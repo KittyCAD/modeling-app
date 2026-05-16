@@ -57,7 +57,20 @@ type SelectionCommandArgument = Extract<
   { inputType: 'selection' | 'selectionMixed' }
 >
 
+type DialogArgumentResolution =
+  | { ok: true; argumentsToSubmit: Record<string, unknown> }
+  | {
+      ok: false
+      reason: 'missingCommand' | 'missingRequired' | 'invalidExpression'
+      message?: string
+    }
+
+type ReviewValidationState =
+  | { status: 'idle' | 'checking' | 'valid'; error?: undefined }
+  | { status: 'invalid'; error: string }
+
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
+const REVIEW_VALIDATION_DEBOUNCE_MS = 350
 const DEFAULT_DIALOG_GROUP_ID = 'parameters'
 const EMPTY_SELECTION: Selections = {
   graphSelections: [],
@@ -137,6 +150,25 @@ function removeSelectionItem(
   return isSelectionValueEmpty(nextSelection) ? undefined : nextSelection
 }
 
+function selectionValueOrUndefined(value: unknown): Selections | undefined {
+  return isSelectionValueEmpty(value) ? undefined : (value as Selections)
+}
+
+function cloneSelectionValue(value: unknown): Selections | undefined {
+  const selection = selectionValueOrUndefined(value)
+  return selection ? structuredClone(selection) : undefined
+}
+
+function getDraftOrSubmittedValue(
+  draftValues: Record<string, unknown>,
+  submittedValues: Record<string, unknown>,
+  argName: string
+): unknown {
+  return Object.prototype.hasOwnProperty.call(draftValues, argName)
+    ? draftValues[argName]
+    : submittedValues[argName]
+}
+
 function hasMeaningfulDialogValue(value: unknown): boolean {
   if (value === undefined || value === null || value === '') return false
   if (typeof value === 'boolean') return true
@@ -145,6 +177,15 @@ function hasMeaningfulDialogValue(value: unknown): boolean {
     return !isSelectionValueEmpty(value)
   }
   return true
+}
+
+function isMissingRequiredDialogValue(
+  arg: CommandArgument<unknown>,
+  value: unknown
+): boolean {
+  return isSelectionArgument(arg)
+    ? isSelectionValueEmpty(value)
+    : !hasMeaningfulDialogValue(value)
 }
 
 function toTitleCase(value: string): string {
@@ -341,6 +382,8 @@ export function ModelingDialog() {
     string | null
   >(null)
   const [didAutoEnableSelection, setDidAutoEnableSelection] = useState(false)
+  const [reviewValidationState, setReviewValidationState] =
+    useState<ReviewValidationState>({ status: 'idle' })
   const dialogPositioningRef = useRef<HTMLDivElement>(null)
   const [dialogTopOffset, setDialogTopOffset] = useState(() =>
     getToolbarBottomOffset(null)
@@ -351,13 +394,28 @@ export function ModelingDialog() {
       : window.document.getElementById(MODELING_AREA_CONTAINER_ID)
   )
 
-  const dialogArgumentsToSubmit = useMemo(
-    () => ({
+  const dialogArgumentsToSubmit = useMemo(() => {
+    const nextValues = {
       ...commandBarState.context.argumentsToSubmit,
       ...draftValues,
-    }),
-    [commandBarState.context.argumentsToSubmit, draftValues]
-  )
+    }
+
+    if (activeSelectionArgName && selectedCommand?.args) {
+      const activeArg = selectedCommand.args[activeSelectionArgName]
+      if (activeArg && isSelectionArgument(activeArg)) {
+        nextValues[activeSelectionArgName] =
+          selectionValueOrUndefined(selectionRanges)
+      }
+    }
+
+    return nextValues
+  }, [
+    activeSelectionArgName,
+    commandBarState.context.argumentsToSubmit,
+    draftValues,
+    selectedCommand?.args,
+    selectionRanges,
+  ])
 
   const dialogContext = useMemo<CommandBarContext>(
     () => ({
@@ -474,6 +532,7 @@ export function ModelingDialog() {
   useEffect(() => {
     setActiveSelectionArgName(null)
     setDidAutoEnableSelection(false)
+    setReviewValidationState({ status: 'idle' })
   }, [selectedCommand])
 
   useEffect(() => {
@@ -501,6 +560,18 @@ export function ModelingDialog() {
 
   const startSelectingArgument = useCallback(
     (argName: string, arg: CommandArgument<unknown>) => {
+      if (
+        activeSelectionArgName &&
+        activeSelectionArgName !== argName &&
+        selectedCommand?.args?.[activeSelectionArgName] &&
+        isSelectionArgument(selectedCommand.args[activeSelectionArgName])
+      ) {
+        setDraftValues((prev) => ({
+          ...prev,
+          [activeSelectionArgName]: cloneSelectionValue(selectionRanges),
+        }))
+      }
+
       commands.send({
         type: 'Change current argument',
         data: {
@@ -514,7 +585,11 @@ export function ModelingDialog() {
 
       if (!isSelectionArgument(arg)) return
 
-      const savedSelection = commandBarState.context.argumentsToSubmit[argName]
+      const savedSelection = getDraftOrSubmittedValue(
+        draftValues,
+        commandBarState.context.argumentsToSubmit,
+        argName
+      )
       if (!isSelectionValueEmpty(savedSelection)) {
         modelingSend({
           type: 'Set selection',
@@ -533,7 +608,15 @@ export function ModelingDialog() {
         })
       }
     },
-    [commandBarState.context.argumentsToSubmit, commands, modelingSend]
+    [
+      activeSelectionArgName,
+      commandBarState.context.argumentsToSubmit,
+      commands,
+      draftValues,
+      modelingSend,
+      selectedCommand?.args,
+      selectionRanges,
+    ]
   )
 
   const removeSceneSelection = useCallback(
@@ -611,16 +694,18 @@ export function ModelingDialog() {
     startSelectingArgument,
   ])
 
-  if (!selectedCommand?.args) return null
-
   const isCheckingArguments = commandBarState.matches(
     'Checking Arguments for Dialog'
   )
+  const reviewValidationErrorToDisplay =
+    reviewValidationState.status === 'invalid'
+      ? reviewValidationState.error
+      : undefined
 
   const visibleFields = fields.filter((field) => !field.isHidden)
   const groupedFields = resolveDialogGroups(
     visibleFields,
-    selectedCommand.dialogLayout?.groups,
+    selectedCommand?.dialogLayout?.groups,
     dialogArgumentsToSubmit
   )
   const activeSelectionFieldName =
@@ -634,14 +719,18 @@ export function ModelingDialog() {
       (field) => !field.isDisabled && isSelectionArgument(field.arg)
     )?.argName
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    try {
+  const resolveDialogArgumentsForSubmit = useCallback(
+    async ({
+      showInvalidExpressionToast = false,
+      stopOnMissingRequired = false,
+    }: {
+      showInvalidExpressionToast?: boolean
+      stopOnMissingRequired?: boolean
+    } = {}): Promise<DialogArgumentResolution> => {
       if (!selectedCommand?.args) {
-        return
+        return { ok: false, reason: 'missingCommand' }
       }
+
       const wasmInstance = await wasmPromise
       const argumentsToSubmit: Record<string, unknown> = {
         ...commandBarState.context.argumentsToSubmit,
@@ -657,7 +746,7 @@ export function ModelingDialog() {
         let value = isSelectionArgument(arg)
           ? argName === activeSelectionFieldName
             ? selectionRanges
-            : commandBarState.context.argumentsToSubmit[argName]
+            : argumentsToSubmit[argName]
           : argumentsToSubmit[argName]
 
         if (
@@ -719,19 +808,140 @@ export function ModelingDialog() {
             )
             if (err(parsed) || 'errors' in parsed) {
               const label = arg.displayName || argName
-              toast.error(`Invalid expression for "${label}"`)
-              return
+              const message = `Invalid expression for "${label}"`
+              if (showInvalidExpressionToast) {
+                toast.error(message)
+              }
+              return { ok: false, reason: 'invalidExpression', message }
             }
             value = parsed
           }
         }
 
+        if (
+          stopOnMissingRequired &&
+          isRequired &&
+          isMissingRequiredDialogValue(arg, value)
+        ) {
+          return { ok: false, reason: 'missingRequired' }
+        }
+
         argumentsToSubmit[argName] = value
+      }
+
+      return { ok: true, argumentsToSubmit }
+    },
+    [
+      activeSelectionFieldName,
+      commandBarState.context,
+      draftValues,
+      kclManager.rustContext,
+      selectedCommand?.args,
+      selectionRanges,
+      wasmPromise,
+    ]
+  )
+
+  useEffect(() => {
+    if (
+      !selectedCommand?.needsReview ||
+      !selectedCommand.reviewValidation ||
+      !selectedCommand.args
+    ) {
+      setReviewValidationState({ status: 'idle' })
+      return
+    }
+
+    let isCancelled = false
+    setReviewValidationState({ status: 'idle' })
+
+    const timeoutId = window.setTimeout(() => {
+      void (async () => {
+        const resolvedArguments = await resolveDialogArgumentsForSubmit({
+          stopOnMissingRequired: true,
+        })
+
+        if (isCancelled || !resolvedArguments.ok) {
+          return
+        }
+
+        setReviewValidationState({ status: 'checking' })
+
+        try {
+          const result = await selectedCommand.reviewValidation?.(
+            {
+              ...commandBarState.context,
+              argumentsToSubmit: resolvedArguments.argumentsToSubmit,
+            },
+            selectedCommand.machineActor
+          )
+
+          if (isCancelled) {
+            return
+          }
+
+          setReviewValidationState(
+            result instanceof Error
+              ? { status: 'invalid', error: result.message }
+              : { status: 'valid' }
+          )
+        } catch (error) {
+          console.error('Error running dialog review validation', error)
+          if (!isCancelled) {
+            setReviewValidationState({
+              status: 'invalid',
+              error: 'Unable to validate command.',
+            })
+          }
+        }
+      })()
+    }, REVIEW_VALIDATION_DEBOUNCE_MS)
+
+    return () => {
+      isCancelled = true
+      window.clearTimeout(timeoutId)
+    }
+  }, [
+    commandBarState.context,
+    resolveDialogArgumentsForSubmit,
+    selectedCommand,
+  ])
+
+  useEffect(() => {
+    if (reviewValidationError) {
+      setReviewValidationState({
+        status: 'invalid',
+        error: reviewValidationError,
+      })
+    }
+  }, [reviewValidationError])
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    if (
+      isSubmitting ||
+      isCheckingArguments ||
+      reviewValidationState.status === 'checking' ||
+      reviewValidationState.status === 'invalid'
+    ) {
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const resolvedArguments = await resolveDialogArgumentsForSubmit({
+        showInvalidExpressionToast: true,
+      })
+
+      if (!resolvedArguments.ok) {
+        return
       }
 
       commands.send({
         type: 'Submit command from dialog',
-        data: { argumentsToSubmit },
+        data: { argumentsToSubmit: resolvedArguments.argumentsToSubmit },
       })
     } finally {
       setIsSubmitting(false)
@@ -752,11 +962,14 @@ export function ModelingDialog() {
     const currentSelection = isSelectionValueEmpty(selectionRanges)
       ? undefined
       : selectionRanges
-    const savedSelection = isSelectionValueEmpty(
-      commandBarState.context.argumentsToSubmit[argName]
+    const savedSelectionValue = getDraftOrSubmittedValue(
+      draftValues,
+      commandBarState.context.argumentsToSubmit,
+      argName
     )
+    const savedSelection = isSelectionValueEmpty(savedSelectionValue)
       ? undefined
-      : (commandBarState.context.argumentsToSubmit[argName] as Selections)
+      : (savedSelectionValue as Selections)
     const displayedSelection = isActivelySelecting
       ? currentSelection
       : savedSelection
@@ -822,6 +1035,10 @@ export function ModelingDialog() {
     )
   }
 
+  if (!selectedCommand?.args) {
+    return null
+  }
+
   return (
     <div
       ref={dialogPositioningRef}
@@ -878,16 +1095,26 @@ export function ModelingDialog() {
               : visibleFields.map(renderField)}
           </div>
 
-          {reviewValidationError && (
+          {reviewValidationErrorToDisplay && (
             <p className="mt-2 mb-0 text-xs leading-tight text-destroy-70 dark:text-destroy-40">
-              {reviewValidationError}
+              {reviewValidationErrorToDisplay}
             </p>
           )}
 
           <div className="mt-3 flex shrink-0 items-center justify-end gap-1.5">
             <SubmitButton
-              disabled={isSubmitting}
-              isChecking={isCheckingArguments}
+              disabled={
+                isSubmitting || reviewValidationState.status === 'invalid'
+              }
+              isChecking={
+                isCheckingArguments ||
+                reviewValidationState.status === 'checking'
+              }
+              checkingLabel={
+                reviewValidationState.status === 'checking'
+                  ? 'Checking...'
+                  : undefined
+              }
             />
           </div>
         </form>
