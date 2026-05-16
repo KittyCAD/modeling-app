@@ -119,7 +119,7 @@ async function dragBetweenRatios(
 const TEST_CODE = `mySketch = startSketchOn(XZ)
 myProfile = startProfile(mySketch, at = [0, 1])
   |> line(end = [-2.5, 3.75])
-sketch(on = XZ) {
+newSketch = sketch(on = XZ) {
   line(start = [var -0.88mm, var 0.54mm], end = [var 0.63mm, var 1.18mm])
   line(start = [var 0.85mm, var -0.57mm], end = [var -0.21mm, var 1.55mm])
   line(start = [var -1.59mm, var -0.49mm], end = [var 0.09mm, var -0.56mm])
@@ -174,7 +174,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       })
 
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'Solve Sketch',
+        'newSketch',
         0
       )
       await solveSketchOperation.dblclick()
@@ -1925,28 +1925,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await toolbar.openFeatureTreePane()
     })
 
-    // TODO: figure out why this is needed for frontend's deleteObjects to work
-    await test.step('Enter sketch edit mode and exit it', async () => {
-      await expect(page.getByText('Building feature tree')).not.toBeVisible({
-        timeout: 10000,
-      })
-      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await solveSketchOperation.dblclick()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await toolbar.exitSketchBtn.click()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.startSketchBtn).toBeEnabled()
-    })
-
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
-      if ((await caret.getAttribute('aria-expanded')) !== 'true') {
-        await caret.click()
-      }
+      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
+      await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
@@ -1958,11 +1939,15 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
+    // TODO: can't quite figure out why this is needed for the second delete to work
+    await test.step('Wait a bit', async () => {
+      await toolbar.closeFeatureTreePane()
+      await page.waitForTimeout(1000)
+    })
+
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
-      if ((await caret.getAttribute('aria-expanded')) !== 'true') {
-        await caret.click()
-      }
+      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
+      await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
