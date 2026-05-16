@@ -517,6 +517,7 @@ function modifyAstWithTagForWallFace(
     }
   }
 
+  // No tag path, no region (surface modeling): retrieve the segment through .sketch
   const sketchSolveSurfaceTagExpr = getSketchSolveSurfaceTagExprForWallFace(
     astClone,
     wallFace,
