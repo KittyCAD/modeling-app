@@ -119,7 +119,7 @@ async function dragBetweenRatios(
 const TEST_CODE = `mySketch = startSketchOn(XZ)
 myProfile = startProfile(mySketch, at = [0, 1])
   |> line(end = [-2.5, 3.75])
-newSketch = sketch(on = XZ) {
+sketch(on = XZ) {
   line(start = [var -0.88mm, var 0.54mm], end = [var 0.63mm, var 1.18mm])
   line(start = [var 0.85mm, var -0.57mm], end = [var -0.21mm, var 1.55mm])
   line(start = [var -1.59mm, var -0.49mm], end = [var 0.09mm, var -0.56mm])
@@ -174,7 +174,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       })
 
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'newSketch',
+        'Solve Sketch',
         0
       )
       await solveSketchOperation.dblclick()
@@ -1914,7 +1914,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   horizontal(line1)
   line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
   coincident([line2.start, line1.end])
-  }`
+}`
       await context.addInitScript(async (code) => {
         localStorage.setItem('persistCode', code)
       }, code)
@@ -1926,13 +1926,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
+      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
       )
-      await expect(op).toBeVisible()
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled()
@@ -1946,13 +1945,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
+      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
       )
-      await expect(op).toBeVisible()
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled()
