@@ -1925,23 +1925,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await toolbar.openFeatureTreePane()
     })
 
-    // TODO: figure out why this is needed for frontend's deleteObjects to work
-    await test.step('Enter sketch edit mode and exit it', async () => {
-      await expect(page.getByText('Building feature tree')).not.toBeVisible({
-        timeout: 10000,
-      })
-      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await solveSketchOperation.dblclick()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await toolbar.exitSketchBtn.click()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.startSketchBtn).toBeEnabled()
-    })
-
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
@@ -1953,6 +1936,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled()
       await editor.expectEditor.not.toContain('horizontal(line1)')
+    })
+
+    // TODO: can't quite figure out why this is needed for the second delete to work
+    await test.step('Wait a bit', async () => {
+      await toolbar.closeFeatureTreePane()
+      await page.waitForTimeout(1000)
     })
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {

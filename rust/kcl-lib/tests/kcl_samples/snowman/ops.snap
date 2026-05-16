@@ -4327,6 +4327,32 @@ description: Operations executed snowman.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 39
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "revolve",
       "unlabeledArg": {
         "value": {
@@ -4397,7 +4423,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 39
+            "index": 40
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4467,7 +4493,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 39
+            "index": 40
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4530,7 +4556,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 39
+            "index": 40
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4574,7 +4600,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 40
+            "index": 41
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4596,7 +4622,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 41
+            "index": 42
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4670,7 +4696,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 41
+            "index": 42
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4720,13 +4746,39 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 42
+            "index": 43
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -4762,7 +4814,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 43
+            "index": 45
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4799,7 +4851,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 44
+            "index": 46
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4824,7 +4876,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 44
+            "index": 46
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4898,7 +4950,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 44
+            "index": 46
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4948,13 +5000,39 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 45
+            "index": 47
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 48
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -4990,7 +5068,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 46
+            "index": 49
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5053,7 +5131,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 46
+            "index": 49
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5084,7 +5162,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 47
+            "index": 50
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5106,7 +5184,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 48
+            "index": 51
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5180,7 +5258,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 48
+            "index": 51
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5230,13 +5308,39 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 49
+            "index": 52
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 53
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -5272,7 +5376,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 50
+            "index": 54
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5349,7 +5453,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 50
+            "index": 54
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5412,7 +5516,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 50
+            "index": 54
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5443,7 +5547,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 51
+            "index": 55
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5465,7 +5569,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 52
+            "index": 56
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5539,7 +5643,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 52
+            "index": 56
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5589,13 +5693,39 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 53
+            "index": 57
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 58
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -5631,7 +5761,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 54
+            "index": 59
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5708,7 +5838,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 54
+            "index": 59
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5771,7 +5901,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 54
+            "index": 59
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5804,7 +5934,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 55
+            "index": 60
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5833,7 +5963,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 56
+            "index": 61
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5855,7 +5985,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 57
+            "index": 62
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5929,7 +6059,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 57
+            "index": 62
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5979,13 +6109,39 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 58
+            "index": 63
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "hide",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 64
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -6021,7 +6177,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 59
+            "index": 65
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6068,6 +6224,17 @@ description: Operations executed snowman.kcl
           },
           "sourceRange": []
         },
+        "opacity": {
+          "value": {
+            "type": "Number",
+            "value": 60.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
         "roughness": {
           "value": {
             "type": "Number",
@@ -6084,114 +6251,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 59
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "union",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 60
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "appearance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "color": {
-          "value": {
-            "type": "String",
-            "value": "#ffffff"
-          },
-          "sourceRange": []
-        },
-        "metalness": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        },
-        "roughness": {
-          "value": {
-            "type": "Number",
-            "value": 20.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 60
+            "index": 65
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6227,40 +6287,44 @@ description: Operations executed snowman.kcl
               }
             },
             {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
             },
             {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
             },
             {
               "type": "Solid",
@@ -6387,7 +6451,7 @@ description: Operations executed snowman.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 65
+            "index": 66
           },
           {
             "type": "ExpressionStatementExpr"
