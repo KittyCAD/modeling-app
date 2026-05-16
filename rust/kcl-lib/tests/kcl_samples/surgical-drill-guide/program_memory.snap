@@ -373,10 +373,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6894,
-            "end": 6901,
+            "commentStart": 6885,
+            "end": 6892,
             "moduleId": 0,
-            "start": 6894,
+            "start": 6885,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -404,10 +404,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 1.0,
             "tag": {
-              "commentStart": 6894,
-              "end": 6901,
+              "commentStart": 6885,
+              "end": 6892,
               "moduleId": 0,
-              "start": 6894,
+              "start": 6885,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -501,10 +501,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 1.0,
           "tag": {
-            "commentStart": 6894,
-            "end": 6901,
+            "commentStart": 6885,
+            "end": 6892,
             "moduleId": 0,
-            "start": 6894,
+            "start": 6885,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -832,10 +832,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 1.0,
                   "tag": {
-                    "commentStart": 6894,
-                    "end": 6901,
+                    "commentStart": 6885,
+                    "end": 6892,
                     "moduleId": 0,
-                    "start": 6894,
+                    "start": 6885,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -920,10 +920,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11275,
-            "end": 11282,
+            "commentStart": 11266,
+            "end": 11273,
             "moduleId": 0,
-            "start": 11275,
+            "start": 11266,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -951,10 +951,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 1.6000000004000001,
             "tag": {
-              "commentStart": 11275,
-              "end": 11282,
+              "commentStart": 11266,
+              "end": 11273,
               "moduleId": 0,
-              "start": 11275,
+              "start": 11266,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1048,10 +1048,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 1.6000000004000001,
           "tag": {
-            "commentStart": 11275,
-            "end": 11282,
+            "commentStart": 11266,
+            "end": 11273,
             "moduleId": 0,
-            "start": 11275,
+            "start": 11266,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1379,10 +1379,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 1.6000000004000001,
                   "tag": {
-                    "commentStart": 11275,
-                    "end": 11282,
+                    "commentStart": 11266,
+                    "end": 11273,
                     "moduleId": 0,
-                    "start": 11275,
+                    "start": 11266,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2637,10 +2637,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5205,
-            "end": 5212,
+            "commentStart": 5196,
+            "end": 5203,
             "moduleId": 0,
-            "start": 5205,
+            "start": 5196,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2668,10 +2668,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 15.789473684421054,
             "tag": {
-              "commentStart": 5205,
-              "end": 5212,
+              "commentStart": 5196,
+              "end": 5203,
               "moduleId": 0,
-              "start": 5205,
+              "start": 5196,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2769,10 +2769,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 15.789473684421054,
           "tag": {
-            "commentStart": 5205,
-            "end": 5212,
+            "commentStart": 5196,
+            "end": 5203,
             "moduleId": 0,
-            "start": 5205,
+            "start": 5196,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3112,10 +3112,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 15.789473684421054,
                   "tag": {
-                    "commentStart": 5205,
-                    "end": 5212,
+                    "commentStart": 5196,
+                    "end": 5203,
                     "moduleId": 0,
-                    "start": 5205,
+                    "start": 5196,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -3204,10 +3204,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9597,
-            "end": 9604,
+            "commentStart": 9588,
+            "end": 9595,
             "moduleId": 0,
-            "start": 9597,
+            "start": 9588,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3235,10 +3235,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 15.789473684421054,
             "tag": {
-              "commentStart": 9597,
-              "end": 9604,
+              "commentStart": 9588,
+              "end": 9595,
               "moduleId": 0,
-              "start": 9597,
+              "start": 9588,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3336,10 +3336,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 15.789473684421054,
           "tag": {
-            "commentStart": 9597,
-            "end": 9604,
+            "commentStart": 9588,
+            "end": 9595,
             "moduleId": 0,
-            "start": 9597,
+            "start": 9588,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3679,10 +3679,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 15.789473684421054,
                   "tag": {
-                    "commentStart": 9597,
-                    "end": 9604,
+                    "commentStart": 9588,
+                    "end": 9595,
                     "moduleId": 0,
-                    "start": 9597,
+                    "start": 9588,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4302,10 +4302,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7761,
-            "end": 7772,
+            "commentStart": 7752,
+            "end": 7763,
             "moduleId": 0,
-            "start": 7761,
+            "start": 7752,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -4316,10 +4316,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8918,
-            "end": 8930,
+            "commentStart": 8909,
+            "end": 8921,
             "moduleId": 0,
-            "start": 8918,
+            "start": 8909,
             "type": "TagDeclarator",
             "value": "capStart003"
           },
@@ -4330,10 +4330,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8893,
-            "end": 8903,
+            "commentStart": 8884,
+            "end": 8894,
             "moduleId": 0,
-            "start": 8893,
+            "start": 8884,
             "type": "TagDeclarator",
             "value": "capEnd005"
           },
@@ -4361,10 +4361,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 16.216216215135134,
             "tag": {
-              "commentStart": 7761,
-              "end": 7772,
+              "commentStart": 7752,
+              "end": 7763,
               "moduleId": 0,
-              "start": 7761,
+              "start": 7752,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -4504,10 +4504,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 16.216216215135134,
           "tag": {
-            "commentStart": 7761,
-            "end": 7772,
+            "commentStart": 7752,
+            "end": 7763,
             "moduleId": 0,
-            "start": 7761,
+            "start": 7752,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -4980,10 +4980,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 16.216216215135134,
                   "tag": {
-                    "commentStart": 7761,
-                    "end": 7772,
+                    "commentStart": 7752,
+                    "end": 7763,
                     "moduleId": 0,
-                    "start": 7761,
+                    "start": 7752,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -5027,10 +5027,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 7844,
-                    "end": 7855,
+                    "commentStart": 7835,
+                    "end": 7846,
                     "moduleId": 0,
-                    "start": 7844,
+                    "start": 7835,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -5364,10 +5364,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12129,
-            "end": 12140,
+            "commentStart": 12120,
+            "end": 12131,
             "moduleId": 0,
-            "start": 12129,
+            "start": 12120,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -5378,10 +5378,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13265,
-            "end": 13277,
+            "commentStart": 13256,
+            "end": 13268,
             "moduleId": 0,
-            "start": 13265,
+            "start": 13256,
             "type": "TagDeclarator",
             "value": "capStart002"
           },
@@ -5392,10 +5392,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13290,
-            "end": 13300,
+            "commentStart": 13281,
+            "end": 13291,
             "moduleId": 0,
-            "start": 13290,
+            "start": 13281,
             "type": "TagDeclarator",
             "value": "capEnd002"
           },
@@ -5423,10 +5423,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 16.216216215135134,
             "tag": {
-              "commentStart": 12129,
-              "end": 12140,
+              "commentStart": 12120,
+              "end": 12131,
               "moduleId": 0,
-              "start": 12129,
+              "start": 12120,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -5566,10 +5566,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 16.216216215135134,
           "tag": {
-            "commentStart": 12129,
-            "end": 12140,
+            "commentStart": 12120,
+            "end": 12131,
             "moduleId": 0,
-            "start": 12129,
+            "start": 12120,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -6042,10 +6042,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 16.216216215135134,
                   "tag": {
-                    "commentStart": 12129,
-                    "end": 12140,
+                    "commentStart": 12120,
+                    "end": 12131,
                     "moduleId": 0,
-                    "start": 12129,
+                    "start": 12120,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -6089,10 +6089,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 3.199999999,
                   "tag": {
-                    "commentStart": 12214,
-                    "end": 12225,
+                    "commentStart": 12205,
+                    "end": 12216,
                     "moduleId": 0,
-                    "start": 12214,
+                    "start": 12205,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -8692,10 +8692,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5976,
-            "end": 5983,
+            "commentStart": 5967,
+            "end": 5974,
             "moduleId": 0,
-            "start": 5976,
+            "start": 5967,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -8706,10 +8706,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6365,
-            "end": 6375,
+            "commentStart": 6356,
+            "end": 6366,
             "moduleId": 0,
-            "start": 6365,
+            "start": 6356,
             "type": "TagDeclarator",
             "value": "capEnd004"
           },
@@ -8737,10 +8737,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 5976,
-              "end": 5983,
+              "commentStart": 5967,
+              "end": 5974,
               "moduleId": 0,
-              "start": 5976,
+              "start": 5967,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -8851,10 +8851,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 5976,
-            "end": 5983,
+            "commentStart": 5967,
+            "end": 5974,
             "moduleId": 0,
-            "start": 5976,
+            "start": 5967,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9177,10 +9177,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 5976,
-                    "end": 5983,
+                    "commentStart": 5967,
+                    "end": 5974,
                     "moduleId": 0,
-                    "start": 5976,
+                    "start": 5967,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -9262,10 +9262,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10354,
-            "end": 10361,
+            "commentStart": 10345,
+            "end": 10352,
             "moduleId": 0,
-            "start": 10354,
+            "start": 10345,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9276,10 +9276,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10745,
-            "end": 10755,
+            "commentStart": 10736,
+            "end": 10746,
             "moduleId": 0,
-            "start": 10745,
+            "start": 10736,
             "type": "TagDeclarator",
             "value": "capEnd003"
           },
@@ -9307,10 +9307,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "radius": 3.1999999998,
             "tag": {
-              "commentStart": 10354,
-              "end": 10361,
+              "commentStart": 10345,
+              "end": 10352,
               "moduleId": 0,
-              "start": 10354,
+              "start": 10345,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -9421,10 +9421,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           ],
           "radius": 3.1999999998,
           "tag": {
-            "commentStart": 10354,
-            "end": 10361,
+            "commentStart": 10345,
+            "end": 10352,
             "moduleId": 0,
-            "start": 10354,
+            "start": 10345,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9747,10 +9747,10 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   ],
                   "radius": 3.1999999998,
                   "tag": {
-                    "commentStart": 10354,
-                    "end": 10361,
+                    "commentStart": 10345,
+                    "end": 10352,
                     "moduleId": 0,
-                    "start": 10354,
+                    "start": 10345,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
