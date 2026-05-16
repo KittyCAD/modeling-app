@@ -11259,91 +11259,26 @@ description: Result of parsing gallows-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "y",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "z",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
+                      "argument": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "csgFriendlyOffset",
+                        "raw": "1",
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "global",
+                      "operator": "-",
                       "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "true",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": true
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
                     }
                   }
                 ],
@@ -11356,7 +11291,34 @@ description: Result of parsing gallows-bracket.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "translate",
+                    "name": "scale",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "flipSurface",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -21535,91 +21497,26 @@ description: Result of parsing gallows-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "y",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "z",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
+                      "argument": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "csgFriendlyOffset",
+                        "raw": "1",
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "global",
+                      "operator": "-",
                       "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "true",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": true
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
                     }
                   }
                 ],
@@ -21632,7 +21529,34 @@ description: Result of parsing gallows-bracket.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "translate",
+                    "name": "scale",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "flipSurface",
                     "start": 0,
                     "type": "Identifier"
                   },

@@ -437,7 +437,9 @@ export class ZDSProject {
       this.files = [...this.files, newEditor]
     }
 
-    newEditor.path = path
+    if (newEditor.path !== path) {
+      newEditor.path = path
+    }
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
@@ -1726,6 +1728,7 @@ export class KclManager extends File {
       if (!isCodeTheSame(initialCode, diskCode)) {
         editor.markFileCodeAsSynced(diskCode)
       }
+      editor.watch()
       return editor
     }
 
@@ -1744,6 +1747,7 @@ export class KclManager extends File {
       shouldWriteToDisk: false,
     })
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.watch()
     return providedEditor
   }
 

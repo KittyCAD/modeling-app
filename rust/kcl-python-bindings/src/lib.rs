@@ -216,9 +216,10 @@ async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
     } = load_and_parse(input).await?;
 
     let (ctx, mut state) = new_context_state(path, mock).await.map_err(to_py_exception)?;
-    ctx.run(&program, &mut state)
-        .await
-        .map_err(|err| into_miette(err, &code))?;
+    if let Err(err) = ctx.run(&program, &mut state).await {
+        ctx.close().await;
+        return Err(into_miette(err, &code));
+    }
 
     Ok(ExecutedKcl {
         ctx,
@@ -323,14 +324,17 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
         filename,
     } = run_kcl(input, false).await?;
 
-    let settings = program
-        .meta_settings()
-        .map_err(|err| into_miette_for_parse(&filename, &code, err))?
-        .unwrap_or_default();
+    let settings = match program.meta_settings() {
+        Ok(x) => x.unwrap_or_default(),
+        Err(err) => {
+            ctx.close().await;
+            return Err(into_miette_for_parse(&filename, &code, err));
+        }
+    };
     let units: UnitLength = settings.default_length_units.into();
 
     // This will not return until there are files.
-    let resp = ctx
+    let export_res = ctx
         .engine
         .send_modeling_cmd(
             &ctx.engine_batch,
@@ -346,7 +350,14 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
                     .build(),
             ),
         )
-        .await?;
+        .await;
+    let resp = match export_res {
+        Ok(x) => x,
+        Err(e) => {
+            ctx.close().await;
+            return Err(e.into());
+        }
+    };
 
     let result = match resp {
         kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } => Ok(files),
@@ -496,7 +507,10 @@ async fn import_and_snapshot_views(
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
-        import(&ctx, filepaths, format).await?;
+        if let Err(e) = import(&ctx, filepaths, format).await {
+            ctx.close().await;
+            return Err(e);
+        }
         let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
         ctx.close().await;
         result

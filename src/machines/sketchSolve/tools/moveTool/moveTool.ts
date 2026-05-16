@@ -27,7 +27,9 @@ import {
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
+  isControlPointSplineSegment,
   isConstraint,
+  isOwnedLineSegment,
   isArcLikeSegment,
   isDiameterConstraint,
   isDistanceConstraint,
@@ -227,6 +229,10 @@ function buildSegmentCtorWithDrag({
     return null
   }
 
+  if (isOwnedLineSegment(obj)) {
+    return null
+  }
+
   if (baseCtor.type === 'Point') {
     if (pointPositionOverride) {
       return {
@@ -294,6 +300,14 @@ function buildSegmentCtorWithDrag({
       type: 'Circle',
       center: newCenter,
       start: newStart,
+      construction: baseCtor.construction,
+    }
+  } else if (baseCtor.type === 'ControlPointSpline') {
+    return {
+      type: 'ControlPointSpline',
+      points: baseCtor.points.map((point) =>
+        applyVectorToPoint2D(point, dragVec)
+      ),
       construction: baseCtor.construction,
     }
   }
@@ -708,11 +722,38 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedPointIds = new Set<number>(coincidentPointIds)
+  const allowedPointIds = new Set<number>()
   const excludedSegmentIds = new Set<number>()
   for (const pointId of coincidentPointIds) {
     const point = sceneGraphDelta.new_graph.objects[pointId]
     if (isPointSegment(point) && point.kind.segment.owner !== null) {
       excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
+
+  const ownerId = draggedObject.kind.segment.owner
+  if (ownerId !== null) {
+    const ownerObject = sceneGraphDelta.new_graph.objects[ownerId]
+    if (isControlPointSplineSegment(ownerObject)) {
+      const controls = ownerObject.kind.segment.controls
+      const firstControlId = controls[0]
+      const lastControlId = controls[controls.length - 1]
+      if (draggedEntityId === firstControlId && lastControlId !== undefined) {
+        allowedPointIds.add(lastControlId)
+      } else if (
+        draggedEntityId === lastControlId &&
+        firstControlId !== undefined
+      ) {
+        allowedPointIds.add(firstControlId)
+      }
+
+      ownerObject.kind.segment.controls.forEach((controlId) => {
+        if (!allowedPointIds.has(controlId)) {
+          excludedPointIds.add(controlId)
+        }
+      })
+      excludedSegmentIds.add(ownerObject.id)
     }
   }
 
@@ -726,13 +767,29 @@ function getDragPointSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (candidate.target.type === 'point') {
-          return !coincidentPointIds.includes(candidate.target.id)
+          return (
+            allowedPointIds.has(candidate.target.id) ||
+            !excludedPointIds.has(candidate.target.id)
+          )
         }
 
         const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        if (snapTargetSegmentId === null) {
+          return true
+        }
+
+        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+        const snapTargetOwnerId =
+          (isPointSegment(snapTargetSegment) ||
+            isOwnedLineSegment(snapTargetSegment)) &&
+          snapTargetSegment.kind.segment.owner != null
+            ? snapTargetSegment.kind.segment.owner
+            : null
+
         return (
-          snapTargetSegmentId === null ||
-          !excludedSegmentIds.has(snapTargetSegmentId)
+          !excludedSegmentIds.has(snapTargetSegmentId) &&
+          (snapTargetOwnerId == null ||
+            !excludedSegmentIds.has(snapTargetOwnerId))
         )
       }
     ) ?? null

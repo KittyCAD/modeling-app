@@ -334,3 +334,68 @@ fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> Runtim
 
     original_ty
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::KclValue;
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn flatten_consumed_solid_does_not_report_kcl_error() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+result = subtract(target, tools = [tool])
+flattened = flatten([[target]])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+
+        match result {
+            Ok(outcome) => {
+                let flattened = outcome.variables.get("flattened").unwrap();
+                let KclValue::HomArray { value, .. } = flattened else {
+                    panic!("expected `flattened` to be an array, got: {flattened:?}");
+                };
+                assert_eq!(value.len(), 1);
+            }
+            Err(err) => {
+                let message = err.error.message();
+                assert!(
+                    message.contains("`target` was already consumed by a `subtract` operation"),
+                    "{message}"
+                );
+                panic!("flatten should ignore consumed-solid validation, but failed with: {message}");
+            }
+        }
+    }
+}

@@ -10,6 +10,6 @@ test.describe('Stress test', { tag: '@desktop' }, () => {
     const projectName = 'stress-test-project'
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.settled(cmdBar)
+    await scene.settled()
   })
 })
