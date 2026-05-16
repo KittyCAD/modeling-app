@@ -632,7 +632,7 @@ test.describe(
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-        await scene.settled(cmdBar)
+        await scene.settled()
         await page.waitForTimeout(1000)
 
         // Selectors and constants
@@ -800,13 +800,13 @@ test.describe(
         )
         await expect(toastMessage).toBeVisible()
         await expect(toastMessage).not.toBeVisible()
-        await scene.settled(cmdBar)
+        await scene.settled()
       }
 
       await test.step('Load modeling view', async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Set backface color to blue', async () => {
@@ -885,7 +885,7 @@ fn cube`
             localStorage.setItem('persistCode', initialCode)
           }, initialCode)
           await homePage.goToModelingScene()
-          await scene.settled(cmdBar)
+          await scene.settled()
           await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
         })
 
@@ -896,7 +896,7 @@ fn cube`
         })
 
         await test.step('Check that they are enabled', async () => {
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.expectEditor.toContain(
             `@settings(experimentalFeatures = allow)
 ${initialCode}`,
@@ -911,7 +911,7 @@ ${initialCode}`,
         })
 
         await test.step('Check that they are disabled', async () => {
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.expectEditor.toContain(
             `@settings(experimentalFeatures = deny)
 ${initialCode}`,

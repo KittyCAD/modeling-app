@@ -50,7 +50,7 @@ test.describe(
 
       const projectName = 'native-menu-window-one'
       await homePage.goToModelingScene(projectName)
-      await scene.settled(cmdBar)
+      await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
 
@@ -246,7 +246,7 @@ test.describe(
         return
       }
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
 
