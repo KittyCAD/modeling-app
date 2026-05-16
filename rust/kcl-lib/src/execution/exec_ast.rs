@@ -22,7 +22,6 @@ use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Group;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
@@ -1657,7 +1656,6 @@ impl Node<SketchBlock> {
                 sketch_id,
             }));
 
-            #[cfg(feature = "artifact-graph")]
             exec_state.push_op(Operation::GroupBegin {
                 group: Group::SketchBlock { sketch_id },
                 node_path: NodePath::placeholder(),
