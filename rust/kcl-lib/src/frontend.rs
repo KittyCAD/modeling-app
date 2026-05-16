@@ -4543,15 +4543,11 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let sweep_ref = get_or_insert_ast_reference(
-                ast,
-                &SourceRef::Simple {
-                    range: sweep_range.0,
-                    node_path: sweep_range.1.clone(),
-                },
-                "solid",
-                None,
-            )?;
+            let sweep_source_ref = SourceRef::Simple {
+                range: sweep_range.0,
+                node_path: sweep_range.1.clone(),
+            };
+            let sweep_ref = get_or_insert_ast_reference(ast, &sweep_source_ref, "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve sweep reference for selected wall: artifact_id={:?}",
@@ -4595,15 +4591,11 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let sweep_ref = get_or_insert_ast_reference(
-                ast,
-                &SourceRef::Simple {
-                    range: range.0,
-                    node_path: range.1.clone(),
-                },
-                "solid",
-                None,
-            )?;
+            let sweep_source_ref = SourceRef::Simple {
+                range: range.0,
+                node_path: range.1.clone(),
+            };
+            let sweep_ref = get_or_insert_ast_reference(ast, &sweep_source_ref, "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve sweep reference for selected cap: artifact_id={:?}",
@@ -4745,29 +4737,57 @@ fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable
     let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
         return None;
     };
-    let ast::Expr::CallExpressionKw(sweep_call) = &sweep_decl.init else {
-        return None;
-    };
-    if !matches!(
-        sweep_call.callee.name.name.as_str(),
-        "extrude" | "revolve" | "sweep" | "loft"
-    ) {
-        return None;
+
+    let region_name_from_sweep_call =
+        |sweep_call: &ast::Node<ast::CallExpressionKw>, pipe_input: Option<&ast::Expr>| -> Option<String> {
+            if !matches!(
+                sweep_call.callee.name.name.as_str(),
+                "extrude" | "revolve" | "sweep" | "loft"
+            ) {
+                return None;
+            }
+            let candidate = if let Some(unlabeled) = sweep_call.unlabeled.as_ref() {
+                let ast::Expr::Name(region_name_expr) = unlabeled else {
+                    return None;
+                };
+                region_name_expr.name.name.clone()
+            } else {
+                let ast::Expr::Name(region_name_expr) = pipe_input? else {
+                    return None;
+                };
+                region_name_expr.name.name.clone()
+            };
+            let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+                return None;
+            };
+            let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+                return None;
+            };
+            if region_call.callee.name.name != "region" {
+                return None;
+            }
+            Some(candidate)
+        };
+
+    match &sweep_decl.init {
+        ast::Expr::CallExpressionKw(sweep_call) => region_name_from_sweep_call(sweep_call, None),
+        ast::Expr::PipeExpression(pipe) => {
+            let mut previous_expr = None;
+            for expr in &pipe.body {
+                if let ast::Expr::CallExpressionKw(sweep_call) = expr
+                    && matches!(
+                        sweep_call.callee.name.name.as_str(),
+                        "extrude" | "revolve" | "sweep" | "loft"
+                    )
+                {
+                    return region_name_from_sweep_call(sweep_call, previous_expr);
+                }
+                previous_expr = Some(expr);
+            }
+            None
+        }
+        _ => None,
     }
-    let ast::Expr::Name(region_name_expr) = sweep_call.unlabeled.as_ref()? else {
-        return None;
-    };
-    let candidate = region_name_expr.name.name.clone();
-    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
-        return None;
-    };
-    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
-        return None;
-    };
-    if region_call.callee.name.name != "region" {
-        return None;
-    }
-    Some(candidate)
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -4822,12 +4842,21 @@ fn mutate_ast_node_by_source_ref(
         node_path,
         command,
         defined_names_stack: Default::default(),
+        fallback_enclosing_variable: None,
     };
     let control = dfs_mut(ast, &mut context);
     match control {
-        ControlFlow::Continue(_) => Err(KclError::refactor(
-            "Could not find the KCL source for this edit. Try reloading the app, or update from code.".to_owned(),
-        )),
+        ControlFlow::Continue(_) => {
+            if let AstMutateCommand::AddVariableDeclaration { .. } = &context.command
+                && let Some((node_ref, variable_name)) = context.fallback_enclosing_variable
+            {
+                return Ok((node_ref, AstMutateCommandReturn::Name(variable_name)));
+            }
+
+            Err(KclError::refactor(
+                "Could not find the KCL source for this edit. Try reloading the app, or update from code.".to_owned(),
+            ))
+        }
         ControlFlow::Break(break_value) => break_value,
     }
 }
@@ -4838,6 +4867,7 @@ struct AstMutateContext {
     node_path: Option<ast::NodePath>,
     command: AstMutateCommand,
     defined_names_stack: Vec<HashSet<String>>,
+    fallback_enclosing_variable: Option<(AstNodeRef, String)>,
 }
 
 #[derive(Debug)]
@@ -5030,6 +5060,17 @@ fn filter_and_process(
                     mutate_body_item: MutateBodyItem::Delete,
                     control_flow: ControlFlow::Break(Ok((AstNodeRef::from(&*ctx), AstMutateCommandReturn::None))),
                 };
+            }
+        } else if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
+            let source_ref_is_contained = match (&ctx.node_path, expr_node_path) {
+                (Some(target), Some(container)) => {
+                    target != container && target.steps.starts_with(container.steps.as_slice())
+                }
+                (None, _) => expr_range != ctx.source_range && expr_range.contains_range(&ctx.source_range),
+                _ => false,
+            };
+            if source_ref_is_contained {
+                ctx.fallback_enclosing_variable = Some((AstNodeRef::from(&**var_decl), var_decl.name().to_owned()));
             }
         }
     }
@@ -5978,6 +6019,21 @@ mod tests {
         None
     }
 
+    fn find_first_end_cap_object_id(scene_graph: &SceneGraph) -> Option<ObjectId> {
+        for object in &scene_graph.objects {
+            if matches!(
+                &object.kind,
+                ObjectKind::Cap(crate::frontend::api::Cap {
+                    kind: crate::frontend::api::CapKind::End,
+                    ..
+                })
+            ) {
+                return Some(object.id);
+            }
+        }
+        None
+    }
+
     #[test]
     fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
         let source = "\
@@ -5986,6 +6042,11 @@ extrude001 = extrude(region001, length = 5)
 revolve001 = revolve(region001, axis = Y)
 sweep001 = sweep(region001, path = path001)
 loft001 = loft(region001)
+translatedExtrude001 = extrude(region001, length = 5)
+  |> translate(z = 1)
+pipedExtrude001 = region001
+  |> extrude(length = 5)
+  |> translate(z = 1)
 not_sweep001 = shell(extrude001, faces = [], thickness = 1)
 ";
 
@@ -6005,6 +6066,14 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         );
         assert_eq!(
             region_name_from_sweep_variable(&program.ast, "loft001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "translatedExtrude001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "pipedExtrude001"),
             Some("region001".to_owned())
         );
         assert_eq!(region_name_from_sweep_variable(&program.ast, "not_sweep001"), None);
