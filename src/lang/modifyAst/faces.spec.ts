@@ -700,6 +700,70 @@ extrude001 = extrude(region001, length = 5)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a deleteFace call on an extruded sketch-solve arc segment surface', async () => {
+      const code = `sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4.32mm])
+  coincident([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  arc1 = arc(start = [var 1.87mm, var 7.34mm], end = [var 0mm, var 4.32mm], center = [var 3.36mm, var 4.32mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  line2 = line(start = [var 1.87mm, var 7.34mm], end = [var 6.51mm, var 8.2mm])
+  coincident([line2.start, arc1.start])
+  tangent([line2, arc1])
+}
+extrude001 = extrude(
+  [
+    sketch001.line1,
+    sketch001.arc1,
+    sketch001.line2
+  ],
+  length = 5,
+  bodyType = SURFACE,
+)`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const arcWall = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'wall') {
+          return false
+        }
+
+        const sweep = artifactGraph.get(artifact.sweepId)
+        if (!sweep || sweep.type !== 'sweep') {
+          return false
+        }
+
+        const path = artifactGraph.get(sweep.pathId)
+        return (
+          path?.type === 'path' && path.segIds.indexOf(artifact.segId) === 1
+        )
+      })
+      if (!arcWall) {
+        throw new Error('Could not find expected arc wall selection')
+      }
+
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: createSelectionFromArtifacts([arcWall], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `surface001 = deleteFace(extrude001, faces = extrude001.sketch.tags.arc1)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a deleteFace call on the bracket', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
