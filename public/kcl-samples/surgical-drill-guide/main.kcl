@@ -111,7 +111,7 @@ hide(bitCut02Sketch)
 bitCut02 = extrude(bitCut02Region, length = -100)
 
 // Cut the bracket
-handle = subtract([bracket], tools = union([bitCut01, bitCut02]))
+handle = subtract(bracket, tools = [bitCut01, bitCut02])
 
 // Model the support for the first drill bit
 bitSupport01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset - 3)) {
