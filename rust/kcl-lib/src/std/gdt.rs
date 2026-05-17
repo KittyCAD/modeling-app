@@ -79,10 +79,6 @@ struct DistanceEndpoint {
 }
 
 fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotation_id: uuid::Uuid) {
-    if args.ctx.settings.skip_artifact_graph {
-        return;
-    }
-
     exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(annotation_id),
         code_ref: CodeRef::placeholder(args.source_range),
@@ -1383,8 +1379,8 @@ gdt::datum(face = top, name = "A", framePosition = [10mm, 0mm], framePlane = XZ)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_annotations_follow_runtime_artifact_graph_setting() {
+    async fn gdt_annotations_do_not_follow_runtime_artifact_graph_setting() {
         assert_eq!(gdt_artifact_count(false).await, 1);
-        assert_eq!(gdt_artifact_count(true).await, 0);
+        assert_eq!(gdt_artifact_count(true).await, 1);
     }
 }
