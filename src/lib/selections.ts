@@ -837,7 +837,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   ) {
     const refs = getCodeRefsFromEntityReference(entityRef, artifactGraph)
     if (refs && refs.length > 0) {
-      codeRefs = refs.map((ref) => ({ range: ref.range }))
+      codeRefs = refs
     }
   } else if (entityId) {
     const _artifact =
@@ -2548,10 +2548,23 @@ export function getCodeRefsFromEntityReference(
       const refs = getCodeRefsByArtifactId(entityRef.edge_id, artifactGraph)
       if (refs?.length) codeRefs.push({ range: refs[0].range })
     }
+    // Solid2D edge ids normally map directly to segment artifacts. Prefer the
+    // exact segment before falling back to broader path/profile ranges.
+    const segmentArtifact = artifactGraph.get(entityRef.edge_id)
+    if (
+      segmentArtifact &&
+      segmentArtifact.type === 'segment' &&
+      segmentArtifact.codeRef
+    ) {
+      codeRefs.push(segmentArtifact.codeRef)
+    }
     // For Solid2D edges (segment curves), the edge_id is the curve UUID
     // We need to find which segment this curve belongs to
     // Search through all paths with solid2dId to find the matching segment
     for (const [_pathId, pathArtifact] of artifactGraph.entries()) {
+      if (codeRefs.length > 0) {
+        break
+      }
       if (pathArtifact.type === 'path' && pathArtifact.solid2dId) {
         // Check all segments in this path
         if (pathArtifact.segIds) {
@@ -2578,18 +2591,6 @@ export function getCodeRefsFromEntityReference(
           }
         }
         break // Found the path, no need to continue
-      }
-    }
-    // If we found codeRefs, return them; otherwise try to find segment by edgeId directly
-    if (codeRefs.length === 0) {
-      // Try to find segment artifact directly by edgeId
-      const segmentArtifact = artifactGraph.get(entityRef.edge_id)
-      if (
-        segmentArtifact &&
-        segmentArtifact.type === 'segment' &&
-        segmentArtifact.codeRef
-      ) {
-        codeRefs.push({ range: segmentArtifact.codeRef.range })
       }
     }
   } else if (

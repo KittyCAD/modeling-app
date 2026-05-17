@@ -60,6 +60,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
+    await editor.replaceCode('', testCode)
+    await scene.settled(cmdBar)
+    await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera so that we can select what we need to.
     await scene.moveCameraTo(
@@ -71,7 +74,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
         format: 'ratio',
       })
-      const [clickEdge, mv] = scene.makeMouseHelpers(0.1907, 0.3477, {
+      const [clickEdge, mv] = scene.makeMouseHelpers(0.0594, 0.3614, {
         format: 'ratio',
         steps: 5,
       })
@@ -137,14 +140,19 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.submit()
 
       // Assert code contains revolve
-      await editor.expectEditor.toContain('revolve')
+      await editor.expectEditor.toContain(`revolve`)
+      await editor.expectEditor.toContain(`sideFaces = [seg01]`)
+	      await editor.expectEditor.toContain(
+	        `endFaces = [seg02, rectangleSegmentA002]`
+	      )
+	      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
 
     await test.step('Second revolve: profile and edge using ratio clicks', async () => {
-      const [clickProfile2] = scene.makeMouseHelpers(0.3343, 0.375, {
+      const [clickProfile2] = scene.makeMouseHelpers(0.3816, 0.4, {
         format: 'ratio',
       })
-      const [clickEdge2] = scene.makeMouseHelpers(0.6671, 0.6136, {
+      const [clickEdge2] = scene.makeMouseHelpers(0.6748, 0.6455, {
         format: 'ratio',
       })
       // Remove the first revolve so only one revolve remains in the code. Two revolves
@@ -238,10 +246,12 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.submit()
 
       // Assert we have a revolve in the code (the second one; first was removed to avoid order-dependent lint)
-      const code = await editor.getCurrentCode()
-      expect(code).toContain('revolve')
+	      const code = await editor.getCurrentCode()
+	      await editor.expectEditor.toContain(`revolve`)
+	      await editor.expectEditor.toContain(`axis = seg03`)
+	      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
 
-      // Final sanity check: assert no errors in code pane
+	      // Final sanity check: assert no errors in code pane
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
   })
@@ -264,6 +274,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
+    await editor.replaceCode('', testCode)
+    await scene.settled(cmdBar)
+    await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera position for optimal edge viewing
     await scene.moveCameraTo(
