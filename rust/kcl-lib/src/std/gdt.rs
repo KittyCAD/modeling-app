@@ -1354,6 +1354,85 @@ mod tests {
     use crate::execution::Artifact;
     use crate::execution::ExecutorSettings;
     use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+
+    const GDT_DISTANCE_KCL_TEMPLATE: &str = r#"
+@settings(defaultLengthUnit = __UNIT__, kclVersion = 2)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10mm)
+gdt::distance(
+  edges = [
+    getCommonEdge(faces = [
+      region001.tags.line4,
+      region001.tags.line1
+    ])
+  ],
+  tolerance = __TOLERANCE__,
+  framePosition = __FRAME_POSITION__,
+  fontSize = 2in,
+)
+"#;
+
+    fn gdt_distance_kcl(unit: &str, tolerance: &str, frame_position: &str) -> String {
+        GDT_DISTANCE_KCL_TEMPLATE
+            .replace("__UNIT__", unit)
+            .replace("__TOLERANCE__", tolerance)
+            .replace("__FRAME_POSITION__", frame_position)
+    }
+
+    async fn gdt_distance_commands(code: &str) -> Vec<ModelingCmd> {
+        let result = parse_execute(code).await.unwrap();
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .map(|artifact_command| artifact_command.command.clone())
+            .collect()
+    }
+
+    #[track_caller]
+    fn set_scene_units(command: &ModelingCmd) -> kcmc::units::UnitLength {
+        let ModelingCmd::SetSceneUnits(set_scene_units) = command else {
+            panic!("expected set_scene_units command, got {command:?}");
+        };
+        set_scene_units.unit
+    }
+
+    #[track_caller]
+    fn basic_dimension(command: &ModelingCmd) -> &AnnotationBasicDimension {
+        let ModelingCmd::NewAnnotation(new_annotation) = command else {
+            panic!("expected new_annotation command, got {command:?}");
+        };
+        new_annotation.options.dimension.as_ref().unwrap()
+    }
+
+    #[track_caller]
+    fn assert_close(actual: f64, expected: f64) {
+        assert!((actual - expected).abs() < 1e-6, "expected {expected}, got {actual}");
+    }
+
+    #[track_caller]
+    fn new_annotation_command_index(commands: &[ModelingCmd]) -> usize {
+        commands
+            .iter()
+            .position(|command| matches!(command, ModelingCmd::NewAnnotation(_)))
+            .unwrap()
+    }
 
     #[test]
     fn gdt_font_scale_is_scene_height_divided_by_calibration_height() {
@@ -1366,6 +1445,68 @@ mod tests {
         let inch_in_mm = 25.4;
         let inch_scale = gdt_font_scale_for_height_mm(inch_in_mm);
         assert!((inch_scale - (inch_in_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32).abs() < f32::EPSILON);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_sets_scene_units_around_non_mm_annotation() {
+        let cases = [
+            (
+                "in",
+                "2.54mm",
+                "[10, -10]",
+                kcmc::units::UnitLength::Inches,
+                0.1,
+                254.0,
+                -254.0,
+            ),
+            (
+                "cm",
+                "10mm",
+                "[1, -1]",
+                kcmc::units::UnitLength::Centimeters,
+                1.0,
+                10.0,
+                -10.0,
+            ),
+        ];
+
+        for (default_unit, tolerance, frame_position, scene_unit, expected_tolerance, expected_x, expected_y) in cases {
+            let code = gdt_distance_kcl(default_unit, tolerance, frame_position);
+            let commands = gdt_distance_commands(&code).await;
+            let annotation_index = new_annotation_command_index(&commands);
+            let dimension = basic_dimension(&commands[annotation_index]);
+
+            assert_eq!(set_scene_units(&commands[annotation_index - 1]), scene_unit);
+            assert_eq!(
+                set_scene_units(&commands[annotation_index + 1]),
+                kcmc::units::UnitLength::Millimeters
+            );
+
+            assert_close(dimension.dimension.tolerance, expected_tolerance);
+            assert_close(dimension.offset.x, expected_x);
+            assert_close(dimension.offset.y, expected_y);
+            assert_close(
+                f64::from(dimension.font_scale),
+                gdt_font_scale_for_height_mm(50.8).into(),
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_keeps_mm_annotation_in_current_scene_units() {
+        let code = gdt_distance_kcl("mm", "2.54mm", "[10, -10]");
+        let commands = gdt_distance_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands);
+        let dimension = basic_dimension(&commands[annotation_index]);
+
+        assert!(
+            !commands
+                .iter()
+                .any(|command| matches!(command, ModelingCmd::SetSceneUnits(_)))
+        );
+        assert_close(dimension.dimension.tolerance, 2.54);
+        assert_close(dimension.offset.x, 10.0);
+        assert_close(dimension.offset.y, -10.0);
     }
 
     const GDT_DATUM_KCL: &str = r#"
