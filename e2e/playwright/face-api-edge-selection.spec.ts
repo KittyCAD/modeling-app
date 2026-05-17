@@ -142,10 +142,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Assert code contains revolve
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`sideFaces = [seg01]`)
-	      await editor.expectEditor.toContain(
-	        `endFaces = [seg02, rectangleSegmentA002]`
-	      )
-	      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      await editor.expectEditor.toContain(
+        `endFaces = [seg02, rectangleSegmentA002]`
+      )
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
 
     await test.step('Second revolve: profile and edge using ratio clicks', async () => {
@@ -246,12 +246,12 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.submit()
 
       // Assert we have a revolve in the code (the second one; first was removed to avoid order-dependent lint)
-	      const code = await editor.getCurrentCode()
-	      await editor.expectEditor.toContain(`revolve`)
-	      await editor.expectEditor.toContain(`axis = seg03`)
-	      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+      const code = await editor.getCurrentCode()
+      await editor.expectEditor.toContain(`revolve`)
+      await editor.expectEditor.toContain(`axis = seg03`)
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
 
-	      // Final sanity check: assert no errors in code pane
+      // Final sanity check: assert no errors in code pane
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
   })
