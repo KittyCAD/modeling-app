@@ -34,6 +34,9 @@ export function hotkeyDisplay(
     .split('+')
     .map((word) => word.trim().toLocaleLowerCase())
     .map((word) => {
+      if (word === 'escape' || word === 'esc') {
+        return 'Esc'
+      }
       if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
         return word.toUpperCase()
       }
