@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite'
 import { SubmitButton } from './SubmitButton'
 
 const meta = {
@@ -9,7 +9,7 @@ const meta = {
     layout: 'centered',
   },
   decorators: [
-    (Story) => (
+    (Story: StoryFn) => (
       <form
         className="rounded border border-chalkboard-20 bg-chalkboard-10 p-3 dark:border-chalkboard-70 dark:bg-chalkboard-100"
         onSubmit={(event) => event.preventDefault()}
@@ -49,7 +49,7 @@ export const Dark: Story = {
     isChecking: false,
   },
   decorators: [
-    (Story) => (
+    (Story: StoryFn) => (
       <div className="dark">
         <Story />
       </div>

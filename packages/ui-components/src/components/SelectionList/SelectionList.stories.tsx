@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { SelectionList, type SelectionListItem } from './SelectionList'
 
@@ -29,7 +29,7 @@ const meta = {
     onRemove: () => {},
   },
   decorators: [
-    (Story) => (
+    (Story: StoryFn) => (
       <div className="w-72 rounded border border-chalkboard-20 bg-chalkboard-10 p-3 text-chalkboard-100 dark:border-chalkboard-70 dark:bg-chalkboard-100 dark:text-chalkboard-10">
         <Story />
       </div>
