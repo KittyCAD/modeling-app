@@ -84,6 +84,7 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
+  Prec,
   type Extension,
   StateEffect,
   Transaction,
@@ -160,6 +161,11 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  type KeymapService,
+} from '@src/registry/contracts/keymap'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 
@@ -271,6 +277,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  keymap?: KeymapService
 }
 
 export enum KclManagerEvents {
@@ -427,7 +434,9 @@ export class ZDSProject {
       this.files = [...this.files, newEditor]
     }
 
-    newEditor.path = path
+    if (newEditor.path !== path) {
+      newEditor.path = path
+    }
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
@@ -1645,6 +1654,32 @@ export class KclManager extends File {
 
     return [
       baseEditorExtensions(),
+      this.systemDeps.keymap
+        ? Prec.highest(
+            EditorView.domEventHandlers({
+              focus: () => {
+                this.systemDeps.keymap?.removeScope(
+                  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+                )
+                this.systemDeps.keymap?.applyScope(
+                  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+                )
+              },
+              blur: () => {
+                this.systemDeps.keymap?.removeScope(
+                  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+                )
+                this.systemDeps.keymap?.applyScope(
+                  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+                )
+              },
+              keydown: (event) =>
+                this.systemDeps.keymap?.handleKeyDown(event, {
+                  source: 'codeMirror',
+                }) ?? false,
+            })
+          )
+        : [],
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
       this.highlightEngineEntitiesEffect,
       this.undoListenerEffect,
@@ -1690,6 +1725,7 @@ export class KclManager extends File {
       if (!isCodeTheSame(initialCode, diskCode)) {
         editor.markFileCodeAsSynced(diskCode)
       }
+      editor.watch()
       return editor
     }
 
@@ -1708,6 +1744,7 @@ export class KclManager extends File {
       shouldWriteToDisk: false,
     })
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.watch()
     return providedEditor
   }
 
@@ -2882,6 +2919,9 @@ export class KclManager extends File {
   localStoragePersistCode(): string {
     return safeLSGetItem(PERSIST_CODE_KEY) || ''
   }
+  /**
+   * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
+   */
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback
     this.editorView.dispatch({

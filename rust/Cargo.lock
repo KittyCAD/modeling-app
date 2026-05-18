@@ -1662,7 +1662,7 @@ dependencies = [
  "bstr",
  "log",
  "regex-automata",
- "regex-syntax 0.8.8",
+ "regex-syntax 0.8.10",
 ]
 
 [[package]]
@@ -2327,7 +2327,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.154"
+version = "0.1.157"
 dependencies = [
  "anyhow",
  "clap",
@@ -2338,7 +2338,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.154"
+version = "0.2.157"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2347,7 +2347,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.154"
+version = "0.1.157"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2357,7 +2357,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.154"
+version = "0.2.157"
 dependencies = [
  "miette",
  "serde",
@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.154"
+version = "0.2.157"
 dependencies = [
  "anyhow",
  "clap",
@@ -2388,7 +2388,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.154"
+version = "0.1.157"
 dependencies = [
  "anyhow",
  "clap",
@@ -2408,7 +2408,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.154"
+version = "0.2.157"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2454,7 +2454,7 @@ dependencies = [
  "mime_guess",
  "nalgebra-glm",
  "num-traits 0.2.19",
- "parse-display",
+ "parse-display 0.11.0",
  "pretty_assertions",
  "pyo3",
  "pyo3-stub-gen",
@@ -2494,7 +2494,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.154"
+version = "0.3.157"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2510,7 +2510,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.154"
+version = "0.2.157"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2523,7 +2523,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.154"
+version = "0.1.157"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2537,7 +2537,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.154"
+version = "0.1.157"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2568,9 +2568,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.4.12"
+version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e45c82b5e6f46e5c15e4a3f535eff13b79c38e57011d152d437dce736403a1c"
+checksum = "dc7690732dfec0288a47ede25d94130d1efdba21f63084ab609ce2018a9e727d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2587,7 +2587,7 @@ dependencies = [
  "itertools 0.14.0",
  "log",
  "mime_guess",
- "parse-display",
+ "parse-display 0.10.0",
  "phonenumber",
  "rand 0.9.4",
  "reqwest",
@@ -2629,8 +2629,8 @@ dependencies = [
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
- "parse-display",
- "parse-display-derive",
+ "parse-display 0.10.0",
+ "parse-display-derive 0.10.0",
  "pyo3",
  "pyo3-stub-gen",
  "schemars",
@@ -3308,9 +3308,20 @@ version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "287d8d3ebdce117b8539f59411e4ed9ec226e0a4153c7f55495c6070d68e6f72"
 dependencies = [
- "parse-display-derive",
+ "parse-display-derive 0.10.0",
  "regex",
- "regex-syntax 0.8.8",
+ "regex-syntax 0.8.10",
+]
+
+[[package]]
+name = "parse-display"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e78deb158fb1d73b29efb4b7e9b9860b78059c670de06bd28df8d0b458ded0eb"
+dependencies = [
+ "parse-display-derive 0.11.0",
+ "regex",
+ "regex-syntax 0.8.10",
 ]
 
 [[package]]
@@ -3322,7 +3333,21 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex",
- "regex-syntax 0.8.8",
+ "regex-syntax 0.8.10",
+ "structmeta",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "parse-display-derive"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8e95a50d1084dab562913062c4c34bb204b68fc6ec38a1395909ff5aaaf4f10a"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "regex",
+ "regex-syntax 0.8.10",
  "structmeta",
  "syn 2.0.117",
 ]
@@ -3999,7 +4024,7 @@ dependencies = [
  "aho-corasick",
  "memchr",
  "regex-automata",
- "regex-syntax 0.8.8",
+ "regex-syntax 0.8.10",
 ]
 
 [[package]]
@@ -4010,7 +4035,7 @@ checksum = "5276caf25ac86c8d810222b3dbb938e512c55c6831a10f3e6ed1c93b84041f1c"
 dependencies = [
  "aho-corasick",
  "memchr",
- "regex-syntax 0.8.8",
+ "regex-syntax 0.8.10",
 ]
 
 [[package]]
@@ -4033,9 +4058,9 @@ checksum = "f162c6dd7b008981e4d40210aca20b4bd0f9b60ca9271061b07f78537722f2e1"
 
 [[package]]
 name = "regex-syntax"
-version = "0.8.8"
+version = "0.8.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
+checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "reqwest"
@@ -5029,9 +5054,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.52.1"
+version = "1.52.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b67dee974fe86fd92cc45b7a95fdd2f99a36a6d7b0d431a231178d3d670bbcc6"
+checksum = "8fc7f01b389ac15039e4dc9531aa973a135d7a4135281b12d7c1bc79fd57fffe"
 dependencies = [
  "bytes",
  "libc",

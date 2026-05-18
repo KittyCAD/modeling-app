@@ -475,7 +475,7 @@ impl ExecOutcome {
 }
 
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -486,9 +486,6 @@ pub struct MockConfig {
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
-    /// Per-sketch-variable initial guess overrides, keyed by sketch variable
-    /// order. These are transient warm-start values for interactive solves.
-    pub sketch_var_initial_guess_overrides: Vec<f64>,
 }
 
 impl Default for MockConfig {
@@ -499,7 +496,6 @@ impl Default for MockConfig {
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
-            sketch_var_initial_guess_overrides: Vec::new(),
         }
     }
 }
@@ -516,12 +512,6 @@ impl MockConfig {
     #[must_use]
     pub(crate) fn no_freedom_analysis(mut self) -> Self {
         self.freedom_analysis = false;
-        self
-    }
-
-    #[must_use]
-    pub(crate) fn with_sketch_var_initial_guess_overrides(mut self, overrides: Vec<f64>) -> Self {
-        self.sketch_var_initial_guess_overrides = overrides;
         self
     }
 }
@@ -779,6 +769,10 @@ pub struct ExecutorSettings {
     /// skipping these commands can make execution slightly faster.
     #[serde(default, skip_serializing_if = "is_false")]
     pub skip_artifact_graph: bool,
+    /// If Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
+    /// If None, no heartbeats will be sent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub heartbeats: Option<u64>,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -796,6 +790,7 @@ impl Default for ExecutorSettings {
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -818,6 +813,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             current_file: None,
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -839,6 +835,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -854,6 +851,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -934,8 +932,9 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> =
-            Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
+        let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
+            crate::engine::conn::EngineConnection::new(ws, settings.heartbeats).await?,
+        ));
 
         Ok(Self::new_with_engine(engine, settings))
     }
@@ -1044,6 +1043,7 @@ impl ExecutorContext {
                 current_file: None,
                 fixed_size_grid: false,
                 skip_artifact_graph: false,
+                heartbeats: None,
             },
             None,
             engine_addr,
@@ -2106,6 +2106,13 @@ pub(crate) struct ExecTestResults {
     mem_env: EnvironmentRef,
     exec_ctxt: ExecutorContext,
     exec_state: ExecState,
+}
+
+#[cfg(test)]
+impl ExecTestResults {
+    pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
+        &self.exec_state.global.root_module_artifacts.commands
+    }
 }
 
 /// There are several places where we want to traverse a KCL program or find a symbol in it,

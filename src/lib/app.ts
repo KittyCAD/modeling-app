@@ -49,6 +49,7 @@ import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type SettingsActorType,
   getOnlySettingsFromContext,
@@ -62,6 +63,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
@@ -155,6 +157,10 @@ export type AppLayoutSystem = {
 
 export type AppRegistrySystem = Registry
 
+export type AppDebug = {
+  mlEphantManagerActor?: MlEphantManagerActor
+}
+
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -171,6 +177,7 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
   }
@@ -536,6 +543,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      keymap: this.registry.get(keymapService),
     })
 
     this.registry.reconfigure(appRegistryServicesSlot, [

@@ -22,7 +22,9 @@ import {
   buildCircularSizeDimensionConstraintInput,
   isArcSegment,
   isCircleSegment,
+  isControlPointSplineSegment,
   isLineSegment,
+  isOwnedLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
@@ -826,8 +828,13 @@ export const sketchSolveMachine = setup({
               if (
                 obj.kind.segment.type !== 'Line' &&
                 obj.kind.segment.type !== 'Arc' &&
-                obj.kind.segment.type !== 'Circle'
+                obj.kind.segment.type !== 'Circle' &&
+                obj.kind.segment.type !== 'ControlPointSpline'
               ) {
+                continue
+              }
+
+              if (isOwnedLineSegment(obj)) {
                 continue
               }
 
@@ -837,7 +844,10 @@ export const sketchSolveMachine = setup({
               }
 
               const currentConstruction =
-                isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
+                isLineSegment(obj) ||
+                isArcSegment(obj) ||
+                isCircleSegment(obj) ||
+                isControlPointSplineSegment(obj)
                   ? obj.kind.segment.construction
                   : false
 
@@ -860,6 +870,14 @@ export const sketchSolveMachine = setup({
                   },
                 })
               } else if (baseCtor.type === 'Circle') {
+                segmentsToEdit.push({
+                  id,
+                  ctor: {
+                    ...baseCtor,
+                    construction: newConstruction,
+                  },
+                })
+              } else if (baseCtor.type === 'ControlPointSpline') {
                 segmentsToEdit.push({
                   id,
                   ctor: {
@@ -1101,6 +1119,10 @@ export const sketchSolveMachine = setup({
 
     'exiting with cleanup': {
       on: {
+        exit: {
+          description:
+            'Ignore repeated exit requests while teardown is already in progress.',
+        },
         'delete draft entities': {
           description: `We override the default "delete draft entities" action with a no-op here because the async invoke above is already performing that cleanup.`,
         },

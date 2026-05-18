@@ -29,7 +29,7 @@ function CommandBarPathInput({
   const { wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
+  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,

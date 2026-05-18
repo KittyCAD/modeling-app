@@ -1,7 +1,6 @@
 import type {
   ApiObject,
   Expr,
-  Freedom,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
@@ -47,6 +46,7 @@ import {
   CONSTRAINT_TYPE,
   isCircleSegment,
   isConstraint,
+  isControlPointSplineSegment,
   isConstruction as isConstructionSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -71,6 +71,7 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
+import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
@@ -176,12 +177,6 @@ export type UpdateSketchOutcomeEvent = {
      */
     suppressExecOutcomeIssues?: boolean
     /**
-     * Preview updates can briefly report Freedom::Conflict while the solver is
-     * settling around drag constraints. Suppress that per-segment red styling
-     * without hiding actual solve-error state.
-     */
-    suppressFreedomConflictColoring?: boolean
-    /**
      * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
      */
     debounceEditorUpdate?: boolean
@@ -217,6 +212,7 @@ export const equipTools = Object.freeze({
   dimensionTool,
   pointTool,
   lineTool,
+  splineTool,
   centerArcTool,
   circleTool,
   tangentialArcTool,
@@ -237,7 +233,6 @@ export type SketchSolveContext = {
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
-    suppressFreedomConflictColoring?: boolean
   }
   draftEntities?: {
     segmentIds: Array<number>
@@ -377,6 +372,22 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       construction: obj.kind.segment.construction,
     }
+  } else if (isControlPointSplineSegment(obj)) {
+    const points = obj.kind.segment.controls
+      .map((pointId) => getLinkedPoint({ objects, pointId }))
+      .filter((point) => point !== null)
+    if (points.length !== obj.kind.segment.controls.length) {
+      console.error(
+        'Failed to find linked points for ControlPointSpline segment',
+        obj
+      )
+      return null
+    }
+    return {
+      type: 'ControlPointSpline',
+      points,
+      construction: obj.kind.segment.construction,
+    }
   }
   return null
 }
@@ -386,76 +397,82 @@ export function buildSegmentCtorFromObject(
  * Determines the correct segment update method based on the input type.
  */
 export function updateSegmentGroup({
+  apiObject,
   group,
-  input,
   state,
   scale,
   theme,
   hasSolveErrors,
-  suppressFreedomConflictColoring,
   objects,
 }: {
+  apiObject: ApiObject
   group: Group
-  input: SegmentCtor
   state: SegmentRenderState
   scale: number
   theme: Themes
   hasSolveErrors: boolean
-  suppressFreedomConflictColoring?: boolean
   objects: ApiObject[]
 }): void {
-  const idNum = Number(group.name)
-  if (Number.isNaN(idNum)) {
+  const input = buildSegmentCtorFromObject(apiObject, objects)
+  if (!input) {
     return
   }
 
-  const segmentObj = objects[idNum]
-  const freedomResult: Freedom | null = segmentObj
-    ? deriveSegmentFreedom(segmentObj, objects)
-    : null
+  const freedomResult = deriveSegmentFreedom(apiObject, objects)
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
+      apiObject,
       input,
       theme,
       scale,
       group,
       state,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
       group,
       state,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     segmentUtilsMap.ArcSegment.update({
+      apiObject,
       input,
       theme,
       scale,
       group,
       state,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
     segmentUtilsMap.CircleSegment.update({
+      apiObject,
       input,
       theme,
       scale,
       group,
       state,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
+      freedom: freedomResult,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    segmentUtilsMap.ControlPointSplineSegment.update({
+      apiObject,
+      input,
+      theme,
+      scale,
+      group,
+      state,
+      hasSolveErrors,
       freedom: freedomResult,
     })
   }
@@ -466,38 +483,52 @@ export function updateSegmentGroup({
  * Determines the correct segment init method based on the input type.
  */
 function initSegmentGroup({
-  input,
-  id,
+  apiObject,
   objects,
 }: {
-  input: SegmentCtor
-  id: number
+  apiObject: ApiObject
   objects: ApiObject[]
 }): Group | Error {
-  const segmentObj = objects[id]
-  const isConstruction = isConstructionSegment(segmentObj)
+  const input = buildSegmentCtorFromObject(apiObject, objects)
+  if (!input) {
+    return new Error(`Unknown input type: ${(apiObject.kind as any).type}`)
+  }
+
+  const id = apiObject.id
+  const isConstruction = isConstructionSegment(apiObject)
 
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
+      apiObject,
+      input,
+      id,
+      isConstruction,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    group = segmentUtilsMap.ControlPointSplineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
@@ -514,7 +545,6 @@ export interface IUpdateSketchSceneGraph {
   context: SketchSolveContext
   selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
-  suppressFreedomConflictColoring?: boolean
 }
 export const updateSketchSceneGraphEffect =
   StateEffect.define<IUpdateSketchSceneGraph>()
@@ -528,7 +558,6 @@ export function updateSceneGraphFromDelta({
   context,
   selectedIds,
   duringAreaSelectIds,
-  suppressFreedomConflictColoring,
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
@@ -640,8 +669,7 @@ export function updateSceneGraphFromDelta({
         return
       }
       const newGroup = initSegmentGroup({
-        input: ctor,
-        id: obj.id,
+        apiObject: obj,
         objects,
       })
       if (newGroup instanceof Error) {
@@ -662,13 +690,12 @@ export function updateSceneGraphFromDelta({
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
-      input: ctor,
       state,
       scale: factor,
       theme: context.sceneInfra.theme,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       objects,
     })
   })
@@ -924,8 +951,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         return
       }
       updateSegmentGroup({
+        apiObject: obj,
         group,
-        input: ctor,
         state: getSegmentRenderState(
           obj.id,
           context.selectedIds,
@@ -938,8 +965,6 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         scale: factor,
         theme: context.sceneInfra.theme,
         hasSolveErrors,
-        suppressFreedomConflictColoring:
-          context.sketchExecOutcome?.suppressFreedomConflictColoring,
         objects,
       })
     }
@@ -1114,8 +1139,8 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
-      input: ctor,
       state: getSegmentRenderState(
         obj.id,
         context.selectedIds,
@@ -1128,8 +1153,6 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
       hasSolveErrors,
-      suppressFreedomConflictColoring:
-        context.sketchExecOutcome?.suppressFreedomConflictColoring,
       objects,
     })
   })
@@ -1300,8 +1323,6 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         context,
         selectedIds: context.selectedIds,
         duringAreaSelectIds: context.duringAreaSelectIds,
-        suppressFreedomConflictColoring:
-          event.data.suppressFreedomConflictColoring,
       }),
     ],
   }
@@ -1401,8 +1422,6 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     sketchExecOutcome: {
       sourceDelta: event.data.sourceDelta,
       sceneGraphDelta,
-      suppressFreedomConflictColoring:
-        event.data.suppressFreedomConflictColoring,
     },
   }
 }

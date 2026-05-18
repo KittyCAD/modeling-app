@@ -18,11 +18,9 @@ import {
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
-  getSketchBlockOperationKey,
-  groupSketchBlockOperations,
+  groupNestedOperations,
   onHide,
   groupOperationTypeStreaks,
-  isSketchBlockOperationGroup,
   stdLibMap,
   onUnhide,
 } from '@src/lib/operations'
@@ -198,10 +196,12 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupSketchBlockOperations(
+  const operationList = groupNestedOperations(
     groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
       'VariableDeclaration',
-    ])
+    ]),
+    unfilteredOperationList,
+    (groupBegin) => groupBegin.group.type === 'SketchBlock'
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
@@ -316,24 +316,6 @@ export const FeatureTreePaneContents = memo(() => {
                 }`
               })()
 
-              if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
-                const sketchGroupKey =
-                  getSketchBlockOperationKey(opOrList[0]) ?? key
-                return (
-                  <SketchBlockOperationGroup
-                    key={sketchGroupKey}
-                    items={opOrList}
-                    code={operationsCode}
-                    isStaleReference={isReadOnlyFeatureTree}
-                    sketchNoFace={sketchNoFace}
-                    systemDeps={systemDeps}
-                    modelingActor={modelingActor}
-                    engineCommandManager={engineCommandManager}
-                    onSelect={selectOperation}
-                  />
-                )
-              }
-
               return isArray(opOrList) ? (
                 <OperationItemGroup
                   key={key}
@@ -367,92 +349,6 @@ export const FeatureTreePaneContents = memo(() => {
   )
 })
 
-function SketchBlockOperationGroup({
-  items,
-  code,
-  isStaleReference,
-  sketchNoFace,
-  systemDeps,
-  modelingActor,
-  engineCommandManager,
-  onSelect,
-}: Omit<OperationProps, 'item'> & { items: Operation[] }) {
-  if (items.length === 0) {
-    return null
-  }
-
-  const parentItem =
-    items.find((item) => item.type === 'SketchSolve') ?? items[0]
-  const childItems = items.filter((item) => item !== parentItem)
-
-  if (childItems.length === 0) {
-    return (
-      <OperationItem
-        item={parentItem}
-        code={code}
-        isStaleReference={isStaleReference}
-        sketchNoFace={sketchNoFace}
-        systemDeps={systemDeps}
-        modelingActor={modelingActor}
-        engineCommandManager={engineCommandManager}
-        onSelect={onSelect}
-      />
-    )
-  }
-
-  return (
-    <Disclosure>
-      <div className="flex items-start gap-1">
-        <Disclosure.Button
-          data-testid="sketchblock-group-caret"
-          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
-        >
-          <CustomIcon
-            name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-            aria-hidden
-          />
-        </Disclosure.Button>
-        <div className="flex-1 min-w-0">
-          <OperationItem
-            item={parentItem}
-            code={code}
-            isStaleReference={isStaleReference}
-            sketchNoFace={sketchNoFace}
-            systemDeps={systemDeps}
-            modelingActor={modelingActor}
-            engineCommandManager={engineCommandManager}
-            onSelect={onSelect}
-          />
-        </div>
-      </div>
-      <Disclosure.Panel>
-        <div className="border-l b-4 ml-6">
-          {childItems.map((item) => {
-            const key = `${item.type}-${
-              'name' in item ? item.name : 'anonymous'
-            }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
-            return (
-              <OperationItem
-                key={key}
-                item={item}
-                code={code}
-                isStaleReference={isStaleReference}
-                sketchNoFace={sketchNoFace}
-                systemDeps={systemDeps}
-                modelingActor={modelingActor}
-                engineCommandManager={engineCommandManager}
-                onSelect={onSelect}
-                size="sm"
-              />
-            )
-          })}
-        </div>
-      </Disclosure.Panel>
-    </Disclosure>
-  )
-}
-
 interface VisibilityToggleProps {
   visible: boolean
   onVisibilityChange: () => unknown
@@ -471,6 +367,89 @@ function OperationItemGroup({
   engineCommandManager,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
+  const contentItems = items.filter((item) => item.type !== 'GroupEnd')
+  if (contentItems.length === 0) {
+    return null
+  }
+
+  const parentItem =
+    contentItems[0]?.type === 'GroupBegin' &&
+    items.some((i) => i.type === 'GroupEnd')
+      ? contentItems[0]
+      : undefined
+  const childItems = parentItem
+    ? contentItems.filter((i) => i !== parentItem)
+    : []
+
+  if (parentItem) {
+    if (childItems.length === 0) {
+      return (
+        <OperationItem
+          item={parentItem}
+          code={code}
+          isStaleReference={isStaleReference}
+          sketchNoFace={sketchNoFace}
+          systemDeps={systemDeps}
+          modelingActor={modelingActor}
+          engineCommandManager={engineCommandManager}
+          onSelect={onSelect}
+        />
+      )
+    }
+
+    return (
+      <Disclosure>
+        <div className="flex items-start gap-1">
+          <Disclosure.Button
+            data-testid="operation-group-caret"
+            className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+          >
+            <CustomIcon
+              name="caretDown"
+              className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+              aria-hidden
+            />
+          </Disclosure.Button>
+          <div className="flex-1 min-w-0">
+            <OperationItem
+              item={parentItem}
+              code={code}
+              isStaleReference={isStaleReference}
+              sketchNoFace={sketchNoFace}
+              systemDeps={systemDeps}
+              modelingActor={modelingActor}
+              engineCommandManager={engineCommandManager}
+              onSelect={onSelect}
+            />
+          </div>
+        </div>
+        <Disclosure.Panel>
+          <div className="border-l b-4 ml-6">
+            {childItems.map((item) => {
+              const key = `${item.type}-${
+                'name' in item ? item.name : 'anonymous'
+              }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
+              return (
+                <OperationItem
+                  key={key}
+                  item={item}
+                  code={code}
+                  isStaleReference={isStaleReference}
+                  sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  modelingActor={modelingActor}
+                  engineCommandManager={engineCommandManager}
+                  onSelect={onSelect}
+                  size="sm"
+                />
+              )
+            })}
+          </div>
+        </Disclosure.Panel>
+      </Disclosure>
+    )
+  }
+
   return (
     <Disclosure>
       <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
@@ -480,12 +459,12 @@ function OperationItemGroup({
           aria-hidden
         />
         <span className="text-sm flex-1">
-          {items.length} {getOpTypeLabel(items[0].type)}s
+          {contentItems.length} {getOpTypeLabel(contentItems[0].type)}s
         </span>
       </Disclosure.Button>
       <Disclosure.Panel as="ul" className="border-b b-4">
         <div className="border-l b-4 ml-4">
-          {items.map((op) => {
+          {contentItems.map((op) => {
             const key = `${op.type}-${
               'name' in op ? op.name : 'anonymous'
             }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
@@ -715,7 +694,7 @@ const OperationItem = ({
     if (
       item.type === 'StdLibCall' ||
       item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
     ) {
       const artifact =
         getArtifactFromRange(
@@ -811,8 +790,7 @@ const OperationItem = ({
     if (
       item.type === 'StdLibCall' ||
       item.type === 'GroupBegin' ||
-      item.type === 'VariableDeclaration' ||
-      item.type === 'SketchSolve'
+      item.type === 'VariableDeclaration'
     ) {
       const maybeArtifact =
         getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
@@ -944,12 +922,12 @@ const OperationItem = ({
               : []),
             ...(item.type === 'StdLibCall' ||
             item.type === 'VariableDeclaration' ||
-            item.type === 'SketchSolve'
+            (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
               ? [
                   <ContextMenuItem
                     disabled={
                       item.type !== 'VariableDeclaration' &&
-                      item.type !== 'SketchSolve' &&
+                      item.type === 'StdLibCall' &&
                       stdLibMap[item.name]?.prepareToEdit === undefined
                     }
                     onClick={enterEditFlow}
@@ -1024,8 +1002,7 @@ const OperationItem = ({
               : []),
             ...(item.type === 'StdLibCall' ||
             item.type === 'GroupBegin' ||
-            item.type === 'VariableDeclaration' ||
-            item.type === 'SketchSolve'
+            item.type === 'VariableDeclaration'
               ? [
                   <ContextMenuItem
                     onClick={deleteOperation}
