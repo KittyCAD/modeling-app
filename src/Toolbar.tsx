@@ -20,7 +20,7 @@ import {
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
@@ -852,7 +852,7 @@ const ToolbarItemTooltipShortContent = ({
 }: {
   status: string
   title: string
-  hotkey?: string | string[]
+  hotkey?: HotkeySequence
   platform: Platform
 }) => (
   <div
@@ -872,7 +872,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {hotkeyDisplay(filterEscHotkey(hotkey)[0], platform)}
+          {hotkeyDisplay(filterEscHotkey(hotkey), platform)}
         </kbd>
       )}
     </div>
@@ -919,7 +919,7 @@ const ToolbarItemTooltipRichContent = memo(
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
             <kbd className="flex-none hotkey">
-              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey)[0], platform)}
+              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey), platform)}
             </kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>

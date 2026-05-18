@@ -4,6 +4,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
+import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -119,7 +120,7 @@ export type ToolbarItemResolved = Omit<
 > & {
   title: string
   disabled?: boolean
-  hotkey?: string | string[]
+  hotkey?: HotkeySequence
   isActive?: boolean
   callbackProps: ToolbarItemCallbackProps
 }

@@ -6,7 +6,7 @@ import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import type { Platform } from '@src/lib/utils'
 
 type RecentDropdownMenuItem = {
@@ -14,7 +14,7 @@ type RecentDropdownMenuItem = {
   label: string
   icon?: CustomIconName
   iconColor?: string
-  hotkey?: string | string[]
+  hotkey?: HotkeySequence
   onClick: (event: MouseEvent<HTMLButtonElement>) => void
   disabled?: boolean
   status?: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
@@ -128,10 +128,7 @@ export function ActionButtonRecentDropdown({
                       </div>
                     ) : item.hotkey ? (
                       <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-                        {hotkeyDisplay(
-                          filterEscHotkey(item.hotkey)[0],
-                          platform
-                        )}
+                        {hotkeyDisplay(filterEscHotkey(item.hotkey), platform)}
                       </kbd>
                     ) : null}
                     {item.status === 'experimental' ? (
