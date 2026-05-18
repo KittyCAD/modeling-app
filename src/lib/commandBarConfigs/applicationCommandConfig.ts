@@ -238,6 +238,7 @@ export function createApplicationCommands({
                 entryName: fileNameWithExtension,
                 baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
                 wasmInstance,
+                preserveUnknownExtension: true,
               })
                 .then(({ path }) => {
                   return fsZds.writeFile(path, fileData)
@@ -369,6 +370,10 @@ export function createApplicationCommands({
           {
             name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
             extensions: relevantFileExtensions(wasmInstance),
+          },
+          {
+            name: 'All files',
+            extensions: ['*'],
           },
         ],
       },

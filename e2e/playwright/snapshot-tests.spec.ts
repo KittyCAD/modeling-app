@@ -94,7 +94,7 @@ function runTestForTheme(mode: Themes) {
 
     await test.step('Create a project', async () => {
       await page.setViewportSize(SCREENSHOT_SIZE)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.openFeatureTreePane()
       await editor.openPane()
@@ -128,7 +128,7 @@ function runTestForTheme(mode: Themes) {
     await test.step('Exit the sketch', async () => {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-exited', mode),

@@ -1,19 +1,26 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Artifact, Expr } from '@src/lang/wasm'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
   getAverageBoundingBoxDimension,
   getDefaultGdtFramePlaneFromBoundingBox,
   getDefaultGdtFramePlaneFromNormal,
   getDefaultGdtFramePositionSignsFromNormal,
   getEngineEntityIdsForGdtSelections,
+  getExistingGdtFontSize,
   getPlanarFaceEntityIdsForGdtSelections,
   withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import { describe, expect, it, vi } from 'vitest'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { Artifact, Expr } from '@src/lang/wasm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const formatNumberLiteral = vi.fn().mockReturnValue('1.2cm')
+const wasmInstance = {
+  format_number_literal: formatNumberLiteral,
+} as unknown as ModuleType
 
 function testArtifact<T extends Artifact['type']>(
   artifact: { type: T } & Record<string, unknown>
@@ -21,15 +28,64 @@ function testArtifact<T extends Artifact['type']>(
   return artifact as Extract<Artifact, { type: T }>
 }
 
+const kclValue = (valueText: string): KclCommandValue => ({
+  valueAst: {} as Expr,
+  valueCalculated: valueText,
+  valueText,
+})
+
 function testFramePosition(): KclCommandValue {
+  return kclValue('[1, 2]')
+}
+
+function gdtProgramWithFontSizes(fontSizes: string[]) {
+  let sourceCode = ''
+  const body = fontSizes.map((fontSize) => {
+    const expressionPrefix = `gdt::datum(face = capEnd001, name = "A", fontSize = `
+    const expressionSuffix = ')'
+    const expressionStart = sourceCode.length
+    const fontSizeStart = expressionStart + expressionPrefix.length
+    const fontSizeEnd = fontSizeStart + fontSize.length
+    sourceCode += `${expressionPrefix}${fontSize}${expressionSuffix}\n`
+
+    return {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'CallExpressionKw',
+        callee: {
+          type: 'Name',
+          path: [{ name: 'gdt' }],
+          name: { name: 'datum' },
+        },
+        unlabeled: null,
+        arguments: [
+          {
+            label: { name: 'fontSize' },
+            arg: {
+              type: 'Literal',
+              value: { value: Number.parseFloat(fontSize), suffix: 'Mm' },
+              raw: fontSize,
+              start: fontSizeStart,
+              end: fontSizeEnd,
+            },
+          },
+        ],
+      },
+    }
+  })
+
   return {
-    valueAst: {} as Expr,
-    valueCalculated: '[1, 2]',
-    valueText: '[1, 2]',
+    ast: { body } as unknown as Parameters<typeof getExistingGdtFontSize>[0],
+    sourceCode,
   }
 }
 
 describe('GD&T frame defaults', () => {
+  beforeEach(() => {
+    formatNumberLiteral.mockClear()
+    formatNumberLiteral.mockReturnValue('1.2cm')
+  })
+
   it('averages non-zero bounding box dimensions', () => {
     expect(getAverageBoundingBoxDimension({ x: 4, y: 0, z: 8 })).toBe(6)
     expect(getAverageBoundingBoxDimension({ x: 4, y: 4, z: 4 })).toBe(4)
@@ -159,7 +215,7 @@ describe('GD&T frame defaults', () => {
     ])
   })
 
-  it('fills omitted framePosition from the selected bounding box', async () => {
+  it('fills omitted framePosition and fontSize from the selected bounding box', async () => {
     const sendSceneCommand = vi
       .fn()
       .mockResolvedValueOnce({
@@ -209,7 +265,7 @@ describe('GD&T frame defaults', () => {
         sendSceneCommand,
       } as unknown as ConnectionManager,
       outputUnit: 'cm',
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(sendSceneCommand).toHaveBeenCalledWith(
@@ -222,6 +278,13 @@ describe('GD&T frame defaults', () => {
       })
     )
     expect(result.framePosition?.valueText).toBe('[6, 6]')
+    expect(result.fontSize?.valueText).toBe('1.2cm')
+    expect(result.fontSize?.valueAst).toMatchObject({
+      type: 'Literal',
+      raw: '1.2cm',
+    })
+    expect(formatNumberLiteral).toHaveBeenCalledWith(1.2, '"Cm"', 4)
+    expect(GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO).toBe(0.2)
   })
 
   it('signs omitted framePosition from the selected face normal', async () => {
@@ -262,6 +325,7 @@ describe('GD&T frame defaults', () => {
 
     const data = {
       name: 'A',
+      fontSize: kclValue('2mm'),
       faces: {
         graphSelections: [
           {
@@ -324,6 +388,7 @@ describe('GD&T frame defaults', () => {
     const data = {
       name: 'A',
       framePlane: 'YZ',
+      fontSize: kclValue('2mm'),
       faces: {
         graphSelections: [
           {
@@ -369,6 +434,7 @@ describe('GD&T frame defaults', () => {
     const data = {
       name: 'A',
       framePosition: testFramePosition(),
+      fontSize: kclValue('2mm'),
       faces: {
         graphSelections: [
           {
@@ -433,6 +499,7 @@ describe('GD&T frame defaults', () => {
     const data = {
       name: 'A',
       framePosition: testFramePosition(),
+      fontSize: kclValue('2mm'),
       faces: {
         graphSelections: [
           {
@@ -455,13 +522,15 @@ describe('GD&T frame defaults', () => {
     expect(result.framePlane).toBe('XZ')
   })
 
-  it('preserves explicit frame defaults', async () => {
+  it('preserves explicit frame defaults and fontSize', async () => {
     const sendSceneCommand = vi.fn()
     const framePosition = testFramePosition()
+    const fontSize = kclValue('2mm')
     const data = {
       name: 'A',
       framePosition,
       framePlane: 'YZ',
+      fontSize,
       faces: { graphSelections: [], otherSelections: [] },
     } as ModelingCommandSchema['GDT Datum']
 
@@ -476,5 +545,36 @@ describe('GD&T frame defaults', () => {
     expect(sendSceneCommand).not.toHaveBeenCalled()
     expect(result.framePosition).toBe(framePosition)
     expect(result.framePlane).toBe('YZ')
+    expect(result.fontSize).toBe(fontSize)
+  })
+
+  it('uses the last explicit GD&T fontSize already in the file', async () => {
+    const sendSceneCommand = vi.fn()
+    const { ast, sourceCode } = gdtProgramWithFontSizes(['2mm', '3mm'])
+    const data = {
+      name: 'B',
+      framePosition: testFramePosition(),
+      framePlane: 'YZ',
+      faces: { graphSelections: [], otherSelections: [] },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      ast,
+      sourceCode,
+      wasmInstance: {} as ModuleType,
+    })
+
+    expect(sendSceneCommand).not.toHaveBeenCalled()
+    expect(result.fontSize?.valueText).toBe('3mm')
+  })
+
+  it('finds existing GD&T fontSize values in source order', () => {
+    const { ast, sourceCode } = gdtProgramWithFontSizes(['2mm', '4mm'])
+
+    expect(getExistingGdtFontSize(ast, sourceCode)?.valueText).toBe('4mm')
   })
 })

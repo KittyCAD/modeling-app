@@ -34,11 +34,24 @@ const getAuthToken = () => {
   }
 }
 
+export const errorToMessage = (
+  error: unknown,
+  fallback = 'Unknown client error'
+) => {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'string') return error
+  if (error === undefined) return fallback
+
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return fallback
+  }
+}
+
 const getErrorMessage = (params: ReportClientErrorParams) => {
   if (params.message) return params.message
-  if (params.error instanceof Error) return params.error.message
-  if (typeof params.error === 'string') return params.error
-  return 'Unknown client error'
+  return errorToMessage(params.error)
 }
 
 const getErrorName = (params: ReportClientErrorParams) => {

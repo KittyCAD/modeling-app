@@ -67,7 +67,7 @@ export class InvisibleConstraintSpriteBuilder {
     hoveredId: number | null,
     displayState: InvisibleConstraintDisplayState
   ) {
-    if (!isInvisibleConstraintObject(obj)) {
+    if (!isInvisibleConstraintObject(obj, objects)) {
       group.visible = false
       return
     }

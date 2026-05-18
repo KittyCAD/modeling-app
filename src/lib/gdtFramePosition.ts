@@ -1,8 +1,16 @@
 import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
-import { createArrayExpression, createLiteral } from '@src/lang/create'
-import type { ArtifactId } from '@src/lang/wasm'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { createArrayExpression, createLiteral } from '@src/lang/create'
+import { toUtf16 } from '@src/lang/errors'
+import type {
+  ArtifactId,
+  CallExpressionKw,
+  Expr,
+  Program,
+} from '@src/lang/wasm'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -12,10 +20,10 @@ import {
   KCL_PLANE_YZ,
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { roundOff, uuidv4 } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type Axis = 'x' | 'y' | 'z'
 type GdtFramePlane =
@@ -41,6 +49,8 @@ type GdtCommandData =
   | ModelingCommandSchema['GDT Parallelism']
   | ModelingCommandSchema['GDT Annotation']
 
+export const GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO = 0.2
+
 function getSelectionsFromGdtData(
   data: GdtCommandData
 ): Selections | undefined {
@@ -54,6 +64,120 @@ function getSelectionsFromGdtData(
     return data.edges
   }
   return undefined
+}
+
+function visitAstNodes(value: unknown, onNode: (node: unknown) => void): void {
+  if (typeof value !== 'object' || value === null) {
+    return
+  }
+
+  onNode(value)
+
+  if (isArray(value)) {
+    value.forEach((item) => visitAstNodes(item, onNode))
+    return
+  }
+
+  Object.values(value).forEach((item) => visitAstNodes(item, onNode))
+}
+
+function isGdtCall(node: unknown): node is Node<CallExpressionKw> {
+  if (
+    typeof node !== 'object' ||
+    node === null ||
+    !('type' in node) ||
+    node.type !== 'CallExpressionKw' ||
+    !('callee' in node)
+  ) {
+    return false
+  }
+
+  const callee = node.callee
+  if (
+    typeof callee !== 'object' ||
+    callee === null ||
+    !('type' in callee) ||
+    callee.type !== 'Name' ||
+    !('path' in callee)
+  ) {
+    return false
+  }
+
+  const path = callee.path
+  if (!isArray(path) || path.length !== 1) {
+    return false
+  }
+
+  const firstPathEntry = path[0]
+  return (
+    typeof firstPathEntry === 'object' &&
+    firstPathEntry !== null &&
+    'name' in firstPathEntry &&
+    firstPathEntry.name === 'gdt'
+  )
+}
+
+function getSourceTextForExpr(
+  expr: Expr,
+  sourceCode: string | undefined
+): string | undefined {
+  if (
+    sourceCode &&
+    Number.isFinite(expr.start) &&
+    Number.isFinite(expr.end) &&
+    expr.end > expr.start
+  ) {
+    return sourceCode
+      .slice(toUtf16(expr.start, sourceCode), toUtf16(expr.end, sourceCode))
+      .trim()
+  }
+
+  if (expr.type === 'Literal') {
+    return expr.raw
+  }
+
+  if (expr.type === 'Name') {
+    return [...expr.path.map(({ name }) => name), expr.name.name].join('::')
+  }
+
+  return undefined
+}
+
+export function getExistingGdtFontSize(
+  ast: Node<Program> | undefined,
+  sourceCode?: string
+): KclCommandValue | undefined {
+  if (!ast) {
+    return undefined
+  }
+
+  let fontSize: KclCommandValue | undefined
+
+  visitAstNodes(ast, (node) => {
+    if (!isGdtCall(node)) {
+      return
+    }
+
+    const fontSizeArg = node.arguments?.find(
+      (arg) => arg.label?.name === 'fontSize'
+    )
+    if (!fontSizeArg) {
+      return
+    }
+
+    const valueText = getSourceTextForExpr(fontSizeArg.arg, sourceCode)
+    if (!valueText) {
+      return
+    }
+
+    fontSize = {
+      valueAst: structuredClone(fontSizeArg.arg),
+      valueCalculated: valueText,
+      valueText,
+    }
+  })
+
+  return fontSize
 }
 
 function deduplicateArtifactIds(entityIds: ArtifactId[]): ArtifactId[] {
@@ -279,6 +403,30 @@ function createFramePositionCommandValue(
   }
 }
 
+function createFontSizeCommandValue(
+  averageDimension: number,
+  outputUnit: UnitLength,
+  wasmInstance: ModuleType
+): KclCommandValue {
+  const value = roundOff(
+    averageDimension * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
+    4
+  )
+  const valueAst = createLiteral(
+    value,
+    wasmInstance,
+    baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const valueText = valueAst.raw
+
+  return {
+    valueAst,
+    valueCalculated: valueText,
+    valueText,
+  }
+}
+
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
   const normal = face.z_axis
   if (
@@ -389,20 +537,34 @@ async function getBoundingBoxForGdtSelections({
 export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data,
   engineCommandManager,
+  ast,
+  sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
 }: {
   data: T
   engineCommandManager: ConnectionManager
+  ast?: Node<Program>
+  sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
-  let nextData = data
-  let hasResolvedFramePlane = Boolean(data.framePlane)
+  const existingFontSize = data.fontSize
+    ? undefined
+    : getExistingGdtFontSize(ast, sourceCode)
+  let nextData =
+    existingFontSize === undefined
+      ? data
+      : {
+          ...data,
+          fontSize: existingFontSize,
+        }
+  let hasResolvedFramePlane = Boolean(nextData.framePlane)
   let framePositionSigns: GdtFramePositionSigns | undefined
-  const shouldQueryNormalDefaults = !data.framePlane || !data.framePosition
+  const shouldQueryNormalDefaults =
+    !nextData.framePlane || !nextData.framePosition
 
   if (shouldQueryNormalDefaults) {
     const defaultsFromNormal =
@@ -414,7 +576,10 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     if (defaultsFromNormal) {
       framePositionSigns = defaultsFromNormal.framePositionSigns
       hasResolvedFramePlane = true
-      if (!data.framePlane && defaultsFromNormal.framePlane !== KCL_PLANE_XY) {
+      if (
+        !nextData.framePlane &&
+        defaultsFromNormal.framePlane !== KCL_PLANE_XY
+      ) {
         nextData = {
           ...nextData,
           framePlane: defaultsFromNormal.framePlane,
@@ -423,7 +588,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
 
-  if (nextData.framePosition && hasResolvedFramePlane) {
+  if (nextData.framePosition && hasResolvedFramePlane && nextData.fontSize) {
     return nextData
   }
 
@@ -453,10 +618,12 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
 
+  const averageDimension =
+    !nextData.framePosition || !nextData.fontSize
+      ? getAverageBoundingBoxDimension(boundingBox.dimensions)
+      : undefined
+
   if (!nextData.framePosition) {
-    const averageDimension = getAverageBoundingBoxDimension(
-      boundingBox.dimensions
-    )
     if (averageDimension === undefined) {
       return nextData
     }
@@ -467,6 +634,21 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       framePosition: createFramePositionCommandValue(
         averageDimension * xSign,
         averageDimension * ySign,
+        wasmInstance
+      ),
+    }
+  }
+
+  if (!nextData.fontSize) {
+    if (averageDimension === undefined) {
+      return nextData
+    }
+
+    nextData = {
+      ...nextData,
+      fontSize: createFontSizeCommandValue(
+        averageDimension,
+        outputUnit,
         wasmInstance
       ),
     }
