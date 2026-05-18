@@ -1,11 +1,16 @@
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { sketchInitialGuessDriftExtension } from '@src/registry/extensions/modeSketch/sketchInitialGuessDrift'
 import { sketchDebuggerPaneExtension } from '@src/registry/extensions/modeSketch/sketchDebuggerPane'
 import { sketchResidualsExtension } from '@src/registry/extensions/modeSketch/sketchResiduals'
 import { isModeSketchDebugExtensionsAvailable } from '@src/registry/plugins/modeSketch/debugAvailability'
 
 // Modes should be plugins that register everything they need in the design experience.
 const debugExtensions = isModeSketchDebugExtensionsAvailable()
-  ? [sketchResidualsExtension, sketchDebuggerPaneExtension]
+  ? [
+      sketchResidualsExtension,
+      sketchInitialGuessDriftExtension,
+      sketchDebuggerPaneExtension,
+    ]
   : []
 
 const modeSketch = createZdsPlugin({
