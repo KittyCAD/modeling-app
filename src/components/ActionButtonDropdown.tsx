@@ -6,8 +6,7 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
-import type { HotkeySequence } from '@src/lib/hotkeys'
-import { toolbarHotkeyDisplay } from '@src/lib/toolbarHotkeys'
+import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import type { Platform } from '@src/lib/utils'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
@@ -102,7 +101,7 @@ function ActionButtonDropdownListItem({
   onClick: (event: MouseEvent<HTMLButtonElement>) => void
   platform: Platform
 }) {
-  const hotkeyLabel = toolbarHotkeyDisplay(item.hotkey, platform)
+  const hotkeyLabel = hotkeyDisplay(item.hotkey, platform)
 
   return (
     <li className="contents">

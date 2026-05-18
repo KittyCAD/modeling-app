@@ -5,8 +5,7 @@ import { useRef } from 'react'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
-import type { HotkeySequence } from '@src/lib/hotkeys'
-import { toolbarHotkeyDisplay } from '@src/lib/toolbarHotkeys'
+import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import type { Platform } from '@src/lib/utils'
 
 type RecentDropdownMenuItem = {
@@ -72,7 +71,7 @@ export function ActionButtonRecentDropdown({
           </Popover.Button>
           <ToolbarDropdownPanel buttonRef={buttonRef} open={popover.open}>
             {menuItems.map((item) => {
-              const hotkeyLabel = toolbarHotkeyDisplay(item.hotkey, platform)
+              const hotkeyLabel = hotkeyDisplay(item.hotkey, platform)
 
               return (
                 <li className="contents" key={item.id}>
