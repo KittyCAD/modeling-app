@@ -4,7 +4,6 @@ import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
-
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
@@ -40,17 +39,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/network/utils'
-import type { WebContentSendPayload } from '@src/menu/channels'
-import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import { useSignals } from '@preact/signals-react/runtime'
-import { modelingMachineStateToToolbarModeName } from '@src/lib/toolbar'
 import { keymapService } from '@src/registry/contracts/keymap'
-import {
-  projectService,
-  sketchSolveScenePluginsValueSpec,
-} from '@src/registry/contracts/project'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -68,7 +57,8 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { machineManager, commands, settings, layout, project } = useApp()
+  const { machineManager, commands, settings, layout, project, registry } =
+    useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
