@@ -16,10 +16,7 @@ import {
   setCallInAst,
   createPoint2dExpression,
 } from '@src/lang/modifyAst'
-import {
-  modifyAstWithTagsForSelection,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
@@ -27,6 +24,7 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { addHide } from '@src/lang/modifyAst/transforms'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
@@ -56,16 +54,9 @@ import {
   getFacesExprsFromSelection,
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
-import {
-  getEdgeTagCall,
-  getPrimitiveEdgeSelections,
-  groupSelectionsByBodyAndAddTags,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
-} from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
 import { isEngineRegionSelection } from '@src/lib/selections'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 export function addExtrude({
   ast,
@@ -843,90 +834,6 @@ function getSketchNamesFromHideArg(
   }
 
   return []
-}
-
-export function getAxisExpression(
-  axis: string | undefined,
-  edge: Selections | undefined,
-  ast: Node<Program>,
-  wasmInstance: ModuleType,
-  artifactGraph?: ArtifactGraph,
-  nodeToEdit?: PathToNode
-) {
-  let modifiedAst = structuredClone(ast)
-  if (axis) {
-    return { generatedAxis: createLocalName(axis), modifiedAst }
-  } else if (edge && artifactGraph) {
-    // Direct segment case (sketch solve)
-    const segmentAxisExpr = getVariableExprsFromSelection(
-      edge,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      nodeToEdit
-    )
-    if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
-      const directAxisExpr = segmentAxisExpr.exprs[0]
-      if (directAxisExpr.type === 'MemberExpression') {
-        return { generatedAxis: directAxisExpr, modifiedAst }
-      }
-    }
-
-    // Direct segment case (old sketch)
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      modifiedAst,
-      edge.graphSelections[0]?.codeRef.range
-    )
-    const tagResult = mutateAstWithTagForSketchSegment(
-      modifiedAst,
-      pathToAxisSelection,
-      wasmInstance
-    )
-    if (!err(tagResult)) {
-      modifiedAst = tagResult.modifiedAst
-      const { tag } = tagResult
-      const axisSelection = edge?.graphSelections[0]?.artifact
-      if (!axisSelection) {
-        return new Error('Generated axis selection is missing.')
-      }
-
-      const generatedAxis = getEdgeTagCall(tag, axisSelection)
-      return { generatedAxis, modifiedAst }
-    }
-
-    // Sweep edge case (both sketch v1 and sketch solve)
-    const bodyData = groupSelectionsByBodyAndAddTags(
-      edge,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      nodeToEdit
-    )
-    if (err(bodyData)) return bodyData
-    let bodies = bodyData.bodies
-    modifiedAst = bodyData.modifiedAst
-
-    const primitiveEdgeSelections = getPrimitiveEdgeSelections(edge)
-    if (primitiveEdgeSelections.length > 0) {
-      const primitiveEdgeResult =
-        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-          primitiveEdgeSelections,
-          bodies,
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
-      if (err(primitiveEdgeResult)) return primitiveEdgeResult
-      bodies = primitiveEdgeResult.bodies
-    }
-    if (bodies.size !== 1) {
-      return new Error('No edges found in the selection')
-    }
-    const expr = bodies.values().toArray()[0].tagsExpr
-    return { generatedAxis: expr, modifiedAst }
-  } else {
-    return new Error('Must provide either an axis or an edge selection')
-  }
 }
 
 // Sort of an inverse from getAxisExpression
