@@ -128,6 +128,13 @@ const createToolbarCommand = ({
   onSubmit,
 })
 
+// Temporary adapter between registry commands and the pre-registry modeling
+// runtime. Command submissions currently arrive from multiple paths: command
+// bar submissions carry their app context in `input`, while toolbar/keymap
+// submissions still need to reach the active KclManager through the global
+// runtime. Once KclManager/modelingMachine are modeled as registry services,
+// toolbar commands should consume those services directly and this helper layer
+// can go away.
 function getCommandBarContext(input: unknown): CommandBarContext | undefined {
   return input &&
     typeof input === 'object' &&
@@ -143,6 +150,8 @@ function getKclManager(input: unknown): KclManager | undefined {
 }
 
 function getGlobalKclManager(): KclManager | undefined {
+  // Fallback for command invocations that do not yet receive registry-backed
+  // modeling services in their submit input.
   return typeof window === 'undefined' ? undefined : window.kclManager
 }
 
