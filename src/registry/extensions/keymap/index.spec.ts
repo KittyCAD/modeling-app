@@ -244,6 +244,20 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('runs mode keybindings from global non-editor targets when editor focus scope is stale', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+    const event = createKeyboardEventWithTarget('l', document.body)
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    keymap.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+    keymap.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+
+    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
+
+    registry[Symbol.dispose]()
+  })
+
   it('accepts JSON-style keymap document contributions', () => {
     const keymapSlot = new Slot()
     const registry = new Registry()

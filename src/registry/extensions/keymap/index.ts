@@ -171,6 +171,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   const handleKeyDown: KeymapService['handleKeyDown'] = (event, { source }) => {
     const chord = keyboardEventToKeymapChord(event)
     const pendingKeystrokes = pendingKeystrokesBySource[source]
+    const eventActiveScopes = getActiveScopesForKeyboardEvent(event, source)
     if (
       !chord ||
       (source === 'global' &&
@@ -181,7 +182,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
 
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
-      activeScopes.value,
+      eventActiveScopes,
       [...pendingKeystrokes, chord],
       keymapScopesSignal.value
     )
@@ -213,7 +214,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
 
     const retryMatch = matchKeymapKeystrokes(
       keymapSignal.value,
-      activeScopes.value,
+      eventActiveScopes,
       [chord],
       keymapScopesSignal.value
     )
@@ -259,6 +260,28 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       onFocus: () => serviceImpl.applyScope(scopeName),
       onBlur: () => serviceImpl.removeScope(scopeName),
     }),
+  }
+
+  function getActiveScopesForKeyboardEvent(
+    event: KeyboardEvent,
+    source: KeymapSource
+  ) {
+    if (
+      source !== 'global' ||
+      !activeScopes.value.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) ||
+      isKeyboardEventFromEditableTarget(event)
+    ) {
+      return activeScopes.value
+    }
+
+    return [
+      ...activeScopes.value.filter(
+        (scope) =>
+          scope !== CODE_EDITOR_FOCUSED_KEYMAP_SCOPE &&
+          scope !== CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+      ),
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    ]
   }
 
   const resetView = () => {
@@ -466,6 +489,10 @@ function shouldIgnoreKeyboardEvent(
     return false
   }
 
+  return isKeyboardEventFromEditableTarget(event)
+}
+
+function isKeyboardEventFromEditableTarget(event: KeyboardEvent) {
   const target = event.target
   if (!(target instanceof HTMLElement)) {
     return false
