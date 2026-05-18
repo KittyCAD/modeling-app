@@ -96,6 +96,7 @@ noseSketch = sketch(on = XZ) {
   horizontal(line2)
 }
 region001 = region(segments = [noseSketch.line1, noseSketch.line2])
+hide(noseSketch)
 nose = revolve(region001, axis = X)
   |> translate(x = rHead * 0.98, y = 0, z = zHeadC)
   |> appearance(color = "#ff7f00", roughness = 40, metalness = 0)
@@ -106,12 +107,14 @@ sketch001 = sketch(on = hatBrimPlane) {
   circle1 = circle(start = [var 26mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [sketch001.circle1])
+hide(sketch001)
 hatBrim = extrude(region002, length = hatBrimThk)
 
 sketch002 = sketch(on = startSketchOn(hatBrim, face = END)) {
   circle1 = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [sketch002.circle1])
+hide(sketch002)
 hat = extrude(region003, length = hatTopH)
   |> appearance(color = "#111111", metalness = 10, roughness = 40)
 
@@ -122,6 +125,7 @@ armCircleR = sketch(on = armSketchR) {
   circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region004 = region(segments = [armCircleR.circle1])
+hide(armCircleR)
 rightArm = extrude(region004, length = armLen)
   |> translate(
        x = 0,
@@ -137,6 +141,7 @@ armCircleL = sketch(on = armSketchL) {
   circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region005 = region(segments = [armCircleL.circle1])
+hide(armCircleL)
 leftArm = extrude(region005, length = armLen)
   |> translate(
        x = 0,
@@ -153,17 +158,24 @@ sketch003 = sketch(on = XY) {
   circle1 = circle(start = [var 71.8mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region006 = region(segments = [sketch003.circle1])
+hide(sketch003)
 baseDisk = extrude(region006, length = -baseThk)
-  |> appearance(color = baseColor, roughness = 70, metalness = 0)
+  |> appearance(
+       color = baseColor,
+       roughness = 70,
+       metalness = 0,
+       opacity = 60,
+     )
 
-bottomWithBase = union([bottom, baseDisk])
-  |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
-
-// Collect parts into a flat array
-parts0 = concat([bottomWithBase, middle, head], items = buttons)
-parts1 = concat(parts0, items = eyes)
-snowmanParts = concat(parts1, items = [nose, hat])
-limbs = [rightArm, leftArm]
-
-concat(snowmanParts, items = limbs)
+// Collect parts into a flat array to be rotated
+[
+  middle,
+  head,
+  buttons,
+  eyes,
+  nose,
+  hat,
+  rightArm,
+  leftArm
+]
   |> rotate(axis = Z, angle = -90deg, global = true)

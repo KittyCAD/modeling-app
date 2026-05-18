@@ -5,6 +5,25 @@ description: Operations executed tangent_line_line_error.kcl
 {
   "rust/kcl-lib/tests/tangent_line_line_error/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,

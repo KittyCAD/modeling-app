@@ -2108,6 +2108,13 @@ pub(crate) struct ExecTestResults {
     exec_state: ExecState,
 }
 
+#[cfg(test)]
+impl ExecTestResults {
+    pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
+        &self.exec_state.global.root_module_artifacts.commands
+    }
+}
+
 /// There are several places where we want to traverse a KCL program or find a symbol in it,
 /// but because KCL modules can import each other, we need to traverse multiple programs.
 /// This stores multiple programs, keyed by their module ID for quick access.
