@@ -171,7 +171,6 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   const handleKeyDown: KeymapService['handleKeyDown'] = (event, { source }) => {
     const chord = keyboardEventToKeymapChord(event)
     const pendingKeystrokes = pendingKeystrokesBySource[source]
-    const eventActiveScopes = getActiveScopesForKeyboardEvent(event, source)
     if (
       !chord ||
       (source === 'global' &&
@@ -182,7 +181,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
 
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
-      eventActiveScopes,
+      activeScopes.value,
       [...pendingKeystrokes, chord],
       keymapScopesSignal.value
     )
@@ -214,7 +213,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
 
     const retryMatch = matchKeymapKeystrokes(
       keymapSignal.value,
-      eventActiveScopes,
+      activeScopes.value,
       [chord],
       keymapScopesSignal.value
     )
@@ -260,28 +259,6 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       onFocus: () => serviceImpl.applyScope(scopeName),
       onBlur: () => serviceImpl.removeScope(scopeName),
     }),
-  }
-
-  function getActiveScopesForKeyboardEvent(
-    event: KeyboardEvent,
-    source: KeymapSource
-  ) {
-    if (
-      source !== 'global' ||
-      !activeScopes.value.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) ||
-      isKeyboardEventFromEditableTarget(event)
-    ) {
-      return activeScopes.value
-    }
-
-    return [
-      ...activeScopes.value.filter(
-        (scope) =>
-          scope !== CODE_EDITOR_FOCUSED_KEYMAP_SCOPE &&
-          scope !== CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
-      ),
-      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-    ]
   }
 
   const resetView = () => {

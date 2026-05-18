@@ -416,6 +416,71 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
+  test('sketch solve tool hotkeys equip tools and update the sketch', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await test.step('Set up the app and enter sketch solve mode', async () => {
+      await context.addInitScript(() => {
+        localStorage.setItem('persistCode', '')
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+
+      await toolbar.startSketchOnDefaultPlane('Top plane')
+      await editor.expectEditor.toContain('sketch(on = XY) {')
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
+      await scene.clickNoWhere()
+    })
+
+    await test.step('Equip the line tool with its keybinding and draw a line', async () => {
+      await page.keyboard.press('l')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
+        format: 'ratio',
+      })
+      const [lineEnd] = scene.makeMouseHelpers(0.55, 0.45, {
+        format: 'ratio',
+      })
+
+      await lineStart()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await lineEnd()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('line(start = [')
+    })
+
+    await test.step('Equip the circle tool with its keybinding and draw a circle', async () => {
+      await page.keyboard.press('c')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      let previousCode = await editor.getCurrentCode()
+      const [circleCenter] = scene.makeMouseHelpers(0.7, 0.55, {
+        format: 'ratio',
+      })
+      const [circleRadius] = scene.makeMouseHelpers(0.78, 0.62, {
+        format: 'ratio',
+      })
+
+      await circleCenter()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await circleRadius()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('circle(start = [')
+    })
+  })
+
   test('unequipping line tool should not drop committed segments from the scene', async ({
     page,
     context,
