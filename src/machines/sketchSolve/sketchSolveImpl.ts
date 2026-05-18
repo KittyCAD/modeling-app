@@ -18,19 +18,19 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
-  resetSketchSolvePointHandleCount,
   type SegmentRenderState,
+  resetSketchSolvePointHandleCount,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
 import {
-  getObjectSelectionIds,
-  isObjectSelectionId,
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
+  getObjectSelectionIds,
+  isObjectSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
-import { StateEffect, Transaction, EditorSelection } from '@codemirror/state'
+import { EditorSelection, StateEffect, Transaction } from '@codemirror/state'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
@@ -46,16 +46,16 @@ import {
   CONSTRAINT_TYPE,
   isCircleSegment,
   isConstraint,
-  isControlPointSplineSegment,
   isConstruction as isConstructionSegment,
+  isControlPointSplineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
   getInvisibleConstraintSegmentHoverColor,
-  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
+  isInvisibleConstraintSegmentSecondaryHovered,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
@@ -67,7 +67,9 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveErrors'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
+import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as filletTool } from '@src/machines/sketchSolve/tools/filletToolDiagram'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
@@ -75,7 +77,6 @@ import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineToo
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
-import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -129,8 +130,8 @@ export type SketchSolveMachineEvent =
   | {
       type: 'update selected ids'
       data: {
-        selectedIds?: Array<SketchSolveSelectionId>
-        duringAreaSelectIds?: Array<number>
+        selectedIds?: SketchSolveSelectionId[]
+        duringAreaSelectIds?: number[]
         replaceExistingSelection?: boolean
       }
     }
@@ -153,8 +154,8 @@ export type SketchSolveMachineEvent =
   | {
       type: 'set draft entities'
       data: {
-        segmentIds: Array<number>
-        constraintIds: Array<number>
+        segmentIds: number[]
+        constraintIds: number[]
       }
     }
   | { type: 'clear draft entities' }
@@ -210,6 +211,7 @@ export const equipTools = Object.freeze({
   centerRectTool: rectTool,
   cornerRectTool: rectTool,
   dimensionTool,
+  filletTool,
   pointTool,
   lineTool,
   splineTool,
@@ -226,8 +228,8 @@ export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
-  selectedIds: Array<SketchSolveSelectionId>
-  duringAreaSelectIds: Array<number>
+  selectedIds: SketchSolveSelectionId[]
+  duringAreaSelectIds: number[]
   hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
   sketchExecOutcome?: {
@@ -235,8 +237,8 @@ export type SketchSolveContext = {
     sceneGraphDelta: SceneGraphDelta
   }
   draftEntities?: {
-    segmentIds: Array<number>
-    constraintIds: Array<number>
+    segmentIds: number[]
+    constraintIds: number[]
   }
   editingConstraintId?: number
   showNonVisualConstraints: boolean
@@ -260,6 +262,7 @@ interface EventLike {
   [key: PropertyKey]: unknown
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: Keeps XState assign typing compatible with existing setup inference.
 type SolveAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   SketchSolveContext,
   SketchSolveMachineEvent,
@@ -288,7 +291,7 @@ export function sendToActorIfActive(
  */
 export function buildSegmentCtorFromObject(
   obj: ApiObject,
-  objects: Array<ApiObject>
+  objects: ApiObject[]
 ): SegmentCtor | null {
   if (isPointSegment(obj)) {
     return {
@@ -306,10 +309,8 @@ export function buildSegmentCtorFromObject(
         },
       },
     }
-  } else if (
-    obj?.kind?.type === 'Segment' &&
-    obj.kind?.segment?.type === 'Line'
-  ) {
+  }
+  if (obj?.kind?.type === 'Segment' && obj.kind?.segment?.type === 'Line') {
     const startPoint = getLinkedPoint({
       objects,
       pointId: obj.kind.segment.start,
@@ -327,10 +328,8 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       end: endPoint,
     }
-  } else if (
-    obj?.kind?.type === 'Segment' &&
-    obj.kind?.segment?.type === 'Arc'
-  ) {
+  }
+  if (obj?.kind?.type === 'Segment' && obj.kind?.segment?.type === 'Arc') {
     const centerPoint = getLinkedPoint({
       objects,
       pointId: obj.kind.segment.center,
@@ -353,7 +352,8 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       end: endPoint,
     }
-  } else if (isCircleSegment(obj)) {
+  }
+  if (isCircleSegment(obj)) {
     const centerPoint = getLinkedPoint({
       objects,
       pointId: obj.kind.segment.center,
@@ -372,7 +372,8 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       construction: obj.kind.segment.construction,
     }
-  } else if (isControlPointSplineSegment(obj)) {
+  }
+  if (isControlPointSplineSegment(obj)) {
     const points = obj.kind.segment.controls
       .map((pointId) => getLinkedPoint({ objects, pointId }))
       .filter((point) => point !== null)
@@ -491,13 +492,13 @@ function initSegmentGroup({
 }): Group | Error {
   const input = buildSegmentCtorFromObject(apiObject, objects)
   if (!input) {
-    return new Error(`Unknown input type: ${(apiObject.kind as any).type}`)
+    return new Error(`Unknown input type: ${apiObject.kind.type}`)
   }
 
   const id = apiObject.id
   const isConstruction = isConstructionSegment(apiObject)
 
-  let group
+  let group: Group | Error | undefined
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
       apiObject,
@@ -537,14 +538,14 @@ function initSegmentGroup({
   if (group instanceof Group) {
     return group
   }
-  return new Error(`Unknown input type: ${(input as any).type}`)
+  return new Error(`Unknown input type: ${input.type}`)
 }
 
 export interface IUpdateSketchSceneGraph {
   sceneGraphDelta: SceneGraphDelta
   context: SketchSolveContext
-  selectedIds: Array<SketchSolveSelectionId>
-  duringAreaSelectIds: Array<number>
+  selectedIds: SketchSolveSelectionId[]
+  duringAreaSelectIds: number[]
 }
 export const updateSketchSceneGraphEffect =
   StateEffect.define<IUpdateSketchSceneGraph>()
@@ -611,10 +612,10 @@ export function updateSceneGraphFromDelta({
     )
   }
 
-  currentSketchObjects.forEach((obj) => {
+  for (const obj of currentSketchObjects) {
     // sketch is not a drawable object
     if (obj.kind.type === 'Sketch') {
-      return
+      continue
     }
 
     // Combine selectedIds and duringAreaSelectIds for highlighting
@@ -651,7 +652,7 @@ export function updateSceneGraphFromDelta({
           getInvisibleConstraintDisplayState(context)
         )
       }
-      return
+      continue
     }
     let group = context.sceneInfra.scene.getObjectByName(String(obj.id))
     const ctor = buildSegmentCtorFromObject(obj, objects)
@@ -666,7 +667,7 @@ export function updateSceneGraphFromDelta({
     )
     if (!(group instanceof Group)) {
       if (!ctor) {
-        return
+        continue
       }
       const newGroup = initSegmentGroup({
         apiObject: obj,
@@ -674,7 +675,7 @@ export function updateSceneGraphFromDelta({
       })
       if (newGroup instanceof Error) {
         console.error('Failed to init segment group for object', obj.id)
-        return
+        continue
       }
       if (sketchSolveGroup) {
         newGroup.traverse((child) => {
@@ -686,7 +687,7 @@ export function updateSceneGraphFromDelta({
       group = newGroup
     }
     if (!(group instanceof Group) || !ctor) {
-      return
+      continue
     }
 
     updateSegmentGroup({
@@ -698,7 +699,7 @@ export function updateSceneGraphFromDelta({
       hasSolveErrors,
       objects,
     })
-  })
+  }
 }
 
 function getLinkedPoint({
@@ -706,7 +707,7 @@ function getLinkedPoint({
   objects,
 }: {
   pointId: number
-  objects: Array<ApiObject>
+  objects: ApiObject[]
 }): { x: Expr; y: Expr } | null {
   const point = objects[pointId]
   if (!isPointSegment(point)) {
@@ -736,7 +737,7 @@ export function initializeIntersectionPlane({ context }: SolveActionArgs) {
   }
 }
 
-export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
+export function clearHoverCallbacks({ context }: SolveActionArgs) {
   // Clear hover callbacks to prevent interference with tool operations
   context.sceneInfra.setCallbacks({
     onMouseEnter: () => {},
@@ -919,15 +920,15 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     )
   }
 
-  currentSketchObjects.forEach((obj) => {
+  for (const obj of currentSketchObjects) {
     if (obj.kind.type === 'Sketch') {
-      return
+      continue
     }
     if (obj.kind.type === 'Constraint') {
       const foundObject = context.sceneInfra.scene.getObjectByName(
         String(obj.id)
       )
-      let constraintGroup: Group | null =
+      const constraintGroup: Group | null =
         foundObject instanceof Group ? foundObject : null
       if (constraintGroup) {
         segmentUtilsMap.Constraint.update(
@@ -944,11 +945,11 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     } else {
       const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
       if (!(group instanceof Group)) {
-        return
+        continue
       }
       const ctor = buildSegmentCtorFromObject(obj, objects)
       if (!ctor) {
-        return
+        continue
       }
       updateSegmentGroup({
         apiObject: obj,
@@ -968,7 +969,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         objects,
       })
     }
-  })
+  }
 }
 
 export function updateHoveredId({
@@ -1123,19 +1124,19 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     getOriginSpriteState(context)
   )
 
-  currentSketchObjects.forEach((obj) => {
+  for (const obj of currentSketchObjects) {
     if (!isPointSegment(obj)) {
-      return
+      continue
     }
 
     const group = sketchSolveGroup.getObjectByName(String(obj.id))
     if (!(group instanceof Group)) {
-      return
+      continue
     }
 
     const ctor = buildSegmentCtorFromObject(obj, objects)
     if (!ctor) {
-      return
+      continue
     }
 
     updateSegmentGroup({
@@ -1155,12 +1156,12 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       hasSolveErrors,
       objects,
     })
-  })
+  }
 
   const constraintGroups = sketchSolveGroup.children.filter(
     (child) => child.userData.type === CONSTRAINT_TYPE && child instanceof Group
   )
-  constraintGroups.forEach((group) => {
+  for (const group of constraintGroups) {
     const objId = group.userData.object_id
     const obj = objects[objId]
     if (obj) {
@@ -1175,7 +1176,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
         getInvisibleConstraintDisplayState(context)
       )
     }
-  })
+  }
 }
 
 function getInvisibleConstraintDisplayState(
@@ -1201,11 +1202,11 @@ function getHoveredSegmentIds(
 
 function getSegmentRenderState(
   segmentId: number,
-  selectedIds: Array<SketchSolveSelectionId>,
-  duringAreaSelectIds: Array<number>,
+  selectedIds: SketchSolveSelectionId[],
+  duringAreaSelectIds: number[],
   hoveredId: SketchSolveSelectionId | null,
-  hoveredSegmentIds: Array<number>,
-  draftEntityIds: Array<number> | undefined,
+  hoveredSegmentIds: number[],
+  draftEntityIds: number[] | undefined,
   objects: ApiObject[]
 ): SegmentRenderState {
   const hoveredObject = isObjectSelectionId(hoveredId)

@@ -15,50 +15,51 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
-  KCL_DEFAULT_CONSTANT_PREFIXES,
-  KCL_DEFAULT_DEGREE,
-  KCL_DEFAULT_INSTANCES,
-  KCL_DEFAULT_LENGTH,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  KCL_DEFAULT_TRANSFORM,
-  KCL_DEFAULT_ORIGIN,
-  KCL_DEFAULT_ORIGIN_2D,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  KCL_DEFAULT_DATUM_REFS,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_FONT_SIZE,
+  KCL_DEFAULT_INSTANCES,
+  KCL_DEFAULT_LEADER_SCALE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_ORIGIN,
+  KCL_DEFAULT_ORIGIN_2D,
+  KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_TRANSFORM,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
-  KCL_DEFAULT_TOLERANCE,
-  KCL_DEFAULT_DATUM_REFS,
-  KCL_DEFAULT_PRECISION,
-  KCL_DEFAULT_FONT_SIZE,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
+  type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  KCL_DEFAULT_SCALE,
-  KCL_DEFAULT_LEADER_SCALE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { err } from '@src/lib/trap'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 
-import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
-import {
-  addExtrude,
-  addLoft,
-  addRevolve,
-  addSweep,
-  type SweepRelativeTo,
-} from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import {
+  addIntersect,
+  addSplit,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import {
   addDeleteFace,
   addHole,
@@ -66,18 +67,35 @@ import {
   addShell,
 } from '@src/lang/modifyAst/faces'
 import {
-  addIntersect,
-  addSplit,
-  addSubtract,
-  addUnion,
-} from '@src/lang/modifyAst/boolean'
-import { addHelix } from '@src/lang/modifyAst/geometry'
+  addAnnotationGdt,
+  addDatumGdt,
+  addDistanceGdt,
+  addFlatnessGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addPositionGdt,
+  addProfileGdt,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
   addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
+import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import {
+  type SweepRelativeTo,
+  addExtrude,
+  addLoft,
+  addRevolve,
+  addSweep,
+} from '@src/lang/modifyAst/sweeps'
 import {
   addAppearance,
   addClone,
@@ -86,25 +104,8 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
-import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import {
-  addFlatnessGdt,
-  addDatumGdt,
-  addPositionGdt,
-  addAnnotationGdt,
-  addParallelismGdt,
-  addPerpendicularityGdt,
-  addDistanceGdt,
-  addProfileGdt,
-  getNextAvailableDatumName,
-} from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -125,7 +126,9 @@ function isExportOptionalArgSupported(
   exportType: unknown,
   arg: ExportOptionalArg
 ): boolean {
-  if (typeof exportType !== 'string') return true
+  if (typeof exportType !== 'string') {
+    return true
+  }
   const supportByArg =
     exportOptionalArgSupportByType[exportType as OutputTypeKey]
   return supportByArg?.[arg] ?? true
@@ -357,6 +360,9 @@ export type ModelingCommandSchema = {
   'change tool': {
     tool: SketchTool
   }
+  'equip tool': {
+    tool: EquipTool
+  }
   'Constrain length': {
     selection: Selections
     length: KclCommandValue
@@ -373,9 +379,10 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
-  // TODO: {} means any non-nullish value. This is probably not what we want.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  /* eslint-disable @typescript-eslint/no-empty-object-type */
+  // biome-ignore lint/complexity/noBannedTypes: This command intentionally has no data payload.
   'Delete selection': {}
+  /* eslint-enable @typescript-eslint/no-empty-object-type */
   Appearance: {
     nodeToEdit?: PathToNode
     objects: Selections
@@ -656,6 +663,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   ],
+  'equip tool': [
+    {
+      description:
+        'Round an adjacent pair of sketch segments with a tangent arc.',
+      icon: 'fillet3d',
+      displayName: 'Sketch Fillet',
+      status: 'experimental',
+      args: {
+        tool: {
+          defaultValue: 'filletTool',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+  ],
   Export: {
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
@@ -819,29 +843,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           return Object.values(
             commandBarContext.machineManager?.machines || []
           ).map((machine: components['schemas']['MachineInfoResponse']) => ({
-            name:
-              `${machine.id} (${
-                machine.make_model.model || machine.make_model.manufacturer
-              }) (${machine.state.state})` +
-              (machine.hardware_configuration &&
+            name: `${machine.id} (${
+              machine.make_model.model || machine.make_model.manufacturer
+            }) (${machine.state.state})${
+              machine.hardware_configuration &&
               machine.hardware_configuration.type !== 'none' &&
               machine.hardware_configuration.config.nozzle_diameter
                 ? ` - Nozzle Diameter: ${machine.hardware_configuration.config.nozzle_diameter}`
-                : '') +
-              (machine.hardware_configuration &&
+                : ''
+            }${
+              machine.hardware_configuration &&
               machine.hardware_configuration.type !== 'none' &&
               machine.hardware_configuration.config.filaments &&
               machine.hardware_configuration.config.filaments[0]
                 ? ` - ${
                     machine.hardware_configuration.config.filaments[0].name
-                  } #${
-                    machine.hardware_configuration.config &&
-                    machine.hardware_configuration.config.filaments[0].color?.slice(
-                      0,
-                      6
-                    )
-                  }`
-                : ''),
+                  } #${machine.hardware_configuration.config?.filaments[0].color?.slice(
+                    0,
+                    6
+                  )}`
+                : ''
+            }`,
             isCurrent: false,
             disabled: machine.state.state !== 'idle',
             value: machine,
@@ -875,12 +897,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -986,12 +1012,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1060,12 +1090,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1126,12 +1160,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1226,12 +1264,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1273,12 +1315,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1421,12 +1467,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       solids: {
@@ -1466,12 +1516,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       solids: {
@@ -1504,12 +1558,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       solids: {
@@ -1543,12 +1601,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1600,12 +1662,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         variables: kclManager.variables,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1653,12 +1719,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1759,12 +1829,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1817,12 +1891,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1875,12 +1953,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1928,12 +2010,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -1986,12 +2072,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2042,12 +2132,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2105,14 +2199,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'byDefault',
         defaultValue(_, machineContext, wasmInstance) {
           const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (!selectionRanges || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
             kclManager: machineContext.kclManager,
             wasmInstance,
           })
-          if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (err(angleLength) || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { transforms } = angleLength
 
           // QUESTION: is it okay to reference kclManager here? will its state be up to date?
@@ -2124,7 +2222,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             referenceSegName: '',
             wasmInstance,
           })
-          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          if (err(sketched)) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { valueUsedInTransform } = sketched
           return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
         },
@@ -2194,12 +2294,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2252,12 +2356,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2311,12 +2419,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2370,12 +2482,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2434,12 +2550,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2471,7 +2591,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           // Be conservative and error out if there is an item or module with the same name.
           const variableExists =
             modelingContext.kclManager.variables[data] ||
-            modelingContext.kclManager.variables['__mod_' + data]
+            modelingContext.kclManager.variables[`__mod_${data}`]
           if (variableExists) {
             return 'This variable name is already in use.'
           }
@@ -2559,12 +2679,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2632,12 +2756,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2697,12 +2825,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2773,12 +2905,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2847,12 +2983,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -2926,12 +3066,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -3085,12 +3229,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -3164,12 +3312,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -3242,12 +3394,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       nodeToEdit: {
@@ -3313,12 +3469,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       surface: {
@@ -3349,12 +3509,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       selection: {
@@ -3386,12 +3550,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       faces: {
@@ -3423,12 +3591,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
-      if (err(modRes)) return modRes
+      if (err(modRes)) {
+        return modRes
+      }
       const execRes = await mockExecAstAndReportErrors(
         modRes.modifiedAst,
         rustContext
       )
-      if (err(execRes)) return execRes
+      if (err(execRes)) {
+        return execRes
+      }
     },
     args: {
       edges: {

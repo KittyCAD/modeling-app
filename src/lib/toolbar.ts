@@ -1,11 +1,12 @@
-import type { EventFrom, StateFrom } from 'xstate'
 import { useEffect, useMemo, useState } from 'react'
+import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
-import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
+import { isDesktop } from '@src/lib/isDesktop'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -14,7 +15,6 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const SKETCH_EXPERIMENTAL_FEATURES_FLAG = 'sketch_experimental_features'
 
@@ -526,9 +526,8 @@ export function buildToolbarConfig(
 
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
               return 'Edit Sketch'
-            } else {
-              return 'Start Sketch'
             }
+            return 'Start Sketch'
           },
           showTitle: true,
           hotkey: 'S',
@@ -2128,6 +2127,26 @@ export function buildToolbarConfig(
             state.context.sketchSolveToolName === 'trimTool',
         },
         {
+          id: 'sketch-fillet',
+          onClick: ({ modelingSend, isActive }) =>
+            isActive
+              ? modelingSend({ type: 'unequip tool' })
+              : modelingSend({
+                  type: 'equip tool',
+                  data: { tool: 'filletTool' },
+                }),
+          icon: 'fillet3d',
+          status: 'experimental',
+          title: 'Fillet',
+          hotkey: 'Shift+F',
+          description:
+            'Round an adjacent pair of sketch segments with a tangent arc.',
+          links: [],
+          isActive: (state) =>
+            state.matches('sketchSolveMode') &&
+            state.context.sketchSolveToolName === 'filletTool',
+        },
+        {
           id: 'rectangles',
           array: [
             {
@@ -2218,7 +2237,7 @@ export function buildToolbarConfig(
             'Constrain distance between points, length of lines, or radius of arcs.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
         {
           id: 'HorizontalDistance',
@@ -2234,7 +2253,7 @@ export function buildToolbarConfig(
           description: 'Constrain horizontal distance between two points.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
         {
           id: 'VerticalDistance',
@@ -2250,7 +2269,7 @@ export function buildToolbarConfig(
           description: 'Constrain vertical distance between two points.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
         {
           id: 'construction',
@@ -2265,7 +2284,7 @@ export function buildToolbarConfig(
           hotkey: 'Q',
           description: 'Toggle construction geometry on selected segments.',
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
       ],
     },
@@ -2318,7 +2337,9 @@ function collectItems(
 ) {
   for (const item of items) {
     // Skip 'break' strings
-    if (typeof item === 'string') continue
+    if (typeof item === 'string') {
+      continue
+    }
 
     // dropdowns, eg. rectangles
     if ('array' in item) {
@@ -2340,7 +2361,7 @@ function collectItems(
       const toolNameMatch = isActiveStr.match(
         /sketchSolveToolName\s*===\s*['"]([^'"]+)['"]/
       )
-      if (toolNameMatch && toolNameMatch[1]) {
+      if (toolNameMatch?.[1]) {
         map[toolNameMatch[1]] = item.icon
       }
     }
