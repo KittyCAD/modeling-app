@@ -19,7 +19,28 @@ const VIEW_KEYMAP_EXCLUDED_SCOPES = [
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
 ]
 const TOOLBAR_KEYMAP_EXCLUDED_SCOPES = [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE]
-const EXIT_SKETCH_KEYSTROKE = isDesktop() ? 'mod+escape' : 'shift+escape'
+const EXIT_SKETCH_KEYSTROKES = isDesktop()
+  ? ['mod+escape', 'meta+escape']
+  : ['shift+escape']
+
+function createExitSketchBindings({
+  id,
+  scope,
+  command,
+}: {
+  id: string
+  scope: string
+  command: string
+}): KeymapDocument['bindings'] {
+  return EXIT_SKETCH_KEYSTROKES.map((keystroke, index) => ({
+    id: index === 0 ? id : `${id}.${keystroke.replaceAll('+', '-')}`,
+    title: 'Exit Sketch',
+    scopes: [scope],
+    excludedScopes: TOOLBAR_KEYMAP_EXCLUDED_SCOPES,
+    keystrokes: [keystroke],
+    command,
+  }))
+}
 
 export const defaultKeymap: KeymapDocument = {
   source: BASE_KEYMAP_SOURCE,
@@ -223,14 +244,11 @@ export const defaultKeymap: KeymapDocument = {
       keystrokes: ['escape'],
       command: TOOLBAR_COMMAND_IDS.sketching.exit,
     },
-    {
+    ...createExitSketchBindings({
       id: 'toolbar.sketching.exit',
-      title: 'Exit Sketch',
-      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
-      excludedScopes: TOOLBAR_KEYMAP_EXCLUDED_SCOPES,
-      keystrokes: [EXIT_SKETCH_KEYSTROKE],
+      scope: MODE_SKETCHING_KEYMAP_SCOPE,
       command: TOOLBAR_COMMAND_IDS.sketching.exit,
-    },
+    }),
     {
       id: 'toolbar.sketching.cancel-tool',
       title: 'Cancel sketch tool',
@@ -295,14 +313,11 @@ export const defaultKeymap: KeymapDocument = {
       keystrokes: ['alt+r'],
       command: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
     },
-    {
+    ...createExitSketchBindings({
       id: 'toolbar.sketch-solve.exit',
-      title: 'Exit Sketch',
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-      excludedScopes: TOOLBAR_KEYMAP_EXCLUDED_SCOPES,
-      keystrokes: [EXIT_SKETCH_KEYSTROKE],
+      scope: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
       command: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
-    },
+    }),
     {
       id: 'toolbar.sketch-solve.cancel',
       title: 'Cancel sketch solve action',

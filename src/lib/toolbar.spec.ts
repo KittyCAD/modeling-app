@@ -44,6 +44,11 @@ describe('toolbar state helpers', () => {
         stubModelingState(['animating to sketch solve mode'])
       )
     ).toBe('sketchSolve')
+    expect(
+      modelingMachineStateToToolbarModeName(
+        stubModelingState(['animating to existing sketch solve'])
+      )
+    ).toBe('sketchSolve')
   })
 
   test('marks sketch toolbars as transitioning during camera animation states', () => {
@@ -55,6 +60,11 @@ describe('toolbar state helpers', () => {
     expect(
       isSketchToolbarTransitioning(
         stubModelingState(['animating to existing sketch'])
+      )
+    ).toBe(true)
+    expect(
+      isSketchToolbarTransitioning(
+        stubModelingState(['animating to existing sketch solve'])
       )
     ).toBe(true)
   })

@@ -53,7 +53,8 @@ export const modelingMachineStateToToolbarModeName = (
     toolbarConfigurationName = 'onlyCancel'
   } else if (
     state.matches('sketchSolveMode') ||
-    state.matches('animating to sketch solve mode')
+    state.matches('animating to sketch solve mode') ||
+    state.matches('animating to existing sketch solve')
   ) {
     // Gotcha: match on the animating state otherwise you see a different toolbar
     toolbarConfigurationName = 'sketchSolve'

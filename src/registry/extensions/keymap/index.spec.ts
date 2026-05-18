@@ -48,6 +48,14 @@ describe('keymap extension', () => {
         (binding) => binding.id === 'toolbar.sketch-solve.exit'
       )?.keystrokes
     ).toEqual([expectedExitSketchKeystroke])
+
+    expect(
+      defaultKeymap.bindings.some(
+        (binding) =>
+          binding.id === 'toolbar.sketching.exit.meta-escape' &&
+          binding.keystrokes[0] === 'meta+escape'
+      )
+    ).toBe(isDesktop())
   })
 
   it('marks a partial match and awaits more input', () => {
