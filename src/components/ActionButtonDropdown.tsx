@@ -58,7 +58,7 @@ export function ActionButtonDropdown({
             <CustomIcon
               name="caretDown"
               className={
-                'w-3.5 h-5 text-chalkboard-70 dark:text-chalkboard-40 rounded-none ' +
+                'w-3.5 h-5 text-inherit dark:text-current rounded-none ' +
                 'ui-open:rotate-180 ui-open:!text-chalkboard-10'
               }
             />

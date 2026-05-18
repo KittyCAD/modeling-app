@@ -53,7 +53,7 @@ export function ActionButtonRecentDropdown({
           >
             <CustomIcon
               name="caretDown"
-              className="w-3.5 h-3 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180 ui-open:!text-chalkboard-10"
+              className="w-3.5 h-3 text-inherit dark:text-current ui-open:rotate-180 ui-open:!text-chalkboard-10"
             />
             <span className="sr-only">
               {name ? `${name}: open menu` : 'open menu'}
