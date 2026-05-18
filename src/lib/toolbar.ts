@@ -1,11 +1,12 @@
-import type { EventFrom, StateFrom } from 'xstate'
 import { useEffect, useMemo, useState } from 'react'
+import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
-import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
+import { isDesktop } from '@src/lib/isDesktop'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -14,7 +15,13 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+} from '@src/registry/contracts/keymap'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
 
 const SKETCH_EXPERIMENTAL_FEATURES_FLAG = 'sketch_experimental_features'
 
@@ -23,6 +30,13 @@ export type ToolbarModeName =
   | 'sketching'
   | 'sketchSolve'
   | 'onlyCancel'
+
+export const toolbarModeNameToKeymapScope: Record<ToolbarModeName, string> = {
+  modeling: MODE_MODELING_KEYMAP_SCOPE,
+  sketching: MODE_SKETCHING_KEYMAP_SCOPE,
+  onlyCancel: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  sketchSolve: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+}
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -76,6 +90,7 @@ export interface ToolbarItemCallbackProps {
 
 export type ToolbarItem = {
   id: string
+  command?: string
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
   sketchSolveToolName?: string
@@ -86,12 +101,8 @@ export type ToolbarItem = {
     state: StateFrom<typeof modelingMachine>,
     wasmInstance: ModuleType
   ) => boolean
-  disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
-  hotkey?:
-    | string
-    | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
   extraInfo?: string
   links: { label: string; url: string }[]
@@ -103,11 +114,10 @@ export type ToolbarItem = {
 
 export type ToolbarItemResolved = Omit<
   ToolbarItem,
-  'disabled' | 'disableHotkey' | 'hotkey' | 'isActive' | 'title'
+  'disabled' | 'isActive' | 'title'
 > & {
   title: string
   disabled?: boolean
-  disableHotkey?: boolean
   hotkey?: string | string[]
   isActive?: boolean
   callbackProps: ToolbarItemCallbackProps
@@ -285,7 +295,7 @@ type SketchSolveConstraintState = {
 
 type ConstraintToolbarItemConfig = Pick<
   ToolbarItem,
-  'id' | 'icon' | 'title' | 'hotkey' | 'description'
+  'id' | 'command' | 'icon' | 'title' | 'description'
 > & {
   toolName: ConstraintToolName
 }
@@ -316,14 +326,15 @@ export function getConstraintToolbarToggleEvent(
 
 function createSketchSolveConstraintDropdownItem({
   id,
+  command,
   toolName,
   icon,
   title,
-  hotkey,
   description,
 }: ConstraintToolbarItemConfig): ToolbarItem {
   return {
     id,
+    command,
     onClick: ({ modelingSend, isActive, keepSelection }) =>
       modelingSend(
         getConstraintToolbarToggleEvent(isActive, toolName, keepSelection)
@@ -332,7 +343,6 @@ function createSketchSolveConstraintDropdownItem({
     sketchSolveToolName: toolName,
     status: 'available',
     title,
-    hotkey,
     description,
     links: [],
     isActive: (state) => isSketchSolveConstraintToolActive(state, toolName),
@@ -344,85 +354,85 @@ const constraintsExtraInfo = 'Hold Cmd/Ctrl to keep selection'
 const sketchSolveConstraintItems: ToolbarItem[] = [
   createSketchSolveConstraintDropdownItem({
     id: 'coincident',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.coincident,
     toolName: 'coincidentConstraintTool',
     icon: 'coincident',
     title: 'Coincident',
-    hotkey: 'X',
     description: 'Constrain points or curves to be coincident.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'midpoint',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.midpoint,
     toolName: 'midpointConstraintTool',
     icon: 'midpoint',
     title: 'Midpoint',
-    hotkey: 'Shift+X',
     description: 'Constrain a point to lie at the midpoint of a selected line.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Tangent',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.tangent,
     toolName: 'tangentConstraintTool',
     icon: 'tangent',
     title: 'Tangent',
-    hotkey: 'T',
     description:
       'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Parallel',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.parallel,
     toolName: 'parallelConstraintTool',
     icon: 'parallel',
     title: 'Parallel',
-    hotkey: 'B',
     description: 'Constrain lines or curves to be parallel.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Perpendicular',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.perpendicular,
     toolName: 'perpendicularConstraintTool',
     icon: 'perpendicular',
     title: 'Perpendicular',
-    hotkey: 'Shift+B',
     description: 'Constrain lines or curves to be perpendicular.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'equalLength',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.equal,
     toolName: 'equalLengthConstraintTool',
     icon: 'equal',
     title: 'Equal',
-    hotkey: 'E',
     description:
       'Constrain lines to have equal length, or arcs and circles to have equal radius.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Symmetric',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.symmetric,
     toolName: 'symmetricConstraintTool',
     icon: 'symmetric',
     title: 'Symmetric',
-    hotkey: 'Shift+E',
     description:
       'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'vertical',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.vertical,
     toolName: 'verticalConstraintTool',
     icon: 'vertical',
     title: 'Vertical',
-    hotkey: 'V',
     description: 'Constrain lines to be vertical.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Horizontal',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontal,
     toolName: 'horizontalConstraintTool',
     icon: 'horizontal',
     title: 'Horizontal',
-    hotkey: 'H',
     description: 'Constrain lines to be horizontal.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Fixed',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.fixed,
     toolName: 'fixedConstraintTool',
     icon: 'fix',
     title: 'Fixed',
-    hotkey: 'F',
     description: 'Lock selected points to their current x and y positions.',
   }),
 ]
@@ -439,6 +449,7 @@ export function buildToolbarConfig(
 ): Record<ToolbarModeName, ToolbarMode> {
   const splineToolbarItem: ToolbarItem = {
     id: 'spline',
+    command: TOOLBAR_COMMAND_IDS.sketchSolve.spline,
     onClick: ({ modelingSend, isActive }) =>
       isActive
         ? modelingSend({
@@ -451,7 +462,6 @@ export function buildToolbarConfig(
     icon: 'spline',
     status: 'experimental',
     title: 'Spline',
-    hotkey: 'S',
     description: 'Draw a control-point spline.',
     links: [],
     isActive: (state) =>
@@ -465,20 +475,15 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
+          command: TOOLBAR_COMMAND_IDS.sketching.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Cancel',
             }),
-          disableHotkey: (state) =>
-            !(
-              state.matches({ Sketch: 'SketchIdle' }) ||
-              state.matches('Sketch no face')
-            ),
           icon: 'arrowShortLeft',
           status: 'available',
           title: 'Cancel Sketch',
           showTitle: true,
-          hotkey: 'Esc',
           description: 'Cancel the current sketch.',
           links: [],
         },
@@ -496,6 +501,7 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch',
+          command: TOOLBAR_COMMAND_IDS.modeling.sketch,
           onClick: ({
             modelingSend,
             modelingState,
@@ -531,7 +537,6 @@ export function buildToolbarConfig(
             }
           },
           showTitle: true,
-          hotkey: 'S',
           description: 'Start drawing a 2D sketch.',
           links: [
             {
@@ -545,6 +550,7 @@ export function buildToolbarConfig(
         'break',
         {
           id: 'extrude',
+          command: 'modeling:Extrude',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -553,7 +559,6 @@ export function buildToolbarConfig(
           icon: 'extrude',
           status: 'available',
           title: 'Extrude',
-          hotkey: 'E',
           description:
             'Pull a sketch into 3D along its normal or perpendicular.',
           links: [
@@ -567,6 +572,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'sweep',
+          command: 'modeling:Sweep',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -575,7 +581,6 @@ export function buildToolbarConfig(
           icon: 'sweep',
           status: 'available',
           title: 'Sweep',
-          hotkey: 'W',
           description:
             'Create a 3D body by moving a sketch region along an arbitrary path.',
           links: [
@@ -587,6 +592,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'loft',
+          command: 'modeling:Loft',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -595,7 +601,6 @@ export function buildToolbarConfig(
           icon: 'loft',
           status: 'available',
           title: 'Loft',
-          hotkey: 'L',
           description:
             'Create a 3D body by blending between two or more sketches.',
           links: [
@@ -607,6 +612,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'revolve',
+          command: 'modeling:Revolve',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -615,7 +621,6 @@ export function buildToolbarConfig(
           icon: 'revolve',
           status: 'available',
           title: 'Revolve',
-          hotkey: 'R',
           description:
             'Create a 3D body by rotating a sketch region about an axis.',
           links: [
@@ -634,6 +639,7 @@ export function buildToolbarConfig(
         'break',
         {
           id: 'fillet3d',
+          command: 'modeling:Fillet',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -642,7 +648,6 @@ export function buildToolbarConfig(
           icon: 'fillet3d',
           status: 'available',
           title: 'Fillet',
-          hotkey: 'F',
           description: 'Round the edges of a 3D solid.',
           links: [
             {
@@ -653,6 +658,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'chamfer3d',
+          command: 'modeling:Chamfer',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -661,7 +667,6 @@ export function buildToolbarConfig(
           icon: 'chamfer3d',
           status: 'available',
           title: 'Chamfer',
-          hotkey: 'C',
           description: 'Bevel the edges of a 3D solid.',
           extraInfo:
             'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
@@ -893,13 +898,13 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'plane-offset',
+              command: 'modeling:Offset plane',
               onClick: () => {
                 commands.send({
                   type: 'Find and select command',
                   data: { name: 'Offset plane', groupId: 'modeling' },
                 })
               },
-              hotkey: 'O',
               icon: 'plane',
               status: 'available',
               title: 'Offset Plane',
@@ -926,13 +931,13 @@ export function buildToolbarConfig(
         },
         {
           id: 'helix',
+          command: 'modeling:Helix',
           onClick: () => {
             commands.send({
               type: 'Find and select command',
               data: { name: 'Helix', groupId: 'modeling' },
             })
           },
-          hotkey: 'H',
           icon: 'helix',
           status: 'available',
           title: 'Helix',
@@ -1024,12 +1029,12 @@ export function buildToolbarConfig(
         'break',
         {
           id: 'insert',
+          command: 'code:Insert',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
               data: { name: 'Insert', groupId: 'code' },
             }),
-          hotkey: 'I',
           icon: 'import',
           status: 'available',
           disabled: () => !isDesktop(),
@@ -1123,13 +1128,13 @@ export function buildToolbarConfig(
             },
             {
               id: 'mirror3d',
+              command: 'modeling:Mirror 3D',
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
                   data: { name: 'Mirror 3D', groupId: 'modeling' },
                 }),
               icon: 'mirror3d',
-              hotkey: 'M',
               status: 'available',
               title: 'Mirror',
               description: 'Mirror solids across a plane or edge.',
@@ -1401,26 +1406,22 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
+          command: TOOLBAR_COMMAND_IDS.sketching.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Cancel',
             }),
-          disableHotkey: (state) =>
-            !(
-              state.matches({ Sketch: 'SketchIdle' }) ||
-              state.matches('Sketch no face')
-            ),
           icon: 'arrowShortLeft',
           status: 'available',
           title: 'Exit Sketch',
           showTitle: true,
-          hotkey: 'Meta+Esc',
           description: 'Exit the current sketch.',
           links: [],
         },
         'break',
         {
           id: 'line',
+          command: TOOLBAR_COMMAND_IDS.sketching.line,
           onClick: ({ modelingState, modelingSend }) => {
             modelingSend({
               type: 'change tool',
@@ -1435,8 +1436,6 @@ export function buildToolbarConfig(
           status: 'available',
           disabled: (state) => state.matches('Sketch no face'),
           title: 'Line',
-          hotkey: (state) =>
-            state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
           description: 'Start drawing straight lines.',
           links: [],
           isActive: (state) => state.matches({ Sketch: 'Line tool' }),
@@ -1446,6 +1445,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'three-point-arc',
+              command: TOOLBAR_COMMAND_IDS.sketching.threePointArc,
               onClick: ({ modelingState, modelingSend }) =>
                 modelingSend({
                   type: 'change tool',
@@ -1460,10 +1460,6 @@ export function buildToolbarConfig(
               icon: 'arc',
               status: 'available',
               title: 'Three-Point Arc',
-              hotkey: (state) =>
-                state.matches({ Sketch: 'Arc three point tool' })
-                  ? ['Esc', 'T']
-                  : 'T',
               showTitle: false,
               description: 'Draw a circular arc defined by three points.',
               links: [
@@ -1477,6 +1473,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'tangential-arc',
+              command: TOOLBAR_COMMAND_IDS.sketching.tangentialArc,
               onClick: ({ modelingState, modelingSend }) =>
                 modelingSend({
                   type: 'change tool',
@@ -1515,10 +1512,6 @@ export function buildToolbarConfig(
                   : undefined
               },
               title: 'Tangential Arc',
-              hotkey: (state) =>
-                state.matches({ Sketch: 'Tangential arc to' })
-                  ? ['Esc', 'A']
-                  : 'A',
               description:
                 'Start drawing an arc tangent to the current segment.',
               links: [],
@@ -1533,6 +1526,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'circle-center',
+              command: TOOLBAR_COMMAND_IDS.sketching.circleCenter,
               onClick: ({ modelingState, modelingSend }) =>
                 modelingSend({
                   type: 'change tool',
@@ -1547,14 +1541,13 @@ export function buildToolbarConfig(
               title: 'Center Circle',
               disabled: (state) => state.matches('Sketch no face'),
               isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
-              hotkey: (state) =>
-                state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
               showTitle: false,
               description: 'Start drawing a circle from its center.',
               links: [],
             },
             {
               id: 'circle-three-points',
+              command: TOOLBAR_COMMAND_IDS.sketching.circleThreePoints,
               onClick: ({ modelingState, modelingSend }) =>
                 modelingSend({
                   type: 'change tool',
@@ -1571,10 +1564,6 @@ export function buildToolbarConfig(
               title: '3-Point Circle',
               isActive: (state) =>
                 state.matches({ Sketch: 'Circle three point tool' }),
-              hotkey: (state) =>
-                state.matches({ Sketch: 'Circle three point tool' })
-                  ? ['Alt+C', 'Esc']
-                  : 'Alt+C',
               showTitle: false,
               description: 'Draw a circle defined by three points.',
               links: [],
@@ -1586,6 +1575,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'corner-rectangle',
+              command: TOOLBAR_COMMAND_IDS.sketching.cornerRectangle,
               onClick: ({ modelingState, modelingSend }) =>
                 modelingSend({
                   type: 'change tool',
@@ -1599,16 +1589,13 @@ export function buildToolbarConfig(
               status: 'available',
               disabled: (state) => state.matches('Sketch no face'),
               title: 'Corner Rectangle',
-              hotkey: (state) =>
-                state.matches({ Sketch: 'Rectangle tool' })
-                  ? ['Esc', 'R']
-                  : 'R',
               description: 'Start drawing a rectangle.',
               links: [],
               isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
             },
             {
               id: 'center-rectangle',
+              command: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
               onClick: ({ modelingState, modelingSend }) =>
                 modelingSend({
                   type: 'change tool',
@@ -1626,10 +1613,6 @@ export function buildToolbarConfig(
               title: 'Center Rectangle',
               description: 'Start drawing a rectangle from its center.',
               links: [],
-              hotkey: (state) =>
-                state.matches({ Sketch: 'Center Rectangle tool' })
-                  ? ['Alt+R', 'Esc']
-                  : 'Alt+R',
               isActive: (state) =>
                 state.matches({ Sketch: 'Center Rectangle tool' }),
             },
@@ -1962,6 +1945,7 @@ export function buildToolbarConfig(
       items: [
         {
           id: 'sketch-exit',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
           onClick: ({ modelingSend }) =>
             modelingSend({
               type: 'Exit sketch',
@@ -1970,13 +1954,13 @@ export function buildToolbarConfig(
           status: 'available',
           title: 'Exit Sketch',
           showTitle: true,
-          hotkey: 'Meta+Esc',
           description: 'Exit the current sketch.',
           links: [],
         },
         'break',
         {
           id: 'line',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.line,
           onClick: ({ modelingSend, isActive }) =>
             isActive
               ? modelingSend({
@@ -1989,7 +1973,6 @@ export function buildToolbarConfig(
           icon: 'line',
           status: 'available',
           title: 'Line',
-          hotkey: 'L',
           description: 'Start drawing straight lines.',
           links: [],
           isActive: (state) =>
@@ -1998,6 +1981,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'point',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.point,
           onClick: ({ modelingSend, isActive }) =>
             isActive
               ? modelingSend({
@@ -2010,7 +1994,6 @@ export function buildToolbarConfig(
           icon: 'oneDot',
           status: 'available',
           title: 'Point',
-          hotkey: '.',
           description: 'Start drawing straight points.',
           links: [],
           isActive: (state) =>
@@ -2020,6 +2003,7 @@ export function buildToolbarConfig(
         ...(showSplineTool ? [splineToolbarItem] : []),
         {
           id: 'circle-center',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.circleCenter,
           onClick: ({ modelingSend, isActive }) =>
             isActive
               ? modelingSend({
@@ -2032,7 +2016,6 @@ export function buildToolbarConfig(
           icon: 'circle',
           status: 'available',
           title: 'Center Circle',
-          hotkey: 'C',
           description: 'Draw a circle from a center point and radius.',
           links: [],
           isActive: (state) =>
@@ -2044,6 +2027,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'center-arc',
+              command: TOOLBAR_COMMAND_IDS.sketchSolve.centerArc,
               onClick: ({ modelingSend, isActive }) =>
                 isActive
                   ? modelingSend({
@@ -2056,7 +2040,6 @@ export function buildToolbarConfig(
               icon: 'arcCenter',
               status: 'available',
               title: 'Center Arc',
-              hotkey: 'A',
               description: 'Draw an arc by center and two endpoints.',
               links: [],
               isActive: (state) =>
@@ -2065,6 +2048,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'three-point-arc',
+              command: TOOLBAR_COMMAND_IDS.sketchSolve.threePointArc,
               onClick: ({ modelingSend, isActive }) =>
                 isActive
                   ? modelingSend({
@@ -2077,7 +2061,6 @@ export function buildToolbarConfig(
               icon: 'arc',
               status: 'available',
               title: '3-Point Arc',
-              hotkey: 'Alt+A',
               description: 'Draw an arc from start, end, and a third point.',
               links: [],
               isActive: (state) =>
@@ -2086,6 +2069,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'tangential-arc',
+              command: TOOLBAR_COMMAND_IDS.sketchSolve.tangentialArc,
               onClick: ({ modelingSend, isActive }) =>
                 isActive
                   ? modelingSend({
@@ -2098,7 +2082,6 @@ export function buildToolbarConfig(
               icon: 'tangent',
               status: 'available',
               title: 'Tangential Arc',
-              hotkey: 'Shift+A',
               description: 'Draw an arc tangent to an existing line endpoint.',
               links: [],
               isActive: (state) =>
@@ -2109,6 +2092,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'trim',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.trim,
           onClick: ({ modelingSend, isActive }) =>
             isActive
               ? modelingSend({ type: 'unequip tool' })
@@ -2119,7 +2103,6 @@ export function buildToolbarConfig(
           icon: 'trimTool',
           status: 'experimental',
           title: 'Trim',
-          hotkey: 'M',
           description:
             'Draw a trimming line through parts of segments to be removed.',
           links: [],
@@ -2132,6 +2115,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'corner-rectangle',
+              command: TOOLBAR_COMMAND_IDS.sketchSolve.cornerRectangle,
               onClick: ({ modelingSend, isActive }) =>
                 isActive
                   ? modelingSend({
@@ -2144,7 +2128,6 @@ export function buildToolbarConfig(
               icon: 'rectangle',
               status: 'available',
               title: 'Corner Rectangle',
-              hotkey: 'R',
               description: 'Start drawing a rectangle.',
               links: [],
               isActive: (state) =>
@@ -2153,6 +2136,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'center-rectangle',
+              command: TOOLBAR_COMMAND_IDS.sketchSolve.centerRectangle,
               onClick: ({ modelingSend, isActive }) =>
                 isActive
                   ? modelingSend({
@@ -2165,7 +2149,6 @@ export function buildToolbarConfig(
               icon: 'rectangleCenter',
               status: 'available',
               title: 'Center Rectangle',
-              hotkey: 'Shift+R',
               description: 'Start drawing a rectangle from its center.',
               links: [],
               isActive: (state) =>
@@ -2174,6 +2157,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'angled-rectangle',
+              command: TOOLBAR_COMMAND_IDS.sketchSolve.angledRectangle,
               onClick: ({ modelingSend, isActive }) =>
                 isActive
                   ? modelingSend({
@@ -2186,7 +2170,6 @@ export function buildToolbarConfig(
               icon: 'rectangleAngled',
               status: 'available',
               title: 'Angled Rectangle',
-              hotkey: 'Alt+R',
               description: 'Draw a rotated rectangle with three clicks.',
               links: [],
               isActive: (state) =>
@@ -2205,6 +2188,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'Dimension',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
           onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'Dimension',
@@ -2213,7 +2197,6 @@ export function buildToolbarConfig(
           icon: 'dimension',
           status: 'available',
           title: 'Dimension',
-          hotkey: 'D',
           description:
             'Constrain distance between points, length of lines, or radius of arcs.',
           extraInfo: constraintsExtraInfo,
@@ -2222,6 +2205,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'HorizontalDistance',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
           onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'HorizontalDistance',
@@ -2230,7 +2214,6 @@ export function buildToolbarConfig(
           icon: 'horizontalDimension',
           status: 'available',
           title: 'Horizontal Distance',
-          hotkey: 'Alt+D',
           description: 'Constrain horizontal distance between two points.',
           extraInfo: constraintsExtraInfo,
           links: [],
@@ -2238,6 +2221,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'VerticalDistance',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
           onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'VerticalDistance',
@@ -2246,7 +2230,6 @@ export function buildToolbarConfig(
           icon: 'verticalDimension',
           status: 'available',
           title: 'Vertical Distance',
-          hotkey: 'Shift+D',
           description: 'Constrain vertical distance between two points.',
           extraInfo: constraintsExtraInfo,
           links: [],
@@ -2254,6 +2237,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'construction',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.construction,
           onClick: ({ modelingSend, keepSelection }) =>
             modelingSend({
               type: 'construction',
@@ -2262,7 +2246,6 @@ export function buildToolbarConfig(
           icon: 'construction',
           status: 'available',
           title: 'Construction',
-          hotkey: 'Q',
           description: 'Toggle construction geometry on selected segments.',
           links: [],
           isActive: (state) => false,

@@ -17,16 +17,25 @@ import { reportRejection } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { useApp, useSingletons } from '@src/lib/boot'
-import { getDeleteKeys } from '@src/lib/utils'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { selectAllInCurrentSketch } from '@src/lib/selections'
+import { getDeleteKeys } from '@src/lib/utils'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
+import { useSignals } from '@preact/signals-react/runtime'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import {
+  modelingMachineStateToToolbarModeName,
+  toolbarModeNameToKeymapScope,
+} from '@src/lib/toolbar'
+import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
@@ -37,6 +46,11 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { modelingMachineStateToToolbarModeName } from '@src/lib/toolbar'
+import { keymapService } from '@src/registry/contracts/keymap'
+import {
+  projectService,
+  sketchSolveScenePluginsValueSpec,
+} from '@src/registry/contracts/project'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -179,6 +193,16 @@ export const ModelingMachineProvider = ({
 
   const toolbarConfigurationName =
     modelingMachineStateToToolbarModeName(modelingState)
+  const toolbarModeKeymapScope =
+    toolbarModeNameToKeymapScope[toolbarConfigurationName]
+  const keymap = registry.get(keymapService)
+
+  useEffect(() => {
+    keymap.applyScope(toolbarModeKeymapScope)
+    return () => {
+      keymap.removeScope(toolbarModeKeymapScope)
+    }
+  }, [keymap, toolbarModeKeymapScope])
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
@@ -420,55 +444,6 @@ export const ModelingMachineProvider = ({
     {
       enableOnContentEditable: false,
     }
-  )
-
-  const commandBarState = commands.useState()
-
-  // Global Esc handler for sketch solve mode when command bar is closed
-  useHotkeys(
-    'esc',
-    () => {
-      // Only handle Esc if we're in sketch solve mode and command bar is closed
-      if (
-        modelingState.matches('sketchSolveMode') &&
-        commandBarState.matches('Closed')
-      ) {
-        modelingSend({ type: 'Cancel' })
-      }
-    },
-    {
-      enableOnFormTags: false,
-      enableOnContentEditable: false,
-    },
-    [modelingState, commandBarState, modelingSend]
-  )
-
-  useHotkeys(
-    'meta+esc',
-    (event) => {
-      if (!commandBarState.matches('Closed')) return
-
-      if (
-        modelingState.matches({ Sketch: 'SketchIdle' }) ||
-        modelingState.matches('Sketch no face')
-      ) {
-        event.preventDefault()
-        event.stopImmediatePropagation()
-        modelingSend({ type: 'Cancel' })
-        return
-      }
-
-      if (modelingState.matches('sketchSolveMode')) {
-        event.preventDefault()
-        event.stopImmediatePropagation()
-        modelingSend({ type: 'Exit sketch' })
-      }
-    },
-    {
-      enableOnFormTags: false,
-      enableOnContentEditable: false,
-    },
-    [modelingState, commandBarState, modelingSend]
   )
 
   useModelingMachineCommands({

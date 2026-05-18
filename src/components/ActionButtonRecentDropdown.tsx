@@ -1,11 +1,13 @@
+import { Popover } from '@headlessui/react'
 import type { MouseEvent, ReactNode } from 'react'
 import { useRef } from 'react'
-import { Popover } from '@headlessui/react'
 
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { Platform } from '@src/lib/utils'
 
 type RecentDropdownMenuItem = {
   id: string
@@ -24,6 +26,7 @@ type ActionButtonRecentDropdownProps = {
   dropdownTooltipText?: string
   menuItems: RecentDropdownMenuItem[]
   name?: string
+  platform: Platform
 }
 
 export function ActionButtonRecentDropdown({
@@ -32,6 +35,7 @@ export function ActionButtonRecentDropdown({
   dropdownTooltipText = 'More tools',
   menuItems,
   name,
+  platform,
 }: ActionButtonRecentDropdownProps) {
   const baseClassNames =
     'action-button p-0 m-0 group mono text-xs leading-none flex items-stretch rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 relative'
@@ -124,7 +128,10 @@ export function ActionButtonRecentDropdown({
                       </div>
                     ) : item.hotkey ? (
                       <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-                        {filterEscHotkey(item.hotkey)}
+                        {hotkeyDisplay(
+                          filterEscHotkey(item.hotkey)[0],
+                          platform
+                        )}
                       </kbd>
                     ) : null}
                     {item.status === 'experimental' ? (

@@ -4,13 +4,18 @@ import {
   defineRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { commandSystemService } from '@src/registry/contracts/commands'
+import { isDesktop } from '@src/lib/isDesktop'
+import {
+  type CommandSystemService,
+  commandSystemService,
+} from '@src/registry/contracts/commands'
 import {
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import { describe, expect, it, vi } from 'vitest'
 import keymapExtension from '.'
 
@@ -26,6 +31,23 @@ describe('keymap extension', () => {
     ).toBe('Base')
 
     registry[Symbol.dispose]()
+  })
+
+  it('uses a browser-safe Exit Sketch keybinding outside the desktop app', () => {
+    const expectedExitSketchKeystroke = isDesktop()
+      ? 'mod+escape'
+      : 'shift+escape'
+
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketching.exit'
+      )?.keystrokes
+    ).toEqual([expectedExitSketchKeystroke])
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketch-solve.exit'
+      )?.keystrokes
+    ).toEqual([expectedExitSketchKeystroke])
   })
 
   it('marks a partial match and awaits more input', () => {
@@ -138,7 +160,7 @@ describe('keymap extension', () => {
               },
               send,
               useState: vi.fn(),
-            } as any),
+            } as unknown as CommandSystemService),
           ],
         }),
       ]
