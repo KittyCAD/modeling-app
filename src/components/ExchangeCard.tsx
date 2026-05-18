@@ -100,9 +100,8 @@ export const ResponseCardToolBar = (props: {
   let contentForClipboard: string | undefined = ''
 
   if (isEndOfStream) {
-    contentForClipboard = getEndOfStreamResponse(
-      props.responses
-    )?.end_of_stream.whole_response
+    contentForClipboard = getEndOfStreamResponse(props.responses)?.end_of_stream
+      .whole_response
   }
 
   return (
