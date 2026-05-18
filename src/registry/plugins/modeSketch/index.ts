@@ -1,0 +1,12 @@
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+
+// Modes should be plugins that register everything they need in the design experience.
+const modeSketch = createZdsPlugin({
+  id: 'mode-sketch',
+  title: 'Sketch mode',
+  description: 'Sketch mode design experience extensions.',
+  items: [],
+  defaultSetting: 'core',
+})
+
+export default modeSketch
