@@ -103,7 +103,7 @@ describe('sketch debugger pane extension', () => {
     expect(area?.hide()).toBe(false)
   })
 
-  it('inserts and opens the debugger pane into an existing layout when the debug setting is enabled', async () => {
+  it('inserts the debugger pane into an existing layout when the debug setting is enabled', async () => {
     const registry = new Registry()
     const settings = signal(createSettings(false))
     const layout = signal<Layout>({
@@ -167,10 +167,10 @@ describe('sketch debugger pane extension', () => {
       id: SKETCH_DEBUGGER_PANE_ID,
       areaType: SKETCH_DEBUGGER_AREA_TYPE,
     })
-    expect(rightToolbar(layout.value).activeIndices).toEqual([0, 1])
+    expect(rightToolbar(layout.value).activeIndices).toEqual([0])
   })
 
-  it('opens an existing inactive debugger pane when the debug setting is enabled', async () => {
+  it('reveals an existing inactive debugger pane when the debug setting is enabled', async () => {
     const registry = new Registry()
     const settings = signal(createSettings(false))
     const layout = signal<Layout>({
@@ -227,6 +227,6 @@ describe('sketch debugger pane extension', () => {
     settings.value = createSettings(true)
     await Promise.resolve()
 
-    expect(rightToolbar(layout.value).activeIndices).toEqual([0, 1])
+    expect(rightToolbar(layout.value).activeIndices).toEqual([0])
   })
 })
