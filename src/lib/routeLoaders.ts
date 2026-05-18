@@ -66,12 +66,14 @@ export const baseLoader =
       settings.settings.app.projectDirectory.current,
       DEFAULT_WEB_PROJECT_NAME
     )
-    const fileURLPath =
-      PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
 
     // We have to create and/or navigate to a project on web.
     try {
       await fsZds.stat(requestedProjectName)
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.navigateToProject,
+        data: { requestedProjectName },
+      })
     } catch {
       await projectSkeletonCreate(
         fsZds.resolve(
@@ -83,9 +85,11 @@ export const baseLoader =
           DEFAULT_DEFAULT_LENGTH_UNIT,
         wasmInstance
       )
-    }
 
-    return redirect(fileURLPath + routerSearch)
+      const fileURLPath =
+        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
+      return redirect(fileURLPath + routerSearch)
+    }
   }
 
 export const fileLoader =

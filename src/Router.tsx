@@ -16,7 +16,6 @@ import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { shouldRevalidateFileRoute } from '@src/lib/routeRevalidation'
 import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import { useApp, useSingletons } from '@src/lib/boot'
 import Home from '@src/routes/Home'
@@ -28,6 +27,8 @@ import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
+import { routesValueSpec } from '@src/registry/contracts/routes'
+import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -36,9 +37,11 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  * @returns RouterProvider
  */
 export const Router = () => {
+  useSignals()
   const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
+  const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>
       createRouter([
@@ -50,7 +53,6 @@ export const Router = () => {
           children: [
             {
               path: PATHS.INDEX,
-              element: <></>,
               errorElement: <ErrorPage />,
               loader: baseLoader({ app }),
             },
@@ -58,7 +60,6 @@ export const Router = () => {
               loader: fileLoader({
                 app,
               }),
-              shouldRevalidate: shouldRevalidateFileRoute,
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,
@@ -152,10 +153,11 @@ export const Router = () => {
                   },
                 ]
               : []),
+            ...routesProvidedByRegistry,
           ],
         },
       ]),
-    [app]
+    [app, routesProvidedByRegistry]
   )
 
   return (

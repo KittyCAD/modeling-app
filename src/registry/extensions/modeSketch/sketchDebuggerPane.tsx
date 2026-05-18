@@ -228,7 +228,9 @@ export const sketchDebuggerPaneExtension = defineRegistryItemFactory((ctx) => {
         return
       }
 
-      layoutApi.ensureContribution(sketchDebuggerLayoutContribution)
+      layoutApi.ensureContribution(sketchDebuggerLayoutContribution, {
+        open: true,
+      })
     })
   })
 
