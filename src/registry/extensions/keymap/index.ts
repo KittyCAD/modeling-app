@@ -174,7 +174,11 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     if (
       !chord ||
       (source === 'global' &&
-        shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
+        shouldIgnoreKeyboardEvent(
+          event,
+          pendingKeystrokes.length > 0,
+          activeScopes.value
+        ))
     ) {
       return false
     }
@@ -355,8 +359,31 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     handleKeyDown(event, { source: 'global' })
   }
 
+  const syncEditorFocusScopeFromEventTarget = (target: EventTarget | null) => {
+    if (isEventFromEditableTarget(target)) {
+      serviceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+      serviceImpl.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+      return
+    }
+
+    serviceImpl.removeScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+    serviceImpl.applyScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+  }
+
+  const handleGlobalFocusIn = (event: FocusEvent) => {
+    syncEditorFocusScopeFromEventTarget(event.target)
+  }
+
+  const handleGlobalPointerDown = (event: PointerEvent) => {
+    syncEditorFocusScopeFromEventTarget(event.target)
+  }
+
   if (typeof window !== 'undefined') {
     window.addEventListener('keydown', handleGlobalKeyDown, { capture: true })
+    window.addEventListener('focusin', handleGlobalFocusIn, { capture: true })
+    window.addEventListener('pointerdown', handleGlobalPointerDown, {
+      capture: true,
+    })
   }
 
   return {
@@ -385,6 +412,12 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         clearPendingKeystrokes()
         if (typeof window !== 'undefined') {
           window.removeEventListener('keydown', handleGlobalKeyDown, {
+            capture: true,
+          })
+          window.removeEventListener('focusin', handleGlobalFocusIn, {
+            capture: true,
+          })
+          window.removeEventListener('pointerdown', handleGlobalPointerDown, {
             capture: true,
           })
         }
@@ -460,17 +493,20 @@ function isMacPlatform() {
 
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
-  hasPendingKeystrokes: boolean
+  hasPendingKeystrokes: boolean,
+  scopes: readonly string[]
 ) {
   if (event.metaKey || event.ctrlKey || event.altKey || hasPendingKeystrokes) {
     return false
   }
 
-  return isKeyboardEventFromEditableTarget(event)
+  return (
+    scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
+    isEventFromEditableTarget(event.target)
+  )
 }
 
-function isKeyboardEventFromEditableTarget(event: KeyboardEvent) {
-  const target = event.target
+function isEventFromEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
   }

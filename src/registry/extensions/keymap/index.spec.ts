@@ -210,6 +210,8 @@ describe('keymap extension', () => {
     const keymap = registry.get(keymapService)
     const target = document.createElement('div')
     target.contentEditable = 'true'
+    document.body.append(target)
+    target.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
     const globalEvent = createKeyboardEventWithTarget('Escape', target)
     const codeMirrorEvent = createKeyboardEventWithTarget('Escape', target)
 
@@ -218,6 +220,7 @@ describe('keymap extension', () => {
       keymap.handleKeyDown(codeMirrorEvent, { source: 'codeMirror' })
     ).toBe(true)
 
+    target.remove()
     registry[Symbol.dispose]()
   })
 
@@ -241,6 +244,49 @@ describe('keymap extension', () => {
 
     expect(keymap.handleKeyDown(event, { source: 'codeMirror' })).toBe(false)
 
+    registry[Symbol.dispose]()
+  })
+
+  it('keeps editor focus priority until focus moves outside editable content', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const editableTarget = document.createElement('div')
+    editableTarget.contentEditable = 'true'
+    document.body.append(editableTarget)
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    editableTarget.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', editableTarget), {
+        source: 'global',
+      })
+    ).toBe(false)
+
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', editableTarget), {
+        source: 'global',
+      })
+    ).toBe(true)
+
+    editableTarget.remove()
     registry[Symbol.dispose]()
   })
 
