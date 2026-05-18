@@ -546,6 +546,9 @@ const Toolbar_ = memo(
                               title={itemConfig.title}
                               hotkey={itemConfig.hotkey}
                               platform={platform}
+                              showBareEscHotkey={shouldShowBareEscHotkey(
+                                itemConfig
+                              )}
                             />
                           )}
                         </ToolbarItemTooltip>
@@ -663,6 +666,9 @@ const Toolbar_ = memo(
                             title={selectedIcon.title}
                             hotkey={selectedIcon.hotkey}
                             platform={platform}
+                            showBareEscHotkey={shouldShowBareEscHotkey(
+                              selectedIcon
+                            )}
                           />
                         )}
                       </ToolbarItemTooltip>
@@ -741,6 +747,7 @@ const Toolbar_ = memo(
                       title={itemConfig.title}
                       hotkey={itemConfig.hotkey}
                       platform={platform}
+                      showBareEscHotkey={shouldShowBareEscHotkey(itemConfig)}
                     />
                   )}
                 </ToolbarItemTooltip>
@@ -844,18 +851,28 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   )
 })
 
+function shouldShowBareEscHotkey(
+  itemConfig: Pick<ToolbarItemResolved, 'id' | 'title'>
+) {
+  return itemConfig.id === 'sketch-exit' && itemConfig.title === 'Cancel Sketch'
+}
+
 const ToolbarItemTooltipShortContent = ({
   status,
   title,
   hotkey,
   platform,
+  showBareEscHotkey = false,
 }: {
   status: string
   title: string
   hotkey?: HotkeySequence
   platform: Platform
+  showBareEscHotkey?: boolean
 }) => {
-  const hotkeyLabel = toolbarHotkeyDisplay(hotkey, platform)
+  const hotkeyLabel = toolbarHotkeyDisplay(hotkey, platform, {
+    showBareEsc: showBareEscHotkey,
+  })
 
   return (
     <div
@@ -898,7 +915,9 @@ const ToolbarItemTooltipRichContent = memo(
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
     )
-    const hotkeyLabel = toolbarHotkeyDisplay(itemConfig.hotkey, platform)
+    const hotkeyLabel = toolbarHotkeyDisplay(itemConfig.hotkey, platform, {
+      showBareEsc: shouldShowBareEscHotkey(itemConfig),
+    })
 
     return (
       <>

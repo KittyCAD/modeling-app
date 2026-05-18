@@ -7,7 +7,8 @@ function isBareEscHotkey(chord: string) {
 
 export function toolbarHotkeyDisplay(
   hotkey: HotkeySequence | undefined,
-  platform: Platform
+  platform: Platform,
+  { showBareEsc = false }: { showBareEsc?: boolean } = {}
 ) {
   if (!hotkey) {
     return undefined
@@ -15,6 +16,7 @@ export function toolbarHotkeyDisplay(
 
   const hotkeySequence = isArray(hotkey) ? hotkey : [hotkey]
   if (
+    !showBareEsc &&
     hotkeySequence.length > 0 &&
     hotkeySequence.every((chord) => isBareEscHotkey(chord))
   ) {
