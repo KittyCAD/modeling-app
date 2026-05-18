@@ -8,6 +8,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
   commandSystemService,
   provideCommand,
@@ -66,13 +67,9 @@ describe('commands extension', () => {
     )
   })
 
-  it('runs toolbar commands against the live KclManager when command context is missing', () => {
-    const testWindow = window as unknown as {
-      kclManager: KclManager | undefined
-    }
-    const previousKclManager = testWindow.kclManager
+  it('runs toolbar commands against the KclManager from command input', () => {
     const sentEvents: unknown[] = []
-    testWindow.kclManager = {
+    const kclManager = {
       modelingState: {
         matches: (state: unknown) => state === 'sketchSolveMode',
         context: { sketchSolveToolName: null },
@@ -83,21 +80,17 @@ describe('commands extension', () => {
       },
     } as unknown as KclManager
 
-    try {
-      const command = toolbarCommands.find(
-        (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.line
-      )
+    const command = toolbarCommands.find(
+      (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.line
+    )
 
-      expect(command?.onSubmit({})).toBe(true)
-      expect(sentEvents).toEqual([
-        { type: 'equip tool', data: { tool: 'lineTool' } },
-      ])
-    } finally {
-      if (previousKclManager === undefined) {
-        testWindow.kclManager = undefined
-      } else {
-        testWindow.kclManager = previousKclManager
-      }
-    }
+    expect(
+      command?.onSubmit({
+        context: { kclManager } as CommandBarContext,
+      })
+    ).toBe(true)
+    expect(sentEvents).toEqual([
+      { type: 'equip tool', data: { tool: 'lineTool' } },
+    ])
   })
 })

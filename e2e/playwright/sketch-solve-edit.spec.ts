@@ -1,6 +1,6 @@
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isArray } from '@src/lib/utils'
 
 /**
@@ -805,11 +805,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           addToHistory: unknown
         }> = []
         const updateCodeEditorCalls: string[] = []
+        const { kclManager } = window.app.singletons
 
         const originalSendModelingEvent =
-          window.kclManager.sendModelingEvent.bind(window.kclManager)
-        window.kclManager.sendModelingEvent = ((
-          ...args: Parameters<typeof window.kclManager.sendModelingEvent>
+          kclManager.sendModelingEvent.bind(kclManager)
+        kclManager.sendModelingEvent = ((
+          ...args: Parameters<typeof kclManager.sendModelingEvent>
         ) => {
           const [event] = args
           if (event.type === 'update sketch outcome') {
@@ -822,17 +823,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           }
 
           return originalSendModelingEvent(...args)
-        }) satisfies typeof window.kclManager.sendModelingEvent
+        }) satisfies typeof kclManager.sendModelingEvent
 
         const originalUpdateCodeEditor =
-          window.kclManager.updateCodeEditor.bind(window.kclManager)
-        window.kclManager.updateCodeEditor = ((
-          ...args: Parameters<typeof window.kclManager.updateCodeEditor>
+          kclManager.updateCodeEditor.bind(kclManager)
+        kclManager.updateCodeEditor = ((
+          ...args: Parameters<typeof kclManager.updateCodeEditor>
         ) => {
           const [code] = args
           updateCodeEditorCalls.push(code)
           return originalUpdateCodeEditor(...args)
-        }) satisfies typeof window.kclManager.updateCodeEditor
+        }) satisfies typeof kclManager.updateCodeEditor
 
         Reflect.set(window, 'directEditorOutcomesForTest', directEditorOutcomes)
         Reflect.set(
@@ -920,9 +921,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Delay the next sketch execution and observe editor saves', async () => {
       await page.evaluate(() => {
         const writeToFileCalls: string[] = []
-        const originalWriteToFile = window.kclManager.writeToFile.bind(
-          window.kclManager
-        )
+        const { kclManager } = window.app.singletons
+        const originalWriteToFile = kclManager.writeToFile.bind(kclManager)
         /*
          * This is only a spy on the save path. The test still edits through
          * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
@@ -930,13 +930,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
          * reaches the normal save listener, and that the delayed execution does
          * not add a stale out-of-band save afterward.
          */
-        window.kclManager.writeToFile = (async (
-          ...args: Parameters<typeof window.kclManager.writeToFile>
+        kclManager.writeToFile = (async (
+          ...args: Parameters<typeof kclManager.writeToFile>
         ) => {
-          const [newCode = window.kclManager.code] = args
+          const [newCode = kclManager.code] = args
           writeToFileCalls.push(newCode)
           return originalWriteToFile(...args)
-        }) satisfies typeof window.kclManager.writeToFile
+        }) satisfies typeof kclManager.writeToFile
         Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
 
         const originalHackSetProgram = window.rustContext.hackSetProgram.bind(
