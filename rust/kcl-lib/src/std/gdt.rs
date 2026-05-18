@@ -78,6 +78,7 @@ enum DistanceEntity {
     Face(Box<Face>),
     TaggedFace(Box<TagIdentifier>),
     Edge(EdgeReference),
+    EdgeEndpoint { edge_id: uuid::Uuid, position: f64 },
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -108,6 +109,10 @@ impl DistanceEntity {
                 entity_id: edge.get_engine_id(exec_state, args)?,
                 entity_pos: KPoint2d { x: 0.5, y: 0.0 },
             }),
+            DistanceEntity::EdgeEndpoint { edge_id, position } => Ok(DistanceEndpoint {
+                entity_id: *edge_id,
+                entity_pos: KPoint2d { x: *position, y: 0.0 },
+            }),
         }
     }
 }
@@ -117,6 +122,10 @@ impl<'a> FromKclValue<'a> for DistanceEntity {
         match arg {
             KclValue::Face { value } => Some(Self::Face(value.to_owned())),
             KclValue::Uuid { value, .. } => Some(Self::Edge(EdgeReference::Uuid(*value))),
+            KclValue::EdgeEndpoint { value, .. } => Some(Self::EdgeEndpoint {
+                edge_id: value.edge_id,
+                position: value.position,
+            }),
             KclValue::TagIdentifier(value) => Some(Self::TaggedFace(value.to_owned())),
             _ => None,
         }
@@ -128,6 +137,7 @@ fn distance_entity_type() -> RuntimeType {
         RuntimeType::face(),
         RuntimeType::tagged_face(),
         RuntimeType::edge(),
+        RuntimeType::edge_endpoint(),
     ])
 }
 

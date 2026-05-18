@@ -29,6 +29,12 @@ export type EnginePrimitiveSelection = {
   parentEntityId?: string
   primitiveIndex: number
   primitiveType: EntityType
+  edgeFaceIds?: [string, string]
+  edgeEndpoint?: {
+    edgePrimitiveIndex: number
+    edgeFaceIds?: [string, string]
+    endpoint: 'start' | 'end'
+  }
 }
 
 export interface EngineRegionSelection {
@@ -54,6 +60,16 @@ export interface Selection {
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
   graphSelections: Array<Selection>
+}
+
+export function isEnginePrimitiveSelection(
+  selection: Selections['otherSelections'][number]
+): selection is EnginePrimitiveSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive'
+  )
 }
 
 export type SetSelections =

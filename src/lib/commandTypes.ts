@@ -55,6 +55,7 @@ export type CommandSelectionType =
   | 'primitiveEdge'
   | 'enginePrimitiveFace'
   | 'enginePrimitiveEdge'
+  | 'enginePrimitiveVertex'
   | 'engineRegion'
 export type FileFilter = {
   name: string

@@ -8,6 +8,10 @@ import type { ImportPath } from '@rust/kcl-lib/bindings/ImportPath'
 import type { ImportSelector } from '@rust/kcl-lib/bindings/ImportSelector'
 import type { ItemVisibility } from '@rust/kcl-lib/bindings/ItemVisibility'
 import {
+  formatNumberLiteral,
+  type NumberLiteralFormatter,
+} from '@src/lang/numberFormat'
+import {
   type ArrayExpression,
   type BinaryExpression,
   type CallExpressionKw,
@@ -25,10 +29,8 @@ import {
   type UnaryExpression,
   type VariableDeclaration,
   type VariableDeclarator,
-  formatNumberLiteral,
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Note: This depends on WASM, but it's not async.  Callers are responsible for
@@ -36,7 +38,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
  */
 export function createLiteral(
   value: number | string | boolean,
-  wasmInstance: ModuleType,
+  wasmInstance: NumberLiteralFormatter,
   suffix?: NumericSuffix,
   decimals?: number
 ): Node<Literal> {
@@ -58,7 +60,7 @@ export function createLiteral(
 
 function createRawStr(
   value: number | string | boolean,
-  wasmInstance: ModuleType,
+  wasmInstance: NumberLiteralFormatter,
   suffix?: NumericSuffix,
   decimals?: number
 ): string {

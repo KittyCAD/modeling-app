@@ -702,3 +702,37 @@ export fn edgeId(
   /// Query the edge closest to this point. Uses absolute global coordinates.
   closestTo?: Point3d,
 ): Edge {}
+
+/// Return the start endpoint of an edge.
+/// This is useful for dimension and GD&T annotations that need to anchor to a
+/// specific end of an edge without referring to a BREP vertex index.
+/// ```kcl,legacySketch
+/// cube = startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///
+/// topEdge = edgeId(cube, closestTo = [0, 5, 2])
+/// gdt::distance(from = startOf(topEdge), to = endOf(topEdge), tolerance = 0.1)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn startOf(
+  /// Edge whose start endpoint should be referenced.
+  @edge: Edge,
+): EdgeEndpoint {}
+
+/// Return the end endpoint of an edge.
+/// This is useful for dimension and GD&T annotations that need to anchor to a
+/// specific end of an edge without referring to a BREP vertex index.
+/// ```kcl,legacySketch
+/// cube = startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///
+/// topEdge = edgeId(cube, closestTo = [0, 5, 2])
+/// gdt::distance(from = startOf(topEdge), to = endOf(topEdge), tolerance = 0.1)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn endOf(
+  /// Edge whose end endpoint should be referenced.
+  @edge: Edge,
+): EdgeEndpoint {}

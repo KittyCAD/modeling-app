@@ -2,7 +2,10 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -792,6 +795,178 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::distance(')
       expect(newCode).toContain('from = getCommonEdge(')
       expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a distance annotation between two selected primitive vertices', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      if (!sweep) {
+        throw new Error('Expected a sweep')
+      }
+      const sweepEdges = [...artifactGraph.values()]
+        .flatMap((artifact) =>
+          artifact.type === 'sweepEdge' && artifact.commonSurfaceIds.length >= 2
+            ? [artifact]
+            : []
+        )
+        .slice(0, 2)
+      if (sweepEdges.length !== 2) {
+        throw new Error('Expected two sweep edges')
+      }
+
+      const vertices: EnginePrimitiveSelection[] = [
+        {
+          type: 'enginePrimitive',
+          entityId: '00000000-0000-0000-0000-000000000001',
+          parentEntityId: sweep.id,
+          primitiveIndex: 0,
+          primitiveType: 'vertex',
+          edgeEndpoint: {
+            edgePrimitiveIndex: 0,
+            edgeFaceIds: [
+              sweepEdges[0].commonSurfaceIds[0],
+              sweepEdges[0].commonSurfaceIds[1],
+            ],
+            endpoint: 'start',
+          },
+        },
+        {
+          type: 'enginePrimitive',
+          entityId: '00000000-0000-0000-0000-000000000002',
+          parentEntityId: sweep.id,
+          primitiveIndex: 1,
+          primitiveType: 'vertex',
+          edgeEndpoint: {
+            edgePrimitiveIndex: 1,
+            edgeFaceIds: [
+              sweepEdges[1].commonSurfaceIds[0],
+              sweepEdges[1].commonSurfaceIds[1],
+            ],
+            endpoint: 'end',
+          },
+        },
+      ]
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [],
+          otherSelections: vertices,
+        },
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('getCommonEdge(faces = [')
+      expect(newCode).not.toContain('edgeId(')
+      expect(newCode).not.toContain('vertexId(')
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toContain('from = startOf(edge')
+      expect(newCode).toContain('to = endOf(edge')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should fall back to primitive edge ids for selected primitive vertices when tagged faces cannot be resolved', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      if (!sweep) {
+        throw new Error('Expected a sweep')
+      }
+
+      const vertices: EnginePrimitiveSelection[] = [
+        {
+          type: 'enginePrimitive',
+          entityId: '00000000-0000-0000-0000-000000000001',
+          parentEntityId: sweep.id,
+          primitiveIndex: 0,
+          primitiveType: 'vertex',
+          edgeEndpoint: {
+            edgePrimitiveIndex: 0,
+            edgeFaceIds: [
+              '00000000-0000-0000-0000-000000000101',
+              '00000000-0000-0000-0000-000000000102',
+            ],
+            endpoint: 'start',
+          },
+        },
+        {
+          type: 'enginePrimitive',
+          entityId: '00000000-0000-0000-0000-000000000002',
+          parentEntityId: sweep.id,
+          primitiveIndex: 1,
+          primitiveType: 'vertex',
+          edgeEndpoint: {
+            edgePrimitiveIndex: 1,
+            edgeFaceIds: [
+              '00000000-0000-0000-0000-000000000201',
+              '00000000-0000-0000-0000-000000000202',
+            ],
+            endpoint: 'end',
+          },
+        },
+      ]
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [],
+          otherSelections: vertices,
+        },
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('edgeId(extrude002, index = 0)')
+      expect(newCode).toContain('edgeId(extrude002, index = 1)')
+      expect(newCode).not.toContain('getCommonEdge(faces = [')
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toContain('from = startOf(edge')
+      expect(newCode).toContain('to = endOf(edge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

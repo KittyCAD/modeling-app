@@ -480,10 +480,10 @@ export fn distance(
   /// The acceptable distance tolerance.
   @(includeInSnippet = true)
   tolerance: number(Length),
-  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center.
-  from?: Face | TaggedFace | Edge,
-  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center.
-  to?: Face | TaggedFace | Edge,
+  /// The face, edge, or edge endpoint to measure from. Must be used with `to`. The default position is the entity center.
+  from?: Face | TaggedFace | Edge | EdgeEndpoint,
+  /// The face, edge, or edge endpoint to measure to. Must be used with `from`. The default position is the entity center.
+  to?: Face | TaggedFace | Edge | EdgeEndpoint,
   /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`.
   @(includeInSnippet = true)
   edges?: [Edge; 1+],

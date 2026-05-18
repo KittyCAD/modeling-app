@@ -11,6 +11,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
+use crate::execution::EdgeEndpoint;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
@@ -24,6 +25,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -132,6 +134,28 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             vec![args.source_range],
         ))),
     }
+}
+
+/// Returns the start endpoint of an edge.
+pub async fn start_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    inner_edge_endpoint(0.0, exec_state, args)
+}
+
+/// Returns the end endpoint of an edge.
+pub async fn end_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    inner_edge_endpoint(1.0, exec_state, args)
+}
+
+fn inner_edge_endpoint(position: f64, exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let edge: EdgeReference = args.get_unlabeled_kw_arg("edge", &RuntimeType::edge(), exec_state)?;
+    let edge_id = edge.get_engine_id(exec_state, &args)?;
+
+    Ok(KclValue::EdgeEndpoint {
+        value: EdgeEndpoint { edge_id, position },
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    })
 }
 
 /// Translates edge indices to edge IDs.

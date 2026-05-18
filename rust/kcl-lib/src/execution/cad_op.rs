@@ -172,6 +172,10 @@ pub enum OpKclValue {
     Uuid {
         value: ::uuid::Uuid,
     },
+    EdgeEndpoint {
+        edge_id: ::uuid::Uuid,
+        position: f64,
+    },
     Bool {
         value: bool,
     },
@@ -259,6 +263,10 @@ impl From<&KclValue> for OpKclValue {
     fn from(value: &KclValue) -> Self {
         match value {
             KclValue::Uuid { value, .. } => Self::Uuid { value: *value },
+            KclValue::EdgeEndpoint { value, .. } => Self::EdgeEndpoint {
+                edge_id: value.edge_id,
+                position: value.position,
+            },
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
             KclValue::Number { value, ty, .. } => Self::Number { value: *value, ty: *ty },
             KclValue::String { value, .. } => Self::String { value: value.clone() },

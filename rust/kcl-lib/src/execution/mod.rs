@@ -24,6 +24,7 @@ pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_value::EdgeEndpoint;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclValue;
 use kcmc::ImageFormat;

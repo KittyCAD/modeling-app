@@ -20,6 +20,7 @@ does.
 * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)
 * [`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge)
 * [`Edge`](/docs/kcl-std/types/std-types-Edge)
+* [`EdgeEndpoint`](/docs/kcl-std/types/std-types-EdgeEndpoint)
 * [`Face`](/docs/kcl-std/types/std-types-Face)
 * [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation)
 * [`Helix`](/docs/kcl-std/types/std-types-Helix)

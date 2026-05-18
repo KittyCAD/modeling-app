@@ -51,6 +51,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Edge)
     }
 
+    pub fn edge_endpoint() -> Self {
+        RuntimeType::Primitive(PrimitiveType::EdgeEndpoint)
+    }
+
     pub fn function() -> Self {
         RuntimeType::Primitive(PrimitiveType::Function)
     }
@@ -480,6 +484,7 @@ pub enum PrimitiveType {
     Helix,
     Face,
     Edge,
+    EdgeEndpoint,
     BoundedEdge,
     Axis2d,
     Axis3d,
@@ -505,6 +510,7 @@ impl PrimitiveType {
             PrimitiveType::Helix => "Helices".to_owned(),
             PrimitiveType::Face => "Faces".to_owned(),
             PrimitiveType::Edge => "Edges".to_owned(),
+            PrimitiveType::EdgeEndpoint => "EdgeEndpoints".to_owned(),
             PrimitiveType::BoundedEdge => "BoundedEdges".to_owned(),
             PrimitiveType::Axis2d => "2d axes".to_owned(),
             PrimitiveType::Axis3d => "3d axes".to_owned(),
@@ -549,6 +555,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
             PrimitiveType::Edge => write!(f, "Edge"),
+            PrimitiveType::EdgeEndpoint => write!(f, "EdgeEndpoint"),
             PrimitiveType::BoundedEdge => write!(f, "BoundedEdge"),
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
@@ -1455,6 +1462,10 @@ impl KclValue {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::EdgeEndpoint => match self {
+                KclValue::EdgeEndpoint { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::BoundedEdge => match self {
                 KclValue::BoundedEdge { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1762,6 +1773,7 @@ impl KclValue {
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
+            KclValue::EdgeEndpoint { .. } => Some(RuntimeType::Primitive(PrimitiveType::EdgeEndpoint)),
             KclValue::Segment { .. } => Some(RuntimeType::Primitive(PrimitiveType::Segment)),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),

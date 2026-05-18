@@ -124,6 +124,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-math-tan-0",
     "std-edgeId-0",
     "std-edgeId-1",
+    "std-startOf-0",
+    "std-endOf-0",
     "std-faceId-0",
     "std-offsetPlane-0",
     "std-offsetPlane-1",
