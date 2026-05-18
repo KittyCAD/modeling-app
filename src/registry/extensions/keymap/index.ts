@@ -19,6 +19,7 @@ import {
 } from '@src/registry/contracts/commands'
 import {
   BASE_KEYMAP_SCOPE,
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapArguments,
   type KeymapItem,
@@ -39,41 +40,75 @@ import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
+const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
 
 const defaultKeymapScopes: readonly KeymapScope[] = [
   {
     id: BASE_KEYMAP_SCOPE,
     displayName: 'Base',
+    priority: 0,
+    userEditable: false,
   },
   {
     id: 'cmd-palette-open',
     displayName: 'Command palette open',
+    priority: 2000,
+    userEditable: false,
   },
   {
     id: 'settings-open',
     displayName: 'Settings open',
+    priority: 1900,
+    userEditable: false,
+  },
+  {
+    id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Code editor not focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 10,
+    userEditable: false,
   },
   {
     id: MODE_MODELING_KEYMAP_SCOPE,
     displayName: 'Modeling mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 100,
+    userEditable: false,
   },
   {
     id: MODE_SKETCHING_KEYMAP_SCOPE,
     displayName: 'Sketch mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 200,
+    userEditable: false,
   },
   {
     id: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
     displayName: 'Sketch no face mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 210,
+    userEditable: false,
   },
   {
     id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
     displayName: 'Sketch solve mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 220,
+    userEditable: false,
+  },
+  {
+    id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Code editor focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 1000,
+    userEditable: false,
   },
 ]
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const keymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
+  const keymapScopesSignal = ctx.valueSpecs.signal(keymapScopesValueSpec)
   const activeScopes = signal<readonly string[]>([
     CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   ])
@@ -147,7 +182,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
-      [...pendingKeystrokes, chord]
+      [...pendingKeystrokes, chord],
+      keymapScopesSignal.value
     )
 
     if (match.type === 'prefix') {
@@ -178,7 +214,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const retryMatch = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
-      [chord]
+      [chord],
+      keymapScopesSignal.value
     )
 
     if (retryMatch.type === 'prefix') {

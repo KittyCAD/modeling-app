@@ -10,7 +10,9 @@ import {
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
@@ -215,6 +217,29 @@ describe('keymap extension', () => {
     expect(
       keymap.handleKeyDown(codeMirrorEvent, { source: 'codeMirror' })
     ).toBe(true)
+
+    registry[Symbol.dispose]()
+  })
+
+  it('does not run mode keybindings from CodeMirror while the editor is focused', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const event = new KeyboardEvent('keydown', { key: 'l' })
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    keymap.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+    keymap.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+
+    expect(keymap.handleKeyDown(event, { source: 'codeMirror' })).toBe(false)
 
     registry[Symbol.dispose]()
   })

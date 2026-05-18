@@ -3,6 +3,9 @@ import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapItem,
+  type KeymapScope,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   createKeymapItemsFromContributions,
   createKeymapTree,
@@ -120,48 +123,69 @@ describe('keymap contract', () => {
     })
   })
 
-  it('does not match items while one of their excluded scopes is active', () => {
+  it('uses the highest-priority scope within a group', () => {
     const item = createKeymapItem({
       id: 'mode.line',
       command: 'mode.line',
       keystrokes: ['l'],
-      scopes: ['mode-sketch'],
-      excludedScopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
     })
 
     const tree = createKeymapTree([item])
+    const scopeMetadata = [
+      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 100),
+      createContextScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE, 1000),
+    ]
 
-    expect(matchKeymapKeystrokes(tree, ['mode-sketch'], ['l'])).toEqual({
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCHING_KEYMAP_SCOPE],
+        ['l'],
+        scopeMetadata
+      )
+    ).toEqual({
       type: 'full',
       item,
     })
     expect(
       matchKeymapKeystrokes(
         tree,
-        ['mode-sketch', CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
-        ['l']
+        [MODE_SKETCHING_KEYMAP_SCOPE, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        ['l'],
+        scopeMetadata
       )
     ).toEqual({ type: 'none' })
   })
 
-  it('finds command bindings using active and excluded scopes', () => {
+  it('finds command bindings using effective active scopes', () => {
     const item = createKeymapItem({
       id: 'mode.line',
       command: 'mode.line',
       keystrokes: ['l'],
-      scopes: ['mode-sketch'],
-      excludedScopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
     })
     const tree = createKeymapTree([item])
+    const scopeMetadata = [
+      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 100),
+      createContextScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE, 1000),
+    ]
 
-    expect(findKeymapItemForCommand(tree, 'mode.line', ['mode-sketch'])).toBe(
-      item
-    )
     expect(
-      findKeymapItemForCommand(tree, 'mode.line', [
-        'mode-sketch',
-        CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-      ])
+      findKeymapItemForCommand(
+        tree,
+        'mode.line',
+        [MODE_SKETCHING_KEYMAP_SCOPE],
+        scopeMetadata
+      )
+    ).toBe(item)
+    expect(
+      findKeymapItemForCommand(
+        tree,
+        'mode.line',
+        [MODE_SKETCHING_KEYMAP_SCOPE, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        scopeMetadata
+      )
     ).toBeUndefined()
   })
 
@@ -176,20 +200,29 @@ describe('keymap contract', () => {
       id: 'view.top',
       command: 'view.top',
       keystrokes: ['v', '1'],
-      scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
-      excludedScopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      scopes: [MODE_MODELING_KEYMAP_SCOPE],
     })
 
     const tree = createKeymapTree([viewTop, vertical])
+    const scopeMetadata = [
+      createContextScope(MODE_MODELING_KEYMAP_SCOPE, 100),
+      createContextScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE, 200),
+    ]
 
     expect(
-      matchKeymapKeystrokes(tree, [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE], ['v'])
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_MODELING_KEYMAP_SCOPE],
+        ['v'],
+        scopeMetadata
+      )
     ).toEqual({ type: 'prefix' })
     expect(
       matchKeymapKeystrokes(
         tree,
-        [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['v']
+        [MODE_MODELING_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['v'],
+        scopeMetadata
       )
     ).toEqual({
       type: 'full',
@@ -198,8 +231,9 @@ describe('keymap contract', () => {
     expect(
       matchKeymapKeystrokes(
         tree,
-        [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['v', '1']
+        [MODE_MODELING_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['v', '1'],
+        scopeMetadata
       )
     ).toEqual({ type: 'none' })
   })
@@ -256,5 +290,14 @@ function createKeymapItem(
     source: 'test',
     scopes: [BASE_KEYMAP_SCOPE],
     ...item,
+  }
+}
+
+function createContextScope(id: string, priority: number): KeymapScope {
+  return {
+    id,
+    displayName: id,
+    group: 'context',
+    priority,
   }
 }
