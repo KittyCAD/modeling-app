@@ -1,14 +1,3 @@
-import { describe, it, expect, vi } from 'vitest'
-import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
-import {
-  createOnDragStartCallback,
-  createOnDragCallback,
-  createOnClickCallback,
-  setUpOnDragAndSelectionClickCallbacks,
-  createOnDragEndCallback,
-} from '@src/machines/sketchSolve/tools/moveTool/moveTool'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import type { Themes } from '@src/lib/theme'
 import type {
   ApiConstraint,
   ApiObject,
@@ -16,15 +5,26 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { isArray } from '@src/lib/utils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import type { Themes } from '@src/lib/theme'
+import { isArray } from '@src/lib/utils'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
   updateSelectedIds,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  createOnClickCallback,
+  createOnDragCallback,
+  createOnDragEndCallback,
+  createOnDragStartCallback,
+  setUpOnDragAndSelectionClickCallbacks,
+} from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
+import { describe, expect, it, vi } from 'vitest'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -783,6 +783,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
       variables: {},
       operations: [],
       artifactGraph: { map: {}, itemCount: 0 },
+      sketchSolverTraces: [],
       filenames: {},
       defaultPlanes: null,
     },

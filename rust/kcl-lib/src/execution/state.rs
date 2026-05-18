@@ -32,6 +32,7 @@ use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
 use crate::execution::ProgramLookup;
+use crate::execution::SketchSolverTrace;
 use crate::execution::SketchVarId;
 use crate::execution::UnsolvedSegment;
 use crate::execution::annotations;
@@ -138,6 +139,8 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Debug-only sketch solver invocations produced while executing this module.
+    pub sketch_solver_traces: Vec<SketchSolverTrace>,
 }
 
 #[derive(Debug, Clone)]
@@ -405,6 +408,7 @@ impl ExecState {
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
+            sketch_solver_traces: self.global.root_module_artifacts.sketch_solver_traces,
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -985,6 +989,7 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
+        self.sketch_solver_traces.extend(other.sketch_solver_traces);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them
