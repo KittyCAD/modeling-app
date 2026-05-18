@@ -1,9 +1,10 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -132,6 +133,7 @@ export enum SystemIOMachineEvents {
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
   done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
+  deleteMlEphantConversation = 'delete ml-ephant conversation',
 }
 
 export enum SystemIOMachineActions {
@@ -201,6 +203,13 @@ export type RequestedKCLFile = {
   requestedFileName: string
   requestedCode: string
 }
+
+export type RequestedKCLFileDelete = {
+  requestedFileName: string
+}
+
+export const normalizeKCLFileDeletePath = (filePath: string) =>
+  filePath.replaceAll('\\', '/')
 
 export type RequestedProjectFile = {
   requestedProjectName: string
@@ -287,21 +296,12 @@ export const collectProjectFiles = async (args: {
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
-    const recursivelyPushFilePromises = (files: FileEntry[]) => {
-      // mutates filePromises declared above, so this function definition should stay here
-      // if pulled out, it would need to be refactored.
-      for (const file of files) {
-        if (file.children !== null) {
-          // is directory
-          recursivelyPushFilePromises(file.children)
-          continue
-        }
+    const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
+      const fileNameWithExtension =
+        fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
 
-        const absolutePathToFileNameWithExtension = file.path
-        const fileNameWithExtension =
-          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
-
-        const filePromise = fsZds
+      filePromises.push(
+        fsZds
           .readFile(absolutePathToFileNameWithExtension)
           .then((file): FileMeta => {
             uploadSize += file.byteLength
@@ -330,15 +330,27 @@ export const collectProjectFiles = async (args: {
             console.error('error reading file', e)
             return null
           })
+      )
+    }
 
-        if (filePromise === undefined) {
+    const recursivelyPushFilePromisesFromPath = async (path: string) => {
+      const entries = await fsZds.readdir(path)
+      for (const entry of entries) {
+        const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
+        const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
+
+        if (Boolean(stat.mode & fsZdsConstants.S_IFDIR)) {
+          await recursivelyPushFilePromisesFromPath(
+            absolutePathToFileNameWithExtension
+          )
           continue
         }
 
-        filePromises.push(filePromise)
+        pushFilePromise(absolutePathToFileNameWithExtension)
       }
     }
-    recursivelyPushFilePromises(args.projectContext?.children)
+
+    await recursivelyPushFilePromisesFromPath(basePath)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
     if (uploadSize > MB64) {
@@ -383,6 +395,7 @@ export const prepareMlEphantNewFileRequest = ({
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
+  filesToDelete = [],
 }: MlEphantNewFileRequestProps) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
@@ -403,14 +416,21 @@ export const prepareMlEphantNewFileRequest = ({
     }
   )
 
-  const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
+  // getFilePathRelativeToProject intentionally keeps the leading separator
+  // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
+  // project-relative, matching what the field name promises.
+  const rawRelativePath = getFilePathRelativeToProject(
     fileFocusedOnInEditor?.path || '',
     projectNameCurrentlyOpened
   )
+  const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
+    ? rawRelativePath.slice(fsZds.sep.length)
+    : rawRelativePath
 
   return {
     files: requestedFiles,
+    filesToDelete,
     requestedProjectName: projectNameCurrentlyOpened,
-    requestedFileNameWithExtension: targetFilePathRelativeToProjectDir ?? '',
+    requestedFileNameWithExtension,
   }
 }

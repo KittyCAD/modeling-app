@@ -961,12 +961,18 @@ fn type_check_params_kw(
         }
     }
 
-    result
-        .unlabeled
-        .iter()
-        .map(|(_, arg)| arg)
-        .chain(result.labeled.values())
-        .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
+    let check_consumed_solid_args = fn_def
+        .std_props
+        .as_ref()
+        .is_none_or(|props| props.check_consumed_solid_args);
+    if check_consumed_solid_args {
+        result
+            .unlabeled
+            .iter()
+            .map(|(_, arg)| arg)
+            .chain(result.labeled.values())
+            .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
+    }
 
     Ok(result)
 }
@@ -1195,6 +1201,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,

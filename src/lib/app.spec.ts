@@ -4,6 +4,8 @@ import { App } from '@src/lib/app'
 import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
@@ -119,6 +121,45 @@ describe('project system', () => {
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.telemetry
       ).toBeUndefined()
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('loads the code editor automatically render plugin setting enabled by default', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const codeEditorPlugin = app.registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === 'code-editor')
+      expect(codeEditorPlugin).toBeDefined()
+      expect(
+        app.registry.get(appHeaderItemsValueSpec).map((item) => item.id)
+      ).toEqual(
+        expect.arrayContaining([
+          'command-bar.open',
+          'code-editor.render',
+          'share.open',
+          'publish.open',
+        ])
+      )
+      expect(
+        app.registry.get(executingEditorService).hasEditsSinceLastExecution
+          .value
+      ).toBe(false)
+      expect(app.registry.get(executingEditorService).code.value).toBe('')
+
+      const textEditorSettings = app.settings.get().textEditor as Record<
+        string,
+        { current: unknown; hideOnLevel?: unknown }
+      >
+      expect(textEditorSettings.automaticallyRender.current).toBe(true)
+      expect(textEditorSettings.automaticallyRender.hideOnLevel).toBe('project')
     } finally {
       disposeApp(app)
     }

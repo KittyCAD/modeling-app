@@ -121,6 +121,28 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -3260,23 +3282,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -3463,6 +3469,28 @@ description: Operations executed helium-tank.kcl
           {
             "type": "ProgramBodyItem",
             "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 97
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3665,23 +3693,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 97,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -3924,6 +3936,28 @@ description: Operations executed helium-tank.kcl
           {
             "type": "ProgramBodyItem",
             "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 104
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4232,23 +4266,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 104,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -4467,6 +4485,28 @@ description: Operations executed helium-tank.kcl
           {
             "type": "ProgramBodyItem",
             "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 115
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8215,23 +8255,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 115,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 19
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -8464,6 +8488,28 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 229
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -8590,23 +8636,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 229,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 23
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -8712,6 +8742,28 @@ description: Operations executed helium-tank.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 234
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -8844,23 +8896,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 234,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 27
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -9124,6 +9160,28 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 240
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 34
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -9250,23 +9308,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 240,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 34
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -9566,6 +9608,28 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 245
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 40
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -9692,23 +9756,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 245,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 40
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -9814,6 +9862,28 @@ description: Operations executed helium-tank.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 250
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -9946,23 +10016,7 @@ description: Operations executed helium-tank.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 250,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 44
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

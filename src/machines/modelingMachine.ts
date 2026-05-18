@@ -137,10 +137,20 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addFlatnessGdt,
+  addDatumGdt,
+  addPositionGdt,
+  addAnnotationGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addDistanceGdt,
+  addProfileGdt,
+} from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addHide,
   addRotate,
   addScale,
@@ -164,6 +174,7 @@ import {
   getPlaneFromArtifact,
   isFaceFromLegacySketch,
   getSketchBlockArtifactForPathToNode,
+  getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -205,7 +216,6 @@ import {
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
-import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
@@ -226,6 +236,7 @@ import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
+import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -294,6 +305,42 @@ function findSceneObjectForPlaneSelection(
       sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
       sourceRangesEqual(object.source.ranges[1][0], segmentRange)
   )
+}
+
+function getSelectedSketchBlockArtifact({
+  artifactGraph,
+  selectionRanges,
+}: {
+  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
+  selectionRanges: Selections
+}): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  const selectedArtifact = selectionRanges.graphSelections[0]?.artifact
+  const selectedSketchBlock = getSketchBlockForArtifact(
+    selectedArtifact,
+    artifactGraph
+  )
+  if (typeof selectedSketchBlock?.sketchId === 'number') {
+    return selectedSketchBlock
+  }
+
+  const sketchPathId = isCursorInSketchCommandRange(
+    artifactGraph,
+    selectionRanges
+  )
+  if (!sketchPathId) {
+    return undefined
+  }
+
+  const sketchPathArtifact = artifactGraph.get(sketchPathId)
+  const sketchBlockFromCursor = getSketchBlockForArtifact(
+    sketchPathArtifact,
+    artifactGraph
+  )
+  if (typeof sketchBlockFromCursor?.sketchId !== 'number') {
+    return undefined
+  }
+
+  return sketchBlockFromCursor
 }
 
 async function enterSketchSolveFromSketchBlockArtifact({
@@ -530,6 +577,10 @@ export type ModelingMachineEvent =
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
+      type: 'Mirror 3D'
+      data: ModelingCommandSchema['Mirror 3D']
+    }
+  | {
       type: 'Hide'
       data: {
         objects: Selections
@@ -537,6 +588,18 @@ export type ModelingMachineEvent =
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
+  | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
+  | { type: 'GDT Distance'; data: ModelingCommandSchema['GDT Distance'] }
+  | {
+      type: 'GDT Perpendicularity'
+      data: ModelingCommandSchema['GDT Perpendicularity']
+    }
+  | {
+      type: 'GDT Parallelism'
+      data: ModelingCommandSchema['GDT Parallelism']
+    }
+  | { type: 'GDT Annotation'; data: ModelingCommandSchema['GDT Annotation'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
@@ -669,12 +732,15 @@ export const modelingMachine = setup({
       return context.store.useSketchSolveMode?.current === true
     },
     'Selection is sketchBlock': ({
-      context: { selectionRanges },
+      context: { selectionRanges, kclManager },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      return isSketchBlockSelected(selectionRanges)
+      return !!getSelectedSketchBlockArtifact({
+        artifactGraph: kclManager.artifactGraph,
+        selectionRanges,
+      })
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager, wasmInstance },
@@ -682,6 +748,14 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
+      if (
+        getSelectedSketchBlockArtifact({
+          artifactGraph: kclManager.artifactGraph,
+          selectionRanges,
+        })
+      ) {
+        return false
+      }
       if (artifactIsPlaneWithPaths(selectionRanges)) {
         return true
       } else if (selectionRanges.graphSelections[0]?.artifact) {
@@ -1466,7 +1540,7 @@ export const modelingMachine = setup({
     },
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
-      // (note the orbit controls are always active though)
+      // Orbit controls are always active though.
       context.kclManager.sceneInfra.resetMouseListeners()
     },
     'restore modeling camera controls': ({ context }) => {
@@ -3636,7 +3710,7 @@ export const modelingMachine = setup({
 
         for (const variable of Object.values(kclManager.execState.variables)) {
           // find programMemory that matches path artifact
-          // Note: this is similar to sketchFromKclValueOptional(), could be combined?
+          // This is similar to sketchFromKclValueOptional(), could be combined.
           if (
             variable?.type === 'Sketch' &&
             variable.value.artifactId === mainPath
@@ -5044,6 +5118,44 @@ export const modelingMachine = setup({
         )
       }
     ),
+    mirror3DAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Mirror 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { ast, artifactGraph, variables } = input.kclManager
+        const result = addMirror3D({
+          ...input.data,
+          ast,
+          artifactGraph,
+          variables,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     hideAstMod: fromPromise(
       async ({
         input,
@@ -5098,30 +5210,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once this command isn't experimental anymore
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addFlatnessGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5153,30 +5257,304 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once this command isn't experimental anymore
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addDatumGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtProfileAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Profile'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addProfileGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtPositionAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Position'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addPositionGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtDistanceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Distance'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addDistanceGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtPerpendicularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Perpendicularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addPerpendicularityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtParallelismAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Parallelism'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addParallelismGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtAnnotationAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Annotation'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addAnnotationGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5904,6 +6282,10 @@ export const modelingMachine = setup({
           target: 'Applying clone',
         },
 
+        'Mirror 3D': {
+          target: 'Applying Mirror 3D',
+        },
+
         Hide: {
           target: 'Applying hide',
         },
@@ -5914,6 +6296,30 @@ export const modelingMachine = setup({
 
         'GDT Datum': {
           target: 'Applying GDT Datum',
+        },
+
+        'GDT Position': {
+          target: 'Applying GDT Position',
+        },
+
+        'GDT Profile': {
+          target: 'Applying GDT Profile',
+        },
+
+        'GDT Distance': {
+          target: 'Applying GDT Distance',
+        },
+
+        'GDT Perpendicularity': {
+          target: 'Applying GDT Perpendicularity',
+        },
+
+        'GDT Parallelism': {
+          target: 'Applying GDT Parallelism',
+        },
+
+        'GDT Annotation': {
+          target: 'Applying GDT Annotation',
         },
 
         'Boolean Subtract': {
@@ -7918,6 +8324,27 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying Mirror 3D': {
+      invoke: {
+        src: 'mirror3DAstMod',
+        id: 'mirror3DAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Mirror 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying hide': {
       invoke: {
         src: 'hideAstMod',
@@ -7965,6 +8392,126 @@ export const modelingMachine = setup({
         id: 'gdtDatumAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Datum') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Profile': {
+      invoke: {
+        src: 'gdtProfileAstMod',
+        id: 'gdtProfileAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Profile') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Position': {
+      invoke: {
+        src: 'gdtPositionAstMod',
+        id: 'gdtPositionAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Position') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Distance': {
+      invoke: {
+        src: 'gdtDistanceAstMod',
+        id: 'gdtDistanceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Distance') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Perpendicularity': {
+      invoke: {
+        src: 'gdtPerpendicularityAstMod',
+        id: 'gdtPerpendicularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Perpendicularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Parallelism': {
+      invoke: {
+        src: 'gdtParallelismAstMod',
+        id: 'gdtParallelismAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Parallelism') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Annotation': {
+      invoke: {
+        src: 'gdtAnnotationAstMod',
+        id: 'gdtAnnotationAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Annotation') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
@@ -8232,12 +8779,13 @@ export const modelingMachine = setup({
             }
           }
           if (event.type === 'Enter sketch') {
-            // Get artifact ID from selection
-            const artifact =
-              context.selectionRanges.graphSelections[0]?.artifact
-            if (artifact?.type === 'sketchBlock' && artifact.id) {
+            const sketchBlockArtifact = getSelectedSketchBlockArtifact({
+              artifactGraph: context.kclManager.artifactGraph,
+              selectionRanges: context.selectionRanges,
+            })
+            if (sketchBlockArtifact?.id) {
               return {
-                artifactId: artifact.id,
+                artifactId: sketchBlockArtifact.id,
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,

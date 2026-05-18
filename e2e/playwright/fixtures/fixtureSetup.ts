@@ -23,9 +23,15 @@ import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
+import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
-import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
+import {
+  getUtils,
+  PLAYWRIGHT_LAYOUT_SETTINGS,
+  settingsToToml,
+  setup,
+} from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { isArray } from '@src/lib/utils'
 
@@ -80,6 +86,7 @@ export interface Fixtures {
   signInPage: SignInPageFixture
   copilot: CopilotFixture
   fs: ReturnType<typeof FsFixture>
+  nativeMenu: NativeMenuFixture
   folderSetupFn: (
     cb: (dir: string) => Promise<void>
   ) => Promise<{ dir: string }>
@@ -315,6 +322,7 @@ export class ElectronZoo {
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
             ...appSettings.app,
@@ -329,6 +337,7 @@ export class ElectronZoo {
       settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
           },
@@ -431,6 +440,9 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   fs: async ({ page }: { page: Page }, use: FnUse) => {
     await use(FsFixture(page))
+  },
+  nativeMenu: async ({ tronApp }: { tronApp?: ElectronZoo }, use: FnUse) => {
+    await use(new NativeMenuFixture(tronApp))
   },
   folderSetupFn: async (
     {

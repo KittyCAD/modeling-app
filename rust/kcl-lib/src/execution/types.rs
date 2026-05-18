@@ -108,6 +108,18 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Solid)
     }
 
+    pub fn gdt() -> Self {
+        RuntimeType::Primitive(PrimitiveType::GdtAnnotation)
+    }
+
+    /// `[GdtAnnotation; 1+]`
+    pub fn gdts() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
     /// `[Helix; 1+]`
     pub fn helices() -> Self {
         RuntimeType::Array(

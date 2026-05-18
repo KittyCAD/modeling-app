@@ -1,6 +1,10 @@
 import type { Page } from '@playwright/test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
-import { lowerRightMasks, settingsToToml } from '@e2e/playwright/test-utils'
+import {
+  lowerRightMasks,
+  PLAYWRIGHT_LAYOUT_SETTINGS,
+  settingsToToml,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { Themes } from '@src/lib/theme'
 
@@ -56,6 +60,7 @@ function runTestForTheme(mode: Themes) {
   }: SnapshotTestContext) => {
     const tomlStr = settingsToToml({
       settings: {
+        ...PLAYWRIGHT_LAYOUT_SETTINGS,
         app: {
           onboarding_status: 'dismissed',
           appearance: {
@@ -89,7 +94,7 @@ function runTestForTheme(mode: Themes) {
 
     await test.step('Create a project', async () => {
       await page.setViewportSize(SCREENSHOT_SIZE)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.openFeatureTreePane()
       await editor.openPane()
@@ -123,7 +128,7 @@ function runTestForTheme(mode: Themes) {
     await test.step('Exit the sketch', async () => {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-exited', mode),

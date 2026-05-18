@@ -13,6 +13,7 @@ import {
   external,
   getBuildConfig,
   getBuildDefine,
+  ignoredWatchPathGlobs,
   pluginHotRestart,
 } from './vite.base.config'
 
@@ -26,13 +27,7 @@ export default defineConfig((env) => {
       open: true,
       port: 3000,
       watch: {
-        ignored: [
-          '**/target/**',
-          '**/dist/**',
-          '**/build/**',
-          '**/test-results/**',
-          '**/playwright-report/**',
-        ],
+        ignored: ignoredWatchPathGlobs,
       },
     },
     test: {

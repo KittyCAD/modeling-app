@@ -18,3 +18,15 @@
 :global(.dark) .button small {
   @apply text-chalkboard-40;
 }
+
+.headerItem {
+  @apply h-7 flex items-center justify-center gap-1.5 px-1.5 py-0 m-0 border border-transparent rounded-sm;
+  @apply bg-transparent text-xs whitespace-nowrap text-chalkboard-90 dark:text-chalkboard-40;
+  @apply hover:text-primary hover:border-primary dark:hover:border-chalkboard-70;
+  @apply disabled:hover:border-transparent disabled:cursor-default disabled:bg-transparent;
+  @apply transition-colors ease-out;
+}
+
+.headerItem p {
+  @apply m-0;
+}

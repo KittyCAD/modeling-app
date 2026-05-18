@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
-import { type MlCopilotMode } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -14,7 +14,6 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_ML_COPILOT_MODE,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
@@ -181,26 +180,12 @@ function createCoreSettings() {
       /**
        * Zookeeper reasoning mode
        */
-      zookeeperMode: new Setting<MlCopilotMode>({
-        defaultValue: DEFAULT_ML_COPILOT_MODE,
-        hideOnLevel: 'user',
-        validate: (v) => v === 'fast' || v === 'thoughtful',
+      zookeeperMode: new Setting<string | undefined>({
+        defaultValue: undefined,
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          v === undefined || (typeof v === 'string' && v.length > 0),
         description: 'The default reasoning mode for Zookeeper.',
-        commandConfig: {
-          inputType: 'options',
-          defaultValueFromContext: (context) =>
-            context.app.zookeeperMode.current,
-          options: (cmdContext, settingsContext) =>
-            (['fast', 'thoughtful'] as const).map((v) => ({
-              name: v === 'fast' ? 'Standard' : capitaliseFC(v),
-              value: v,
-              isCurrent:
-                settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
-                  cmdContext.argumentsToSubmit.level as SettingsLevel,
-                  v
-                ),
-            })),
-        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -314,6 +299,13 @@ function createCoreSettings() {
         defaultValue: {},
         validate: (_v) => true,
         hideOnLevel: 'user',
+      }),
+      showAllFiles: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        description:
+          'Show all project files in the file pane, including dotfiles and configuration files.',
+        validate: (v) => typeof v === 'boolean',
       }),
     },
     /**
@@ -782,6 +774,34 @@ function createCoreSettings() {
         commandConfig: {
           inputType: 'boolean',
         },
+      }),
+    },
+    /**
+     * App-owned layout settings.
+     *
+     * These settings are intentionally hidden from the generic settings UI and
+     * command bar. They persist layout state that should travel through the same
+     * user settings file as plugin and other TypeScript-only settings.
+     */
+    layout: {
+      configs: new Setting<LayoutsWithMetadata>({
+        defaultValue: {},
+        hideOnLevel: 'project',
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          typeof v === 'object' &&
+          v !== null &&
+          !isArray(v) &&
+          Object.values(v).every(
+            (layout) =>
+              typeof layout === 'object' &&
+              layout !== null &&
+              'version' in layout &&
+              typeof layout.version === 'string' &&
+              'layout' in layout &&
+              typeof layout.layout === 'object' &&
+              layout.layout !== null
+          ),
       }),
     },
     /** Settings that affect the behavior of the entire app,

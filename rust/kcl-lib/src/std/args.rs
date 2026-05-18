@@ -981,8 +981,10 @@ impl_from_kcl_for_vec!(Segment);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
+impl_from_kcl_for_vec!(crate::execution::GdtAnnotation);
 impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
 impl_from_kcl_for_vec!(crate::execution::BoundedEdge);
+impl_from_kcl_for_vec!(String);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -1012,6 +1014,15 @@ impl<'a> FromKclValue<'a> for crate::execution::Metadata {
 impl<'a> FromKclValue<'a> for crate::execution::Solid {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_solid().cloned()
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::GdtAnnotation {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::GdtAnnotation { value } = arg else {
+            return None;
+        };
+        Some(value.as_ref().to_owned())
     }
 }
 
@@ -1048,15 +1059,18 @@ impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
             KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
             KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
+            KclValue::GdtAnnotation { value } => Some(Self::GdtAnnotationSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
                 let mut sketches = vec![];
                 let mut helices = vec![];
+                let mut annotations = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
                         KclValue::Sketch { value } => sketches.push((**value).clone()),
                         KclValue::Helix { value } => helices.push((**value).clone()),
+                        KclValue::GdtAnnotation { value } => annotations.push((**value).clone()),
                         _ => return None,
                     }
                 }
@@ -1064,8 +1078,10 @@ impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
                     Some(Self::SolidSet(solids))
                 } else if !sketches.is_empty() {
                     Some(Self::SketchSet(sketches))
-                } else {
+                } else if !helices.is_empty() {
                     Some(Self::HelixSet(helices))
+                } else {
+                    Some(Self::GdtAnnotationSet(annotations))
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
@@ -1147,6 +1163,28 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         case1(arg)
             .or_else(|| case2(arg).map(Self::Edge))
             .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = crate::execution::Plane::from_kcl_val;
+        let case2 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis {
+                direction: Box::new(direction),
+                origin: Box::new(origin),
+            })
+        };
+        let case3 = super::fillet::EdgeReference::from_kcl_val;
+        let case4 = Segment::from_kcl_val;
+        case1(arg)
+            .map(|p| Self::Plane(Box::new(p)))
+            .or_else(|| case2(arg))
+            .or_else(|| case3(arg).map(|e| Self::Edge(Box::new(e))))
+            .or_else(|| case4(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 

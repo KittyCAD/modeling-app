@@ -1,4 +1,3 @@
-import { isDesktop } from '@src/lib/isDesktop'
 import { platform } from '@src/lib/utils'
 
 export type InteractionMapItem = {
@@ -43,12 +42,6 @@ export const interactionMap: Record<
 > = {
   Settings: [
     {
-      name: 'toggle-settings',
-      sequence: isDesktop() ? `${PRIMARY}+,` : `Shift+${PRIMARY}+,`,
-      title: 'Toggle Settings',
-      description: 'Opens the settings dialog. Always available.',
-    },
-    {
       name: 'settings-search',
       sequence: 'Control+.',
       title: 'Settings Search',
@@ -56,14 +49,7 @@ export const interactionMap: Record<
         'Focus the settings search input. Available when settings are open.',
     },
   ],
-  'Command Palette': [
-    {
-      name: 'toggle-command-palette',
-      sequence: `${PRIMARY}+K`,
-      title: 'Toggle Command Palette',
-      description: 'Always available.',
-    },
-  ],
+  'Command Palette': [],
   Panes: [
     {
       name: 'toggle-code-pane',
@@ -151,13 +137,6 @@ export const interactionMap: Record<
       title: 'Center on selection',
       description:
         'Centers the view on the selected geometry, or everything if nothing is selected.',
-    },
-    {
-      name: 'camera-reset-position',
-      sequence: `${PRIMARY}+Alt+X`,
-      title: 'Reset camera position',
-      description:
-        'Reset the camera to its default position and orientation, which is an isometric view.',
     },
   ],
   'Code Editor': [

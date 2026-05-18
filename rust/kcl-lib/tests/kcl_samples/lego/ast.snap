@@ -1281,205 +1281,6 @@ description: Result of parsing lego.kcl
       },
       {
         "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [
-            {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "isGreaterThan",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "1",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              }
-            },
-            {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "error",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "\"lbumps must be greater than 1\"",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "lbumps must be greater than 1"
-              }
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "assert",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "lbumps",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
-        },
-        "moduleId": 0,
-        "preComments": [
-          "// Add assertions to ensure that the number of bumps are greater than 1"
-        ],
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [
-            {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "isGreaterThan",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "1",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              }
-            },
-            {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "error",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "\"wbumps must be greater than 1\"",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "wbumps must be greater than 1"
-              }
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "assert",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "wbumps",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
         "declaration": {
           "commentStart": 0,
           "end": 0,
@@ -8378,7 +8179,7 @@ description: Result of parsing lego.kcl
             }
           }
         ],
-        "18": [
+        "20": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8390,7 +8191,7 @@ description: Result of parsing lego.kcl
             }
           }
         ],
-        "22": [
+        "24": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8402,19 +8203,7 @@ description: Result of parsing lego.kcl
             }
           }
         ],
-        "26": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "32": [
+        "30": [
           {
             "commentStart": 0,
             "end": 0,

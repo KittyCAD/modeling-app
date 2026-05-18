@@ -11,6 +11,7 @@ import {
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
@@ -49,7 +50,12 @@ import type {
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
-import { getAngle, isArray } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
+import {
+  deg2Rad,
+  isParallel as areVectorsParallel,
+  subVec,
+} from '@src/lib/utils2d'
 
 import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
@@ -565,7 +571,7 @@ export function isLinesParallelAndConstrained(
     }
   | Error {
   try {
-    const EPSILON = 0.005
+    const EPSILON = deg2Rad(0.005)
     const primaryPath = getNodePathFromSourceRange(
       ast,
       primaryLine?.codeRef?.range
@@ -618,15 +624,11 @@ export function isLinesParallelAndConstrained(
     )
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
-    const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
-    const secondaryAngle = getAngle(secondarySegment.from, secondarySegment.to)
-    const secondaryAngleAlt = getAngle(
-      secondarySegment.to,
-      secondarySegment.from
+    const isParallel = areVectorsParallel(
+      subVec(primarySegment.to, primarySegment.from),
+      subVec(secondarySegment.to, secondarySegment.from),
+      EPSILON
     )
-    const isParallel =
-      Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
-      Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getArgForEnd(secondaryNode)
@@ -1602,6 +1604,32 @@ export function findOperationArtifact(
   return artifact
 }
 
+export function findOperationForArtifact(input: {
+  artifact: Artifact | undefined
+  operations: Operation[]
+}): Operation | undefined {
+  if (!input.artifact || !('codeRef' in input.artifact)) {
+    return undefined
+  }
+  const { artifact } = input
+
+  return input.operations.find((operation) => {
+    if (!('sourceRange' in operation)) {
+      return false
+    }
+    return (
+      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
+      (operation.type === 'StdLibCall' &&
+        operation.stdlibEntrySourceRange !== undefined &&
+        operation.stdlibEntrySourceRange !== null &&
+        sourceRangeContains(
+          operation.stdlibEntrySourceRange,
+          artifact.codeRef.range
+        ))
+    )
+  })
+}
+
 export function findOperationPlaneArtifact(
   operation: StdLibCallOp,
   artifactGraph: ArtifactGraph
@@ -2100,6 +2128,110 @@ export function getSketchSegmentName(
     )
   ) {
     return directSegmentVarDec.node.declaration.id.name
+  }
+
+  return null
+}
+
+export function getSketchSegmentNameFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  segmentArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  options: { fallbackToFirstSegment?: boolean } = {}
+): string | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput) {
+    return null
+  }
+
+  let selectedSegment: Extract<Artifact, { type: 'segment' }> | null = null
+  if (segmentArtifact.type === 'segment') {
+    selectedSegment = segmentArtifact
+  } else if (segmentArtifact.type === 'sweepEdge') {
+    const segment = getArtifactOfTypes(
+      { key: segmentArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(segment) && segment.type === 'segment') {
+      selectedSegment = segment
+    }
+  } else if (segmentArtifact.type === 'wall') {
+    const segment = getArtifactOfTypes(
+      { key: segmentArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(segment) && segment.type === 'segment') {
+      selectedSegment = segment
+    }
+  }
+
+  if (
+    sweepInput.type === 'MemberExpression' &&
+    sweepInput.property.type === 'Name'
+  ) {
+    return sweepInput.property.name.name
+  }
+
+  if (sweepInput.type !== 'ArrayExpression') {
+    return null
+  }
+
+  if (selectedSegment) {
+    const pathArtifact = getArtifactOfTypes(
+      { key: sourceSurfaceArtifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (!err(pathArtifact) && pathArtifact.type === 'path') {
+      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
+        (segmentId) =>
+          segmentId === selectedSegment.originalSegId ||
+          segmentId === selectedSegment.id
+      )
+
+      if (matchingSegmentIndex !== -1) {
+        const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
+        if (
+          matchingSegmentExpr?.type === 'MemberExpression' &&
+          matchingSegmentExpr.property.type === 'Name'
+        ) {
+          return matchingSegmentExpr.property.name.name
+        }
+      }
+    }
+  }
+
+  if (options.fallbackToFirstSegment === false) {
+    return null
+  }
+
+  const firstSweepSegment = sweepInput.elements.find(
+    (element) =>
+      element.type === 'MemberExpression' && element.property.type === 'Name'
+  )
+  if (
+    firstSweepSegment?.type === 'MemberExpression' &&
+    firstSweepSegment.property.type === 'Name'
+  ) {
+    return firstSweepSegment.property.name.name
   }
 
   return null
