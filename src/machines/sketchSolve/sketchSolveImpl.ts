@@ -69,6 +69,7 @@ import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/center
 import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
 import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as filletTool } from '@src/machines/sketchSolve/tools/filletToolDiagram'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
@@ -210,6 +211,7 @@ export const equipTools = Object.freeze({
   centerRectTool: rectTool,
   cornerRectTool: rectTool,
   dimensionTool,
+  filletTool,
   pointTool,
   lineTool,
   splineTool,

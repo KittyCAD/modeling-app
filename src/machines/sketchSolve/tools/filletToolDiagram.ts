@@ -1,13 +1,9 @@
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
-
 import {
   isSketchSolveErrorOutput,
   toastSketchSolveError,
 } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { ToolInput } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  type ToolContext,
-  type ToolEvents,
   addFirstSegmentListener,
   addRadiusListener,
   addSecondSegmentListener,
@@ -18,10 +14,15 @@ import {
   storeConfirmedGeometry,
   storeCreatedFilletArc,
   storeFirstSegment,
+  storeInitialFirstSegment,
   storeInitialSelection,
   storeSelectedPair,
+  type ToolContext,
+  type ToolEvents,
+  tryResolveInitialFirstSegment,
   tryResolveInitialSelection,
 } from '@src/machines/sketchSolve/tools/filletToolImpl'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 export const toolId = 'Fillet tool'
 
@@ -36,6 +37,8 @@ export const machine = setup({
       'output' in event && isSketchSolveErrorOutput(event.output),
     'has valid initial selection': ({ context }) =>
       tryResolveInitialSelection(context) !== null,
+    'has initial first segment': ({ context }) =>
+      tryResolveInitialFirstSegment(context) !== null,
   },
   actions: {
     'add first segment listener': addFirstSegmentListener,
@@ -46,6 +49,7 @@ export const machine = setup({
     'store confirmed geometry': assign(storeConfirmedGeometry),
     'store created fillet arc': assign(storeCreatedFilletArc),
     'store first segment': assign(storeFirstSegment),
+    'store initial first segment': assign(storeInitialFirstSegment),
     'store initial selection': assign(storeInitialSelection),
     'store selected pair': assign(storeSelectedPair),
     'toast sketch solve error': ({ event }) => {
@@ -81,6 +85,11 @@ export const machine = setup({
           guard: 'has valid initial selection',
           target: 'Creating fillet arc',
           actions: 'store initial selection',
+        },
+        {
+          guard: 'has initial first segment',
+          target: 'ready for second segment',
+          actions: 'store initial first segment',
         },
         {
           target: 'ready for first segment',

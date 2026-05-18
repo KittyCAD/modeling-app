@@ -994,10 +994,7 @@ function sendHoveredSegment({
 export function tryResolveInitialSelection(
   context: ToolContext
 ): FilletSelection | null {
-  const selectedIds =
-    context.initialSelectionIds?.filter(
-      (id): id is number => typeof id === 'number'
-    ) ?? []
+  const selectedIds = getInitialSegmentSelectionIds(context)
   if (selectedIds.length !== 2 || !context.initialObjects) {
     return null
   }
@@ -1006,6 +1003,28 @@ export function tryResolveInitialSelection(
     segmentIds: [selectedIds[0], selectedIds[1]],
     objects: context.initialObjects,
   })
+}
+
+function getInitialSegmentSelectionIds(context: ToolContext) {
+  return (
+    context.initialSelectionIds?.filter(
+      (id): id is number => typeof id === 'number'
+    ) ?? []
+  )
+}
+
+export function tryResolveInitialFirstSegment(
+  context: ToolContext
+): number | null {
+  const selectedIds = getInitialSegmentSelectionIds(context)
+  if (selectedIds.length !== 1 || !context.initialObjects) {
+    return null
+  }
+
+  const selectedObject = context.initialObjects[selectedIds[0]]
+  return isLineSegment(selectedObject) || isArcSegment(selectedObject)
+    ? selectedIds[0]
+    : null
 }
 
 export function addFirstSegmentListener({ self, context }: ToolActionArgs) {
@@ -1275,6 +1294,13 @@ export function storeInitialSelection({
 }: ToolAssignArgs): Partial<ToolContext> {
   const selection = tryResolveInitialSelection(context)
   return selection ? { selection } : {}
+}
+
+export function storeInitialFirstSegment({
+  context,
+}: ToolAssignArgs): Partial<ToolContext> {
+  const firstSegmentId = tryResolveInitialFirstSegment(context)
+  return firstSegmentId === null ? {} : { firstSegmentId }
 }
 
 export function storeFirstSegment({

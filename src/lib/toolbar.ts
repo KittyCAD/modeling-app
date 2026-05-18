@@ -1,6 +1,3 @@
-import { useMemo } from 'react'
-import type { EventFrom, StateFrom } from 'xstate'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
@@ -26,11 +23,13 @@ import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import {
   MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
+import { useMemo } from 'react'
+import type { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName =
   | 'modeling'
@@ -2420,6 +2419,26 @@ export function buildToolbarConfig(
             state.context.sketchSolveToolName === 'trimTool',
         },
         {
+          id: 'sketch-fillet',
+          command: TOOLBAR_COMMAND_IDS.sketchSolve.fillet,
+          onClick: ({ modelingSend, isActive }) =>
+            isActive
+              ? modelingSend({ type: 'unequip tool' })
+              : modelingSend({
+                  type: 'equip tool',
+                  data: { tool: 'filletTool' },
+                }),
+          icon: 'fillet',
+          status: 'available',
+          title: 'Fillet',
+          description:
+            'Round an adjacent pair of sketch segments with a tangent arc.',
+          links: [],
+          isActive: (state) =>
+            state.matches('sketchSolveMode') &&
+            state.context.sketchSolveToolName === 'filletTool',
+        },
+        {
           id: 'rectangles',
           array: [
             {
@@ -2510,7 +2529,7 @@ export function buildToolbarConfig(
             'Constrain distance between points, length of lines, or radius of arcs.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
         {
           id: 'HorizontalDistance',
@@ -2526,7 +2545,7 @@ export function buildToolbarConfig(
           description: 'Constrain horizontal distance between two points.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
         {
           id: 'VerticalDistance',
@@ -2542,7 +2561,7 @@ export function buildToolbarConfig(
           description: 'Constrain vertical distance between two points.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
         {
           id: 'construction',
@@ -2557,7 +2576,7 @@ export function buildToolbarConfig(
           title: 'Construction',
           description: 'Toggle construction geometry on selected segments.',
           links: [],
-          isActive: (state) => false,
+          isActive: (_state) => false,
         },
       ],
     },
@@ -2661,7 +2680,9 @@ function collectItems(
 ) {
   for (const item of items) {
     // Skip 'break' strings
-    if (typeof item === 'string') continue
+    if (typeof item === 'string') {
+      continue
+    }
 
     // dropdowns, eg. rectangles
     if ('array' in item) {
@@ -2683,7 +2704,7 @@ function collectItems(
       const toolNameMatch = isActiveStr.match(
         /sketchSolveToolName\s*===\s*['"]([^'"]+)['"]/
       )
-      if (toolNameMatch && toolNameMatch[1]) {
+      if (toolNameMatch?.[1]) {
         map[toolNameMatch[1]] = item.icon
       }
     }

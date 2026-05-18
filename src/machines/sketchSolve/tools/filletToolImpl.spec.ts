@@ -2,8 +2,6 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { type Mock, describe, expect, it } from 'vitest'
-
 import {
   finalizeFilletActor,
   resolveFilletSelection,
@@ -19,6 +17,7 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { describe, expect, it, type Mock } from 'vitest'
 
 function createConstraintApiObject({
   id,
