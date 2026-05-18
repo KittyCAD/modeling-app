@@ -1,7 +1,10 @@
 import { RadioGroup } from '@headlessui/react'
+import { useEffect, useState } from 'react'
 
 import { SettingsTabButton } from '@src/components/Settings/SettingsTabButton'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
+
+const PLUGINS_FEATURE_FLAG = 'plugins'
 
 interface SettingsTabButtonProps {
   value: string
@@ -14,6 +17,22 @@ export function SettingsTabs({
   onChange,
   showProjectTab,
 }: SettingsTabButtonProps) {
+  const [showPluginsTab, setShowPluginsTab] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void userHasFeature(PLUGINS_FEATURE_FLAG, false).then((enabled) => {
+      if (!cancelled) {
+        setShowPluginsTab(enabled)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <RadioGroup
       value={value}
@@ -45,7 +64,7 @@ export function SettingsTabs({
           />
         )}
       </RadioGroup.Option>
-      {IS_STAGING_OR_DEBUG && (
+      {showPluginsTab && (
         <RadioGroup.Option value="plugins">
           {({ checked }) => (
             <SettingsTabButton
