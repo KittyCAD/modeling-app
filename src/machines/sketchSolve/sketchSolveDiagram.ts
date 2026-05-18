@@ -30,6 +30,7 @@ import {
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   CHILD_TOOL_DONE_EVENT,
+  ORIGIN_TARGET,
   type SketchSolveContext,
   type SketchSolveMachineEvent,
   type SolveActionArgs,
@@ -44,7 +45,6 @@ import {
   getObjectSelectionIds,
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
-  ORIGIN_TARGET,
   refreshSelectionStyling,
   refreshSketchSolveScale,
   sendToActorIfActive,
@@ -53,18 +53,18 @@ import {
   tearDownSketchSolve,
   updateHoveredId,
   updateSelectedCodeHighlight,
-  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
+  updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import {
-  constraintToolNames,
   type ConstraintToolName,
+  constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
@@ -374,6 +374,10 @@ function isConstraintToolName(
   return constraintToolNameSet.has(toolName)
 }
 
+function shouldPreserveSelectionForTool(toolName: string) {
+  return toolName === 'filletTool'
+}
+
 export const sketchSolveMachine = setup({
   types: {
     context: {} as SketchSolveContext,
@@ -406,7 +410,7 @@ export const sketchSolveMachine = setup({
     'send escape to tool': ({ context }) => {
       sendToActorIfActive(context.childTool, { type: 'escape' })
     },
-    'store pending tool': assign(({ event, system }) => {
+    'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
@@ -702,7 +706,8 @@ export const sketchSolveMachine = setup({
                 )
                 sendToolbarConstraintOutcome(self, result, keepSelection)
                 return
-              } else if (isLineSegment(firstObject)) {
+              }
+              if (isLineSegment(firstObject)) {
                 // Calculate distance for line segment from its endpoints
                 const startPoint =
                   context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
@@ -1047,6 +1052,14 @@ export const sketchSolveMachine = setup({
             actions: 'store pending tool',
           },
           {
+            guard: ({ event }) => {
+              assertEvent(event, 'equip tool')
+              return shouldPreserveSelectionForTool(event.data.tool)
+            },
+            target: 'using tool',
+            actions: 'store pending tool',
+          },
+          {
             target: 'using tool',
             actions: [
               'clear selection',
@@ -1156,7 +1169,7 @@ export const sketchSolveMachine = setup({
             ({ event }) => {
               toastSketchSolveError(event, 'Failed to exit sketch cleanly')
             },
-            ({ event, context, self }) => {
+            ({ self }) => {
               // Clear draft entities even on error to allow exit to continue
               sendToActorIfActive(self, { type: 'clear draft entities' })
             },
