@@ -156,21 +156,6 @@ const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
 
-const showDisabledInEditDialog = isEditingNode
-
-const showEnabledInEditDialog = (context: {
-  argumentsToSubmit: Record<string, unknown>
-}) => (isEditingNode(context) ? 'enabled' : false)
-
-const showDisabledInEditDialogWhen =
-  (
-    predicate: (context: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => boolean
-  ) =>
-  (context: { argumentsToSubmit: Record<string, unknown> }) =>
-    isEditingNode(context) && predicate(context)
-
 // For all transforms and boolean commands
 const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
@@ -938,7 +923,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'Profiles',
         dialog: {
           group: 'selection',
-          overrideHidden: showDisabledInEditDialog,
           selectionHeading: 'Profiles',
           selectionEmptyLabel: 'Select profiles or faces',
           selectionHint: 'Pick sketch regions, sketch segments, or faces.',
@@ -1113,9 +1097,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       path: {
@@ -1125,9 +1106,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: true,
         multiple: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       sectional: {
@@ -1200,9 +1178,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       vDegree: {
@@ -1276,9 +1251,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       axisOrEdge: {
@@ -1290,9 +1262,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       axis: {
@@ -1304,11 +1273,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
-        dialog: {
-          overrideHidden: showDisabledInEditDialogWhen((context) =>
-            ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string)
-          ),
-        },
         hidden: (context) =>
           isEditingNode(context) ||
           !['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
@@ -1320,11 +1284,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
-        dialog: {
-          overrideHidden: showDisabledInEditDialogWhen((context) =>
-            ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string)
-          ),
-        },
         hidden: (context) =>
           isEditingNode(context) ||
           !['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
@@ -1401,9 +1360,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       thickness: {
@@ -1454,9 +1410,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       cutAt: {
@@ -1614,9 +1567,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       tools: {
@@ -1626,9 +1576,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
     },
@@ -1667,9 +1614,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
     },
@@ -1708,9 +1652,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
     },
@@ -1754,9 +1695,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       tools: {
@@ -1766,9 +1704,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: false,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       merge: {
@@ -1830,9 +1765,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: false,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       offset: {
@@ -1885,9 +1817,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Edge', isCurrent: false, value: 'Edge' },
           { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
         ],
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       axis: {
@@ -1910,11 +1839,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.mode as string),
-        dialog: {
-          overrideHidden: showDisabledInEditDialogWhen((context) =>
-            ['Edge'].includes(context.argumentsToSubmit.mode as string)
-          ),
-        },
         hidden: (context) =>
           isEditingNode(context) ||
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
@@ -1926,11 +1850,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: (context) =>
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
-        dialog: {
-          overrideHidden: showDisabledInEditDialogWhen((context) =>
-            ['Cylinder'].includes(context.argumentsToSubmit.mode as string)
-          ),
-        },
         hidden: (context) =>
           isEditingNode(context) ||
           !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
@@ -2233,9 +2152,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         displayName: 'Selection',
         inputType: 'selection',
-        dialog: {
-          overrideHidden: showEnabledInEditDialog,
-        },
         selectionTypes: [
           'segment',
           'sweepEdge',
@@ -2295,9 +2211,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         displayName: 'Selection',
         inputType: 'selection',
-        dialog: {
-          overrideHidden: showEnabledInEditDialog,
-        },
         selectionTypes: [
           'segment',
           'sweepEdge',
@@ -2462,9 +2375,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionFilter: ['object'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       color: {
@@ -2527,9 +2437,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       x: {
@@ -2595,9 +2502,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       roll: {
@@ -2663,9 +2567,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       x: {
@@ -2737,9 +2638,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: false, // only one object can be cloned at this time
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       variableName: {
@@ -2868,9 +2766,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       instances: {
@@ -2952,9 +2847,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       instances: {
@@ -3026,9 +2918,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       tolerance: {
@@ -3112,9 +3001,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       name: {
@@ -3193,9 +3079,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       datums: {
@@ -3275,9 +3158,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       datums: {
@@ -3361,9 +3241,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       tolerance: {
@@ -3440,9 +3317,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       datums: {
@@ -3522,9 +3396,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       datums: {
@@ -3603,9 +3474,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        dialog: {
-          overrideHidden: showDisabledInEditDialog,
-        },
         hidden: isEditingNode,
       },
       annotation: {

@@ -278,6 +278,8 @@ function evaluateVisibility(
   context: CommandBarContext
 ): { isHidden: boolean; isRequired: boolean; isDisabled: boolean } {
   const machineContext = arg.machineActor?.getSnapshot().context
+  const shouldShowDisabledSelectionInEdit =
+    isSelectionArgument(arg) && Boolean(context.argumentsToSubmit.nodeToEdit)
   const isRawHidden =
     typeof arg.hidden === 'function'
       ? arg.hidden(context, machineContext)
@@ -286,21 +288,11 @@ function evaluateVisibility(
     typeof arg.required === 'function'
       ? arg.required(context, machineContext)
       : !!arg.required
-  const overrideHidden =
-    isRawHidden && typeof arg.dialog?.overrideHidden === 'function'
-      ? arg.dialog.overrideHidden(context, machineContext)
-      : isRawHidden
-        ? arg.dialog?.overrideHidden
-        : undefined
-  const shouldOverrideHidden =
-    overrideHidden === true ||
-    overrideHidden === 'disabled' ||
-    overrideHidden === 'enabled'
 
   return {
-    isHidden: isRawHidden && !shouldOverrideHidden,
+    isHidden: isRawHidden && !shouldShowDisabledSelectionInEdit,
     isRequired,
-    isDisabled: overrideHidden === true || overrideHidden === 'disabled',
+    isDisabled: shouldShowDisabledSelectionInEdit,
   }
 }
 

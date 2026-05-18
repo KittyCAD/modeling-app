@@ -58,22 +58,12 @@ export type CommandDialogGroup = {
 export type CommandDialogLayout = {
   groups: CommandDialogGroup[]
 }
-export type CommandArgumentDialogHiddenOverride<C = unknown> =
-  | boolean
-  | 'disabled'
-  | 'enabled'
-  | ((
-      commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-      machineContext?: C
-    ) => boolean | 'disabled' | 'enabled')
-export type CommandArgumentDialogConfig<C = unknown> = {
+export type CommandArgumentDialogConfig = {
   group?: string
   controlStyle?: 'select' | 'segmented'
   selectionHeading?: string
   selectionEmptyLabel?: string
   selectionHint?: string
-  /** In ModelingDialog, show this argument even when hidden is true. true shows it disabled; 'enabled' shows it editable. */
-  overrideHidden?: CommandArgumentDialogHiddenOverride<C>
 }
 export type CommandSelectionType =
   | Artifact['type']
@@ -187,7 +177,7 @@ export type CommandArgumentConfig<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType) => string
-  dialog?: CommandArgumentDialogConfig<C>
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: 'options'
@@ -378,7 +368,7 @@ export type CommandArgument<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
-  dialog?: CommandArgumentDialogConfig<ContextFrom<T>>
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
