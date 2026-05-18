@@ -1,38 +1,20 @@
 import { RadioGroup } from '@headlessui/react'
-import { useEffect, useState } from 'react'
 
 import { SettingsTabButton } from '@src/components/Settings/SettingsTabButton'
-import { userHasFeature } from '@src/lib/settings/settingsUtils'
-
-const PLUGINS_FEATURE_FLAG = 'plugins'
 
 interface SettingsTabButtonProps {
   value: string
   onChange: (value: string) => void
   showProjectTab: boolean
+  showPluginsTab: boolean
 }
 
 export function SettingsTabs({
   value,
   onChange,
   showProjectTab,
+  showPluginsTab,
 }: SettingsTabButtonProps) {
-  const [showPluginsTab, setShowPluginsTab] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-
-    void userHasFeature(PLUGINS_FEATURE_FLAG, false).then((enabled) => {
-      if (!cancelled) {
-        setShowPluginsTab(enabled)
-      }
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
   return (
     <RadioGroup
       value={value}
