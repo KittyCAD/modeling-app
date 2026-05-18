@@ -1806,6 +1806,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            sketch_solver_traces: Default::default(),
             issues: non_fatal,
             default_planes,
         })

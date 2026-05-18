@@ -40,7 +40,7 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -63,11 +63,16 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import {
+  createProjectRegistryItem,
+  projectRegistrySlot,
+} from '@src/registry/extensions/project'
 import {
   appRegistryServicesSlot,
   coreRegistryItems,
@@ -80,7 +85,6 @@ import type {
   Subscription,
 } from 'xstate'
 import { createActor } from 'xstate'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -398,11 +402,15 @@ export class App implements AppSubsystems {
       } else {
         const legacyLayout = loadLayout(layoutConfigName)
         const fallbackLegacyLayout =
-          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
+          isErr(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
             ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
             : legacyLayout
-        if (!err(fallbackLegacyLayout)) {
+        if (!isErr(fallbackLegacyLayout)) {
           layoutSignal.value = structuredClone(fallbackLegacyLayout)
+        } else if (
+          fallbackLegacyLayout.message !== 'No persisted layout found'
+        ) {
+          err(fallbackLegacyLayout)
         }
       }
 
@@ -457,6 +465,12 @@ export class App implements AppSubsystems {
   async openProject(projectIORef: Project) {
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
+    this.registry.reconfigure(projectRegistrySlot, [
+      createProjectRegistryItem({
+        project: this.project,
+        settingsActor: this.settings.actor,
+      }),
+    ])
 
     // This extension makes it possible to mark FS operations as un/redoable
     effect(() => {
@@ -491,6 +505,7 @@ export class App implements AppSubsystems {
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
     this.project?.close()
+    this.registry.reconfigure(projectRegistrySlot, [])
     this.project = undefined
   }
 
@@ -543,6 +558,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      registry: this.registry,
       keymap: this.registry.get(keymapService),
     })
 

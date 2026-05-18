@@ -1,13 +1,17 @@
+import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type RustContext from '@src/lib/rustContext'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
+
+const emptySketchSolveScenePlugins = signal<SketchSolveScenePlugin[]>([])
 
 export const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
@@ -33,6 +37,7 @@ export const dummyInitSketchGraphDelta = Object.freeze({
     variables: {},
     operations: [],
     artifactGraph: { map: {}, itemCount: 0 },
+    sketchSolverTraces: [],
     filenames: {},
     defaultPlanes: null,
   },
@@ -71,6 +76,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     sketchSolveToolName: null,
     sketchSolveTool: null,
     initialSceneGraphDelta: dummyInitSketchGraphDelta,
+    sketchSolveScenePlugins: emptySketchSolveScenePlugins,
   }
 
 export function generateModelingMachineDefaultContext(systemDeps: {
@@ -113,6 +119,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
     sketchSolveTool: null,
     sketchSolveToolName: null,
     initialSceneGraphDelta: dummyInitSketchGraphDelta,
+    sketchSolveScenePlugins: emptySketchSolveScenePlugins,
     ...systemDeps,
   }
   return context

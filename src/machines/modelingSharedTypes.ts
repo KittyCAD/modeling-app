@@ -13,7 +13,9 @@ import type { Setting } from '@src/lib/settings/initialSettings'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
@@ -237,6 +239,7 @@ export type ModelingMachineInput = {
   commandBarActor: CommandBarActorType
   fileName?: string
   projectRef?: { current: Project | undefined }
+  sketchSolveScenePlugins?: ReadonlySignal<SketchSolveScenePlugin[]>
   store?: Store
 }
 export type ModelingMachineInternalContext = {
@@ -263,6 +266,7 @@ export type ModelingMachineInternalContext = {
   sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchSolveId?: number
   initialSceneGraphDelta: SceneGraphDelta
+  sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null

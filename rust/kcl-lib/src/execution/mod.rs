@@ -265,12 +265,35 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Debug-only sketch solver invocations produced during this execution.
+    pub sketch_solver_traces: Vec<SketchSolverTrace>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchSolverTrace {
+    pub sketch_id: ObjectId,
+    pub source_range: SourceRange,
+    pub required_constraint_count: usize,
+    pub optional_constraint_count: usize,
+    pub initial_guess_count: usize,
+    pub items: Vec<SketchSolverTraceItem>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchSolverTraceItem {
+    pub kind: String,
+    pub label: String,
+    pub detail: String,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors

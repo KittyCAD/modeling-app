@@ -44,6 +44,7 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import { recordSketchSolverDebugOperation } from '@src/machines/sketchSolve/sketchSolverDebugger'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -511,6 +512,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'add segment',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -548,6 +555,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'edit segments',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -587,6 +600,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'delete objects',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -624,6 +643,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'add constraint',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -663,6 +688,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'edit constraint',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -703,6 +734,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'edit constraint label',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -744,6 +781,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'chain segment',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -820,6 +863,12 @@ export default class RustContext {
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'trim',
+        result.scene_graph_delta,
+        checkpointId != null,
+        this.settingsActor
+      )
       return {
         kclSource: result.source_delta,
         sceneGraphDelta: result.scene_graph_delta,
@@ -865,6 +914,32 @@ function normalizeSketchCheckpointId(
   }
 
   return normalized
+}
+
+function recordSketchSolverMutation(
+  label: string,
+  sceneGraphDelta: SceneGraphDelta,
+  committed: boolean,
+  settingsActor: SettingsActorType
+) {
+  if (!isSketchDebuggerPaneEnabled(settingsActor)) {
+    return
+  }
+  recordSketchSolverDebugOperation(
+    label,
+    committed ? 'commit' : 'preview',
+    sceneGraphDelta
+  )
+}
+
+function isSketchDebuggerPaneEnabled(settingsActor: SettingsActorType) {
+  const settings = getSettingsFromActorContext(settingsActor)
+  const debug = settings.debug as
+    | (typeof settings.debug & {
+        showSketchDebuggerPane?: { current?: boolean }
+      })
+    | undefined
+  return debug?.showSketchDebuggerPane?.current === true
 }
 
 type SketchMutationResult = {

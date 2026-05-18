@@ -158,12 +158,25 @@ export type LayoutContribution =
 
 export type LayoutContributionResult = {
   applied: boolean
-  reason?: 'already-present' | 'target-not-found' | 'invalid-target' | 'applied'
+  reason?:
+    | 'already-present'
+    | 'target-not-found'
+    | 'invalid-target'
+    | 'applied'
+    | 'opened'
+}
+
+export type EnsureLayoutContributionOptions = {
+  open?: boolean
 }
 
 export type LayoutService = {
   applyContribution: (
     contribution: LayoutContribution
+  ) => LayoutContributionResult
+  ensureContribution: (
+    contribution: LayoutContribution,
+    options?: EnsureLayoutContributionOptions
   ) => LayoutContributionResult
   applyContributions: (
     contributions: readonly LayoutContribution[]
