@@ -1,4 +1,4 @@
-import type { EntityType, Point2d } from '@kittycad/lib'
+import type { EntityType } from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
@@ -34,8 +34,10 @@ export type EnginePrimitiveSelection = {
 export interface EngineRegionSelection {
   type: 'engineRegion'
   id: string
-  point: Point2d
   sketchId: ArtifactId
+  segmentIds: [ArtifactId, ...ArtifactId[]]
+  intersectionIndex?: number
+  curveClockwise?: boolean
 }
 
 export type NonCodeSelection =

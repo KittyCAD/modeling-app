@@ -60,7 +60,6 @@ export function useEngineConnectionSubscriptions() {
             engineCommandManager,
             kclManager,
             rustContext,
-            wasmInstance,
           })
           // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
           // This is probably rare, but we do go into sketch mode on double click.

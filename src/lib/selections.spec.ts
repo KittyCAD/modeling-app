@@ -1515,8 +1515,8 @@ describe('getSelectionTypeDisplayText', () => {
         {
           type: 'engineRegion',
           id: 'region-1',
-          point: { x: 0, y: 0 },
           sketchId: 'sketch-1',
+          segmentIds: ['segment-1', 'segment-2'],
         } as any,
       ],
     }

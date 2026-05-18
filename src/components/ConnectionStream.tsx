@@ -11,7 +11,7 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
-  getEngineRegionSelectionFromEntity,
+  getSketchIdForEngineRegionEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
 import {
@@ -161,19 +161,16 @@ export const ConnectionStream = (props: {
             // If the selection is an undeclared region, get the corresponding sketch
             if (!artifact) {
               try {
-                const regionSelection =
-                  await getEngineRegionSelectionFromEntity(
-                    entity_id,
-                    kclManager.artifactGraph,
-                    kclManager.ast,
-                    engineCommandManager,
-                    wasmInstance
-                  )
+                const sketchId = await getSketchIdForEngineRegionEntity(
+                  entity_id,
+                  kclManager.artifactGraph,
+                  engineCommandManager
+                )
 
-                if (regionSelection && regionSelection.sketchId) {
+                if (sketchId) {
                   sceneInfra.modelingSend({
                     type: 'Edit sketch solve',
-                    data: { artifactId: regionSelection.sketchId },
+                    data: { artifactId: sketchId },
                   })
                 }
 

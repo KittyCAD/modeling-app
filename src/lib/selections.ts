@@ -4,6 +4,7 @@ import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
   Point2d,
+  SelectedRegion,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -25,7 +26,6 @@ import {
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
-  getSettingsAnnotation,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -61,10 +61,6 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
-} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr } from '@src/lib/trap'
@@ -73,7 +69,6 @@ import {
   isArray,
   isNonNullable,
   isOverlap,
-  mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -93,6 +88,14 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
+let pendingSelectedRegion: SelectedRegion | null = null
+
+function takePendingSelectedRegion(): SelectedRegion | null {
+  const selectedRegion = pendingSelectedRegion
+  pendingSelectedRegion = null
+  return selectedRegion
+}
+
 async function getParentEntityIdForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
@@ -111,47 +114,64 @@ async function getParentEntityIdForEntity(
   return parentIdResponse.data.entity_id
 }
 
-async function getRegionQueryPointForRegion(
-  regionId: string,
+async function getSelectedRegionFromPoint(
+  selectedAtWindow: Point2d,
   engineCommandManager: ConnectionManager
-): Promise<Point2d | null> {
+): Promise<SelectedRegion | null> {
   const response = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
-      type: 'region_get_query_point',
-      region_id: regionId,
+      type: 'select_region_from_point',
+      selected_at_window: selectedAtWindow,
     },
   })
   if (!isModelingResponse(response)) return null
-  const queryPointResponse = response.resp.data.modeling_response
-  if (queryPointResponse.type !== 'region_get_query_point') return null
-  return queryPointResponse.data.query_point
+  const selectedRegionResponse = response.resp.data.modeling_response
+  if (selectedRegionResponse.type !== 'select_region_from_point') return null
+  return selectedRegionResponse.data.region ?? null
 }
 
-export async function getEngineRegionSelectionFromEntity(
-  regionEntityId: string,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  engineCommandManager: ConnectionManager,
-  wasmInstance: ModuleType
-): Promise<EngineRegionSelection | null> {
-  const queryPointMm = await getRegionQueryPointForRegion(
-    regionEntityId,
-    engineCommandManager
-  )
-  if (!queryPointMm) return null
-  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  const lengthUnit =
-    !isErr(settings) && settings.defaultLengthUnit
-      ? settings.defaultLengthUnit
-      : DEFAULT_DEFAULT_LENGTH_UNIT
-  const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+function getSegmentArtifactForRegionSegment(
+  segmentId: ArtifactId,
+  artifactGraph: ArtifactGraph
+) {
+  const segment = artifactGraph.get(segmentId)
+  if (!segment || segment.type !== 'segment') return null
+
+  if (!segment.originalSegId) return segment
+
+  const originalSegment = artifactGraph.get(segment.originalSegId)
+  return originalSegment?.type === 'segment' ? originalSegment : segment
+}
+
+function getSketchIdForSelectedRegion(
+  selectedRegion: SelectedRegion,
+  artifactGraph: ArtifactGraph
+): ArtifactId | null {
+  const segmentIds = [
+    selectedRegion.segment,
+    selectedRegion.intersection_segment,
+  ]
+  for (const segmentId of segmentIds) {
+    const segment = getSegmentArtifactForRegionSegment(segmentId, artifactGraph)
+    if (!segment) continue
+
+    const path = artifactGraph.get(segment.pathId)
+    if (!path || path.type !== 'path') continue
+
+    const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
+    if (sketch) return sketch.id
   }
 
+  return null
+}
+
+export async function getSketchIdForEngineRegionEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<ArtifactId | null> {
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
     engineCommandManager
@@ -162,13 +182,32 @@ export async function getEngineRegionSelectionFromEntity(
   if (!path || path.type !== 'path') return null
 
   const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
-  if (!sketch) return null
+  return sketch?.id ?? null
+}
+
+export function getEngineRegionSelectionFromEntity(
+  regionEntityId: string,
+  selectedRegion: SelectedRegion,
+  artifactGraph: ArtifactGraph
+): EngineRegionSelection | null {
+  const sketchId = getSketchIdForSelectedRegion(selectedRegion, artifactGraph)
+  if (!sketchId) return null
+
+  const segmentIds =
+    selectedRegion.segment === selectedRegion.intersection_segment
+      ? ([selectedRegion.segment] as [ArtifactId])
+      : ([selectedRegion.segment, selectedRegion.intersection_segment] as [
+          ArtifactId,
+          ArtifactId,
+        ])
 
   return {
     type: 'engineRegion',
     id: regionEntityId,
-    point,
-    sketchId: sketch.id,
+    segmentIds,
+    sketchId,
+    intersectionIndex: selectedRegion.intersection_index,
+    curveClockwise: selectedRegion.curve_clockwise,
   }
 }
 
@@ -233,15 +272,14 @@ export async function getEventForSelectWithPoint(
     engineCommandManager,
     kclManager,
     rustContext,
-    wasmInstance,
   }: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     rustContext: RustContext
-    wasmInstance: ModuleType
   }
 ): Promise<ModelingMachineEvent | null> {
-  const { ast, artifactGraph } = kclManager
+  const { artifactGraph } = kclManager
+  const selectedRegion = takePendingSelectedRegion()
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -285,13 +323,13 @@ export async function getEventForSelectWithPoint(
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
     // we first check if it's a region
-    const regionSelection = await getEngineRegionSelectionFromEntity(
-      data.entity_id,
-      artifactGraph,
-      ast,
-      engineCommandManager,
-      wasmInstance
-    )
+    const regionSelection =
+      selectedRegion &&
+      getEngineRegionSelectionFromEntity(
+        data.entity_id,
+        selectedRegion,
+        artifactGraph
+      )
     if (regionSelection) {
       return {
         type: 'Set selection',
@@ -1076,6 +1114,10 @@ export async function sendSelectEventToEngine(
     videoRef,
     systemDeps.engineCommandManager.streamDimensions
   )
+  pendingSelectedRegion = await getSelectedRegionFromPoint(
+    { x, y },
+    systemDeps.engineCommandManager
+  )
   let res = await systemDeps.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
@@ -1086,6 +1128,7 @@ export async function sendSelectEventToEngine(
     cmd_id: uuidv4(),
   })
   if (!res) {
+    pendingSelectedRegion = null
     console.warn('No response')
     return undefined
   }

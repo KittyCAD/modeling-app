@@ -11,6 +11,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createPipeExpression,
   createUnaryExpression,
   createVariableDeclaration,
@@ -20,7 +21,7 @@ import {
   findAllPreviousVariables,
   getBodyIndex,
   getNodeFromPath,
-  getSettingsAnnotation,
+  getSketchSegmentName,
   getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
@@ -36,7 +37,6 @@ import type {
   CallExpressionKw,
   Expr,
   ExpressionStatement,
-  NumericSuffix,
   PathToNode,
   PipeExpression,
   Program,
@@ -45,20 +45,13 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  baseUnitToNumericSuffix,
-  isPathToNodeNumber,
-  parse,
-} from '@src/lang/wasm'
+import { isPathToNodeNumber, parse } from '@src/lang/wasm'
 import type {
   KclCommandValue,
   KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import {
-  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
-  KCL_DEFAULT_CONSTANT_PREFIXES,
-} from '@src/lib/constants'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
@@ -1061,6 +1054,54 @@ export function insertVariableAndOffsetPathToNode(
   }
 }
 
+function getSegmentExprForEngineRegion({
+  segmentId,
+  sketchId,
+  sketchVarName,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  segmentId: string
+  sketchId: string
+  sketchVarName: string
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | Expr {
+  const segmentArtifact = artifactGraph.get(segmentId)
+  if (!segmentArtifact || segmentArtifact.type !== 'segment') {
+    return new Error("Couldn't retrieve region segment artifact")
+  }
+
+  const originalSegmentId = segmentArtifact.originalSegId ?? segmentArtifact.id
+  const originalSegmentArtifact = artifactGraph.get(originalSegmentId)
+  if (!originalSegmentArtifact || originalSegmentArtifact.type !== 'segment') {
+    return new Error("Couldn't retrieve original region segment artifact")
+  }
+
+  const pathArtifact = artifactGraph.get(originalSegmentArtifact.pathId)
+  if (!pathArtifact || pathArtifact.type !== 'path') {
+    return new Error("Couldn't retrieve region segment path artifact")
+  }
+
+  if (pathArtifact.sketchBlockId !== sketchId) {
+    return new Error('Region segment is not part of the selected sketch')
+  }
+
+  const segmentVarName = getSketchSegmentName(
+    modifiedAst,
+    originalSegmentArtifact.id,
+    artifactGraph,
+    wasmInstance
+  )
+  if (!segmentVarName) {
+    return new Error("Couldn't retrieve region segment variable")
+  }
+
+  return createMemberExpression(sketchVarName, segmentVarName)
+}
+
 export function insertRegionVariablesAndOffsetPathToNode({
   engineRegions,
   modifiedAst,
@@ -1075,14 +1116,6 @@ export function insertRegionVariablesAndOffsetPathToNode({
   if (engineRegions.length === 0) {
     return []
   }
-
-  const settings = getSettingsAnnotation(modifiedAst, wasmInstance)
-  if (err(settings)) {
-    return settings
-  }
-  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
-    settings.defaultLengthUnit
-  )
 
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
@@ -1100,22 +1133,41 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error("Couldn't retrieve sketch block variable")
     }
 
-    const { x, y } = regionSelection.point
-    if (!Number.isFinite(x) || !Number.isFinite(y)) {
-      return new Error('Region point coordinates are invalid')
+    const segmentExprs: Expr[] = []
+    for (const segmentId of regionSelection.segmentIds) {
+      const segmentExpr = getSegmentExprForEngineRegion({
+        segmentId,
+        sketchId: regionSelection.sketchId,
+        sketchVarName,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(segmentExpr)) {
+        return segmentExpr
+      }
+      segmentExprs.push(segmentExpr)
     }
 
-    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-    const regionExpr = createCallExpressionStdLibKw('region', null, [
-      createLabeledArg(
-        'point',
-        createArrayExpression([
-          createLiteral(x, wasmInstance, unitSuffix, decimals),
-          createLiteral(y, wasmInstance, unitSuffix, decimals),
-        ])
-      ),
-      createLabeledArg('sketch', createLocalName(sketchVarName)),
-    ])
+    const labeledArgs = [
+      createLabeledArg('segments', createArrayExpression(segmentExprs)),
+    ]
+    if (
+      regionSelection.intersectionIndex !== undefined &&
+      regionSelection.intersectionIndex !== -1
+    ) {
+      labeledArgs.push(
+        createLabeledArg(
+          'intersectionIndex',
+          createLiteral(regionSelection.intersectionIndex, wasmInstance)
+        )
+      )
+    }
+    if (regionSelection.curveClockwise) {
+      labeledArgs.push(createLabeledArg('direction', createLocalName('CW')))
+    }
+
+    const regionExpr = createCallExpressionStdLibKw('region', null, labeledArgs)
 
     const variableName = findUniqueName(modifiedAst, 'region')
     const variableIdentifierAst = createLocalName(variableName)
