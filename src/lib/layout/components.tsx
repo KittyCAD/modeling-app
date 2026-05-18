@@ -112,7 +112,6 @@ interface LayoutRootNodeProps {
   showDebugPanel: SettingsType['debug']['showPanel']['current']
   notifications: boolean[]
   artifactGraph: ArtifactGraph
-  settings: SettingsType
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
@@ -127,7 +126,6 @@ export const LayoutRootNode = memo(
     setLayout,
     showDebugPanel,
     enableContextMenus = false,
-    settings,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
 
@@ -181,7 +179,6 @@ export const LayoutRootNode = memo(
         actionLibrary,
         togglePane,
         showDebugPanel,
-        settings,
       ]
     )
 
@@ -195,7 +192,6 @@ export const LayoutRootNode = memo(
     isEqual(oldProps.layout, newProps.layout) &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
-    isEqual(oldProps.settings, newProps.settings) &&
     isEqual(oldProps.notifications, newProps.notifications) &&
     isEqual(oldProps.artifactGraph, newProps.artifactGraph)
 )

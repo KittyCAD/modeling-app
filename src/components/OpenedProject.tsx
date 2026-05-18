@@ -391,7 +391,6 @@ export function OpenedProject() {
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settingsValues.debug.showPanel.current}
-            settings={settingsValues}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />

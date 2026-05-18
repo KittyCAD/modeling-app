@@ -11,8 +11,7 @@ function getTestLayout(settingsLayout: LayoutWithMetadata | undefined): Layout {
 
 export function TestLayout() {
   const { settings } = useApp()
-  const settingsValues = settings.useSettings()
-  const settingsLayout = settingsValues.layout.configs.current.test
+  const settingsLayout = settings.useSettings().layout.configs.current.test
   const [layout, setLayout] = useState(() =>
     getTestLayout(settings.get().layout.configs.current.test)
   )
@@ -32,7 +31,6 @@ export function TestLayout() {
       areaLibrary={testAreaLibrary}
       enableContextMenus={true}
       showDebugPanel={false}
-      settings={settingsValues}
       notifications={[]}
       artifactGraph={new Map()}
     />
