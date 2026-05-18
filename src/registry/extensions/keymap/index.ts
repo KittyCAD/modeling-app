@@ -18,15 +18,19 @@ import {
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
+  BASE_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapArguments,
   type KeymapItem,
   type KeymapScope,
   type KeymapService,
   type KeymapSource,
-  BASE_KEYMAP_SCOPE,
-  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  keymapService,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   keymapScopesValueSpec,
+  keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
 } from '@src/registry/contracts/keymap'
@@ -49,6 +53,22 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
   {
     id: 'settings-open',
     displayName: 'Settings open',
+  },
+  {
+    id: MODE_MODELING_KEYMAP_SCOPE,
+    displayName: 'Modeling mode',
+  },
+  {
+    id: MODE_SKETCHING_KEYMAP_SCOPE,
+    displayName: 'Sketch mode',
+  },
+  {
+    id: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+    displayName: 'Sketch no face mode',
+  },
+  {
+    id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+    displayName: 'Sketch solve mode',
   },
 ]
 

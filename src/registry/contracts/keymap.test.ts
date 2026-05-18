@@ -3,9 +3,11 @@ import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapItem,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   createKeymapItemsFromContributions,
   createKeymapTree,
   createKeymapTreeFromContributions,
+  findKeymapItemForCommand,
   matchKeymapKeystrokes,
   normalizeKeymapChord,
 } from '@src/registry/contracts/keymap'
@@ -116,6 +118,90 @@ describe('keymap contract', () => {
     expect(matchKeymapKeystrokes(tree, ['settings-open'], ['p'])).toEqual({
       type: 'prefix',
     })
+  })
+
+  it('does not match items while one of their excluded scopes is active', () => {
+    const item = createKeymapItem({
+      id: 'mode.line',
+      command: 'mode.line',
+      keystrokes: ['l'],
+      scopes: ['mode-sketch'],
+      excludedScopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+    })
+
+    const tree = createKeymapTree([item])
+
+    expect(matchKeymapKeystrokes(tree, ['mode-sketch'], ['l'])).toEqual({
+      type: 'full',
+      item,
+    })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        ['mode-sketch', CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        ['l']
+      )
+    ).toEqual({ type: 'none' })
+  })
+
+  it('finds command bindings using active and excluded scopes', () => {
+    const item = createKeymapItem({
+      id: 'mode.line',
+      command: 'mode.line',
+      keystrokes: ['l'],
+      scopes: ['mode-sketch'],
+      excludedScopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+    })
+    const tree = createKeymapTree([item])
+
+    expect(findKeymapItemForCommand(tree, 'mode.line', ['mode-sketch'])).toBe(
+      item
+    )
+    expect(
+      findKeymapItemForCommand(tree, 'mode.line', [
+        'mode-sketch',
+        CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+      ])
+    ).toBeUndefined()
+  })
+
+  it('lets sketch mode single-key bindings beat view command prefixes', () => {
+    const vertical = createKeymapItem({
+      id: 'sketch.vertical',
+      command: 'sketch.vertical',
+      keystrokes: ['v'],
+      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+    })
+    const viewTop = createKeymapItem({
+      id: 'view.top',
+      command: 'view.top',
+      keystrokes: ['v', '1'],
+      scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+      excludedScopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+    })
+
+    const tree = createKeymapTree([viewTop, vertical])
+
+    expect(
+      matchKeymapKeystrokes(tree, [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE], ['v'])
+    ).toEqual({ type: 'prefix' })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['v']
+      )
+    ).toEqual({
+      type: 'full',
+      item: vertical,
+    })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['v', '1']
+      )
+    ).toEqual({ type: 'none' })
   })
 
   it('normalizes JSON-style keymap document contributions into keymap items', () => {

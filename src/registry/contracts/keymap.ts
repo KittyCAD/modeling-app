@@ -9,6 +9,10 @@ import type { ReadonlySignal } from '@preact/signals-core'
 export const BASE_KEYMAP_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE = 'code-editor-not-focused'
+export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
+export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
+export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
+export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
 
 export type KeymapArguments =
   | null
@@ -28,6 +32,7 @@ export type KeymapBinding = {
   keystrokes: readonly string[]
   arguments?: KeymapArguments
   scopes?: readonly string[]
+  excludedScopes?: readonly string[]
   title?: string
 }
 
@@ -203,6 +208,14 @@ export function getKeymapItemScopes(item: KeymapBinding) {
   return nonBaseScopes.length > 0 ? nonBaseScopes : [BASE_KEYMAP_SCOPE]
 }
 
+export function getKeymapItemExcludedScopes(item: KeymapBinding) {
+  return [
+    ...new Set(
+      item.excludedScopes?.map((scope) => scope.trim()).filter(Boolean)
+    ),
+  ]
+}
+
 export function createKeymapTreeFromContributions(
   contributions: readonly KeymapContribution[]
 ): KeymapTree {
@@ -272,7 +285,7 @@ export function matchKeymapKeystrokes(
   let node = tree.root
   for (const chord of normalizedKeystrokes) {
     const child = node.children.get(chord)
-    if (!child || !nodeHasActiveScopes(child, activeScopes)) {
+    if (!child || !nodeHasActiveItems(child, activeScopes)) {
       return { type: 'none' }
     }
     node = child
@@ -283,7 +296,7 @@ export function matchKeymapKeystrokes(
     return { type: 'full', item }
   }
 
-  if (nodeHasActiveScopes(node, activeScopes)) {
+  if (nodeHasActiveItems(node, activeScopes)) {
     return { type: 'prefix' }
   }
 
@@ -294,20 +307,27 @@ function getActiveKeymapScopes(scopes: readonly string[]) {
   return new Set([BASE_KEYMAP_SCOPE, ...scopes])
 }
 
-function nodeHasActiveScopes(
+function nodeHasActiveItems(
   node: KeymapTreeNode,
   activeScopes: ReadonlySet<string>
-) {
-  return [...node.scopes].some((scope) => activeScopes.has(scope))
+): boolean {
+  return (
+    node.items.some((item) => isKeymapItemActive(item, activeScopes)) ||
+    [...node.children.values()].some((child) =>
+      nodeHasActiveItems(child, activeScopes)
+    )
+  )
 }
 
 function getActiveKeymapItem(
   items: readonly KeymapItem[],
   activeScopes: readonly string[]
 ) {
+  const activeScopeSet = getActiveKeymapScopes(activeScopes)
+
   for (const scope of [...activeScopes].toReversed()) {
     const item = items.find((candidate) =>
-      getKeymapItemScopes(candidate).includes(scope)
+      isKeymapItemActiveForScope(candidate, scope, activeScopeSet)
     )
     if (item) {
       return item
@@ -315,7 +335,42 @@ function getActiveKeymapItem(
   }
 
   return items.find((item) =>
-    getKeymapItemScopes(item).includes(BASE_KEYMAP_SCOPE)
+    isKeymapItemActiveForScope(item, BASE_KEYMAP_SCOPE, activeScopeSet)
+  )
+}
+
+export function findKeymapItemForCommand(
+  tree: KeymapTree,
+  command: string,
+  scopes: readonly string[]
+) {
+  const activeScopeSet = getActiveKeymapScopes(scopes)
+  return tree.items.find(
+    (item) =>
+      item.command === command && isKeymapItemActive(item, activeScopeSet)
+  )
+}
+
+function isKeymapItemActive(
+  item: KeymapItem,
+  activeScopes: ReadonlySet<string>
+) {
+  return (
+    !getKeymapItemExcludedScopes(item).some((scope) =>
+      activeScopes.has(scope)
+    ) && getKeymapItemScopes(item).some((scope) => activeScopes.has(scope))
+  )
+}
+
+function isKeymapItemActiveForScope(
+  item: KeymapItem,
+  scope: string,
+  activeScopes: ReadonlySet<string>
+) {
+  return (
+    !getKeymapItemExcludedScopes(item).some((excludedScope) =>
+      activeScopes.has(excludedScope)
+    ) && getKeymapItemScopes(item).includes(scope)
   )
 }
 
