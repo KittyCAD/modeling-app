@@ -5,8 +5,8 @@ import { useRef } from 'react'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
-import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
+import type { HotkeySequence } from '@src/lib/hotkeys'
+import { toolbarHotkeyDisplay } from '@src/lib/toolbarHotkeys'
 import type { Platform } from '@src/lib/utils'
 
 type RecentDropdownMenuItem = {
@@ -71,73 +71,79 @@ export function ActionButtonRecentDropdown({
             </Tooltip>
           </Popover.Button>
           <ToolbarDropdownPanel buttonRef={buttonRef} open={popover.open}>
-            {menuItems.map((item) => (
-              <li className="contents" key={item.id}>
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    item.onClick(event)
-                    if (!event.metaKey && !event.ctrlKey) {
-                      popover.close()
-                    }
-                  }}
-                  className="group/button flex items-center justify-between gap-4 px-3 py-1 font-sans text-xs hover:bg-primary/10 dark:hover:bg-chalkboard-80 border-0 m-0 w-full rounded-none text-left disabled:!bg-transparent dark:disabled:text-chalkboard-60"
-                  tabIndex={-1}
-                  disabled={item.disabled}
-                  data-testid={`dropdown-${item.id}`}
-                  data-onboarding-id={`${item.id}-dropdown-item`}
-                >
-                  <span className="flex min-w-0 flex-1 items-center gap-2">
-                    {item.icon ? (
-                      <CustomIcon
-                        name={item.icon}
-                        className="h-4 w-4 shrink-0 text-chalkboard-100 dark:text-chalkboard-10"
-                        style={
-                          item.iconColor ? { color: item.iconColor } : undefined
-                        }
-                      />
-                    ) : item.status === 'unavailable' ? (
-                      <CustomIcon
-                        name="horizontalDash"
-                        className="h-4 w-4 shrink-0 text-chalkboard-50 dark:text-chalkboard-50"
-                        aria-hidden
-                      />
-                    ) : null}
-                    <span className="capitalize text-left">{item.label}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-2">
-                    {item.status === 'unavailable' ? (
-                      <div className="flex flex-none items-center gap-1">
-                        <span className="text-chalkboard-70 dark:text-chalkboard-40">
-                          In development
-                        </span>
+            {menuItems.map((item) => {
+              const hotkeyLabel = toolbarHotkeyDisplay(item.hotkey, platform)
+
+              return (
+                <li className="contents" key={item.id}>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      item.onClick(event)
+                      if (!event.metaKey && !event.ctrlKey) {
+                        popover.close()
+                      }
+                    }}
+                    className="group/button flex items-center justify-between gap-4 px-3 py-1 font-sans text-xs hover:bg-primary/10 dark:hover:bg-chalkboard-80 border-0 m-0 w-full rounded-none text-left disabled:!bg-transparent dark:disabled:text-chalkboard-60"
+                    tabIndex={-1}
+                    disabled={item.disabled}
+                    data-testid={`dropdown-${item.id}`}
+                    data-onboarding-id={`${item.id}-dropdown-item`}
+                  >
+                    <span className="flex min-w-0 flex-1 items-center gap-2">
+                      {item.icon ? (
                         <CustomIcon
-                          name="lockClosed"
-                          className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
+                          name={item.icon}
+                          className="h-4 w-4 shrink-0 text-chalkboard-100 dark:text-chalkboard-10"
+                          style={
+                            item.iconColor
+                              ? { color: item.iconColor }
+                              : undefined
+                          }
                         />
-                      </div>
-                    ) : item.status === 'kcl-only' ? (
-                      <div className="flex flex-none items-center gap-1">
-                        <span className="text-chalkboard-70 dark:text-chalkboard-40">
-                          KCL code only
-                        </span>
+                      ) : item.status === 'unavailable' ? (
                         <CustomIcon
-                          name="code"
-                          className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
+                          name="horizontalDash"
+                          className="h-4 w-4 shrink-0 text-chalkboard-50 dark:text-chalkboard-50"
+                          aria-hidden
                         />
-                      </div>
-                    ) : item.hotkey ? (
-                      <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-                        {hotkeyDisplay(filterEscHotkey(item.hotkey), platform)}
-                      </kbd>
-                    ) : null}
-                    {item.status === 'experimental' ? (
-                      <CustomIcon name="beaker" className="h-4 w-4" />
-                    ) : null}
-                  </span>
-                </button>
-              </li>
-            ))}
+                      ) : null}
+                      <span className="capitalize text-left">{item.label}</span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      {item.status === 'unavailable' ? (
+                        <div className="flex flex-none items-center gap-1">
+                          <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                            In development
+                          </span>
+                          <CustomIcon
+                            name="lockClosed"
+                            className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
+                          />
+                        </div>
+                      ) : item.status === 'kcl-only' ? (
+                        <div className="flex flex-none items-center gap-1">
+                          <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                            KCL code only
+                          </span>
+                          <CustomIcon
+                            name="code"
+                            className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
+                          />
+                        </div>
+                      ) : hotkeyLabel ? (
+                        <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
+                          {hotkeyLabel}
+                        </kbd>
+                      ) : null}
+                      {item.status === 'experimental' ? (
+                        <CustomIcon name="beaker" className="h-4 w-4" />
+                      ) : null}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ToolbarDropdownPanel>
         </>
       )}

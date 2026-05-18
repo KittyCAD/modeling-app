@@ -1,5 +1,4 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { isArray } from '@src/lib/utils'
 import { useEffect } from 'react'
 import type { Options } from 'react-hotkeys-hook'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -47,19 +46,4 @@ function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
     .replaceAll('ctrl', 'Ctrl')
     .replaceAll('shift', 'Shift')
     .replaceAll('alt', 'Alt')
-}
-
-const ensureHotkeyArray = (
-  hotkey: string | readonly string[]
-): readonly string[] => (isArray(hotkey) ? hotkey : [hotkey])
-
-/**
- * We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
- *
- * @deprecated Prefer displaying shortcuts from registry keymap metadata.
- */
-export function filterEscHotkey(hotkey: string | readonly string[]) {
-  return ensureHotkeyArray(hotkey).filter(
-    (h) => typeof h === 'string' && !['esc', 'escape'].includes(h.toLowerCase())
-  )
 }

@@ -6,8 +6,8 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
-import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
+import type { HotkeySequence } from '@src/lib/hotkeys'
+import { toolbarHotkeyDisplay } from '@src/lib/toolbarHotkeys'
 import type { Platform } from '@src/lib/utils'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
@@ -102,6 +102,8 @@ function ActionButtonDropdownListItem({
   onClick: (event: MouseEvent<HTMLButtonElement>) => void
   platform: Platform
 }) {
+  const hotkeyLabel = toolbarHotkeyDisplay(item.hotkey, platform)
+
   return (
     <li className="contents">
       <button
@@ -150,9 +152,9 @@ function ActionButtonDropdownListItem({
                 className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
               />
             </div>
-          ) : item.hotkey ? (
+          ) : hotkeyLabel ? (
             <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-              {hotkeyDisplay(filterEscHotkey(item.hotkey), platform)}
+              {hotkeyLabel}
             </kbd>
           ) : null}
           {item.status === 'experimental' ? (

@@ -19,7 +19,6 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -42,6 +41,7 @@ import {
   toolbarModeNameToKeymapScope,
   useToolbarConfig,
 } from '@src/lib/toolbar'
+import { toolbarHotkeyDisplay } from '@src/lib/toolbarHotkeys'
 import { reportRejection } from '@src/lib/trap'
 import { type Platform, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -854,30 +854,36 @@ const ToolbarItemTooltipShortContent = ({
   title: string
   hotkey?: HotkeySequence
   platform: Platform
-}) => (
-  <div
-    className={`text-sm flex flex-col ${
-      !['available', 'experimental'].includes(status)
-        ? 'text-chalkboard-70 dark:text-chalkboard-40'
-        : ''
-    }`}
-  >
-    {status === 'experimental' && (
-      <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-        <CustomIcon name="beaker" className="w-4 h-4" />
-        <span>Experimental</span>
-      </div>
-    )}
-    <div className={`flex gap-4 ${status === 'experimental' ? 'pt-1' : 'p-0'}`}>
-      {title}
-      {hotkey && (
-        <kbd className="inline-block ml-2 flex-none hotkey">
-          {hotkeyDisplay(filterEscHotkey(hotkey), platform)}
-        </kbd>
+}) => {
+  const hotkeyLabel = toolbarHotkeyDisplay(hotkey, platform)
+
+  return (
+    <div
+      className={`text-sm flex flex-col ${
+        !['available', 'experimental'].includes(status)
+          ? 'text-chalkboard-70 dark:text-chalkboard-40'
+          : ''
+      }`}
+    >
+      {status === 'experimental' && (
+        <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+          <CustomIcon name="beaker" className="w-4 h-4" />
+          <span>Experimental</span>
+        </div>
       )}
+      <div
+        className={`flex gap-4 ${status === 'experimental' ? 'pt-1' : 'p-0'}`}
+      >
+        {title}
+        {hotkeyLabel && (
+          <kbd className="inline-block ml-2 flex-none hotkey">
+            {hotkeyLabel}
+          </kbd>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const ToolbarItemTooltipRichContent = memo(
   ({
@@ -892,6 +898,8 @@ const ToolbarItemTooltipRichContent = memo(
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
     )
+    const hotkeyLabel = toolbarHotkeyDisplay(itemConfig.hotkey, platform)
+
     return (
       <>
         {itemConfig.status === 'experimental' && (
@@ -917,10 +925,8 @@ const ToolbarItemTooltipRichContent = memo(
           >
             {itemConfig.title}
           </div>
-          {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">
-              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey), platform)}
-            </kbd>
+          {shouldBeEnabled && hotkeyLabel ? (
+            <kbd className="flex-none hotkey">{hotkeyLabel}</kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
