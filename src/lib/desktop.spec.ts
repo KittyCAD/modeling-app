@@ -7,6 +7,7 @@ import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
+  getProjectInfo,
   listProjects,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
@@ -97,9 +98,18 @@ describe('desktop utilities', () => {
     '/test/projects/valid-project': [
       'file1.kcl',
       'file2.stp',
+      'notes.txt',
+      'project.toml',
+      'settings.toml',
+      'boot.txt',
+      'raw-metrics.txt',
+      'environment.txt',
+      '.gitignore',
       'file3.kcl',
+      '.hidden-dir',
       'directory1',
     ],
+    '/test/projects/valid-project/.hidden-dir': ['secret.txt'],
     '/test/projects/valid-project/directory1': [],
     '/test/projects/project-without-kcl-files': ['file3.glb'],
     '/test/projects/another-valid-project': [
@@ -216,6 +226,69 @@ describe('desktop utilities', () => {
       // Restore for future tests!
       mockFileSystem['/test/projects'] = TEST_PROJECTS_DEFAULT
       expect(projects).toEqual([])
+    })
+
+    it('shows all non-dot files except settings files in project contents', async () => {
+      const { instance } = await buildTheWorldNode()
+      const wasmInstance = await instance
+      const instanceWithProjectSettings = {
+        ...wasmInstance,
+        parse_app_settings: vi.fn(() => ({})),
+        parse_project_settings: vi.fn(() => ({})),
+      }
+      const project = await getProjectInfo(
+        '/test/projects/valid-project',
+        instanceWithProjectSettings
+      )
+
+      expect(project.children?.map((child) => child.name)).toEqual([
+        'file1.kcl',
+        'file3.kcl',
+        'file2.stp',
+        'notes.txt',
+        'boot.txt',
+        'raw-metrics.txt',
+        'environment.txt',
+        'directory1',
+      ])
+    })
+
+    it('shows config and dot files when app settings enable all files', async () => {
+      mockElectron.readFile.mockImplementation(async (path: string) => {
+        if (path === '/appData/settings.toml') {
+          return '[settings.app]\nshow_all_files = true\n'
+        }
+
+        return ''
+      })
+
+      const { instance } = await buildTheWorldNode()
+      const wasmInstance = await instance
+      const instanceWithAppSettings = {
+        ...wasmInstance,
+        parse_app_settings: vi.fn(() => ({
+          settings: { app: { show_all_files: true } },
+        })),
+      }
+      const project = await getProjectInfo(
+        '/test/projects/valid-project',
+        instanceWithAppSettings
+      )
+
+      expect(project.children?.map((child) => child.name)).toEqual([
+        'file1.kcl',
+        'file3.kcl',
+        'file2.stp',
+        'notes.txt',
+        'project.toml',
+        'settings.toml',
+        'boot.txt',
+        'raw-metrics.txt',
+        'environment.txt',
+        '.gitignore',
+        '.hidden-dir',
+        'directory1',
+      ])
     })
   })
 
