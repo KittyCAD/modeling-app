@@ -1,5 +1,11 @@
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
+import {
+  getDefaultGdtTolerance,
+  modelingMachineCommandConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -18,5 +24,46 @@ gdt::datum(face = capEnd001, name = "A")`
 
     // Should return 'B' since 'A' is already used
     expect(getNextAvailableDatumName(ast)).toBe('B')
+  })
+})
+
+describe('GDT tolerance defaults', () => {
+  it('uses the current file unit for the tolerance input default', () => {
+    const modelingContext = {
+      kclManager: {
+        fileSettings: {
+          defaultLengthUnit: 'in',
+        },
+      },
+    } as unknown as ModelingMachineContext
+
+    expect(getDefaultGdtTolerance({}, modelingContext)).toBe('0.1in')
+    expect(getDefaultGdtTolerance({})).toBe('0.1mm')
+  })
+
+  it('wires the unit-aware default into tolerance-bearing GD&T commands', () => {
+    const commandNames = [
+      'GDT Flatness',
+      'GDT Position',
+      'GDT Profile',
+      'GDT Distance',
+      'GDT Perpendicularity',
+      'GDT Parallelism',
+    ] as const
+
+    for (const commandName of commandNames) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      expect(Array.isArray(commandConfig)).toBe(false)
+      expect(commandConfig?.args?.tolerance).toMatchObject({
+        inputType: 'kcl',
+        defaultValue: getDefaultGdtTolerance,
+      })
+      expect(
+        commandConfig?.args?.tolerance?.valueSummary?.({
+          valueCalculated: '2.54mm',
+          valueText: '0.1in',
+        } as KclCommandValue)
+      ).toBe('0.1in')
+    }
   })
 })
