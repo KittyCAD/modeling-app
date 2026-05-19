@@ -449,8 +449,9 @@ export const MlEphantConversationPane = (props: {
               activeFile: currentLoaderFile
                 ? activeFileRelativeToProject({
                     currentFileEntry: currentLoaderFile,
-                    applicationProjectDirectory:
-                      props.settings.app.projectDirectory.current,
+                    applicationProjectDirectory: getParentAbsolutePath(
+                      project.path
+                    ),
                   })
                 : undefined,
             })
