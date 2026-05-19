@@ -41,7 +41,7 @@ jobs:
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
+          name: prepared-wasm
           workflow: build-wasm.yml
           branch: main
           path: rust/kcl-wasm-lib/pkg
