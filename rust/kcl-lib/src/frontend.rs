@@ -236,6 +236,10 @@ pub struct FrontendState {
     /// initial guesses back into KCL. Drag previews keep this off so only the
     /// explicit drag edit feeds the next solve.
     next_edit_commits_solver_solutions: Option<bool>,
+    /// One-shot object filter for solver-updated initial guesses. Used by drag
+    /// previews so warm-start feedback is limited to the graph connected to the
+    /// drag target.
+    next_edit_solver_solution_object_ids: Option<AhashIndexSet<ObjectId>>,
     sketch_checkpoints: VecDeque<SketchCheckpoint>,
     sketch_checkpoint_id_gen: IncIdGenerator<u64>,
 }
@@ -262,6 +266,7 @@ impl FrontendState {
             next_drag_anchor_segment_ids: None,
             next_arc_drag_anchors: None,
             next_edit_commits_solver_solutions: None,
+            next_edit_solver_solution_object_ids: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
         }
@@ -381,15 +386,21 @@ impl FrontendState {
         anchor_segment_ids: Vec<ObjectId>,
         arc_drag_anchors: Vec<ArcDragAnchor>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let mut feedback_seed_ids = anchor_segment_ids.iter().copied().collect::<AhashIndexSet<_>>();
+        feedback_seed_ids.extend(segments.iter().map(|segment| segment.id));
+        feedback_seed_ids.extend(arc_drag_anchors.iter().map(|anchor| anchor.arc_id));
+        let connected_object_ids = self.connected_solver_feedback_object_ids(&feedback_seed_ids);
         let previous_anchor_ids = self
             .next_drag_anchor_segment_ids
             .replace(anchor_segment_ids.into_iter().collect());
         let previous_arc_drag_anchors = self.next_arc_drag_anchors.replace(arc_drag_anchors);
-        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(false);
+        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(true);
+        let previous_solution_filter = self.next_edit_solver_solution_object_ids.replace(connected_object_ids);
         let result = SketchApi::edit_segments(self, ctx, version, sketch, segments).await;
         self.next_drag_anchor_segment_ids = previous_anchor_ids;
         self.next_arc_drag_anchors = previous_arc_drag_anchors;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
+        self.next_edit_solver_solution_object_ids = previous_solution_filter;
         result
     }
 
@@ -408,7 +419,11 @@ impl FrontendState {
         label_position: Point2d<Number>,
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(false);
+        let mut feedback_seed_ids = anchor_segment_ids.iter().copied().collect::<AhashIndexSet<_>>();
+        feedback_seed_ids.insert(constraint_id);
+        let connected_object_ids = self.connected_solver_feedback_object_ids(&feedback_seed_ids);
+        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(true);
+        let previous_solution_filter = self.next_edit_solver_solution_object_ids.replace(connected_object_ids);
         let result = SketchApi::edit_distance_constraint_label_position(
             self,
             ctx,
@@ -420,6 +435,7 @@ impl FrontendState {
         )
         .await;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
+        self.next_edit_solver_solution_object_ids = previous_solution_filter;
         result
     }
 
@@ -442,6 +458,7 @@ impl FrontendState {
         self.next_drag_anchor_segment_ids = None;
         self.next_arc_drag_anchors = None;
         self.next_edit_commits_solver_solutions = None;
+        self.next_edit_solver_solution_object_ids = None;
 
         if let Some(mock_memory) = checkpoint.mock_memory {
             write_old_memory(mock_memory).await;
@@ -570,6 +587,82 @@ fn ensure_control_point_spline_experimental_features(program: &Program) -> Resul
     }
 
     program.change_experimental_features(Some(WarningLevel::Allow))
+}
+
+fn object_connection_ids(object: &Object) -> AhashIndexSet<ObjectId> {
+    let mut object_ids = AhashIndexSet::default();
+    object_ids.insert(object.id);
+
+    match &object.kind {
+        ObjectKind::Segment { segment } => {
+            object_ids.extend(segment_connection_ids(segment));
+        }
+        ObjectKind::Constraint { constraint } => {
+            object_ids.extend(constraint_connection_ids(constraint));
+        }
+        _ => {}
+    }
+
+    object_ids
+}
+
+fn segment_connection_ids(segment: &Segment) -> Vec<ObjectId> {
+    match segment {
+        Segment::Point(point) => point.owner.into_iter().collect(),
+        Segment::Line(line) => [Some(line.start), Some(line.end), line.owner]
+            .into_iter()
+            .flatten()
+            .collect(),
+        Segment::Arc(arc) => vec![arc.start, arc.end, arc.center],
+        Segment::Circle(circle) => vec![circle.start, circle.center],
+        Segment::ControlPointSpline(spline) => spline.controls.clone(),
+    }
+}
+
+fn constraint_connection_ids(constraint: &Constraint) -> Vec<ObjectId> {
+    match constraint {
+        Constraint::Coincident(coincident) => coincident.segment_ids().collect(),
+        Constraint::Distance(distance)
+        | Constraint::HorizontalDistance(distance)
+        | Constraint::VerticalDistance(distance) => constraint_segment_object_ids(&distance.points),
+        Constraint::Angle(angle) => angle.lines.clone(),
+        Constraint::Diameter(diameter) => vec![diameter.arc],
+        Constraint::EqualRadius(equal_radius) => equal_radius.input.clone(),
+        Constraint::Fixed(fixed) => fixed.points.iter().map(|point| point.point).collect(),
+        Constraint::Horizontal(Horizontal::Line { line }) => vec![*line],
+        Constraint::Horizontal(Horizontal::Points { points }) => constraint_segment_object_ids(points),
+        Constraint::LinesEqualLength(lines_equal_length) => lines_equal_length.lines.clone(),
+        Constraint::Midpoint(midpoint) => vec![midpoint.point, midpoint.segment],
+        Constraint::Parallel(parallel) => parallel.lines.clone(),
+        Constraint::Perpendicular(perpendicular) => perpendicular.lines.clone(),
+        Constraint::Radius(radius) => vec![radius.arc],
+        Constraint::Symmetric(symmetric) => symmetric
+            .input
+            .iter()
+            .copied()
+            .chain(std::iter::once(symmetric.axis))
+            .collect(),
+        Constraint::Tangent(tangent) => tangent.input.clone(),
+        Constraint::Vertical(Vertical::Line { line }) => vec![*line],
+        Constraint::Vertical(Vertical::Points { points }) => constraint_segment_object_ids(points),
+    }
+}
+
+fn constraint_segment_object_ids(segments: &[ConstraintSegment]) -> Vec<ObjectId> {
+    segments
+        .iter()
+        .filter_map(|segment| match segment {
+            ConstraintSegment::Segment(object_id) => Some(*object_id),
+            ConstraintSegment::Origin(_) => None,
+        })
+        .collect()
+}
+
+fn source_ref_ranges(source_ref: &SourceRef) -> Vec<SourceRange> {
+    match source_ref {
+        SourceRef::Simple { range, .. } => vec![*range],
+        SourceRef::BackTrace { ranges } => ranges.iter().map(|(range, _)| *range).collect(),
+    }
 }
 
 impl SketchApi for FrontendState {
@@ -3371,9 +3464,10 @@ impl FrontendState {
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
+        let solver_solution_object_ids = self.next_edit_solver_solution_object_ids.take();
 
         let src_delta = if commit_solved_initial_guesses {
-            self.commit_var_solutions_to_program(&outcome, "editing")?
+            self.commit_var_solutions_to_program(&outcome, "editing", solver_solution_object_ids.as_ref())?
         } else {
             SourceDelta { text: new_source }
         };
@@ -4727,7 +4821,7 @@ impl FrontendState {
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
 
-        let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraint")?;
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraint", None)?;
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: false,
@@ -4737,7 +4831,41 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    fn commit_var_solutions_to_program(&mut self, outcome: &ExecOutcome, operation: &str) -> ExecResult<SourceDelta> {
+    fn connected_solver_feedback_object_ids(&self, seeds: &AhashIndexSet<ObjectId>) -> AhashIndexSet<ObjectId> {
+        let mut connected = seeds.clone();
+        let mut changed = true;
+
+        while changed {
+            changed = false;
+            for object in &self.scene_graph.objects {
+                let object_group = object_connection_ids(object);
+                if !object_group.iter().any(|object_id| connected.contains(object_id)) {
+                    continue;
+                }
+
+                for object_id in object_group {
+                    changed |= connected.insert(object_id);
+                }
+            }
+        }
+
+        connected
+    }
+
+    fn solver_feedback_source_ranges_for_object_ids(&self, object_ids: &AhashIndexSet<ObjectId>) -> Vec<SourceRange> {
+        object_ids
+            .iter()
+            .filter_map(|object_id| self.scene_graph.objects.get(object_id.0))
+            .flat_map(|object| source_ref_ranges(&object.source))
+            .collect()
+    }
+
+    fn commit_var_solutions_to_program(
+        &mut self,
+        outcome: &ExecOutcome,
+        operation: &str,
+        object_filter: Option<&AhashIndexSet<ObjectId>>,
+    ) -> ExecResult<SourceDelta> {
         let commit_failure = || {
             KclErrorWithOutputs::from_error_outcome(
                 KclError::refactor(format!("Could not update KCL after {operation}.")),
@@ -4747,8 +4875,17 @@ impl FrontendState {
 
         let default_length_unit = self.default_length_unit();
         let mut settled_ast = self.program.ast.clone();
+        let allowed_source_ranges =
+            object_filter.map(|object_ids| self.solver_feedback_source_ranges_for_object_ids(object_ids));
         let mut committed_solver_value = false;
         for (var_range, value) in &outcome.var_solutions {
+            if let Some(allowed_source_ranges) = &allowed_source_ranges
+                && !allowed_source_ranges
+                    .iter()
+                    .any(|source_range| source_range.contains_range(var_range))
+            {
+                continue;
+            }
             let Some(current_literal) = numeric_literal_at_source_range(&settled_ast, *var_range) else {
                 return Err(commit_failure());
             };
@@ -8526,7 +8663,7 @@ sketch(on = XY) {
     /// Preview segment edits should return solved geometry without persisting
     /// solver feedback to KCL.
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_preview_edit_segments_does_not_persist_solver_feedback() {
+    async fn test_preview_edit_segments_persists_connected_solver_feedback_only() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 1, var 2], end = [var 1, var 2])
@@ -8534,6 +8671,11 @@ sketch(on = XY) {
   fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
+  line3 = line(start = [var 20, var 20], end = [var 20, var 20])
+  line4 = line(start = [var 40, var 41], end = [var 42, var 43])
+  fixed([line3.start, [30, 30]])
+  coincident([line3.end, line4.start])
+  equalLength([line3, line4])
 }
 ";
 
@@ -8575,12 +8717,22 @@ sketch(on = XY) {
         assert!(
             preview_source
                 .text
-                .contains("line1 = line(start = [var 1, var 2], end = [var 1, var 2])")
+                .contains("line1 = line(start = [var 0, var 0], end = [var 4.14, var 5.32])")
         );
         assert!(
             preview_source
                 .text
-                .contains("line2 = line(start = [var 5, var 6], end = [var 9, var 10])")
+                .contains("line2 = line(start = [var 4.14, var 5.32], end = [var 9, var 10])")
+        );
+        assert!(
+            preview_source
+                .text
+                .contains("line3 = line(start = [var 20, var 20], end = [var 20, var 20])")
+        );
+        assert!(
+            preview_source
+                .text
+                .contains("line4 = line(start = [var 40, var 41], end = [var 42, var 43])")
         );
 
         let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
@@ -8663,7 +8815,9 @@ cylinder = startSketchOn(XY)
             default_planes: Default::default(),
         };
 
-        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+        let source_delta = frontend
+            .commit_var_solutions_to_program(&outcome, "testing", None)
+            .unwrap();
 
         assert_eq!(source_delta.text, initial_source);
     }

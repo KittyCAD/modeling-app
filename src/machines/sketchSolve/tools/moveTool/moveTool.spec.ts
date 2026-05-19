@@ -26,6 +26,11 @@ import {
   updateSelectedIds,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 
+type TestDragSketchOutcome = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+}
+
 function createDeferred<T>() {
   let resolve!: (value: T) => void
   let reject!: (reason?: unknown) => void
@@ -162,7 +167,7 @@ function createDragSnappingDeps() {
     getActiveDragSessionId: vi.fn(() => 1),
     getLastGoodPreview: vi.fn(() => null),
     setLastGoodPreview: vi.fn(),
-    getDragStartOutcome: vi.fn(() => null),
+    getDragStartOutcome: vi.fn((): TestDragSketchOutcome | null => null),
   }
 }
 
@@ -3219,6 +3224,121 @@ describe('createOnDragCallback', () => {
       writeToDisk: false,
       suppressExecOutcomeIssues: true,
     })
+  })
+
+  it('should seed connected point drag by rotating the graph around a fixed origin pivot', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(10, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const pivot = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const draggedPoint = createPointApiObject({
+      id: 2,
+      x: 10,
+      y: 0,
+      owner: 4,
+    })
+    const connectedPoint = createPointApiObject({
+      id: 3,
+      x: 10,
+      y: 10,
+      owner: 5,
+    })
+    const firstLine = createLineApiObject({ id: 4, start: 1, end: 2 })
+    const secondLine = createLineApiObject({ id: 5, start: 2, end: 3 })
+    const originCoincident = {
+      id: 6,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Coincident',
+          segments: [1, 'ORIGIN'],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+    } as ApiObject
+    const sceneGraphDelta = createSceneGraphDelta([
+      pivot,
+      draggedPoint,
+      connectedPoint,
+      firstLine,
+      secondLine,
+      originCoincident,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [2],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: 'updated code' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const dragSnappingDeps = createDragSnappingDeps()
+    dragSnappingDeps.getDragStartOutcome.mockReturnValue({
+      kclSource: { text: 'baseline code' },
+      sceneGraphDelta,
+    })
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(0, 10),
+        threeD: new Vector3(0, 10, 0),
+      },
+      selected: undefined,
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalledWith(
+      0,
+      0,
+      [
+        {
+          id: 2,
+          ctor: {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: 0, units: 'Mm' },
+              y: { type: 'Var', value: 10, units: 'Mm' },
+            },
+          },
+        },
+        {
+          id: 3,
+          ctor: {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: -10, units: 'Mm' },
+              y: { type: 'Var', value: 10, units: 'Mm' },
+            },
+          },
+        },
+      ],
+      {},
+      [2]
+    )
   })
 
   it('drops a stale preview result when the drag session changes before the solve resolves', async () => {

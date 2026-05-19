@@ -449,6 +449,27 @@ function buildArcDragAnchors({
   ]
 }
 
+function buildPointCtorFromVector(
+  position: Vector2,
+  units: NumericSuffix
+): SegmentCtor {
+  return {
+    type: 'Point',
+    position: {
+      x: {
+        type: 'Var',
+        value: roundOff(position.x),
+        units,
+      },
+      y: {
+        type: 'Var',
+        value: roundOff(position.y),
+        units,
+      },
+    },
+  }
+}
+
 function isConstraintWithDraggableLabel(obj: ApiObject | undefined) {
   return (
     obj !== undefined &&
@@ -632,6 +653,298 @@ function getPointSegmentPosition(pointId: number, objects: ApiObject[]) {
   return new Vector2(
     obj.kind.segment.position.x.value,
     obj.kind.segment.position.y.value
+  )
+}
+
+function buildKinematicConnectedPointDrag({
+  draggedPointId,
+  selectedIds,
+  currentCursorPosition,
+  currentObjects,
+  dragStartObjects,
+  units,
+}: {
+  draggedPointId: number
+  selectedIds: number[]
+  currentCursorPosition: Vector2
+  currentObjects: ApiObject[]
+  dragStartObjects: ApiObject[]
+  units: NumericSuffix
+}): {
+  segmentsToEdit: ExistingSegmentCtor[]
+  dragAnchorSegmentIds: number[]
+} | null {
+  if (
+    !isPointSegment(currentObjects[draggedPointId]) ||
+    !isPointSegment(dragStartObjects[draggedPointId])
+  ) {
+    return null
+  }
+
+  const connectedIds = getConnectedObjectIds([draggedPointId], dragStartObjects)
+  if (selectedIds.some((id) => !connectedIds.has(id))) {
+    return null
+  }
+
+  const connectedPointIds = Array.from(connectedIds)
+    .filter((id) => isPointSegment(dragStartObjects[id]))
+    .sort((a, b) => a - b)
+  const pivotPointId = findKinematicPivotPointId({
+    connectedPointIds,
+    draggedPointId,
+    objects: dragStartObjects,
+  })
+  if (pivotPointId === null) {
+    return null
+  }
+
+  const pivotPosition = getPointSegmentPosition(pivotPointId, dragStartObjects)
+  const dragStartPosition = getPointSegmentPosition(
+    draggedPointId,
+    dragStartObjects
+  )
+  if (!pivotPosition || !dragStartPosition) {
+    return null
+  }
+
+  const dragStartVector = dragStartPosition.clone().sub(pivotPosition)
+  const cursorVector = currentCursorPosition.clone().sub(pivotPosition)
+  if (dragStartVector.lengthSq() < 1e-8 || cursorVector.lengthSq() < 1e-8) {
+    return null
+  }
+
+  const angleDelta =
+    Math.atan2(cursorVector.y, cursorVector.x) -
+    Math.atan2(dragStartVector.y, dragStartVector.x)
+  const segmentsToEdit: ExistingSegmentCtor[] = []
+
+  for (const pointId of connectedPointIds) {
+    if (pointId === pivotPointId) {
+      continue
+    }
+
+    const pointStartPosition = getPointSegmentPosition(
+      pointId,
+      dragStartObjects
+    )
+    if (!pointStartPosition) {
+      continue
+    }
+
+    const nextPosition =
+      pointId === draggedPointId
+        ? currentCursorPosition
+        : rotatePointAroundPivot(pointStartPosition, pivotPosition, angleDelta)
+    segmentsToEdit.push({
+      id: pointId,
+      ctor: buildPointCtorFromVector(nextPosition, units),
+    })
+  }
+
+  return {
+    segmentsToEdit,
+    dragAnchorSegmentIds: [draggedPointId],
+  }
+}
+
+function findKinematicPivotPointId({
+  connectedPointIds,
+  draggedPointId,
+  objects,
+}: {
+  connectedPointIds: number[]
+  draggedPointId: number
+  objects: ApiObject[]
+}): number | null {
+  const candidatePointIds = connectedPointIds.filter(
+    (pointId) => pointId !== draggedPointId
+  )
+  const originPivotId = candidatePointIds.find((pointId) =>
+    hasCoincidentConstraintWithOrigin(pointId, objects)
+  )
+  if (originPivotId !== undefined) {
+    return originPivotId
+  }
+
+  const fixedConstraintPivotId = candidatePointIds.find((pointId) =>
+    hasFixedConstraint(pointId, objects)
+  )
+  if (fixedConstraintPivotId !== undefined) {
+    return fixedConstraintPivotId
+  }
+
+  const fixedFreedomPivotId = candidatePointIds.find((pointId) => {
+    const obj = objects[pointId]
+    return isPointSegment(obj) && obj.kind.segment.freedom === 'Fixed'
+  })
+  return fixedFreedomPivotId ?? null
+}
+
+function hasFixedConstraint(pointId: number, objects: ApiObject[]) {
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Fixed') &&
+      obj.kind.constraint.points.some(
+        (fixedPoint) => fixedPoint.point === pointId
+      )
+  )
+}
+
+function rotatePointAroundPivot(point: Vector2, pivot: Vector2, angle: number) {
+  const cos = Math.cos(angle)
+  const sin = Math.sin(angle)
+  const dx = point.x - pivot.x
+  const dy = point.y - pivot.y
+
+  return new Vector2(
+    pivot.x + dx * cos - dy * sin,
+    pivot.y + dx * sin + dy * cos
+  )
+}
+
+function getConnectedObjectIds(
+  seedIds: Iterable<number>,
+  objects: ApiObject[]
+) {
+  const adjacency = new Map<number, Set<number>>()
+  const connect = (a: number, b: number) => {
+    if (a === b) {
+      return
+    }
+
+    let aConnections = adjacency.get(a)
+    if (!aConnections) {
+      aConnections = new Set<number>()
+      adjacency.set(a, aConnections)
+    }
+    aConnections.add(b)
+
+    let bConnections = adjacency.get(b)
+    if (!bConnections) {
+      bConnections = new Set<number>()
+      adjacency.set(b, bConnections)
+    }
+    bConnections.add(a)
+  }
+
+  for (const obj of objects) {
+    if (!obj) {
+      continue
+    }
+
+    for (const connectedId of getObjectConnectionIds(obj)) {
+      connect(obj.id, connectedId)
+    }
+  }
+
+  const connectedIds = new Set<number>()
+  const frontier = Array.from(seedIds)
+  for (const seedId of frontier) {
+    connectedIds.add(seedId)
+  }
+
+  while (frontier.length > 0) {
+    const currentId = frontier.pop()
+    if (currentId === undefined) {
+      continue
+    }
+
+    for (const connectedId of adjacency.get(currentId) ?? []) {
+      if (connectedIds.has(connectedId)) {
+        continue
+      }
+
+      connectedIds.add(connectedId)
+      frontier.push(connectedId)
+    }
+  }
+
+  return connectedIds
+}
+
+function getObjectConnectionIds(obj: ApiObject): number[] {
+  if (obj.kind.type === 'Segment') {
+    return getSegmentConnectionIds(obj)
+  }
+
+  if (obj.kind.type === 'Constraint') {
+    return getConstraintConnectionIds(obj)
+  }
+
+  return []
+}
+
+function getSegmentConnectionIds(obj: ApiObject): number[] {
+  if (obj.kind.type !== 'Segment') {
+    return []
+  }
+
+  const segment = obj.kind.segment
+  switch (segment.type) {
+    case 'Point':
+      return segment.owner === null ? [] : [segment.owner]
+    case 'Line':
+      return [
+        segment.start,
+        segment.end,
+        ...(segment.owner === undefined ? [] : [segment.owner]),
+      ]
+    case 'Arc':
+      return [segment.center, segment.start, segment.end]
+    case 'Circle':
+      return [segment.center, segment.start]
+    case 'ControlPointSpline':
+      return segment.controls
+    default:
+      return []
+  }
+}
+
+function getConstraintConnectionIds(obj: ApiObject): number[] {
+  if (obj.kind.type !== 'Constraint') {
+    return []
+  }
+
+  const constraint = obj.kind.constraint
+  switch (constraint.type) {
+    case 'Coincident':
+      return constraintSegmentObjectIds(constraint.segments)
+    case 'Distance':
+    case 'HorizontalDistance':
+    case 'VerticalDistance':
+      return constraintSegmentObjectIds(constraint.points)
+    case 'Horizontal':
+    case 'Vertical':
+      return 'points' in constraint
+        ? constraintSegmentObjectIds(constraint.points)
+        : [constraint.line]
+    case 'Angle':
+      return constraint.lines
+    case 'Diameter':
+    case 'Radius':
+      return [constraint.arc]
+    case 'EqualRadius':
+      return constraint.input
+    case 'Fixed':
+      return constraint.points.map((point) => point.point)
+    case 'LinesEqualLength':
+    case 'Parallel':
+    case 'Perpendicular':
+      return constraint.lines
+    case 'Midpoint':
+      return [constraint.point, constraint.segment]
+    case 'Symmetric':
+      return [...constraint.input, constraint.axis]
+    case 'Tangent':
+      return constraint.input
+    default:
+      return []
+  }
+}
+
+function constraintSegmentObjectIds(segments: ConstraintSegment[]): number[] {
+  return segments.filter(
+    (segment): segment is number => typeof segment === 'number'
   )
 }
 
@@ -1472,6 +1785,8 @@ export function createOnDragCallback({
       const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
       const objects = sceneGraphDelta.new_graph.objects
+      const dragStartObjects =
+        getDragStartOutcome()?.sceneGraphDelta.new_graph.objects ?? objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
       // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
@@ -1494,7 +1809,7 @@ export function createOnDragCallback({
       const arcDragAnchorIds = new Set(
         arcDragAnchors.map((anchor) => anchor.arcId)
       )
-      const dragAnchorSegmentIds = Array.from(
+      let dragAnchorSegmentIds = Array.from(
         new Set(
           [entityUnderCursorId, ...selectedIds].filter(
             (id): id is number =>
@@ -1504,31 +1819,47 @@ export function createOnDragCallback({
           )
         )
       )
+      const kinematicPointDrag =
+        entityUnderCursorId === null
+          ? null
+          : buildKinematicConnectedPointDrag({
+              draggedPointId: entityUnderCursorId,
+              selectedIds,
+              currentCursorPosition: twoD,
+              currentObjects: objects,
+              dragStartObjects,
+              units,
+            })
 
-      for (const id of idsToEdit) {
-        const obj = objects[id]
-        if (!obj) {
-          continue
-        }
+      if (kinematicPointDrag) {
+        segmentsToEdit.push(...kinematicPointDrag.segmentsToEdit)
+        dragAnchorSegmentIds = kinematicPointDrag.dragAnchorSegmentIds
+      } else {
+        for (const id of idsToEdit) {
+          const obj = objects[id]
+          if (!obj) {
+            continue
+          }
 
-        // Skip if not a segment
-        if (obj.kind.type !== 'Segment') {
-          continue
-        }
+          // Skip if not a segment
+          if (obj.kind.type !== 'Segment') {
+            continue
+          }
 
-        const isEntityUnderCursor = id === entityUnderCursorId
+          const isEntityUnderCursor = id === entityUnderCursorId
 
-        const ctor = buildSegmentCtorWithDrag({
-          objUnderCursor: obj,
-          selectedObjects: objects,
-          isEntityUnderCursor,
-          currentCursorPosition: twoD,
-          dragVec: dragVec,
-          units,
-        })
+          const ctor = buildSegmentCtorWithDrag({
+            objUnderCursor: obj,
+            selectedObjects: objects,
+            isEntityUnderCursor,
+            currentCursorPosition: twoD,
+            dragVec: dragVec,
+            units,
+          })
 
-        if (ctor) {
-          segmentsToEdit.push({ id, ctor })
+          if (ctor) {
+            segmentsToEdit.push({ id, ctor })
+          }
         }
       }
 
