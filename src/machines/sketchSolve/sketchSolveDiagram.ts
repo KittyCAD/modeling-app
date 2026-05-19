@@ -35,6 +35,7 @@ import {
   type SketchSolveMachineEvent,
   type SolveActionArgs,
   type SpawnToolActor,
+  type UpdateSketchOutcomeEvent,
   buildSegmentCtorFromObject,
   cleanupSketchSolveGroup,
   clearDraftEntities,
@@ -68,7 +69,14 @@ import {
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
-import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  createMachine,
+  fromPromise,
+  sendParent,
+  setup,
+} from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 const constraintToolNameSet = new Set<string>(constraintToolNames)
@@ -79,6 +87,35 @@ type SketchSolveInput = {
   sketchId: number
   initialSceneGraphDelta: SceneGraphDelta
   sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
+}
+
+type SketchMutationResult = Awaited<
+  ReturnType<SketchSolveContext['rustContext']['sketchExecuteMock']>
+>
+
+function hasSketchMutationOutput(
+  event: unknown
+): event is { output: SketchMutationResult } {
+  return event !== null && typeof event === 'object' && 'output' in event
+}
+
+function updateSketchOutcomeFromMutation(
+  context: SketchSolveContext,
+  result: SketchMutationResult,
+  options: Partial<UpdateSketchOutcomeEvent['data']> = {}
+) {
+  return updateSketchOutcome({
+    context,
+    event: {
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId: result.checkpointId ?? null,
+        ...options,
+      },
+    },
+  } as Parameters<typeof updateSketchOutcome>[0])
 }
 
 function sendToolbarConstraintOutcome(
@@ -486,6 +523,19 @@ export const sketchSolveMachine = setup({
     'refresh selection styling': refreshSelectionStyling,
     'clear hovered code highlight': clearHoveredCodeHighlight,
     'update sketch outcome': assign(updateSketchOutcome),
+    'apply settled sketch outcome': assign(({ context, event }) => {
+      if (!hasSketchMutationOutput(event)) {
+        return {}
+      }
+
+      return updateSketchOutcomeFromMutation(context, event.output, {
+        addToHistory: false,
+        suppressExecOutcomeIssues: true,
+      })
+    }),
+    'log sketch entry settle error': ({ event }) => {
+      console.warn('Failed to settle sketch on entry', event)
+    },
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -500,6 +550,14 @@ export const sketchSolveMachine = setup({
     }),
   },
   actors: {
+    settleSketchOnEntry: fromPromise(
+      async ({ input }: { input: { context: SketchSolveContext } }) => {
+        return input.context.rustContext.sketchExecuteMock(
+          SKETCH_FILE_VERSION,
+          input.context.sketchId
+        )
+      }
+    ),
     tearDownSketchSolve,
     moveToolActor: createMachine({
       /* ... */
@@ -536,7 +594,7 @@ export const sketchSolveMachine = setup({
     return context
   },
   id: 'Sketch Solve Mode',
-  initial: 'move and select',
+  initial: 'settling sketch',
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
@@ -1026,6 +1084,24 @@ export const sketchSolveMachine = setup({
     },
   },
   states: {
+    'settling sketch': {
+      invoke: {
+        id: 'settleSketchOnEntry',
+        src: 'settleSketchOnEntry',
+        input: ({ context }) => ({ context }),
+        onDone: {
+          target: 'move and select',
+          actions: 'apply settled sketch outcome',
+        },
+        onError: {
+          target: 'move and select',
+          actions: 'log sketch entry settle error',
+        },
+      },
+      description:
+        'Runs a best-effort solve before tools start so pasted or directly edited KCL does not carry stale sketch-var initial guesses into the first interaction.',
+    },
+
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {

@@ -285,8 +285,11 @@ export function createMockRustContext(): RustContext {
     addConstraint: vi.fn(),
     chainSegment: vi.fn(),
     editSegments: vi.fn(),
+    previewEditSegments: vi.fn(),
+    commitEditSegmentsFromPreview: vi.fn(),
     editDistanceConstraintLabelPosition: vi.fn(),
     deleteObjects: vi.fn(),
+    sketchExecuteMockFromPreview: vi.fn(),
     settingsActor: {
       send: vi.fn(),
       getSnapshot: vi.fn(() => ({

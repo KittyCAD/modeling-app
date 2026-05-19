@@ -5,6 +5,7 @@ import {
   X_AXIS_TARGET,
   Y_AXIS_TARGET,
   getConstraintForSnapTarget,
+  getConstraintsForSnapCluster,
   getConstraintsForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
@@ -20,6 +21,29 @@ import {
 
 function createObjectsArray(objects: ApiObject[]) {
   return createSceneGraphDelta(objects).new_graph.objects
+}
+
+function createCoincidentConstraintApiObject({
+  id,
+  segments,
+}: {
+  id: number
+  segments: number[]
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Constraint',
+      constraint: {
+        type: 'Coincident',
+        segments,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
 }
 
 describe('snapping', () => {
@@ -78,6 +102,41 @@ describe('snapping', () => {
           type: 'Midpoint',
           point: 5,
           segment: 10,
+        },
+      ])
+    })
+  })
+
+  describe('getConstraintsForSnapCluster', () => {
+    it('connects the whole dragged point cluster to the whole target point cluster', () => {
+      const draggedPoint = createPointApiObject({ id: 5 })
+      const draggedClusterPoint = createPointApiObject({ id: 6 })
+      const targetPoint = createPointApiObject({ id: 10 })
+      const targetClusterPoint = createPointApiObject({ id: 11 })
+      const objects = createObjectsArray([
+        draggedPoint,
+        draggedClusterPoint,
+        targetPoint,
+        targetClusterPoint,
+        createCoincidentConstraintApiObject({ id: 20, segments: [5, 6] }),
+        createCoincidentConstraintApiObject({ id: 21, segments: [10, 11] }),
+      ])
+
+      expect(
+        getConstraintsForSnapCluster([5, 6], { type: 'point', id: 10 }, objects)
+      ).toEqual([
+        {
+          type: 'Coincident',
+          segments: [5, 6, 10, 11],
+        },
+      ])
+    })
+
+    it('connects the whole dragged point cluster to the origin', () => {
+      expect(getConstraintsForSnapCluster([5, 6], { type: 'origin' })).toEqual([
+        {
+          type: 'Coincident',
+          segments: [5, 6, 'ORIGIN'],
         },
       ])
     })

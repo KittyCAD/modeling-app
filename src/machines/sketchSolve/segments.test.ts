@@ -584,6 +584,30 @@ describe('getSegmentColor', () => {
     expect(color).toBe(CONFLICT_COLOR)
   })
 
+  it('should suppress transient freedom conflict coloring during previews', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      freedom: 'Conflict',
+      suppressFreedomConflictColoring: true,
+      theme: DARK_THEME,
+    })
+
+    const solveErrorColor = getSegmentColor({
+      isDraft: false,
+      isHovered: false,
+      isSelected: false,
+      hasSolveErrors: true,
+      freedom: 'Conflict',
+      suppressFreedomConflictColoring: true,
+      theme: DARK_THEME,
+    })
+
+    expect(color).toBe(UNCONSTRAINED_COLOR)
+    expect(solveErrorColor).toBe(CONFLICT_COLOR)
+  })
+
   it('should return conflict color when the solver has outcome errors', () => {
     const color = getSegmentColor({
       isDraft: false,

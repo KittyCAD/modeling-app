@@ -39,6 +39,7 @@ import {
 import {
   type ConstraintHoverPopup,
   findInvisibleConstraintsForSegment,
+  findSegmentsForInvisibleConstraint,
   isConstrainingSegment,
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
@@ -60,9 +61,9 @@ import {
 import {
   type SnappingCandidate,
   allowSnapping,
-  getConstraintsForSnapTarget,
+  getConstraintsForSnapCluster,
   getObjectIdForSnapTarget,
-  getCoincidentSegmentsForSnapTarget,
+  getCoincidentSegmentsForSnapCluster,
   getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
@@ -91,6 +92,7 @@ type ConstraintLabelEdit = {
 
 type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
+  dragAnchorIds?: number[]
   constraintLabelEdits: ConstraintLabelEdit[]
 }
 
@@ -98,6 +100,13 @@ type ClosestSelectionTarget = {
   distance: number
   selectionId: SketchSolveSelectionId
   apiObject: ApiObject | null
+}
+
+type DragCallbackArgs = {
+  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  selected?: Object3D
+  mouseEvent: MouseEvent
+  intersects: Array<unknown>
 }
 
 // This is only a settlement latch for "there is a preview solve in flight".
@@ -116,6 +125,17 @@ function createDeferredVoid(): DeferredVoid {
   })
 
   return { promise, resolve }
+}
+
+function cloneDragCallbackArgs(args: DragCallbackArgs): DragCallbackArgs {
+  return {
+    ...args,
+    intersectionPoint: {
+      twoD: args.intersectionPoint.twoD.clone(),
+      threeD: args.intersectionPoint.threeD.clone(),
+    },
+    intersects: [...args.intersects],
+  }
 }
 
 export function getClosestSelectionTarget(
@@ -196,13 +216,15 @@ function buildSegmentCtorWithDrag({
   currentCursorPosition,
   dragVec,
   units,
+  pointPositionOverride,
 }: {
   objUnderCursor: ApiObject
-  selectedObjects: Array<ApiObject>
+  selectedObjects: ApiObject[]
   isEntityUnderCursor: boolean
   currentCursorPosition: Vector2
   dragVec: Vector2
   units: NumericSuffix
+  pointPositionOverride?: Extract<SegmentCtor, { type: 'Point' }>['position']
 }): SegmentCtor | null {
   const baseCtor = buildSegmentCtorFromObject(obj, objects)
   if (!baseCtor) {
@@ -214,37 +236,35 @@ function buildSegmentCtorWithDrag({
   }
 
   if (baseCtor.type === 'Point') {
+    if (pointPositionOverride) {
+      return {
+        type: 'Point',
+        position: pointPositionOverride,
+      }
+    }
+
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
       // Note: currentCursorPosition comes from intersectionPoint.twoD which is in world coordinates and scaled to match current units
       return {
         type: 'Point',
-        position: {
-          x: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.x),
-            units,
-          },
-          y: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.y),
-            units,
-          },
-        },
-      }
-    } else {
-      // Apply drag vector to current position
-      const currentPos = {
-        x: baseCtor.position.x,
-        y: baseCtor.position.y,
-      }
-      const newPos = applyVectorToPoint2D(currentPos, dragVec)
-      return {
-        type: 'Point',
-        position: newPos,
+        position: buildCursorPointPosition(currentCursorPosition, units),
       }
     }
-  } else if (baseCtor.type === 'Line') {
+
+    // Apply drag vector to current position
+    const currentPos = {
+      x: baseCtor.position.x,
+      y: baseCtor.position.y,
+    }
+    const newPos = applyVectorToPoint2D(currentPos, dragVec)
+    return {
+      type: 'Point',
+      position: newPos,
+    }
+  }
+
+  if (baseCtor.type === 'Line') {
     // For lines, always apply the drag vector to both endpoints (translate the line)
     // This applies whether it's the entity under cursor or another selected entity
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
@@ -254,7 +274,9 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
-  } else if (baseCtor.type === 'Arc') {
+  }
+
+  if (baseCtor.type === 'Arc') {
     // For arcs, always apply the drag vector to center, start, and end points (translate the arc)
     // This applies whether it's the entity under cursor or another selected entity
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
@@ -270,7 +292,9 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
-  } else if (baseCtor.type === 'Circle') {
+  }
+
+  if (baseCtor.type === 'Circle') {
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
 
@@ -291,6 +315,96 @@ function buildSegmentCtorWithDrag({
   }
 
   return baseCtor
+}
+
+function buildCursorPointPosition(
+  position: Vector2,
+  units: NumericSuffix
+): Extract<SegmentCtor, { type: 'Point' }>['position'] {
+  return {
+    x: {
+      type: 'Var',
+      value: roundOff(position.x),
+      units,
+    },
+    y: {
+      type: 'Var',
+      value: roundOff(position.y),
+      units,
+    },
+  }
+}
+
+function getActiveDragPointIdsFromAnchorIds(
+  anchorIds: number[],
+  objects: ApiObject[]
+): number[] {
+  return anchorIds.filter((id) => isPointSegment(objects[id]))
+}
+
+function sameOrderedIds(left: number[], right: number[]): boolean {
+  return (
+    left.length === right.length &&
+    left.every((id, index) => id === right[index])
+  )
+}
+
+function getCenterOwnerSegmentIds(
+  pointIds: number[],
+  objects: ApiObject[]
+): Set<number> {
+  const ownerIds = new Set<number>()
+  for (const pointId of pointIds) {
+    const point = objects[pointId]
+    if (!isPointSegment(point) || point.kind.segment.owner == null) {
+      continue
+    }
+    const owner = objects[point.kind.segment.owner]
+    if (isArcLikeSegment(owner) && owner.kind.segment.center === pointId) {
+      ownerIds.add(owner.id)
+    }
+  }
+  return ownerIds
+}
+
+function getConnectedDragWarmStartIds(
+  seedSegmentIds: Set<number>,
+  objects: ApiObject[]
+): Set<number> {
+  const connectedIds = new Set(seedSegmentIds)
+  let didAdd = true
+
+  while (didAdd) {
+    didAdd = false
+    for (const obj of objects) {
+      if (!isInvisibleConstraintObject(obj, objects)) {
+        continue
+      }
+
+      const constrainedIds = findSegmentsForInvisibleConstraint(obj, objects)
+      if (!constrainedIds.some((id) => connectedIds.has(id))) {
+        continue
+      }
+
+      for (const id of constrainedIds) {
+        if (!connectedIds.has(id)) {
+          connectedIds.add(id)
+          didAdd = true
+        }
+      }
+    }
+  }
+
+  return connectedIds
+}
+
+function updateActiveDragPointIds(
+  context: SolveActionArgs['context'],
+  pointIds: number[] | null
+) {
+  if (context.activeDragPointIds) {
+    context.activeDragPointIds.value = pointIds
+  }
 }
 
 function buildConstraintLabelPosition(
@@ -735,6 +849,20 @@ function getDragPointSnappingCandidate({
   return candidate
 }
 
+function getPointOwnerSegmentIds(
+  pointIds: number[],
+  objects: ApiObject[]
+): Set<number> {
+  const ownerIds = new Set<number>()
+  for (const pointId of pointIds) {
+    const point = objects[pointId]
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
+      ownerIds.add(point.kind.segment.owner)
+    }
+  }
+  return ownerIds
+}
+
 function hasCoincidentConstraintWithOrigin(
   pointId: number,
   objects: ApiObject[]
@@ -747,12 +875,36 @@ function hasCoincidentConstraintWithOrigin(
   )
 }
 
-function hasCoincidentConstraintForSnapTarget(
-  pointId: number,
+function hasCoincidentConstraintForSnapCluster(
+  pointIds: number[],
   target: SnappingCandidate['target'],
   objects: ApiObject[]
 ) {
-  const coincidentSegments = getCoincidentSegmentsForSnapTarget(pointId, target)
+  const primaryPointId = pointIds[0]
+  if (primaryPointId === undefined) {
+    return false
+  }
+
+  if (target.type === 'point') {
+    const draggedCluster = new Set(
+      getCoincidentCluster(primaryPointId, objects)
+    )
+    return getCoincidentCluster(target.id, objects).some((targetPointId) =>
+      draggedCluster.has(targetPointId)
+    )
+  }
+
+  if (target.type === ORIGIN_TARGET) {
+    return pointIds.some((pointId) =>
+      hasCoincidentConstraintWithOrigin(pointId, objects)
+    )
+  }
+
+  const coincidentSegments = getCoincidentSegmentsForSnapCluster(
+    pointIds,
+    target,
+    objects
+  )
   if (coincidentSegments === null) {
     return false
   }
@@ -766,8 +918,8 @@ function hasCoincidentConstraintForSnapTarget(
   )
 }
 
-function hasMidpointConstraintForSnapTarget(
-  pointId: number,
+function hasMidpointConstraintForSnapCluster(
+  pointIds: number[],
   target: SnappingCandidate['target'],
   objects: ApiObject[]
 ) {
@@ -778,7 +930,7 @@ function hasMidpointConstraintForSnapTarget(
   return objects.some(
     (obj) =>
       isConstraint(obj, 'Midpoint') &&
-      obj.kind.constraint.point === pointId &&
+      pointIds.includes(obj.kind.constraint.point) &&
       obj.kind.constraint.segment === target.id
   )
 }
@@ -798,8 +950,44 @@ function getAxisConstraintWithOrigin(
   )
 }
 
+function getAxisConstraintWithOriginForCluster(
+  pointIds: number[],
+  constraintType: 'Horizontal' | 'Vertical',
+  objects: ApiObject[]
+) {
+  for (const pointId of pointIds) {
+    const constraint = getAxisConstraintWithOrigin(
+      pointId,
+      constraintType,
+      objects
+    )
+    if (constraint) {
+      return constraint
+    }
+  }
+
+  return null
+}
+
+const PARTIAL_PRIORITY_SOLVE_TRACE_LABEL = 'partial priority solution'
+
+function hasPartialPrioritySolveTrace(sceneGraphDelta?: SceneGraphDelta) {
+  return (
+    sceneGraphDelta?.exec_outcome?.sketchSolverTraces?.some((trace) =>
+      trace.items.some(
+        (item) =>
+          item.kind === 'solve' &&
+          item.label === PARTIAL_PRIORITY_SOLVE_TRACE_LABEL
+      )
+    ) ?? false
+  )
+}
+
 function hasSketchSolveIssues(sceneGraphDelta?: SceneGraphDelta): boolean {
-  return (sceneGraphDelta?.exec_outcome?.issues.length ?? 0) > 0
+  return (
+    (sceneGraphDelta?.exec_outcome?.issues.length ?? 0) > 0 ||
+    hasPartialPrioritySolveTrace(sceneGraphDelta)
+  )
 }
 
 function buildPreviewOutcomeWithPreservedGeometry({
@@ -821,6 +1009,8 @@ function buildPreviewOutcomeWithPreservedGeometry({
 type CreateOnDragStartCallbackArgs = {
   // Seeds the drag anchor used to compute relative drag vectors.
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  // Keeps the fixed drag-start anchor for frame-independent previews.
+  setDragStartPoint: (point: Vector2) => void
   // Clears any previously cached valid preview from an earlier drag session.
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   // Stores the frontend sketch outcome at drag start for preview fallback.
@@ -846,6 +1036,7 @@ type CreateOnDragStartCallbackArgs = {
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
+  setDragStartPoint,
   setLastGoodPreview,
   setDragStartOutcome,
   setPreDragCheckpointId,
@@ -862,7 +1053,9 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     beginDragSession()
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    const dragStartPoint = intersectionPoint.twoD.clone()
+    setLastSuccessfulDragFromPoint(dragStartPoint.clone())
+    setDragStartPoint(dragStartPoint)
     setLastGoodPreview(null)
     setDragStartOutcome(getCurrentSketchOutcome())
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
@@ -879,11 +1072,13 @@ export function createOnDragEndCallback({
   getDraggedEntityId,
   setDraggedEntityId,
   invalidateDragSession,
+  onUpdateActiveDragPointIds = () => {},
   onComplete,
 }: {
   getDraggedEntityId: () => number | null
   setDraggedEntityId: (entityId: number | null) => void
   invalidateDragSession: () => void
+  onUpdateActiveDragPointIds?: (pointIds: number[] | null) => void
   onComplete: (data: {
     draggedEntityId: number | null
     intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
@@ -906,6 +1101,7 @@ export function createOnDragEndCallback({
         mouseEvent,
       })
     } finally {
+      onUpdateActiveDragPointIds(null)
       setDraggedEntityId(null)
     }
   }
@@ -1171,6 +1367,7 @@ export function createOnDragCallback({
   getLastGoodPreview,
   setLastGoodPreview,
   getDragStartOutcome,
+  getDragStartPoint,
   getContextData,
   editSegments,
   editDistanceConstraintLabelPosition = async () => null,
@@ -1179,6 +1376,7 @@ export function createOnDragCallback({
   getJsAppSettings,
   sceneInfra,
   onUpdateDragSnapping,
+  onUpdateActiveDragPointIds = () => {},
   onPreviewSolveStarted,
   onPreviewSolveSettled,
 }: {
@@ -1192,6 +1390,7 @@ export function createOnDragCallback({
   getLastGoodPreview: () => DragCommitCandidate | null
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   getDragStartOutcome: () => DragSketchOutcome | null
+  getDragStartPoint?: () => Vector2
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -1204,7 +1403,8 @@ export function createOnDragCallback({
     version: number,
     sketchId: number,
     segments: Array<ExistingSegmentCtor>,
-    settings: DeepPartial<Configuration>
+    settings: DeepPartial<Configuration>,
+    anchorSegmentIds?: number[]
   ) => Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -1225,26 +1425,29 @@ export function createOnDragCallback({
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
     suppressExecOutcomeIssues?: boolean
+    suppressFreedomConflictColoring?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
   sceneInfra: SceneInfra
   onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
+  onUpdateActiveDragPointIds?: (pointIds: number[]) => void
   onPreviewSolveStarted?: () => void
   onPreviewSolveSettled?: () => void
-}): (arg: {
-  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
-  selected?: Object3D
-  mouseEvent: MouseEvent
-  intersects: Array<unknown>
-}) => Promise<void> {
-  return async ({ intersectionPoint, mouseEvent }) => {
+}): (arg: DragCallbackArgs) => Promise<void> {
+  let queuedDragArgs: DragCallbackArgs | null = null
+
+  const handleDrag = async (
+    args: DragCallbackArgs,
+    isQueuedContinuation = false
+  ): Promise<void> => {
+    const { intersectionPoint, mouseEvent } = args
     if (!getIsDragActive()) {
       return
     }
 
-    // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
+      queuedDragArgs = cloneDragCallbackArgs(args)
       return
     }
 
@@ -1254,6 +1457,7 @@ export function createOnDragCallback({
 
     if (!sceneGraphDelta) {
       onUpdateDragSnapping(null)
+      onUpdateActiveDragPointIds([])
       return
     }
 
@@ -1263,6 +1467,7 @@ export function createOnDragCallback({
       sceneGraphDelta
     )
     if (draggedConstraintLabelId != null) {
+      onUpdateActiveDragPointIds([])
       setIsSolveInProgress(true)
       onPreviewSolveStarted?.()
       try {
@@ -1299,6 +1504,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         }
@@ -1309,22 +1515,27 @@ export function createOnDragCallback({
       return
     }
 
+    const dragStartOutcome = getDragStartOutcome()
+    const editSceneGraphDelta =
+      dragStartOutcome?.sceneGraphDelta ?? sceneGraphDelta
+    const editObjects = editSceneGraphDelta.new_graph.objects
+
     const coincidentClusterPointIds =
       entityUnderCursorId !== null
-        ? getCoincidentCluster(
-            entityUnderCursorId,
-            sceneGraphDelta.new_graph.objects
-          )
+        ? getCoincidentCluster(entityUnderCursorId, editObjects)
         : []
 
     // If no entity under cursor and no selectedIds, nothing to do
     if (entityUnderCursorId === null && selectedIds.length === 0) {
       onUpdateDragSnapping(null)
+      onUpdateActiveDragPointIds([])
       return
     }
 
     setIsSolveInProgress(true)
-    onPreviewSolveStarted?.()
+    if (!isQueuedContinuation) {
+      onPreviewSolveStarted?.()
+    }
     try {
       const dragSessionId = getActiveDragSessionId()
       const isActiveDragSession = () =>
@@ -1342,23 +1553,64 @@ export function createOnDragCallback({
           })
       onUpdateDragSnapping(snappingCandidate)
 
-      // Calculate drag vector from last successful drag point to current position
-      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
+      // Build every preview from the drag-start geometry. Solver output can
+      // legitimately adjust unconstrained geometry, and applying the next drag
+      // increment to that adjusted result compounds small deviations.
+      const dragAnchorPoint =
+        getDragStartPoint?.() ?? getLastSuccessfulDragFromPoint()
+      const dragVec = twoD.clone().sub(dragAnchorPoint)
 
-      const objects = sceneGraphDelta.new_graph.objects
+      const objects = editObjects
       const segmentsToEdit: ExistingSegmentCtor[] = []
-
-      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
-      const idsToEdit = new Set<number>()
-      coincidentClusterPointIds.forEach((id) => {
-        idsToEdit.add(id)
-      })
-      selectedIds.forEach((id) => {
-        idsToEdit.add(id)
-      })
-
-      // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const isDraggingPointCluster =
+        entityUnderCursorId !== null &&
+        coincidentClusterPointIds.length > 1 &&
+        isPointSegment(objects[entityUnderCursorId])
+      const coincidentClusterPointIdSet = new Set(
+        isDraggingPointCluster ? coincidentClusterPointIds : []
+      )
+      const coincidentClusterDragTarget = isDraggingPointCluster
+        ? buildCursorPointPosition(twoD, units)
+        : null
+      const draggedPointIds =
+        entityUnderCursorId !== null &&
+        isPointSegment(objects[entityUnderCursorId])
+          ? coincidentClusterPointIds
+          : []
+      const draggedPointOwnerIds = getPointOwnerSegmentIds(
+        draggedPointIds,
+        objects
+      )
+
+      // Collect all IDs to edit. Coincident point edits are intentionally last:
+      // Rust flattens point edits into owner segment edits in order, and the
+      // point under the cursor should override broader selected-segment edits.
+      // A selected owner segment is skipped during child-point drags so an arc
+      // endpoint drag does not also translate the arc from its drag-start pose.
+      const idsToEdit = new Set<number>()
+      const dragAnchorIds = new Set<number>()
+      for (const id of selectedIds) {
+        if (draggedPointOwnerIds.has(id)) {
+          continue
+        }
+        idsToEdit.add(id)
+        dragAnchorIds.add(id)
+      }
+      const centerOwnerIds = getCenterOwnerSegmentIds(draggedPointIds, objects)
+      const connectedWarmStartIds = getConnectedDragWarmStartIds(
+        centerOwnerIds,
+        objects
+      )
+      for (const id of connectedWarmStartIds) {
+        idsToEdit.add(id)
+      }
+      for (const id of coincidentClusterPointIds) {
+        idsToEdit.delete(id)
+        idsToEdit.add(id)
+        dragAnchorIds.delete(id)
+        dragAnchorIds.add(id)
+      }
 
       for (const id of idsToEdit) {
         const obj = objects[id]
@@ -1372,6 +1624,10 @@ export function createOnDragCallback({
         }
 
         const isEntityUnderCursor = id === entityUnderCursorId
+        const pointPositionOverride =
+          coincidentClusterDragTarget && coincidentClusterPointIdSet.has(id)
+            ? coincidentClusterDragTarget
+            : undefined
 
         const ctor = buildSegmentCtorWithDrag({
           objUnderCursor: obj,
@@ -1380,6 +1636,7 @@ export function createOnDragCallback({
           currentCursorPosition: twoD,
           dragVec: dragVec,
           units,
+          pointPositionOverride,
         })
 
         if (ctor) {
@@ -1388,9 +1645,14 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
-        setIsSolveInProgress(false)
+        onUpdateActiveDragPointIds([])
         return
       }
+
+      const orderedDragAnchorIds = Array.from(dragAnchorIds)
+      onUpdateActiveDragPointIds(
+        getActiveDragPointIdsFromAnchorIds(orderedDragAnchorIds, objects)
+      )
 
       // Edit segments via Rust context
       const settings = await getJsAppSettings()
@@ -1399,11 +1661,19 @@ export function createOnDragCallback({
       }
       // Get sketchId from context data (needed for editSegments)
       const sketchId = getContextData().sketchId
+      const segmentEditIds = segmentsToEdit.map(({ id }) => id)
+      const explicitAnchorIds = sameOrderedIds(
+        orderedDragAnchorIds,
+        segmentEditIds
+      )
+        ? undefined
+        : orderedDragAnchorIds
       let result = await editSegments(
         0,
         sketchId,
         segmentsToEdit,
-        settings
+        settings,
+        ...(explicitAnchorIds ? [explicitAnchorIds] : [])
       ).catch((err) => {
         if (!isActiveDragSession()) {
           return null
@@ -1431,7 +1701,7 @@ export function createOnDragCallback({
               version: 0,
               sketchId,
               settings,
-              anchorSegmentIds: segmentsToEdit.map(({ id }) => id),
+              anchorSegmentIds: orderedDragAnchorIds,
             }).catch((err) => {
               if (!isActiveDragSession()) {
                 return null
@@ -1452,6 +1722,7 @@ export function createOnDragCallback({
           setLastGoodPreview({
             ...result,
             segmentsToEdit,
+            dragAnchorIds: explicitAnchorIds,
             constraintLabelEdits: appliedConstraintLabelEdits,
           })
           // Only advance the drag anchor on a valid solve.
@@ -1460,6 +1731,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         } else {
           const fallbackOutcome =
@@ -1484,15 +1756,27 @@ export function createOnDragCallback({
               : result),
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         }
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
-      onPreviewSolveSettled?.()
       setIsSolveInProgress(false)
+      const nextDragArgs = queuedDragArgs
+      queuedDragArgs = null
+      if (nextDragArgs && getIsDragActive()) {
+        await handleDrag(nextDragArgs, true)
+        if (!isQueuedContinuation) {
+          onPreviewSolveSettled?.()
+        }
+      } else if (!isQueuedContinuation) {
+        onPreviewSolveSettled?.()
+      }
     }
   }
+
+  return handleDrag
 }
 
 export function setUpOnDragAndSelectionClickCallbacks({
@@ -1514,6 +1798,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getIsDragActive, setIsDragActive] = createGetSet(false)
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
+  const [getDragStartPoint, setDragStartPoint] = createGetSet<Vector2>(
+    new Vector2()
+  )
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
@@ -1674,12 +1961,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
   const beginDragSession = () => {
     setIsDragActive(true)
+    updateActiveDragPointIds(context, [])
     const nextDragSessionId = getActiveDragSessionId() + 1
     setActiveDragSessionId(nextDragSessionId)
   }
 
   const invalidateDragSession = () => {
     setIsDragActive(false)
+    updateActiveDragPointIds(context, null)
     const nextDragSessionId = getActiveDragSessionId() + 1
     setActiveDragSessionId(nextDragSessionId)
   }
@@ -1738,6 +2027,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
+      setDragStartPoint,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -1763,6 +2053,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getDraggedEntityId,
       setDraggedEntityId,
       invalidateDragSession,
+      onUpdateActiveDragPointIds: (pointIds) => {
+        updateActiveDragPointIds(context, pointIds)
+      },
       // Send the last up-to-date state from the frontend to Rust. It doesn't know
       // about this last feedback loop yet!
       onComplete: async ({
@@ -1840,11 +2133,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
           const units = baseUnitToNumericSuffix(
             context.kclManager.fileSettings.defaultLengthUnit
           )
+          const snapObjects = currentSceneGraphDelta?.new_graph.objects ?? []
+          const snapPointIds =
+            draggedEntityId !== null &&
+            snapObjects.length > 0 &&
+            isPointSegment(snapObjects[draggedEntityId])
+              ? getCoincidentCluster(draggedEntityId, snapObjects)
+              : draggedEntityId !== null
+                ? [draggedEntityId]
+                : []
           const snapConstraints =
             snappingCandidate && draggedEntityId !== null
-              ? getConstraintsForSnapTarget(
-                  draggedEntityId,
-                  snappingCandidate.target
+              ? getConstraintsForSnapCluster(
+                  snapPointIds,
+                  snappingCandidate.target,
+                  snapObjects
                 )
               : []
           const settings = jsAppSettings(context.rustContext.settingsActor)
@@ -1860,16 +2163,24 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = []
+            constraintLabelEdits: ConstraintLabelEdit[] = [],
+            shouldCreateCheckpoint = true,
+            dragAnchorIds?: number[]
           ) => {
-            const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
-            let latestResult = await context.rustContext.editSegments(
-              0,
-              context.sketchId,
-              segmentsToEdit,
-              settings,
-              constraintLabelEdits.length === 0
-            )
+            const anchorSegmentIds =
+              dragAnchorIds ?? segmentsToEdit.map(({ id }) => id)
+            // The preview solve has the freshest visible guesses and hidden
+            // lowered-geometry warm starts. Commit from that branch on mouse-up
+            // so we do not reintroduce stale source guesses before settling.
+            let latestResult =
+              await context.rustContext.commitEditSegmentsFromPreview(
+                0,
+                context.sketchId,
+                segmentsToEdit,
+                settings,
+                constraintLabelEdits.length === 0 && shouldCreateCheckpoint,
+                dragAnchorIds
+              )
 
             for (const [
               index,
@@ -1882,13 +2193,20 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   constraintId,
                   labelPosition,
                   settings,
-                  index === constraintLabelEdits.length - 1,
+                  index === constraintLabelEdits.length - 1 &&
+                    shouldCreateCheckpoint,
                   anchorSegmentIds
                 )
             }
 
             return latestResult
           }
+
+          const settleSketchFromPreview = () =>
+            context.rustContext.sketchExecuteMockFromPreview(
+              SKETCH_FILE_VERSION,
+              context.sketchId
+            )
 
           const ensureRestoredBaseline = async () => {
             if (restoredPreDragOutcome) {
@@ -1911,7 +2229,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
             if (lastGoodPreview?.segmentsToEdit.length) {
               const recoveredCommit = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                true,
+                lastGoodPreview.dragAnchorIds
               )
 
               if (
@@ -1930,10 +2250,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               }
             }
 
-            return context.rustContext.sketchExecuteMock(
-              SKETCH_FILE_VERSION,
-              context.sketchId
-            )
+            return settleSketchFromPreview()
           }
 
           if (shouldRecoverInvalidPreview) {
@@ -1944,12 +2261,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
             snapConstraints.length > 0
           ) {
             const [x, y] = snappingCandidate.position
-            const editResult = await context.rustContext.editSegments(
-              0,
-              context.sketchId,
-              [
-                {
-                  id: draggedEntityId,
+            // Snaps are two-step commits: first move the dragged point to the
+            // snap target from the preview state, then add the persistent
+            // snap constraint. Move the whole coincident cluster here; editing
+            // only the point under the cursor can serialize guesses that tear
+            // an existing cluster apart before the new constraint is added.
+            const snappedPointEdit = snapPointIds.map(
+              (pointId) =>
+                ({
+                  id: pointId,
                   ctor: {
                     type: 'Point',
                     position: {
@@ -1965,11 +2285,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
                       },
                     },
                   },
-                },
-              ],
-              settings,
-              true
+                }) satisfies ExistingSegmentCtor
             )
+            if (snappedPointEdit.length === 0) {
+              snappedPointEdit.push({
+                id: draggedEntityId,
+                ctor: {
+                  type: 'Point',
+                  position: {
+                    x: {
+                      type: 'Var',
+                      value: roundOff(x),
+                      units,
+                    },
+                    y: {
+                      type: 'Var',
+                      value: roundOff(y),
+                      units,
+                    },
+                  },
+                },
+              })
+            }
 
             const axisConstraint = snapConstraints.find(
               (constraint) =>
@@ -1979,24 +2316,41 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
             if (axisConstraint) {
               const objects = currentSceneGraphDelta?.new_graph.objects ?? []
-              const existingSameConstraint = getAxisConstraintWithOrigin(
-                draggedEntityId,
-                axisConstraint.type,
-                objects
-              )
+              const existingSameConstraint =
+                getAxisConstraintWithOriginForCluster(
+                  snapPointIds,
+                  axisConstraint.type,
+                  objects
+                )
               if (existingSameConstraint) {
                 // Same zero distance constraint already exists -> don't add it again
-                result = editResult
+                result =
+                  await context.rustContext.commitEditSegmentsFromPreview(
+                    0,
+                    context.sketchId,
+                    snappedPointEdit,
+                    settings,
+                    true
+                  )
               } else {
+                await context.rustContext.commitEditSegmentsFromPreview(
+                  0,
+                  context.sketchId,
+                  snappedPointEdit,
+                  settings,
+                  false
+                )
+
                 const oppositeConstraintType =
                   axisConstraint.type === 'Horizontal'
                     ? 'Vertical'
                     : 'Horizontal'
-                const existingOppositeConstraint = getAxisConstraintWithOrigin(
-                  draggedEntityId,
-                  oppositeConstraintType,
-                  objects
-                )
+                const existingOppositeConstraint =
+                  getAxisConstraintWithOriginForCluster(
+                    snapPointIds,
+                    oppositeConstraintType,
+                    objects
+                  )
                 if (existingOppositeConstraint) {
                   // If there is already a 0 distance opposite constraint:
                   // delete that and add a Coincident constraint instead.
@@ -2013,7 +2367,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     {
                       type: 'Coincident',
-                      segments: [draggedEntityId, 'ORIGIN'],
+                      segments: [...snapPointIds, 'ORIGIN'],
                     },
                     settings,
                     true
@@ -2042,16 +2396,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
               const objects = currentSceneGraphDelta?.new_graph.objects ?? []
               const constraintsToAdd = snapConstraints.filter((constraint) => {
                 if (constraint.type === 'Coincident') {
-                  return !hasCoincidentConstraintForSnapTarget(
-                    draggedEntityId,
+                  return !hasCoincidentConstraintForSnapCluster(
+                    snapPointIds,
                     snappingCandidate.target,
                     objects
                   )
                 }
 
                 if (constraint.type === 'Midpoint') {
-                  return !hasMidpointConstraintForSnapTarget(
-                    draggedEntityId,
+                  return !hasMidpointConstraintForSnapCluster(
+                    snapPointIds,
                     snappingCandidate.target,
                     objects
                   )
@@ -2061,9 +2415,23 @@ export function setUpOnDragAndSelectionClickCallbacks({
               })
 
               if (constraintsToAdd.length === 0) {
-                result = editResult
+                result =
+                  await context.rustContext.commitEditSegmentsFromPreview(
+                    0,
+                    context.sketchId,
+                    snappedPointEdit,
+                    settings,
+                    true
+                  )
               } else {
-                let latestResult = editResult
+                let latestResult =
+                  await context.rustContext.commitEditSegmentsFromPreview(
+                    0,
+                    context.sketchId,
+                    snappedPointEdit,
+                    settings,
+                    false
+                  )
 
                 for (const [index, constraint] of constraintsToAdd.entries()) {
                   latestResult = await context.rustContext.addConstraint(
@@ -2080,27 +2448,35 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           } else {
             if (lastGoodPreview?.segmentsToEdit.length) {
-              result = await commitSegmentAndLabelEdits(
+              // Commit dragged positions without checkpointing, then settle:
+              // a solve without drag constraints finds the nearest valid
+              // solution and creates the checkpoint.
+              await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                false,
+                lastGoodPreview.dragAnchorIds
               )
+              result = await settleSketchFromPreview()
             } else if (!currentSceneGraphDelta) {
-              result = await context.rustContext.sketchExecuteMock(
-                SKETCH_FILE_VERSION,
-                context.sketchId
-              )
+              result = await settleSketchFromPreview()
             } else {
               const objects = currentSceneGraphDelta.new_graph.objects
               const coincidentClusterPointIds =
                 draggedEntityId !== null
                   ? getCoincidentCluster(draggedEntityId, objects)
                   : []
+              const draggedPointOwnerIds =
+                draggedEntityId !== null &&
+                isPointSegment(objects[draggedEntityId])
+                  ? getPointOwnerSegmentIds(coincidentClusterPointIds, objects)
+                  : new Set<number>()
               const idsToEdit = new Set<number>()
               coincidentClusterPointIds.forEach((id) => {
                 idsToEdit.add(id)
               })
               snapshot.context.selectedIds.forEach((id) => {
-                if (isObjectSelectionId(id)) {
+                if (isObjectSelectionId(id) && !draggedPointOwnerIds.has(id)) {
                   idsToEdit.add(id)
                 }
               })
@@ -2115,18 +2491,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
               }
 
               if (segmentsToEdit.length === 0) {
-                result = await context.rustContext.sketchExecuteMock(
-                  SKETCH_FILE_VERSION,
-                  context.sketchId
-                )
+                result = await settleSketchFromPreview()
               } else {
-                result = await context.rustContext.editSegments(
+                // Same settle pattern: commit positions, then re-solve without
+                // drag constraints to snap back to a geometrically valid state.
+                await context.rustContext.commitEditSegmentsFromPreview(
                   0,
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  true
+                  false
                 )
+                result = await settleSketchFromPreview()
               }
             }
           }
@@ -2172,6 +2548,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastGoodPreview,
       setLastGoodPreview,
       getDragStartOutcome,
+      getDragStartPoint,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
@@ -2184,13 +2561,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
         version: number,
         sketchId: number,
         segments: Array<ExistingSegmentCtor>,
-        settings: DeepPartial<Configuration>
+        settings: DeepPartial<Configuration>,
+        anchorSegmentIds?: number[]
       ) => {
-        return context.rustContext.editSegments(
+        return context.rustContext.previewEditSegments(
           version,
           sketchId,
           segments,
-          settings
+          settings,
+          anchorSegmentIds
         )
       },
       editDistanceConstraintLabelPosition: async (
@@ -2219,6 +2598,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
+            suppressFreedomConflictColoring:
+              outcome.suppressFreedomConflictColoring,
           },
         })
       },
@@ -2228,11 +2609,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
         jsAppSettings(context.rustContext.settingsActor),
       sceneInfra: context.sceneInfra,
       onUpdateDragSnapping: updateDragSnappingState,
+      onUpdateActiveDragPointIds: (pointIds) => {
+        updateActiveDragPointIds(context, pointIds)
+      },
       onPreviewSolveStarted: markPreviewSolveStarted,
       onPreviewSolveSettled: markPreviewSolveSettled,
     }),
     onMouseDownSelection: () => {
       setDraggedEntityId(null)
+      updateActiveDragPointIds(context, null)
       const snapshot = self.getSnapshot()
       const hoveredId = snapshot.context.hoveredId
       if (!isObjectSelectionId(hoveredId)) {

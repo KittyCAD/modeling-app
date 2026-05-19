@@ -9,6 +9,7 @@ import type { Coords2d } from '@src/lang/util'
 import { distance2d } from '@src/lib/utils2d'
 import {
   getArcPoints,
+  getCoincidentCluster,
   getLinePoints,
   isArcSegment,
   isCircleSegment,
@@ -86,6 +87,28 @@ export function getCoincidentSegmentsForSnapTarget(
   segmentId: number,
   target: SnapTarget | undefined
 ): ConstraintSegment[] | null {
+  return getCoincidentSegmentsForSnapCluster([segmentId], target)
+}
+
+function dedupeConstraintSegments(
+  segments: ConstraintSegment[]
+): ConstraintSegment[] {
+  const seen = new Set<string>()
+  return segments.filter((segment) => {
+    const key = typeof segment === 'number' ? `segment:${segment}` : segment
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
+export function getCoincidentSegmentsForSnapCluster(
+  segmentIds: number[],
+  target: SnapTarget | undefined,
+  objects?: ApiObject[]
+): ConstraintSegment[] | null {
   if (
     target === undefined ||
     target.type === X_AXIS_TARGET ||
@@ -94,11 +117,22 @@ export function getCoincidentSegmentsForSnapTarget(
     return null
   }
 
-  if (target.type === ORIGIN_TARGET) {
-    return [segmentId, 'ORIGIN']
+  if (segmentIds.length === 0) {
+    return null
   }
 
-  return isCoincidentSnapTarget(target) ? [segmentId, target.id] : null
+  if (target.type === ORIGIN_TARGET) {
+    return dedupeConstraintSegments([...segmentIds, 'ORIGIN'])
+  }
+
+  if (target.type === 'point') {
+    const targetSegmentIds = objects
+      ? getCoincidentCluster(target.id, objects)
+      : [target.id]
+    return dedupeConstraintSegments([...segmentIds, ...targetSegmentIds])
+  }
+
+  return isCoincidentSnapTarget(target) ? [segmentIds[0], target.id] : null
 }
 
 export function getConstraintForSnapTarget(
@@ -110,7 +144,16 @@ export function getConstraintForSnapTarget(
 
 export function getConstraintsForSnapTarget(
   segmentId: number,
-  target: SnapTarget | undefined
+  target: SnapTarget | undefined,
+  objects?: ApiObject[]
+): ApiConstraint[] {
+  return getConstraintsForSnapCluster([segmentId], target, objects)
+}
+
+export function getConstraintsForSnapCluster(
+  segmentIds: number[],
+  target: SnapTarget | undefined,
+  objects?: ApiObject[]
 ): ApiConstraint[] {
   switch (target?.type) {
     case 'point':
@@ -119,7 +162,11 @@ export function getConstraintsForSnapTarget(
     case 'arc':
     case 'circle':
     case ORIGIN_TARGET: {
-      const segments = getCoincidentSegmentsForSnapTarget(segmentId, target)
+      const segments = getCoincidentSegmentsForSnapCluster(
+        segmentIds,
+        target,
+        objects
+      )
       if (segments === null) {
         return []
       }
@@ -131,9 +178,13 @@ export function getConstraintsForSnapTarget(
         },
       ]
       if (target.type === 'midpoint') {
+        const point = segmentIds[0]
+        if (point === undefined) {
+          return constraints
+        }
         constraints.push({
           type: 'Midpoint',
-          point: segmentId,
+          point,
           segment: target.id,
         })
       }
@@ -141,17 +192,23 @@ export function getConstraintsForSnapTarget(
       return constraints
     }
     case X_AXIS_TARGET:
+      if (segmentIds[0] === undefined) {
+        return []
+      }
       return [
         {
           type: 'Horizontal',
-          points: [segmentId, 'ORIGIN'],
+          points: [segmentIds[0], 'ORIGIN'],
         },
       ]
     case Y_AXIS_TARGET:
+      if (segmentIds[0] === undefined) {
+        return []
+      }
       return [
         {
           type: 'Vertical',
-          points: [segmentId, 'ORIGIN'],
+          points: [segmentIds[0], 'ORIGIN'],
         },
       ]
     default:
