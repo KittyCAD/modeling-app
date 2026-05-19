@@ -1,6 +1,7 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
@@ -16,9 +17,13 @@ use crate::ExecState;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
+use crate::execution::Artifact;
+use crate::execution::ArtifactId;
+use crate::execution::CodeRef;
 use crate::execution::ControlFlowKind;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
+use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Plane;
@@ -33,11 +38,39 @@ use crate::std::args::TyF64;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 
-/// Bundle of common GD&T annotation style arguments.
-#[derive(Debug, Clone)]
-pub(crate) struct AnnotationStyle {
-    pub font_point_size: Option<TyF64>,
-    pub font_scale: Option<TyF64>,
+// The engine exposes two text knobs:
+// - font_point_size controls the FreeType raster/bitmap texture resolution in pixels/points.
+// - font_scale is the unitless model-space multiplier applied to that texture.
+// KCL exposes only fontSize as a Length. Keep the raster quality fixed so changing
+// quality does not resize the text, and map the requested length into font_scale.
+const GDT_FONT_TEXTURE_POINT_SIZE: u32 = 36;
+const DEFAULT_GDT_FONT_SIZE_MM: f64 = 10.0;
+
+// Calibration target: measured annotation text/frame height in millimeters when
+// font_scale is 1.0 and GDT_FONT_TEXTURE_POINT_SIZE is fixed. Tune this value from
+// scene measurements, not by exposing engine font_point_size to users.
+const GDT_FONT_SCALE_1_HEIGHT_MM: f64 = 8.0;
+
+fn gdt_font_scale(font_size: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
+    let requested_height_mm = font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
+    if requested_height_mm <= 0.0 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "fontSize must be greater than 0.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    Ok(gdt_font_scale_for_height_mm(requested_height_mm))
+}
+
+fn gdt_font_scale_for_height_mm(requested_height_mm: f64) -> f32 {
+    (requested_height_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32
+}
+
+fn set_engine_scene_units_cmd(cmd_id: uuid::Uuid, units: kcmc::units::UnitLength) -> ModelingCmdReq {
+    ModelingCmdReq {
+        cmd_id: cmd_id.into(),
+        cmd: ModelingCmd::from(mcmd::SetSceneUnits::builder().unit(units).build()),
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -51,6 +84,13 @@ enum DistanceEntity {
 struct DistanceEndpoint {
     entity_id: uuid::Uuid,
     entity_pos: KPoint2d<f64>,
+}
+
+fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotation_id: uuid::Uuid) {
+    exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
+        id: ArtifactId::new(annotation_id),
+        code_ref: CodeRef::placeholder(args.source_range),
+    }));
 }
 
 impl DistanceEntity {
@@ -98,8 +138,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotation = inner_datum(
         face,
@@ -107,10 +146,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -127,7 +163,7 @@ async fn inner_datum(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<GdtAnnotation, KclError> {
@@ -177,8 +213,8 @@ async fn inner_datum(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(0)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     exec_state
@@ -193,6 +229,7 @@ async fn inner_datum(
             ),
         )
         .await?;
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     Ok(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -211,8 +248,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_flatness(
         faces,
@@ -221,10 +257,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -249,8 +282,7 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_profile(
         edges,
@@ -260,10 +292,7 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -293,8 +322,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_position(
         faces.unwrap_or_default(),
@@ -305,10 +333,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -330,8 +355,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_distance(
         from,
@@ -342,10 +366,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -375,8 +396,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_perpendicularity(
         faces.unwrap_or_default(),
@@ -387,10 +407,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -420,8 +437,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_parallelism(
         faces.unwrap_or_default(),
@@ -432,10 +448,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -459,8 +472,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_annotation(
         annotation,
@@ -469,10 +481,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        font_size,
         exec_state,
         &args,
     )
@@ -490,7 +499,7 @@ async fn inner_perpendicularity(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -529,7 +538,7 @@ async fn inner_perpendicularity(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -547,7 +556,7 @@ async fn inner_perpendicularity(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -568,7 +577,7 @@ async fn inner_parallelism(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -607,7 +616,7 @@ async fn inner_parallelism(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -625,7 +634,7 @@ async fn inner_parallelism(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -644,7 +653,7 @@ async fn inner_annotation(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -684,7 +693,7 @@ async fn inner_annotation(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -699,7 +708,7 @@ async fn inner_annotation(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -720,7 +729,7 @@ async fn inner_distance(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -765,7 +774,7 @@ async fn inner_distance(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -798,7 +807,7 @@ async fn inner_distance(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -817,7 +826,7 @@ async fn inner_profile(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -849,7 +858,7 @@ async fn inner_profile(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -869,7 +878,7 @@ async fn inner_position(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -908,7 +917,7 @@ async fn inner_position(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -926,7 +935,7 @@ async fn inner_position(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -944,7 +953,7 @@ async fn inner_flatness(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -989,8 +998,8 @@ async fn inner_flatness(
                 KPoint2d { x: 100.0, y: 100.0 }
             })
             .precision(precision)
-            .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-            .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+            .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+            .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
             .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
             .build();
         let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1006,6 +1015,7 @@ async fn inner_flatness(
                 ),
             )
             .await?;
+        add_gdt_annotation_artifact(exec_state, args, annotation_id);
         annotations.push(GdtAnnotation {
             id: annotation_id,
             meta,
@@ -1038,13 +1048,14 @@ async fn create_basic_distance_annotation(
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
     leader_scale: Option<&TyF64>,
-    style: &AnnotationStyle,
+    font_size: Option<&TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
     annotations: &mut Vec<GdtAnnotation>,
 ) -> Result<(), KclError> {
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
+    let display_units = exec_state.length_unit();
     let dimension = AnnotationBasicDimension::builder()
         .from_entity_id(from.entity_id)
         .from_entity_pos(from.entity_pos)
@@ -1052,7 +1063,7 @@ async fn create_basic_distance_annotation(
         .to_entity_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
-                .tolerance(tolerance.to_mm())
+                .tolerance(tolerance.to_length_units(display_units))
                 .build(),
         )
         .plane_id(frame_plane_id)
@@ -1065,23 +1076,43 @@ async fn create_basic_distance_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(precision)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().dimension(dimension).build();
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
-            ModelingCmd::from(
-                mcmd::NewAnnotation::builder()
-                    .options(options)
-                    .clobber(false)
-                    .annotation_type(AnnotationType::T3D)
-                    .build(),
-            ),
-        )
-        .await?;
+    // The engine formats auto-measured MBD distance labels from its current scene units.
+    // Queue the unit switch, annotation, and reset together so other module commands
+    // cannot interleave while the engine's MBD display units are flipped.
+    let use_display_units = display_units != kcmc::units::UnitLength::Millimeters;
+    let annotation_cmd = ModelingCmd::from(
+        mcmd::NewAnnotation::builder()
+            .options(options)
+            .clobber(false)
+            .annotation_type(AnnotationType::T3D)
+            .build(),
+    );
+    let cmd_meta = ModelingCmdMeta::from_args_id(exec_state, args, annotation_id);
+    if use_display_units {
+        let set_units_id = exec_state.next_uuid();
+        let reset_units_id = exec_state.next_uuid();
+        exec_state
+            .batch_modeling_cmds(
+                cmd_meta,
+                &[
+                    set_engine_scene_units_cmd(set_units_id, display_units),
+                    ModelingCmdReq {
+                        cmd_id: annotation_id.into(),
+                        cmd: annotation_cmd,
+                    },
+                    set_engine_scene_units_cmd(reset_units_id, kcmc::units::UnitLength::Millimeters),
+                ],
+            )
+            .await?;
+    } else {
+        exec_state.batch_modeling_cmd(cmd_meta, annotation_cmd).await?;
+    }
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -1099,7 +1130,7 @@ async fn create_feature_control_annotation(
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
     leader_scale: Option<&TyF64>,
-    style: &AnnotationStyle,
+    font_size: Option<&TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
     annotations: &mut Vec<GdtAnnotation>,
@@ -1122,8 +1153,8 @@ async fn create_feature_control_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(precision)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1139,6 +1170,7 @@ async fn create_feature_control_annotation(
             ),
         )
         .await?;
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -1153,7 +1185,7 @@ async fn create_annotation(
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
     leader_scale: Option<&TyF64>,
-    style: &AnnotationStyle,
+    font_size: Option<&TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
     annotations: &mut Vec<GdtAnnotation>,
@@ -1175,8 +1207,8 @@ async fn create_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(0)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1192,6 +1224,7 @@ async fn create_annotation(
             ),
         )
         .await?;
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -1308,4 +1341,215 @@ fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
         range.end(),
         range.module_id(),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ExecutorContext;
+    use crate::execution::Artifact;
+    use crate::execution::ExecutorSettings;
+    use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+
+    const GDT_DISTANCE_KCL_TEMPLATE: &str = r#"
+@settings(defaultLengthUnit = __UNIT__, kclVersion = 2)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10mm)
+gdt::distance(
+  edges = [
+    getCommonEdge(faces = [
+      region001.tags.line4,
+      region001.tags.line1
+    ])
+  ],
+  tolerance = __TOLERANCE__,
+  framePosition = __FRAME_POSITION__,
+  fontSize = 2in,
+)
+"#;
+
+    fn gdt_distance_kcl(unit: &str, tolerance: &str, frame_position: &str) -> String {
+        GDT_DISTANCE_KCL_TEMPLATE
+            .replace("__UNIT__", unit)
+            .replace("__TOLERANCE__", tolerance)
+            .replace("__FRAME_POSITION__", frame_position)
+    }
+
+    async fn gdt_distance_commands(code: &str) -> Vec<ModelingCmd> {
+        let result = parse_execute(code).await.unwrap();
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .map(|artifact_command| artifact_command.command.clone())
+            .collect()
+    }
+
+    #[track_caller]
+    fn set_scene_units(command: &ModelingCmd) -> kcmc::units::UnitLength {
+        let ModelingCmd::SetSceneUnits(set_scene_units) = command else {
+            panic!("expected set_scene_units command, got {command:?}");
+        };
+        set_scene_units.unit
+    }
+
+    #[track_caller]
+    fn basic_dimension(command: &ModelingCmd) -> &AnnotationBasicDimension {
+        let ModelingCmd::NewAnnotation(new_annotation) = command else {
+            panic!("expected new_annotation command, got {command:?}");
+        };
+        new_annotation.options.dimension.as_ref().unwrap()
+    }
+
+    #[track_caller]
+    fn assert_close(actual: f64, expected: f64) {
+        assert!((actual - expected).abs() < 1e-6, "expected {expected}, got {actual}");
+    }
+
+    #[track_caller]
+    fn new_annotation_command_index(commands: &[ModelingCmd]) -> usize {
+        commands
+            .iter()
+            .position(|command| matches!(command, ModelingCmd::NewAnnotation(_)))
+            .unwrap()
+    }
+
+    #[test]
+    fn gdt_font_scale_is_scene_height_divided_by_calibration_height() {
+        let scale_at_calibrated_height = gdt_font_scale_for_height_mm(GDT_FONT_SCALE_1_HEIGHT_MM);
+        assert!((scale_at_calibrated_height - 1.0).abs() < f32::EPSILON);
+
+        let double_height_scale = gdt_font_scale_for_height_mm(GDT_FONT_SCALE_1_HEIGHT_MM * 2.0);
+        assert!((double_height_scale - 2.0).abs() < f32::EPSILON);
+
+        let inch_in_mm = 25.4;
+        let inch_scale = gdt_font_scale_for_height_mm(inch_in_mm);
+        assert!((inch_scale - (inch_in_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32).abs() < f32::EPSILON);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_sets_scene_units_around_non_mm_annotation() {
+        let cases = [
+            (
+                "in",
+                "2.54mm",
+                "[10, -10]",
+                kcmc::units::UnitLength::Inches,
+                0.1,
+                254.0,
+                -254.0,
+            ),
+            (
+                "cm",
+                "10mm",
+                "[1, -1]",
+                kcmc::units::UnitLength::Centimeters,
+                1.0,
+                10.0,
+                -10.0,
+            ),
+        ];
+
+        for (default_unit, tolerance, frame_position, scene_unit, expected_tolerance, expected_x, expected_y) in cases {
+            let code = gdt_distance_kcl(default_unit, tolerance, frame_position);
+            let commands = gdt_distance_commands(&code).await;
+            let annotation_index = new_annotation_command_index(&commands);
+            let dimension = basic_dimension(&commands[annotation_index]);
+
+            assert_eq!(set_scene_units(&commands[annotation_index - 1]), scene_unit);
+            assert_eq!(
+                set_scene_units(&commands[annotation_index + 1]),
+                kcmc::units::UnitLength::Millimeters
+            );
+
+            assert_close(dimension.dimension.tolerance, expected_tolerance);
+            assert_close(dimension.offset.x, expected_x);
+            assert_close(dimension.offset.y, expected_y);
+            assert_close(
+                f64::from(dimension.font_scale),
+                gdt_font_scale_for_height_mm(50.8).into(),
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_keeps_mm_annotation_in_current_scene_units() {
+        let code = gdt_distance_kcl("mm", "2.54mm", "[10, -10]");
+        let commands = gdt_distance_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands);
+        let dimension = basic_dimension(&commands[annotation_index]);
+
+        assert!(
+            !commands
+                .iter()
+                .any(|command| matches!(command, ModelingCmd::SetSceneUnits(_)))
+        );
+        assert_close(dimension.dimension.tolerance, 2.54);
+        assert_close(dimension.offset.x, 10.0);
+        assert_close(dimension.offset.y, -10.0);
+    }
+
+    const GDT_DATUM_KCL: &str = r#"
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 5mm])
+  edge3 = line(start = [var 8mm, var 5mm], end = [var 0mm, var 5mm])
+  edge4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [4mm, 2mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+
+gdt::datum(face = top, name = "A", framePosition = [10mm, 0mm], framePlane = XZ)
+"#;
+
+    async fn gdt_artifact_count(skip_artifact_graph: bool) -> usize {
+        let settings = ExecutorSettings {
+            skip_artifact_graph,
+            ..Default::default()
+        };
+        let ctx = ExecutorContext::new_mock(Some(settings)).await;
+        let program = crate::Program::parse_no_errs(GDT_DATUM_KCL).unwrap();
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let outcome = ctx.run_mock(&program, &mock_config).await.unwrap();
+        ctx.close().await;
+
+        outcome
+            .artifact_graph
+            .values()
+            .filter(|artifact| matches!(artifact, Artifact::GdtAnnotation(_)))
+            .count()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_annotations_do_not_follow_runtime_artifact_graph_setting() {
+        assert_eq!(gdt_artifact_count(false).await, 1);
+        assert_eq!(gdt_artifact_count(true).await, 1);
+    }
 }

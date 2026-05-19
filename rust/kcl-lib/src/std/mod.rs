@@ -53,11 +53,20 @@ pub type StdFn =
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
     pub name: String,
+    pub check_consumed_solid_args: bool,
 }
 
 impl StdFnProps {
     pub(crate) fn default(name: &str) -> Self {
-        Self { name: name.to_owned() }
+        Self {
+            name: name.to_owned(),
+            check_consumed_solid_args: true,
+        }
+    }
+
+    pub(crate) fn skip_consumed_solid_arg_check(mut self) -> Self {
+        self.check_consumed_solid_args = false;
+        self
     }
 }
 
@@ -222,7 +231,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "hide") => (
             |e, a| Box::pin(crate::std::transform::hide(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::transform::hide"),
+            StdFnProps::default("std::transform::hide").skip_consumed_solid_arg_check(),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
@@ -318,7 +327,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("array", "flatten") => (
             |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::flatten"),
+            StdFnProps::default("std::array::flatten").skip_consumed_solid_arg_check(),
         ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
@@ -555,6 +564,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solver", "circle") => (
             |e, a| Box::pin(crate::std::constraints::circle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::circle"),
+        ),
+        ("solver", "controlPointSpline") => (
+            |e, a| Box::pin(crate::std::constraints::control_point_spline(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::controlPointSpline"),
         ),
         ("solver", "coincident") => (
             |e, a| Box::pin(crate::std::constraints::coincident(e, a).map(|r| r.map(KclValue::continue_))),

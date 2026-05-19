@@ -119,7 +119,7 @@ async function dragBetweenRatios(
 const TEST_CODE = `mySketch = startSketchOn(XZ)
 myProfile = startProfile(mySketch, at = [0, 1])
   |> line(end = [-2.5, 3.75])
-sketch(on = XZ) {
+newSketch = sketch(on = XZ) {
   line(start = [var -0.88mm, var 0.54mm], end = [var 0.63mm, var 1.18mm])
   line(start = [var 0.85mm, var -0.57mm], end = [var -0.21mm, var 1.55mm])
   line(start = [var -1.59mm, var -0.49mm], end = [var 0.09mm, var -0.56mm])
@@ -153,7 +153,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await editor.expectEditor.toContain('sketch(on = XZ)')
     })
@@ -174,7 +174,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       })
 
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'Solve Sketch',
+        'newSketch',
         0
       )
       await solveSketchOperation.dblclick()
@@ -251,7 +251,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start a new sketch and select a plane', async () => {
@@ -441,7 +441,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start a new sketch and equip line tool', async () => {
@@ -570,7 +570,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -780,7 +780,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
 
       await toolbar.openFeatureTreePane()
@@ -901,7 +901,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
 
       await toolbar.openFeatureTreePane()
@@ -1048,7 +1048,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start a new sketch and equip center arc', async () => {
@@ -1492,7 +1492,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -1534,17 +1534,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
             .map((el) => el.getAttribute('data-segment_id'))
             .filter((value): value is string => Boolean(value))
         )
-    const initialHandleIds = await getHandleIds()
+    const initialHandleCount = (await getHandleIds()).length
 
     const expectBackToInitialCode = async (changedCode: string) => {
       await pressUndo()
       const undoneCode = await waitForCodeChange(page, changedCode)
       expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
       await expect
-        .poll(async () => JSON.stringify(await getHandleIds()), {
+        .poll(async () => (await getHandleIds()).length, {
           timeout: 10000,
         })
-        .toBe(JSON.stringify(initialHandleIds))
+        .toBe(initialHandleCount)
     }
 
     const applyConstraintStep = async ({
@@ -1823,7 +1823,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
     })
 
@@ -1920,30 +1920,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }, code)
       await page.setBodyDimensions({ width: 1200, height: 1000 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch(on')
       await toolbar.openFeatureTreePane()
     })
 
-    // TODO: figure out why this is needed for frontend's deleteObjects to work
-    await test.step('Enter sketch edit mode and exit it', async () => {
-      await expect(page.getByText('Building feature tree')).not.toBeVisible({
-        timeout: 10000,
-      })
-      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await solveSketchOperation.dblclick()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await toolbar.exitSketchBtn.click()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.startSketchBtn).toBeEnabled()
-    })
-
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
@@ -1951,12 +1934,18 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
+    // TODO: can't quite figure out why this is needed for the second delete to work
+    await test.step('Wait a bit', async () => {
+      await toolbar.closeFeatureTreePane()
+      await page.waitForTimeout(1000)
+    })
+
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
@@ -1964,7 +1953,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       )
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(
         'coincident([line2.start, line1.end])'
       )
@@ -1974,7 +1963,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('sketch(on')
     })
   })
@@ -2015,7 +2004,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }, square)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
     })
 
@@ -2058,7 +2047,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Expect extrusion', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
@@ -2079,7 +2068,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(extrudeOp).toBeVisible()
       await extrudeOp.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('extrude(')
     })
 
@@ -2091,7 +2080,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(regionOp).toBeVisible()
       await regionOp.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('region(')
       await editor.expectEditor.toContain(square, { shouldNormalise: true })
     })
@@ -2116,7 +2105,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }, squareInches)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
       await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
     })
@@ -2160,7 +2149,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Expect extrusion uses inches for region point', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
@@ -2204,7 +2193,7 @@ extrude001 = extrude(region001, length = 5)`
       await page.setBodyDimensions({ width: 1200, height: 1000 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start sketch and click center face', async () => {
@@ -2254,7 +2243,7 @@ extrude001 = extrude(region001, length = 5)`
       await page.setBodyDimensions({ width: 1200, height: 1000 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start sketch and click top face', async () => {

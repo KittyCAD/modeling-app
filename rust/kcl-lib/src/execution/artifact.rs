@@ -512,6 +512,14 @@ pub struct Helix {
     pub consumed: bool,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct GdtAnnotationArtifact {
+    pub id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -562,6 +570,7 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
+    GdtAnnotation(GdtAnnotationArtifact),
     Pattern(Pattern),
 }
 
@@ -587,6 +596,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
             Artifact::Helix(a) => a.id,
+            Artifact::GdtAnnotation(a) => a.id,
             Artifact::Pattern(a) => a.id,
         }
     }
@@ -614,6 +624,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
             Artifact::Helix(a) => Some(&a.code_ref),
+            Artifact::GdtAnnotation(a) => Some(&a.code_ref),
             Artifact::Pattern(a) => Some(&a.code_ref),
         }
     }
@@ -641,6 +652,7 @@ impl Artifact {
             | Artifact::EdgeCut(_)
             | Artifact::EdgeCutEdge(_)
             | Artifact::Helix(_)
+            | Artifact::GdtAnnotation(_)
             | Artifact::Pattern(_) => None,
         }
     }
@@ -668,6 +680,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(a) => a.merge(new),
+            Artifact::GdtAnnotation(a) => a.merge(new),
             Artifact::Pattern(a) => a.merge(new),
         }
     }
@@ -795,6 +808,17 @@ impl Helix {
         merge_opt_id(&mut self.axis_id, new.axis_id);
         merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
         self.consumed = new.consumed;
+
+        None
+    }
+}
+
+impl GdtAnnotationArtifact {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::GdtAnnotation(new) = new else {
+            return Some(new);
+        };
+        self.code_ref = new.code_ref;
 
         None
     }
@@ -1030,6 +1054,12 @@ fn fill_in_node_paths(
         Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
             constraint.code_ref.node_path =
                 NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
+        }
+        Artifact::GdtAnnotation(annotation) if annotation.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, annotation.code_ref.range, import_code_refs);
+            annotation.code_ref.range = range;
+            annotation.code_ref.node_path = node_path;
         }
         _ => {}
     }
@@ -1451,6 +1481,10 @@ fn remap_artifact_for_clone(
             } else {
                 source.consumed
             },
+        }),
+        Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
+            id: remap_id_for_clone(source.id, entity_id_map),
+            code_ref: clone_code_ref.clone(),
         }),
         Artifact::Pattern(source) => Artifact::Pattern(Pattern {
             id: remap_id_for_clone(source.id, entity_id_map),

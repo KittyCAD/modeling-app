@@ -26,10 +26,10 @@ import {
   addLoft,
   addRevolve,
   addSweep,
-  getAxisExpression,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'

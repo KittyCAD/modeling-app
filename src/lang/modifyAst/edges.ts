@@ -20,6 +20,7 @@ import {
 import {
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
+  getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
@@ -324,97 +325,6 @@ type BodySelectionData = {
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
-}
-
-function getSketchSegmentNameFromSourceSurface(
-  sourceSurfaceArtifact: Artifact,
-  edgeArtifact: Artifact,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
-): string | null {
-  if (sourceSurfaceArtifact.type !== 'sweep') {
-    return null
-  }
-
-  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
-    ast,
-    sourceSurfaceArtifact.codeRef.pathToNode,
-    wasmInstance,
-    ['CallExpressionKw']
-  )
-  if (
-    err(sourceSurfaceNode) ||
-    sourceSurfaceNode.node.type !== 'CallExpressionKw'
-  ) {
-    return null
-  }
-
-  const sweepInput = sourceSurfaceNode.node.unlabeled
-  if (!sweepInput) {
-    return null
-  }
-
-  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
-  if (edgeArtifact.type === 'segment') {
-    segmentArtifact = edgeArtifact
-  } else if (edgeArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: edgeArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      segmentArtifact = segment
-    }
-  }
-
-  if (
-    sweepInput.type === 'MemberExpression' &&
-    sweepInput.property.type === 'Name'
-  ) {
-    return sweepInput.property.name.name
-  }
-
-  if (sweepInput.type !== 'ArrayExpression') {
-    return null
-  }
-
-  if (segmentArtifact) {
-    const pathArtifact = getArtifactOfTypes(
-      { key: sourceSurfaceArtifact.pathId, types: ['path'] },
-      artifactGraph
-    )
-    if (!err(pathArtifact) && pathArtifact.type === 'path') {
-      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
-        (segmentId) =>
-          segmentId === segmentArtifact.originalSegId ||
-          segmentId === segmentArtifact.id
-      )
-
-      if (matchingSegmentIndex !== -1) {
-        const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
-        if (
-          matchingSegmentExpr?.type === 'MemberExpression' &&
-          matchingSegmentExpr.property.type === 'Name'
-        ) {
-          return matchingSegmentExpr.property.name.name
-        }
-      }
-    }
-  }
-
-  const firstSweepSegment = sweepInput.elements.find(
-    (element) =>
-      element.type === 'MemberExpression' && element.property.type === 'Name'
-  )
-  if (
-    firstSweepSegment?.type === 'MemberExpression' &&
-    firstSweepSegment.property.type === 'Name'
-  ) {
-    return firstSweepSegment.property.name.name
-  }
-
-  return null
 }
 
 function getRegionSketchTagExprFromSourceSurface(

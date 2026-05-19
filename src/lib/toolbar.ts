@@ -1,10 +1,11 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -14,6 +15,8 @@ import {
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+const SKETCH_EXPERIMENTAL_FEATURES_FLAG = 'sketch_experimental_features'
 
 export type ToolbarModeName =
   | 'modeling'
@@ -427,8 +430,35 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
 type ToolbarCommands = Pick<ReturnType<typeof useApp>['commands'], 'send'>
 
 export function buildToolbarConfig(
-  commands: ToolbarCommands
+  commands: ToolbarCommands,
+  {
+    showSplineTool = false,
+  }: {
+    showSplineTool?: boolean
+  } = {}
 ): Record<ToolbarModeName, ToolbarMode> {
+  const splineToolbarItem: ToolbarItem = {
+    id: 'spline',
+    onClick: ({ modelingSend, isActive }) =>
+      isActive
+        ? modelingSend({
+            type: 'unequip tool',
+          })
+        : modelingSend({
+            type: 'equip tool',
+            data: { tool: 'splineTool' },
+          }),
+    icon: 'spline',
+    status: 'experimental',
+    title: 'Spline',
+    hotkey: 'S',
+    description: 'Draw a control-point spline.',
+    links: [],
+    isActive: (state) =>
+      state.matches('sketchSolveMode') &&
+      state.context.sketchSolveToolName === 'splineTool',
+  }
+
   return {
     onlyCancel: {
       check: (state) => !state.matches('Sketch no face'),
@@ -1092,6 +1122,27 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'mirror3d',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Mirror 3D', groupId: 'modeling' },
+                }),
+              icon: 'mirror3d',
+              hotkey: 'M',
+              status: 'available',
+              title: 'Mirror',
+              description: 'Mirror solids across a plane or edge.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-transform-mirror3d'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'appearance',
               onClick: () =>
                 commands.send({
@@ -1172,7 +1223,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Flatness', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Flatness',
               icon: 'gdtFlatness',
               description:
@@ -1193,7 +1244,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Datum', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Datum',
               icon: 'gdtDatum',
               description:
@@ -1212,7 +1263,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Profile', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Profile',
               icon: 'gdtProfile',
               description:
@@ -1233,7 +1284,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Position', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Position',
               icon: 'gdtPosition',
               description:
@@ -1257,7 +1308,7 @@ export function buildToolbarConfig(
                     groupId: 'modeling',
                   },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Perpendicularity',
               icon: 'perpendicular',
               description:
@@ -1281,7 +1332,7 @@ export function buildToolbarConfig(
                     groupId: 'modeling',
                   },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Parallelism',
               icon: 'parallel',
               description:
@@ -1302,7 +1353,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Distance', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Distance',
               icon: 'dimension',
               description:
@@ -1323,7 +1374,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Annotation', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Annotation',
               icon: 'text',
               description:
@@ -1966,6 +2017,7 @@ export function buildToolbarConfig(
             state.matches('sketchSolveMode') &&
             state.context.sketchSolveToolName === 'pointTool',
         },
+        ...(showSplineTool ? [splineToolbarItem] : []),
         {
           id: 'circle-center',
           onClick: ({ modelingSend, isActive }) =>
@@ -2222,9 +2274,27 @@ export function buildToolbarConfig(
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
+  const [showSplineTool, setShowSplineTool] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void userHasFeature(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false).then(
+      (enabled) => {
+        if (!cancelled) {
+          setShowSplineTool(enabled)
+        }
+      }
+    )
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () => buildToolbarConfig(commands),
-    [commands]
+    () => buildToolbarConfig(commands, { showSplineTool }),
+    [commands, showSplineTool]
   )
 }
 

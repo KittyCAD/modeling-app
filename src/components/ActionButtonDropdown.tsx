@@ -1,8 +1,10 @@
 import type { MouseEvent } from 'react'
+import { useRef } from 'react'
 import { Popover } from '@headlessui/react'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
@@ -33,6 +35,8 @@ export function ActionButtonDropdown({
   ...props
 }: ActionButtonSplitProps) {
   const baseClassNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10`
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
   return (
     <Popover
       className={`${baseClassNames} ${className}`}
@@ -42,6 +46,7 @@ export function ActionButtonDropdown({
         <>
           {children}
           <Popover.Button
+            ref={buttonRef}
             className={
               '!border-transparent dark:!border-transparent ' +
               'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent ' +
@@ -53,7 +58,7 @@ export function ActionButtonDropdown({
             <CustomIcon
               name="caretDown"
               className={
-                'w-3.5 h-5 text-chalkboard-70 dark:text-chalkboard-40 rounded-none ' +
+                'w-3.5 h-5 text-inherit dark:text-current rounded-none ' +
                 'ui-open:rotate-180 ui-open:!text-chalkboard-10'
               }
             />
@@ -68,11 +73,7 @@ export function ActionButtonDropdown({
               {dropdownTooltipText}
             </Tooltip>
           </Popover.Button>
-          <Popover.Panel
-            as="ul"
-            className="!pointer-events-auto absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
-            unmount={false}
-          >
+          <ToolbarDropdownPanel buttonRef={buttonRef} open={popover.open}>
             {splitMenuItems.map((item) => (
               <ActionButtonDropdownListItem
                 item={item}
@@ -85,7 +86,7 @@ export function ActionButtonDropdown({
                 platform={platform}
               />
             ))}
-          </Popover.Panel>
+          </ToolbarDropdownPanel>
         </>
       )}
     </Popover>

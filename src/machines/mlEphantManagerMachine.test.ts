@@ -1,4 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ClientErrorReport } from '@kittycad/lib'
 import type { FileMeta } from '@src/lib/types'
+import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+
 import {
   type Conversation,
   type MlCopilotModeOption,
@@ -11,8 +15,26 @@ import {
   parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
-import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
+
+function stubClientErrorFetch() {
+  resetReportedClientErrorsForTests()
+  const reports: ClientErrorReport[] = []
+  const fetchMock = vi
+    .spyOn(globalThis, 'fetch')
+    .mockImplementation(async (_input, init) => {
+      if (typeof init?.body !== 'string') {
+        throw new Error('Expected a client error report request body')
+      }
+      reports.push(JSON.parse(init.body))
+
+      return new Response(JSON.stringify({ accepted: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    })
+  return { fetchMock, reports }
+}
 
 class TestSocket extends EventTarget {
   sentPayloads: string[] = []
@@ -51,6 +73,14 @@ const completedConversation: Conversation = {
 }
 
 describe('mlEphantManagerMachine', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   describe('parseMlCopilotModesResult', () => {
     const modes = [
       {
@@ -214,6 +244,7 @@ describe('mlEphantManagerMachine', () => {
         type: MlEphantManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
+        activeFile: 'newFile.kcl',
       })
 
       await waitFor(actor, (state) =>
@@ -233,6 +264,7 @@ describe('mlEphantManagerMachine', () => {
             'main.kcl': Array.from(new TextEncoder().encode('cube()')),
             'notes.txt': Array.from(new TextEncoder().encode('notes')),
           },
+          active_file: 'newFile.kcl',
         }),
       ])
 
@@ -297,6 +329,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('keeps recoverable context after an abrupt close', async () => {
+      const { fetchMock } = stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const machine = mlEphantManagerMachine.provide({
         actors: {
@@ -346,6 +379,67 @@ describe('mlEphantManagerMachine', () => {
       )
       expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
       expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      expect(fetchMock).not.toHaveBeenCalled()
+
+      actor.stop()
+    })
+  })
+
+  describe('client-side actor errors', () => {
+    it('reports local actor invocation failures', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            conversation: { exchanges: [] },
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      const report = reports[0]
+      if (!report) {
+        throw new Error('Expected a client error report')
+      }
+      expect(report).toMatchObject({
+        code: 'zookeeper_actor_error',
+        error_name: 'Error',
+        message: 'WebSocket not present',
+      })
+      if (typeof report.stack !== 'string') {
+        throw new Error('Expected client error report stack')
+      }
+      expect(JSON.parse(report.stack)).toMatchObject({
+        source: 'MlEphantManagerMachine',
+        conversationId: 'conversation-id',
+      })
 
       actor.stop()
     })

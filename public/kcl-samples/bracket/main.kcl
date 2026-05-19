@@ -75,12 +75,6 @@ wallMountHoleCenters = [
   ]
 ]
 
-// Check that the bracket envelope is large enough for the reference mounting holes.
-assert(wallLegLength, isGreaterThanOrEqual = referenceWallMountHoleDiameter * 3, error = "Wall leg is too short for the reference wall-mount hole diameter")
-assert(shelfLegLength, isGreaterThanOrEqual = referenceShelfMountHoleDiameter * 5.5, error = "Shelf leg is too short for the reference shelf-mount hole diameter")
-assert(bracketWidth, isGreaterThanOrEqual = referenceShelfMountHoleDiameter * 5.5, error = "Bracket width is too small for the reference shelf-mount hole diameter")
-assert(bracketWidth, isGreaterThanOrEqual = referenceWallMountHoleDiameter * 5.5, error = "Bracket width is too small for the reference wall-mount hole diameter")
-
 // Create the 2D bracket side profile on the XZ plane using constrained sketch geometry.
 bracketProfileSketch = sketch(on = XZ) {
   line1 = line(start = [var -0.29in, var 1.23in], end = [var -0.28in, var 3.34in])

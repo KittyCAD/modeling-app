@@ -37,6 +37,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
+use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
 use crate::front::Number;
@@ -51,6 +52,7 @@ use crate::std::Args;
 use crate::std::args::TyF64;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::util::MathExt;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -1933,8 +1935,8 @@ fn linear_distance(
     [x0, y0]: &[f64; 2],
     [x1, y1]: &[f64; 2]
 ) -> f64 {
-    let y_sq = (y1 - y0).powi(2);
-    let x_sq = (x1 - x0).powi(2);
+    let y_sq = (y1 - y0).squared();
+    let x_sq = (x1 - x0).squared();
     (y_sq + x_sq).sqrt()
 }
 
@@ -2197,6 +2199,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    ControlPointSpline {
+        controls: Vec<UnsolvedPoint2dExpr>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        degree: u32,
+        construction: bool,
+    },
 }
 
 impl UnsolvedSegmentKind {
@@ -2208,6 +2218,7 @@ impl UnsolvedSegmentKind {
             Self::Line { .. } => "a Line",
             Self::Arc { .. } => "an Arc",
             Self::Circle { .. } => "a Circle",
+            Self::ControlPointSpline { .. } => "a Control Point Spline",
         }
     }
 }
@@ -2240,6 +2251,7 @@ impl Segment {
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
             SegmentKind::Circle { construction, .. } => *construction,
+            SegmentKind::ControlPointSpline { construction, .. } => *construction,
         }
     }
 }
@@ -2294,6 +2306,16 @@ pub enum SegmentKind {
         center_freedom: Option<Freedom>,
         construction: bool,
     },
+    ControlPointSpline {
+        controls: Vec<[TyF64; 2]>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        control_freedoms: Vec<Option<Freedom>>,
+        degree: u32,
+        construction: bool,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2330,6 +2352,64 @@ pub enum SketchConstraintKind {
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    PointLineDistance {
+        point: ConstrainablePoint2dOrOrigin,
+        line: ConstrainableLine2d,
+        input_object_ids: [Option<ObjectId>; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    LineLineDistance {
+        line0: ConstrainableLine2d,
+        line1: ConstrainableLine2d,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    PointCircularDistance {
+        point: ConstrainablePoint2dOrOrigin,
+        center: ConstrainablePoint2d,
+        start: ConstrainablePoint2d,
+        end: Option<ConstrainablePoint2d>,
+        input_object_ids: [Option<ObjectId>; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    LineCircularDistance {
+        line: ConstrainableLine2d,
+        center: ConstrainablePoint2d,
+        start: ConstrainablePoint2d,
+        end: Option<ConstrainablePoint2d>,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    CircularCircularDistance {
+        center0: ConstrainablePoint2d,
+        start0: ConstrainablePoint2d,
+        end0: Option<ConstrainablePoint2d>,
+        center1: ConstrainablePoint2d,
+        start1: ConstrainablePoint2d,
+        end1: Option<ConstrainablePoint2d>,
+        input_object_ids: [ObjectId; 2],
         #[serde(rename = "labelPosition")]
         #[serde(skip_serializing_if = "Option::is_none")]
         #[ts(rename = "labelPosition")]
@@ -2375,6 +2455,11 @@ impl SketchConstraintKind {
         match self {
             SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::PointLineDistance { .. } => "distance",
+            SketchConstraintKind::LineLineDistance { .. } => "distance",
+            SketchConstraintKind::PointCircularDistance { .. } => "distance",
+            SketchConstraintKind::LineCircularDistance { .. } => "distance",
+            SketchConstraintKind::CircularCircularDistance { .. } => "distance",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",
             SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",

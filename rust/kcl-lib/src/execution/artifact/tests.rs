@@ -3,6 +3,26 @@
 use super::*;
 
 #[test]
+fn gdt_annotation_artifacts_get_node_paths() {
+    let code = r#"gdt::annotation(annotation = "NOTE", faces = [], edges = [])"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let mut artifact = Artifact::GdtAnnotation(GdtAnnotationArtifact {
+        id: ArtifactId::new(Uuid::new_v4()),
+        code_ref: CodeRef::placeholder(source_range),
+    });
+
+    fill_in_node_paths(&mut artifact, &programs, 0, &FnvHashMap::default());
+
+    let Artifact::GdtAnnotation(annotation) = artifact else {
+        panic!("Expected GD&T annotation artifact");
+    };
+    assert_eq!(annotation.code_ref.range, source_range);
+    assert!(!annotation.code_ref.node_path.is_empty());
+}
+
+#[test]
 fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let source_path_id = ArtifactId::new(Uuid::new_v4());
