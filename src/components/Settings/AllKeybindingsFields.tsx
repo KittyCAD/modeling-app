@@ -133,7 +133,6 @@ export const AllKeybindingsFields = forwardRef(
             <table className="w-full min-w-[920px] border-collapse text-left">
               <thead className="sticky top-0 z-10 bg-chalkboard-10 dark:bg-chalkboard-100">
                 <tr className="border-0 border-b border-solid border-chalkboard-30 text-xs uppercase text-chalkboard-60 dark:border-chalkboard-80 dark:text-chalkboard-50">
-                  <th className="px-2 py-2 font-medium">Action</th>
                   <th className="px-2 py-2 font-medium">Title</th>
                   <th className="px-2 py-2 font-medium">Keystrokes</th>
                   <th className="px-2 py-2 font-medium">Arguments</th>
@@ -381,9 +380,6 @@ function KeybindingTableRow({
         (isHighlighted ? 'bg-primary/5 dark:bg-chalkboard-90' : '')
       }
     >
-      <td className="max-w-64 break-all px-2 py-3 font-mono text-xs">
-        {row.command}
-      </td>
       <td className="px-2 py-3">
         <div className="flex min-w-48 items-center gap-2">
           <h3 className="m-0 text-base font-normal capitalize tracking-wide">
@@ -392,12 +388,13 @@ function KeybindingTableRow({
           {row.state === 'override' && <StateChip>User override</StateChip>}
           {isUnbound && <StateChip>Unbound</StateChip>}
         </div>
+        <code className="block text-xs font-mono text-2">{row.command}</code>
       </td>
       <td className="px-2 py-3">
         {isUnbound ? (
           <span className="text-sm text-chalkboard-50">-</span>
         ) : (
-          <div className="flex min-w-44 flex-wrap items-center gap-2">
+          <div className="flex min-w-44 flex-wrap items-center">
             <KeystrokesField
               keymap={keymap}
               value={visibleKeystrokes}
