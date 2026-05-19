@@ -110,6 +110,7 @@ export type ToolbarItem = {
     wasmInstance: ModuleType
   ) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
+  tooltipTitle?: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
   description: string
   extraInfo?: string
@@ -122,9 +123,10 @@ export type ToolbarItem = {
 
 export type ToolbarItemResolved = Omit<
   ToolbarItem,
-  'disabled' | 'isActive' | 'title'
+  'disabled' | 'isActive' | 'title' | 'tooltipTitle'
 > & {
   title: string
+  tooltipTitle?: string
   disabled?: boolean
   hotkey?: HotkeySequence
   isActive?: boolean
@@ -552,6 +554,17 @@ export function buildToolbarConfig(
           icon: 'sketch',
           status: 'available',
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
+            const isSketchBlock = isSketchBlockSelected(
+              modelingState.context.selectionRanges
+            )
+
+            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+              return 'Edit Sketch'
+            }
+
+            return 'Start Sketch'
+          },
+          tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
               modelingState.context.selectionRanges
             )
