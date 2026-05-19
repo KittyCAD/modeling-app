@@ -47,13 +47,13 @@ export function ActionButtonRecentDropdown({
           <div className="flex items-stretch gap-[1px]">{children}</div>
           <Popover.Button
             ref={buttonRef}
-            className="!border-transparent dark:!border-transparent bg-transparent dark:bg-transparent enabled:hover:bg-chalkboard-10/85 dark:enabled:hover:bg-chalkboard-100/85 pressed:!bg-primary/85 pressed:enabled:hover:!text-chalkboard-10 absolute -bottom-3 left-1 right-1 z-10 min-h-3 px-0 py-0 rounded-sm !outline-none ui-open:border-primary ui-open:bg-primary/85 flex items-center justify-center"
+            className="!border-transparent dark:!border-transparent bg-transparent dark:bg-transparent enabled:hover:bg-chalkboard-10/85 dark:enabled:hover:bg-chalkboard-100/85 pressed:!bg-primary/85 pressed:enabled:hover:!text-chalkboard-10 self-stretch min-w-4 px-0 py-0 m-0 rounded-none !rounded-r-sm !outline-none ui-open:border-primary ui-open:bg-primary/85 flex items-center justify-center"
             data-onboarding-id={`${name}-dropdown-button`}
             data-testid={`${name}-dropdown`}
           >
             <CustomIcon
               name="caretDown"
-              className="w-3.5 h-3 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180 ui-open:!text-chalkboard-10"
+              className="w-3.5 h-5 text-inherit dark:text-current ui-open:rotate-180 ui-open:!text-chalkboard-10"
             />
             <span className="sr-only">
               {name ? `${name}: open menu` : 'open menu'}

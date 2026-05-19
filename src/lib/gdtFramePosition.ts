@@ -49,7 +49,7 @@ type GdtCommandData =
   | ModelingCommandSchema['GDT Parallelism']
   | ModelingCommandSchema['GDT Annotation']
 
-export const GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO = 0.2
+export const GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO = 0.07
 
 function getSelectionsFromGdtData(
   data: GdtCommandData
@@ -495,16 +495,18 @@ async function getDefaultGdtFrameDefaultsFromSelectionNormals({
   return undefined
 }
 
-async function getBoundingBoxForGdtSelections({
+async function getBoundingBoxForGdtEntities({
   engineCommandManager,
   entityIds,
   outputUnit,
+  includeEntireScene = false,
 }: {
   engineCommandManager: ConnectionManager
   entityIds: ArtifactId[]
   outputUnit: UnitLength
+  includeEntireScene?: boolean
 }): Promise<BoundingBox | undefined> {
-  if (entityIds.length === 0) {
+  if (entityIds.length === 0 && !includeEntireScene) {
     return undefined
   }
 
@@ -592,19 +594,19 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     return nextData
   }
 
-  const boundingBox = await getBoundingBoxForGdtSelections({
-    engineCommandManager,
-    entityIds,
-    outputUnit,
-  })
+  const needsSelectionBoundingBox =
+    !hasResolvedFramePlane || !nextData.framePosition
+  const selectionBoundingBox = needsSelectionBoundingBox
+    ? await getBoundingBoxForGdtEntities({
+        engineCommandManager,
+        entityIds,
+        outputUnit,
+      })
+    : undefined
 
-  if (!boundingBox) {
-    return nextData
-  }
-
-  if (!hasResolvedFramePlane) {
+  if (!hasResolvedFramePlane && selectionBoundingBox) {
     const framePlaneFromBoundingBox = getDefaultGdtFramePlaneFromBoundingBox(
-      boundingBox.dimensions
+      selectionBoundingBox.dimensions
     )
 
     if (framePlaneFromBoundingBox) {
@@ -619,14 +621,11 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   const averageDimension =
-    !nextData.framePosition || !nextData.fontSize
-      ? getAverageBoundingBoxDimension(boundingBox.dimensions)
+    !nextData.framePosition && selectionBoundingBox
+      ? getAverageBoundingBoxDimension(selectionBoundingBox.dimensions)
       : undefined
 
-  if (!nextData.framePosition) {
-    if (averageDimension === undefined) {
-      return nextData
-    }
+  if (!nextData.framePosition && averageDimension !== undefined) {
     const [xSign, ySign] = framePositionSigns ?? [1, 1]
 
     nextData = {
@@ -640,14 +639,24 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   if (!nextData.fontSize) {
-    if (averageDimension === undefined) {
+    const modelBoundingBox = await getBoundingBoxForGdtEntities({
+      engineCommandManager,
+      entityIds: [],
+      outputUnit,
+      includeEntireScene: true,
+    })
+    const modelAverageDimension = modelBoundingBox
+      ? getAverageBoundingBoxDimension(modelBoundingBox.dimensions)
+      : undefined
+
+    if (modelAverageDimension === undefined) {
       return nextData
     }
 
     nextData = {
       ...nextData,
       fontSize: createFontSizeCommandValue(
-        averageDimension,
+        modelAverageDimension,
         outputUnit,
         wasmInstance
       ),

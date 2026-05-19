@@ -236,6 +236,7 @@ export function createApplicationCommands({
                       uniqueNameIfNeeded
                     ),
                     wasmInstance,
+                    preserveUnknownExtension: true,
                   })
                 )
                 .then(({ path }) => {
@@ -377,6 +378,10 @@ export function createApplicationCommands({
           {
             name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
             extensions: relevantFileExtensions(wasmInstance),
+          },
+          {
+            name: 'All files',
+            extensions: ['*'],
           },
         ],
       },

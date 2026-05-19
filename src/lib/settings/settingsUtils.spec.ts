@@ -189,6 +189,7 @@ describe('project settings serialization regression', () => {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
           machineApi: true,
+          showAllFiles: true,
         },
         debug: {
           showPanel: true,
@@ -229,6 +230,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
     expect(serializedToml).toContain('machine_api = true')
+    expect(serializedToml).toContain('show_all_files = true')
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = true')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
@@ -260,6 +262,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedPayload.app?.machineApi).toBe(true)
+    expect(parsedPayload.app?.showAllFiles).toBe(true)
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')
@@ -427,7 +430,7 @@ describe('project settings serialization regression', () => {
     )
   })
 
-  it('preserves app-owned project settings through wasm round-trip', async () => {
+  it('preserves project-scoped app-owned settings through wasm round-trip', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
