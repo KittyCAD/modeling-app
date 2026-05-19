@@ -3197,29 +3197,7 @@ impl FrontendState {
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
 
-        let new_source = {
-            // Feed back sketch var solutions into the source.
-            //
-            // The interpreter is returning all var solutions from the sketch
-            // block we're editing.
-            let mut new_ast = self.program.ast.clone();
-            for (var_range, value) in &outcome.var_solutions {
-                let rounded = value.round(3);
-                let source_ref = SourceRef::Simple {
-                    range: *var_range,
-                    node_path: None,
-                };
-                mutate_ast_node_by_source_ref(
-                    &mut new_ast,
-                    &source_ref,
-                    AstMutateCommand::EditVarInitialValue { value: rounded },
-                )
-                .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
-            }
-            source_from_ast(&new_ast)
-        };
-
-        let src_delta = SourceDelta { text: new_source };
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "editing")?;
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: is_delete,
@@ -4563,14 +4541,14 @@ impl FrontendState {
             vec![constraint_id]
         };
 
-        // Only now, after all operations succeeded, update self.program
-        // This ensures state is only modified if everything succeeds
+        // Only now, after all operations succeeded, update self.program.
+        // This ensures state is only modified if everything succeeds.
         self.program = new_program;
 
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
 
-        let src_delta = SourceDelta { text: new_source };
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraint")?;
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: false,
@@ -4578,6 +4556,48 @@ impl FrontendState {
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
+    }
+
+    fn commit_var_solutions_to_program(&mut self, outcome: &ExecOutcome, operation: &str) -> ExecResult<SourceDelta> {
+        let mut settled_ast = self.program.ast.clone();
+        for (var_range, value) in &outcome.var_solutions {
+            let rounded = value.round(3);
+            let source_ref = SourceRef::Simple {
+                range: *var_range,
+                node_path: None,
+            };
+            mutate_ast_node_by_source_ref(
+                &mut settled_ast,
+                &source_ref,
+                AstMutateCommand::EditVarInitialValue { value: rounded },
+            )
+            .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
+        }
+
+        let settled_source = source_from_ast(&settled_ast);
+        let (settled_program, errors) = Program::parse(&settled_source).map_err(|err| {
+            KclErrorWithOutputs::from_error_outcome(KclError::refactor(err.to_string()), outcome.clone())
+        })?;
+        if !errors.is_empty() {
+            return Err(KclErrorWithOutputs::from_error_outcome(
+                KclError::refactor(format!(
+                    "Error parsing KCL source after {operation} and committing solver solutions: {errors:?}"
+                )),
+                outcome.clone(),
+            ));
+        }
+        let Some(settled_program) = settled_program else {
+            return Err(KclErrorWithOutputs::from_error_outcome(
+                KclError::refactor(format!(
+                    "No AST produced after {operation} and committing solver solutions"
+                )),
+                outcome.clone(),
+            ));
+        };
+
+        self.program = settled_program;
+
+        Ok(SourceDelta { text: settled_source })
     }
 
     // Find constraints that reference the given segments.
@@ -8132,6 +8152,107 @@ sketch(on = XY) {
         );
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_segments_persists_solver_feedback_for_next_mock_execute() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  fixed([line1.start, [0, 0]])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_end_id = *sketch.segments.get(4).unwrap();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line2_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 9.0,
+                        units: NumericSuffix::None,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 10.0,
+                        units: NumericSuffix::None,
+                    }),
+                },
+            }),
+        }];
+        let (edited_source, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, edited_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraint_persists_solver_feedback_for_next_mock_execute() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::Fixed(Fixed {
+            points: vec![FixedPoint {
+                point: line_end_id,
+                position: Point2d {
+                    x: Number {
+                        value: 20.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    y: Number {
+                        value: 0.0,
+                        units: NumericSuffix::Mm,
+                    },
+                },
+            }],
+        });
+        let (constraint_source, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+
+        assert!(
+            constraint_source
+                .text
+                .contains("line1 = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])"),
+            "{}",
+            constraint_source.text
+        );
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, constraint_source.text);
+
         mock_ctx.close().await;
     }
 
@@ -13111,47 +13232,11 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        let edited_sketch1_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
-        // Only the first sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        assert_eq!(src_delta.text, edited_sketch1_source);
         // Exit sketch. Objects from the entire program should be present.
         //
         // - startSketchOn(XY) Plane 1
@@ -13239,47 +13324,11 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        let edited_sketch2_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
-        // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        assert_eq!(src_delta.text, edited_sketch2_source);
 
         ctx.close().await;
         mock_ctx.close().await;
