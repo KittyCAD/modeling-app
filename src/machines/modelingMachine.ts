@@ -150,6 +150,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addHide,
   addRotate,
   addScale,
@@ -173,6 +174,7 @@ import {
   getPlaneFromArtifact,
   isFaceFromLegacySketch,
   getSketchBlockArtifactForPathToNode,
+  getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -214,7 +216,6 @@ import {
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
-import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
@@ -235,7 +236,7 @@ import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
-import { withDefaultGdtFramePosition } from '@src/lib/gdtFramePosition'
+import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -304,6 +305,42 @@ function findSceneObjectForPlaneSelection(
       sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
       sourceRangesEqual(object.source.ranges[1][0], segmentRange)
   )
+}
+
+function getSelectedSketchBlockArtifact({
+  artifactGraph,
+  selectionRanges,
+}: {
+  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
+  selectionRanges: Selections
+}): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  const selectedArtifact = selectionRanges.graphSelections[0]?.artifact
+  const selectedSketchBlock = getSketchBlockForArtifact(
+    selectedArtifact,
+    artifactGraph
+  )
+  if (typeof selectedSketchBlock?.sketchId === 'number') {
+    return selectedSketchBlock
+  }
+
+  const sketchPathId = isCursorInSketchCommandRange(
+    artifactGraph,
+    selectionRanges
+  )
+  if (!sketchPathId) {
+    return undefined
+  }
+
+  const sketchPathArtifact = artifactGraph.get(sketchPathId)
+  const sketchBlockFromCursor = getSketchBlockForArtifact(
+    sketchPathArtifact,
+    artifactGraph
+  )
+  if (typeof sketchBlockFromCursor?.sketchId !== 'number') {
+    return undefined
+  }
+
+  return sketchBlockFromCursor
 }
 
 async function enterSketchSolveFromSketchBlockArtifact({
@@ -540,6 +577,10 @@ export type ModelingMachineEvent =
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
+      type: 'Mirror 3D'
+      data: ModelingCommandSchema['Mirror 3D']
+    }
+  | {
       type: 'Hide'
       data: {
         objects: Selections
@@ -691,12 +732,15 @@ export const modelingMachine = setup({
       return context.store.useSketchSolveMode?.current === true
     },
     'Selection is sketchBlock': ({
-      context: { selectionRanges },
+      context: { selectionRanges, kclManager },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      return isSketchBlockSelected(selectionRanges)
+      return !!getSelectedSketchBlockArtifact({
+        artifactGraph: kclManager.artifactGraph,
+        selectionRanges,
+      })
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager, wasmInstance },
@@ -704,6 +748,14 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
+      if (
+        getSelectedSketchBlockArtifact({
+          artifactGraph: kclManager.artifactGraph,
+          selectionRanges,
+        })
+      ) {
+        return false
+      }
       if (artifactIsPlaneWithPaths(selectionRanges)) {
         return true
       } else if (selectionRanges.graphSelections[0]?.artifact) {
@@ -5066,6 +5118,44 @@ export const modelingMachine = setup({
         )
       }
     ),
+    mirror3DAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Mirror 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { ast, artifactGraph, variables } = input.kclManager
+        const result = addMirror3D({
+          ...input.data,
+          ast,
+          artifactGraph,
+          variables,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     hideAstMod: fromPromise(
       async ({
         input,
@@ -5122,9 +5212,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5167,9 +5259,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5212,9 +5306,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5257,9 +5353,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5302,9 +5400,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5347,9 +5447,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5392,9 +5494,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5437,9 +5541,11 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -6174,6 +6280,10 @@ export const modelingMachine = setup({
 
         Clone: {
           target: 'Applying clone',
+        },
+
+        'Mirror 3D': {
+          target: 'Applying Mirror 3D',
         },
 
         Hide: {
@@ -8214,6 +8324,27 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying Mirror 3D': {
+      invoke: {
+        src: 'mirror3DAstMod',
+        id: 'mirror3DAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Mirror 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying hide': {
       invoke: {
         src: 'hideAstMod',
@@ -8648,12 +8779,13 @@ export const modelingMachine = setup({
             }
           }
           if (event.type === 'Enter sketch') {
-            // Get artifact ID from selection
-            const artifact =
-              context.selectionRanges.graphSelections[0]?.artifact
-            if (artifact?.type === 'sketchBlock' && artifact.id) {
+            const sketchBlockArtifact = getSelectedSketchBlockArtifact({
+              artifactGraph: context.kclManager.artifactGraph,
+              selectionRanges: context.selectionRanges,
+            })
+            if (sketchBlockArtifact?.id) {
               return {
-                artifactId: artifact.id,
+                artifactId: sketchBlockArtifact.id,
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,

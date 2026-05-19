@@ -27,7 +27,9 @@ import {
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
+  isControlPointSplineSegment,
   isConstraint,
+  isOwnedLineSegment,
   isArcLikeSegment,
   isDiameterConstraint,
   isDistanceConstraint,
@@ -207,6 +209,10 @@ function buildSegmentCtorWithDrag({
     return null
   }
 
+  if (isOwnedLineSegment(obj)) {
+    return null
+  }
+
   if (baseCtor.type === 'Point') {
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
@@ -272,6 +278,14 @@ function buildSegmentCtorWithDrag({
       type: 'Circle',
       center: newCenter,
       start: newStart,
+      construction: baseCtor.construction,
+    }
+  } else if (baseCtor.type === 'ControlPointSpline') {
+    return {
+      type: 'ControlPointSpline',
+      points: baseCtor.points.map((point) =>
+        applyVectorToPoint2D(point, dragVec)
+      ),
       construction: baseCtor.construction,
     }
   }
@@ -646,11 +660,38 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedPointIds = new Set<number>(coincidentPointIds)
+  const allowedPointIds = new Set<number>()
   const excludedSegmentIds = new Set<number>()
   for (const pointId of coincidentPointIds) {
     const point = sceneGraphDelta.new_graph.objects[pointId]
     if (isPointSegment(point) && point.kind.segment.owner !== null) {
       excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
+
+  const ownerId = draggedObject.kind.segment.owner
+  if (ownerId !== null) {
+    const ownerObject = sceneGraphDelta.new_graph.objects[ownerId]
+    if (isControlPointSplineSegment(ownerObject)) {
+      const controls = ownerObject.kind.segment.controls
+      const firstControlId = controls[0]
+      const lastControlId = controls[controls.length - 1]
+      if (draggedEntityId === firstControlId && lastControlId !== undefined) {
+        allowedPointIds.add(lastControlId)
+      } else if (
+        draggedEntityId === lastControlId &&
+        firstControlId !== undefined
+      ) {
+        allowedPointIds.add(firstControlId)
+      }
+
+      ownerObject.kind.segment.controls.forEach((controlId) => {
+        if (!allowedPointIds.has(controlId)) {
+          excludedPointIds.add(controlId)
+        }
+      })
+      excludedSegmentIds.add(ownerObject.id)
     }
   }
 
@@ -664,13 +705,29 @@ function getDragPointSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (candidate.target.type === 'point') {
-          return !coincidentPointIds.includes(candidate.target.id)
+          return (
+            allowedPointIds.has(candidate.target.id) ||
+            !excludedPointIds.has(candidate.target.id)
+          )
         }
 
         const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        if (snapTargetSegmentId === null) {
+          return true
+        }
+
+        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+        const snapTargetOwnerId =
+          (isPointSegment(snapTargetSegment) ||
+            isOwnedLineSegment(snapTargetSegment)) &&
+          snapTargetSegment.kind.segment.owner != null
+            ? snapTargetSegment.kind.segment.owner
+            : null
+
         return (
-          snapTargetSegmentId === null ||
-          !excludedSegmentIds.has(snapTargetSegmentId)
+          !excludedSegmentIds.has(snapTargetSegmentId) &&
+          (snapTargetOwnerId == null ||
+            !excludedSegmentIds.has(snapTargetOwnerId))
         )
       }
     ) ?? null
@@ -1168,7 +1225,6 @@ export function createOnDragCallback({
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
     suppressExecOutcomeIssues?: boolean
-    suppressFreedomConflictColoring?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -1243,7 +1299,6 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
-            suppressFreedomConflictColoring: true,
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         }
@@ -1405,7 +1460,6 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
-            suppressFreedomConflictColoring: true,
           })
         } else {
           const fallbackOutcome =
@@ -1430,7 +1484,6 @@ export function createOnDragCallback({
               : result),
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
-            suppressFreedomConflictColoring: true,
           })
         }
         await new Promise((resolve) => requestAnimationFrame(resolve))
@@ -1807,8 +1860,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = [],
-            shouldCreateCheckpoint = true
+            constraintLabelEdits: ConstraintLabelEdit[] = []
           ) => {
             const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
             let latestResult = await context.rustContext.editSegments(
@@ -1816,7 +1868,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               context.sketchId,
               segmentsToEdit,
               settings,
-              constraintLabelEdits.length === 0 && shouldCreateCheckpoint
+              constraintLabelEdits.length === 0
             )
 
             for (const [
@@ -1830,8 +1882,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   constraintId,
                   labelPosition,
                   settings,
-                  index === constraintLabelEdits.length - 1 &&
-                    shouldCreateCheckpoint,
+                  index === constraintLabelEdits.length - 1,
                   anchorSegmentIds
                 )
             }
@@ -2029,17 +2080,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           } else {
             if (lastGoodPreview?.segmentsToEdit.length) {
-              // Commit dragged positions without checkpointing, then settle:
-              // a solve without drag constraints finds the nearest valid
-              // solution and creates the checkpoint.
-              await commitSegmentAndLabelEdits(
+              result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits,
-                false
-              )
-              result = await context.rustContext.sketchExecuteMock(
-                SKETCH_FILE_VERSION,
-                context.sketchId
+                lastGoodPreview.constraintLabelEdits
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -2077,18 +2120,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId
                 )
               } else {
-                // Same settle pattern: commit positions, then re-solve without
-                // drag constraints to snap back to a geometrically valid state.
-                await context.rustContext.editSegments(
+                result = await context.rustContext.editSegments(
                   0,
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  false
-                )
-                result = await context.rustContext.sketchExecuteMock(
-                  SKETCH_FILE_VERSION,
-                  context.sketchId
+                  true
                 )
               }
             }
@@ -2182,8 +2219,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
-            suppressFreedomConflictColoring:
-              outcome.suppressFreedomConflictColoring,
           },
         })
       },
