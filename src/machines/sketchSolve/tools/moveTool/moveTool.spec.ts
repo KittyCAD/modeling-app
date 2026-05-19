@@ -971,7 +971,8 @@ describe('createOnDragCallback', () => {
             },
           },
         ],
-        {}
+        {},
+        [3]
       )
       expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
         0,
@@ -1463,10 +1464,15 @@ describe('createOnDragCallback', () => {
 
     expect(rustContext.restoreSketchCheckpoint).not.toHaveBeenCalled()
     expect(rustContext.editSegments).toHaveBeenCalledTimes(3)
+    expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(false)
+    expect(rustContext.editSegments.mock.calls[0]?.[6]).toBe(false)
+    expect(rustContext.editSegments.mock.calls[1]?.[4]).toBe(false)
+    expect(rustContext.editSegments.mock.calls[1]?.[6]).toBe(false)
     expect(rustContext.editSegments.mock.calls[2]?.[2]).toEqual(
       rustContext.editSegments.mock.calls[1]?.[2]
     )
     expect(rustContext.editSegments.mock.calls[2]?.[4]).toBe(true)
+    expect(rustContext.editSegments.mock.calls[2]?.[6]).toBeUndefined()
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
@@ -3076,6 +3082,7 @@ describe('createOnDragCallback', () => {
 
     // Should send event to update the sketch outcome
     // This triggers the state machine to update the scene graph and code
+    expect((editSegments as any).mock.calls[0]?.[4]).toEqual([5])
     expect(onNewSketchOutcome).toHaveBeenCalledWith({
       ...result,
       writeToDisk: false,
@@ -3851,7 +3858,8 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
       },
       expect.any(Object),
       false,
-      undefined
+      undefined,
+      false
     )
   })
 })

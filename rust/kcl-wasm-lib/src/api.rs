@@ -446,6 +446,106 @@ impl Context {
             .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Edit segments in a sketch while constraining only the given drag anchors.
+    #[wasm_bindgen]
+    pub async fn edit_segments_with_anchors(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        segments_json: &str,
+        anchor_segment_ids_json: &str,
+        settings: &str,
+        create_checkpoint: bool,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
+        let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
+            .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for edit segments with anchors. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_segments_with_anchor_ids(&ctx, version, sketch, segments, anchor_segment_ids)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize edit segments with anchors result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Preview segment edits in a sketch while constraining only the given drag anchors.
+    ///
+    /// Unlike committed edits, this does not write every solver solution back into
+    /// the frontend KCL program. The returned scene graph still reflects the solved
+    /// preview geometry.
+    #[wasm_bindgen]
+    pub async fn preview_edit_segments_with_anchors(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        segments_json: &str,
+        anchor_segment_ids_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
+        let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
+            .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!(
+                "Could not create KCL executor context for preview edit segments with anchors. {TRUE_BUG} Details: {e}"
+            )
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .preview_edit_segments_with_anchor_ids(&ctx, version, sketch, segments, anchor_segment_ids)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id: None,
+        };
+
+        Ok(JsValue::from_serde(&result).map_err(|e| {
+            format!("Could not serialize preview edit segments with anchors result. {TRUE_BUG} Details: {e}")
+        })?)
+    }
+
     /// Delete segments and constraints in sketch.
     #[wasm_bindgen]
     pub async fn delete_objects(
@@ -657,6 +757,58 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint label result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Preview a constraint label position edit without committing solver solutions
+    /// back into KCL.
+    #[wasm_bindgen]
+    pub async fn preview_edit_distance_constraint_label_position(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        constraint_id_json: &str,
+        label_position_json: &str,
+        settings: &str,
+        anchor_segment_ids_json: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint_id: kcl_lib::front::ObjectId =
+            serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let label_position: kcl_lib::front::Point2d<kcl_lib::front::Number> = serde_json::from_str(label_position_json)
+            .map_err(|e| format!("Could not deserialize label position: {e}"))?;
+        let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
+            .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for preview constraint label. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .preview_edit_distance_constraint_label_position(
+                &ctx,
+                version,
+                sketch,
+                constraint_id,
+                label_position,
+                anchor_segment_ids,
+            )
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id: None,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize preview constraint label result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Execute trim operations on a sketch.

@@ -528,22 +528,47 @@ export default class RustContext {
     sketch: ApiObjectId,
     segments: ExistingSegmentCtor[],
     settings: DeepPartial<Configuration>,
-    createCheckpoint = false
+    createCheckpoint = false,
+    anchorSegmentIds?: ApiObjectId[],
+    commitSolverResults = true
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error('Preview segment edits cannot create sketch checkpoints')
+        )
+      }
+
       const result: {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
-      } = await instance.edit_segments(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(segments),
-        JSON.stringify(settings),
-        createCheckpoint
-      )
+      } = !commitSolverResults
+        ? await (instance as any).preview_edit_segments_with_anchors(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(segments),
+            JSON.stringify(anchorSegmentIds ?? []),
+            JSON.stringify(settings)
+          )
+        : anchorSegmentIds?.length
+          ? await (instance as any).edit_segments_with_anchors(
+              JSON.stringify(version),
+              JSON.stringify(sketch),
+              JSON.stringify(segments),
+              JSON.stringify(anchorSegmentIds),
+              JSON.stringify(settings),
+              createCheckpoint
+            )
+          : await instance.edit_segments(
+              JSON.stringify(version),
+              JSON.stringify(sketch),
+              JSON.stringify(segments),
+              JSON.stringify(settings),
+              createCheckpoint
+            )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
@@ -681,24 +706,42 @@ export default class RustContext {
     labelPosition: ApiPoint2d<Number>,
     settings: DeepPartial<Configuration>,
     createCheckpoint = false,
-    anchorSegmentIds: ApiObjectId[] = []
+    anchorSegmentIds: ApiObjectId[] = [],
+    commitSolverResults = true
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error('Preview label edits cannot create sketch checkpoints')
+        )
+      }
+
       const result: {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
-      } = await instance.edit_distance_constraint_label_position(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(constraintId),
-        JSON.stringify(labelPosition),
-        JSON.stringify(settings),
-        createCheckpoint,
-        JSON.stringify(anchorSegmentIds)
-      )
+      } = !commitSolverResults
+        ? await (
+            instance as any
+          ).preview_edit_distance_constraint_label_position(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(constraintId),
+            JSON.stringify(labelPosition),
+            JSON.stringify(settings),
+            JSON.stringify(anchorSegmentIds)
+          )
+        : await instance.edit_distance_constraint_label_position(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(constraintId),
+            JSON.stringify(labelPosition),
+            JSON.stringify(settings),
+            createCheckpoint,
+            JSON.stringify(anchorSegmentIds)
+          )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)

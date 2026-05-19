@@ -218,6 +218,13 @@ pub struct FrontendState {
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
+    /// One-shot drag anchors for the next segment edit. These ids define which
+    /// edited points/segments become temporary fixed constraints during solve.
+    next_drag_anchor_segment_ids: Option<AhashIndexSet<ObjectId>>,
+    /// One-shot override for whether the next edit commits solver-updated
+    /// initial guesses back into KCL. Drag previews keep this off so only the
+    /// explicit drag edit feeds the next solve.
+    next_edit_commits_solver_solutions: Option<bool>,
     sketch_checkpoints: VecDeque<SketchCheckpoint>,
     sketch_checkpoint_id_gen: IncIdGenerator<u64>,
 }
@@ -241,6 +248,8 @@ impl FrontendState {
                 sketch_mode: Default::default(),
             },
             point_freedom_cache: HashMap::new(),
+            next_drag_anchor_segment_ids: None,
+            next_edit_commits_solver_solutions: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
         }
@@ -283,6 +292,64 @@ impl FrontendState {
         Ok(checkpoint_id)
     }
 
+    pub async fn edit_segments_with_anchor_ids(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_anchor_ids = self
+            .next_drag_anchor_segment_ids
+            .replace(anchor_segment_ids.into_iter().collect());
+        let result = SketchApi::edit_segments(self, ctx, version, sketch, segments).await;
+        self.next_drag_anchor_segment_ids = previous_anchor_ids;
+        result
+    }
+
+    pub async fn preview_edit_segments_with_anchor_ids(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_anchor_ids = self
+            .next_drag_anchor_segment_ids
+            .replace(anchor_segment_ids.into_iter().collect());
+        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(false);
+        let result = SketchApi::edit_segments(self, ctx, version, sketch, segments).await;
+        self.next_drag_anchor_segment_ids = previous_anchor_ids;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
+    pub async fn preview_edit_distance_constraint_label_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(false);
+        let result = SketchApi::edit_distance_constraint_label_position(
+            self,
+            ctx,
+            version,
+            sketch,
+            constraint_id,
+            label_position,
+            anchor_segment_ids,
+        )
+        .await;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
     pub async fn restore_sketch_checkpoint(
         &mut self,
         checkpoint_id: SketchCheckpointId,
@@ -299,6 +366,8 @@ impl FrontendState {
         self.program = checkpoint.program;
         self.scene_graph = checkpoint.scene_graph.clone();
         self.point_freedom_cache = checkpoint.point_freedom_cache;
+        self.next_drag_anchor_segment_ids = None;
+        self.next_edit_commits_solver_solutions = None;
 
         if let Some(mock_memory) = checkpoint.mock_memory {
             write_old_memory(mock_memory).await;
@@ -712,13 +781,13 @@ impl SketchApi for FrontendState {
             sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
 
         let mut new_ast = self.program.ast.clone();
-        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
+        let mut edited_segment_ids = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
         let mut invalidates_ids = false;
 
-        // segment_ids_edited still has to be the original segments (not final_edits), otherwise the owner segments
+        // edited_segment_ids still has to be the original segments (not final_edits), otherwise the owner segments
         // are passed to `execute_after_edit` which changes the result of the solver, causing tests to fail.
         for segment in &segments {
-            segment_ids_edited.insert(segment.id);
+            edited_segment_ids.insert(segment.id);
             if let SegmentCtor::ControlPointSpline(new_ctor) = &segment.ctor
                 && let Some(existing_object) = self.scene_graph.objects.get(segment.id.0)
                 && let ObjectKind::Segment {
@@ -729,6 +798,11 @@ impl SketchApi for FrontendState {
                 invalidates_ids = true;
             }
         }
+        let drag_anchor_segment_ids = self
+            .next_drag_anchor_segment_ids
+            .take()
+            .unwrap_or_else(|| edited_segment_ids.clone());
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
 
         // Preprocess segments into a final_edits vector to handle if segments contains:
         // - edit start point of line1 (as SegmentCtor::Point)
@@ -929,9 +1003,10 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
+                drag_anchor_segment_ids,
                 EditDeleteKind::Edit,
                 &mut new_ast,
+                commit_solved_initial_guesses,
             )
             .await?;
         if invalidates_ids {
@@ -1119,6 +1194,7 @@ impl SketchApi for FrontendState {
             Default::default(),
             EditDeleteKind::DeleteNonSketch,
             &mut new_ast,
+            true,
         )
         .await
     }
@@ -1380,6 +1456,7 @@ impl SketchApi for FrontendState {
             Default::default(),
             EditDeleteKind::Edit,
             &mut new_ast,
+            true,
         )
         .await
     }
@@ -1427,6 +1504,7 @@ impl SketchApi for FrontendState {
             AstMutateCommand::EditDistanceConstraintLabelPosition { label_position },
         )
         .map_err(KclErrorWithOutputs::no_outputs)?;
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
 
         self.execute_after_edit(
             ctx,
@@ -1435,6 +1513,7 @@ impl SketchApi for FrontendState {
             anchor_segment_ids.into_iter().collect(),
             EditDeleteKind::Edit,
             &mut new_ast,
+            commit_solved_initial_guesses,
         )
         .await
     }
@@ -1596,6 +1675,7 @@ impl SketchApi for FrontendState {
                 segment_ids_edited,
                 EditDeleteKind::Edit,
                 &mut new_ast,
+                true,
             )
             .await?;
 
@@ -1684,6 +1764,7 @@ impl SketchApi for FrontendState {
                 segment_ids_edited,
                 EditDeleteKind::Edit,
                 &mut new_ast,
+                true,
             )
             .await?;
 
@@ -3153,6 +3234,7 @@ impl FrontendState {
         segment_ids_edited: AhashIndexSet<ObjectId>,
         edit_kind: EditDeleteKind,
         new_ast: &mut ast::Node<ast::Program>,
+        commit_solved_initial_guesses: bool,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
@@ -3198,7 +3280,11 @@ impl FrontendState {
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
 
-        let src_delta = self.commit_var_solutions_to_program(&outcome, "editing")?;
+        let src_delta = if commit_solved_initial_guesses {
+            self.commit_var_solutions_to_program(&outcome, "editing")?
+        } else {
+            SourceDelta { text: new_source }
+        };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: is_delete,
@@ -6717,6 +6803,32 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         assert!((actual.y.value - expected.y.value).abs() < 1e-6);
     }
 
+    fn point_expr_mm(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::Var(Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            }),
+        }
+    }
+
+    fn point_number_mm(x: f64, y: f64) -> Point2d<Number> {
+        Point2d {
+            x: Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            },
+        }
+    }
+
     fn make_line_ctor(start_x: f64, start_y: f64, end_x: f64, end_y: f64, units: NumericSuffix) -> LineCtor {
         LineCtor {
             start: Point2d {
@@ -8316,6 +8428,70 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_preview_edit_segments_does_not_persist_solver_feedback() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  fixed([line1.start, [0, 0]])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_end_id = *sketch.segments.get(4).unwrap();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line2_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 9.0,
+                        units: NumericSuffix::None,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 10.0,
+                        units: NumericSuffix::None,
+                    }),
+                },
+            }),
+        }];
+        let (preview_source, preview_delta) = frontend
+            .preview_edit_segments_with_anchor_ids(&mock_ctx, version, sketch_id, segments, vec![line2_end_id])
+            .await
+            .unwrap();
+
+        assert!(
+            !preview_delta.exec_outcome.var_solutions.is_empty(),
+            "preview solve should still solve and return geometry feedback"
+        );
+        assert!(
+            preview_source
+                .text
+                .contains("line1 = line(start = [var 1, var 2], end = [var 1, var 2])")
+        );
+        assert!(
+            preview_source
+                .text
+                .contains("line2 = line(start = [var 5, var 6], end = [var 9, var 10])")
+        );
+
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, preview_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_add_constraint_persists_solver_feedback_for_next_mock_execute() {
         let initial_source = "\
 sketch(on = XY) {
@@ -8392,6 +8568,59 @@ cylinder = startSketchOn(XY)
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
         assert_eq!(source_delta.text, initial_source);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_segments_with_anchor_ids_limits_drag_fixed_constraints() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point2 = point(at = [var 0mm, var 0mm])
+  coincident([point1, point2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point1_id = sketch.segments[0];
+        let point2_id = sketch.segments[1];
+
+        let segments = vec![
+            ExistingSegmentCtor {
+                id: point1_id,
+                ctor: SegmentCtor::Point(PointCtor {
+                    position: point_expr_mm(10.0, 0.0),
+                }),
+            },
+            ExistingSegmentCtor {
+                id: point2_id,
+                ctor: SegmentCtor::Point(PointCtor {
+                    position: point_expr_mm(100.0, 0.0),
+                }),
+            },
+        ];
+        let (_, scene_delta) = frontend
+            .edit_segments_with_anchor_ids(&mock_ctx, version, sketch_id, segments, vec![point1_id])
+            .await
+            .unwrap();
+
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            point_number_mm(10.0, 0.0),
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point2_id),
+            point_number_mm(10.0, 0.0),
+        );
+
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

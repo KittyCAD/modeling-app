@@ -92,6 +92,7 @@ type ConstraintLabelEdit = {
 type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
   constraintLabelEdits: ConstraintLabelEdit[]
+  dragAnchorSegmentIds: number[]
 }
 
 type ClosestSelectionTarget = {
@@ -1188,7 +1189,8 @@ export function createOnDragCallback({
     version: number,
     sketchId: number,
     segments: Array<ExistingSegmentCtor>,
-    settings: DeepPartial<Configuration>
+    settings: DeepPartial<Configuration>,
+    dragAnchorSegmentIds?: number[]
   ) => Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -1343,6 +1345,14 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const dragAnchorSegmentIds = Array.from(
+        new Set(
+          [entityUnderCursorId, ...selectedIds].filter(
+            (id): id is number =>
+              id !== null && objects[id]?.kind.type === 'Segment'
+          )
+        )
+      )
 
       for (const id of idsToEdit) {
         const obj = objects[id]
@@ -1387,7 +1397,8 @@ export function createOnDragCallback({
         0,
         sketchId,
         segmentsToEdit,
-        settings
+        settings,
+        dragAnchorSegmentIds
       ).catch((err) => {
         if (!isActiveDragSession()) {
           return null
@@ -1415,7 +1426,7 @@ export function createOnDragCallback({
               version: 0,
               sketchId,
               settings,
-              anchorSegmentIds: segmentsToEdit.map(({ id }) => id),
+              anchorSegmentIds: dragAnchorSegmentIds,
             }).catch((err) => {
               if (!isActiveDragSession()) {
                 return null
@@ -1438,6 +1449,7 @@ export function createOnDragCallback({
           ...result,
           segmentsToEdit,
           constraintLabelEdits: appliedConstraintLabelEdits,
+          dragAnchorSegmentIds,
         })
         setLastSuccessfulDragFromPoint(twoD.clone())
         onNewSketchOutcome({
@@ -1819,15 +1831,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = []
+            constraintLabelEdits: ConstraintLabelEdit[] = [],
+            dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id)
           ) => {
-            const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
             let latestResult = await context.rustContext.editSegments(
               0,
               context.sketchId,
               segmentsToEdit,
               settings,
-              constraintLabelEdits.length === 0
+              constraintLabelEdits.length === 0,
+              dragAnchorSegmentIds
             )
 
             for (const [
@@ -1842,7 +1855,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   labelPosition,
                   settings,
                   index === constraintLabelEdits.length - 1,
-                  anchorSegmentIds
+                  dragAnchorSegmentIds
                 )
             }
 
@@ -1870,7 +1883,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             if (lastGoodPreview?.segmentsToEdit.length) {
               const recoveredCommit = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                lastGoodPreview.dragAnchorSegmentIds
               )
 
               if (recoveredCommit.checkpointId != null) {
@@ -1922,7 +1936,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 },
               ],
               settings,
-              true
+              true,
+              [draggedEntityId]
             )
 
             const axisConstraint = snapConstraints.find(
@@ -2036,7 +2051,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             if (lastGoodPreview?.segmentsToEdit.length) {
               result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                lastGoodPreview.dragAnchorSegmentIds
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -2045,6 +2061,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
               )
             } else {
               const objects = currentSceneGraphDelta.new_graph.objects
+              const dragAnchorSegmentIds = Array.from(
+                new Set(
+                  [draggedEntityId, ...snapshot.context.selectedIds]
+                    .filter(isObjectSelectionId)
+                    .filter((id) => objects[id]?.kind.type === 'Segment')
+                )
+              )
               const coincidentClusterPointIds =
                 draggedEntityId !== null
                   ? getCoincidentCluster(draggedEntityId, objects)
@@ -2079,7 +2102,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  true
+                  true,
+                  dragAnchorSegmentIds
                 )
               }
             }
@@ -2132,13 +2156,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         version: number,
         sketchId: number,
         segments: Array<ExistingSegmentCtor>,
-        settings: DeepPartial<Configuration>
+        settings: DeepPartial<Configuration>,
+        dragAnchorSegmentIds?: number[]
       ) => {
         return context.rustContext.editSegments(
           version,
           sketchId,
           segments,
-          settings
+          settings,
+          false,
+          dragAnchorSegmentIds,
+          false
         )
       },
       editDistanceConstraintLabelPosition: async (
@@ -2156,7 +2184,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           labelPosition,
           settings,
           false,
-          anchorSegmentIds
+          anchorSegmentIds,
+          false
         )
       },
       onNewSketchOutcome: (outcome) => {
