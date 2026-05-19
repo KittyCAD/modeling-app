@@ -92,6 +92,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+    let draft_angle: Option<TyF64> = args.get_kw_arg_opt("draftAngle", &RuntimeType::degrees(), exec_state)?;
     let twist_angle: Option<TyF64> = args.get_kw_arg_opt("twistAngle", &RuntimeType::degrees(), exec_state)?;
     let twist_angle_step: Option<TyF64> = args.get_kw_arg_opt("twistAngleStep", &RuntimeType::degrees(), exec_state)?;
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
@@ -118,6 +119,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         bidirectional_length,
         tag_start,
         tag_end,
+        draft_angle,
         twist_angle,
         twist_angle_step,
         twist_center,
@@ -278,6 +280,7 @@ async fn inner_extrude(
     bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    draft_angle: Option<TyF64>,
     twist_angle: Option<TyF64>,
     twist_angle_step: Option<TyF64>,
     twist_center: Option<[TyF64; 2]>,
@@ -370,6 +373,7 @@ async fn inner_extrude(
                     .target(sketch_or_face_id.into())
                     .distance(LengthUnit(length.to_mm()))
                     .opposite(opposite.clone())
+                    .maybe_draft_angle(draft_angle.clone().map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))))
                     .extrude_method(extrude_method)
                     .body_type(body_type)
                     .maybe_merge_coplanar_faces(hide_seams)
