@@ -44,7 +44,10 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { recordSketchSolverDebugOperation } from '@src/machines/sketchSolve/sketchSolverDebugger'
+import {
+  recordSketchSolverDebugOperation,
+  withSketchSolverPrioritySettings,
+} from '@src/machines/sketchSolve/sketchSolverDebugger'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -144,7 +147,7 @@ export default class RustContext {
       const result: SceneGraphDelta = await instance.execute(
         JSON.stringify(node),
         path,
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const outcome = execStateFromRust(result.exec_outcome)
 
@@ -177,7 +180,7 @@ export default class RustContext {
       const result = await instance.executeMock(
         JSON.stringify(node),
         path,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         usePrevMemory
       )
       return execStateFromRust(result)
@@ -197,7 +200,7 @@ export default class RustContext {
     try {
       return await instance.export(
         JSON.stringify(format),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
@@ -249,7 +252,7 @@ export default class RustContext {
 
     try {
       const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(settings),
+        serializeSettings(settings),
         path
       )
 
@@ -306,7 +309,7 @@ export default class RustContext {
         checkpointId?: bigint | number | null
       } = await instance.hack_set_program(
         JSON.stringify(program_ast),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       if (result.type !== 'Success') {
         return result
@@ -345,12 +348,60 @@ export default class RustContext {
       } = await instance.sketch_execute_mock(
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(jsAppSettings(this.settingsActor))
+        serializeSettings(jsAppSettings(this.settingsActor))
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'settle sketch',
+        result.sceneGraphDelta,
+        true,
+        this.settingsActor
+      )
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /**
+   * Execute the sketch in mock mode using the latest preview warm starts.
+   * Drag previews are intentionally source-transient, so drag end needs this
+   * path to settle from the visible preview branch instead of cold source.
+   */
+  async sketchExecuteMockFromPreview(
+    version: ApiVersion,
+    sketch: ApiObjectId
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await (instance as any).sketch_execute_mock_from_preview(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        serializeSettings(jsAppSettings(this.settingsActor))
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      recordSketchSolverMutation(
+        'settle sketch from preview',
+        result.sceneGraphDelta,
+        true,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -383,7 +434,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketchArgs),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -420,7 +471,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -472,7 +523,7 @@ export default class RustContext {
         await instance.delete_sketch(
           JSON.stringify(version),
           JSON.stringify(sketch),
-          JSON.stringify(settings)
+          serializeSettings(settings)
         )
       return {
         kclSource: result[0],
@@ -505,7 +556,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(segment),
         label,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -548,7 +599,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(segments),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -557,6 +608,107 @@ export default class RustContext {
       }
       recordSketchSolverMutation(
         'edit segments',
+        result.sceneGraphDelta,
+        createCheckpoint,
+        this.settingsActor
+      )
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Preview editing sketch segments without committing source guesses. */
+  async previewEditSegments(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    segments: ExistingSegmentCtor[],
+    settings: DeepPartial<Configuration>,
+    anchorSegmentIds?: ApiObjectId[]
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = anchorSegmentIds
+        ? await (instance as any).preview_edit_segments_with_anchors(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(segments),
+            JSON.stringify(anchorSegmentIds),
+            serializeSettings(settings)
+          )
+        : await (instance as any).preview_edit_segments(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(segments),
+            serializeSettings(settings)
+          )
+      recordSketchSolverMutation(
+        'preview edit segments',
+        result.sceneGraphDelta,
+        false,
+        this.settingsActor
+      )
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId: null,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Commit sketch segment edits using the latest preview warm starts. */
+  async commitEditSegmentsFromPreview(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    segments: ExistingSegmentCtor[],
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    anchorSegmentIds?: ApiObjectId[]
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = anchorSegmentIds
+        ? await (
+            instance as any
+          ).commit_edit_segments_from_preview_with_anchors(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(segments),
+            JSON.stringify(anchorSegmentIds),
+            serializeSettings(settings),
+            createCheckpoint
+          )
+        : await (instance as any).commit_edit_segments_from_preview(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(segments),
+            serializeSettings(settings),
+            createCheckpoint
+          )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      recordSketchSolverMutation(
+        'commit preview edit segments',
         result.sceneGraphDelta,
         createCheckpoint,
         this.settingsActor
@@ -593,7 +745,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(constraintIds),
         JSON.stringify(segmentIds),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -636,7 +788,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraint),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -681,7 +833,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
         valueExpression,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -726,7 +878,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
         JSON.stringify(labelPosition),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint,
         JSON.stringify(anchorSegmentIds)
       )
@@ -774,7 +926,7 @@ export default class RustContext {
         JSON.stringify(previousSegmentEndPointId),
         JSON.stringify(segment),
         label,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -857,7 +1009,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         flattenedPoints,
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpoint_id)
       if (checkpointId instanceof Error) {
@@ -914,6 +1066,10 @@ function normalizeSketchCheckpointId(
   }
 
   return normalized
+}
+
+function serializeSettings(settings: DeepPartial<Configuration>): string {
+  return JSON.stringify(withSketchSolverPrioritySettings(settings))
 }
 
 function recordSketchSolverMutation(

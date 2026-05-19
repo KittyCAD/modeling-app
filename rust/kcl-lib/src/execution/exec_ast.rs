@@ -1,8 +1,9 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
+use ezpz::datatypes::inputs::{DatumCircle, DatumCircularArc, DatumLineSegment, DatumPoint};
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
 
@@ -37,6 +38,7 @@ use crate::execution::Segment;
 use crate::execution::SegmentKind;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchConstraintKind;
+use crate::execution::SketchSolverPriorityBucket;
 use crate::execution::SketchSurface;
 use crate::execution::StatementKind;
 use crate::execution::TagIdentifier;
@@ -116,49 +118,453 @@ fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> Kc
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
 }
 
-fn sketch_solver_trace(
+struct SketchSolverTraceInput<'a> {
     sketch_id: crate::front::ObjectId,
     source_range: SourceRange,
     required_constraint_count: usize,
     optional_constraint_count: usize,
-    constraints: &[ezpz::ConstraintRequest],
-    initial_guesses: &[(ezpz::Id, f64)],
-    config: &ezpz::Config,
-) -> crate::execution::SketchSolverTrace {
-    let mut items = Vec::with_capacity(constraints.len() + initial_guesses.len() + 1);
+    constraints: &'a [ezpz::ConstraintRequest],
+    initial_guesses: &'a [(ezpz::Id, f64)],
+    initial_guess_source_ranges: &'a [Option<SourceRange>],
+    config: &'a ezpz::Config,
+}
+
+fn sketch_solver_trace(input: SketchSolverTraceInput<'_>) -> crate::execution::SketchSolverTrace {
+    let mut items = Vec::with_capacity(input.constraints.len() + input.initial_guesses.len() + 1);
     items.push(crate::execution::SketchSolverTraceItem {
         kind: "config".to_owned(),
         label: "solver config".to_owned(),
-        detail: format!("{config:?}"),
+        detail: format!("{:?}", input.config),
+        source_range: None,
     });
-    items.extend(
-        constraints
-            .iter()
-            .enumerate()
-            .map(|(index, request)| crate::execution::SketchSolverTraceItem {
-                kind: "constraint".to_owned(),
-                label: format!("constraint {}", index + 1),
-                detail: format!("priority {}\n{:?}", request.priority(), request.constraint()),
-            }),
-    );
-    items.extend(
-        initial_guesses
-            .iter()
-            .map(|(id, value)| crate::execution::SketchSolverTraceItem {
-                kind: "initialGuess".to_owned(),
-                label: format!("guess {id}"),
-                detail: value.to_string(),
-            }),
-    );
+    items.extend(input.constraints.iter().enumerate().map(|(index, request)| {
+        crate::execution::SketchSolverTraceItem {
+            kind: "constraint".to_owned(),
+            label: format!("constraint {}", index + 1),
+            detail: format!("priority {}\n{:?}", request.priority(), request.constraint()),
+            source_range: None,
+        }
+    }));
+    items.extend(input.initial_guesses.iter().map(|(id, value)| {
+        crate::execution::SketchSolverTraceItem {
+            kind: "initialGuess".to_owned(),
+            label: format!("guess {id}"),
+            detail: value.to_string(),
+            source_range: usize::try_from(*id)
+                .ok()
+                .and_then(|index| input.initial_guess_source_ranges.get(index).copied().flatten()),
+        }
+    }));
 
     crate::execution::SketchSolverTrace {
-        sketch_id,
-        source_range,
-        required_constraint_count,
-        optional_constraint_count,
-        initial_guess_count: initial_guesses.len(),
+        sketch_id: input.sketch_id,
+        source_range: input.source_range,
+        required_constraint_count: input.required_constraint_count,
+        optional_constraint_count: input.optional_constraint_count,
+        initial_guess_count: input.initial_guesses.len(),
         items,
     }
+}
+
+fn append_support_geometry_trace_items(
+    trace: &mut crate::execution::SketchSolverTrace,
+    constraints: &[ezpz::Constraint],
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+) {
+    let mut seen_points = HashSet::new();
+    let mut seen_lines = HashSet::new();
+    let mut seen_circles = HashSet::new();
+
+    for constraint in constraints {
+        collect_support_geometry_from_constraint(
+            trace,
+            constraint,
+            initial_guesses,
+            initial_guess_source_ranges,
+            solve_outcome,
+            &mut seen_points,
+            &mut seen_lines,
+            &mut seen_circles,
+        );
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn collect_support_geometry_from_constraint(
+    trace: &mut crate::execution::SketchSolverTrace,
+    constraint: &ezpz::Constraint,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_points: &mut HashSet<(ezpz::Id, ezpz::Id)>,
+    seen_lines: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id, ezpz::Id)>,
+    seen_circles: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id)>,
+) {
+    match constraint {
+        Constraint::LineTangentToCircle(line, circle, _) => {
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+            push_support_circle_trace_item(
+                trace,
+                circle,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_circles,
+            );
+        }
+        Constraint::CircleTangentToCircle(circle0, circle1, _) => {
+            for circle in [circle0, circle1] {
+                push_support_circle_trace_item(
+                    trace,
+                    circle,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_circles,
+                );
+            }
+        }
+        Constraint::Distance(point0, point1, _)
+        | Constraint::VerticalDistance(point0, point1, _)
+        | Constraint::HorizontalDistance(point0, point1, _)
+        | Constraint::PointsCoincident(point0, point1)
+        | Constraint::DistanceVar(point0, point1, _) => {
+            for point in [point0, point1] {
+                push_support_point_trace_item(
+                    trace,
+                    point,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_points,
+                );
+            }
+        }
+        Constraint::Vertical(line) | Constraint::Horizontal(line) => {
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+        }
+        Constraint::Midpoint(line, point)
+        | Constraint::PointLineDistance(point, line, _)
+        | Constraint::VerticalPointLineDistance(point, line, _)
+        | Constraint::HorizontalPointLineDistance(point, line, _) => {
+            push_support_point_trace_item(
+                trace,
+                point,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_points,
+            );
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+        }
+        Constraint::LinesAtAngle(line0, line1, _) | Constraint::LinesEqualLength(line0, line1) => {
+            for line in [line0, line1] {
+                push_support_line_trace_item(
+                    trace,
+                    line,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_lines,
+                );
+            }
+        }
+        Constraint::Symmetric(line, point0, point1) => {
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+            for point in [point0, point1] {
+                push_support_point_trace_item(
+                    trace,
+                    point,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_points,
+                );
+            }
+        }
+        Constraint::CircleRadius(circle, _) => {
+            push_support_circle_trace_item(
+                trace,
+                circle,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_circles,
+            );
+        }
+        Constraint::Arc(arc)
+        | Constraint::ArcRadius(arc, _)
+        | Constraint::PointArcCoincident(arc, _)
+        | Constraint::ArcLength(arc, _)
+        | Constraint::ArcAngle(arc, _) => {
+            push_support_arc_points_trace_items(
+                trace,
+                arc,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_points,
+            );
+        }
+        Constraint::PointsAtAngle(point0, point1, point2, _) => {
+            for point in [point0, point1, point2] {
+                push_support_point_trace_item(
+                    trace,
+                    point,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_points,
+                );
+            }
+        }
+        Constraint::Fixed(_, _) | Constraint::ScalarEqual(_, _) => {}
+        _ => {}
+    }
+}
+
+fn push_support_arc_points_trace_items(
+    trace: &mut crate::execution::SketchSolverTrace,
+    arc: &DatumCircularArc,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_points: &mut HashSet<(ezpz::Id, ezpz::Id)>,
+) {
+    for point in [&arc.start, &arc.end, &arc.center] {
+        push_support_point_trace_item(
+            trace,
+            point,
+            initial_guesses,
+            initial_guess_source_ranges,
+            solve_outcome,
+            seen_points,
+        );
+    }
+}
+
+fn push_support_point_trace_item(
+    trace: &mut crate::execution::SketchSolverTrace,
+    point: &DatumPoint,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_points: &mut HashSet<(ezpz::Id, ezpz::Id)>,
+) {
+    if !is_hidden_support_point(point, initial_guess_source_ranges) {
+        return;
+    }
+    let key = (point.id_x(), point.id_y());
+    if !seen_points.insert(key) {
+        return;
+    }
+    let Some(initial_x) = initial_guess_value(initial_guesses, point.id_x()) else {
+        return;
+    };
+    let Some(initial_y) = initial_guess_value(initial_guesses, point.id_y()) else {
+        return;
+    };
+    let Some(resolved_x) = solved_value(solve_outcome, point.id_x()) else {
+        return;
+    };
+    let Some(resolved_y) = solved_value(solve_outcome, point.id_y()) else {
+        return;
+    };
+
+    trace.items.push(crate::execution::SketchSolverTraceItem {
+        kind: "supportGeometry".to_owned(),
+        label: format!("support point {} {}", point.id_x(), point.id_y()),
+        detail: format!(
+            "type point\nvars {} {}\ninitial {} {}\nresolved {} {}",
+            point.id_x(),
+            point.id_y(),
+            initial_x,
+            initial_y,
+            resolved_x,
+            resolved_y
+        ),
+        source_range: None,
+    });
+}
+
+fn push_support_line_trace_item(
+    trace: &mut crate::execution::SketchSolverTrace,
+    line: &DatumLineSegment,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_lines: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id, ezpz::Id)>,
+) {
+    if !is_hidden_support_point(&line.p0, initial_guess_source_ranges)
+        && !is_hidden_support_point(&line.p1, initial_guess_source_ranges)
+    {
+        return;
+    }
+    let key = (line.p0.id_x(), line.p0.id_y(), line.p1.id_x(), line.p1.id_y());
+    if !seen_lines.insert(key) {
+        return;
+    }
+    let Some(initial_p0) = initial_point(initial_guesses, &line.p0) else {
+        return;
+    };
+    let Some(initial_p1) = initial_point(initial_guesses, &line.p1) else {
+        return;
+    };
+    let Some(resolved_p0) = solved_point(solve_outcome, &line.p0) else {
+        return;
+    };
+    let Some(resolved_p1) = solved_point(solve_outcome, &line.p1) else {
+        return;
+    };
+
+    trace.items.push(crate::execution::SketchSolverTraceItem {
+        kind: "supportGeometry".to_owned(),
+        label: format!(
+            "support line {} {} {} {}",
+            line.p0.id_x(),
+            line.p0.id_y(),
+            line.p1.id_x(),
+            line.p1.id_y()
+        ),
+        detail: format!(
+            "type line\nvars {} {} {} {}\ninitial {} {} {} {}\nresolved {} {} {} {}",
+            line.p0.id_x(),
+            line.p0.id_y(),
+            line.p1.id_x(),
+            line.p1.id_y(),
+            initial_p0[0],
+            initial_p0[1],
+            initial_p1[0],
+            initial_p1[1],
+            resolved_p0[0],
+            resolved_p0[1],
+            resolved_p1[0],
+            resolved_p1[1]
+        ),
+        source_range: None,
+    });
+}
+
+fn push_support_circle_trace_item(
+    trace: &mut crate::execution::SketchSolverTrace,
+    circle: &DatumCircle,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_circles: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id)>,
+) {
+    if !is_hidden_support_point(&circle.center, initial_guess_source_ranges)
+        && !is_hidden_support_scalar(circle.radius.id, initial_guess_source_ranges)
+    {
+        return;
+    }
+    let key = (circle.center.id_x(), circle.center.id_y(), circle.radius.id);
+    if !seen_circles.insert(key) {
+        return;
+    }
+    let Some(initial_center) = initial_point(initial_guesses, &circle.center) else {
+        return;
+    };
+    let Some(initial_radius) = initial_guess_value(initial_guesses, circle.radius.id) else {
+        return;
+    };
+    let Some(resolved_center) = solved_point(solve_outcome, &circle.center) else {
+        return;
+    };
+    let Some(resolved_radius) = solved_value(solve_outcome, circle.radius.id) else {
+        return;
+    };
+
+    trace.items.push(crate::execution::SketchSolverTraceItem {
+        kind: "supportGeometry".to_owned(),
+        label: format!(
+            "support circle {} {} {}",
+            circle.center.id_x(),
+            circle.center.id_y(),
+            circle.radius.id
+        ),
+        detail: format!(
+            "type circle\nvars {} {} {}\ninitial {} {} {}\nresolved {} {} {}",
+            circle.center.id_x(),
+            circle.center.id_y(),
+            circle.radius.id,
+            initial_center[0],
+            initial_center[1],
+            initial_radius,
+            resolved_center[0],
+            resolved_center[1],
+            resolved_radius
+        ),
+        source_range: None,
+    });
+}
+
+fn is_hidden_support_point(point: &DatumPoint, initial_guess_source_ranges: &[Option<SourceRange>]) -> bool {
+    is_hidden_support_scalar(point.id_x(), initial_guess_source_ranges)
+        && is_hidden_support_scalar(point.id_y(), initial_guess_source_ranges)
+}
+
+fn is_hidden_support_scalar(id: ezpz::Id, initial_guess_source_ranges: &[Option<SourceRange>]) -> bool {
+    usize::try_from(id)
+        .ok()
+        .and_then(|index| initial_guess_source_ranges.get(index))
+        .is_some_and(Option::is_none)
+}
+
+fn initial_point(initial_guesses: &[(ezpz::Id, f64)], point: &DatumPoint) -> Option<[f64; 2]> {
+    Some([
+        initial_guess_value(initial_guesses, point.id_x())?,
+        initial_guess_value(initial_guesses, point.id_y())?,
+    ])
+}
+
+fn solved_point(solve_outcome: &Solved, point: &DatumPoint) -> Option<[f64; 2]> {
+    Some([
+        solved_value(solve_outcome, point.id_x())?,
+        solved_value(solve_outcome, point.id_y())?,
+    ])
+}
+
+fn initial_guess_value(initial_guesses: &[(ezpz::Id, f64)], id: ezpz::Id) -> Option<f64> {
+    initial_guesses
+        .iter()
+        .find_map(|(guess_id, value)| (*guess_id == id).then_some(*value))
+}
+
+fn solved_value(solve_outcome: &Solved, id: ezpz::Id) -> Option<f64> {
+    usize::try_from(id)
+        .ok()
+        .and_then(|index| solve_outcome.final_values.get(index).copied())
 }
 
 fn datum_point_from_constrainable(
@@ -208,6 +614,33 @@ fn push_fixed_origin_point(
     ))
 }
 
+fn sketch_solver_constraint_priority_bucket(
+    constraint: &Constraint,
+    is_drag_fixed_constraint: bool,
+) -> SketchSolverPriorityBucket {
+    if is_drag_fixed_constraint {
+        SketchSolverPriorityBucket::DragFixed
+    } else if matches!(constraint, Constraint::Fixed(_, _)) {
+        SketchSolverPriorityBucket::Fixed
+    } else if is_existing_coincident_constraint(constraint) {
+        SketchSolverPriorityBucket::ExistingCoincident
+    } else {
+        SketchSolverPriorityBucket::EverythingElse
+    }
+}
+
+fn is_existing_coincident_constraint(constraint: &Constraint) -> bool {
+    const ZERO_DISTANCE_TOLERANCE: f64 = 1.0e-9;
+
+    match constraint {
+        Constraint::PointsCoincident(_, _) | Constraint::PointArcCoincident(_, _) => true,
+        Constraint::PointLineDistance(_, _, distance)
+        | Constraint::VerticalPointLineDistance(_, _, distance)
+        | Constraint::HorizontalPointLineDistance(_, _, distance) => distance.abs() <= ZERO_DISTANCE_TOLERANCE,
+        _ => false,
+    }
+}
+
 fn datum_point_from_constrainable_or_origin(
     sketch_block_state: &mut SketchBlockState,
     sketch_var_ty: NumericType,
@@ -245,6 +678,10 @@ fn sketch_var_initial_value(
     range: SourceRange,
     description: &str,
 ) -> Result<f64, KclError> {
+    if let Some(value) = exec_state.sketch_var_initial_guess_override(sketch_vars, id) {
+        return Ok(value);
+    }
+
     sketch_vars
         .get(id.0)
         .and_then(KclValue::as_sketch_var)
@@ -1773,14 +2210,29 @@ impl Node<SketchBlock> {
             .solver_constraints
             .iter()
             .cloned()
-            .map(ezpz::ConstraintRequest::highest_priority)
+            .map(|constraint| {
+                let bucket = sketch_solver_constraint_priority_bucket(&constraint, false);
+                // Most solves use user-configurable semantic buckets. Some
+                // committed frontend mutations intentionally override required
+                // priorities so the newly persisted constraint cannot be
+                // treated as softer than the already-existing sketch shape.
+                let priority = exec_state
+                    .required_constraint_priority_override()
+                    .unwrap_or_else(|| ctx.settings.sketch_solver_priority(bucket));
+                ezpz::ConstraintRequest::new(constraint, priority)
+            })
             .chain(
-                // Optional constraints have a lower priority.
+                // Interaction constraints encode the current drag target. Their
+                // relative priority is configurable from the sketch debugger so
+                // we can tune drag behavior without recompiling.
                 sketch_block_state
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(|c| ezpz::ConstraintRequest::new(c, 1)),
+                    .map(|constraint| {
+                        let bucket = sketch_solver_constraint_priority_bucket(&constraint, true);
+                        ezpz::ConstraintRequest::new(constraint, ctx.settings.sketch_solver_priority(bucket))
+                    }),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
@@ -1813,26 +2265,36 @@ impl Node<SketchBlock> {
                     debug_assert!(false, "{}", &message);
                     return Err(internal_err(message, self));
                 };
+                let initial_guess = exec_state
+                    .sketch_var_initial_guess_override(&sketch_block_state.sketch_vars, sketch_var.id)
+                    .unwrap_or(initial_guess);
                 Ok((constraint_id, initial_guess))
             })
             .collect::<Result<Vec<_>, KclError>>()?;
-        // Solve constraints.
+        let initial_guess_source_ranges = sketch_block_state
+            .sketch_vars
+            .iter()
+            .map(|v| {
+                v.as_sketch_var()
+                    .and_then(|sketch_var| sketch_var.meta.first().map(|m| m.source_range))
+            })
+            .collect::<Vec<_>>();
+        // Solve constraints. Tangent + midpoint/dimension examples can need
+        // extra Newton steps once committed constraints are made authoritative.
         let config = ezpz::Config::default()
-            .with_max_iterations(50)
+            .with_max_iterations(200)
             .with_convergence_tolerance(SOLVER_CONVERGENCE_TOLERANCE);
-        exec_state
-            .mod_local
-            .artifacts
-            .sketch_solver_traces
-            .push(sketch_solver_trace(
-                sketch_id,
-                range,
-                sketch_block_state.solver_constraints.len(),
-                sketch_block_state.solver_optional_constraints.len(),
-                &constraints,
-                &initial_guesses,
-                &config,
-            ));
+        let mut solver_trace = sketch_solver_trace(SketchSolverTraceInput {
+            sketch_id,
+            source_range: range,
+            required_constraint_count: sketch_block_state.solver_constraints.len(),
+            optional_constraint_count: sketch_block_state.solver_optional_constraints.len(),
+            constraints: &constraints,
+            initial_guesses: &initial_guesses,
+            initial_guess_source_ranges: &initial_guess_source_ranges,
+            config: &config,
+        });
+        let lowest_requested_priority = constraints.iter().map(|request| request.priority()).max();
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
@@ -1905,6 +2367,28 @@ impl Node<SketchBlock> {
                 }
             }
         };
+        if let Some(lowest_requested_priority) = lowest_requested_priority
+            && solve_outcome.priority_solved < lowest_requested_priority
+        {
+            let message = format!(
+                "Constraint solver found a partial priority solution: solved through priority {}, but constraints were requested through priority {}",
+                solve_outcome.priority_solved, lowest_requested_priority
+            );
+            solver_trace.items.push(crate::execution::SketchSolverTraceItem {
+                kind: "solve".to_owned(),
+                label: "partial priority solution".to_owned(),
+                detail: message.clone(),
+                source_range: None,
+            });
+        }
+        append_support_geometry_trace_items(
+            &mut solver_trace,
+            &all_constraints,
+            &initial_guesses,
+            &initial_guess_source_ranges,
+            &solve_outcome,
+        );
+        exec_state.mod_local.artifacts.sketch_solver_traces.push(solver_trace);
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
@@ -1936,6 +2420,8 @@ impl Node<SketchBlock> {
         // solutions.
         exec_state.mod_local.artifacts.var_solutions =
             sketch_block_state.var_solutions(&solve_outcome, solution_ty, SourceRange::from(self))?;
+        exec_state.mod_local.artifacts.ordered_sketch_var_solutions =
+            sketch_block_state.ordered_sketch_var_solutions(&solve_outcome, SourceRange::from(self))?;
 
         // Create scene objects after unknowns are solved.
         let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
@@ -2009,7 +2495,8 @@ impl Node<SketchBlock> {
             .constraints
             .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
 
-        // Close the sketch block operation group.
+        // Close the sketch block operation group so the feature tree can nest
+        // sketch operations under the sketch block instead of flattening them.
         exec_state.push_op(Operation::GroupEnd);
 
         // Warn if the sketch has conflicting constraints. Skip this when
@@ -4620,6 +5107,10 @@ impl Node<BinaryExpression> {
                                 exec_state: &mut ExecState,
                                 range: SourceRange,
                             ) -> Result<f64, KclError> {
+                                if let Some(value) = exec_state.sketch_var_initial_guess_override(sketch_vars, id) {
+                                    return Ok(value);
+                                }
+
                                 sketch_vars
                                     .get(id.0)
                                     .and_then(KclValue::as_sketch_var)
@@ -6315,6 +6806,46 @@ s = sketch(on = XY) {
         // sketch block fields.
         assert!(!value.contains_key("line"));
         assert!(!value.contains_key("coincident"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_operations_are_grouped_for_feature_tree() {
+        let ast = r#"
+s = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  coincident([line1.end, line2.start])
+}
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let actual_operations = result.exec_state.global.root_module_artifacts.operations;
+
+        let Some(first) = actual_operations.first() else {
+            panic!("expected sketch block operations, got none");
+        };
+        let Some(last) = actual_operations.last() else {
+            panic!("expected sketch block operations, got none");
+        };
+        assert!(
+            matches!(
+                first,
+                Operation::GroupBegin {
+                    group: Group::SketchBlock { .. },
+                    ..
+                }
+            ),
+            "expected first operation to begin a sketch block group, got {first:?}"
+        );
+        assert!(
+            matches!(last, Operation::GroupEnd),
+            "expected last operation to close a sketch block group, got {last:?}"
+        );
+        assert!(
+            actual_operations[1..actual_operations.len() - 1]
+                .iter()
+                .any(|operation| matches!(operation, Operation::StdLibCall { .. })),
+            "expected sketch block group to contain feature tree operations, got {actual_operations:#?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

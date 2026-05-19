@@ -3,6 +3,7 @@ use std::sync::Arc;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
+use kcl_lib::collections::AhashIndexSet;
 use kcl_lib::front::Error;
 use kcl_lib::front::ExistingSegmentCtor;
 use kcl_lib::front::File;
@@ -200,6 +201,45 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize execute mock result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Execute the sketch in mock mode using the latest preview warm starts.
+    #[wasm_bindgen]
+    pub async fn sketch_execute_mock_from_preview(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for preview sketch. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .execute_mock_from_preview(&ctx, version, sketch)
+            .await
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
+        let checkpoint_id = guard
+            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .await
+            .map_err(|e: Error| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id: Some(checkpoint_id),
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize preview execute mock result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Create new sketch and enter sketch mode.
@@ -444,6 +484,194 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Preview editing segments in sketch without committing source guesses.
+    #[wasm_bindgen]
+    pub async fn preview_edit_segments(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        segments_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for preview edit. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_segments_for_preview(&ctx, version, sketch, segments)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id: None,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize preview edit segments result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Preview editing segments in sketch with explicit drag-fixed anchor ids.
+    #[wasm_bindgen]
+    pub async fn preview_edit_segments_with_anchors(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        segments_json: &str,
+        anchor_segment_ids_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
+        let anchor_segment_ids: AhashIndexSet<ObjectId> =
+            serde_json::from_str::<Vec<ObjectId>>(anchor_segment_ids_json)
+                .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?
+                .into_iter()
+                .collect();
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for preview edit. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_segments_for_preview_with_anchor_ids(&ctx, version, sketch, segments, anchor_segment_ids)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id: None,
+        };
+
+        Ok(JsValue::from_serde(&result).map_err(|e| {
+            format!("Could not serialize preview edit segments with anchors result. {TRUE_BUG} Details: {e}")
+        })?)
+    }
+
+    /// Commit sketch segment edits using the latest preview warm starts.
+    #[wasm_bindgen]
+    pub async fn commit_edit_segments_from_preview(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        segments_json: &str,
+        settings: &str,
+        create_checkpoint: bool,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for preview commit edit. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_segments_commit_from_preview(&ctx, version, sketch, segments)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize preview commit edit result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Commit preview segment edits with explicit drag-fixed anchor ids.
+    #[wasm_bindgen]
+    pub async fn commit_edit_segments_from_preview_with_anchors(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        segments_json: &str,
+        anchor_segment_ids_json: &str,
+        settings: &str,
+        create_checkpoint: bool,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
+        let anchor_segment_ids: AhashIndexSet<ObjectId> =
+            serde_json::from_str::<Vec<ObjectId>>(anchor_segment_ids_json)
+                .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?
+                .into_iter()
+                .collect();
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for preview commit edit. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_segments_commit_from_preview_with_anchor_ids(&ctx, version, sketch, segments, anchor_segment_ids)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
+
+        Ok(JsValue::from_serde(&result).map_err(|e| {
+            format!("Could not serialize preview commit edit with anchors result. {TRUE_BUG} Details: {e}")
+        })?)
     }
 
     /// Delete segments and constraints in sketch.

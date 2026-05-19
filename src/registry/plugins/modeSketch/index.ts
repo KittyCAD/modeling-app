@@ -5,6 +5,7 @@ import { sketchResidualsExtension } from '@src/registry/extensions/modeSketch/sk
 import { isModeSketchDebugExtensionsAvailable } from '@src/registry/plugins/modeSketch/debugAvailability'
 
 // Modes should be plugins that register everything they need in the design experience.
+// Sketch residuals is mode-owned infrastructure; debug.showSketchResiduals controls whether it renders.
 const debugExtensions = isModeSketchDebugExtensionsAvailable()
   ? [
       sketchResidualsExtension,

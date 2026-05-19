@@ -3294,6 +3294,10 @@ fn sketch_var_initial_value(
     exec_state: &mut ExecState,
     range: crate::SourceRange,
 ) -> Result<f64, KclError> {
+    if let Some(value) = exec_state.sketch_var_initial_guess_override(sketch_vars, id) {
+        return Ok(value);
+    }
+
     sketch_vars
         .get(id.0)
         .and_then(KclValue::as_sketch_var)

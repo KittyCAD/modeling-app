@@ -265,6 +265,8 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    #[serde(skip)]
+    pub ordered_sketch_var_solutions: Vec<SketchVarSolution>,
     /// Debug-only sketch solver invocations produced during this execution.
     pub sketch_solver_traces: Vec<SketchSolverTrace>,
     /// Non-fatal errors and warnings.
@@ -273,6 +275,12 @@ pub struct ExecOutcome {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct SketchVarSolution {
+    pub source_range: Option<SourceRange>,
+    pub value: f64,
 }
 
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
@@ -294,6 +302,9 @@ pub struct SketchSolverTraceItem {
     pub kind: String,
     pub label: String,
     pub detail: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub source_range: Option<SourceRange>,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
@@ -498,7 +509,7 @@ impl ExecOutcome {
 }
 
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -509,6 +520,19 @@ pub struct MockConfig {
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Per-sketch-variable initial guess overrides, keyed by sketch variable
+    /// order. These are transient warm-start values for interactive solves.
+    pub sketch_var_initial_guess_overrides: Vec<f64>,
+    /// Per-source-sketch-variable warm starts keyed by source variable order,
+    /// excluding hidden lowered variables.
+    pub sketch_var_source_initial_guess_overrides: Vec<f64>,
+    /// Source ranges for the solver-order warm starts. Hidden lowered
+    /// variables have no source range.
+    pub sketch_var_initial_guess_source_ranges: Vec<Option<SourceRange>>,
+    /// If set, all required solver constraints use this priority instead of
+    /// bucket-based priorities. Preview solves can use soft priorities, but
+    /// committed source mutations should require all persistent constraints.
+    pub required_constraint_priority_override: Option<u32>,
 }
 
 impl Default for MockConfig {
@@ -519,6 +543,10 @@ impl Default for MockConfig {
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
+            sketch_var_initial_guess_overrides: Vec::new(),
+            sketch_var_source_initial_guess_overrides: Vec::new(),
+            sketch_var_initial_guess_source_ranges: Vec::new(),
+            required_constraint_priority_override: None,
         }
     }
 }
@@ -533,8 +561,21 @@ impl MockConfig {
     }
 
     #[must_use]
-    pub(crate) fn no_freedom_analysis(mut self) -> Self {
-        self.freedom_analysis = false;
+    pub(crate) fn with_ordered_sketch_var_initial_guess_overrides(
+        mut self,
+        solver_overrides: Vec<f64>,
+        source_overrides: Vec<f64>,
+        solver_source_ranges: Vec<Option<SourceRange>>,
+    ) -> Self {
+        self.sketch_var_initial_guess_overrides = solver_overrides;
+        self.sketch_var_source_initial_guess_overrides = source_overrides;
+        self.sketch_var_initial_guess_source_ranges = solver_source_ranges;
+        self
+    }
+
+    #[must_use]
+    pub(crate) fn with_required_constraint_priority_override(mut self, priority: u32) -> Self {
+        self.required_constraint_priority_override = Some(priority);
         self
     }
 }
@@ -796,10 +837,59 @@ pub struct ExecutorSettings {
     /// If None, no heartbeats will be sent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heartbeats: Option<u64>,
+    /// Priority levels used when assigning sketch solver constraint requests.
+    /// 0 is the highest priority.
+    #[serde(default = "SketchSolverPriorityBucket::default_levels")]
+    pub sketch_solver_priority_levels: BTreeMap<SketchSolverPriorityBucket, u32>,
 }
 
 fn is_false(b: &bool) -> bool {
     !*b
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord, Hash, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum SketchSolverPriorityBucket {
+    ExistingCoincident,
+    Fixed,
+    DragFixed,
+    EverythingElse,
+}
+
+impl SketchSolverPriorityBucket {
+    pub fn default_order() -> Vec<Self> {
+        vec![
+            Self::ExistingCoincident,
+            Self::Fixed,
+            Self::DragFixed,
+            Self::EverythingElse,
+        ]
+    }
+
+    pub fn default_levels() -> BTreeMap<Self, u32> {
+        BTreeMap::from([
+            (Self::ExistingCoincident, 0),
+            (Self::Fixed, 0),
+            (Self::DragFixed, 1),
+            (Self::EverythingElse, 2),
+        ])
+    }
+
+    fn normalized_order(order: &[Self]) -> Vec<Self> {
+        let mut normalized = Vec::with_capacity(4);
+        for bucket in order {
+            if !normalized.contains(bucket) {
+                normalized.push(*bucket);
+            }
+        }
+        for bucket in Self::default_order() {
+            if !normalized.contains(&bucket) {
+                normalized.push(bucket);
+            }
+        }
+        normalized
+    }
 }
 
 impl Default for ExecutorSettings {
@@ -814,6 +904,7 @@ impl Default for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            sketch_solver_priority_levels: SketchSolverPriorityBucket::default_levels(),
         }
     }
 }
@@ -826,6 +917,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
+        let sketch_solver_priority_levels = sketch_solver_priority_levels_from_settings(&settings);
         let modeling_settings = settings.modeling.unwrap_or_default();
         Self {
             highlight_edges: modeling_settings.highlight_edges.unwrap_or_default().into(),
@@ -837,6 +929,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
             heartbeats: None,
+            sketch_solver_priority_levels,
         }
     }
 }
@@ -859,6 +952,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            sketch_solver_priority_levels: SketchSolverPriorityBucket::default_levels(),
         }
     }
 }
@@ -875,11 +969,24 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            sketch_solver_priority_levels: SketchSolverPriorityBucket::default_levels(),
         }
     }
 }
 
 impl ExecutorSettings {
+    pub fn sketch_solver_priority(&self, bucket: SketchSolverPriorityBucket) -> u32 {
+        self.sketch_solver_priority_levels
+            .get(&bucket)
+            .copied()
+            .unwrap_or_else(|| {
+                SketchSolverPriorityBucket::default_levels()
+                    .get(&bucket)
+                    .copied()
+                    .unwrap_or(0)
+            })
+    }
+
     /// Add the current file path to the executor settings.
     pub fn with_current_file(&mut self, current_file: TypedPath) {
         // We want the parent directory of the file.
@@ -895,6 +1002,36 @@ impl ExecutorSettings {
             self.project_directory = Some(current_file);
         }
     }
+}
+
+fn sketch_solver_priority_levels_from_settings(
+    settings: &crate::settings::types::Settings,
+) -> BTreeMap<SketchSolverPriorityBucket, u32> {
+    let Some(debug_settings) = settings.other.get("debug") else {
+        return SketchSolverPriorityBucket::default_levels();
+    };
+
+    if let Some(levels) = debug_settings
+        .get("sketch_solver_priority_levels")
+        .or_else(|| debug_settings.get("sketchSolverPriorityLevels"))
+        .and_then(|value| serde_json::from_value::<BTreeMap<SketchSolverPriorityBucket, u32>>(value.clone()).ok())
+    {
+        let mut normalized = SketchSolverPriorityBucket::default_levels();
+        normalized.extend(levels);
+        return normalized;
+    }
+
+    let order = debug_settings
+        .get("sketch_solver_priority_order")
+        .or_else(|| debug_settings.get("sketchSolverPriorityOrder"))
+        .and_then(|value| serde_json::from_value::<Vec<SketchSolverPriorityBucket>>(value.clone()).ok())
+        .unwrap_or_else(SketchSolverPriorityBucket::default_order);
+
+    SketchSolverPriorityBucket::normalized_order(&order)
+        .into_iter()
+        .enumerate()
+        .map(|(priority, bucket)| (bucket, priority as u32))
+        .collect()
 }
 
 impl ExecutorContext {
@@ -1067,6 +1204,7 @@ impl ExecutorContext {
                 fixed_size_grid: false,
                 skip_artifact_graph: false,
                 heartbeats: None,
+                sketch_solver_priority_levels: SketchSolverPriorityBucket::default_levels(),
             },
             None,
             engine_addr,

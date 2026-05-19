@@ -773,6 +773,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
         project_directory: null,
         current_file: null,
         fixed_size_grid: true,
+        sketch_solver_priority_levels: {},
       },
       sketch_mode: null,
     },

@@ -482,7 +482,6 @@ pub(crate) struct Solved {
     pub(crate) warnings: Vec<Warning>,
     /// What is the lowest priority that got solved?
     /// 0 is the highest priority. Larger numbers are lower priority.
-    #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
     pub(crate) priority_solved: u32,
     /// Variables involved in unsatisfied constraints (for conflict detection)
     pub(crate) variables_in_conflicts: AHashSet<ezpz::Id>,
