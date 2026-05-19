@@ -9,6 +9,10 @@ import type { ReadonlySignal } from '@preact/signals-core'
 export const BASE_KEYMAP_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE = 'code-editor-not-focused'
+export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
+export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
+export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
+export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
 
 export type KeymapArguments =
   | null
@@ -21,6 +25,9 @@ export type KeymapArguments =
 export type KeymapScope = {
   id: string
   displayName: string
+  priority?: number
+  group?: string
+  userEditable?: boolean
 }
 
 export type KeymapBinding = {
@@ -245,6 +252,91 @@ export function getNormalizedKeymapScopes(
     .toSorted()
 }
 
+const DEFAULT_KEYMAP_SCOPE_PRIORITY = 0
+
+type IndexedKeymapScope = {
+  scope: string
+  metadata: KeymapScope | undefined
+  index: number
+}
+
+export function getKeymapScopePriority(scope: KeymapScope | undefined) {
+  return scope?.priority ?? DEFAULT_KEYMAP_SCOPE_PRIORITY
+}
+
+export function getEffectiveKeymapScopes(
+  scopes: readonly string[],
+  keymapScopes: readonly KeymapScope[] = []
+) {
+  const keymapScopesById = new Map(
+    keymapScopes.map((scope) => [scope.id, scope])
+  )
+  const normalizedActiveScopes = new Map<string, IndexedKeymapScope>()
+
+  for (const [index, rawScope] of [BASE_KEYMAP_SCOPE, ...scopes].entries()) {
+    const scope = rawScope.trim()
+    if (!scope) {
+      continue
+    }
+
+    normalizedActiveScopes.set(scope, {
+      scope,
+      metadata: keymapScopesById.get(scope),
+      index,
+    })
+  }
+
+  const ungroupedScopes: IndexedKeymapScope[] = []
+  const groupedScopes = new Map<string, IndexedKeymapScope>()
+
+  for (const activeScope of normalizedActiveScopes.values()) {
+    const group = activeScope.metadata?.group?.trim()
+    if (!group) {
+      ungroupedScopes.push(activeScope)
+      continue
+    }
+
+    const currentScope = groupedScopes.get(group)
+    if (!currentScope || compareEffectiveScope(activeScope, currentScope) > 0) {
+      groupedScopes.set(group, activeScope)
+    }
+  }
+
+  return [...ungroupedScopes, ...groupedScopes.values()]
+    .toSorted(compareActiveScopeOrder)
+    .map((activeScope) => activeScope.scope)
+}
+
+function compareEffectiveScope(a: IndexedKeymapScope, b: IndexedKeymapScope) {
+  const priorityDifference =
+    getKeymapScopePriority(a.metadata) - getKeymapScopePriority(b.metadata)
+  if (priorityDifference !== 0) {
+    return priorityDifference
+  }
+
+  return a.index - b.index
+}
+
+function compareActiveScopeOrder(a: IndexedKeymapScope, b: IndexedKeymapScope) {
+  if (a.scope === BASE_KEYMAP_SCOPE && b.scope !== BASE_KEYMAP_SCOPE) {
+    return -1
+  }
+  if (b.scope === BASE_KEYMAP_SCOPE && a.scope !== BASE_KEYMAP_SCOPE) {
+    return 1
+  }
+
+  const priorityDifference =
+    getKeymapScopePriority(a.metadata) - getKeymapScopePriority(b.metadata)
+  if (priorityDifference !== 0) {
+    return priorityDifference
+  }
+
+  const indexDifference = a.index - b.index
+  return indexDifference !== 0
+    ? indexDifference
+    : a.scope.localeCompare(b.scope)
+}
+
 export function areKeymapKeystrokesEqual(
   a: readonly string[],
   b: readonly string[]
@@ -264,41 +356,44 @@ export function areKeymapKeystrokesEqual(
 export function matchKeymapKeystrokes(
   tree: KeymapTree,
   scopes: readonly string[],
-  keystrokes: readonly string[]
+  keystrokes: readonly string[],
+  keymapScopes: readonly KeymapScope[] = []
 ): KeymapMatch {
   const normalizedKeystrokes = keystrokes.map(normalizeKeymapChord)
-  const activeScopes = getActiveKeymapScopes(scopes)
+  const activeScopes = getEffectiveKeymapScopes(scopes, keymapScopes)
+  const activeScopeSet = new Set(activeScopes)
 
   let node = tree.root
   for (const chord of normalizedKeystrokes) {
     const child = node.children.get(chord)
-    if (!child || !nodeHasActiveScopes(child, activeScopes)) {
+    if (!child || !nodeHasActiveItems(child, activeScopeSet)) {
       return { type: 'none' }
     }
     node = child
   }
 
-  const item = getActiveKeymapItem(node.items, scopes)
+  const item = getActiveKeymapItem(node.items, activeScopes)
   if (item) {
     return { type: 'full', item }
   }
 
-  if (nodeHasActiveScopes(node, activeScopes)) {
+  if (nodeHasActiveItems(node, activeScopeSet)) {
     return { type: 'prefix' }
   }
 
   return { type: 'none' }
 }
 
-function getActiveKeymapScopes(scopes: readonly string[]) {
-  return new Set([BASE_KEYMAP_SCOPE, ...scopes])
-}
-
-function nodeHasActiveScopes(
+function nodeHasActiveItems(
   node: KeymapTreeNode,
   activeScopes: ReadonlySet<string>
-) {
-  return [...node.scopes].some((scope) => activeScopes.has(scope))
+): boolean {
+  return (
+    node.items.some((item) => isKeymapItemActive(item, activeScopes)) ||
+    [...node.children.values()].some((child) =>
+      nodeHasActiveItems(child, activeScopes)
+    )
+  )
 }
 
 function getActiveKeymapItem(
@@ -307,7 +402,7 @@ function getActiveKeymapItem(
 ) {
   for (const scope of [...activeScopes].toReversed()) {
     const item = items.find((candidate) =>
-      getKeymapItemScopes(candidate).includes(scope)
+      isKeymapItemActiveForScope(candidate, scope)
     )
     if (item) {
       return item
@@ -315,8 +410,32 @@ function getActiveKeymapItem(
   }
 
   return items.find((item) =>
-    getKeymapItemScopes(item).includes(BASE_KEYMAP_SCOPE)
+    isKeymapItemActiveForScope(item, BASE_KEYMAP_SCOPE)
   )
+}
+
+export function findKeymapItemForCommand(
+  tree: KeymapTree,
+  command: string,
+  scopes: readonly string[],
+  keymapScopes: readonly KeymapScope[] = []
+) {
+  const activeScopeSet = new Set(getEffectiveKeymapScopes(scopes, keymapScopes))
+  return tree.items.find(
+    (item) =>
+      item.command === command && isKeymapItemActive(item, activeScopeSet)
+  )
+}
+
+function isKeymapItemActive(
+  item: KeymapItem,
+  activeScopes: ReadonlySet<string>
+) {
+  return getKeymapItemScopes(item).some((scope) => activeScopes.has(scope))
+}
+
+function isKeymapItemActiveForScope(item: KeymapItem, scope: string) {
+  return getKeymapItemScopes(item).includes(scope)
 }
 
 export const keymapContract = defineContract({
@@ -351,7 +470,18 @@ export function provideKeymapScope(scope: KeymapScope) {
 function combineKeymapScopes(scopes: readonly KeymapScope[]) {
   return [
     ...new Map(scopes.map((scope) => [scope.id, scope])).values(),
-  ].toSorted((a, b) => a.displayName.localeCompare(b.displayName))
+  ].toSorted(compareKeymapScopeDisplayOrder)
+}
+
+function compareKeymapScopeDisplayOrder(a: KeymapScope, b: KeymapScope) {
+  const priorityDifference =
+    getKeymapScopePriority(b) - getKeymapScopePriority(a)
+  if (priorityDifference !== 0) {
+    return priorityDifference
+  }
+
+  const nameDifference = a.displayName.localeCompare(b.displayName)
+  return nameDifference !== 0 ? nameDifference : a.id.localeCompare(b.id)
 }
 
 function isKeymapDocument(

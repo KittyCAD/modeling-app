@@ -1,6 +1,8 @@
 import {
+  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  provide,
   provideService,
 } from '@kittycad/registry'
 import { effect } from '@preact/signals-core'
@@ -15,8 +17,9 @@ import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
+import { toolbarCommands } from './toolbarCommands'
 
-const commandsExtension = defineRegistryItemFactory((ctx) => {
+export const commandsExtension = defineRegistryItemFactory((ctx) => {
   const commandsSignal = ctx.valueSpecs.signal(commandsValueSpec)
 
   let commandBarActor: CommandSystemService['actor'] | undefined
@@ -85,4 +88,18 @@ const commandsExtension = defineRegistryItemFactory((ctx) => {
   }
 }, 'commands-extension')
 
-export default commandsExtension
+const toolbarCommandsItem = defineRegistryItem({
+  id: 'toolbar-commands',
+  provides: toolbarCommands.map((command) =>
+    provide(commandsValueSpec, command, {
+      key: command.id ?? `${command.groupId}:${String(command.name)}`,
+    })
+  ),
+})
+
+const commandsRegistryItem = defineRegistryItem({
+  id: 'commands',
+  uses: [commandsExtension, toolbarCommandsItem],
+})
+
+export default commandsRegistryItem
