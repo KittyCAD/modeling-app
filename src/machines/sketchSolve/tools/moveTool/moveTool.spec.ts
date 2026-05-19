@@ -1364,7 +1364,7 @@ describe('createOnDragCallback', () => {
     )
   })
 
-  it('restores the pre-drag checkpoint before committing the last good preview after an invalid release', async () => {
+  it('commits the latest preview after an invalid release', async () => {
     const draggedPoint = createPointApiObject({
       id: 4,
       x: 20,
@@ -1403,18 +1403,10 @@ describe('createOnDragCallback', () => {
         sourceRange: [0, 0, 0],
       } as any,
     ]
-    const restoreResult = {
-      kclSource: { text: 'baseline' },
-      sceneGraphDelta: createSceneGraphDelta([
-        draggedStart,
-        draggedPoint,
-        draggedLine,
-      ]),
-    }
-    const committedResult = {
-      kclSource: { text: 'committed' },
-      sceneGraphDelta: validPreviewDelta,
-      checkpointId: 123,
+    const committedInvalidResult = {
+      kclSource: { text: 'committed invalid' },
+      sceneGraphDelta: invalidPreviewDelta,
+      checkpointId: 124,
     }
     ;(rustContext.editSegments as any)
       .mockResolvedValueOnce({
@@ -1427,10 +1419,7 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: invalidPreviewDelta,
         checkpointId: null,
       })
-      .mockResolvedValueOnce(committedResult)
-    ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
-      restoreResult
-    )
+      .mockResolvedValueOnce(committedInvalidResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1472,25 +1461,25 @@ describe('createOnDragCallback', () => {
       intersects: [],
     })
 
-    expect(rustContext.restoreSketchCheckpoint).toHaveBeenCalledWith(99)
+    expect(rustContext.restoreSketchCheckpoint).not.toHaveBeenCalled()
     expect(rustContext.editSegments).toHaveBeenCalledTimes(3)
     expect(rustContext.editSegments.mock.calls[2]?.[2]).toEqual(
-      rustContext.editSegments.mock.calls[0]?.[2]
+      rustContext.editSegments.mock.calls[1]?.[2]
     )
     expect(rustContext.editSegments.mock.calls[2]?.[4]).toBe(true)
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
         data: expect.objectContaining({
-          sourceDelta: committedResult.kclSource,
-          sceneGraphDelta: committedResult.sceneGraphDelta,
-          checkpointId: 123,
+          sourceDelta: committedInvalidResult.kclSource,
+          sceneGraphDelta: committedInvalidResult.sceneGraphDelta,
+          checkpointId: 124,
         }),
       })
     )
   })
 
-  it('restores the baseline instead of committing a snapped invalid release when there is no last good preview', async () => {
+  it('commits an invalid preview even without an earlier valid preview', async () => {
     const draggedPoint = createPointApiObject({
       id: 4,
       x: 20,
@@ -1524,22 +1513,18 @@ describe('createOnDragCallback', () => {
         sourceRange: [0, 0, 0],
       } as any,
     ]
-    const restoreResult = {
-      kclSource: { text: 'baseline' },
-      sceneGraphDelta: createSceneGraphDelta([
-        draggedStart,
-        draggedPoint,
-        draggedLine,
-      ]),
-    }
-    ;(rustContext.editSegments as any).mockResolvedValueOnce({
-      kclSource: { text: 'invalid preview' },
+    const committedInvalidResult = {
+      kclSource: { text: 'committed invalid' },
       sceneGraphDelta: invalidPreviewDelta,
-      checkpointId: null,
-    })
-    ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
-      restoreResult
-    )
+      checkpointId: 123,
+    }
+    ;(rustContext.editSegments as any)
+      .mockResolvedValueOnce({
+        kclSource: { text: 'invalid preview' },
+        sceneGraphDelta: invalidPreviewDelta,
+        checkpointId: null,
+      })
+      .mockResolvedValueOnce(committedInvalidResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1563,30 +1548,30 @@ describe('createOnDragCallback', () => {
 
     await onDragEnd({
       intersectionPoint: {
-        twoD: new Vector2(20, 0),
-        threeD: new Vector3(20, 0, 0),
+        twoD: new Vector2(20, 2),
+        threeD: new Vector3(20, 2, 0),
       },
       selected: undefined,
-      mouseEvent: createTestMouseEvent(),
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
       intersects: [],
     })
 
-    expect(rustContext.restoreSketchCheckpoint).toHaveBeenCalledWith(99)
-    expect(rustContext.editSegments).toHaveBeenCalledTimes(1)
+    expect(rustContext.restoreSketchCheckpoint).not.toHaveBeenCalled()
+    expect(rustContext.editSegments).toHaveBeenCalledTimes(2)
     expect(rustContext.addConstraint).not.toHaveBeenCalled()
     expect(send).toHaveBeenLastCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
         data: expect.objectContaining({
-          sourceDelta: restoreResult.kclSource,
-          sceneGraphDelta: restoreResult.sceneGraphDelta,
-          checkpointId: 99,
+          sourceDelta: committedInvalidResult.kclSource,
+          sceneGraphDelta: committedInvalidResult.sceneGraphDelta,
+          checkpointId: 123,
         }),
       })
     )
   })
 
-  it('recommits the last good preview when the final drag-end commit returns issues', async () => {
+  it('keeps the final drag-end commit when it returns issues', async () => {
     const draggedPoint = createPointApiObject({
       id: 4,
       x: 20,
@@ -1625,18 +1610,10 @@ describe('createOnDragCallback', () => {
         sourceRange: [0, 0, 0],
       } as any,
     ]
-    const restoreResult = {
-      kclSource: { text: 'baseline' },
-      sceneGraphDelta: createSceneGraphDelta([
-        draggedStart,
-        draggedPoint,
-        draggedLine,
-      ]),
-    }
-    const recoveredCommit = {
-      kclSource: { text: 'recovered commit' },
-      sceneGraphDelta: validPreviewDelta,
-      checkpointId: 123,
+    const invalidCommittedResult = {
+      kclSource: { text: 'invalid final' },
+      sceneGraphDelta: invalidCommittedDelta,
+      checkpointId: 124,
     }
     ;(rustContext.editSegments as any)
       .mockResolvedValueOnce({
@@ -1644,15 +1621,7 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: validPreviewDelta,
         checkpointId: null,
       })
-      .mockResolvedValueOnce({
-        kclSource: { text: 'invalid final' },
-        sceneGraphDelta: invalidCommittedDelta,
-        checkpointId: null,
-      })
-      .mockResolvedValueOnce(recoveredCommit)
-    ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
-      restoreResult
-    )
+      .mockResolvedValueOnce(invalidCommittedResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1684,15 +1653,15 @@ describe('createOnDragCallback', () => {
       intersects: [],
     })
 
-    expect(rustContext.restoreSketchCheckpoint).toHaveBeenCalledWith(99)
-    expect(rustContext.editSegments).toHaveBeenCalledTimes(3)
+    expect(rustContext.restoreSketchCheckpoint).not.toHaveBeenCalled()
+    expect(rustContext.editSegments).toHaveBeenCalledTimes(2)
     expect(send).toHaveBeenLastCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
         data: expect.objectContaining({
-          sourceDelta: recoveredCommit.kclSource,
-          sceneGraphDelta: recoveredCommit.sceneGraphDelta,
-          checkpointId: 123,
+          sourceDelta: invalidCommittedResult.kclSource,
+          sceneGraphDelta: invalidCommittedResult.sceneGraphDelta,
+          checkpointId: 124,
         }),
       })
     )
@@ -3178,7 +3147,7 @@ describe('createOnDragCallback', () => {
     expect(setLastSuccessfulDragFromPoint).not.toHaveBeenCalled()
   })
 
-  it('should preserve the last good geometry while surfacing issues for an invalid preview', async () => {
+  it('should show invalid preview geometry while surfacing issues', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
@@ -3237,11 +3206,15 @@ describe('createOnDragCallback', () => {
       intersects: [],
     })
 
-    expect(setLastSuccessfulDragFromPoint).not.toHaveBeenCalled()
+    expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledTimes(1)
+    expect(setLastSuccessfulDragFromPoint.mock.calls[0]?.[0]).toMatchObject({
+      x: 10,
+      y: 20,
+    })
     expect(onNewSketchOutcome).toHaveBeenCalledTimes(1)
     const outcome = onNewSketchOutcome.mock.calls[0]?.[0]
-    expect(outcome?.kclSource).toEqual({ text: 'baseline code' })
-    expect(outcome?.sceneGraphDelta.new_graph).toEqual(baselineDelta.new_graph)
+    expect(outcome?.kclSource).toEqual({ text: 'invalid code' })
+    expect(outcome?.sceneGraphDelta.new_graph).toEqual(invalidDelta.new_graph)
     expect(outcome?.sceneGraphDelta.exec_outcome).toEqual(
       invalidDelta.exec_outcome
     )

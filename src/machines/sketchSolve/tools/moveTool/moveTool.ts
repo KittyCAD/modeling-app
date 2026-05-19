@@ -802,30 +802,14 @@ function hasSketchSolveIssues(sceneGraphDelta?: SceneGraphDelta): boolean {
   return (sceneGraphDelta?.exec_outcome?.issues.length ?? 0) > 0
 }
 
-function buildPreviewOutcomeWithPreservedGeometry({
-  baseOutcome,
-  previewResult,
-}: {
-  baseOutcome: DragSketchOutcome
-  previewResult: DragSketchOutcome
-}): DragSketchOutcome {
-  return {
-    kclSource: baseOutcome.kclSource,
-    sceneGraphDelta: {
-      ...baseOutcome.sceneGraphDelta,
-      exec_outcome: previewResult.sceneGraphDelta.exec_outcome,
-    },
-  }
-}
-
 type CreateOnDragStartCallbackArgs = {
   // Seeds the drag anchor used to compute relative drag vectors.
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  // Clears any previously cached valid preview from an earlier drag session.
+  // Clears any previously cached preview from an earlier drag session.
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   // Stores the frontend sketch outcome at drag start for preview fallback.
   setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
-  // Stores the committed Rust checkpoint so invalid releases can restore to it.
+  // Stores the committed Rust checkpoint so checkpoint-less releases can restore to it.
   setPreDragCheckpointId: (checkpointId: number | null) => void
   // Starts a fresh drag session so stale preview responses can be ignored.
   beginDragSession: () => void
@@ -1415,6 +1399,7 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
+        let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
           const constraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
@@ -1422,7 +1407,6 @@ export function createOnDragCallback({
               objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
               units,
             })
-          let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
           if (constraintLabelEdits.length > 0) {
             const labelResult = await applyConstraintLabelPreviewEdits({
               result,
@@ -1448,44 +1432,19 @@ export function createOnDragCallback({
               appliedConstraintLabelEdits = constraintLabelEdits
             }
           }
-
-          setLastGoodPreview({
-            ...result,
-            segmentsToEdit,
-            constraintLabelEdits: appliedConstraintLabelEdits,
-          })
-          // Only advance the drag anchor on a valid solve.
-          setLastSuccessfulDragFromPoint(twoD.clone())
-          onNewSketchOutcome({
-            ...result,
-            writeToDisk: false,
-            suppressExecOutcomeIssues: true,
-          })
-        } else {
-          const fallbackOutcome =
-            getLastGoodPreview() ??
-            getDragStartOutcome() ??
-            (contextData.sketchExecOutcome
-              ? {
-                  kclSource:
-                    contextData.sketchExecOutcome.sourceDelta ??
-                    result.kclSource,
-                  sceneGraphDelta:
-                    contextData.sketchExecOutcome.sceneGraphDelta,
-                }
-              : null)
-
-          onNewSketchOutcome({
-            ...(fallbackOutcome
-              ? buildPreviewOutcomeWithPreservedGeometry({
-                  baseOutcome: fallbackOutcome,
-                  previewResult: result,
-                })
-              : result),
-            writeToDisk: false,
-            suppressExecOutcomeIssues: true,
-          })
         }
+
+        setLastGoodPreview({
+          ...result,
+          segmentsToEdit,
+          constraintLabelEdits: appliedConstraintLabelEdits,
+        })
+        setLastSuccessfulDragFromPoint(twoD.clone())
+        onNewSketchOutcome({
+          ...result,
+          writeToDisk: false,
+          suppressExecOutcomeIssues: true,
+        })
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
@@ -1521,6 +1480,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
     createGetSet<number>(0)
   const [getInFlightPreviewSolve, setInFlightPreviewSolve] =
     createGetSet<DeferredVoid | null>(null)
+  // Historical name: this stores the latest preview candidate, including
+  // solver outcomes with issues.
   const [getLastGoodPreview, setLastGoodPreview] =
     createGetSet<DragCommitCandidate | null>(null)
   const [getDragStartOutcome, setDragStartOutcome] =
@@ -1855,8 +1816,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
           }
           const lastGoodPreview = getLastGoodPreview()
           const preDragCheckpointId = getPreDragCheckpointId()
-          const previewHasIssues = hasSketchSolveIssues(currentSceneGraphDelta)
-          const shouldRecoverInvalidPreview = previewHasIssues
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
@@ -1905,7 +1864,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             return restoredPreDragOutcome ?? getDragStartOutcome()
           }
 
-          const recoverKnownGoodResult = async (reason: string) => {
+          const recoverCheckpointBackedResult = async () => {
             const restored = await ensureRestoredBaseline()
 
             if (lastGoodPreview?.segmentsToEdit.length) {
@@ -1914,10 +1873,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 lastGoodPreview.constraintLabelEdits
               )
 
-              if (
-                !hasSketchSolveIssues(recoveredCommit.sceneGraphDelta) &&
-                recoveredCommit.checkpointId != null
-              ) {
+              if (recoveredCommit.checkpointId != null) {
                 return recoveredCommit
               }
             }
@@ -1936,9 +1892,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             )
           }
 
-          if (shouldRecoverInvalidPreview) {
-            result = await recoverKnownGoodResult('invalid preview on drag end')
-          } else if (
+          if (
             snappingCandidate &&
             draggedEntityId !== null &&
             snapConstraints.length > 0
@@ -2131,19 +2085,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           }
 
-          if (hasSketchSolveIssues(result.sceneGraphDelta)) {
-            result = await recoverKnownGoodResult(
-              'invalid final drag-end result'
-            )
-          } else if (
+          if (
             result.checkpointId == null &&
             (Boolean(lastGoodPreview?.segmentsToEdit.length) ||
               snapConstraints.length > 0 ||
               draggedEntityId !== null)
           ) {
-            result = await recoverKnownGoodResult(
-              'missing checkpoint on drag end'
-            )
+            result = await recoverCheckpointBackedResult()
           }
 
           // Send the event to update the sketch outcome
