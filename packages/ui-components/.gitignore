@@ -1,0 +1,4 @@
+dist
+storybook-static
+*.config.d.ts
+*.config.d.ts.map

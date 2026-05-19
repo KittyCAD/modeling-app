@@ -70,7 +70,7 @@ jobs:
     if: github.repository == 'kittycad/modeling-app'
 
     steps:
-      - uses: actions/create-github-app-token@v3
+      - uses: actions/create-github-app-token@v3.1.1
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -94,7 +94,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -200,7 +200,7 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/create-github-app-token@v3
+      - uses: actions/create-github-app-token@v3.1.1
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -224,7 +224,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -343,7 +343,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -375,7 +375,7 @@ jobs:
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
-          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
       - name: npm run test:e2e:desktop
@@ -436,7 +436,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -457,6 +457,7 @@ jobs:
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel-preview
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 1200 # average build times are 17-18 minutes
@@ -467,6 +468,7 @@ jobs:
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel-staging
         if: github.event_name == 'push' && github.ref_name == 'main'
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: staging
@@ -474,13 +476,20 @@ jobs:
           check_interval: 30
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
+      - name: Skip Vercel Playwright run when no deployment is available
+        if: ${{ !(steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url) }}
+        run: |
+          echo "No Vercel deployment was found for this run. Skipping Vercel Playwright coverage."
+
       - name: Check Vercel
+        if: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
         run: .github/ci-cd-scripts/check-vercel.sh
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: npm run test:e2e:web
+        if: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
         run: npm run test:e2e:web -- --grep=demo
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}

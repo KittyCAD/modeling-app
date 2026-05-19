@@ -25,8 +25,6 @@ const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>>,
     /// The default planes for the scene.
@@ -40,8 +38,6 @@ impl EngineConnection {
         result.write().await.push_str(CPP_PREFIX);
 
         Ok(EngineConnection {
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
@@ -376,14 +372,6 @@ fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> St
 
 #[async_trait::async_trait]
 impl kcl_lib::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         Arc::new(RwLock::new(IndexMap::new()))
     }
@@ -406,6 +394,7 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        _batch_context: &kcl_lib::EngineBatchContext,
         _id_generator: &mut IdGenerator,
         _source_range: kcl_lib::SourceRange,
     ) -> Result<(), KclError> {

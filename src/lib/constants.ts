@@ -1,4 +1,4 @@
-import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -24,6 +24,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const DEFAULT_KCL_VERSION = '2.0'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -65,6 +66,9 @@ export const KCL_DEFAULT_LENGTH = `5`
 
 /** The default KCL tolerance expression */
 export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+
+/** The default KCL datum reference expression */
+export const KCL_DEFAULT_DATUM_REFS = `["A"]`
 
 /** The default KCL precision expression */
 export const KCL_DEFAULT_PRECISION = `3`
@@ -138,11 +142,8 @@ export const SKETCH_FILE_VERSION = 0
 /** The default KCL leader scale expression */
 export const KCL_DEFAULT_LEADER_SCALE = `1.0`
 
-/** The default KCL font point size expression */
-export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
-
-/** The default KCL font scale expression */
-export const KCL_DEFAULT_FONT_SCALE = `1.0`
+/** The default model-space GDT font size expression */
+export const KCL_DEFAULT_FONT_SIZE = `10mm`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -296,6 +297,8 @@ export const CMD_NAME_QUERY_PARAM = 'cmd'
 export const CMD_GROUP_QUERY_PARAM = 'groupId'
 /** A query parameter that manually sets the engine pool the frontend should use. */
 export const POOL_QUERY_PARAM = 'pool'
+/** A query parameter containing the project ID to open inside the app. */
+export const PROJECT_ID_QUERY_PARAM = 'project-id'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
@@ -361,9 +364,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
-
-// Zookeeper input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'

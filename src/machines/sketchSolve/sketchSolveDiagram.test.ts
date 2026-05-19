@@ -8,6 +8,8 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   buildAngleConstraintInput,
+  buildEqualLengthConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
   buildFixedConstraintInput,
   buildSymmetricConstraintInput,
   buildSymmetricConstraintInputWithExplicitAxis,
@@ -84,6 +86,71 @@ describe('buildAngleConstraintInput', () => {
       source: { expr: '135deg', is_literal: true },
     })
   })
+
+  it('supports angle constraints on owned control polygon edges', () => {
+    const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const up = createPointApiObject({ id: 2, x: 0, y: 10 })
+    const diag = createPointApiObject({ id: 3, x: 10, y: 10 })
+    const ownedLine = createLineApiObject({
+      id: 10,
+      start: 1,
+      end: 2,
+      owner: 99,
+    })
+    const diagonalLine = createLineApiObject({ id: 11, start: 1, end: 3 })
+    const objects = createObjectsArray([
+      origin,
+      up,
+      diag,
+      ownedLine,
+      diagonalLine,
+    ])
+
+    expect(buildAngleConstraintInput(ownedLine, diagonalLine, objects)).toEqual(
+      {
+        type: 'Angle',
+        lines: [11, 10],
+        angle: { value: 45, units: 'Deg' },
+        source: { expr: '45deg', is_literal: true },
+      }
+    )
+  })
+})
+
+describe('buildArcSizeDimensionConstraintInput', () => {
+  it('builds radius dimensions for arcs', () => {
+    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+
+    expect(
+      buildCircularSizeDimensionConstraintInput({
+        segment: arc,
+        radius: 5,
+        units: 'Mm',
+      })
+    ).toEqual({
+      type: 'Radius',
+      radius: { value: 5, units: 'Mm' },
+      arc: 10,
+      source: { expr: '5', is_literal: true },
+    })
+  })
+
+  it('builds diameter dimensions for circles', () => {
+    const circle = createCircleApiObject({ id: 11, center: 1, start: 2 })
+
+    expect(
+      buildCircularSizeDimensionConstraintInput({
+        segment: circle,
+        radius: 5,
+        units: 'Mm',
+      })
+    ).toEqual({
+      type: 'Diameter',
+      diameter: { value: 10, units: 'Mm' },
+      arc: 11,
+      source: { expr: '10', is_literal: true },
+    })
+  })
 })
 
 describe('buildTangentConstraintInput', () => {
@@ -156,6 +223,57 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([], objects)).toBeNull()
     expect(buildTangentConstraintInput([10], objects)).toBeNull()
     expect(buildTangentConstraintInput([10, 11], objects)).toBeNull()
+  })
+
+  it('supports tangent constraints when the selected line is an owned control polygon edge', () => {
+    const center = createPointApiObject({ id: 1, x: 5, y: 5 })
+    const arcStart = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const arcEnd = createPointApiObject({ id: 3, x: 10, y: 0 })
+    const lineStart = createPointApiObject({ id: 4, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+    const ownedLine = createLineApiObject({
+      id: 11,
+      start: 4,
+      end: 5,
+      owner: 42,
+    })
+    const objects = createObjectsArray([
+      center,
+      arcStart,
+      arcEnd,
+      lineStart,
+      lineEnd,
+      arc,
+      ownedLine,
+    ])
+
+    expect(buildTangentConstraintInput([11, 10], objects)).toEqual({
+      type: 'Tangent',
+      input: [11, 10],
+    })
+  })
+})
+
+describe('buildEqualLengthConstraintInput', () => {
+  it('supports equal length when any selected line is an owned control polygon edge', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0 })
+    const p4 = createPointApiObject({ id: 4, x: 30, y: 0 })
+    const ownedLine = createLineApiObject({
+      id: 10,
+      start: 1,
+      end: 2,
+      owner: 77,
+    })
+    const line = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const objects = createObjectsArray([p1, p2, p3, p4, ownedLine, line])
+
+    expect(buildEqualLengthConstraintInput([10, 11], objects)).toEqual({
+      type: 'LinesEqualLength',
+      lines: [10, 11],
+    })
   })
 })
 

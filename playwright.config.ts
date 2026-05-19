@@ -40,7 +40,7 @@ export default defineConfig({
   workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    [process.env.CI ? 'dot' : 'list'],
+    ['list'],
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
     ['./e2e/playwright/lib/api-reporter.ts'],

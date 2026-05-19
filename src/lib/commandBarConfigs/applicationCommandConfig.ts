@@ -218,6 +218,7 @@ export function createApplicationCommands({
                 entryName: fileNameWithExtension,
                 baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
                 wasmInstance,
+                preserveUnknownExtension: true,
               })
                 .then(({ path }) => {
                   return fsZds.writeFile(path, fileData)
@@ -358,6 +359,10 @@ export function createApplicationCommands({
           {
             name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
             extensions: relevantFileExtensions(wasmInstance),
+          },
+          {
+            name: 'All files',
+            extensions: ['*'],
           },
         ],
       },
@@ -603,8 +608,27 @@ export function createApplicationCommands({
     },
   }
 
+  const checkForUpdatesCommand: Command = {
+    name: 'check-for-updates',
+    displayName: 'Check for updates',
+    description: 'Check for a newer desktop app version.',
+    needsReview: false,
+    icon: 'download',
+    groupId: 'application',
+    onSubmit: () => {
+      if (!window.electron) {
+        return new Error(
+          'Checking for updates is only available in the desktop app.'
+        )
+      }
+
+      return window.electron.appCheckForUpdates()
+    },
+  }
+
   return [
     addKCLFileToProject,
+    ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
     createASampleDesktopOnly,

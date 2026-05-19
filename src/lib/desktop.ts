@@ -15,7 +15,6 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -36,7 +35,6 @@ import { getInVariableCase, isArray } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import env from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 
 function getProjectSettingsSection(
@@ -287,18 +285,12 @@ export async function listProjects(
 const collectAllFilesRecursiveFrom = async (
   targetPath: string,
   canReadWritePath: boolean,
-  fileExtensionsForFilter: string[]
+  showAllFiles: boolean
 ) => {
-  const isRelevantFile = (filename: string): boolean => {
-    const extensionNoPeriod = getEXTNoPeriod(filename)
-    if (!extensionNoPeriod) {
-      return false
-    }
-    return isExtensionARelevantExtension(
-      extensionNoPeriod,
-      fileExtensionsForFilter
-    )
-  }
+  const configurationFileNames = new Set([
+    SETTINGS_FILE_NAME,
+    PROJECT_SETTINGS_FILE_NAME,
+  ])
 
   // Make sure the filesystem object exists.
   try {
@@ -346,7 +338,7 @@ const collectAllFilesRecursiveFrom = async (
 
   for (let e of entries) {
     // ignore hidden files and directories (starting with a dot)
-    if (e.indexOf('.') === 0) {
+    if (!showAllFiles && e.indexOf('.') === 0) {
       continue
     }
 
@@ -357,11 +349,11 @@ const collectAllFilesRecursiveFrom = async (
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
         canReadWritePath,
-        fileExtensionsForFilter
+        showAllFiles
       )
       children.push(subChildren)
     } else {
-      if (!isRelevantFile(ePath)) {
+      if (!showAllFiles && configurationFileNames.has(e)) {
         continue
       }
       children.push(
@@ -382,7 +374,8 @@ const collectAllFilesRecursiveFrom = async (
 
 export async function getDefaultKclFileForDir(
   projectDir: string,
-  file: FileEntry
+  file: FileEntry,
+  wasmInstance: ModuleType
 ) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await statIsDirectory(projectDir)
@@ -402,11 +395,27 @@ export async function getDefaultKclFileForDir(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(entry.path, entry)
+            return getDefaultKclFileForDir(entry.path, entry, wasmInstance)
           }
         }
         // If we didn't find a kcl file, create one.
-        await fsZds.writeFile(defaultFilePath, new Uint8Array())
+        const configuration = await readAppSettingsFile(wasmInstance)
+        if (err(configuration)) {
+          return Promise.reject(configuration)
+        }
+        const codeToWrite = newKclFile(
+          undefined,
+          configuration?.settings?.modeling?.base_unit ??
+            DEFAULT_DEFAULT_LENGTH_UNIT,
+          wasmInstance
+        )
+        if (err(codeToWrite)) {
+          return Promise.reject(codeToWrite)
+        }
+        await fsZds.writeFile(
+          defaultFilePath,
+          new TextEncoder().encode(codeToWrite)
+        )
         return defaultFilePath
       }
     }
@@ -479,19 +488,25 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
-  const fileExtensionsForFilter = relevantFileExtensions(wasmInstance)
+  const appSettings = await readAppSettingsFile(wasmInstance)
+  const showAllFiles = appSettings.settings?.app?.show_all_files === true
+
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
     canReadWriteProjectPath,
-    fileExtensionsForFilter
+    showAllFiles
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDir(projectPath, walked)
+    default_file = await getDefaultKclFileForDir(
+      projectPath,
+      walked,
+      wasmInstance
+    )
   }
 
   let project = {

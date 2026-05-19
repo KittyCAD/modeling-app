@@ -1,6 +1,7 @@
-import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
+import path from 'path'
+import type { DeviceFlowAuthorization } from '@root/interface'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
@@ -22,19 +23,14 @@ const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
-const takeElectronWindowScreenshot = ({
-  width,
-  height,
-}: {
-  width: number
-  height: number
-}) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const startDeviceFlow = (host: string): Promise<string> =>
+const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const cancelDeviceFlow = (): Promise<void> =>
+  ipcRenderer.invoke('cancelDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
 ) =>
@@ -253,14 +249,14 @@ const createFallbackMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', { page: 'fallback' })
 }
 
-// Given the application menu, try to enable the menu
+// Given the active native menu, try to enable the menu item.
 const enableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('enable-menu', {
     menuId,
   })
 }
 
-// Given the application menu, try to disable the menu
+// Given the active native menu, try to disable the menu item.
 const disableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('disable-menu', {
     menuId,
@@ -290,6 +286,7 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
+  cancelDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.
@@ -318,7 +315,6 @@ contextBridge.exposeInMainWorld('electron', {
   platform: process.platform,
   version: process.version,
   path: path,
-  takeElectronWindowScreenshot,
   os: {
     isMac,
     isWindows,

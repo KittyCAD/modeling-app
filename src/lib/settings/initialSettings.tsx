@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
-import { type MlCopilotMode } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -14,11 +14,14 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_ML_COPILOT_MODE,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import type {
+  DynamicSettingsCategories,
+  ResolvedExtensionSettings,
+} from '@src/lib/settings/extensionSettings'
 import type {
   BaseUnit,
   SettingProps,
@@ -134,7 +137,7 @@ export class Setting<T = unknown> {
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
 
-export function createSettings() {
+function createCoreSettings() {
   const settings = {
     // Gotcha: Only settings that must be understood by Rust/KCL/CLI need a
     // matching schema in rust/kcl-lib. App-owned settings can stay TS-only if
@@ -177,25 +180,12 @@ export function createSettings() {
       /**
        * Zookeeper reasoning mode
        */
-      zookeeperMode: new Setting<MlCopilotMode>({
-        defaultValue: DEFAULT_ML_COPILOT_MODE,
-        validate: (v) => v === 'fast' || v === 'thoughtful',
+      zookeeperMode: new Setting<string | undefined>({
+        defaultValue: undefined,
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          v === undefined || (typeof v === 'string' && v.length > 0),
         description: 'The default reasoning mode for Zookeeper.',
-        commandConfig: {
-          inputType: 'options',
-          defaultValueFromContext: (context) =>
-            context.app.zookeeperMode.current,
-          options: (cmdContext, settingsContext) =>
-            (['fast', 'thoughtful'] as const).map((v) => ({
-              name: v === 'fast' ? 'Standard' : capitaliseFC(v),
-              value: v,
-              isCurrent:
-                settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
-                  cmdContext.argumentsToSubmit.level as SettingsLevel,
-                  v
-                ),
-            })),
-        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -309,6 +299,13 @@ export function createSettings() {
         defaultValue: {},
         validate: (_v) => true,
         hideOnLevel: 'user',
+      }),
+      showAllFiles: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        description:
+          'Show all project files in the file pane, including dotfiles and configuration files.',
+        validate: (v) => typeof v === 'boolean',
       }),
     },
     /**
@@ -779,6 +776,34 @@ export function createSettings() {
         },
       }),
     },
+    /**
+     * App-owned layout settings.
+     *
+     * These settings are intentionally hidden from the generic settings UI and
+     * command bar. They persist layout state that should travel through the same
+     * user settings file as plugin and other TypeScript-only settings.
+     */
+    layout: {
+      configs: new Setting<LayoutsWithMetadata>({
+        defaultValue: {},
+        hideOnLevel: 'project',
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          typeof v === 'object' &&
+          v !== null &&
+          !isArray(v) &&
+          Object.values(v).every(
+            (layout) =>
+              typeof layout === 'object' &&
+              layout !== null &&
+              'version' in layout &&
+              typeof layout.version === 'string' &&
+              'layout' in layout &&
+              typeof layout.layout === 'object' &&
+              layout.layout !== null
+          ),
+      }),
+    },
     /** Settings that affect the behavior of the entire app,
      *  beyond just modeling or navigating, for example
      *  NOTE: before using the project id for anything, check it isn't the
@@ -810,4 +835,48 @@ export function createSettings() {
   return settings
 }
 
-export type SettingsType = ReturnType<typeof createSettings>
+function instantiateExtensionSettings(
+  resolved: ResolvedExtensionSettings
+): DynamicSettingsCategories {
+  return Object.fromEntries(
+    Object.entries(resolved).map(([category, settings]) => [
+      category,
+      Object.fromEntries(
+        Object.entries(settings).map(([settingName, definition]) => [
+          settingName,
+          definition.createSetting(),
+        ])
+      ),
+    ])
+  )
+}
+
+type CoreSettingsType = ReturnType<typeof createCoreSettings>
+
+export type SettingsType = CoreSettingsType & {
+  plugins: Record<string, Setting<boolean>>
+}
+
+export function createSettings(
+  extensionSettings: ResolvedExtensionSettings = {}
+): SettingsType {
+  const settings = createCoreSettings() as SettingsType
+  settings.plugins = {}
+
+  // For now, core settings remain defined here and extension-provided settings
+  // are merged into the same mutable settings object during app bootstrap.
+  // A narrower follow-up can invert this so the signal output becomes the
+  // canonical registry and core settings are just another contribution.
+  Object.entries(instantiateExtensionSettings(extensionSettings)).forEach(
+    ([category, categorySettings]) => {
+      ;(settings as Record<string, Record<string, Setting<any>>>)[category] = {
+        ...((settings as Record<string, Record<string, Setting<any>>>)[
+          category
+        ] ?? {}),
+        ...categorySettings,
+      }
+    }
+  )
+
+  return settings
+}

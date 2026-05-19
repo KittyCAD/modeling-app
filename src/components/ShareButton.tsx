@@ -3,7 +3,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { ShareDialog } from '@src/components/ShareDialog'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { App } from '@src/lib/app'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { copyFileShareLink } from '@src/lib/links'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -12,9 +12,14 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
 
+type ShareButtonProps = {
+  app: App
+}
+
 /** Share Zoo link button shown in the upper-right of the modeling view */
-export const ShareButton = memo(function ShareButton() {
-  const app = useApp()
+export const ShareButton = memo(function ShareButton({
+  app,
+}: ShareButtonProps) {
   const { billing } = app
   const platform = usePlatform()
 
@@ -36,6 +41,7 @@ export const ShareButton = memo(function ShareButton() {
         return (
           <SharePopoverContent
             billingLoading={billingLoading}
+            app={app}
             shareButtonRef={shareButtonRef}
             close={() => popover.close()}
             open={popover.open}
@@ -48,12 +54,14 @@ export const ShareButton = memo(function ShareButton() {
 })
 
 function SharePopoverContent({
+  app,
   billingLoading,
   shareButtonRef,
   close,
   open,
   platform,
 }: {
+  app: App
   billingLoading: boolean
   shareButtonRef: RefObject<HTMLButtonElement | null>
   close: () => void
@@ -61,9 +69,8 @@ function SharePopoverContent({
   platform: ReturnType<typeof usePlatform>
 }) {
   useSignals()
-  const app = useApp()
   const { auth, billing } = app
-  const { kclManager } = useSingletons()
+  const { kclManager } = app.singletons
   const token = auth.useToken()
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value

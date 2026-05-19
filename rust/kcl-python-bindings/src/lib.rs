@@ -43,6 +43,8 @@ use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::KclErrorInfo;
 use crate::bridge::sketch_constraints::SketchConstraintReport;
 
+const HEARTBEAT_INTERVAL_SECONDS: u64 = 5;
+
 mod bridge;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
@@ -241,7 +243,10 @@ async fn new_context_state(
     request: &RequestContext,
     current_file: Option<std::path::PathBuf>,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
-    let mut settings: kcl_lib::ExecutorSettings = Default::default();
+    let mut settings: kcl_lib::ExecutorSettings = kcl_lib::ExecutorSettings {
+        heartbeats: Some(HEARTBEAT_INTERVAL_SECONDS),
+        ..Default::default()
+    };
     if let Some(current_file) = current_file {
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
@@ -391,16 +396,20 @@ async fn execute_and_export_impl(request: RequestContext, export_format: FileExp
         filename,
     } = run_kcl(request).await?;
 
-    let settings = program
-        .meta_settings()
-        .map_err(|err| into_miette_for_parse(&filename, &code, err))?
-        .unwrap_or_default();
+    let settings = match program.meta_settings() {
+        Ok(x) => x.unwrap_or_default(),
+        Err(err) => {
+            ctx.close().await;
+            return Err(into_miette_for_parse(&filename, &code, err));
+        }
+    };
     let units: UnitLength = settings.default_length_units.into();
 
     // This will not return until there are files.
-    let resp = ctx
+    let export_res = ctx
         .engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
             &kittycad_modeling_cmds::ModelingCmd::Export(
@@ -413,7 +422,14 @@ async fn execute_and_export_impl(request: RequestContext, export_format: FileExp
                     .build(),
             ),
         )
-        .await?;
+        .await;
+    let resp = match export_res {
+        Ok(x) => x,
+        Err(e) => {
+            ctx.close().await;
+            return Err(e.into());
+        }
+    };
 
     let result = match resp {
         kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } => Ok(files),
@@ -606,7 +622,8 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
     let resp = ctx
         .engine
         .send_modeling_cmd(
-            Uuid::new_v4().into(),
+            &ctx.engine_batch,
+            Uuid::new_v4(),
             Default::default(),
             &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles::builder().files(files).format(format).build()),
         )
@@ -803,12 +820,12 @@ async fn take_snaps(
             let view_cmd = kcmc::DefaultCameraLookAt::from(camera);
             let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
             ctx.engine
-                .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                .send_modeling_cmd(&ctx.engine_batch, uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
         } else {
             let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric::builder().padding(0.0).build());
             ctx.engine
-                .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                .send_modeling_cmd(&ctx.engine_batch, uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
         }
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
@@ -821,6 +838,7 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
     // Set orthographic projection
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
             &kittycad_modeling_cmds::ModelingCmd::DefaultCameraSetOrthographic(
@@ -833,6 +851,7 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
     if zoom {
         ctx.engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(
@@ -850,6 +869,7 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
     let resp = ctx
         .engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
             &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(
@@ -890,6 +910,7 @@ async fn measure_model_properties(
         let volume_resp = ctx
             .engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(volume_req),
@@ -910,6 +931,7 @@ async fn measure_model_properties(
         let mass_resp = ctx
             .engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(mass_req),
@@ -930,6 +952,7 @@ async fn measure_model_properties(
         let center_of_mass_resp = ctx
             .engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(center_of_mass_req),
@@ -950,6 +973,7 @@ async fn measure_model_properties(
         let density_resp = ctx
             .engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(density_req),
@@ -970,6 +994,7 @@ async fn measure_model_properties(
         let surface_area_resp = ctx
             .engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(surface_area_req),
@@ -990,6 +1015,7 @@ async fn measure_model_properties(
         let bb_resp = ctx
             .engine
             .send_modeling_cmd(
+                &ctx.engine_batch,
                 uuid::Uuid::new_v4(),
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(bb_req),
@@ -1017,6 +1043,7 @@ async fn get_bounding_box(
     let bounding_box_resp = ctx
         .engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             kcl_lib::SourceRange::default(),
             &ModelingCmd::from(

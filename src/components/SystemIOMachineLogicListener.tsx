@@ -1,7 +1,11 @@
 import fsZds from '@src/lib/fs-zds'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PROJECT_ID_QUERY_PARAM,
+} from '@src/lib/constants'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -105,8 +109,15 @@ export function SystemIOMachineLogicListener() {
     kclManager.isExecuting = false
 
     const url = new URL(location.href)
-    url.searchParams.delete('ask-open-desktop')
-    void navigate(requestedPath + '?' + url.searchParams.toString())
+    url.searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
+    if (
+      lastOperation ===
+      SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
+    ) {
+      url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
+    }
+    const search = url.searchParams.toString()
+    void navigate(requestedPath + (search ? `?${search}` : ''))
   }
 
   /**
@@ -122,9 +133,26 @@ export function SystemIOMachineLogicListener() {
         return
       }
 
+      const fileNavigationOperations = [
+        SystemIOMachineStates.importFileFromURL,
+        SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
+        SystemIOMachineStates.renamingFileAndNavigateToFile,
+        SystemIOMachineStates.renamingFolderAndNavigateToFile,
+      ]
+      if (
+        requestedFileName.project &&
+        requestedFileName.file &&
+        fileNavigationOperations.includes(lastOperation)
+      ) {
+        return
+      }
+
       const isCreating = [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
         SystemIOMachineStates.importFileFromURL,
       ].includes(lastOperation)
       const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
@@ -170,7 +198,7 @@ export function SystemIOMachineLogicListener() {
       )
       const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,
-        requestedProjectName.name
+        requestedFileName.project
       )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
@@ -266,6 +294,7 @@ export function SystemIOMachineLogicListener() {
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
             files: payload.files,
+            filesToDelete: payload.filesToDelete,
             override: true,
             // Gotcha: Both are called "project name" and "file name", but one of them
             // has to include the project-relative file path between the two.
