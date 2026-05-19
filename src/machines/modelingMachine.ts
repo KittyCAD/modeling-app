@@ -7726,7 +7726,7 @@ export const modelingMachine = setup({
         },
       },
 
-      exit: ['enable copilot', 'reset selections'],
+      exit: ['enable copilot'],
 
       entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
@@ -7867,11 +7867,11 @@ export const modelingMachine = setup({
             input: ({ context }) => ({ context }),
             onDone: {
               target: '#Modeling.idle',
-              actions: ['reset sketch metadata', 'reset selections'],
+              actions: ['reset sketch metadata'],
             },
             onError: {
               target: '#Modeling.idle',
-              actions: ['reset sketch metadata', 'reset selections'],
+              actions: ['reset sketch metadata'],
             },
           },
         },
