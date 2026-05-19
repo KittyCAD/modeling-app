@@ -5596,6 +5596,27 @@ mod consumed_solid_original_issue {
         super::execute(TEST_NAME, true).await
     }
 }
+mod zds_extrude_fillet_top_edge {
+    const TEST_NAME: &str = "zds_extrude_fillet_top_edge";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 
 mod christmas_tree_mirror3d_union {
     const TEST_NAME: &str = "christmas_tree_mirror3d_union";
