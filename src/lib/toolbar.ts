@@ -102,7 +102,9 @@ export type ToolbarItem = {
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
   sketchSolveToolName?: string
-  iconColor?: string
+  iconColor?:
+    | string
+    | ((props: ToolbarItemCallbackProps) => string | undefined)
   alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: (
@@ -123,10 +125,11 @@ export type ToolbarItem = {
 
 export type ToolbarItemResolved = Omit<
   ToolbarItem,
-  'disabled' | 'isActive' | 'title' | 'tooltipTitle'
+  'disabled' | 'isActive' | 'title' | 'tooltipTitle' | 'iconColor'
 > & {
   title: string
   tooltipTitle?: string
+  iconColor?: string
   disabled?: boolean
   hotkey?: HotkeySequence
   isActive?: boolean
@@ -552,6 +555,8 @@ export function buildToolbarConfig(
             }
           },
           icon: 'sketch',
+          iconColor: ({ modelingState }) =>
+            getSelectedSketchIconColor(modelingState.context.selectionRanges),
           status: 'available',
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
@@ -2346,6 +2351,41 @@ function getSelectedSketchTarget(
         ? 'Start Sketch on plane'
         : 'Start Sketch on face',
   }
+}
+
+const sketchIconColors = {
+  default: '#fff',
+  faceOrPlane: '#eab308',
+  xy: '#ef4444',
+  xz: '#3b82f6',
+  yz: '#22c55e',
+}
+
+function getSelectedSketchIconColor(selectionRanges: Selections): string {
+  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
+  if (defaultPlane) {
+    return (
+      sketchIconColors[
+        defaultPlane.name.toLowerCase() as keyof typeof sketchIconColors
+      ] ?? sketchIconColors.default
+    )
+  }
+
+  const hasFaceOrPlaneSelection = selectionRanges.graphSelections.some(
+    (selection) => {
+      const artifact = selection.artifact
+      return (
+        artifact?.type === 'plane' ||
+        artifact?.type === 'wall' ||
+        artifact?.type === 'cap' ||
+        (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
+      )
+    }
+  )
+
+  return hasFaceOrPlaneSelection
+    ? sketchIconColors.faceOrPlane
+    : sketchIconColors.default
 }
 
 export const useToolbarConfig = () => {

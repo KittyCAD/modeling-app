@@ -302,11 +302,16 @@ const Toolbar_ = memo(
             : typeof maybeIconConfig.tooltipTitle === 'string'
               ? maybeIconConfig.tooltipTitle
               : maybeIconConfig.tooltipTitle(itemCallbackProps)
+        const iconColor =
+          typeof maybeIconConfig.iconColor === 'function'
+            ? maybeIconConfig.iconColor(itemCallbackProps)
+            : maybeIconConfig.iconColor
 
         return {
           ...maybeIconConfig,
           title,
           tooltipTitle,
+          iconColor,
           description: maybeIconConfig.description,
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
