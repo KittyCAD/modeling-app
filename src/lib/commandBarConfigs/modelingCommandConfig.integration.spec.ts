@@ -5,6 +5,7 @@ import {
   modelingMachineCommandConfig,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
@@ -53,13 +54,16 @@ describe('GDT tolerance defaults', () => {
 
     for (const commandName of commandNames) {
       const commandConfig = modelingMachineCommandConfig[commandName]
-      expect(Array.isArray(commandConfig)).toBe(false)
-      expect(commandConfig?.args?.tolerance).toMatchObject({
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      expect(commandConfig.args?.tolerance).toMatchObject({
         inputType: 'kcl',
         defaultValue: getDefaultGdtTolerance,
       })
       expect(
-        commandConfig?.args?.tolerance?.valueSummary?.({
+        commandConfig.args?.tolerance?.valueSummary?.({
           valueCalculated: '2.54mm',
           valueText: '0.1in',
         } as KclCommandValue)
