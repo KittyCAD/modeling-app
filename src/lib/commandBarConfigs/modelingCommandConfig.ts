@@ -626,7 +626,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       displayName: 'Line',
       args: {
         tool: {
-          displayName: 'Tool',
           defaultValue: 'line',
           required: true,
           inputType: 'string',
@@ -639,7 +638,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       displayName: 'Tangential Arc',
       args: {
         tool: {
-          displayName: 'Tool',
           defaultValue: 'tangentialArc',
           required: true,
           inputType: 'string',
@@ -652,7 +650,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       displayName: 'Rectangle',
       args: {
         tool: {
-          displayName: 'Tool',
           defaultValue: 'rectangle',
           required: true,
           inputType: 'string',
@@ -666,7 +663,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       type: {
-        displayName: 'Type',
         inputType: 'options',
         defaultValue: 'gltf',
         required: true,
@@ -679,7 +675,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       storage: {
-        displayName: 'Storage',
         inputType: 'options',
         defaultValue: (c) => {
           switch (c.argumentsToSubmit.type) {
@@ -814,7 +809,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       machine: {
-        displayName: 'Machine',
         inputType: 'options',
         required: true,
         valueSummary: (machine: components['schemas']['MachineInfoResponse']) =>
@@ -915,7 +909,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       sketches: {
@@ -940,7 +933,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       length: {
-        displayName: 'Length',
         inputType: 'kcl',
         dialog: {
           group: 'extent',
@@ -950,7 +942,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         prepopulate: true,
       },
       to: {
-        displayName: 'To',
         inputType: 'selection',
         dialog: {
           group: 'extent',
@@ -966,7 +957,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         description: 'Only parallel faces are supported for now.',
       },
       symmetric: {
-        displayName: 'Symmetric',
         inputType: 'boolean',
         dialog: {
           group: 'extent',
@@ -975,7 +965,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bidirectionalLength: {
-        displayName: 'Bidirectional Length',
         inputType: 'kcl',
         dialog: {
           group: 'extent',
@@ -983,7 +972,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       tagStart: {
-        displayName: 'Tag Start',
         inputType: 'tagDeclarator',
         dialog: {
           group: 'advanced',
@@ -992,7 +980,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         // TODO: add validation like for Clone command
       },
       tagEnd: {
-        displayName: 'Tag End',
         inputType: 'tagDeclarator',
         dialog: {
           group: 'advanced',
@@ -1000,7 +987,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       twistAngle: {
-        displayName: 'Twist Angle',
         inputType: 'kcl',
         dialog: {
           group: 'advanced',
@@ -1008,7 +994,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       twistAngleStep: {
-        displayName: 'Twist Angle Step',
         inputType: 'kcl',
         dialog: {
           group: 'advanced',
@@ -1016,7 +1001,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       twistCenter: {
-        displayName: 'Twist Center',
         inputType: 'vector2d',
         dialog: {
           group: 'advanced',
@@ -1025,7 +1009,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       method: {
-        displayName: 'Method',
         inputType: 'options',
         dialog: {
           group: 'advanced',
@@ -1038,7 +1021,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         })),
       },
       hideSeams: {
-        displayName: 'Hide Seams',
         inputType: 'boolean',
         dialog: {
           group: 'advanced',
@@ -1047,7 +1029,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bodyType: {
-        displayName: 'Body Type',
         inputType: 'options',
         dialog: {
           group: 'operation',
@@ -1088,7 +1069,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       sketches: {
@@ -1100,7 +1080,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       path: {
-        displayName: 'Path',
         inputType: 'selection',
         selectionTypes: ['segment', 'path', 'helix'],
         clearSelectionFirst: true,
@@ -1109,12 +1088,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       sectional: {
-        displayName: 'Sectional',
         inputType: 'boolean',
         required: false,
       },
       relativeTo: {
-        displayName: 'Relative To',
         inputType: 'options',
         required: false,
         options: [
@@ -1123,17 +1100,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       tagStart: {
-        displayName: 'Tag Start',
         inputType: 'tagDeclarator',
         required: false,
       },
       tagEnd: {
-        displayName: 'Tag End',
         inputType: 'tagDeclarator',
         required: false,
       },
       bodyType: {
-        displayName: 'Body Type',
         inputType: 'options',
         required: false,
         options: kclBodyTypeOptions,
@@ -1169,7 +1143,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       sketches: {
@@ -1181,32 +1154,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       vDegree: {
-        displayName: 'V Degree',
         inputType: 'kcl',
         required: false,
       },
       bezApproximateRational: {
-        displayName: 'Bez Approximate Rational',
         inputType: 'boolean',
         required: false,
       },
       baseCurveIndex: {
-        displayName: 'Base Curve Index',
         inputType: 'kcl',
         required: false,
       },
       tagStart: {
-        displayName: 'Tag Start',
         inputType: 'tagDeclarator',
         required: false,
       },
       tagEnd: {
-        displayName: 'Tag End',
         inputType: 'tagDeclarator',
         required: false,
       },
       bodyType: {
-        displayName: 'Body Type',
         inputType: 'options',
         required: false,
         options: kclBodyTypeOptions,
@@ -1242,7 +1209,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       sketches: {
@@ -1254,7 +1220,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       axisOrEdge: {
-        displayName: 'Axis Or Edge',
         inputType: 'options',
         required: true,
         defaultValue: 'Axis',
@@ -1278,7 +1243,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       edge: {
-        displayName: 'Edge',
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'selection',
@@ -1289,33 +1253,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       angle: {
-        displayName: 'Angle',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
       symmetric: {
-        displayName: 'Symmetric',
         inputType: 'boolean',
         required: false,
       },
       bidirectionalAngle: {
-        displayName: 'Bidirectional Angle',
         inputType: 'kcl',
         required: false,
       },
       tagStart: {
-        displayName: 'Tag Start',
         inputType: 'tagDeclarator',
         required: false,
       },
       tagEnd: {
-        displayName: 'Tag End',
         inputType: 'tagDeclarator',
         required: false,
       },
       bodyType: {
-        displayName: 'Body Type',
         inputType: 'options',
         required: false,
         options: kclBodyTypeOptions,
@@ -1351,11 +1309,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       faces: {
-        displayName: 'Faces',
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
         multiple: true,
@@ -1363,7 +1319,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       thickness: {
-        displayName: 'Thickness',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
@@ -1401,11 +1356,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       face: {
-        displayName: 'Face',
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
@@ -1413,19 +1366,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       cutAt: {
-        displayName: 'Cut At',
         inputType: 'vector2d',
         required: true,
         defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       holeBody: {
-        displayName: 'Hole Body',
         inputType: 'options',
         required: true,
         options: [{ name: 'Blind', isCurrent: true, value: 'blind' }],
       },
       blindDepth: {
-        displayName: 'Blind Depth',
         inputType: 'kcl',
         required: (context) =>
           ['blind'].includes(context.argumentsToSubmit.holeBody as string),
@@ -1434,7 +1384,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: '2',
       },
       blindDiameter: {
-        displayName: 'Blind Diameter',
         inputType: 'kcl',
         required: (context) =>
           ['blind'].includes(context.argumentsToSubmit.holeBody as string),
@@ -1443,7 +1392,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: '1',
       },
       holeType: {
-        displayName: 'Hole Type',
         inputType: 'options',
         required: true,
         options: [
@@ -1453,7 +1401,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       counterboreDepth: {
-        displayName: 'Counterbore Depth',
         inputType: 'kcl',
         required: (context) =>
           ['counterbore'].includes(
@@ -1466,7 +1413,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: '1',
       },
       counterboreDiameter: {
-        displayName: 'Counterbore Diameter',
         inputType: 'kcl',
         required: (context) =>
           ['counterbore'].includes(
@@ -1479,7 +1425,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: '2',
       },
       countersinkAngle: {
-        displayName: 'Countersink Angle',
         inputType: 'kcl',
         required: (context) =>
           ['countersink'].includes(
@@ -1492,7 +1437,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: '90deg',
       },
       countersinkDiameter: {
-        displayName: 'Countersink Diameter',
         inputType: 'kcl',
         required: (context) =>
           ['countersink'].includes(
@@ -1514,7 +1458,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: '0',
       },
       holeBottom: {
-        displayName: 'Hole Bottom',
         inputType: 'options',
         required: true,
         options: [
@@ -1523,7 +1466,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       drillPointAngle: {
-        displayName: 'Drill Point Angle',
         inputType: 'kcl',
         required: (context) =>
           ['drill'].includes(context.argumentsToSubmit.holeBottom as string),
@@ -1562,7 +1504,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       solids: {
-        displayName: 'Solids',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -1570,7 +1511,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       tools: {
-        displayName: 'Tools',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         clearSelectionFirst: true,
@@ -1609,7 +1549,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       solids: {
-        displayName: 'Solids',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -1647,7 +1586,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       solids: {
-        displayName: 'Solids',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -1686,11 +1624,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       targets: {
-        displayName: 'Targets',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -1698,7 +1634,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       tools: {
-        displayName: 'Tools',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         clearSelectionFirst: true,
@@ -1707,12 +1642,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       merge: {
-        displayName: 'Merge',
         inputType: 'boolean',
         required: false,
       },
       keepTools: {
-        displayName: 'Keep Tools',
         inputType: 'boolean',
         required: false,
       },
@@ -1748,11 +1681,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       plane: {
-        displayName: 'Plane',
         inputType: 'selection',
         selectionTypes: [
           'plane',
@@ -1768,7 +1699,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       offset: {
-        displayName: 'Offset',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
@@ -1804,11 +1734,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       mode: {
-        displayName: 'Mode',
         inputType: 'options',
         required: true,
         defaultValue: 'Axis',
@@ -1820,7 +1748,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       axis: {
-        displayName: 'Axis',
         inputType: 'options',
         options: [
           { name: 'X Axis', value: 'X' },
@@ -1833,7 +1760,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Axis'].includes(context.argumentsToSubmit.mode as string),
       },
       edge: {
-        displayName: 'Edge',
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge'],
         multiple: false,
@@ -1844,7 +1770,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
-        displayName: 'Cylinder',
         ...objectsTypesAndFilters,
         inputType: 'selection',
         multiple: false,
@@ -1855,19 +1780,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
       },
       revolutions: {
-        displayName: 'Revolutions',
         inputType: 'kcl',
         defaultValue: '1',
         required: true,
       },
       angleStart: {
-        displayName: 'Angle Start',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
       radius: {
-        displayName: 'Radius',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: (context) =>
@@ -1876,7 +1798,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
       },
       length: {
-        displayName: 'Length',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: (commandContext) =>
@@ -2146,11 +2067,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       selection: {
-        displayName: 'Selection',
         inputType: 'selection',
         selectionTypes: [
           'segment',
@@ -2163,13 +2082,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       radius: {
-        displayName: 'Radius',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
       tag: {
-        displayName: 'Tag',
         inputType: 'tagDeclarator',
         required: false,
         // TODO: add validation like for Clone command
@@ -2205,11 +2122,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       selection: {
-        displayName: 'Selection',
         inputType: 'selection',
         selectionTypes: [
           'segment',
@@ -2222,25 +2137,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       length: {
-        displayName: 'Length',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
       secondLength: {
-        displayName: 'Second Length',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: false,
       },
       angle: {
-        displayName: 'Angle',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: false,
       },
       tag: {
-        displayName: 'Tag',
         inputType: 'tagDeclarator',
         required: false,
         // TODO: add validation like for Clone command
@@ -2252,14 +2163,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'dimension',
     args: {
       selection: {
-        displayName: 'Selection',
         inputType: 'selection',
         selectionTypes: ['segment'],
         multiple: false,
         required: true,
       },
       length: {
-        displayName: 'Length',
         inputType: 'kcl',
         required: true,
         createVariable: 'byDefault',
@@ -2296,14 +2205,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'make-variable',
     args: {
       currentValue: {
-        displayName: 'Current Value',
         description: nodeToEditDescription,
         inputType: 'text',
         required: false,
         hidden: true,
       },
       namedValue: {
-        displayName: 'Named Value',
         inputType: 'kcl',
         required: true,
         createVariable: 'byDefault',
@@ -2364,11 +2271,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       objects: {
-        displayName: 'Objects',
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
         selectionTypes: ['path', 'sweep', 'compositeSolid'],
@@ -2378,22 +2283,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       color: {
-        displayName: 'Color',
         inputType: 'color',
         required: true,
       },
       metalness: {
-        displayName: 'Metalness',
         inputType: 'kcl',
         required: false,
       },
       roughness: {
-        displayName: 'Roughness',
         inputType: 'kcl',
         required: false,
       },
       opacity: {
-        displayName: 'Opacity',
         inputType: 'kcl',
         required: false,
       },
@@ -2428,11 +2329,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       objects: {
-        displayName: 'Objects',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -2440,25 +2339,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       x: {
-        displayName: 'X',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
       y: {
-        displayName: 'Y',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
       z: {
-        displayName: 'Z',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
       global: {
-        displayName: 'Global',
         inputType: 'boolean',
         required: false,
       },
@@ -2493,11 +2388,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       objects: {
-        displayName: 'Objects',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -2505,25 +2398,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       roll: {
-        displayName: 'Roll',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
       pitch: {
-        displayName: 'Pitch',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
       yaw: {
-        displayName: 'Yaw',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
       global: {
-        displayName: 'Global',
         inputType: 'boolean',
         required: false,
       },
@@ -2558,11 +2447,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       objects: {
-        displayName: 'Objects',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -2570,31 +2457,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       x: {
-        displayName: 'X',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       y: {
-        displayName: 'Y',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       z: {
-        displayName: 'Z',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       factor: {
-        displayName: 'Factor',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_SCALE,
         required: false,
       },
       global: {
-        displayName: 'Global',
         inputType: 'boolean',
         required: false,
       },
@@ -2629,11 +2511,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       objects: {
-        displayName: 'Objects',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: false, // only one object can be cloned at this time
@@ -2641,7 +2521,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       variableName: {
-        displayName: 'Variable Name',
         inputType: 'string',
         required: true,
         defaultValue: (_, modelingContext) => {
@@ -2757,11 +2636,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       solids: {
-        displayName: 'Solids',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -2769,13 +2646,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       instances: {
-        displayName: 'Instances',
         inputType: 'kcl',
         required: true,
         defaultValue: KCL_DEFAULT_INSTANCES,
       },
       axis: {
-        displayName: 'Axis',
         inputType: 'options',
         required: true,
         defaultValue: KCL_AXIS_Z,
@@ -2786,24 +2661,20 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       center: {
-        displayName: 'Center',
         inputType: 'vector3d',
         required: true,
         defaultValue: KCL_DEFAULT_ORIGIN,
       },
       arcDegrees: {
-        displayName: 'Arc Degrees',
         inputType: 'kcl',
         required: false,
         defaultValue: KCL_DEFAULT_DEGREE,
       },
       rotateDuplicates: {
-        displayName: 'Rotate Duplicates',
         inputType: 'boolean',
         required: false,
       },
       useOriginal: {
-        displayName: 'Use Original',
         inputType: 'boolean',
         required: false,
       },
@@ -2838,11 +2709,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       solids: {
-        displayName: 'Solids',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -2850,19 +2719,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       instances: {
-        displayName: 'Instances',
         inputType: 'kcl',
         required: true,
         defaultValue: KCL_DEFAULT_INSTANCES,
       },
       distance: {
-        displayName: 'Distance',
         inputType: 'kcl',
         required: true,
         defaultValue: KCL_DEFAULT_LENGTH,
       },
       axis: {
-        displayName: 'Axis',
         inputType: 'options',
         required: true,
         defaultValue: KCL_AXIS_X,
@@ -2873,7 +2739,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       useOriginal: {
-        displayName: 'Use Original',
         inputType: 'boolean',
         required: false,
       },
@@ -2909,11 +2774,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       faces: {
-        displayName: 'Faces',
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: true,
@@ -2921,25 +2784,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       tolerance: {
-        displayName: 'Tolerance',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TOLERANCE,
         required: true,
       },
       precision: {
-        displayName: 'Precision',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_PRECISION,
         required: false,
       },
       framePosition: {
-        displayName: 'Frame Position',
         inputType: 'vector2d',
         defaultValue: KCL_DEFAULT_ORIGIN_2D,
         required: false,
       },
       framePlane: {
-        displayName: 'Frame Plane',
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
         options: [
@@ -2950,7 +2809,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       leaderScale: {
-        displayName: 'Leader Scale',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
@@ -2992,11 +2850,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       nodeToEdit: {
-        displayName: 'Node To Edit',
         ...nodeToEditProps,
       },
       faces: {
-        displayName: 'Faces',
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
@@ -3004,7 +2860,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: isEditingNode,
       },
       name: {
-        displayName: 'Name',
         inputType: 'string',
         defaultValue: (_, modelingContext) =>
           modelingContext
@@ -3013,13 +2868,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       framePosition: {
-        displayName: 'Frame Position',
         inputType: 'vector2d',
         defaultValue: KCL_DEFAULT_ORIGIN_2D,
         required: false,
       },
       framePlane: {
-        displayName: 'Frame Plane',
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
         options: [
@@ -3030,7 +2883,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       leaderScale: {
-        displayName: 'Leader Scale',
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
@@ -3538,7 +3390,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       surface: {
-        displayName: 'Surface',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -3575,7 +3426,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       selection: {
-        displayName: 'Selection',
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
         multiple: true,
@@ -3613,7 +3463,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       faces: {
-        displayName: 'Faces',
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
         multiple: true,
@@ -3651,7 +3500,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
     args: {
       edges: {
-        displayName: 'Edges',
         inputType: 'selection',
         selectionTypes: [
           'segment',
