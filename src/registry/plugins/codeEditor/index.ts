@@ -11,11 +11,6 @@ import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import {
-  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  keymapScopesValueSpec,
-} from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { useSelector } from '@xstate/react'
@@ -110,14 +105,6 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
 
 const codeEditorSettingsItem = defineRegistryItem({
   provides: [
-    provide(keymapScopesValueSpec, {
-      id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-      displayName: 'Code editor focused',
-    }),
-    provide(keymapScopesValueSpec, {
-      id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-      displayName: 'Code editor not focused',
-    }),
     provide(settingsValueSpec, {
       textEditor: {
         automaticallyRender: defineBooleanExtensionSetting({
