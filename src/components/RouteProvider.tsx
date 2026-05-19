@@ -7,7 +7,6 @@ import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -130,14 +129,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
       // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
       // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
-      const data = await loadAndValidateSettings(
-        kclManager.wasmInstancePromise,
-        loadedProject?.path
-      )
       settingsActor.send({
-        type: 'Set all settings',
-        settings: data.settings,
-        doNotPersist: true,
+        type: 'reload.settings',
       })
     },
     [settingsPath, loadedProject?.path].filter(
