@@ -1,13 +1,12 @@
+import { Popover } from '@headlessui/react'
 import type { MouseEvent } from 'react'
 import { useRef } from 'react'
-import { Popover } from '@headlessui/react'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import type { Platform } from '@src/lib/utils'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
@@ -18,7 +17,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
     label: string
     icon?: CustomIconName
     iconColor?: string
-    hotkey?: string | string[]
+    hotkey?: HotkeySequence
     onClick: (event: MouseEvent<HTMLButtonElement>) => void
     disabled?: boolean
     status?: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
@@ -58,7 +57,7 @@ export function ActionButtonDropdown({
             <CustomIcon
               name="caretDown"
               className={
-                'w-3.5 h-5 text-chalkboard-70 dark:text-chalkboard-40 rounded-none ' +
+                'w-3.5 h-5 text-inherit dark:text-current rounded-none ' +
                 'ui-open:rotate-180 ui-open:!text-chalkboard-10'
               }
             />
@@ -102,6 +101,8 @@ function ActionButtonDropdownListItem({
   onClick: (event: MouseEvent<HTMLButtonElement>) => void
   platform: Platform
 }) {
+  const hotkeyLabel = hotkeyDisplay(item.hotkey, platform)
+
   return (
     <li className="contents">
       <button
@@ -150,9 +151,9 @@ function ActionButtonDropdownListItem({
                 className="h-4 w-4 text-chalkboard-70 dark:text-chalkboard-40"
               />
             </div>
-          ) : item.hotkey ? (
+          ) : hotkeyLabel ? (
             <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-              {hotkeyDisplay(filterEscHotkey(item.hotkey)[0], platform)}
+              {hotkeyLabel}
             </kbd>
           ) : null}
           {item.status === 'experimental' ? (

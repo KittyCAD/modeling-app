@@ -25,6 +25,7 @@ use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
+use crate::execution::Group;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
 use crate::execution::Metadata;
@@ -1686,6 +1687,12 @@ impl Node<SketchBlock> {
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
+
+            exec_state.push_op(Operation::GroupBegin {
+                group: Group::SketchBlock { sketch_id },
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
             artifact_id
         };
 
@@ -1976,12 +1983,8 @@ impl Node<SketchBlock> {
             .constraints
             .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
 
-        // Push sketch solve operation
-        exec_state.push_op(Operation::SketchSolve {
-            sketch_id,
-            node_path: NodePath::placeholder(),
-            source_range: range,
-        });
+        // Close the sketch block operation group.
+        exec_state.push_op(Operation::GroupEnd);
 
         // Warn if the sketch has conflicting constraints. Skip this when
         // freedom analysis didn't run (e.g., during dragging), because the

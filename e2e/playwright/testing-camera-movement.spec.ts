@@ -105,7 +105,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     const camInitialPosition: [number, number, number] = [0, 85, 85]
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
@@ -190,7 +190,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
 
     await homePage.goToModelingScene()
     // this turns on the debug pane setting as well
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()

@@ -1,9 +1,7 @@
+import type { KclManager } from '@src/lang/KclManager'
 import { useEffect } from 'react'
 import type { Options } from 'react-hotkeys-hook'
 import { useHotkeys } from 'react-hotkeys-hook'
-
-import type { KclManager } from '@src/lang/KclManager'
-import { isArray } from '@src/lib/utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
 // with hotkeys inside the editor.
@@ -48,13 +46,4 @@ function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
     .replaceAll('ctrl', 'Ctrl')
     .replaceAll('shift', 'Shift')
     .replaceAll('alt', 'Alt')
-}
-
-/**
- * We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
- *
- * @deprecated Prefer displaying shortcuts from registry keymap metadata.
- */
-export function filterEscHotkey(hotkey: string | string[]) {
-  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
 }

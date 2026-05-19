@@ -281,7 +281,7 @@ test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
 
     await homePage.goToModelingScene()
     await editor.closePane()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Setup`, async () => {
       await scene.expectState({

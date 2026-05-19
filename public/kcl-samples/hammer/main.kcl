@@ -100,15 +100,7 @@ hidden004 = hide(sketch004)
 rightSideCut = extrude(region004, length = -14)
 
 // Subtract the top profiles from the side profile to create a CSG hammer shape
-firstProfiles = subtract(
-  [headSideProfile],
-  tools = [
-    union([
-      leftSideCut,
-      union([rearCut, rightSideCut])
-    ])
-  ],
-)
+firstProfiles = subtract(headSideProfile, tools = [leftSideCut, rearCut, rightSideCut])
 
 // Extrude a polygon through the center of the hammer head to create the mounting hole for the handle
 sketch005 = sketch(on = XY) {
