@@ -40,9 +40,11 @@ jobs:
         uses: dawidd6/action-download-artifact@v21
         continue-on-error: true
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
           name: prepared-wasm
-          workflow: build-wasm.yml
+          # `build-wasm.yml` is `workflow_call` only, so its artifacts are
+          # attributed to the caller's parent run. Using `e2e-tests.yml` works
+          # as the canonical caller since this runs every hour on main.
+          workflow: e2e-tests.yml
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
