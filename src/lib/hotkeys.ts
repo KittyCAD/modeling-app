@@ -1,4 +1,4 @@
-import type { Platform } from '@src/lib/utils'
+import { type Platform, isArray } from '@src/lib/utils'
 
 /**
  * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
@@ -7,9 +7,12 @@ export const SNAP_TO_GRID_HOTKEY = 'mod+g'
 
 const LOWER_CASE_LETTER = /[a-z]/
 const WHITESPACE = /\s+/g
+const HOTKEY_SEQUENCE_SEPARATOR = ' '
+
+export type HotkeySequence = string | readonly string[]
 
 /**
- * Convert hotkey to display text.
+ * Convert hotkey or keymap sequence to display text.
  *
  * @deprecated Prefer displaying shortcuts from registry keymap metadata.
  *
@@ -17,6 +20,22 @@ const WHITESPACE = /\s+/g
  * but we don't.
  */
 export function hotkeyDisplay(
+  hotkey: HotkeySequence | undefined,
+  platform: Platform
+): string | undefined {
+  if (isArray(hotkey)) {
+    const display = hotkey
+      .map((chord) => hotkeyChordDisplay(chord, platform))
+      .filter((chordDisplay): chordDisplay is string => !!chordDisplay)
+      .join(HOTKEY_SEQUENCE_SEPARATOR)
+
+    return display || undefined
+  }
+
+  return hotkeyChordDisplay(hotkey, platform)
+}
+
+function hotkeyChordDisplay(
   hotkey: string | undefined,
   platform: Platform
 ): string | undefined {
@@ -34,6 +53,9 @@ export function hotkeyDisplay(
     .split('+')
     .map((word) => word.trim().toLocaleLowerCase())
     .map((word) => {
+      if (word === 'escape' || word === 'esc') {
+        return 'Esc'
+      }
       if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
         return word.toUpperCase()
       }
