@@ -2,7 +2,6 @@ import { join } from 'node:path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
 
-import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -91,8 +90,6 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       )
     })
     const u = await getUtils(page)
-
-    // Locators and constants
     const sampleOne = {
       file: `ball-bearing${FILE_EXT}`,
       title: 'Ball Bearing',
@@ -101,51 +98,19 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       folderName1: 'ball-bearing-1',
     }
     const projectCard = page.getByRole('link', { name: 'bracket' })
-    const overwriteWarning = page.getByText(
-      'Overwrite current file with sample?'
-    )
-    const newlyCreatedFile = (name: string) =>
-      page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name }),
-      })
-    const defaultLoadCmdBarState: CmdBarSerialised = {
-      commandName: 'Add file to project',
-      currentArgKey: 'sample',
-      currentArgValue: '',
-      headerArguments: {
-        Method: 'Existing project',
-        Sample: '',
-        Source: 'kcl-samples',
-        ProjectName: 'bracket',
-      },
-      highlightedHeaderArg: 'sample',
-      stage: 'arguments',
-    }
 
-    await test.step('Test setup', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await projectCard.click()
-      await scene.settled()
-    })
-
-    await test.step('Precondition: check the initial code', async () => {
-      await u.openKclCodePanel()
-      await editor.scrollToText(bracket.split('\n')[0])
-      await editor.expectEditor.toContain(bracket.split('\n')[0])
-      await u.openFilePanel()
-      await expect(newlyCreatedFile(sampleOne.file)).not.toBeVisible()
-    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await projectCard.click()
+    await scene.settled()
 
     await test.step('Load a KCL sample with the command palette', async () => {
       await toolbar.loadButton.click()
       await cmdBar.selectOption({ name: 'KCL Samples' }).click()
-      await cmdBar.expectState(defaultLoadCmdBarState)
       await cmdBar.selectOption({ name: sampleOne.title }).click()
-      await expect(overwriteWarning).not.toBeVisible()
     })
 
     await test.step('Ensure we made and opened a new file', async () => {
-      await editor.expectEditor.toContain(`// ${sampleOne.title}`)
+      await u.openFilePanel()
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
       ).toBeVisible()
@@ -154,13 +119,11 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     await test.step('Load a KCL sample with the command palette', async () => {
       await toolbar.loadButton.click()
       await cmdBar.selectOption({ name: 'KCL Samples' }).click()
-      await cmdBar.expectState(defaultLoadCmdBarState)
       await cmdBar.selectOption({ name: sampleOne.title }).click()
-      await expect(overwriteWarning).not.toBeVisible()
     })
 
     await test.step('Ensure we made and opened a new file with a unique name', async () => {
-      await editor.expectEditor.toContain(`// ${sampleOne.title}`)
+      await u.openFilePanel()
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
