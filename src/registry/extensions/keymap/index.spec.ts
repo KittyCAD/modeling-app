@@ -12,16 +12,34 @@ import {
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  KEYMAP_SCHEMA_VERSION,
+  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  type PersistedKeymap,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import keymapExtension from '.'
 
+const persistenceMocks = vi.hoisted(() => ({
+  readUserKeymapFile: vi.fn(),
+  writeUserKeymapFile: vi.fn(),
+}))
+
+vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
+
 describe('keymap extension', () => {
+  beforeEach(() => {
+    persistenceMocks.readUserKeymapFile.mockResolvedValue({
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [],
+    })
+    persistenceMocks.writeUserKeymapFile.mockResolvedValue(undefined)
+  })
+
   it('contributes the default keymap as the Base source', () => {
     const registry = createRegistryWithKeymapItems([])
     const keymap = registry.get(keymapService)
@@ -42,22 +60,49 @@ describe('keymap extension', () => {
 
     expect(
       defaultKeymap.bindings.find(
-        (binding) => binding.id === 'toolbar.sketching.exit'
+        (binding) => binding.id === 'toolbar.sketch-legacy.exit'
       )?.keystrokes
     ).toEqual([expectedExitSketchKeystroke])
     expect(
       defaultKeymap.bindings.find(
-        (binding) => binding.id === 'toolbar.sketch-solve.exit'
+        (binding) => binding.id === 'toolbar.sketch.exit'
       )?.keystrokes
     ).toEqual([expectedExitSketchKeystroke])
 
     expect(
       defaultKeymap.bindings.some(
         (binding) =>
-          binding.id === 'toolbar.sketching.exit.meta-escape' &&
+          binding.id === 'toolbar.sketch-legacy.exit.meta-escape' &&
+          binding.hidden === true &&
           binding.keystrokes[0] === 'meta+escape'
       )
     ).toBe(isDesktop())
+    expect(
+      defaultKeymap.bindings.some(
+        (binding) =>
+          binding.id === 'toolbar.sketch.exit.meta-escape' &&
+          binding.hidden === true &&
+          binding.userBindingCommand === 'zds.toolbar.sketch.exit' &&
+          binding.keystrokes[0] === 'meta+escape'
+      )
+    ).toBe(isDesktop())
+  })
+
+  it('hides legacy sketch keybindings and links them to user-facing sketch bindings', () => {
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketch-legacy.line'
+      )
+    ).toMatchObject({
+      hidden: true,
+      command: 'zds.toolbar.sketchLegacy.line',
+      userBindingCommand: 'zds.toolbar.sketch.line',
+    })
+    const sketchLine = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.line'
+    )
+    expect(sketchLine?.command).toBe('zds.toolbar.sketch.line')
+    expect(sketchLine?.hidden).toBeUndefined()
   })
 
   it('marks a partial match and awaits more input', () => {
@@ -218,6 +263,53 @@ describe('keymap extension', () => {
       },
     })
     expect(onSubmit).not.toHaveBeenCalled()
+
+    registry[Symbol.dispose]()
+  })
+
+  it('keeps saved overrides active if the initial persisted keymap load resolves later', async () => {
+    let resolveInitialRead: ((keymap: PersistedKeymap) => void) | undefined
+    persistenceMocks.readUserKeymapFile.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveInitialRead = resolve
+      })
+    )
+    const registry = createRegistryWithKeymapItems([])
+
+    const keymap = registry.get(keymapService)
+    keymap.applyScope(MODE_SKETCHING_KEYMAP_SCOPE)
+
+    await keymap.savePersistedKeymap({
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [
+        {
+          command: 'zds.toolbar.sketch.line',
+          keystrokes: ['shift+q'],
+          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        },
+      ],
+    })
+
+    expect(
+      keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
+        source: 'global',
+      })
+    ).toBe(false)
+    expect(
+      keymap.handleKeyDown(
+        new KeyboardEvent('keydown', { key: 'Q', shiftKey: true }),
+        { source: 'global' }
+      )
+    ).toBe(true)
+
+    resolveInitialRead?.({ version: KEYMAP_SCHEMA_VERSION, bindings: [] })
+    await Promise.resolve()
+
+    expect(
+      keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
+        source: 'global',
+      })
+    ).toBe(false)
 
     registry[Symbol.dispose]()
   })

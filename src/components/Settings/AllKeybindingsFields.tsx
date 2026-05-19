@@ -198,7 +198,9 @@ function getKeybindingRows(
   userBindings: readonly KeymapBinding[]
 ): KeybindingRow[] {
   const claimedUserBindingIndexes = new Set<number>()
-  const rows: KeybindingRow[] = appItems.map((item) => {
+  const rows: KeybindingRow[] = []
+
+  for (const item of appItems) {
     const matches = userBindings.flatMap((binding, index) =>
       doesUserBindingApplyToAppItem(binding, item) ? [{ binding, index }] : []
     )
@@ -206,29 +208,39 @@ function getKeybindingRows(
       claimedUserBindingIndexes.add(match.index)
     }
 
+    if (item.hidden) {
+      continue
+    }
+
     const effectiveMatch = matches.at(-1)
     if (
       effectiveMatch &&
       isUnboundKeymapCommand(effectiveMatch.binding.command)
     ) {
-      return createAppRow(item, {
-        state: 'unbound',
-        userBinding: effectiveMatch.binding,
-        userBindingIndex: effectiveMatch.index,
-        keystrokes: [],
-      })
+      rows.push(
+        createAppRow(item, {
+          state: 'unbound',
+          userBinding: effectiveMatch.binding,
+          userBindingIndex: effectiveMatch.index,
+          keystrokes: [],
+        })
+      )
+      continue
     }
 
     if (effectiveMatch) {
-      return createAppRow(item, {
-        state: 'override',
-        userBinding: effectiveMatch.binding,
-        userBindingIndex: effectiveMatch.index,
-      })
+      rows.push(
+        createAppRow(item, {
+          state: 'override',
+          userBinding: effectiveMatch.binding,
+          userBindingIndex: effectiveMatch.index,
+        })
+      )
+      continue
     }
 
-    return createAppRow(item, { state: 'app' })
-  })
+    rows.push(createAppRow(item, { state: 'app' }))
+  }
 
   for (const [index, binding] of userBindings.entries()) {
     if (
@@ -518,20 +530,18 @@ function NewKeybindingRow({
   return (
     <tr className="border-0 border-b border-solid border-primary/40 align-top bg-primary/5 dark:bg-primary/10">
       <td className="px-2 py-3">
+        <input
+          className="w-48 bg-transparent text-base block"
+          value={title}
+          placeholder="Title"
+          onChange={(event) => setTitle(event.target.value)}
+        />
         <SearchableTextField
           className="w-64 font-mono text-xs"
           value={command}
           placeholder="command.id"
           options={commandOptions}
           onChange={setCommand}
-        />
-      </td>
-      <td className="px-2 py-3">
-        <input
-          className="w-48 bg-transparent text-base"
-          value={title}
-          placeholder="Title"
-          onChange={(event) => setTitle(event.target.value)}
         />
       </td>
       <td className="px-2 py-3">
@@ -705,11 +715,13 @@ function createCommandSearchOptions(
       description: command.description ?? command.groupId,
     }
   })
-  const keymapCommandOptions = keymapItems.map((item) => ({
-    id: item.command,
-    title: item.title,
-    description: item.command,
-  }))
+  const keymapCommandOptions = keymapItems
+    .filter((item) => !item.hidden)
+    .map((item) => ({
+      id: item.command,
+      title: item.title,
+      description: item.command,
+    }))
 
   return dedupeSearchOptions([...commandOptions, ...keymapCommandOptions])
 }

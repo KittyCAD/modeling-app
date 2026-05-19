@@ -365,6 +365,80 @@ describe('keymap contract', () => {
     })
   })
 
+  it('uses persisted overrides for linked hidden keybindings', () => {
+    const legacyItem = createKeymapItem({
+      id: 'toolbar.sketch-legacy.line',
+      command: 'zds.toolbar.sketchLegacy.line',
+      keystrokes: ['l'],
+      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
+      hidden: true,
+      userBindingCommand: 'zds.toolbar.sketch.line',
+    })
+    const item = createKeymapItem({
+      id: 'toolbar.sketch.line',
+      command: 'zds.toolbar.sketch.line',
+      keystrokes: ['l'],
+      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+    })
+    const tree = createKeymapTree(
+      resolveKeymapItems([legacyItem, item], {
+        version: 1,
+        bindings: [
+          {
+            command: 'zds.toolbar.sketch.line',
+            keystrokes: ['shift+q'],
+            scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+          },
+        ],
+      })
+    )
+    const scopeMetadata = [
+      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 200),
+      createContextScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE, 220),
+    ]
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCHING_KEYMAP_SCOPE],
+        ['l'],
+        scopeMetadata
+      )
+    ).toEqual({ type: 'none' })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCHING_KEYMAP_SCOPE],
+        ['shift+q'],
+        scopeMetadata
+      )
+    ).toEqual({
+      type: 'full',
+      item: {
+        ...legacyItem,
+        keystrokes: ['shift+q'],
+        scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
+        source: 'User',
+      },
+    })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['shift+q'],
+        scopeMetadata
+      )
+    ).toEqual({
+      type: 'full',
+      item: {
+        ...item,
+        keystrokes: ['shift+q'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        source: 'User',
+      },
+    })
+  })
+
   it('resolves persisted unbind entries by command and keystrokes', () => {
     const item = createKeymapItem({
       id: 'open-command-palette',
@@ -384,6 +458,50 @@ describe('keymap contract', () => {
     )
 
     expect(matchKeymapKeystrokes(tree, [], ['mod+k'])).toEqual({ type: 'none' })
+  })
+
+  it('resolves persisted unbind entries across linked hidden keybindings', () => {
+    const visibleItem = createKeymapItem({
+      id: 'toolbar.sketch.exit',
+      command: 'zds.toolbar.sketch.exit',
+      keystrokes: ['mod+escape'],
+      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+    })
+    const hiddenAlias = createKeymapItem({
+      id: 'toolbar.sketch.exit.meta-escape',
+      command: 'zds.toolbar.sketch.exit',
+      keystrokes: ['meta+escape'],
+      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      hidden: true,
+      userBindingCommand: 'zds.toolbar.sketch.exit',
+    })
+    const tree = createKeymapTree(
+      resolveKeymapItems([visibleItem, hiddenAlias], {
+        version: 1,
+        bindings: [
+          {
+            command: '-zds.toolbar.sketch.exit',
+            keystrokes: ['mod+escape'],
+            scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+          },
+        ],
+      })
+    )
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['mod+escape']
+      )
+    ).toEqual({ type: 'none' })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['meta+escape']
+      )
+    ).toEqual({ type: 'none' })
   })
 })
 
