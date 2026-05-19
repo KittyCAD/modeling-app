@@ -648,6 +648,26 @@ s1 = sketch(on = YZ) {
   line1.end.at[1] == 7
 """
 
+two_sketches_svg_code = """
+@settings(kclVersion = 2.0)
+
+sketch_a = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line1.start.at[0] == 0
+  line1.start.at[1] == 0
+  line1.end.at[0] == 1
+  line1.end.at[1] == 0
+}
+
+sketch_b = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
+  line1.start.at[0] == 0
+  line1.start.at[1] == 0
+  line1.end.at[0] == 0
+  line1.end.at[1] == 2
+}
+"""
+
 
 @requires_engine
 @pytest.mark.asyncio
@@ -739,3 +759,42 @@ async def test_sketch_constraint_status_execution_error_returns_partial_report()
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "execution"
     assert "missing_sketch" in report.kcl_error.text
+
+
+@pytest.mark.asyncio
+async def test_export_sketch_svg_code_by_variable_name():
+    first_svg = await kcl.export_sketch_svg_code(two_sketches_svg_code)
+    second_svg = await kcl.export_sketch_svg_code(
+        two_sketches_svg_code, "sketch_b"
+    )
+
+    assert first_svg.startswith("<svg")
+    assert second_svg.startswith("<svg")
+    assert "sketch-svg-mode-agent" in second_svg
+    assert 'data-layer="model-geometry"' in second_svg
+    assert first_svg != second_svg
+    assert 'x1="0" y1="0" x2="0" y2="-2"' in second_svg
+
+
+@pytest.mark.asyncio
+async def test_export_sketch_svg_file_by_variable_name(tmp_path):
+    kcl_file = tmp_path / "main.kcl"
+    kcl_file.write_text(two_sketches_svg_code)
+
+    svg = await kcl.export_sketch_svg(
+        str(kcl_file), "sketch_b", mode="constraints"
+    )
+
+    assert svg.startswith("<svg")
+    assert "sketch-svg-mode-constraints" in svg
+    assert 'data-layer="solver-constraints"' in svg
+
+
+@pytest.mark.asyncio
+async def test_export_sketch_svg_unknown_variable_reports_available_names():
+    with pytest.raises(Exception) as exc:
+        await kcl.export_sketch_svg_code(two_sketches_svg_code, "missing")
+
+    assert "No sketch variable named `missing` found" in str(exc.value)
+    assert "sketch_a" in str(exc.value)
+    assert "sketch_b" in str(exc.value)
