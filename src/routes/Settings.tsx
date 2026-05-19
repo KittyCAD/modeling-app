@@ -136,7 +136,7 @@ export const Settings = () => {
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar />
+                <SettingsSearchBar showPlugins={showPluginsTab} />
                 <button
                   type="button"
                   onClick={close}
@@ -165,10 +165,12 @@ export const Settings = () => {
                   <SettingsSectionsList
                     searchParamTab={searchParamTab}
                     scrollRef={scrollRef}
+                    showPlugins={showPluginsTab}
                   />
                   <AllSettingsFields
                     searchParamTab={searchParamTab}
                     isFileSettings={isFileSettings}
+                    showPlugins={showPluginsTab}
                     ref={scrollRef}
                   />
                 </>
