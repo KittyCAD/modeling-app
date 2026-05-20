@@ -29,8 +29,7 @@ This file applies to TypeScript and React development under `src/`. It complemen
 
 ## Code style
 
-- Format with Biome: `npm run fmt`. Check formatting with `npm run fmt:check`.
-- Lint with ESLint: `npm run lint`, or target a smaller path with `npx eslint src/path --max-warnings 0`.
+- Format with Biome and lint with ESLint, both covered by `make check`.
 - Keep TypeScript types understandable and maintainable. Prefer explicit interfaces, straightforward unions, and local type guards over clever conditional types, heavy generics, or type-level plumbing.
 - Use type-only imports for types (`import type { Foo } ...`) because ESLint enforces `@typescript-eslint/consistent-type-imports`.
 - Use `isArray()` from `@src/lib/utils`, and any other helpful utils instead of reinventing your own.
@@ -59,7 +58,7 @@ This file applies to TypeScript and React development under `src/`. It complemen
 
 - Unit tests use `*.test.ts` or `*.test.tsx` and run with `npm run test:unit`.
 - Integration tests use `*.spec.ts` or `*.spec.tsx` and run with `npm run test:integration`.
-- Prefer targeted Vitest runs while iterating, for example `npx vitest run src/components/Foo.spec.tsx`.
+- Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.spec.tsx`.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
 
@@ -69,7 +68,7 @@ For a typical `src/` change, prefer the smallest useful checks first:
 
 ```sh
 make check
-npx vitest run src/path/to/file.spec.tsx
+npm run test:unit -- src/path/to/file.spec.tsx
 ```
 
 Before a broad PR, run:
