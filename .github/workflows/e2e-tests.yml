@@ -457,7 +457,6 @@ jobs:
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel-preview
         if: github.event_name == 'pull_request'
-        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 1200 # average build times are 17-18 minutes
@@ -468,7 +467,6 @@ jobs:
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel-staging
         if: github.event_name == 'push' && github.ref_name == 'main'
-        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: staging

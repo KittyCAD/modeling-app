@@ -2939,7 +2939,7 @@ impl SketchOrSegment {
     fn sketch(&self) -> Result<&Sketch, KclError> {
         match self {
             SketchOrSegment::Sketch(sketch) => Ok(sketch),
-            SketchOrSegment::Segment(segment) => segment.sketch.as_ref().ok_or_else(|| {
+            SketchOrSegment::Segment(segment) => segment.sketch.as_deref().ok_or_else(|| {
                 KclError::new_semantic(KclErrorDetails::new(
                     "Segment should have an associated sketch".to_owned(),
                     vec![],
@@ -3105,7 +3105,7 @@ async fn inner_region(
         SketchOrSegment::Sketch(sketch) => sketch,
         SketchOrSegment::Segment(segment) => {
             if let Some(sketch) = segment.sketch {
-                sketch
+                sketch.as_ref().clone()
             } else {
                 Sketch {
                     id: region_id,
