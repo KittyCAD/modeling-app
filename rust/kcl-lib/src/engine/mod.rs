@@ -363,7 +363,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         Err(KclError::new_engine(KclErrorDetails::new(
-            format!("async command timed out after {ASYNC_CMD_TIMEOUT_SECS}s (client-side ceiling, not an engine error)"),
+            format!(
+                "async command timed out after {ASYNC_CMD_TIMEOUT_SECS}s (client-side ceiling, not an engine error)"
+            ),
             vec![source_range],
         )))
     }
