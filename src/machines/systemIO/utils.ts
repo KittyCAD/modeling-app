@@ -2,17 +2,18 @@ import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import fsZds from '@src/lib/fs-zds'
-import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
@@ -309,87 +310,86 @@ export const collectProjectFiles = async (args: {
         : normalizeSelectedPath(
             fsZds.relative(basePath, selectedFilePath) ?? selectedFilePath
           )
-    const recursivelyPushFilePromises = (files: FileEntry[]) => {
-      // mutates filePromises declared above, so this function definition should stay here
-      // if pulled out, it would need to be refactored.
-      for (const file of files) {
-        if (file.children !== null) {
-          // is directory
-          recursivelyPushFilePromises(file.children)
-          continue
-        }
+    const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
+      const fileNameWithExtension =
+        fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+      const absoluteFilePath = absolutePathToFileNameWithExtension.replaceAll(
+        '\\',
+        '/'
+      )
+      const relativeFilePath = normalizeSelectedPath(fileNameWithExtension)
+      const isSelectedFile =
+        selectedFilePath !== undefined &&
+        (absoluteFilePath === selectedFilePath ||
+          relativeFilePath === selectedFilePathWithoutLeadingSlash ||
+          relativeFilePath === selectedFileRelativePath)
 
-        const absolutePathToFileNameWithExtension = file.path
-        const fileNameWithExtension =
-          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
-        const absoluteFilePath = absolutePathToFileNameWithExtension.replaceAll(
-          '\\',
-          '/'
+      if (isSelectedFile) {
+        uploadSize += new TextEncoder().encode(args.selectedFileContents).length
+        filePromises.push(
+          Promise.resolve<FileMeta>({
+            type: 'kcl',
+            absPath: absolutePathToFileNameWithExtension,
+            relPath: fileNameWithExtension,
+            fileContents: args.selectedFileContents,
+            execStateFileNamesIndex:
+              execStateNameToIndexMap[absolutePathToFileNameWithExtension],
+          })
         )
-        const relativeFilePath = normalizeSelectedPath(fileNameWithExtension)
-        const isSelectedFile =
-          selectedFilePath !== undefined &&
-          (absoluteFilePath === selectedFilePath ||
-            relativeFilePath === selectedFilePathWithoutLeadingSlash ||
-            relativeFilePath === selectedFileRelativePath)
+        return
+      }
 
-        const filePromise = isSelectedFile
-          ? Promise.resolve<FileMeta>({
-              type: 'kcl',
-              absPath: absolutePathToFileNameWithExtension,
-              relPath: fileNameWithExtension,
-              fileContents: args.selectedFileContents,
-              execStateFileNamesIndex:
-                execStateNameToIndexMap[absolutePathToFileNameWithExtension],
+      filePromises.push(
+        fsZds
+          .readFile(absolutePathToFileNameWithExtension)
+          .then((file): FileMeta => {
+            uploadSize += file.byteLength
+            const decoder = new TextDecoder('utf-8')
+            const fileType = fsZds.extname(absolutePathToFileNameWithExtension)
+            if (fileType === FILE_EXT) {
+              return {
+                type: 'kcl',
+                absPath: absolutePathToFileNameWithExtension,
+                relPath: fileNameWithExtension,
+                fileContents: decoder.decode(file),
+                execStateFileNamesIndex:
+                  execStateNameToIndexMap[absolutePathToFileNameWithExtension],
+              }
+            }
+            const blob = new Blob([new Uint8Array(file)], {
+              type: 'application/octet-stream',
             })
-          : fsZds
-              .readFile(absolutePathToFileNameWithExtension)
-              .then((file): FileMeta => {
-                uploadSize += file.byteLength
-                const decoder = new TextDecoder('utf-8')
-                const fileType = fsZds.extname(
-                  absolutePathToFileNameWithExtension
-                )
-                if (fileType === FILE_EXT) {
-                  return {
-                    type: 'kcl',
-                    absPath: absolutePathToFileNameWithExtension,
-                    relPath: fileNameWithExtension,
-                    fileContents: decoder.decode(file),
-                    execStateFileNamesIndex:
-                      execStateNameToIndexMap[
-                        absolutePathToFileNameWithExtension
-                      ],
-                  }
-                }
-                const blob = new Blob([new Uint8Array(file)], {
-                  type: 'application/octet-stream',
-                })
-                return {
-                  type: 'other',
-                  relPath: fileNameWithExtension,
-                  data: blob,
-                }
-              })
-              .catch((e) => {
-                console.error('error reading file', e)
-                return null
-              })
+            return {
+              type: 'other',
+              relPath: fileNameWithExtension,
+              data: blob,
+            }
+          })
+          .catch((e) => {
+            console.error('error reading file', e)
+            return null
+          })
+      )
+    }
 
-        if (isSelectedFile) {
-          uploadSize += new TextEncoder().encode(
-            args.selectedFileContents
-          ).length
-        }
+    const recursivelyPushFilePromisesFromPath = async (path: string) => {
+      const entries = await fsZds.readdir(path)
+      for (const entry of entries) {
+        const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
+        const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
 
-        if (filePromise === undefined) {
+        if (Boolean(stat.mode & fsZdsConstants.S_IFDIR)) {
+          await recursivelyPushFilePromisesFromPath(
+            absolutePathToFileNameWithExtension
+          )
           continue
         }
 
-        filePromises.push(filePromise)
+        pushFilePromise(absolutePathToFileNameWithExtension)
       }
     }
-    recursivelyPushFilePromises(args.projectContext?.children)
+
+    await recursivelyPushFilePromisesFromPath(basePath)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
     if (uploadSize > MB64) {

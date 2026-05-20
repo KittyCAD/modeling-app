@@ -441,6 +441,67 @@ describe('MlEphantConversation', () => {
     ).toBeInTheDocument()
   })
 
+  test('hides the immediate thought when end_of_stream is followed by another response', () => {
+    const finalResponse = 'Rendered.'
+
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Render a bracket',
+          },
+          responses: [
+            {
+              reasoning: {
+                type: 'text',
+                content: 'Starting render...',
+              },
+            },
+            {
+              end_of_stream: {
+                whole_response: finalResponse,
+                started_at: '2026-05-18T12:00:00.000Z',
+                completed_at: '2026-05-18T12:01:00.000Z',
+              },
+            },
+            {
+              reasoning: {
+                type: 'text',
+                content: 'Checking Constraints...',
+              },
+            },
+          ],
+          deltasAggregated: finalResponse,
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.queryByTestId('thinking-immediate')).not.toBeInTheDocument()
+    expect(screen.getByTestId('ml-response-chat-bubble')).toHaveTextContent(
+      finalResponse
+    )
+  })
+
   test('renders user message additional files as attachments under the prompt', () => {
     const conversation: Conversation = {
       exchanges: [

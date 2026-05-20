@@ -54,7 +54,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
       })
 
       await homePage.openProject('import-test')
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await scene.moveCameraTo(
         {

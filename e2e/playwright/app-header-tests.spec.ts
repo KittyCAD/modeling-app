@@ -88,7 +88,7 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject(projectName)
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const publishButton = page.getByTestId('publish-button')
 
@@ -98,13 +98,13 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
     await test.step('Valid KCL', async () => {
       await editor.replaceCode('', 'x = 42')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(publishButton).not.toBeDisabled()
     })
 
     await test.step('Invalid KCL', async () => {
       await editor.replaceCode('', '(')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(publishButton).toBeDisabled()
     })
   })
