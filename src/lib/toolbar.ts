@@ -9,11 +9,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  getDefaultSketchPlaneData,
-  getSelectedDefaultPlane,
-  selectSketchPlane,
-} from '@src/lib/selections'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
@@ -523,10 +519,8 @@ export function buildToolbarConfig(
               modelingState.context.selectionRanges
             )
             const selectedSketchTarget =
-              getSelectedSketchTarget(
-                modelingState.context.selectionRanges,
-                modelingState.context.kclManager
-              )?.id ?? null
+              getSelectedSketchTarget(modelingState.context.selectionRanges)
+                ?.id ?? null
 
             // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
@@ -577,8 +571,7 @@ export function buildToolbarConfig(
             }
 
             const selectedSketchTarget = getSelectedSketchTarget(
-              modelingState.context.selectionRanges,
-              modelingState.context.kclManager
+              modelingState.context.selectionRanges
             )
             if (selectedSketchTarget) {
               return selectedSketchTarget.title
@@ -2305,26 +2298,15 @@ export function buildToolbarConfig(
   }
 }
 
-function getSelectedSketchTarget(
-  selectionRanges: Selections,
-  kclManager: StateFrom<typeof modelingMachine>['context']['kclManager']
-): {
+function getSelectedSketchTarget(selectionRanges: Selections): {
   id: string
   title: string
 } | null {
   const defaultPlane = getSelectedDefaultPlane(selectionRanges)
   if (defaultPlane) {
-    const defaultPlaneData = getDefaultSketchPlaneData(defaultPlane.id, {
-      rustContext: kclManager.rustContext,
-      sceneInfra: kclManager.sceneInfra,
-    })
-    if (!defaultPlaneData || defaultPlaneData instanceof Error) {
-      return null
-    }
-
     return {
       id: defaultPlane.id,
-      title: `Start Sketch on ${defaultPlaneData.plane}`,
+      title: `Start Sketch on ${defaultPlane.name.toUpperCase()}`,
     }
   }
 
