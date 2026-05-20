@@ -160,8 +160,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        partitionIndex: [1, 2, 3, 4]
-        partitionTotal: [4]
+        partitionIndex: [1, 2, 3]
+        partitionTotal: [3]
     steps:
       - uses: runs-on/action@v2.1.2
       - uses: actions/create-github-app-token@v3.1.1
