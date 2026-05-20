@@ -254,7 +254,7 @@ describe('desktop utilities', () => {
       expect(projects).toEqual([])
     })
 
-    it('shows all non-dot files except settings and gitignored files in project contents', async () => {
+    it('shows all non-dot files except settings files in project contents', async () => {
       const { instance } = await buildTheWorldNode()
       const wasmInstance = await instance
       const instanceWithProjectSettings = {
