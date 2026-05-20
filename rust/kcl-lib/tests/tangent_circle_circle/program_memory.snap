@@ -86,7 +86,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000000404845086488446,
+                        "n": 0.00000000000000000000949664069092271,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -238,7 +238,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000000000034221731663559024,
+                        "n": 0.000000000000000000018053234236531518,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -354,7 +354,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 11.000000000000004,
+                        "n": 11.000000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -372,7 +372,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.000000000000003,
+                        "n": 5.000000000000001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -390,7 +390,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     ],
                     "center": [
                       {
-                        "n": 8.000000000000004,
+                        "n": 8.000000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -506,7 +506,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 5.000000000000003,
+                        "n": 5.000000000000001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -524,7 +524,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     ],
                     "end": [
                       {
-                        "n": 11.000000000000004,
+                        "n": 11.000000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -542,7 +542,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     ],
                     "center": [
                       {
-                        "n": 8.000000000000004,
+                        "n": 8.000000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -726,7 +726,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   ],
                   "tag": null,
                   "to": [
-                    5.000000000000003,
+                    5.000000000000001,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -739,11 +739,11 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   },
                   "ccw": true,
                   "center": [
-                    8.000000000000004,
+                    8.000000000000002,
                     -0.0000000000000003673940397442061
                   ],
                   "from": [
-                    5.000000000000003,
+                    5.000000000000001,
                     0.0
                   ],
                   "radius": 3.000000000000001,

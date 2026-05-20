@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing equal_arc_circle_native.kcl
+description: Variables in memory after executing equal_radius_arc_circle_native.kcl
 ---
 {
   "__sketch_1_on": {
@@ -50,7 +50,7 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -4.9999999995,
+                        "n": -4.99999999999995,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.9999999995,
+                        "n": 4.99999999999995,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -202,7 +202,7 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 14.999999997,
+                        "n": 14.99999999849985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -220,7 +220,7 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                     ],
                     "center": [
                       {
-                        "n": 9.999999999,
+                        "n": 9.9999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -327,13 +327,13 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                   "ccw": true,
                   "center": [
                     -0.0,
-                    -0.0000000000000006123233995124443
+                    -0.0000000000000006123233995736705
                   ],
                   "from": [
-                    -4.9999999995,
+                    -4.99999999999995,
                     0.0
                   ],
-                  "radius": 4.9999999995,
+                  "radius": 4.99999999999995,
                   "tag": {
                     "commentStart": 65,
                     "end": 66,
@@ -343,8 +343,8 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                     "value": "a"
                   },
                   "to": [
-                    4.9999999995,
-                    -0.0000000000000018369701985373327
+                    4.99999999999995,
+                    -0.0000000000000018369701987210114
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -355,12 +355,12 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.9999999995,
-                    -0.0000000000000018369701985373327
+                    4.99999999999995,
+                    -0.0000000000000018369701987210114
                   ],
                   "tag": null,
                   "to": [
-                    14.999999997,
+                    14.99999999849985,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -373,14 +373,14 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                   },
                   "ccw": true,
                   "center": [
-                    9.999999999,
+                    9.9999999999999,
                     0.0
                   ],
                   "from": [
-                    14.999999997,
+                    14.99999999849985,
                     0.0
                   ],
-                  "radius": 4.999999998,
+                  "radius": 4.99999999849995,
                   "tag": {
                     "commentStart": 159,
                     "end": 160,
@@ -390,7 +390,7 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
                     "value": "b"
                   },
                   "to": [
-                    14.999999997,
+                    14.99999999849985,
                     0.0
                   ],
                   "type": "Circle",
@@ -430,11 +430,11 @@ description: Variables in memory after executing equal_arc_circle_native.kcl
               },
               "start": {
                 "from": [
-                  -4.9999999995,
+                  -4.99999999999995,
                   0.0
                 ],
                 "to": [
-                  -4.9999999995,
+                  -4.99999999999995,
                   0.0
                 ],
                 "units": "mm",

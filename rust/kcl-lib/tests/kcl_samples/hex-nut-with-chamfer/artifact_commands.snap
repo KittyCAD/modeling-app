@@ -68,8 +68,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.999999999993895,
-          "y": -0.0000000000007111201869671793,
+          "x": 9.999999999998238,
+          "y": -0.00000000000000010165830334644156,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999996307,
-            "y": 8.660254038770063,
+            "x": 4.999999999998956,
+            "y": 8.660254038773925,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.999999999998177,
-            "y": 8.660254038769823,
+            "x": -4.999999999999152,
+            "y": 8.660254038773813,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.99999999999574,
-            "y": -0.0000000000007111209079838314,
+            "x": -9.999999999998337,
+            "y": -0.000000000000055844192005235393,
             "z": 0.0
           },
           "relative": false
@@ -141,8 +141,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.999999999998104,
-            "y": -8.660254038771289,
+            "x": -4.999999999999054,
+            "y": -8.660254038773868,
             "z": 0.0
           },
           "relative": false
@@ -158,8 +158,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999996381,
-            "y": -8.660254038771104,
+            "x": 4.999999999999054,
+            "y": -8.660254038773868,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.999999999993895,
-            "y": -0.0000000000005417584559039567,
+            "x": 9.999999999998238,
+            "y": -0.00000000000000008469643318970403,
             "z": 0.0
           },
           "relative": false
@@ -190,7 +190,7 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.2508737898140208,
+          "x": 3.250873789816666,
           "y": 2.330626439963561,
           "z": 0.0
         }
@@ -205,17 +205,17 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000017475789678086058,
-            "y": -0.0000000000012528795904140175
+            "x": -0.00000000000000017475792948166618,
+            "y": -0.00000000000000012520520555661384
           },
-          "radius": 3.9999999999967746,
+          "radius": 3.999999999996774,
           "start": {
             "unit": "radians",
-            "value": 0.6219936702365492
+            "value": 0.6219936702361638
           },
           "end": {
             "unit": "radians",
-            "value": 6.905178977416135
+            "value": 6.90517897741575
           },
           "relative": false
         }
@@ -359,8 +359,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.668746132955034,
-          "y": 2.9198198930982904,
+          "x": 9.668746134110497,
+          "y": 2.9198198896288434,
           "z": 0.0
         }
       }
@@ -381,17 +381,17 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000987461500468549,
-            "y": -0.00000000002981989305277447
+            "x": -0.000000000000009874613626780337,
+            "y": -0.0000000000000029819889613144426
           },
-          "radius": 10.099999999690548,
+          "radius": 10.09999999969055,
           "start": {
             "unit": "radians",
-            "value": 0.29327723947737516
+            "value": 0.29327723911546016
           },
           "end": {
             "unit": "radians",
-            "value": 6.576462546656962
+            "value": 6.576462546295047
           },
           "relative": false
         }

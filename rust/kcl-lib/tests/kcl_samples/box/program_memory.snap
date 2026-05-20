@@ -110,7 +110,7 @@ description: Variables in memory after executing box.kcl
               "sourceRange": []
             },
             "from": [
-              -5.000000000000013,
+              -5.000000000000005,
               -5.0
             ],
             "tag": {
@@ -122,7 +122,7 @@ description: Variables in memory after executing box.kcl
               "value": "line1"
             },
             "to": [
-              4.999999999999988,
+              4.999999999999996,
               -5.0
             ],
             "type": "ToPoint",
@@ -134,7 +134,7 @@ description: Variables in memory after executing box.kcl
               "sourceRange": []
             },
             "from": [
-              4.999999999999988,
+              4.999999999999996,
               -5.0
             ],
             "tag": {
@@ -146,8 +146,8 @@ description: Variables in memory after executing box.kcl
               "value": "line2"
             },
             "to": [
-              4.999999999999989,
-              4.999999999999999
+              4.999999999999996,
+              5.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -158,8 +158,8 @@ description: Variables in memory after executing box.kcl
               "sourceRange": []
             },
             "from": [
-              4.999999999999989,
-              4.999999999999999
+              4.999999999999996,
+              5.0
             ],
             "tag": {
               "commentStart": 432,
@@ -170,8 +170,8 @@ description: Variables in memory after executing box.kcl
               "value": "line3"
             },
             "to": [
-              -5.000000000000015,
-              4.999999999999999
+              -5.000000000000006,
+              5.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -182,8 +182,8 @@ description: Variables in memory after executing box.kcl
               "sourceRange": []
             },
             "from": [
-              -5.000000000000015,
-              4.999999999999999
+              -5.000000000000006,
+              5.0
             ],
             "tag": {
               "commentStart": 508,
@@ -194,7 +194,7 @@ description: Variables in memory after executing box.kcl
               "value": "line4"
             },
             "to": [
-              -5.000000000000014,
+              -5.000000000000005,
               -5.0
             ],
             "type": "ToPoint",
@@ -234,11 +234,11 @@ description: Variables in memory after executing box.kcl
         },
         "start": {
           "from": [
-            -5.000000000000013,
+            -5.000000000000005,
             -5.0
           ],
           "to": [
-            -5.000000000000013,
+            -5.000000000000005,
             -5.0
           ],
           "units": "mm",
@@ -289,7 +289,7 @@ description: Variables in memory after executing box.kcl
             "sourceRange": []
           },
           "from": [
-            -5.000000000000013,
+            -5.000000000000005,
             -5.0
           ],
           "tag": {
@@ -301,7 +301,7 @@ description: Variables in memory after executing box.kcl
             "value": "line1"
           },
           "to": [
-            4.999999999999988,
+            4.999999999999996,
             -5.0
           ],
           "type": "ToPoint",
@@ -313,7 +313,7 @@ description: Variables in memory after executing box.kcl
             "sourceRange": []
           },
           "from": [
-            4.999999999999988,
+            4.999999999999996,
             -5.0
           ],
           "tag": {
@@ -325,8 +325,8 @@ description: Variables in memory after executing box.kcl
             "value": "line2"
           },
           "to": [
-            4.999999999999989,
-            4.999999999999999
+            4.999999999999996,
+            5.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -337,8 +337,8 @@ description: Variables in memory after executing box.kcl
             "sourceRange": []
           },
           "from": [
-            4.999999999999989,
-            4.999999999999999
+            4.999999999999996,
+            5.0
           ],
           "tag": {
             "commentStart": 432,
@@ -349,8 +349,8 @@ description: Variables in memory after executing box.kcl
             "value": "line3"
           },
           "to": [
-            -5.000000000000015,
-            4.999999999999999
+            -5.000000000000006,
+            5.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -361,8 +361,8 @@ description: Variables in memory after executing box.kcl
             "sourceRange": []
           },
           "from": [
-            -5.000000000000015,
-            4.999999999999999
+            -5.000000000000006,
+            5.0
           ],
           "tag": {
             "commentStart": 508,
@@ -373,7 +373,7 @@ description: Variables in memory after executing box.kcl
             "value": "line4"
           },
           "to": [
-            -5.000000000000014,
+            -5.000000000000005,
             -5.0
           ],
           "type": "ToPoint",
@@ -413,11 +413,11 @@ description: Variables in memory after executing box.kcl
       },
       "start": {
         "from": [
-          -5.000000000000013,
+          -5.000000000000005,
           -5.0
         ],
         "to": [
-          -5.000000000000013,
+          -5.000000000000005,
           -5.0
         ],
         "units": "mm",
@@ -484,7 +484,7 @@ description: Variables in memory after executing box.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -5.000000000000013,
+                        "n": -5.000000000000005,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -502,7 +502,7 @@ description: Variables in memory after executing box.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.999999999999988,
+                        "n": 4.999999999999996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -604,7 +604,7 @@ description: Variables in memory after executing box.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.999999999999989,
+                        "n": 4.999999999999996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -622,7 +622,7 @@ description: Variables in memory after executing box.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.999999999999989,
+                        "n": 4.999999999999996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -630,7 +630,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 4.999999999999999,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -724,7 +724,7 @@ description: Variables in memory after executing box.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.999999999999989,
+                        "n": 4.999999999999996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -732,7 +732,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 4.999999999999999,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -742,7 +742,7 @@ description: Variables in memory after executing box.kcl
                     ],
                     "end": [
                       {
-                        "n": -5.000000000000015,
+                        "n": -5.000000000000006,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -750,7 +750,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 4.999999999999999,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -844,7 +844,7 @@ description: Variables in memory after executing box.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -5.000000000000015,
+                        "n": -5.000000000000006,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -852,7 +852,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 4.999999999999999,
+                        "n": 5.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -862,7 +862,7 @@ description: Variables in memory after executing box.kcl
                     ],
                     "end": [
                       {
-                        "n": -5.000000000000014,
+                        "n": -5.000000000000005,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -964,7 +964,7 @@ description: Variables in memory after executing box.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000002559354449053094,
+                        "n": -0.00000000000000000025616472046499696,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -972,7 +972,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000008840089587470894,
+                        "n": 0.000000000000000000004672416881223909,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -982,7 +982,7 @@ description: Variables in memory after executing box.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000002559344443912613,
+                        "n": -0.0000000000000000002561637179456515,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1085,7 +1085,7 @@ description: Variables in memory after executing box.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000005118728908383919,
+                        "n": -0.0000000000000000005123294411303646,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1093,7 +1093,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000009256077724907077,
+                        "n": 0.000000000000000000004672454418381223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1103,7 +1103,7 @@ description: Variables in memory after executing box.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.999999999999993,
+                        "n": 4.999999999999997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1111,7 +1111,7 @@ description: Variables in memory after executing box.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000009464069767032667,
+                        "n": 0.000000000000000000004840034702697543,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1209,7 +1209,7 @@ description: Variables in memory after executing box.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -5.000000000000013,
+                    -5.000000000000005,
                     -5.0
                   ],
                   "tag": {
@@ -1221,7 +1221,7 @@ description: Variables in memory after executing box.kcl
                     "value": "line1"
                   },
                   "to": [
-                    4.999999999999988,
+                    4.999999999999996,
                     -5.0
                   ],
                   "type": "ToPoint",
@@ -1233,7 +1233,7 @@ description: Variables in memory after executing box.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.999999999999988,
+                    4.999999999999996,
                     -5.0
                   ],
                   "tag": {
@@ -1245,8 +1245,8 @@ description: Variables in memory after executing box.kcl
                     "value": "line2"
                   },
                   "to": [
-                    4.999999999999989,
-                    4.999999999999999
+                    4.999999999999996,
+                    5.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1257,8 +1257,8 @@ description: Variables in memory after executing box.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.999999999999989,
-                    4.999999999999999
+                    4.999999999999996,
+                    5.0
                   ],
                   "tag": {
                     "commentStart": 432,
@@ -1269,8 +1269,8 @@ description: Variables in memory after executing box.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -5.000000000000015,
-                    4.999999999999999
+                    -5.000000000000006,
+                    5.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1281,8 +1281,8 @@ description: Variables in memory after executing box.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -5.000000000000015,
-                    4.999999999999999
+                    -5.000000000000006,
+                    5.0
                   ],
                   "tag": {
                     "commentStart": 508,
@@ -1293,7 +1293,7 @@ description: Variables in memory after executing box.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -5.000000000000014,
+                    -5.000000000000005,
                     -5.0
                   ],
                   "type": "ToPoint",
@@ -1333,11 +1333,11 @@ description: Variables in memory after executing box.kcl
               },
               "start": {
                 "from": [
-                  -5.000000000000013,
+                  -5.000000000000005,
                   -5.0
                 ],
                 "to": [
-                  -5.000000000000013,
+                  -5.000000000000005,
                   -5.0
                 ],
                 "units": "mm",

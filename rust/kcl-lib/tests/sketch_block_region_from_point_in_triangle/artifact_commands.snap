@@ -68,8 +68,8 @@ description: Artifact commands sketch_block_region_from_point_in_triangle.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.20674594013619027,
-          "y": -0.06852748084846844,
+          "x": -0.2067205254741229,
+          "y": -0.0685728831037614,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands sketch_block_region_from_point_in_triangle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.3967460225035606,
-            "y": -0.06852748084842362,
+            "x": 3.3972337903811516,
+            "y": -0.06857288310371729,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands sketch_block_region_from_point_in_triangle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.5950000411833656,
-            "y": 4.787054952178176,
+            "x": 1.5952566324533406,
+            "y": 4.787233424351659,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands sketch_block_region_from_point_in_triangle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.2067459401361986,
-            "y": -0.06852748084851323,
+            "x": -0.2067205254741229,
+            "y": -0.0685728831037614,
             "z": 0.0
           },
           "relative": false

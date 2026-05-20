@@ -136,7 +136,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                   "point": {
                     "position": [
                       {
-                        "n": 1.0,
+                        "n": 0.9999999999998999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -144,7 +144,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       },
                       {
-                        "n": 2.0,
+                        "n": 1.9999999999997997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -222,7 +222,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                   "point": {
                     "position": [
                       {
-                        "n": 127.0,
+                        "n": 126.9999999999876,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -230,7 +230,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       },
                       {
-                        "n": 152.39999999999998,
+                        "n": 152.3999999999851,
                         "ty": {
                           "mm": null,
                           "type": "Known",

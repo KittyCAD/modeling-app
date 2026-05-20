@@ -68,8 +68,8 @@ description: Artifact commands field-monitor-stand.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -60.00000000000002,
-          "y": -0.00000000000002497146472962705,
+          "x": -60.0,
+          "y": -0.000000000000020671502539370375,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000238752171250505,
-            "y": -0.000000000000004292440421957927,
+            "x": -0.000000000000000002389187991907405,
+            "y": -0.000000000000000000429525711339286,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -41.384437342405995,
-            "y": 113.70280711509488,
+            "x": -41.384437342405946,
+            "y": 113.7028071150949,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -44.203515204763775,
-            "y": 112.67674668511785,
+            "x": -44.2035152047637,
+            "y": 112.67674668511788,
             "z": 0.0
           },
           "relative": false
@@ -141,24 +141,7 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.28444402022648,
-            "y": 2.999999999999998,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -60.00000000000002,
+            "x": -4.28444402022636,
             "y": 2.9999999999999885,
             "z": 0.0
           },
@@ -175,8 +158,25 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -60.00000000000002,
-            "y": -0.000000000000020375276633059364,
+            "x": -60.0,
+            "y": 2.999999999999984,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -60.0,
+            "y": -0.000000000000020671043484396817,
             "z": 0.0
           },
           "relative": false
@@ -330,8 +330,8 @@ description: Artifact commands field-monitor-stand.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4.284444020199679,
-          "y": 2.9999999999956772,
+          "x": -4.28444402022634,
+          "y": 2.9999999999999996,
           "z": 0.0
         }
       }
@@ -352,8 +352,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -19.284444020181905,
-            "y": 2.999999999991355,
+            "x": -19.28444402020855,
+            "y": 2.999999999995671,
             "z": 0.0
           },
           "relative": false
@@ -369,8 +369,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -19.284444020159683,
-            "y": 44.21216129180205,
+            "x": -19.284444020199647,
+            "y": 44.21216129181068,
             "z": 0.0
           },
           "relative": false
@@ -386,8 +386,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.2844440201952345,
-            "y": 2.9999999999956772,
+            "x": -4.284444020226339,
+            "y": 2.9999999999999996,
             "z": 0.0
           },
           "relative": false

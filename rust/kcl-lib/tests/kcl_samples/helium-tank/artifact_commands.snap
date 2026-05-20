@@ -107,8 +107,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.542000615854523,
-            "y": 746.7438719257616,
+            "x": 18.54200061584641,
+            "y": 746.7438808686038,
             "z": 0.0
           },
           "relative": false
@@ -124,17 +124,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 18.512972937218212,
-            "y": 744.2619300341587
+            "x": 18.512973599328355,
+            "y": 744.26192908095
           },
-          "radius": 2.4821116331504105,
+          "radius": 2.482121520781368,
           "start": {
             "unit": "degrees",
-            "value": 89.32992482445941
+            "value": 89.32994277883186
           },
           "end": {
             "unit": "degrees",
-            "value": -19.15510870613189
+            "value": -19.154846013194582
           },
           "relative": false
         }
@@ -149,17 +149,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 35.051999825272055,
-            "y": 738.1461786572012
+            "x": 35.051999825345064,
+            "y": 738.1461966732479
           },
-          "radius": 15.152000873762885,
+          "radius": 15.1519839948026,
           "start": {
             "unit": "degrees",
-            "value": 159.52033769693003
+            "value": 159.5203601320427
           },
           "end": {
             "unit": "degrees",
-            "value": 199.7362762752925
+            "value": 199.73636691849669
           },
           "relative": false
         }
@@ -174,17 +174,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 18.333562053523156,
-            "y": 732.0917908697629
+            "x": 18.333576780296642,
+            "y": 732.0918114836993
           },
-          "radius": 2.629393916979586,
+          "radius": 2.629395623975676,
           "start": {
             "unit": "degrees",
-            "value": 20.892643066322428
+            "value": 20.892174967635526
           },
           "end": {
             "unit": "degrees",
-            "value": -90.99290018496043
+            "value": -90.99322045918986
           },
           "relative": false
         }
@@ -199,17 +199,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 18.28799999840412,
-            "y": 726.9576930098257
+            "x": 18.287999998400075,
+            "y": 726.957690429851
           },
-          "radius": 2.505098746198064,
+          "radius": 2.5051204881030067,
           "start": {
             "unit": "degrees",
-            "value": 90.00003256326528
+            "value": 90.00003252855907
           },
           "end": {
             "unit": "degrees",
-            "value": 270.0000001652566
+            "value": 270.00000016488343
           },
           "relative": false
         }
@@ -224,17 +224,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 18.382286765730644,
-            "y": 628.5559647151601
+            "x": 18.382292063781932,
+            "y": 628.5559409320795
           },
-          "radius": 95.89667590041455,
+          "radius": 95.89667536682514,
           "start": {
             "unit": "degrees",
-            "value": 90.05633390560652
+            "value": 90.05633707138205
           },
           "end": {
             "unit": "degrees",
-            "value": 0.05618365866103287
+            "value": 0.05619786874721963
           },
           "relative": false
         }
@@ -249,8 +249,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 114.27891656271366,
-            "y": 38.10000000352714,
+            "x": 114.27892130385493,
+            "y": 38.1000000035227,
             "z": 0.0
           },
           "relative": false
@@ -266,17 +266,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 63.49004722582871,
-            "y": 38.09004722643779
+            "x": 63.490049311421075,
+            "y": 38.09004931203259
           },
-          "radius": 50.78887031207668,
+          "radius": 50.788872967216875,
           "start": {
             "unit": "degrees",
-            "value": 0.011227895438515077
+            "value": 0.011225542052008947
           },
           "end": {
             "unit": "degrees",
-            "value": -89.9887721078104
+            "value": -89.98877446118925
           },
           "relative": false
         }
@@ -291,8 +291,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000038117588021687076,
-            "y": -12.698822110447724,
+            "x": 0.00000000003804126300046013,
+            "y": -12.698822680401824,
             "z": 0.0
           },
           "relative": false
@@ -308,8 +308,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.00000000003811758768046989,
-            "y": -9.396822110447722,
+            "x": 0.00000000003804126284910042,
+            "y": -9.396822680401822,
             "z": 0.0
           },
           "relative": false
@@ -325,8 +325,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 63.50000000003811,
-            "y": -9.396822110447722,
+            "x": 63.500000000038035,
+            "y": -9.396822680401822,
             "z": 0.0
           },
           "relative": false
@@ -342,17 +342,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 63.50052965500304,
-            "y": 38.1005296550051
+            "x": 63.500529407493694,
+            "y": 38.10052940749562
           },
-          "radius": 47.49735176840598,
+          "radius": 47.49735209084784,
           "start": {
             "unit": "degrees",
-            "value": -90.0006389197073
+            "value": -90.00063862113396
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000638919756307834
+            "value": -0.0006386211827257849
           },
           "relative": false
         }
@@ -367,7 +367,7 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 110.99788142045585,
+            "x": 110.99788149539111,
             "y": 628.65,
             "z": 0.0
           },
@@ -384,17 +384,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 33.01994466286808,
-            "y": 628.6500553371319
+            "x": 33.01994469810803,
+            "y": 628.6500553018918
           },
-          "radius": 77.97793675760742,
+          "radius": 77.9779367973027,
           "start": {
             "unit": "degrees",
-            "value": -0.00004066001540558578
+            "value": -0.000040634122043473984
           },
           "end": {
             "unit": "degrees",
-            "value": 89.9999593399846
+            "value": 89.99995936587786
           },
           "relative": false
         }
@@ -410,7 +410,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 13.462,
-            "y": 706.6279920947197,
+            "y": 706.6279920991749,
             "z": 0.0
           },
           "relative": false
@@ -427,7 +427,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 13.462,
-            "y": 761.9999920947197,
+            "y": 761.9999920991748,
             "z": 0.0
           },
           "relative": false
@@ -444,7 +444,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 16.002000000000002,
-            "y": 761.9999920947197,
+            "y": 761.9999920991748,
             "z": 0.0
           },
           "relative": false
@@ -847,7 +847,7 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.591192310262835,
+          "x": 11.59120221024873,
           "y": 769.62,
           "z": 0.0
         }
@@ -869,10 +869,10 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.007858972595221,
+            "x": 1.007868872581134,
             "y": 769.62
           },
-          "radius": 10.583333337667614,
+          "radius": 10.583333337667595,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -892,7 +892,7 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 10.777089745453631,
+          "x": 10.777099645540464,
           "y": 769.62,
           "z": 0.0
         }
@@ -907,10 +907,10 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.0078589724942721,
+            "x": 1.0078688725811238,
             "y": 769.62
           },
-          "radius": 9.769230772959359,
+          "radius": 9.76923077295934,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -1101,8 +1101,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000000025375094882959873,
-          "y": 114.31106256686972,
+          "x": -0.0000000000003602284866089873,
+          "y": 114.31105317354066,
           "z": 0.0
         }
       }
@@ -1123,8 +1123,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.5400000000000023,
-            "y": 114.31106256686974,
+            "x": -2.54000000000036,
+            "y": 114.31105317354067,
             "z": 0.0
           },
           "relative": false
@@ -1140,17 +1140,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.559027797603753,
-            "y": -0.005973801139100665
+            "x": -2.5590552127457458,
+            "y": -0.005981927663396646
           },
-          "radius": 114.31703795157455,
+          "radius": 114.31703668933628,
           "start": {
             "unit": "degrees",
-            "value": 89.99046325446588
+            "value": 89.99044951387205
           },
           "end": {
             "unit": "degrees",
-            "value": 124.95120739573152
+            "value": 124.95119052814805
           },
           "relative": false
         }
@@ -1165,17 +1165,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -71.70415640118739,
-            "y": 98.85286515128978
+            "x": -71.70417280721374,
+            "y": 98.85287524707365
           },
-          "radius": 6.323534772542279,
+          "radius": 6.323544753243669,
           "start": {
             "unit": "degrees",
-            "value": -54.68627718207039
+            "value": -54.686149165181355
           },
           "end": {
             "unit": "degrees",
-            "value": -188.779993287293
+            "value": -188.77990627142174
           },
           "relative": false
         }
@@ -1190,8 +1190,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -72.37589407874866,
-            "y": 132.07774308740525,
+            "x": -72.37590858696055,
+            "y": 132.0777425699803,
             "z": 0.0
           },
           "relative": false
@@ -1207,17 +1207,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -66.06821177409714,
-            "y": 131.04030218830098
+            "x": -66.06822090650898,
+            "y": 131.04029451700495
           },
-          "radius": 6.392428308205594,
+          "radius": 6.392434773757401,
           "start": {
             "unit": "degrees",
-            "value": 170.6600343958506
+            "value": 170.6599789451567
           },
           "end": {
             "unit": "degrees",
-            "value": 89.74713562095258
+            "value": 89.74705402218675
           },
           "relative": false
         }
@@ -1232,8 +1232,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 66.03999994029502,
-            "y": 137.43266824276816,
+            "x": 66.0399999402244,
+            "y": 137.43266699677608,
             "z": 0.0
           },
           "relative": false
@@ -1247,8 +1247,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 72.366769643625,
-          "y": 132.07628305854294,
+          "x": 72.36677276471598,
+          "y": 132.07628205748242,
           "z": 0.0
         }
       }
@@ -1262,8 +1262,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 77.9535903642056,
-            "y": 99.81809427052944,
+            "x": 77.95361830085633,
+            "y": 99.81809717963075,
             "z": 0.0
           },
           "relative": false
@@ -1277,8 +1277,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 68.04881757594454,
-          "y": 93.69286607269515,
+          "x": 68.04881587782859,
+          "y": 93.69287494845524,
           "z": 0.0
         }
       }
@@ -1292,169 +1292,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 2.55902774152444,
-            "y": -0.00597380694900993
+            "x": 2.559058788802733,
+            "y": -0.005962185469745673
           },
-          "radius": 114.3170379573741,
+          "radius": 114.317016947738,
           "start": {
             "unit": "degrees",
-            "value": 55.048792618571
+            "value": 55.04880528214961
           },
           "end": {
             "unit": "degrees",
-            "value": 90.00953671742666
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.0000000000000025434122020499218,
-            "y": 114.31106256686972,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 0.00000000000007539966808066699,
-          "y": 117.55385399107648,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -2.5399999999999245,
-            "y": 117.5538539910764,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -2.457330299133219,
-            "y": 0.026204549314461544
-          },
-          "radius": 117.5276785169567,
-          "start": {
-            "unit": "degrees",
-            "value": 90.04030221139088
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 125.00190891687951
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -71.74045065844365,
-            "y": 98.87346998618511
-          },
-          "radius": 3.182868206723068,
-          "start": {
-            "unit": "degrees",
-            "value": -54.045314814247426
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -187.8535972857864
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -74.89346506137807,
-          "y": 99.30838444960403,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -69.07933512963426,
-            "y": 131.5705558031227,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -66.05732984587812,
-            "y": 131.04955838547994
-          },
-          "radius": 3.0665867416788464,
-          "start": {
-            "unit": "degrees",
-            "value": 170.21829219309663
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 89.67620715169889
+            "value": 90.00955228010024
           },
           "relative": false
         }
@@ -1469,8 +1317,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 66.04000011417969,
-            "y": 134.11609615896174,
+            "x": -0.0000000000003602284872013624,
+            "y": 114.31105317354066,
             "z": 0.0
           },
           "relative": false
@@ -1484,8 +1332,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 69.08847233260762,
-          "y": 131.57207889974381,
+          "x": -0.00000000007034821343740444,
+          "y": 117.55386836806566,
           "z": 0.0
         }
       }
@@ -1499,24 +1347,11 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 74.89346506186376,
-            "y": 99.3083844500433,
+            "x": -2.5400000000703478,
+            "y": 117.55386836806558,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 69.87164453524703,
-          "y": 96.29699686395432,
-          "z": 0.0
         }
       }
     },
@@ -1529,17 +1364,97 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 2.4573303589670568,
-            "y": 0.026204756893886304
+            "x": -2.45727599261104,
+            "y": 0.026220622098636247
           },
-          "radius": 117.52767830932011,
+          "radius": 117.52767685937427,
           "start": {
             "unit": "degrees",
-            "value": 54.998091202914054
+            "value": 90.04032868690894
           },
           "end": {
             "unit": "degrees",
-            "value": 89.9596978177074
+            "value": 125.00193926988622
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -71.74046502059144,
+            "y": 98.87347860228918
+          },
+          "radius": 3.1829031112266173,
+          "start": {
+            "unit": "degrees",
+            "value": -54.045356508873354
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -187.85343174901953
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -74.89351525696384,
+          "y": 99.30838872544088,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -69.07934408816983,
+            "y": 131.5705559702351,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -66.05733614303662,
+            "y": 131.0495531091729
+          },
+          "radius": 3.0665902891783907,
+          "start": {
+            "unit": "degrees",
+            "value": 170.2182004154963
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 89.67608986900198
           },
           "relative": false
         }
@@ -1554,8 +1469,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000752001088724375,
-            "y": 117.55385399107648,
+            "x": 66.04000011418452,
+            "y": 134.11609439461742,
             "z": 0.0
           },
           "relative": false
@@ -1569,8 +1484,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 72.36676964362498,
-          "y": 132.07628305854294,
+          "x": 69.08847468221602,
+          "y": 131.5720793373345,
           "z": 0.0
         }
       }
@@ -1582,19 +1497,11 @@ description: Artifact commands helium-tank.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc",
-          "center": {
-            "x": 66.06275793292708,
-            "y": 131.04488006005747
-          },
-          "radius": 6.387828722962207,
-          "start": {
-            "unit": "degrees",
-            "value": 9.291869703217758
-          },
+          "type": "line",
           "end": {
-            "unit": "degrees",
-            "value": 90.20412878037952
+            "x": 74.89348295031,
+            "y": 99.30838999549145,
+            "z": 0.0
           },
           "relative": false
         }
@@ -1607,8 +1514,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 69.08847233260764,
-          "y": 131.57207889974381,
+          "x": 69.87165717440887,
+          "y": 96.29699316635217,
           "z": 0.0
         }
       }
@@ -1622,17 +1529,34 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 66.06275793292704,
-            "y": 131.0448800600575
+            "x": 2.457317707970165,
+            "y": 0.026220836014277535
           },
-          "radius": 3.071300415947797,
+          "radius": 117.52767661608897,
           "start": {
             "unit": "degrees",
-            "value": 9.88395911028784
+            "value": 54.998075573379325
           },
           "end": {
             "unit": "degrees",
-            "value": 90.42455596035353
+            "value": 89.95969164968692
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.00000000007034821345736095,
+            "y": 117.55386836806566,
+            "z": 0.0
           },
           "relative": false
         }
@@ -1645,8 +1569,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 68.04881757594457,
-          "y": 93.69286607269518,
+          "x": 72.36677276471598,
+          "y": 132.07628205748242,
           "z": 0.0
         }
       }
@@ -1660,17 +1584,17 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 71.70415638946332,
-            "y": 98.8528651447245
+            "x": 66.06276077841595,
+            "y": 131.04487845463274
           },
-          "radius": 6.323534791946673,
+          "radius": 6.387829092531021,
           "start": {
             "unit": "degrees",
-            "value": -125.31372340871647
+            "value": 9.291874653805472
           },
           "end": {
             "unit": "degrees",
-            "value": 8.779993329465325
+            "value": 90.20415429204249
           },
           "relative": false
         }
@@ -1683,8 +1607,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 69.87164453524676,
-          "y": 96.29699686395394,
+          "x": 69.08847468221602,
+          "y": 131.5720793373345,
           "z": 0.0
         }
       }
@@ -1698,17 +1622,93 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 71.74045065457187,
-            "y": 98.8734699841855
+            "x": 66.06276077841595,
+            "y": 131.04487845463274
           },
-          "radius": 3.182868211362639,
+          "radius": 3.071300278118466,
           "start": {
             "unit": "degrees",
-            "value": -125.95469083319611
+            "value": 9.88399824541798
           },
           "end": {
             "unit": "degrees",
-            "value": 7.853597318352862
+            "value": 90.42460906399282
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 68.04881587782859,
+          "y": 93.69287494845524,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 71.70417225807613,
+            "y": 98.85287490972628
+          },
+          "radius": 6.323545672084092,
+          "start": {
+            "unit": "degrees",
+            "value": -125.31384863134197
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 8.77991524761373
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 69.87165717440887,
+          "y": 96.29699316635217,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 71.74046133075255,
+            "y": 98.87347639124987
+          },
+          "radius": 3.182875238357087,
+          "start": {
+            "unit": "degrees",
+            "value": -125.95455542940188
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 7.853564213393145
           },
           "relative": false
         }

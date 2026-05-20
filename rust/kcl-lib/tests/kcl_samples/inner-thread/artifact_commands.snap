@@ -460,8 +460,8 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.2500000002,
-            "y": -0.2500000001,
+            "x": 4.250000000200179,
+            "y": -0.25000000010013534,
             "z": 0.0
           },
           "relative": false
@@ -477,8 +477,8 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.25000000045,
-            "y": 0.24999999954999996,
+            "x": 4.25000000030033,
+            "y": 0.24999999969966985,
             "z": 0.0
           },
           "relative": false
@@ -494,8 +494,8 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.7499999997,
-            "y": 0.24999999929999994,
+            "x": 3.74999999989985,
+            "y": 0.24999999959951946,
             "z": 0.0
           },
           "relative": false
@@ -511,8 +511,8 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.74999999985,
-            "y": -0.24999999995,
+            "x": 3.749999999999985,
+            "y": -0.249999999999995,
             "z": 0.0
           },
           "relative": false

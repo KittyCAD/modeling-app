@@ -91,7 +91,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 9.668746132955034,
+                        "n": 9.668746134110497,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -99,7 +99,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": 2.9198198930982904,
+                        "n": 2.9198198896288434,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -109,7 +109,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0000000000987461500468549,
+                        "n": -0.000000000000009874613626780337,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -117,7 +117,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.00000000002981989305277447,
+                        "n": -0.0000000000000029819889613144426,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -215,14 +215,14 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0000000000987461500468549,
-                    -0.00000000002981989305277447
+                    -0.000000000000009874613626780337,
+                    -0.0000000000000029819889613144426
                   ],
                   "from": [
-                    9.668746132955034,
-                    2.9198198930982904
+                    9.668746134110497,
+                    2.9198198896288434
                   ],
-                  "radius": 10.099999999690548,
+                  "radius": 10.09999999969055,
                   "tag": {
                     "commentStart": 2549,
                     "end": 2556,
@@ -232,8 +232,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    9.668746132955034,
-                    2.9198198930982904
+                    9.668746134110497,
+                    2.9198198896288434
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -272,12 +272,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               },
               "start": {
                 "from": [
-                  9.668746132955034,
-                  2.9198198930982904
+                  9.668746134110497,
+                  2.9198198896288434
                 ],
                 "to": [
-                  9.668746132955034,
-                  2.9198198930982904
+                  9.668746134110497,
+                  2.9198198896288434
                 ],
                 "units": "mm",
                 "tag": null,
@@ -380,14 +380,14 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             },
             "ccw": true,
             "center": [
-              -0.0000000000987461500468549,
-              -0.00000000002981989305277447
+              -0.000000000000009874613626780337,
+              -0.0000000000000029819889613144426
             ],
             "from": [
-              9.668746132955034,
-              2.9198198930982904
+              9.668746134110497,
+              2.9198198896288434
             ],
-            "radius": 10.099999999690548,
+            "radius": 10.09999999969055,
             "tag": {
               "commentStart": 2549,
               "end": 2556,
@@ -397,8 +397,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "circle1"
             },
             "to": [
-              9.668746132955034,
-              2.9198198930982904
+              9.668746134110497,
+              2.9198198896288434
             ],
             "type": "Circle",
             "units": "mm"
@@ -437,12 +437,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "start": {
           "from": [
-            9.668746132955034,
-            2.9198198930982904
+            9.668746134110497,
+            2.9198198896288434
           ],
           "to": [
-            9.668746132955034,
-            2.9198198930982904
+            9.668746134110497,
+            2.9198198896288434
           ],
           "units": "mm",
           "tag": null,
@@ -543,14 +543,14 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             },
             "ccw": true,
             "center": [
-              -0.0000000000987461500468549,
-              -0.00000000002981989305277447
+              -0.000000000000009874613626780337,
+              -0.0000000000000029819889613144426
             ],
             "from": [
-              9.668746132955034,
-              2.9198198930982904
+              9.668746134110497,
+              2.9198198896288434
             ],
-            "radius": 10.099999999690548,
+            "radius": 10.09999999969055,
             "tag": {
               "commentStart": 2549,
               "end": 2556,
@@ -560,8 +560,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "circle1"
             },
             "to": [
-              9.668746132955034,
-              2.9198198930982904
+              9.668746134110497,
+              2.9198198896288434
             ],
             "type": "Circle",
             "units": "mm"
@@ -600,12 +600,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "start": {
           "from": [
-            9.668746132955034,
-            2.9198198930982904
+            9.668746134110497,
+            2.9198198896288434
           ],
           "to": [
-            9.668746132955034,
-            2.9198198930982904
+            9.668746134110497,
+            2.9198198896288434
           ],
           "units": "mm",
           "tag": null,
@@ -698,7 +698,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 3.2508737898140208,
+                        "n": 3.250873789816666,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -716,7 +716,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0000000000017475789678086058,
+                        "n": -0.00000000000000017475792948166618,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -724,7 +724,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000012528795904140175,
+                        "n": -0.00000000000000012520520555661384,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -818,7 +818,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 9.999999999993847,
+                        "n": 9.999999999998238,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -826,7 +826,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000006264393546701583,
+                        "n": -0.00000000000000009317583545044054,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -836,7 +836,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.000000000000873789382764811,
+                        "n": -0.00000000000000008737897946454816,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -844,7 +844,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000006264396680175922,
+                        "n": -0.0000000000000000625611911186372,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -939,7 +939,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 9.999999999993895,
+                        "n": 9.999999999998238,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -947,7 +947,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000007111201869671793,
+                        "n": -0.00000000000000010165830334644156,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -957,7 +957,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.999999999996307,
+                        "n": 4.999999999998956,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -965,7 +965,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": 8.660254038770063,
+                        "n": 8.660254038773925,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1059,7 +1059,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.999999999996356,
+                        "n": 4.999999999998956,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1067,7 +1067,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": 8.660254038770233,
+                        "n": 8.660254038773925,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1077,7 +1077,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.999999999998177,
+                        "n": -4.999999999999152,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1085,7 +1085,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": 8.660254038769823,
+                        "n": 8.660254038773813,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1179,7 +1179,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.999999999998372,
+                        "n": -4.999999999999152,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1187,7 +1187,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": 8.660254038770077,
+                        "n": 8.660254038773813,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1197,7 +1197,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": -9.99999999999574,
+                        "n": -9.999999999998337,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1205,7 +1205,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000007111209079838314,
+                        "n": -0.000000000000055844192005235393,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1299,7 +1299,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -9.999999999995692,
+                        "n": -9.999999999998337,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1307,7 +1307,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000006264400698380826,
+                        "n": -0.000000000000055835727399898456,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1317,7 +1317,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.999999999998104,
+                        "n": -4.999999999999054,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1325,7 +1325,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -8.660254038771289,
+                        "n": -8.660254038773868,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1419,7 +1419,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.999999999998153,
+                        "n": -4.999999999999054,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1427,7 +1427,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -8.660254038771457,
+                        "n": -8.660254038773868,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1437,7 +1437,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.999999999996381,
+                        "n": 4.999999999999054,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1445,7 +1445,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -8.660254038771104,
+                        "n": -8.660254038773868,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1539,7 +1539,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.999999999996576,
+                        "n": 4.999999999999054,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1547,7 +1547,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -8.660254038771358,
+                        "n": -8.660254038773868,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1557,7 +1557,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.999999999993895,
+                        "n": 9.999999999998238,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1565,7 +1565,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000005417584559039567,
+                        "n": -0.00000000000000008469643318970403,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1659,7 +1659,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000026338218187931045,
+                        "n": -0.0000000000000002634796719249884,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1667,7 +1667,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000006264395629420078,
+                        "n": -0.00000000000000006256425197089367,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1677,7 +1677,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.999999999995605,
+                        "n": 9.999999999998238,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1685,7 +1685,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000006264394584928633,
+                        "n": -0.00000000000000009317277459816849,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1783,8 +1783,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    9.999999999993895,
-                    -0.0000000000007111201869671793
+                    9.999999999998238,
+                    -0.00000000000000010165830334644156
                   ],
                   "tag": {
                     "commentStart": 710,
@@ -1795,8 +1795,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "line1"
                   },
                   "to": [
-                    4.999999999996307,
-                    8.660254038770063
+                    4.999999999998956,
+                    8.660254038773925
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1807,8 +1807,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.999999999996307,
-                    8.660254038770063
+                    4.999999999998956,
+                    8.660254038773925
                   ],
                   "tag": {
                     "commentStart": 783,
@@ -1819,8 +1819,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "line2"
                   },
                   "to": [
-                    -4.999999999998177,
-                    8.660254038769823
+                    -4.999999999999152,
+                    8.660254038773813
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1831,8 +1831,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.999999999998177,
-                    8.660254038769823
+                    -4.999999999999152,
+                    8.660254038773813
                   ],
                   "tag": {
                     "commentStart": 859,
@@ -1843,8 +1843,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -9.99999999999574,
-                    -0.0000000000007111209079838314
+                    -9.999999999998337,
+                    -0.000000000000055844192005235393
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1855,8 +1855,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -9.99999999999574,
-                    -0.0000000000007111209079838314
+                    -9.999999999998337,
+                    -0.000000000000055844192005235393
                   ],
                   "tag": {
                     "commentStart": 934,
@@ -1867,8 +1867,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -4.999999999998104,
-                    -8.660254038771289
+                    -4.999999999999054,
+                    -8.660254038773868
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1879,8 +1879,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.999999999998104,
-                    -8.660254038771289
+                    -4.999999999999054,
+                    -8.660254038773868
                   ],
                   "tag": {
                     "commentStart": 1010,
@@ -1891,8 +1891,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "line5"
                   },
                   "to": [
-                    4.999999999996381,
-                    -8.660254038771104
+                    4.999999999999054,
+                    -8.660254038773868
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1903,8 +1903,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.999999999996381,
-                    -8.660254038771104
+                    4.999999999999054,
+                    -8.660254038773868
                   ],
                   "tag": {
                     "commentStart": 1088,
@@ -1915,8 +1915,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "line6"
                   },
                   "to": [
-                    9.999999999993895,
-                    -0.0000000000005417584559039567
+                    9.999999999998238,
+                    -0.00000000000000008469643318970403
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1927,12 +1927,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    9.999999999993895,
-                    -0.0000000000005417584559039567
+                    9.999999999998238,
+                    -0.00000000000000008469643318970403
                   ],
                   "tag": null,
                   "to": [
-                    3.2508737898140208,
+                    3.250873789816666,
                     2.330626439963561
                   ],
                   "type": "ToPoint",
@@ -1945,14 +1945,14 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0000000000017475789678086058,
-                    -0.0000000000012528795904140175
+                    -0.00000000000000017475792948166618,
+                    -0.00000000000000012520520555661384
                   ],
                   "from": [
-                    3.2508737898140208,
+                    3.250873789816666,
                     2.330626439963561
                   ],
-                  "radius": 3.9999999999967746,
+                  "radius": 3.999999999996774,
                   "tag": {
                     "commentStart": 1163,
                     "end": 1170,
@@ -1962,7 +1962,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    3.2508737898140208,
+                    3.250873789816666,
                     2.330626439963561
                   ],
                   "type": "Circle",
@@ -2002,12 +2002,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               },
               "start": {
                 "from": [
-                  9.999999999993895,
-                  -0.0000000000007111201869671793
+                  9.999999999998238,
+                  -0.00000000000000010165830334644156
                 ],
                 "to": [
-                  9.999999999993895,
-                  -0.0000000000007111201869671793
+                  9.999999999998238,
+                  -0.00000000000000010165830334644156
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2209,8 +2209,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              9.999999999993895,
-              -0.0000000000007111201869671793
+              9.999999999998238,
+              -0.00000000000000010165830334644156
             ],
             "tag": {
               "commentStart": 710,
@@ -2221,8 +2221,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line1"
             },
             "to": [
-              4.999999999996307,
-              8.660254038770063
+              4.999999999998956,
+              8.660254038773925
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2233,8 +2233,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              4.999999999996307,
-              8.660254038770063
+              4.999999999998956,
+              8.660254038773925
             ],
             "tag": {
               "commentStart": 783,
@@ -2245,8 +2245,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line2"
             },
             "to": [
-              -4.999999999998177,
-              8.660254038769823
+              -4.999999999999152,
+              8.660254038773813
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2257,8 +2257,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              -4.999999999998177,
-              8.660254038769823
+              -4.999999999999152,
+              8.660254038773813
             ],
             "tag": {
               "commentStart": 859,
@@ -2269,8 +2269,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line3"
             },
             "to": [
-              -9.99999999999574,
-              -0.0000000000007111209079838314
+              -9.999999999998337,
+              -0.000000000000055844192005235393
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2281,8 +2281,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              -9.99999999999574,
-              -0.0000000000007111209079838314
+              -9.999999999998337,
+              -0.000000000000055844192005235393
             ],
             "tag": {
               "commentStart": 934,
@@ -2293,8 +2293,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line4"
             },
             "to": [
-              -4.999999999998104,
-              -8.660254038771289
+              -4.999999999999054,
+              -8.660254038773868
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2305,8 +2305,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              -4.999999999998104,
-              -8.660254038771289
+              -4.999999999999054,
+              -8.660254038773868
             ],
             "tag": {
               "commentStart": 1010,
@@ -2317,8 +2317,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line5"
             },
             "to": [
-              4.999999999996381,
-              -8.660254038771104
+              4.999999999999054,
+              -8.660254038773868
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2329,8 +2329,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              4.999999999996381,
-              -8.660254038771104
+              4.999999999999054,
+              -8.660254038773868
             ],
             "tag": {
               "commentStart": 1088,
@@ -2341,8 +2341,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line6"
             },
             "to": [
-              9.999999999993895,
-              -0.0000000000005417584559039567
+              9.999999999998238,
+              -0.00000000000000008469643318970403
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2381,12 +2381,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "start": {
           "from": [
-            9.999999999993895,
-            -0.0000000000007111201869671793
+            9.999999999998238,
+            -0.00000000000000010165830334644156
           ],
           "to": [
-            9.999999999993895,
-            -0.0000000000007111201869671793
+            9.999999999998238,
+            -0.00000000000000010165830334644156
           ],
           "units": "mm",
           "tag": null,
@@ -2548,8 +2548,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              9.999999999993895,
-              -0.0000000000007111201869671793
+              9.999999999998238,
+              -0.00000000000000010165830334644156
             ],
             "tag": {
               "commentStart": 710,
@@ -2560,8 +2560,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line1"
             },
             "to": [
-              4.999999999996307,
-              8.660254038770063
+              4.999999999998956,
+              8.660254038773925
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2572,8 +2572,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              4.999999999996307,
-              8.660254038770063
+              4.999999999998956,
+              8.660254038773925
             ],
             "tag": {
               "commentStart": 783,
@@ -2584,8 +2584,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line2"
             },
             "to": [
-              -4.999999999998177,
-              8.660254038769823
+              -4.999999999999152,
+              8.660254038773813
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2596,8 +2596,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              -4.999999999998177,
-              8.660254038769823
+              -4.999999999999152,
+              8.660254038773813
             ],
             "tag": {
               "commentStart": 859,
@@ -2608,8 +2608,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line3"
             },
             "to": [
-              -9.99999999999574,
-              -0.0000000000007111209079838314
+              -9.999999999998337,
+              -0.000000000000055844192005235393
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2620,8 +2620,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              -9.99999999999574,
-              -0.0000000000007111209079838314
+              -9.999999999998337,
+              -0.000000000000055844192005235393
             ],
             "tag": {
               "commentStart": 934,
@@ -2632,8 +2632,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line4"
             },
             "to": [
-              -4.999999999998104,
-              -8.660254038771289
+              -4.999999999999054,
+              -8.660254038773868
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2644,8 +2644,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              -4.999999999998104,
-              -8.660254038771289
+              -4.999999999999054,
+              -8.660254038773868
             ],
             "tag": {
               "commentStart": 1010,
@@ -2656,8 +2656,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line5"
             },
             "to": [
-              4.999999999996381,
-              -8.660254038771104
+              4.999999999999054,
+              -8.660254038773868
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2668,8 +2668,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "sourceRange": []
             },
             "from": [
-              4.999999999996381,
-              -8.660254038771104
+              4.999999999999054,
+              -8.660254038773868
             ],
             "tag": {
               "commentStart": 1088,
@@ -2680,8 +2680,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "value": "line6"
             },
             "to": [
-              9.999999999993895,
-              -0.0000000000005417584559039567
+              9.999999999998238,
+              -0.00000000000000008469643318970403
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2720,12 +2720,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "start": {
           "from": [
-            9.999999999993895,
-            -0.0000000000007111201869671793
+            9.999999999998238,
+            -0.00000000000000010165830334644156
           ],
           "to": [
-            9.999999999993895,
-            -0.0000000000007111201869671793
+            9.999999999998238,
+            -0.00000000000000010165830334644156
           ],
           "units": "mm",
           "tag": null,
@@ -2787,8 +2787,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "sourceRange": []
           },
           "from": [
-            9.999999999993895,
-            -0.0000000000007111201869671793
+            9.999999999998238,
+            -0.00000000000000010165830334644156
           ],
           "tag": {
             "commentStart": 710,
@@ -2799,8 +2799,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line1"
           },
           "to": [
-            4.999999999996307,
-            8.660254038770063
+            4.999999999998956,
+            8.660254038773925
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2811,8 +2811,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "sourceRange": []
           },
           "from": [
-            4.999999999996307,
-            8.660254038770063
+            4.999999999998956,
+            8.660254038773925
           ],
           "tag": {
             "commentStart": 783,
@@ -2823,8 +2823,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line2"
           },
           "to": [
-            -4.999999999998177,
-            8.660254038769823
+            -4.999999999999152,
+            8.660254038773813
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2835,8 +2835,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "sourceRange": []
           },
           "from": [
-            -4.999999999998177,
-            8.660254038769823
+            -4.999999999999152,
+            8.660254038773813
           ],
           "tag": {
             "commentStart": 859,
@@ -2847,8 +2847,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line3"
           },
           "to": [
-            -9.99999999999574,
-            -0.0000000000007111209079838314
+            -9.999999999998337,
+            -0.000000000000055844192005235393
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2859,8 +2859,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "sourceRange": []
           },
           "from": [
-            -9.99999999999574,
-            -0.0000000000007111209079838314
+            -9.999999999998337,
+            -0.000000000000055844192005235393
           ],
           "tag": {
             "commentStart": 934,
@@ -2871,8 +2871,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line4"
           },
           "to": [
-            -4.999999999998104,
-            -8.660254038771289
+            -4.999999999999054,
+            -8.660254038773868
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2883,8 +2883,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "sourceRange": []
           },
           "from": [
-            -4.999999999998104,
-            -8.660254038771289
+            -4.999999999999054,
+            -8.660254038773868
           ],
           "tag": {
             "commentStart": 1010,
@@ -2895,8 +2895,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line5"
           },
           "to": [
-            4.999999999996381,
-            -8.660254038771104
+            4.999999999999054,
+            -8.660254038773868
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2907,8 +2907,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "sourceRange": []
           },
           "from": [
-            4.999999999996381,
-            -8.660254038771104
+            4.999999999999054,
+            -8.660254038773868
           ],
           "tag": {
             "commentStart": 1088,
@@ -2919,8 +2919,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line6"
           },
           "to": [
-            9.999999999993895,
-            -0.0000000000005417584559039567
+            9.999999999998238,
+            -0.00000000000000008469643318970403
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2959,12 +2959,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       },
       "start": {
         "from": [
-          9.999999999993895,
-          -0.0000000000007111201869671793
+          9.999999999998238,
+          -0.00000000000000010165830334644156
         ],
         "to": [
-          9.999999999993895,
-          -0.0000000000007111201869671793
+          9.999999999998238,
+          -0.00000000000000010165830334644156
         ],
         "units": "mm",
         "tag": null,
@@ -3022,14 +3022,14 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           "ccw": true,
           "center": [
-            -0.0000000000987461500468549,
-            -0.00000000002981989305277447
+            -0.000000000000009874613626780337,
+            -0.0000000000000029819889613144426
           ],
           "from": [
-            9.668746132955034,
-            2.9198198930982904
+            9.668746134110497,
+            2.9198198896288434
           ],
-          "radius": 10.099999999690548,
+          "radius": 10.09999999969055,
           "tag": {
             "commentStart": 2549,
             "end": 2556,
@@ -3039,8 +3039,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "circle1"
           },
           "to": [
-            9.668746132955034,
-            2.9198198930982904
+            9.668746134110497,
+            2.9198198896288434
           ],
           "type": "Circle",
           "units": "mm"
@@ -3079,12 +3079,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       },
       "start": {
         "from": [
-          9.668746132955034,
-          2.9198198930982904
+          9.668746134110497,
+          2.9198198896288434
         ],
         "to": [
-          9.668746132955034,
-          2.9198198930982904
+          9.668746134110497,
+          2.9198198896288434
         ],
         "units": "mm",
         "tag": null,

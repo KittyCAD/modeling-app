@@ -5,8 +5,19 @@ use crate::frontend::trim::execute_trim_flow;
 /// Helper function to run a trim test with the common pattern:
 /// - Execute trim flow with base code and trim points
 /// - Compare result with expected code (normalized by trimming whitespace)
-async fn assert_trim_result(base_kcl_code: &str, trim_points: &[Coords2d], expected_code: &str, sketch_id: ObjectId) {
+async fn assert_trim_result_with_context(
+    base_kcl_code: &str,
+    trim_points: &[Coords2d],
+    expected_code: &str,
+    sketch_id: ObjectId,
+    context: &str,
+) {
     let result = execute_trim_flow(base_kcl_code, trim_points, sketch_id).await;
+    let context_suffix = if context.is_empty() {
+        String::new()
+    } else {
+        format!(" ({context})")
+    };
 
     match result {
         Ok(result) => {
@@ -16,13 +27,18 @@ async fn assert_trim_result(base_kcl_code: &str, trim_points: &[Coords2d], expec
             pretty_assertions::assert_eq!(
                 result_normalized,
                 expected_normalized,
-                "Trim result should match expected KCL code (left = actual, right = expected)"
+                "Trim result should match expected KCL code{} (left = actual, right = expected)",
+                context_suffix
             );
         }
         Err(e) => {
-            panic!("trim flow failed: {}", e);
+            panic!("trim flow failed{}: {}", context_suffix, e);
         }
     }
+}
+
+async fn assert_trim_result(base_kcl_code: &str, trim_points: &[Coords2d], expected_code: &str, sketch_id: ObjectId) {
+    assert_trim_result_with_context(base_kcl_code, trim_points, expected_code, sketch_id, "").await;
 }
 
 /// Convenience wrapper that uses the default sketch_id (ObjectId(1))
@@ -1987,9 +2003,9 @@ async fn test_split_arc_with_point_segment_coincident_constraints() {
         (
             vec![Coords2d { x: -3.45, y: -1.3 }, Coords2d { x: -5.53, y: -1.3 }],
             r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -3.08mm, var 6.08mm], end = [var -5.01mm, var 1mm], center = [var 1.84mm, var 1.3mm])
-  arc2 = arc(start = [var -4.82mm, var -0.72mm], end = [var -6.76mm, var -1.16mm], center = [var -4.12mm, var -8.15mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.01mm, var 1mm])
+  arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.13mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
+  arc2 = arc(start = [var -5.03mm, var 0.9mm], end = [var -7.15mm, var 0.31mm], center = [var -3.65mm, var -8.07mm])
+  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.13mm, var 2.3mm])
   coincident([arc1.end, line1.end])
 }
 "#,
@@ -2007,9 +2023,9 @@ async fn test_split_arc_with_point_segment_coincident_constraints() {
         (
             vec![Coords2d { x: -3.77, y: 0.5 }, Coords2d { x: -6.11, y: 0.37 }],
             r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -3.08mm, var 6.08mm], end = [var -5.01mm, var 1mm], center = [var 1.84mm, var 1.3mm])
-  arc2 = arc(start = [var -4.82mm, var -0.72mm], end = [var -6.76mm, var -1.16mm], center = [var -4.12mm, var -8.15mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.01mm, var 1mm])
+  arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.13mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
+  arc2 = arc(start = [var -5.03mm, var 0.9mm], end = [var -7.15mm, var 0.31mm], center = [var -3.65mm, var -8.07mm])
+  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.13mm, var 2.3mm])
   arc3 = arc(start = [var -4.82mm, var -0.72mm], end = [var -1.77mm, var -4.66mm], center = [var 1.83mm, var 1.27mm])
   coincident([arc1.end, line1.end])
   coincident([arc3.start, arc2.start])
@@ -2020,8 +2036,9 @@ async fn test_split_arc_with_point_segment_coincident_constraints() {
 
     let sketch_id = ObjectId(1);
 
-    for (trim_points, expected_code) in trim_cases.iter() {
-        assert_trim_result(base_kcl_code, trim_points, expected_code, sketch_id).await;
+    for (case_index, (trim_points, expected_code)) in trim_cases.iter().enumerate() {
+        let context = format!("case {}", case_index + 1);
+        assert_trim_result_with_context(base_kcl_code, trim_points, expected_code, sketch_id, &context).await;
     }
 }
 
@@ -2214,11 +2231,11 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     line3.start
   ])
   line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
-  splitTrimLineDistanceConstraintMigrated = line(start = [var -3.7mm, var -3.56mm], end = [var -0.71mm, var -3.93mm])
-  line8 = line(start = [var 1.84mm, var -3.74mm], end = [var 5.42mm, var -1.72mm])
-  line9 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.28mm, var -5.69mm])
-  line10 = line(start = [var 1.98mm, var -3.74mm], end = [var 2.57mm, var -5.65mm])
-  line11 = line(start = [var -1.05mm, var -2.11mm], end = [var -0.45mm, var -5.31mm])
+  splitTrimLineDistanceConstraintMigrated = line(start = [var -4.22mm, var -3.55mm], end = [var -1.78mm, var -3.63mm])
+  line8 = line(start = [var 1.32mm, var -3.73mm], end = [var 5.42mm, var -1.72mm])
+  line9 = line(start = [var 1.1mm, var -3.72mm], end = [var 1.28mm, var -5.69mm])
+  line10 = line(start = [var 1.99mm, var -3.75mm], end = [var 2.57mm, var -5.65mm])
+  line11 = line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
   coincident([
     endTrimmedShouldDeleteDisConstraint.end,
     line6
@@ -2227,7 +2244,7 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     startTrimmedAlsoDeleteDisConstraint.start,
     line5
   ])
-  line2 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.84mm, var -3.74mm])
+  line2 = line(start = [var 1.1mm, var -3.72mm], end = [var 1.32mm, var -3.73mm])
   coincident([
     splitTrimLineDistanceConstraintMigrated.end,
     line11

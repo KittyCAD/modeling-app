@@ -68,8 +68,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000013537208475017735,
-          "y": 0.00000000001487602247279773,
+          "x": -0.000000000000001354634107683245,
+          "y": 0.0000000000000014886102670991809,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999995438,
-            "y": 0.000000000017851242805712417,
+            "x": 5.00000000000898,
+            "y": 0.000000000000001786302609394116,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.999999999925243,
-            "y": 2.7272727273510315,
+            "x": 1.9999999999774671,
+            "y": 2.7272727272908868,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999997193,
-            "y": 2.727272727378552,
+            "x": 5.000000000001757,
+            "y": 2.7272727273032893,
             "z": 0.0
           },
           "relative": false
@@ -141,8 +141,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.9999999999288034,
-            "y": 5.454545454694512,
+            "x": 1.9999999999711462,
+            "y": 5.454545454594123,
             "z": 0.0
           },
           "relative": false
@@ -158,8 +158,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999983656,
-            "y": 5.454545454692033,
+            "x": 4.99999999998821,
+            "y": 5.4545454545901615,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000013537191667278716,
-            "y": 10.000000000059504,
+            "x": 0.0000000000000013546348010670072,
+            "y": 10.000000000014891,
             "z": 0.0
           },
           "relative": false
@@ -192,8 +192,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000003604960242087521,
-            "y": 0.00000000002975204496047148,
+            "x": -0.000000000000003607396690554265,
+            "y": 0.0000000000000029772205341985104,
             "z": 0.0
           },
           "relative": false

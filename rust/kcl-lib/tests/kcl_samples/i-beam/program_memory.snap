@@ -65,8 +65,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -1.3315000000003405,
-            1.9999999999999905
+            -1.331500000000063,
+            1.9999999999999998
           ],
           "tag": {
             "commentStart": 380,
@@ -77,8 +77,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topFlangeLeftOuterEdge"
           },
           "to": [
-            -0.0000000000003129848906385332,
-            2.0000000000000226
+            -0.00000000000005065638511042308,
+            2.0000000000000298
           ],
           "type": "ToPoint",
           "units": "in"
@@ -89,8 +89,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -1.3315000000002313,
-            -2.0000000000000613
+            -1.3315000000000714,
+            -2.0000000000000497
           ],
           "tag": {
             "commentStart": 508,
@@ -101,8 +101,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomFlangeLeftOuterEdge"
           },
           "to": [
-            -0.00000000000020375005882272893,
-            -2.000000000000034
+            -0.00000000000005909443135237495,
+            -2.000000000000027
           ],
           "type": "ToPoint",
           "units": "in"
@@ -113,8 +113,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000000034069877953868454,
-            2.0000000000000537
+            -0.00000000000005065891669758893,
+            2.0000000000000298
           ],
           "tag": {
             "commentStart": 1336,
@@ -125,8 +125,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topFlangeRightOuterEdge"
           },
           "to": [
-            1.331499999999659,
-            2.000000000000085
+            1.3314999999999366,
+            2.000000000000062
           ],
           "type": "ToPoint",
           "units": "in"
@@ -137,8 +137,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000000020375005965027734,
-            -1.999999999999981
+            -0.00000000000005909443135238329,
+            -2.000000000000027
           ],
           "tag": {
             "commentStart": 1513,
@@ -149,8 +149,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomFlangeRightOuterEdge"
           },
           "to": [
-            1.3314999999998236,
-            -1.9999999999999276
+            1.3314999999999535,
+            -1.9999999999999796
           ],
           "type": "ToPoint",
           "units": "in"
@@ -161,8 +161,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -1.3315000000003683,
-            2.0000000000000098
+            -1.331500000000063,
+            1.9999999999999998
           ],
           "tag": {
             "commentStart": 2063,
@@ -173,8 +173,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topFlangeLeftOuterSide"
           },
           "to": [
-            -1.331500000000396,
-            1.7070000000001126
+            -1.3315000000000883,
+            1.7070000000000989
           ],
           "type": "ToPoint",
           "units": "in"
@@ -185,8 +185,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -1.331500000000396,
-            1.7070000000001126
+            -1.3315000000000883,
+            1.7070000000000989
           ],
           "tag": {
             "commentStart": 2248,
@@ -197,8 +197,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topFlangeLeftInnerEdge"
           },
           "to": [
-            -0.5534753545977885,
-            1.7070000000001393
+            -0.5534829998939595,
+            1.7070000000001084
           ],
           "type": "ToPoint",
           "units": "in"
@@ -209,8 +209,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            1.3314999999996313,
-            2.0000000000001155
+            1.3314999999999366,
+            2.000000000000062
           ],
           "tag": {
             "commentStart": 2610,
@@ -221,8 +221,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topFlangeRightOuterSide"
           },
           "to": [
-            1.3314999999996036,
-            1.7070000000002497
+            1.3314999999999113,
+            1.7070000000001935
           ],
           "type": "ToPoint",
           "units": "in"
@@ -233,8 +233,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            1.3314999999996036,
-            1.7070000000002497
+            1.3314999999999113,
+            1.7070000000001935
           ],
           "tag": {
             "commentStart": 2794,
@@ -245,8 +245,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topFlangeRightInnerEdge"
           },
           "to": [
-            0.5534753545969131,
-            1.70700000000034
+            0.5534829998937572,
+            1.7070000000002548
           ],
           "type": "ToPoint",
           "units": "in"
@@ -257,8 +257,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            1.3314999999998236,
-            -1.9999999999998743
+            1.3314999999999535,
+            -1.9999999999999796
           ],
           "tag": {
             "commentStart": 2981,
@@ -269,8 +269,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomFlangeRightOuterSide"
           },
           "to": [
-            1.3314999999998236,
-            -1.7069999999999241
+            1.3314999999999535,
+            -1.707000000000031
           ],
           "type": "ToPoint",
           "units": "in"
@@ -281,8 +281,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            1.3314999999998236,
-            -1.7069999999999241
+            1.3314999999999535,
+            -1.707000000000031
           ],
           "tag": {
             "commentStart": 3176,
@@ -293,8 +293,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomFlangeRightInnerEdge"
           },
           "to": [
-            0.5533853724320016,
-            -1.7069999999998031
+            0.553406877696629,
+            -1.7069999999999703
           ],
           "type": "ToPoint",
           "units": "in"
@@ -305,8 +305,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -1.3315000000002313,
-            -2.0000000000001674
+            -1.3315000000000714,
+            -2.0000000000000497
           ],
           "tag": {
             "commentStart": 3374,
@@ -317,8 +317,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomFlangeLeftOuterSide"
           },
           "to": [
-            -1.3315000000002313,
-            -1.7070000000003767
+            -1.3315000000000714,
+            -1.707000000000244
           ],
           "type": "ToPoint",
           "units": "in"
@@ -329,8 +329,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -1.3315000000002313,
-            -1.7070000000003767
+            -1.3315000000000714,
+            -1.707000000000244
           ],
           "tag": {
             "commentStart": 3570,
@@ -341,8 +341,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomFlangeLeftInnerEdge"
           },
           "to": [
-            -0.5535613414347086,
-            -1.7070000000006516
+            -0.5535591068716469,
+            -1.7070000000004029
           ],
           "type": "ToPoint",
           "units": "in"
@@ -354,14 +354,14 @@ description: Variables in memory after executing i-beam.kcl
           },
           "ccw": true,
           "center": [
-            0.5534398741927609,
-            1.2500601252968453
+            0.5534520428898677,
+            1.2500479572284802
           ],
           "from": [
-            0.5534753545968749,
-            1.7069999995716467
+            0.5534829998937572,
+            1.7070000000002086
           ],
-          "radius": 0.45693987565229016,
+          "radius": 0.45695204382034615,
           "tag": {
             "commentStart": 4178,
             "end": 4193,
@@ -371,8 +371,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topRightRootArc"
           },
           "to": [
-            0.09649999940085313,
-            1.2500881660899459
+            0.09649999970001771,
+            1.2500719616658895
           ],
           "type": "Arc",
           "units": "in"
@@ -384,14 +384,14 @@ description: Variables in memory after executing i-beam.kcl
           },
           "ccw": true,
           "center": [
-            0.5534136512515494,
-            -1.2500863476460873
+            0.5534296015368161,
+            -1.2500703979891998
           ],
           "from": [
-            0.09649999999971633,
-            -1.250046878937014
+            0.09649999999987505,
+            -1.2500382204565146
           ],
-          "radius": 0.45691365295650854,
+          "radius": 0.4569296026699313,
           "tag": {
             "commentStart": 4381,
             "end": 4399,
@@ -401,8 +401,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomRightRootArc"
           },
           "to": [
-            0.5533853724320079,
-            -1.7069999997274943
+            0.5534068776966241,
+            -1.7070000000940846
           ],
           "type": "Arc",
           "units": "in"
@@ -414,14 +414,14 @@ description: Variables in memory after executing i-beam.kcl
           },
           "ccw": true,
           "center": [
-            -0.5534999986094375,
-            -1.2500000006382201
+            -0.5534999984885831,
+            -1.2500000006582597
           ],
           "from": [
-            -0.5535613414346552,
-            -1.7069999995757117
+            -0.5535591068716468,
+            -1.7070000000003591
           ],
-          "radius": 0.4570000030544961,
+          "radius": 0.4570000031646388,
           "tag": {
             "commentStart": 4513,
             "end": 4530,
@@ -431,8 +431,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "bottomLeftRootArc"
           },
           "to": [
-            -0.09649999795929032,
-            -1.2500468789367956
+            -0.09649999692214234,
+            -1.2500382204566207
           ],
           "type": "Arc",
           "units": "in"
@@ -444,14 +444,14 @@ description: Variables in memory after executing i-beam.kcl
           },
           "ccw": true,
           "center": [
-            -0.5534999996285696,
-            1.250000000328987
+            -0.5534999995801437,
+            1.250000000175758
           ],
           "from": [
-            -0.09650000024831058,
-            1.250025705584305
+            -0.0965000000001982,
+            1.25002227173429
           ],
-          "radius": 0.4570000001031913,
+          "radius": 0.4570000001226395,
           "tag": {
             "commentStart": 4730,
             "end": 4744,
@@ -461,8 +461,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "topLeftRootArc"
           },
           "to": [
-            -0.5534753545978066,
-            1.7069999997676515
+            -0.5534829998939601,
+            1.7069999999822167
           ],
           "type": "Arc",
           "units": "in"
@@ -473,8 +473,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            -0.09650000000044615,
-            -1.2500468789365917
+            -0.09650000000018524,
+            -1.2500382204563634
           ],
           "tag": {
             "commentStart": 5276,
@@ -485,8 +485,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "leftWebEdge"
           },
           "to": [
-            -0.09650000000042344,
-            1.2500257055843145
+            -0.09650000000017021,
+            1.25002227173429
           ],
           "type": "ToPoint",
           "units": "in"
@@ -497,8 +497,8 @@ description: Variables in memory after executing i-beam.kcl
             "sourceRange": []
           },
           "from": [
-            0.09649999934138916,
-            -1.2500468789370196
+            0.09649999999980338,
+            -1.2500382204565146
           ],
           "tag": {
             "commentStart": 5490,
@@ -509,8 +509,8 @@ description: Variables in memory after executing i-beam.kcl
             "value": "rightWebEdge"
           },
           "to": [
-            0.09649999934144794,
-            1.2500881660899417
+            0.09649999999986222,
+            1.2500719616658738
           ],
           "type": "ToPoint",
           "units": "in"
@@ -549,12 +549,12 @@ description: Variables in memory after executing i-beam.kcl
       },
       "start": {
         "from": [
-          -1.3315000000003405,
-          1.9999999999999905
+          -1.331500000000063,
+          1.9999999999999998
         ],
         "to": [
-          -1.3315000000003405,
-          1.9999999999999905
+          -1.331500000000063,
+          1.9999999999999998
         ],
         "units": "in",
         "tag": null,
@@ -658,7 +658,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000002037500569125102,
+                        "n": -0.00000000000005909443135233106,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -666,7 +666,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -2.000000000000033,
+                        "n": -2.000000000000027,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -676,7 +676,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000014670155742149019,
+                        "n": -0.000000000000000014515635242257187,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -684,7 +684,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000027759113220772375,
+                        "n": 0.0000000000000000004776429437091379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -779,7 +779,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3315000000002313,
+                        "n": -1.3315000000000714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -787,7 +787,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7070000000004828,
+                        "n": -1.707000000000244,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -797,7 +797,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.5535613414347086,
+                        "n": -0.5535591068716469,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -805,7 +805,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7070000000006516,
+                        "n": -1.7070000000004029,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -899,7 +899,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3315000000002313,
+                        "n": -1.3315000000000714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -907,7 +907,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -2.0000000000000613,
+                        "n": -2.0000000000000497,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -917,7 +917,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000020375005882272893,
+                        "n": -0.00000000000005909443135237495,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -925,7 +925,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -2.000000000000034,
+                        "n": -2.000000000000027,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1019,7 +1019,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3315000000002313,
+                        "n": -1.3315000000000714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1027,7 +1027,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -2.0000000000001674,
+                        "n": -2.0000000000000497,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1037,7 +1037,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.3315000000002313,
+                        "n": -1.3315000000000714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1045,7 +1045,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7070000000003767,
+                        "n": -1.707000000000244,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1139,7 +1139,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.3314999999998236,
+                        "n": 1.3314999999999535,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1147,7 +1147,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7069999999998708,
+                        "n": -1.707000000000031,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1157,7 +1157,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5533853724320016,
+                        "n": 0.553406877696629,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1165,7 +1165,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7069999999998031,
+                        "n": -1.7069999999999703,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1259,7 +1259,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000020375005965027734,
+                        "n": -0.00000000000005909443135238329,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1267,7 +1267,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.999999999999981,
+                        "n": -2.000000000000027,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1277,7 +1277,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3314999999998236,
+                        "n": 1.3314999999999535,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1285,7 +1285,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.9999999999999276,
+                        "n": -1.9999999999999796,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1379,7 +1379,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.3314999999998236,
+                        "n": 1.3314999999999535,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1387,7 +1387,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.9999999999998743,
+                        "n": -1.9999999999999796,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1397,7 +1397,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3314999999998236,
+                        "n": 1.3314999999999535,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1405,7 +1405,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7069999999999241,
+                        "n": -1.707000000000031,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1499,7 +1499,7 @@ description: Variables in memory after executing i-beam.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.5535613414346552,
+                        "n": -0.5535591068716468,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1507,7 +1507,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7069999995757117,
+                        "n": -1.7070000000003591,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1517,7 +1517,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.09650000092789197,
+                        "n": -0.09650000000028604,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1525,7 +1525,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500468789364911,
+                        "n": -1.2500382204563634,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1535,7 +1535,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.5534999986094375,
+                        "n": -0.5534999984885832,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1543,7 +1543,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500000006382201,
+                        "n": -1.2500000006582597,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1651,7 +1651,7 @@ description: Variables in memory after executing i-beam.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.09649999999971633,
+                        "n": 0.09649999999987505,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1659,7 +1659,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.250046878937014,
+                        "n": -1.2500382204565146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1669,7 +1669,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5533853724320139,
+                        "n": 0.553406877696629,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1677,7 +1677,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.7069999996370835,
+                        "n": -1.7069999999999301,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1687,7 +1687,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5534136512515494,
+                        "n": 0.5534296015368161,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1695,7 +1695,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500863476460873,
+                        "n": -1.2500703979891998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1803,7 +1803,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.09650000000044615,
+                        "n": -0.09650000000018524,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1811,7 +1811,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500468789365917,
+                        "n": -1.2500382204563634,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1821,7 +1821,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.09650000000042344,
+                        "n": -0.09650000000017021,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1829,7 +1829,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.2500257055843145,
+                        "n": 1.25002227173429,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1923,7 +1923,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.09650000000034635,
+                        "n": -0.09650000000018523,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1931,7 +1931,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500468789366872,
+                        "n": -1.2500382204563634,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1941,7 +1941,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000003192687320260056,
+                        "n": -0.0000000000001314698471207766,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1949,7 +1949,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.250046878936777,
+                        "n": -1.2500382204564437,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2047,8 +2047,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.3315000000003405,
-                    1.9999999999999905
+                    -1.331500000000063,
+                    1.9999999999999998
                   ],
                   "tag": {
                     "commentStart": 380,
@@ -2059,8 +2059,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topFlangeLeftOuterEdge"
                   },
                   "to": [
-                    -0.0000000000003129848906385332,
-                    2.0000000000000226
+                    -0.00000000000005065638511042308,
+                    2.0000000000000298
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2071,13 +2071,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000003129848906385332,
-                    2.0000000000000226
+                    -0.00000000000005065638511042308,
+                    2.0000000000000298
                   ],
                   "tag": null,
                   "to": [
-                    -1.3315000000002313,
-                    -2.0000000000000613
+                    -1.3315000000000714,
+                    -2.0000000000000497
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2088,8 +2088,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.3315000000002313,
-                    -2.0000000000000613
+                    -1.3315000000000714,
+                    -2.0000000000000497
                   ],
                   "tag": {
                     "commentStart": 508,
@@ -2100,8 +2100,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomFlangeLeftOuterEdge"
                   },
                   "to": [
-                    -0.00000000000020375005882272893,
-                    -2.000000000000034
+                    -0.00000000000005909443135237495,
+                    -2.000000000000027
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2112,13 +2112,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000020375005882272893,
-                    -2.000000000000034
+                    -0.00000000000005909443135237495,
+                    -2.000000000000027
                   ],
                   "tag": null,
                   "to": [
-                    -0.00000000000034069877953868454,
-                    2.0000000000000537
+                    -0.00000000000005065891669758893,
+                    2.0000000000000298
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2129,8 +2129,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000034069877953868454,
-                    2.0000000000000537
+                    -0.00000000000005065891669758893,
+                    2.0000000000000298
                   ],
                   "tag": {
                     "commentStart": 1336,
@@ -2141,8 +2141,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topFlangeRightOuterEdge"
                   },
                   "to": [
-                    1.331499999999659,
-                    2.000000000000085
+                    1.3314999999999366,
+                    2.000000000000062
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2153,13 +2153,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.331499999999659,
-                    2.000000000000085
+                    1.3314999999999366,
+                    2.000000000000062
                   ],
                   "tag": null,
                   "to": [
-                    -0.00000000000020375005965027734,
-                    -1.999999999999981
+                    -0.00000000000005909443135238329,
+                    -2.000000000000027
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2170,8 +2170,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000020375005965027734,
-                    -1.999999999999981
+                    -0.00000000000005909443135238329,
+                    -2.000000000000027
                   ],
                   "tag": {
                     "commentStart": 1513,
@@ -2182,8 +2182,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomFlangeRightOuterEdge"
                   },
                   "to": [
-                    1.3314999999998236,
-                    -1.9999999999999276
+                    1.3314999999999535,
+                    -1.9999999999999796
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2194,13 +2194,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3314999999998236,
-                    -1.9999999999999276
+                    1.3314999999999535,
+                    -1.9999999999999796
                   ],
                   "tag": null,
                   "to": [
-                    -1.3315000000003683,
-                    2.0000000000000098
+                    -1.331500000000063,
+                    1.9999999999999998
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2211,8 +2211,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.3315000000003683,
-                    2.0000000000000098
+                    -1.331500000000063,
+                    1.9999999999999998
                   ],
                   "tag": {
                     "commentStart": 2063,
@@ -2223,8 +2223,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topFlangeLeftOuterSide"
                   },
                   "to": [
-                    -1.331500000000396,
-                    1.7070000000001126
+                    -1.3315000000000883,
+                    1.7070000000000989
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2235,8 +2235,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.331500000000396,
-                    1.7070000000001126
+                    -1.3315000000000883,
+                    1.7070000000000989
                   ],
                   "tag": {
                     "commentStart": 2248,
@@ -2247,8 +2247,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topFlangeLeftInnerEdge"
                   },
                   "to": [
-                    -0.5534753545977885,
-                    1.7070000000001393
+                    -0.5534829998939595,
+                    1.7070000000001084
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2259,13 +2259,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.5534753545977885,
-                    1.7070000000001393
+                    -0.5534829998939595,
+                    1.7070000000001084
                   ],
                   "tag": null,
                   "to": [
-                    1.3314999999996313,
-                    2.0000000000001155
+                    1.3314999999999366,
+                    2.000000000000062
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2276,8 +2276,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3314999999996313,
-                    2.0000000000001155
+                    1.3314999999999366,
+                    2.000000000000062
                   ],
                   "tag": {
                     "commentStart": 2610,
@@ -2288,8 +2288,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topFlangeRightOuterSide"
                   },
                   "to": [
-                    1.3314999999996036,
-                    1.7070000000002497
+                    1.3314999999999113,
+                    1.7070000000001935
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2300,8 +2300,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3314999999996036,
-                    1.7070000000002497
+                    1.3314999999999113,
+                    1.7070000000001935
                   ],
                   "tag": {
                     "commentStart": 2794,
@@ -2312,8 +2312,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topFlangeRightInnerEdge"
                   },
                   "to": [
-                    0.5534753545969131,
-                    1.70700000000034
+                    0.5534829998937572,
+                    1.7070000000002548
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2324,13 +2324,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5534753545969131,
-                    1.70700000000034
+                    0.5534829998937572,
+                    1.7070000000002548
                   ],
                   "tag": null,
                   "to": [
-                    1.3314999999998236,
-                    -1.9999999999998743
+                    1.3314999999999535,
+                    -1.9999999999999796
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2341,8 +2341,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3314999999998236,
-                    -1.9999999999998743
+                    1.3314999999999535,
+                    -1.9999999999999796
                   ],
                   "tag": {
                     "commentStart": 2981,
@@ -2353,8 +2353,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomFlangeRightOuterSide"
                   },
                   "to": [
-                    1.3314999999998236,
-                    -1.7069999999999241
+                    1.3314999999999535,
+                    -1.707000000000031
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2365,8 +2365,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3314999999998236,
-                    -1.7069999999999241
+                    1.3314999999999535,
+                    -1.707000000000031
                   ],
                   "tag": {
                     "commentStart": 3176,
@@ -2377,8 +2377,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomFlangeRightInnerEdge"
                   },
                   "to": [
-                    0.5533853724320016,
-                    -1.7069999999998031
+                    0.553406877696629,
+                    -1.7069999999999703
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2389,13 +2389,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5533853724320016,
-                    -1.7069999999998031
+                    0.553406877696629,
+                    -1.7069999999999703
                   ],
                   "tag": null,
                   "to": [
-                    -1.3315000000002313,
-                    -2.0000000000001674
+                    -1.3315000000000714,
+                    -2.0000000000000497
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2406,8 +2406,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.3315000000002313,
-                    -2.0000000000001674
+                    -1.3315000000000714,
+                    -2.0000000000000497
                   ],
                   "tag": {
                     "commentStart": 3374,
@@ -2418,8 +2418,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomFlangeLeftOuterSide"
                   },
                   "to": [
-                    -1.3315000000002313,
-                    -1.7070000000003767
+                    -1.3315000000000714,
+                    -1.707000000000244
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2430,8 +2430,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.3315000000002313,
-                    -1.7070000000003767
+                    -1.3315000000000714,
+                    -1.707000000000244
                   ],
                   "tag": {
                     "commentStart": 3570,
@@ -2442,8 +2442,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomFlangeLeftInnerEdge"
                   },
                   "to": [
-                    -0.5535613414347086,
-                    -1.7070000000006516
+                    -0.5535591068716469,
+                    -1.7070000000004029
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2454,13 +2454,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.5535613414347086,
-                    -1.7070000000006516
+                    -0.5535591068716469,
+                    -1.7070000000004029
                   ],
                   "tag": null,
                   "to": [
-                    0.5534753545968749,
-                    1.7069999995716467
+                    0.5534829998937572,
+                    1.7070000000002086
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2472,14 +2472,14 @@ description: Variables in memory after executing i-beam.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.5534398741927609,
-                    1.2500601252968453
+                    0.5534520428898677,
+                    1.2500479572284802
                   ],
                   "from": [
-                    0.5534753545968749,
-                    1.7069999995716467
+                    0.5534829998937572,
+                    1.7070000000002086
                   ],
-                  "radius": 0.45693987565229016,
+                  "radius": 0.45695204382034615,
                   "tag": {
                     "commentStart": 4178,
                     "end": 4193,
@@ -2489,8 +2489,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topRightRootArc"
                   },
                   "to": [
-                    0.09649999940085313,
-                    1.2500881660899459
+                    0.09649999970001771,
+                    1.2500719616658895
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2501,13 +2501,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.09649999940085313,
-                    1.2500881660899459
+                    0.09649999970001771,
+                    1.2500719616658895
                   ],
                   "tag": null,
                   "to": [
-                    0.09649999999971633,
-                    -1.250046878937014
+                    0.09649999999987505,
+                    -1.2500382204565146
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2519,14 +2519,14 @@ description: Variables in memory after executing i-beam.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.5534136512515494,
-                    -1.2500863476460873
+                    0.5534296015368161,
+                    -1.2500703979891998
                   ],
                   "from": [
-                    0.09649999999971633,
-                    -1.250046878937014
+                    0.09649999999987505,
+                    -1.2500382204565146
                   ],
-                  "radius": 0.45691365295650854,
+                  "radius": 0.4569296026699313,
                   "tag": {
                     "commentStart": 4381,
                     "end": 4399,
@@ -2536,8 +2536,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomRightRootArc"
                   },
                   "to": [
-                    0.5533853724320079,
-                    -1.7069999997274943
+                    0.5534068776966241,
+                    -1.7070000000940846
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2548,13 +2548,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5533853724320079,
-                    -1.7069999997274943
+                    0.5534068776966241,
+                    -1.7070000000940846
                   ],
                   "tag": null,
                   "to": [
-                    -0.5535613414346552,
-                    -1.7069999995757117
+                    -0.5535591068716468,
+                    -1.7070000000003591
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2566,14 +2566,14 @@ description: Variables in memory after executing i-beam.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.5534999986094375,
-                    -1.2500000006382201
+                    -0.5534999984885831,
+                    -1.2500000006582597
                   ],
                   "from": [
-                    -0.5535613414346552,
-                    -1.7069999995757117
+                    -0.5535591068716468,
+                    -1.7070000000003591
                   ],
-                  "radius": 0.4570000030544961,
+                  "radius": 0.4570000031646388,
                   "tag": {
                     "commentStart": 4513,
                     "end": 4530,
@@ -2583,8 +2583,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "bottomLeftRootArc"
                   },
                   "to": [
-                    -0.09649999795929032,
-                    -1.2500468789367956
+                    -0.09649999692214234,
+                    -1.2500382204566207
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2595,13 +2595,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.09649999795929032,
-                    -1.2500468789367956
+                    -0.09649999692214234,
+                    -1.2500382204566207
                   ],
                   "tag": null,
                   "to": [
-                    -0.09650000024831058,
-                    1.250025705584305
+                    -0.0965000000001982,
+                    1.25002227173429
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2613,14 +2613,14 @@ description: Variables in memory after executing i-beam.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.5534999996285696,
-                    1.250000000328987
+                    -0.5534999995801437,
+                    1.250000000175758
                   ],
                   "from": [
-                    -0.09650000024831058,
-                    1.250025705584305
+                    -0.0965000000001982,
+                    1.25002227173429
                   ],
-                  "radius": 0.4570000001031913,
+                  "radius": 0.4570000001226395,
                   "tag": {
                     "commentStart": 4730,
                     "end": 4744,
@@ -2630,8 +2630,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "topLeftRootArc"
                   },
                   "to": [
-                    -0.5534753545978066,
-                    1.7069999997676515
+                    -0.5534829998939601,
+                    1.7069999999822167
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2642,13 +2642,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.5534753545978066,
-                    1.7069999997676515
+                    -0.5534829998939601,
+                    1.7069999999822167
                   ],
                   "tag": null,
                   "to": [
-                    -0.09650000000044615,
-                    -1.2500468789365917
+                    -0.09650000000018524,
+                    -1.2500382204563634
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2659,8 +2659,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.09650000000044615,
-                    -1.2500468789365917
+                    -0.09650000000018524,
+                    -1.2500382204563634
                   ],
                   "tag": {
                     "commentStart": 5276,
@@ -2671,8 +2671,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "leftWebEdge"
                   },
                   "to": [
-                    -0.09650000000042344,
-                    1.2500257055843145
+                    -0.09650000000017021,
+                    1.25002227173429
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2683,13 +2683,13 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.09650000000042344,
-                    1.2500257055843145
+                    -0.09650000000017021,
+                    1.25002227173429
                   ],
                   "tag": null,
                   "to": [
-                    0.09649999934138916,
-                    -1.2500468789370196
+                    0.09649999999980338,
+                    -1.2500382204565146
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2700,8 +2700,8 @@ description: Variables in memory after executing i-beam.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.09649999934138916,
-                    -1.2500468789370196
+                    0.09649999999980338,
+                    -1.2500382204565146
                   ],
                   "tag": {
                     "commentStart": 5490,
@@ -2712,8 +2712,8 @@ description: Variables in memory after executing i-beam.kcl
                     "value": "rightWebEdge"
                   },
                   "to": [
-                    0.09649999934144794,
-                    1.2500881660899417
+                    0.09649999999986222,
+                    1.2500719616658738
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2752,12 +2752,12 @@ description: Variables in memory after executing i-beam.kcl
               },
               "start": {
                 "from": [
-                  -1.3315000000003405,
-                  1.9999999999999905
+                  -1.331500000000063,
+                  1.9999999999999998
                 ],
                 "to": [
-                  -1.3315000000003405,
-                  1.9999999999999905
+                  -1.331500000000063,
+                  1.9999999999999998
                 ],
                 "units": "in",
                 "tag": null,
@@ -2861,7 +2861,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.09649999934138916,
+                        "n": 0.09649999999980338,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2869,7 +2869,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500468789370196,
+                        "n": -1.2500382204565146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2879,7 +2879,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.09649999934144794,
+                        "n": 0.09649999999986222,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2887,7 +2887,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.2500881660899417,
+                        "n": 1.2500719616658738,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2981,7 +2981,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0964999999997078,
+                        "n": 0.09649999999987503,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2989,7 +2989,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500468789369406,
+                        "n": -1.2500382204565146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2999,7 +2999,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000002736318433804506,
+                        "n": -0.00000000000013146512089033542,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3007,7 +3007,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -1.2500468789368615,
+                        "n": -1.2500382204564437,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3102,7 +3102,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000002021293353628568,
+                        "n": -0.000000000000000019578809554915732,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3110,7 +3110,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000004163866976628957,
+                        "n": 0.0000000000000000007164644155637195,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3120,7 +3120,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000002575571131189086,
+                        "n": -0.00000000000005065132193611859,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3128,7 +3128,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 2.000000000000024,
+                        "n": 2.0000000000000298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3223,7 +3223,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3315000000004236,
+                        "n": -1.3315000000000883,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3231,7 +3231,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7070000000001317,
+                        "n": 1.7070000000000989,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3241,7 +3241,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.5534753545977885,
+                        "n": -0.5534829998939595,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3249,7 +3249,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7070000000001393,
+                        "n": 1.7070000000001084,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3343,7 +3343,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3315000000003405,
+                        "n": -1.331500000000063,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3351,7 +3351,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.9999999999999905,
+                        "n": 1.9999999999999998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3361,7 +3361,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000003129848906385332,
+                        "n": -0.00000000000005065638511042308,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3369,7 +3369,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 2.0000000000000226,
+                        "n": 2.0000000000000298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3463,7 +3463,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3315000000003683,
+                        "n": -1.331500000000063,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3471,7 +3471,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 2.0000000000000098,
+                        "n": 1.9999999999999998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3481,7 +3481,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.331500000000396,
+                        "n": -1.3315000000000883,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3489,7 +3489,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7070000000001126,
+                        "n": 1.7070000000000989,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3583,7 +3583,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.331499999999576,
+                        "n": 1.3314999999999113,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3591,7 +3591,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7070000000002805,
+                        "n": 1.7070000000001935,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3601,7 +3601,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5534753545969131,
+                        "n": 0.5534829998937572,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3609,7 +3609,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.70700000000034,
+                        "n": 1.7070000000002548,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3703,7 +3703,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000034069877953868454,
+                        "n": -0.00000000000005065891669758893,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3711,7 +3711,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 2.0000000000000537,
+                        "n": 2.0000000000000298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3721,7 +3721,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.331499999999659,
+                        "n": 1.3314999999999366,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3729,7 +3729,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 2.000000000000085,
+                        "n": 2.000000000000062,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3823,7 +3823,7 @@ description: Variables in memory after executing i-beam.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.3314999999996313,
+                        "n": 1.3314999999999366,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3831,7 +3831,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 2.0000000000001155,
+                        "n": 2.000000000000062,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3841,7 +3841,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3314999999996036,
+                        "n": 1.3314999999999113,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3849,7 +3849,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7070000000002497,
+                        "n": 1.7070000000001935,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3943,7 +3943,7 @@ description: Variables in memory after executing i-beam.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.09650000024831058,
+                        "n": -0.0965000000001982,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3951,7 +3951,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.250025705584305,
+                        "n": 1.25002227173429,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3961,7 +3961,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.5534753545978057,
+                        "n": -0.5534829998939595,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3969,7 +3969,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7069999997809353,
+                        "n": 1.7070000000000967,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3979,7 +3979,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.5534999996285696,
+                        "n": -0.5534999995801437,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3987,7 +3987,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.250000000328987,
+                        "n": 1.250000000175758,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4095,7 +4095,7 @@ description: Variables in memory after executing i-beam.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.5534753545968749,
+                        "n": 0.5534829998937572,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4103,7 +4103,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.7069999995716467,
+                        "n": 1.7070000000002086,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4113,7 +4113,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.09649999967166954,
+                        "n": 0.09649999999990069,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4121,7 +4121,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.250088166089929,
+                        "n": 1.2500719616658738,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4131,7 +4131,7 @@ description: Variables in memory after executing i-beam.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5534398741927608,
+                        "n": 0.5534520428898677,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4139,7 +4139,7 @@ description: Variables in memory after executing i-beam.kcl
                         }
                       },
                       {
-                        "n": 1.2500601252968453,
+                        "n": 1.2500479572284802,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4567,8 +4567,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -1.3315000000003405,
-              1.9999999999999905
+              -1.331500000000063,
+              1.9999999999999998
             ],
             "tag": {
               "commentStart": 380,
@@ -4579,8 +4579,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topFlangeLeftOuterEdge"
             },
             "to": [
-              -0.0000000000003129848906385332,
-              2.0000000000000226
+              -0.00000000000005065638511042308,
+              2.0000000000000298
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4591,8 +4591,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -1.3315000000002313,
-              -2.0000000000000613
+              -1.3315000000000714,
+              -2.0000000000000497
             ],
             "tag": {
               "commentStart": 508,
@@ -4603,8 +4603,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomFlangeLeftOuterEdge"
             },
             "to": [
-              -0.00000000000020375005882272893,
-              -2.000000000000034
+              -0.00000000000005909443135237495,
+              -2.000000000000027
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4615,8 +4615,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000000034069877953868454,
-              2.0000000000000537
+              -0.00000000000005065891669758893,
+              2.0000000000000298
             ],
             "tag": {
               "commentStart": 1336,
@@ -4627,8 +4627,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topFlangeRightOuterEdge"
             },
             "to": [
-              1.331499999999659,
-              2.000000000000085
+              1.3314999999999366,
+              2.000000000000062
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4639,8 +4639,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000000020375005965027734,
-              -1.999999999999981
+              -0.00000000000005909443135238329,
+              -2.000000000000027
             ],
             "tag": {
               "commentStart": 1513,
@@ -4651,8 +4651,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomFlangeRightOuterEdge"
             },
             "to": [
-              1.3314999999998236,
-              -1.9999999999999276
+              1.3314999999999535,
+              -1.9999999999999796
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4663,8 +4663,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -1.3315000000003683,
-              2.0000000000000098
+              -1.331500000000063,
+              1.9999999999999998
             ],
             "tag": {
               "commentStart": 2063,
@@ -4675,8 +4675,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topFlangeLeftOuterSide"
             },
             "to": [
-              -1.331500000000396,
-              1.7070000000001126
+              -1.3315000000000883,
+              1.7070000000000989
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4687,8 +4687,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -1.331500000000396,
-              1.7070000000001126
+              -1.3315000000000883,
+              1.7070000000000989
             ],
             "tag": {
               "commentStart": 2248,
@@ -4699,8 +4699,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topFlangeLeftInnerEdge"
             },
             "to": [
-              -0.5534753545977885,
-              1.7070000000001393
+              -0.5534829998939595,
+              1.7070000000001084
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4711,8 +4711,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              1.3314999999996313,
-              2.0000000000001155
+              1.3314999999999366,
+              2.000000000000062
             ],
             "tag": {
               "commentStart": 2610,
@@ -4723,8 +4723,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topFlangeRightOuterSide"
             },
             "to": [
-              1.3314999999996036,
-              1.7070000000002497
+              1.3314999999999113,
+              1.7070000000001935
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4735,8 +4735,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              1.3314999999996036,
-              1.7070000000002497
+              1.3314999999999113,
+              1.7070000000001935
             ],
             "tag": {
               "commentStart": 2794,
@@ -4747,8 +4747,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topFlangeRightInnerEdge"
             },
             "to": [
-              0.5534753545969131,
-              1.70700000000034
+              0.5534829998937572,
+              1.7070000000002548
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4759,8 +4759,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              1.3314999999998236,
-              -1.9999999999998743
+              1.3314999999999535,
+              -1.9999999999999796
             ],
             "tag": {
               "commentStart": 2981,
@@ -4771,8 +4771,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomFlangeRightOuterSide"
             },
             "to": [
-              1.3314999999998236,
-              -1.7069999999999241
+              1.3314999999999535,
+              -1.707000000000031
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4783,8 +4783,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              1.3314999999998236,
-              -1.7069999999999241
+              1.3314999999999535,
+              -1.707000000000031
             ],
             "tag": {
               "commentStart": 3176,
@@ -4795,8 +4795,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomFlangeRightInnerEdge"
             },
             "to": [
-              0.5533853724320016,
-              -1.7069999999998031
+              0.553406877696629,
+              -1.7069999999999703
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4807,8 +4807,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -1.3315000000002313,
-              -2.0000000000001674
+              -1.3315000000000714,
+              -2.0000000000000497
             ],
             "tag": {
               "commentStart": 3374,
@@ -4819,8 +4819,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomFlangeLeftOuterSide"
             },
             "to": [
-              -1.3315000000002313,
-              -1.7070000000003767
+              -1.3315000000000714,
+              -1.707000000000244
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4831,8 +4831,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -1.3315000000002313,
-              -1.7070000000003767
+              -1.3315000000000714,
+              -1.707000000000244
             ],
             "tag": {
               "commentStart": 3570,
@@ -4843,8 +4843,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomFlangeLeftInnerEdge"
             },
             "to": [
-              -0.5535613414347086,
-              -1.7070000000006516
+              -0.5535591068716469,
+              -1.7070000000004029
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4856,14 +4856,14 @@ description: Variables in memory after executing i-beam.kcl
             },
             "ccw": true,
             "center": [
-              0.5534398741927609,
-              1.2500601252968453
+              0.5534520428898677,
+              1.2500479572284802
             ],
             "from": [
-              0.5534753545968749,
-              1.7069999995716467
+              0.5534829998937572,
+              1.7070000000002086
             ],
-            "radius": 0.45693987565229016,
+            "radius": 0.45695204382034615,
             "tag": {
               "commentStart": 4178,
               "end": 4193,
@@ -4873,8 +4873,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topRightRootArc"
             },
             "to": [
-              0.09649999940085313,
-              1.2500881660899459
+              0.09649999970001771,
+              1.2500719616658895
             ],
             "type": "Arc",
             "units": "in"
@@ -4886,14 +4886,14 @@ description: Variables in memory after executing i-beam.kcl
             },
             "ccw": true,
             "center": [
-              0.5534136512515494,
-              -1.2500863476460873
+              0.5534296015368161,
+              -1.2500703979891998
             ],
             "from": [
-              0.09649999999971633,
-              -1.250046878937014
+              0.09649999999987505,
+              -1.2500382204565146
             ],
-            "radius": 0.45691365295650854,
+            "radius": 0.4569296026699313,
             "tag": {
               "commentStart": 4381,
               "end": 4399,
@@ -4903,8 +4903,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomRightRootArc"
             },
             "to": [
-              0.5533853724320079,
-              -1.7069999997274943
+              0.5534068776966241,
+              -1.7070000000940846
             ],
             "type": "Arc",
             "units": "in"
@@ -4916,14 +4916,14 @@ description: Variables in memory after executing i-beam.kcl
             },
             "ccw": true,
             "center": [
-              -0.5534999986094375,
-              -1.2500000006382201
+              -0.5534999984885831,
+              -1.2500000006582597
             ],
             "from": [
-              -0.5535613414346552,
-              -1.7069999995757117
+              -0.5535591068716468,
+              -1.7070000000003591
             ],
-            "radius": 0.4570000030544961,
+            "radius": 0.4570000031646388,
             "tag": {
               "commentStart": 4513,
               "end": 4530,
@@ -4933,8 +4933,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "bottomLeftRootArc"
             },
             "to": [
-              -0.09649999795929032,
-              -1.2500468789367956
+              -0.09649999692214234,
+              -1.2500382204566207
             ],
             "type": "Arc",
             "units": "in"
@@ -4946,14 +4946,14 @@ description: Variables in memory after executing i-beam.kcl
             },
             "ccw": true,
             "center": [
-              -0.5534999996285696,
-              1.250000000328987
+              -0.5534999995801437,
+              1.250000000175758
             ],
             "from": [
-              -0.09650000024831058,
-              1.250025705584305
+              -0.0965000000001982,
+              1.25002227173429
             ],
-            "radius": 0.4570000001031913,
+            "radius": 0.4570000001226395,
             "tag": {
               "commentStart": 4730,
               "end": 4744,
@@ -4963,8 +4963,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "topLeftRootArc"
             },
             "to": [
-              -0.5534753545978066,
-              1.7069999997676515
+              -0.5534829998939601,
+              1.7069999999822167
             ],
             "type": "Arc",
             "units": "in"
@@ -4975,8 +4975,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              -0.09650000000044615,
-              -1.2500468789365917
+              -0.09650000000018524,
+              -1.2500382204563634
             ],
             "tag": {
               "commentStart": 5276,
@@ -4987,8 +4987,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "leftWebEdge"
             },
             "to": [
-              -0.09650000000042344,
-              1.2500257055843145
+              -0.09650000000017021,
+              1.25002227173429
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4999,8 +4999,8 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              0.09649999934138916,
-              -1.2500468789370196
+              0.09649999999980338,
+              -1.2500382204565146
             ],
             "tag": {
               "commentStart": 5490,
@@ -5011,8 +5011,8 @@ description: Variables in memory after executing i-beam.kcl
               "value": "rightWebEdge"
             },
             "to": [
-              0.09649999934144794,
-              1.2500881660899417
+              0.09649999999986222,
+              1.2500719616658738
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5051,12 +5051,12 @@ description: Variables in memory after executing i-beam.kcl
         },
         "start": {
           "from": [
-            -1.3315000000003405,
-            1.9999999999999905
+            -1.331500000000063,
+            1.9999999999999998
           ],
           "to": [
-            -1.3315000000003405,
-            1.9999999999999905
+            -1.331500000000063,
+            1.9999999999999998
           ],
           "units": "in",
           "tag": null,

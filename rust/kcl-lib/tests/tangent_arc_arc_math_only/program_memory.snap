@@ -50,7 +50,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -4.999999997000044,
+                        "n": -5.000000002999356,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.000000008999868,
+                        "n": 5.000000003000556,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -86,7 +86,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000005999912245655804,
+                        "n": 0.0000000000005999912281651226,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -202,7 +202,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 5.00000002102672,
+                        "n": 5.000000015027409,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -220,7 +220,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "end": [
                       {
-                        "n": 11.000000027026633,
+                        "n": 11.00000002102732,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -238,7 +238,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     ],
                     "center": [
                       {
-                        "n": 8.00000002399965,
+                        "n": 8.000000018000339,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -358,11 +358,11 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000005999912566778676,
+                    0.0000000000006004086117172847,
                     -0.0000000000000006123233999410653
                   ],
                   "from": [
-                    -4.999999997000044,
+                    -5.000000002999356,
                     0.0
                   ],
                   "radius": 5.000000002999957,
@@ -375,7 +375,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "value": "a"
                   },
                   "to": [
-                    5.000000008999869,
+                    5.000000003000557,
                     -0.000000000000001836970199823196
                   ],
                   "type": "Arc",
@@ -387,12 +387,12 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.000000008999869,
+                    5.000000003000557,
                     -0.000000000000001836970199823196
                   ],
                   "tag": null,
                   "to": [
-                    5.00000002102672,
+                    5.000000015027409,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -405,11 +405,11 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                   },
                   "ccw": true,
                   "center": [
-                    8.00000002399965,
+                    8.000000018000339,
                     -0.0000000000000003673940401082849
                   ],
                   "from": [
-                    5.00000002102672,
+                    5.000000015027409,
                     0.0
                   ],
                   "radius": 3.0000000029729303,
@@ -422,7 +422,7 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
                     "value": "b"
                   },
                   "to": [
-                    11.00000002697258,
+                    11.00000002097327,
                     -0.0000000000000011021821203248548
                   ],
                   "type": "Arc",
@@ -462,11 +462,11 @@ description: Variables in memory after executing tangent_arc_arc_math_only.kcl
               },
               "start": {
                 "from": [
-                  -4.999999997000044,
+                  -5.000000002999356,
                   0.0
                 ],
                 "to": [
-                  -4.999999997000044,
+                  -5.000000002999356,
                   0.0
                 ],
                 "units": "mm",

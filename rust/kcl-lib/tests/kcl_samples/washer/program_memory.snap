@@ -76,14 +76,14 @@ description: Variables in memory after executing washer.kcl
           },
           "ccw": true,
           "center": [
-            0.000000000000999999994004197,
+            0.00000000000000009999999960039971,
             0.0
           ],
           "from": [
-            0.219000000002,
+            0.2190000000010001,
             0.0
           ],
-          "radius": 0.219000000001,
+          "radius": 0.21900000000099998,
           "tag": {
             "commentStart": 720,
             "end": 727,
@@ -93,7 +93,7 @@ description: Variables in memory after executing washer.kcl
             "value": "circle1"
           },
           "to": [
-            0.219000000002,
+            0.2190000000010001,
             0.0
           ],
           "type": "Circle",
@@ -133,11 +133,11 @@ description: Variables in memory after executing washer.kcl
       },
       "start": {
         "from": [
-          0.219000000002,
+          0.2190000000010001,
           0.0
         ],
         "to": [
-          0.219000000002,
+          0.2190000000010001,
           0.0
         ],
         "units": "in",
@@ -206,14 +206,14 @@ description: Variables in memory after executing washer.kcl
             },
             "ccw": true,
             "center": [
-              0.000000000000999999994004197,
+              0.00000000000000009999999960039971,
               0.0
             ],
             "from": [
-              0.219000000002,
+              0.2190000000010001,
               0.0
             ],
-            "radius": 0.219000000001,
+            "radius": 0.21900000000099998,
             "tag": {
               "commentStart": 720,
               "end": 727,
@@ -223,7 +223,7 @@ description: Variables in memory after executing washer.kcl
               "value": "circle1"
             },
             "to": [
-              0.219000000002,
+              0.2190000000010001,
               0.0
             ],
             "type": "Circle",
@@ -263,11 +263,11 @@ description: Variables in memory after executing washer.kcl
         },
         "start": {
           "from": [
-            0.219000000002,
+            0.2190000000010001,
             0.0
           ],
           "to": [
-            0.219000000002,
+            0.2190000000010001,
             0.0
           ],
           "units": "in",
@@ -313,7 +313,7 @@ description: Variables in memory after executing washer.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.219000000002,
+                        "n": 0.2190000000010001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -331,7 +331,7 @@ description: Variables in memory after executing washer.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000999999994004197,
+                        "n": 0.00000000000000009999999960039971,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -433,7 +433,7 @@ description: Variables in memory after executing washer.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.101499999997,
+                        "n": 0.10149999999849986,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -451,7 +451,7 @@ description: Variables in memory after executing washer.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0000000000015000002078467296,
+                        "n": -0.00000000000000015000002108464301,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -557,14 +557,14 @@ description: Variables in memory after executing washer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000000000999999994004197,
+                    0.00000000000000009999999960039971,
                     0.0
                   ],
                   "from": [
-                    0.219000000002,
+                    0.2190000000010001,
                     0.0
                   ],
-                  "radius": 0.219000000001,
+                  "radius": 0.21900000000099998,
                   "tag": {
                     "commentStart": 720,
                     "end": 727,
@@ -574,7 +574,7 @@ description: Variables in memory after executing washer.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    0.219000000002,
+                    0.2190000000010001,
                     0.0
                   ],
                   "type": "Circle",
@@ -586,12 +586,12 @@ description: Variables in memory after executing washer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.219000000002,
+                    0.2190000000010001,
                     0.0
                   ],
                   "tag": null,
                   "to": [
-                    0.101499999997,
+                    0.10149999999849986,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -604,14 +604,14 @@ description: Variables in memory after executing washer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0000000000015000002078467296,
+                    -0.00000000000000015000002108464301,
                     0.0
                   ],
                   "from": [
-                    0.101499999997,
+                    0.10149999999849986,
                     0.0
                   ],
-                  "radius": 0.1014999999985,
+                  "radius": 0.10149999999850001,
                   "tag": {
                     "commentStart": 903,
                     "end": 910,
@@ -621,7 +621,7 @@ description: Variables in memory after executing washer.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    0.101499999997,
+                    0.10149999999849986,
                     0.0
                   ],
                   "type": "Circle",
@@ -661,11 +661,11 @@ description: Variables in memory after executing washer.kcl
               },
               "start": {
                 "from": [
-                  0.219000000002,
+                  0.2190000000010001,
                   0.0
                 ],
                 "to": [
-                  0.219000000002,
+                  0.2190000000010001,
                   0.0
                 ],
                 "units": "in",

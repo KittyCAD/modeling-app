@@ -234,8 +234,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.9358720832837444,
-              1.710743539102222
+              0.9358161366217276,
+              1.7107741498344147
             ],
             "tag": {
               "commentStart": 871,
@@ -246,8 +246,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "upperRightTransition"
             },
             "to": [
-              2.859979391882502,
-              0.6579626415268301
+              2.8599845935418005,
+              0.657959795440594
             ],
             "type": "ToPoint",
             "units": "in"
@@ -259,14 +259,14 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              2.500000000070064,
-              0.00000000012767886747866442
+              2.50000000000016,
+              0.000000000000011657341758564144
             ],
             "from": [
-              2.859979391882502,
-              0.6579626415268301
+              2.8599845935418005,
+              0.657959795440594
             ],
-            "radius": 0.7500000000044006,
+            "radius": 0.7500000000023688,
             "tag": {
               "commentStart": 966,
               "end": 977,
@@ -276,8 +276,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "rightEndArc"
             },
             "to": [
-              2.8599793917924687,
-              -0.6579626413207307
+              2.8599845965049036,
+              -0.6579597938193904
             ],
             "type": "Arc",
             "units": "in"
@@ -288,8 +288,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.8599793917924687,
-              -0.6579626413207307
+              2.8599845965049036,
+              -0.6579597938193904
             ],
             "tag": {
               "commentStart": 1153,
@@ -300,62 +300,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "lowerRightTransition"
             },
             "to": [
-              0.9358720832811473,
-              -1.7107435391035366
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.00000000000000011102230246251565,
-              0.00000000000010524914273446484
-            ],
-            "from": [
-              -0.9358720825923019,
-              -1.7107435378418723
-            ],
-            "radius": 1.9500000018573687,
-            "tag": {
-              "commentStart": 1325,
-              "end": 1340,
-              "moduleId": 0,
-              "start": 1325,
-              "type": "TagDeclarator",
-              "value": "bottomCenterArc"
-            },
-            "to": [
-              0.935872082591239,
-              -1.7107435378424536
-            ],
-            "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9358720832822102,
-              -1.7107435391029553
-            ],
-            "tag": {
-              "commentStart": 1522,
-              "end": 1541,
-              "moduleId": 0,
-              "start": 1522,
-              "type": "TagDeclarator",
-              "value": "lowerLeftTransition"
-            },
-            "to": [
-              -2.8599793918345235,
-              -0.6579626415529755
+              0.9358159756222706,
+              -1.7107742379260795
             ],
             "type": "ToPoint",
             "units": "in"
@@ -367,25 +313,25 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              -2.5000000000700644,
-              -0.0000000001275743954920472
+              0.00000000000008704148513061227,
+              -0.00000000000015920598173124745
             ],
             "from": [
-              -2.8599793918345235,
-              -0.6579626415529755
+              0.9358159756222706,
+              -1.7107742379260795
             ],
-            "radius": 0.7500000000044006,
+            "radius": 1.9500000085591571,
             "tag": {
-              "commentStart": 1698,
-              "end": 1708,
+              "commentStart": 1325,
+              "end": 1340,
               "moduleId": 0,
-              "start": 1698,
+              "start": 1325,
               "type": "TagDeclarator",
-              "value": "leftEndArc"
+              "value": "bottomCenterArc"
             },
             "to": [
-              -2.859979391814856,
-              0.6579626413085871
+              -0.9358159526011027,
+              -1.7107742505188654
             ],
             "type": "Arc",
             "units": "in"
@@ -396,8 +342,62 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -2.859979391814856,
-              0.6579626413085871
+              -0.9358159526011027,
+              -1.7107742505188654
+            ],
+            "tag": {
+              "commentStart": 1522,
+              "end": 1541,
+              "moduleId": 0,
+              "start": 1522,
+              "type": "TagDeclarator",
+              "value": "lowerLeftTransition"
+            },
+            "to": [
+              -2.859984596915003,
+              -0.6579597935950383
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.5000000000001603,
+              -0.000000000000012101430968414206
+            ],
+            "from": [
+              -2.859984596915003,
+              -0.6579597935950383
+            ],
+            "radius": 0.7500000000023676,
+            "tag": {
+              "commentStart": 1698,
+              "end": 1708,
+              "moduleId": 0,
+              "start": 1698,
+              "type": "TagDeclarator",
+              "value": "leftEndArc"
+            },
+            "to": [
+              -2.859984597734331,
+              0.6579597931467415
+            ],
+            "type": "Arc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.859984597734331,
+              0.6579597931467415
             ],
             "tag": {
               "commentStart": 1885,
@@ -408,8 +408,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "upperLeftTransition"
             },
             "to": [
-              -0.9358720832783843,
-              1.7107435391051538
+              -0.9358159823850111,
+              1.7107742342224819
             ],
             "type": "ToPoint",
             "units": "in"
@@ -419,16 +419,16 @@ description: Variables in memory after executing countersunk-plate.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.00000000000000011102230246251565,
-              -0.0
+              -0.00000000000008748557434046234,
+              0.00000000000015920598173124745
             ],
             "from": [
-              0.9358720825938365,
-              1.7107435378411395
+              -0.9358159823850111,
+              1.7107742342224819
             ],
-            "radius": 1.95000000185737,
+            "radius": 1.9500000085553935,
             "tag": {
               "commentStart": 2054,
               "end": 2066,
@@ -438,8 +438,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "topCenterArc"
             },
             "to": [
-              -0.9358720825884765,
-              1.7107435378440716
+              0.935816136629362,
+              1.7107741498486908
             ],
             "type": "Arc",
             "units": "in"
@@ -478,12 +478,12 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "start": {
           "from": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "to": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "units": "in",
           "tag": null,
@@ -557,8 +557,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "sourceRange": []
           },
           "from": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "tag": {
             "commentStart": 871,
@@ -569,8 +569,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "value": "upperRightTransition"
           },
           "to": [
-            2.859979391882502,
-            0.6579626415268301
+            2.8599845935418005,
+            0.657959795440594
           ],
           "type": "ToPoint",
           "units": "in"
@@ -582,14 +582,14 @@ description: Variables in memory after executing countersunk-plate.kcl
           },
           "ccw": false,
           "center": [
-            2.500000000070064,
-            0.00000000012767886747866442
+            2.50000000000016,
+            0.000000000000011657341758564144
           ],
           "from": [
-            2.859979391882502,
-            0.6579626415268301
+            2.8599845935418005,
+            0.657959795440594
           ],
-          "radius": 0.7500000000044006,
+          "radius": 0.7500000000023688,
           "tag": {
             "commentStart": 966,
             "end": 977,
@@ -599,8 +599,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "value": "rightEndArc"
           },
           "to": [
-            2.8599793917924687,
-            -0.6579626413207307
+            2.8599845965049036,
+            -0.6579597938193904
           ],
           "type": "Arc",
           "units": "in"
@@ -611,8 +611,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "sourceRange": []
           },
           "from": [
-            2.8599793917924687,
-            -0.6579626413207307
+            2.8599845965049036,
+            -0.6579597938193904
           ],
           "tag": {
             "commentStart": 1153,
@@ -623,62 +623,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "value": "lowerRightTransition"
           },
           "to": [
-            0.9358720832811473,
-            -1.7107435391035366
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.00000000000000011102230246251565,
-            0.00000000000010524914273446484
-          ],
-          "from": [
-            -0.9358720825923019,
-            -1.7107435378418723
-          ],
-          "radius": 1.9500000018573687,
-          "tag": {
-            "commentStart": 1325,
-            "end": 1340,
-            "moduleId": 0,
-            "start": 1325,
-            "type": "TagDeclarator",
-            "value": "bottomCenterArc"
-          },
-          "to": [
-            0.935872082591239,
-            -1.7107435378424536
-          ],
-          "type": "Arc",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.9358720832822102,
-            -1.7107435391029553
-          ],
-          "tag": {
-            "commentStart": 1522,
-            "end": 1541,
-            "moduleId": 0,
-            "start": 1522,
-            "type": "TagDeclarator",
-            "value": "lowerLeftTransition"
-          },
-          "to": [
-            -2.8599793918345235,
-            -0.6579626415529755
+            0.9358159756222706,
+            -1.7107742379260795
           ],
           "type": "ToPoint",
           "units": "in"
@@ -690,25 +636,25 @@ description: Variables in memory after executing countersunk-plate.kcl
           },
           "ccw": false,
           "center": [
-            -2.5000000000700644,
-            -0.0000000001275743954920472
+            0.00000000000008704148513061227,
+            -0.00000000000015920598173124745
           ],
           "from": [
-            -2.8599793918345235,
-            -0.6579626415529755
+            0.9358159756222706,
+            -1.7107742379260795
           ],
-          "radius": 0.7500000000044006,
+          "radius": 1.9500000085591571,
           "tag": {
-            "commentStart": 1698,
-            "end": 1708,
+            "commentStart": 1325,
+            "end": 1340,
             "moduleId": 0,
-            "start": 1698,
+            "start": 1325,
             "type": "TagDeclarator",
-            "value": "leftEndArc"
+            "value": "bottomCenterArc"
           },
           "to": [
-            -2.859979391814856,
-            0.6579626413085871
+            -0.9358159526011027,
+            -1.7107742505188654
           ],
           "type": "Arc",
           "units": "in"
@@ -719,8 +665,62 @@ description: Variables in memory after executing countersunk-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -2.859979391814856,
-            0.6579626413085871
+            -0.9358159526011027,
+            -1.7107742505188654
+          ],
+          "tag": {
+            "commentStart": 1522,
+            "end": 1541,
+            "moduleId": 0,
+            "start": 1522,
+            "type": "TagDeclarator",
+            "value": "lowerLeftTransition"
+          },
+          "to": [
+            -2.859984596915003,
+            -0.6579597935950383
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            -2.5000000000001603,
+            -0.000000000000012101430968414206
+          ],
+          "from": [
+            -2.859984596915003,
+            -0.6579597935950383
+          ],
+          "radius": 0.7500000000023676,
+          "tag": {
+            "commentStart": 1698,
+            "end": 1708,
+            "moduleId": 0,
+            "start": 1698,
+            "type": "TagDeclarator",
+            "value": "leftEndArc"
+          },
+          "to": [
+            -2.859984597734331,
+            0.6579597931467415
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.859984597734331,
+            0.6579597931467415
           ],
           "tag": {
             "commentStart": 1885,
@@ -731,8 +731,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "value": "upperLeftTransition"
           },
           "to": [
-            -0.9358720832783843,
-            1.7107435391051538
+            -0.9358159823850111,
+            1.7107742342224819
           ],
           "type": "ToPoint",
           "units": "in"
@@ -742,16 +742,16 @@ description: Variables in memory after executing countersunk-plate.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            0.00000000000000011102230246251565,
-            -0.0
+            -0.00000000000008748557434046234,
+            0.00000000000015920598173124745
           ],
           "from": [
-            0.9358720825938365,
-            1.7107435378411395
+            -0.9358159823850111,
+            1.7107742342224819
           ],
-          "radius": 1.95000000185737,
+          "radius": 1.9500000085553935,
           "tag": {
             "commentStart": 2054,
             "end": 2066,
@@ -761,8 +761,8 @@ description: Variables in memory after executing countersunk-plate.kcl
             "value": "topCenterArc"
           },
           "to": [
-            -0.9358720825884765,
-            1.7107435378440716
+            0.935816136629362,
+            1.7107741498486908
           ],
           "type": "Arc",
           "units": "in"
@@ -801,12 +801,12 @@ description: Variables in memory after executing countersunk-plate.kcl
       },
       "start": {
         "from": [
-          0.9358720832837444,
-          1.710743539102222
+          0.9358161366217276,
+          1.7107741498344147
         ],
         "to": [
-          0.9358720832837444,
-          1.710743539102222
+          0.9358161366217276,
+          1.7107741498344147
         ],
         "units": "in",
         "tag": null,
@@ -878,7 +878,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.9358720825923019,
+                        "n": -0.9358159526004294,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -886,7 +886,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -1.7107435378418723,
+                        "n": -1.7107742505173174,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -896,7 +896,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.9358720825912391,
+                        "n": 0.9358159756221835,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -904,7 +904,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -1.7107435378424536,
+                        "n": -1.7107742379259203,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -914,7 +914,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000000000009412227193677931,
+                        "n": 0.00000000000000000023639176373513815,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -922,7 +922,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000010516776114035543,
+                        "n": 0.000000000000000022117714663944402,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1030,7 +1030,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 1.270887088340596,
+                        "n": 1.2708870883618744,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1038,7 +1038,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.7967722439249263,
+                        "n": -0.7967722438909866,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.000000000000000000032938460766450504,
+                        "n": 0.0000000000000000001298345641475714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1056,7 +1056,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000000029800707118058343,
+                        "n": -0.00000000000000000002711235015137586,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1150,7 +1150,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -2.8599793917449983,
+                        "n": -2.859984597734327,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1158,7 +1158,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6579626414362667,
+                        "n": 0.6579597931467583,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1168,7 +1168,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.859979391764666,
+                        "n": -2.8599845969149964,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1176,7 +1176,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.6579626414252959,
+                        "n": -0.6579597935950264,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1186,7 +1186,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": -2.500000000000207,
+                        "n": -2.5000000000001537,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1194,7 +1194,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000010516783657287953,
+                        "n": -0.00000000000000017291475779875525,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1302,7 +1302,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.500000000000069,
+                        "n": -2.5000000000001537,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1310,7 +1310,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000010516780994882206,
+                        "n": -0.00000000000000017289525965643882,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1320,7 +1320,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000000000000037381600601750935,
+                        "n": 0.0000000000000000002089008925881867,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1328,7 +1328,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000010516778560818251,
+                        "n": 0.00000000000000002209821531644945,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1423,7 +1423,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.9358720832822102,
+                        "n": -0.9358159526005166,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1431,7 +1431,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -1.7107435391029553,
+                        "n": -1.710774250517477,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1441,7 +1441,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.8599793918345235,
+                        "n": -2.859984596915003,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1449,7 +1449,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.6579626415529755,
+                        "n": -0.6579597935950383,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1543,7 +1543,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.859979391792469,
+                        "n": 2.8599845965049,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1551,7 +1551,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.6579626415760896,
+                        "n": -0.6579597938194074,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1561,7 +1561,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.9358720832811473,
+                        "n": 0.9358159756222706,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1569,7 +1569,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -1.7107435391035366,
+                        "n": -1.7107742379260795,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1666,8 +1666,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.9358720832837444,
-                    1.710743539102222
+                    0.9358161366217276,
+                    1.7107741498344147
                   ],
                   "tag": {
                     "commentStart": 871,
@@ -1678,8 +1678,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "value": "upperRightTransition"
                   },
                   "to": [
-                    2.859979391882502,
-                    0.6579626415268301
+                    2.8599845935418005,
+                    0.657959795440594
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1691,14 +1691,14 @@ description: Variables in memory after executing countersunk-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    2.500000000070064,
-                    0.00000000012767886747866442
+                    2.50000000000016,
+                    0.000000000000011657341758564144
                   ],
                   "from": [
-                    2.859979391882502,
-                    0.6579626415268301
+                    2.8599845935418005,
+                    0.657959795440594
                   ],
-                  "radius": 0.7500000000044006,
+                  "radius": 0.7500000000023688,
                   "tag": {
                     "commentStart": 966,
                     "end": 977,
@@ -1708,8 +1708,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "value": "rightEndArc"
                   },
                   "to": [
-                    2.8599793917924687,
-                    -0.6579626413207307
+                    2.8599845965049036,
+                    -0.6579597938193904
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -1720,8 +1720,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.8599793917924687,
-                    -0.6579626413207307
+                    2.8599845965049036,
+                    -0.6579597938193904
                   ],
                   "tag": {
                     "commentStart": 1153,
@@ -1732,96 +1732,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "value": "lowerRightTransition"
                   },
                   "to": [
-                    0.9358720832811473,
-                    -1.7107435391035366
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.9358720832811473,
-                    -1.7107435391035366
-                  ],
-                  "tag": null,
-                  "to": [
-                    -0.9358720825923019,
-                    -1.7107435378418723
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
-                  "center": [
-                    0.00000000000000011102230246251565,
-                    0.00000000000010524914273446484
-                  ],
-                  "from": [
-                    -0.9358720825923019,
-                    -1.7107435378418723
-                  ],
-                  "radius": 1.9500000018573687,
-                  "tag": {
-                    "commentStart": 1325,
-                    "end": 1340,
-                    "moduleId": 0,
-                    "start": 1325,
-                    "type": "TagDeclarator",
-                    "value": "bottomCenterArc"
-                  },
-                  "to": [
-                    0.935872082591239,
-                    -1.7107435378424536
-                  ],
-                  "type": "Arc",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.935872082591239,
-                    -1.7107435378424536
-                  ],
-                  "tag": null,
-                  "to": [
-                    -0.9358720832822102,
-                    -1.7107435391029553
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -0.9358720832822102,
-                    -1.7107435391029553
-                  ],
-                  "tag": {
-                    "commentStart": 1522,
-                    "end": 1541,
-                    "moduleId": 0,
-                    "start": 1522,
-                    "type": "TagDeclarator",
-                    "value": "lowerLeftTransition"
-                  },
-                  "to": [
-                    -2.8599793918345235,
-                    -0.6579626415529755
+                    0.9358159756222706,
+                    -1.7107742379260795
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1833,25 +1745,25 @@ description: Variables in memory after executing countersunk-plate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -2.5000000000700644,
-                    -0.0000000001275743954920472
+                    0.00000000000008704148513061227,
+                    -0.00000000000015920598173124745
                   ],
                   "from": [
-                    -2.8599793918345235,
-                    -0.6579626415529755
+                    0.9358159756222706,
+                    -1.7107742379260795
                   ],
-                  "radius": 0.7500000000044006,
+                  "radius": 1.9500000085591571,
                   "tag": {
-                    "commentStart": 1698,
-                    "end": 1708,
+                    "commentStart": 1325,
+                    "end": 1340,
                     "moduleId": 0,
-                    "start": 1698,
+                    "start": 1325,
                     "type": "TagDeclarator",
-                    "value": "leftEndArc"
+                    "value": "bottomCenterArc"
                   },
                   "to": [
-                    -2.859979391814856,
-                    0.6579626413085871
+                    -0.9358159526011027,
+                    -1.7107742505188654
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -1862,8 +1774,62 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.859979391814856,
-                    0.6579626413085871
+                    -0.9358159526011027,
+                    -1.7107742505188654
+                  ],
+                  "tag": {
+                    "commentStart": 1522,
+                    "end": 1541,
+                    "moduleId": 0,
+                    "start": 1522,
+                    "type": "TagDeclarator",
+                    "value": "lowerLeftTransition"
+                  },
+                  "to": [
+                    -2.859984596915003,
+                    -0.6579597935950383
+                  ],
+                  "type": "ToPoint",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": false,
+                  "center": [
+                    -2.5000000000001603,
+                    -0.000000000000012101430968414206
+                  ],
+                  "from": [
+                    -2.859984596915003,
+                    -0.6579597935950383
+                  ],
+                  "radius": 0.7500000000023676,
+                  "tag": {
+                    "commentStart": 1698,
+                    "end": 1708,
+                    "moduleId": 0,
+                    "start": 1698,
+                    "type": "TagDeclarator",
+                    "value": "leftEndArc"
+                  },
+                  "to": [
+                    -2.859984597734331,
+                    0.6579597931467415
+                  ],
+                  "type": "Arc",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -2.859984597734331,
+                    0.6579597931467415
                   ],
                   "tag": {
                     "commentStart": 1885,
@@ -1874,8 +1840,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "value": "upperLeftTransition"
                   },
                   "to": [
-                    -0.9358720832783843,
-                    1.7107435391051538
+                    -0.9358159823850111,
+                    1.7107742342224819
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1885,33 +1851,16 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    -0.9358720832783843,
-                    1.7107435391051538
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.9358720825938365,
-                    1.7107435378411395
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
+                  "ccw": false,
                   "center": [
-                    0.00000000000000011102230246251565,
-                    -0.0
+                    -0.00000000000008748557434046234,
+                    0.00000000000015920598173124745
                   ],
                   "from": [
-                    0.9358720825938365,
-                    1.7107435378411395
+                    -0.9358159823850111,
+                    1.7107742342224819
                   ],
-                  "radius": 1.95000000185737,
+                  "radius": 1.9500000085553935,
                   "tag": {
                     "commentStart": 2054,
                     "end": 2066,
@@ -1921,8 +1870,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "value": "topCenterArc"
                   },
                   "to": [
-                    -0.9358720825884765,
-                    1.7107435378440716
+                    0.935816136629362,
+                    1.7107741498486908
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -1933,13 +1882,13 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.9358720825884765,
-                    1.7107435378440716
+                    0.935816136629362,
+                    1.7107741498486908
                   ],
                   "tag": null,
                   "to": [
-                    1.270887088340596,
-                    -0.7967722439249263
+                    1.2708870883618744,
+                    -0.7967722438909866
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1951,14 +1900,14 @@ description: Variables in memory after executing countersunk-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.000000000000000000032938460766450504,
-                    -0.000000000000000000029800707118058343
+                    0.0000000000000000001298345641475714,
+                    -0.00000000000000000002711235015137586
                   ],
                   "from": [
-                    1.270887088340596,
-                    -0.7967722439249263
+                    1.2708870883618744,
+                    -0.7967722438909866
                   ],
-                  "radius": 1.5,
+                  "radius": 1.5000000000000002,
                   "tag": {
                     "commentStart": 3686,
                     "end": 3707,
@@ -1968,8 +1917,8 @@ description: Variables in memory after executing countersunk-plate.kcl
                     "value": "centerClearanceCircle"
                   },
                   "to": [
-                    1.270887088340596,
-                    -0.7967722439249263
+                    1.2708870883618744,
+                    -0.7967722438909866
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -2008,12 +1957,12 @@ description: Variables in memory after executing countersunk-plate.kcl
               },
               "start": {
                 "from": [
-                  0.9358720832837444,
-                  1.710743539102222
+                  0.9358161366217276,
+                  1.7107741498344147
                 ],
                 "to": [
-                  0.9358720832837444,
-                  1.710743539102222
+                  0.9358161366217276,
+                  1.7107741498344147
                 ],
                 "units": "in",
                 "tag": null,
@@ -2063,7 +2012,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": "in",
-              "isClosed": "no"
+              "isClosed": "implicitly"
             }
           }
         },
@@ -2081,7 +2030,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.8599793917226117,
+                        "n": 2.8599845965048933,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2089,7 +2038,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.6579626414484097,
+                        "n": -0.6579597938193954,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2099,7 +2048,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.859979391812645,
+                        "n": 2.8599845935417942,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2107,7 +2056,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6579626413991512,
+                        "n": 0.6579597954405821,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2117,7 +2066,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 2.500000000000207,
+                        "n": 2.5000000000001537,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2125,7 +2074,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000000021622565605161612,
+                        "n": -0.0000000000000002612217683785772,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2233,7 +2182,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000000003293846062007276,
+                        "n": 0.00000000000000000012983456416636228,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2241,7 +2190,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000000002980070709068042,
+                        "n": -0.00000000000000000002711235016315251,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2251,7 +2200,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.500000000000069,
+                        "n": 2.5000000000001537,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2259,7 +2208,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000000012301318170249717,
+                        "n": -0.0000000000000002611956515247469,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2354,7 +2303,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.9358720825938365,
+                        "n": 0.9358161366216404,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2362,7 +2311,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 1.7107435378411395,
+                        "n": 1.7107741498342555,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2372,7 +2321,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.9358720825884761,
+                        "n": -0.9358159823849239,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2380,7 +2329,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 1.7107435378440707,
+                        "n": 1.7107742342223224,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2390,7 +2339,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000000000000002730455369984807,
+                        "n": 0.0000000000000000001573251728396828,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2398,7 +2347,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000006341176760496826,
+                        "n": -0.0000000000000000000009954962574603157,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2506,7 +2455,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.8599793918148557,
+                        "n": -2.859984597734333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2514,7 +2463,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6579626415639465,
+                        "n": 0.6579597931467702,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2524,7 +2473,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.9358720832783843,
+                        "n": -0.9358159823850111,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2532,7 +2481,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 1.7107435391051538,
+                        "n": 1.7107742342224819,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2626,7 +2575,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.9358720832837444,
+                        "n": 0.9358161366217276,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2634,7 +2583,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 1.710743539102222,
+                        "n": 1.7107741498344147,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2644,7 +2593,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.859979391882502,
+                        "n": 2.8599845935418005,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2652,7 +2601,7 @@ description: Variables in memory after executing countersunk-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6579626415268301,
+                        "n": 0.657959795440594,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2891,8 +2840,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.9358720832837444,
-              1.710743539102222
+              0.9358161366217276,
+              1.7107741498344147
             ],
             "tag": {
               "commentStart": 871,
@@ -2903,8 +2852,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "upperRightTransition"
             },
             "to": [
-              2.859979391882502,
-              0.6579626415268301
+              2.8599845935418005,
+              0.657959795440594
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2916,14 +2865,14 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              2.500000000070064,
-              0.00000000012767886747866442
+              2.50000000000016,
+              0.000000000000011657341758564144
             ],
             "from": [
-              2.859979391882502,
-              0.6579626415268301
+              2.8599845935418005,
+              0.657959795440594
             ],
-            "radius": 0.7500000000044006,
+            "radius": 0.7500000000023688,
             "tag": {
               "commentStart": 966,
               "end": 977,
@@ -2933,8 +2882,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "rightEndArc"
             },
             "to": [
-              2.8599793917924687,
-              -0.6579626413207307
+              2.8599845965049036,
+              -0.6579597938193904
             ],
             "type": "Arc",
             "units": "in"
@@ -2945,8 +2894,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.8599793917924687,
-              -0.6579626413207307
+              2.8599845965049036,
+              -0.6579597938193904
             ],
             "tag": {
               "commentStart": 1153,
@@ -2957,62 +2906,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "lowerRightTransition"
             },
             "to": [
-              0.9358720832811473,
-              -1.7107435391035366
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.00000000000000011102230246251565,
-              0.00000000000010524914273446484
-            ],
-            "from": [
-              -0.9358720825923019,
-              -1.7107435378418723
-            ],
-            "radius": 1.9500000018573687,
-            "tag": {
-              "commentStart": 1325,
-              "end": 1340,
-              "moduleId": 0,
-              "start": 1325,
-              "type": "TagDeclarator",
-              "value": "bottomCenterArc"
-            },
-            "to": [
-              0.935872082591239,
-              -1.7107435378424536
-            ],
-            "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9358720832822102,
-              -1.7107435391029553
-            ],
-            "tag": {
-              "commentStart": 1522,
-              "end": 1541,
-              "moduleId": 0,
-              "start": 1522,
-              "type": "TagDeclarator",
-              "value": "lowerLeftTransition"
-            },
-            "to": [
-              -2.8599793918345235,
-              -0.6579626415529755
+              0.9358159756222706,
+              -1.7107742379260795
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3024,25 +2919,25 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              -2.5000000000700644,
-              -0.0000000001275743954920472
+              0.00000000000008704148513061227,
+              -0.00000000000015920598173124745
             ],
             "from": [
-              -2.8599793918345235,
-              -0.6579626415529755
+              0.9358159756222706,
+              -1.7107742379260795
             ],
-            "radius": 0.7500000000044006,
+            "radius": 1.9500000085591571,
             "tag": {
-              "commentStart": 1698,
-              "end": 1708,
+              "commentStart": 1325,
+              "end": 1340,
               "moduleId": 0,
-              "start": 1698,
+              "start": 1325,
               "type": "TagDeclarator",
-              "value": "leftEndArc"
+              "value": "bottomCenterArc"
             },
             "to": [
-              -2.859979391814856,
-              0.6579626413085871
+              -0.9358159526011027,
+              -1.7107742505188654
             ],
             "type": "Arc",
             "units": "in"
@@ -3053,8 +2948,62 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -2.859979391814856,
-              0.6579626413085871
+              -0.9358159526011027,
+              -1.7107742505188654
+            ],
+            "tag": {
+              "commentStart": 1522,
+              "end": 1541,
+              "moduleId": 0,
+              "start": 1522,
+              "type": "TagDeclarator",
+              "value": "lowerLeftTransition"
+            },
+            "to": [
+              -2.859984596915003,
+              -0.6579597935950383
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.5000000000001603,
+              -0.000000000000012101430968414206
+            ],
+            "from": [
+              -2.859984596915003,
+              -0.6579597935950383
+            ],
+            "radius": 0.7500000000023676,
+            "tag": {
+              "commentStart": 1698,
+              "end": 1708,
+              "moduleId": 0,
+              "start": 1698,
+              "type": "TagDeclarator",
+              "value": "leftEndArc"
+            },
+            "to": [
+              -2.859984597734331,
+              0.6579597931467415
+            ],
+            "type": "Arc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.859984597734331,
+              0.6579597931467415
             ],
             "tag": {
               "commentStart": 1885,
@@ -3065,8 +3014,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "upperLeftTransition"
             },
             "to": [
-              -0.9358720832783843,
-              1.7107435391051538
+              -0.9358159823850111,
+              1.7107742342224819
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3076,16 +3025,16 @@ description: Variables in memory after executing countersunk-plate.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.00000000000000011102230246251565,
-              -0.0
+              -0.00000000000008748557434046234,
+              0.00000000000015920598173124745
             ],
             "from": [
-              0.9358720825938365,
-              1.7107435378411395
+              -0.9358159823850111,
+              1.7107742342224819
             ],
-            "radius": 1.95000000185737,
+            "radius": 1.9500000085553935,
             "tag": {
               "commentStart": 2054,
               "end": 2066,
@@ -3095,8 +3044,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "topCenterArc"
             },
             "to": [
-              -0.9358720825884765,
-              1.7107435378440716
+              0.935816136629362,
+              1.7107741498486908
             ],
             "type": "Arc",
             "units": "in"
@@ -3135,12 +3084,12 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "start": {
           "from": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "to": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "units": "in",
           "tag": null,
@@ -3347,8 +3296,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.9358720832837444,
-              1.710743539102222
+              0.9358161366217276,
+              1.7107741498344147
             ],
             "tag": {
               "commentStart": 871,
@@ -3359,8 +3308,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "upperRightTransition"
             },
             "to": [
-              2.859979391882502,
-              0.6579626415268301
+              2.8599845935418005,
+              0.657959795440594
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3372,14 +3321,14 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              2.500000000070064,
-              0.00000000012767886747866442
+              2.50000000000016,
+              0.000000000000011657341758564144
             ],
             "from": [
-              2.859979391882502,
-              0.6579626415268301
+              2.8599845935418005,
+              0.657959795440594
             ],
-            "radius": 0.7500000000044006,
+            "radius": 0.7500000000023688,
             "tag": {
               "commentStart": 966,
               "end": 977,
@@ -3389,8 +3338,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "rightEndArc"
             },
             "to": [
-              2.8599793917924687,
-              -0.6579626413207307
+              2.8599845965049036,
+              -0.6579597938193904
             ],
             "type": "Arc",
             "units": "in"
@@ -3401,8 +3350,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.8599793917924687,
-              -0.6579626413207307
+              2.8599845965049036,
+              -0.6579597938193904
             ],
             "tag": {
               "commentStart": 1153,
@@ -3413,62 +3362,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "lowerRightTransition"
             },
             "to": [
-              0.9358720832811473,
-              -1.7107435391035366
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.00000000000000011102230246251565,
-              0.00000000000010524914273446484
-            ],
-            "from": [
-              -0.9358720825923019,
-              -1.7107435378418723
-            ],
-            "radius": 1.9500000018573687,
-            "tag": {
-              "commentStart": 1325,
-              "end": 1340,
-              "moduleId": 0,
-              "start": 1325,
-              "type": "TagDeclarator",
-              "value": "bottomCenterArc"
-            },
-            "to": [
-              0.935872082591239,
-              -1.7107435378424536
-            ],
-            "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9358720832822102,
-              -1.7107435391029553
-            ],
-            "tag": {
-              "commentStart": 1522,
-              "end": 1541,
-              "moduleId": 0,
-              "start": 1522,
-              "type": "TagDeclarator",
-              "value": "lowerLeftTransition"
-            },
-            "to": [
-              -2.8599793918345235,
-              -0.6579626415529755
+              0.9358159756222706,
+              -1.7107742379260795
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3480,25 +3375,25 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              -2.5000000000700644,
-              -0.0000000001275743954920472
+              0.00000000000008704148513061227,
+              -0.00000000000015920598173124745
             ],
             "from": [
-              -2.8599793918345235,
-              -0.6579626415529755
+              0.9358159756222706,
+              -1.7107742379260795
             ],
-            "radius": 0.7500000000044006,
+            "radius": 1.9500000085591571,
             "tag": {
-              "commentStart": 1698,
-              "end": 1708,
+              "commentStart": 1325,
+              "end": 1340,
               "moduleId": 0,
-              "start": 1698,
+              "start": 1325,
               "type": "TagDeclarator",
-              "value": "leftEndArc"
+              "value": "bottomCenterArc"
             },
             "to": [
-              -2.859979391814856,
-              0.6579626413085871
+              -0.9358159526011027,
+              -1.7107742505188654
             ],
             "type": "Arc",
             "units": "in"
@@ -3509,8 +3404,62 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -2.859979391814856,
-              0.6579626413085871
+              -0.9358159526011027,
+              -1.7107742505188654
+            ],
+            "tag": {
+              "commentStart": 1522,
+              "end": 1541,
+              "moduleId": 0,
+              "start": 1522,
+              "type": "TagDeclarator",
+              "value": "lowerLeftTransition"
+            },
+            "to": [
+              -2.859984596915003,
+              -0.6579597935950383
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.5000000000001603,
+              -0.000000000000012101430968414206
+            ],
+            "from": [
+              -2.859984596915003,
+              -0.6579597935950383
+            ],
+            "radius": 0.7500000000023676,
+            "tag": {
+              "commentStart": 1698,
+              "end": 1708,
+              "moduleId": 0,
+              "start": 1698,
+              "type": "TagDeclarator",
+              "value": "leftEndArc"
+            },
+            "to": [
+              -2.859984597734331,
+              0.6579597931467415
+            ],
+            "type": "Arc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.859984597734331,
+              0.6579597931467415
             ],
             "tag": {
               "commentStart": 1885,
@@ -3521,8 +3470,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "upperLeftTransition"
             },
             "to": [
-              -0.9358720832783843,
-              1.7107435391051538
+              -0.9358159823850111,
+              1.7107742342224819
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3532,16 +3481,16 @@ description: Variables in memory after executing countersunk-plate.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.00000000000000011102230246251565,
-              -0.0
+              -0.00000000000008748557434046234,
+              0.00000000000015920598173124745
             ],
             "from": [
-              0.9358720825938365,
-              1.7107435378411395
+              -0.9358159823850111,
+              1.7107742342224819
             ],
-            "radius": 1.95000000185737,
+            "radius": 1.9500000085553935,
             "tag": {
               "commentStart": 2054,
               "end": 2066,
@@ -3551,8 +3500,8 @@ description: Variables in memory after executing countersunk-plate.kcl
               "value": "topCenterArc"
             },
             "to": [
-              -0.9358720825884765,
-              1.7107435378440716
+              0.935816136629362,
+              1.7107741498486908
             ],
             "type": "Arc",
             "units": "in"
@@ -3591,12 +3540,12 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "start": {
           "from": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "to": [
-            0.9358720832837444,
-            1.710743539102222
+            0.9358161366217276,
+            1.7107741498344147
           ],
           "units": "in",
           "tag": null,
