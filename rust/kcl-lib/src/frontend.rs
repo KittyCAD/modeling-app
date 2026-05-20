@@ -172,6 +172,12 @@ enum EditDeleteKind {
     DeleteNonSketch,
 }
 
+struct ExecuteAfterEditOptions {
+    segment_ids_edited: AhashIndexSet<ObjectId>,
+    edit_kind: EditDeleteKind,
+    commit_solved_initial_guesses: bool,
+}
+
 impl EditDeleteKind {
     /// Returns true if this edit is any type of deletion.
     fn is_delete(&self) -> bool {
@@ -1003,10 +1009,12 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                drag_anchor_segment_ids,
-                EditDeleteKind::Edit,
                 &mut new_ast,
-                commit_solved_initial_guesses,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited: drag_anchor_segment_ids,
+                    edit_kind: EditDeleteKind::Edit,
+                    commit_solved_initial_guesses,
+                },
             )
             .await?;
         if invalidates_ids {
@@ -1191,10 +1199,12 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::DeleteNonSketch,
             &mut new_ast,
-            true,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::DeleteNonSketch,
+                commit_solved_initial_guesses: true,
+            },
         )
         .await
     }
@@ -1453,10 +1463,12 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::Edit,
             &mut new_ast,
-            true,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses: true,
+            },
         )
         .await
     }
@@ -1510,10 +1522,12 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            anchor_segment_ids.into_iter().collect(),
-            EditDeleteKind::Edit,
             &mut new_ast,
-            commit_solved_initial_guesses,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: anchor_segment_ids.into_iter().collect(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses,
+            },
         )
         .await
     }
@@ -1672,10 +1686,12 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
                 &mut new_ast,
-                true,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    commit_solved_initial_guesses: true,
+                },
             )
             .await?;
 
@@ -1761,10 +1777,12 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
                 &mut new_ast,
-                true,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    commit_solved_initial_guesses: true,
+                },
             )
             .await?;
 
@@ -3231,11 +3249,15 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         sketch_block_ref: AstNodeRef,
-        segment_ids_edited: AhashIndexSet<ObjectId>,
-        edit_kind: EditDeleteKind,
         new_ast: &mut ast::Node<ast::Program>,
-        commit_solved_initial_guesses: bool,
+        options: ExecuteAfterEditOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let ExecuteAfterEditOptions {
+            segment_ids_edited,
+            edit_kind,
+            commit_solved_initial_guesses,
+        } = options;
+
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
