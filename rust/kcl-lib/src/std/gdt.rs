@@ -1469,28 +1469,44 @@ gdt::flatness(
             .collect()
     }
 
-    #[track_caller]
-    fn set_scene_units(command: &ModelingCmd) -> kcmc::units::UnitLength {
+    fn set_scene_units(command: &ModelingCmd) -> Result<kcmc::units::UnitLength, KclError> {
         let ModelingCmd::SetSceneUnits(set_scene_units) = command else {
-            panic!("expected set_scene_units command, got {command:?}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("expected set_scene_units command, got {command:?}"),
+                vec![SourceRange::default()],
+            )));
         };
-        set_scene_units.unit
+        Ok(set_scene_units.unit)
     }
 
-    #[track_caller]
-    fn basic_dimension(command: &ModelingCmd) -> &AnnotationBasicDimension {
+    fn basic_dimension(command: &ModelingCmd) -> Result<&AnnotationBasicDimension, KclError> {
         let ModelingCmd::NewAnnotation(new_annotation) = command else {
-            panic!("expected new_annotation command, got {command:?}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("expected new_annotation command, got {command:?}"),
+                vec![SourceRange::default()],
+            )));
         };
-        new_annotation.options.dimension.as_ref().unwrap()
+        new_annotation.options.dimension.as_ref().ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "expected new_annotation command to have a dimension".to_owned(),
+                vec![SourceRange::default()],
+            ))
+        })
     }
 
-    #[track_caller]
-    fn feature_control(command: &ModelingCmd) -> &AnnotationFeatureControl {
+    fn feature_control(command: &ModelingCmd) -> Result<&AnnotationFeatureControl, KclError> {
         let ModelingCmd::NewAnnotation(new_annotation) = command else {
-            panic!("expected new_annotation command, got {command:?}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("expected new_annotation command, got {command:?}"),
+                vec![SourceRange::default()],
+            )));
         };
-        new_annotation.options.feature_control.as_ref().unwrap()
+        new_annotation.options.feature_control.as_ref().ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "expected new_annotation command to have a feature_control".to_owned(),
+                vec![SourceRange::default()],
+            ))
+        })
     }
 
     #[track_caller]
@@ -1498,12 +1514,16 @@ gdt::flatness(
         assert!((actual - expected).abs() < 1e-6, "expected {expected}, got {actual}");
     }
 
-    #[track_caller]
-    fn new_annotation_command_index(commands: &[ModelingCmd]) -> usize {
+    fn new_annotation_command_index(commands: &[ModelingCmd]) -> Result<usize, KclError> {
         commands
             .iter()
             .position(|command| matches!(command, ModelingCmd::NewAnnotation(_)))
-            .unwrap()
+            .ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "expected commands to contain a new_annotation command".to_owned(),
+                    vec![SourceRange::default()],
+                ))
+            })
     }
 
     #[test]
@@ -1561,17 +1581,20 @@ gdt::flatness(
             )
     }
 
-    async fn gdt_flatness_feature_control(font_size: &str, leader_scale: Option<&str>) -> AnnotationFeatureControl {
+    async fn gdt_flatness_feature_control(
+        font_size: &str,
+        leader_scale: Option<&str>,
+    ) -> Result<AnnotationFeatureControl, KclError> {
         let code = gdt_flatness_leader_kcl(font_size, leader_scale);
         let commands = gdt_commands(&code).await;
-        let annotation_index = new_annotation_command_index(&commands);
-        feature_control(&commands[annotation_index]).clone()
+        let annotation_index = new_annotation_command_index(&commands)?;
+        Ok(feature_control(&commands[annotation_index])?.clone())
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_dot_leader_scale_is_normalized_against_font_scale() {
-        let tiny = gdt_flatness_feature_control("1mm", None).await;
-        let large = gdt_flatness_feature_control("100mm", None).await;
+    async fn gdt_dot_leader_scale_is_normalized_against_font_scale() -> Result<(), KclError> {
+        let tiny = gdt_flatness_feature_control("1mm", None).await?;
+        let large = gdt_flatness_feature_control("100mm", None).await?;
 
         assert_close(f64::from(tiny.font_scale), gdt_font_scale_for_height_mm(1.0).into());
         assert_close(f64::from(large.font_scale), gdt_font_scale_for_height_mm(100.0).into());
@@ -1586,12 +1609,13 @@ gdt::flatness(
             f64::from(large.font_scale) * f64::from(large.leader_scale),
             f64::from(gdt_dot_leader_normal_size()),
         );
+        Ok(())
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn explicit_gdt_dot_leader_scale_multiplies_normal_size() {
-        let tiny = gdt_flatness_feature_control("1mm", Some("2")).await;
-        let large = gdt_flatness_feature_control("100mm", Some("2")).await;
+    async fn explicit_gdt_dot_leader_scale_multiplies_normal_size() -> Result<(), KclError> {
+        let tiny = gdt_flatness_feature_control("1mm", Some("2")).await?;
+        let large = gdt_flatness_feature_control("100mm", Some("2")).await?;
 
         let expected_scaled_dot_size = f64::from(gdt_dot_leader_normal_size()) * 2.0;
         assert_close(
@@ -1602,10 +1626,11 @@ gdt::flatness(
             f64::from(large.font_scale) * f64::from(large.leader_scale),
             expected_scaled_dot_size,
         );
+        Ok(())
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_flatness_uses_scene_units_for_control_frame_tolerance() {
+    async fn gdt_flatness_uses_scene_units_for_control_frame_tolerance() -> Result<(), KclError> {
         let cases = [
             ("in", "0.1in", "[10, -10]", 0.1, 254.0, -254.0),
             ("cm", "10mm", "[1, -1]", 1.0, 10.0, -10.0),
@@ -1614,9 +1639,14 @@ gdt::flatness(
         for (default_unit, tolerance, frame_position, expected_tolerance, expected_x, expected_y) in cases {
             let code = gdt_flatness_kcl(default_unit, tolerance, frame_position);
             let commands = gdt_commands(&code).await;
-            let annotation_index = new_annotation_command_index(&commands);
-            let feature_control = feature_control(&commands[annotation_index]);
-            let control_frame = feature_control.control_frame.as_ref().unwrap();
+            let annotation_index = new_annotation_command_index(&commands)?;
+            let feature_control = feature_control(&commands[annotation_index])?;
+            let control_frame = feature_control.control_frame.as_ref().ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "expected feature_control to have a control_frame".to_owned(),
+                    vec![SourceRange::default()],
+                ))
+            })?;
 
             assert_close(control_frame.tolerance, expected_tolerance);
             assert_close(feature_control.offset.x, expected_x);
@@ -1626,10 +1656,11 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_distance_sets_scene_units_around_non_mm_annotation() {
+    async fn gdt_distance_sets_scene_units_around_non_mm_annotation() -> Result<(), KclError> {
         let cases = [
             (
                 "in",
@@ -1654,12 +1685,12 @@ gdt::flatness(
         for (default_unit, tolerance, frame_position, scene_unit, expected_tolerance, expected_x, expected_y) in cases {
             let code = gdt_distance_kcl(default_unit, tolerance, frame_position);
             let commands = gdt_commands(&code).await;
-            let annotation_index = new_annotation_command_index(&commands);
-            let dimension = basic_dimension(&commands[annotation_index]);
+            let annotation_index = new_annotation_command_index(&commands)?;
+            let dimension = basic_dimension(&commands[annotation_index])?;
 
-            assert_eq!(set_scene_units(&commands[annotation_index - 1]), scene_unit);
+            assert_eq!(set_scene_units(&commands[annotation_index - 1])?, scene_unit);
             assert_eq!(
-                set_scene_units(&commands[annotation_index + 1]),
+                set_scene_units(&commands[annotation_index + 1])?,
                 kcmc::units::UnitLength::Millimeters
             );
 
@@ -1671,14 +1702,15 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_distance_keeps_mm_annotation_in_current_scene_units() {
+    async fn gdt_distance_keeps_mm_annotation_in_current_scene_units() -> Result<(), KclError> {
         let code = gdt_distance_kcl("mm", "2.54mm", "[10, -10]");
         let commands = gdt_commands(&code).await;
-        let annotation_index = new_annotation_command_index(&commands);
-        let dimension = basic_dimension(&commands[annotation_index]);
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let dimension = basic_dimension(&commands[annotation_index])?;
 
         assert!(
             !commands
@@ -1688,6 +1720,7 @@ gdt::flatness(
         assert_close(dimension.dimension.tolerance, 2.54);
         assert_close(dimension.offset.x, 10.0);
         assert_close(dimension.offset.y, -10.0);
+        Ok(())
     }
 
     const GDT_DATUM_KCL: &str = r#"
