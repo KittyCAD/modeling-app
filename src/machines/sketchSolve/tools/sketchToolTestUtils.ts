@@ -283,6 +283,7 @@ export function createMockRustContext(): RustContext {
     addConstraint: vi.fn(),
     chainSegment: vi.fn(),
     editSegments: vi.fn(),
+    editFixedConstraintPointPosition: vi.fn(),
     editDistanceConstraintLabelPosition: vi.fn(),
     deleteObjects: vi.fn(),
     settingsActor: {

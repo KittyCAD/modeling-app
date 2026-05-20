@@ -150,6 +150,29 @@ function createConstraintApiObject({
   }
 }
 
+function createCoincidentConstraintApiObject({
+  id,
+  segments,
+}: {
+  id: number
+  segments: Array<number | 'ORIGIN'>
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Constraint',
+      constraint: {
+        type: 'Coincident',
+        segments,
+      } as ApiConstraint,
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
 function createDraggedEntityIdGetter(entityId: number | null = null) {
   return vi.fn(() => entityId)
 }
@@ -279,9 +302,11 @@ function setUpMoveToolCallbacks({
 
   const context = {
     sceneInfra,
+    sketchId,
     rustContext: {
       editSegments: vi.fn(),
       editDistanceConstraintLabelPosition: vi.fn(),
+      editFixedConstraintPointPosition: vi.fn(),
       addConstraint: vi.fn(),
       deleteObjects: vi.fn(),
       restoreSketchCheckpoint: vi.fn(),
@@ -542,11 +567,13 @@ function createPointApiObject({
   x = 0,
   y = 0,
   owner = null,
+  freedom = 'Free',
 }: {
   id: number
   x?: number
   y?: number
   owner?: number | null
+  freedom?: 'Free' | 'Fixed' | 'Conflict'
 }): ApiObject {
   return {
     id,
@@ -560,7 +587,7 @@ function createPointApiObject({
         },
         ctor: null,
         owner,
-        freedom: 'Free',
+        freedom,
         constraints: [],
       },
     },
@@ -1240,6 +1267,145 @@ describe('createOnDragCallback', () => {
     // This ensures state is always clean after drag ends
     expect(invalidateDragSession).toHaveBeenCalledTimes(1)
     expect(setDraggedEntityId).toHaveBeenCalledWith(null)
+  })
+
+  it('should preview and commit fixed constraint position edits when dragging a coincident fixed cluster', async () => {
+    const fixedPoint = createPointApiObject({
+      id: 1,
+      x: 0,
+      y: 0,
+      freedom: 'Fixed',
+    })
+    const draggedPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const coincidentConstraint = createCoincidentConstraintApiObject({
+      id: 21,
+      segments: [1, 2],
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      fixedPoint,
+      draggedPoint,
+      coincidentConstraint,
+    ])
+    const previewResult = {
+      kclSource: { text: 'preview' },
+      sceneGraphDelta,
+      checkpointId: null,
+    }
+    const commitResult = {
+      kclSource: { text: 'committed' },
+      sceneGraphDelta,
+      checkpointId: 123,
+    }
+    const {
+      onMouseDownSelection,
+      onDragStart,
+      onDrag,
+      onDragEnd,
+      rustContext,
+      send,
+    } = setUpMoveToolCallbacks({
+      apiObjects: [fixedPoint, draggedPoint, coincidentConstraint],
+      hoveredId: 2,
+      selectedIds: [2],
+    })
+    ;(rustContext.editFixedConstraintPointPosition as any)
+      .mockResolvedValueOnce(previewResult)
+      .mockResolvedValueOnce(commitResult)
+
+    expect(onMouseDownSelection()).toBe(true)
+
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    await onDrag({
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
+      selected: undefined,
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
+      intersects: [],
+    })
+
+    await onDragEnd({
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
+      selected: undefined,
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
+      intersects: [],
+    })
+
+    expect(rustContext.editSegments).not.toHaveBeenCalled()
+    expect(rustContext.editFixedConstraintPointPosition).toHaveBeenCalledTimes(
+      2
+    )
+    expect(rustContext.editFixedConstraintPointPosition.mock.calls[0]).toEqual([
+      0,
+      0,
+      1,
+      {
+        x: { value: 10, units: 'Mm' },
+        y: { value: 20, units: 'Mm' },
+      },
+      {},
+      false,
+      false,
+    ])
+    expect(rustContext.editFixedConstraintPointPosition.mock.calls[1]).toEqual([
+      0,
+      0,
+      1,
+      {
+        x: { value: 10, units: 'Mm' },
+        y: { value: 20, units: 'Mm' },
+      },
+      {},
+      true,
+    ])
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'update sketch outcome',
+        data: expect.objectContaining({
+          sourceDelta: { text: 'committed' },
+          sceneGraphDelta,
+          checkpointId: 123,
+        }),
+      })
+    )
+  })
+
+  it('should disallow dragging a point transitively coincident with the origin', () => {
+    const originPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const draggedPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const originCoincidentConstraint = createCoincidentConstraintApiObject({
+      id: 20,
+      segments: [1, 'ORIGIN'],
+    })
+    const pointCoincidentConstraint = createCoincidentConstraintApiObject({
+      id: 21,
+      segments: [1, 2],
+    })
+    const { onMouseDownSelection } = setUpMoveToolCallbacks({
+      apiObjects: [
+        originPoint,
+        draggedPoint,
+        originCoincidentConstraint,
+        pointCoincidentConstraint,
+      ],
+      hoveredId: 2,
+      selectedIds: [2],
+    })
+
+    expect(onMouseDownSelection()).toBe(false)
   })
 
   it('does not add a duplicate coincident constraint when re-snapping near the same line midpoint', async () => {
@@ -3339,6 +3505,102 @@ describe('createOnDragCallback', () => {
       {},
       [2]
     )
+  })
+
+  it('should drag a fixed point by editing the fixed constraint position', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const fixedPoint = createPointApiObject({
+      id: 1,
+      x: 0,
+      y: 0,
+      freedom: 'Fixed',
+    })
+    const draggedPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const coincidentConstraint = createCoincidentConstraintApiObject({
+      id: 21,
+      segments: [1, 2],
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      fixedPoint,
+      draggedPoint,
+      coincidentConstraint,
+    ])
+    const result = {
+      kclSource: { text: 'updated code' },
+      sceneGraphDelta,
+    }
+    const getContextData = vi.fn(() => ({
+      selectedIds: [2],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn()
+    const editFixedConstraintPointPosition = vi.fn(() =>
+      Promise.resolve(result)
+    )
+    const onNewSketchOutcome = vi.fn()
+    const setLastGoodPreview = vi.fn()
+    const dragSnappingDeps = createDragSnappingDeps()
+    dragSnappingDeps.setLastGoodPreview = setLastGoodPreview
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      editFixedConstraintPointPosition,
+      onNewSketchOutcome,
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
+      selected: undefined,
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
+      intersects: [],
+    })
+
+    expect(editSegments).not.toHaveBeenCalled()
+    expect(editFixedConstraintPointPosition).toHaveBeenCalledWith(
+      0,
+      0,
+      1,
+      {
+        x: { value: 10, units: 'Mm' },
+        y: { value: 20, units: 'Mm' },
+      },
+      {}
+    )
+    expect(setLastGoodPreview).toHaveBeenCalledWith({
+      ...result,
+      segmentsToEdit: [],
+      constraintLabelEdits: [],
+      dragAnchorSegmentIds: [1],
+      fixedPositionEdit: {
+        pointId: 1,
+        position: {
+          x: { value: 10, units: 'Mm' },
+          y: { value: 20, units: 'Mm' },
+        },
+      },
+    })
+    expect(onNewSketchOutcome).toHaveBeenCalledWith({
+      ...result,
+      writeToDisk: false,
+      suppressExecOutcomeIssues: true,
+    })
   })
 
   it('drops a stale preview result when the drag session changes before the solve resolves', async () => {

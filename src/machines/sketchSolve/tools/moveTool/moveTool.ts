@@ -93,11 +93,19 @@ type ConstraintLabelEdit = {
   labelPosition: ApiPoint2d<ApiNumber>
 }
 
+type FixedPositionEdit = {
+  pointId: number
+  position: ApiPoint2d<ApiNumber>
+}
+
+type FixedDragTarget = { type: 'origin' } | { type: 'fixed'; pointId: number }
+
 type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
   constraintLabelEdits: ConstraintLabelEdit[]
   dragAnchorSegmentIds: number[]
   arcDragAnchors: ArcDragAnchor[]
+  fixedPositionEdit: FixedPositionEdit | null
 }
 
 type ClosestSelectionTarget = {
@@ -781,13 +789,69 @@ function findKinematicPivotPointId({
 }
 
 function hasFixedConstraint(pointId: number, objects: ApiObject[]) {
-  return objects.some(
+  return getFixedConstraintForPoint(pointId, objects) !== null
+}
+
+function getFixedDragTargetForPoint(
+  pointId: number,
+  objects: ApiObject[]
+): FixedDragTarget | null {
+  if (!isPointSegment(objects[pointId])) {
+    return null
+  }
+
+  const coincidentPointIds = getCoincidentCluster(pointId, objects)
+  if (
+    coincidentPointIds.some((coincidentPointId) =>
+      hasCoincidentConstraintWithOrigin(coincidentPointId, objects)
+    )
+  ) {
+    return { type: 'origin' }
+  }
+
+  for (const coincidentPointId of coincidentPointIds) {
+    const fixedConstraint = getFixedConstraintForPoint(
+      coincidentPointId,
+      objects
+    )
+    if (fixedConstraint) {
+      return fixedConstraint
+    }
+  }
+
+  return null
+}
+
+function getFixedConstraintForPoint(
+  pointId: number,
+  objects: ApiObject[]
+): Extract<FixedDragTarget, { type: 'fixed' }> | null {
+  const pointObject = objects[pointId]
+  if (
+    isPointSegment(pointObject) &&
+    pointObject.kind.segment.freedom === 'Fixed'
+  ) {
+    return {
+      type: 'fixed',
+      pointId,
+    }
+  }
+
+  const fixedConstraint = objects.find(
     (obj) =>
       isConstraint(obj, 'Fixed') &&
       obj.kind.constraint.points.some(
         (fixedPoint) => fixedPoint.point === pointId
       )
   )
+  if (!fixedConstraint) {
+    return null
+  }
+
+  return {
+    type: 'fixed',
+    pointId,
+  }
 }
 
 function rotatePointAroundPivot(point: Vector2, pivot: Vector2, angle: number) {
@@ -1611,6 +1675,7 @@ export function createOnDragCallback({
   getContextData,
   editSegments,
   editDistanceConstraintLabelPosition = async () => null,
+  editFixedConstraintPointPosition = async () => null,
   onNewSketchOutcome,
   getDefaultLengthUnit,
   getJsAppSettings,
@@ -1655,6 +1720,16 @@ export function createOnDragCallback({
     labelPosition: ApiPoint2d<ApiNumber>,
     settings: DeepPartial<Configuration>,
     anchorSegmentIds?: number[]
+  ) => Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  } | null>
+  editFixedConstraintPointPosition?: (
+    version: number,
+    sketchId: number,
+    pointId: number,
+    position: ApiPoint2d<ApiNumber>,
+    settings: DeepPartial<Configuration>
   ) => Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -1800,6 +1875,61 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const fixedDragTarget =
+        entityUnderCursorId === null
+          ? null
+          : getFixedDragTargetForPoint(entityUnderCursorId, objects)
+
+      if (fixedDragTarget?.type === 'origin') {
+        onUpdateDragSnapping(null)
+        return
+      }
+
+      if (fixedDragTarget?.type === 'fixed') {
+        onUpdateDragSnapping(null)
+        const fixedPositionEdit: FixedPositionEdit = {
+          pointId: fixedDragTarget.pointId,
+          position: buildConstraintLabelPosition(twoD, units),
+        }
+        const settings = await getJsAppSettings()
+        if (!isActiveDragSession()) {
+          return
+        }
+        const result = await editFixedConstraintPointPosition(
+          0,
+          contextData.sketchId,
+          fixedPositionEdit.pointId,
+          fixedPositionEdit.position,
+          settings
+        ).catch((err) => {
+          if (!isActiveDragSession()) {
+            return null
+          }
+          console.error('failed to edit fixed constraint position', err)
+          toastSketchSolveError(err)
+          return null
+        })
+
+        if (result && isActiveDragSession()) {
+          setLastGoodPreview({
+            ...result,
+            segmentsToEdit: [],
+            constraintLabelEdits: [],
+            dragAnchorSegmentIds: [fixedPositionEdit.pointId],
+            arcDragAnchors: [],
+            fixedPositionEdit,
+          })
+          setLastSuccessfulDragFromPoint(twoD.clone())
+          onNewSketchOutcome({
+            ...result,
+            writeToDisk: false,
+            suppressExecOutcomeIssues: true,
+          })
+          await new Promise((resolve) => requestAnimationFrame(resolve))
+        }
+        return
+      }
+
       const arcDragAnchors = buildArcDragAnchors({
         draggedEntityId: entityUnderCursorId,
         objects,
@@ -1937,6 +2067,7 @@ export function createOnDragCallback({
           constraintLabelEdits: appliedConstraintLabelEdits,
           dragAnchorSegmentIds,
           arcDragAnchors,
+          fixedPositionEdit: null,
         })
         setLastSuccessfulDragFromPoint(twoD.clone())
         onNewSketchOutcome({
@@ -2351,6 +2482,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
             return latestResult
           }
+          const commitFixedPositionEdit = (
+            fixedPositionEdit: FixedPositionEdit
+          ) =>
+            context.rustContext.editFixedConstraintPointPosition(
+              SKETCH_FILE_VERSION,
+              context.sketchId,
+              fixedPositionEdit.pointId,
+              fixedPositionEdit.position,
+              settings,
+              true
+            )
 
           const ensureRestoredBaseline = async () => {
             if (restoredPreDragOutcome) {
@@ -2369,6 +2511,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
           const recoverCheckpointBackedResult = async () => {
             const restored = await ensureRestoredBaseline()
+
+            if (lastGoodPreview?.fixedPositionEdit) {
+              const recoveredCommit = await commitFixedPositionEdit(
+                lastGoodPreview.fixedPositionEdit
+              )
+
+              if (recoveredCommit.checkpointId != null) {
+                return recoveredCommit
+              }
+            }
 
             if (lastGoodPreview?.segmentsToEdit.length) {
               const recoveredCommit = await commitSegmentAndLabelEdits(
@@ -2397,6 +2549,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           }
 
           if (
+            !lastGoodPreview?.fixedPositionEdit &&
             snappingCandidate &&
             draggedEntityId !== null &&
             snapConstraints.length > 0
@@ -2538,7 +2691,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
               }
             }
           } else {
-            if (lastGoodPreview?.segmentsToEdit.length) {
+            if (lastGoodPreview?.fixedPositionEdit) {
+              result = await commitFixedPositionEdit(
+                lastGoodPreview.fixedPositionEdit
+              )
+            } else if (lastGoodPreview?.segmentsToEdit.length) {
               result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
                 lastGoodPreview.constraintLabelEdits,
@@ -2602,7 +2759,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
           if (
             result.checkpointId == null &&
-            (Boolean(lastGoodPreview?.segmentsToEdit.length) ||
+            (Boolean(lastGoodPreview?.fixedPositionEdit) ||
+              Boolean(lastGoodPreview?.segmentsToEdit.length) ||
               snapConstraints.length > 0 ||
               draggedEntityId !== null)
           ) {
@@ -2681,6 +2839,23 @@ export function setUpOnDragAndSelectionClickCallbacks({
           false
         )
       },
+      editFixedConstraintPointPosition: async (
+        version: number,
+        sketchId: number,
+        pointId: number,
+        position: ApiPoint2d<ApiNumber>,
+        settings: DeepPartial<Configuration>
+      ) => {
+        return context.rustContext.editFixedConstraintPointPosition(
+          version,
+          sketchId,
+          pointId,
+          position,
+          settings,
+          false,
+          false
+        )
+      },
       onNewSketchOutcome: (outcome) => {
         self.send({
           type: 'update sketch outcome',
@@ -2732,15 +2907,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
         }
         return false
       }
-      // If it's a point which is already coincident with ORIGIN -> don't allow dragging
-      const canDrag = !(
-        isPointSegment(hoveredObject) &&
-        hasCoincidentConstraintWithOrigin(hoveredId, objects)
-      )
-      if (canDrag) {
-        setDraggedEntityId(hoveredId)
+      if (isPointSegment(hoveredObject)) {
+        const fixedDragTarget = getFixedDragTargetForPoint(hoveredId, objects)
+        if (fixedDragTarget?.type === 'origin') {
+          return false
+        }
+        if (fixedDragTarget?.type === 'fixed') {
+          setDraggedEntityId(fixedDragTarget.pointId)
+          return true
+        }
       }
-      return canDrag
+
+      setDraggedEntityId(hoveredId)
+      return true
     },
     onClick: createOnClickCallback({
       getApiObjects: () => {

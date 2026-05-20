@@ -439,6 +439,25 @@ impl FrontendState {
         result
     }
 
+    pub async fn preview_edit_fixed_constraint_point_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        point_id: ObjectId,
+        position: Point2d<Number>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let feedback_seed_ids = AhashIndexSet::from_iter([point_id]);
+        let connected_object_ids = self.connected_solver_feedback_object_ids(&feedback_seed_ids);
+        let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(true);
+        let previous_solution_filter = self.next_edit_solver_solution_object_ids.replace(connected_object_ids);
+        let result =
+            SketchApi::edit_fixed_constraint_point_position(self, ctx, version, sketch, point_id, position).await;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        self.next_edit_solver_solution_object_ids = previous_solution_filter;
+        result
+    }
+
     pub async fn restore_sketch_checkpoint(
         &mut self,
         checkpoint_id: SketchCheckpointId,
@@ -1688,6 +1707,53 @@ impl SketchApi for FrontendState {
                 segment_ids_edited: anchor_segment_ids.into_iter().collect(),
                 edit_kind: EditDeleteKind::Edit,
                 commit_solved_initial_guesses,
+            },
+        )
+        .await
+    }
+
+    async fn edit_fixed_constraint_point_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        point_id: ObjectId,
+        position: Point2d<Number>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let mut new_ast = self.program.ast.clone();
+        let point_ast = self
+            .point_id_to_ast_reference(point_id, &mut new_ast)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        let point_key = ast_reference_key(&point_ast).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Could not build fixed constraint reference for point {point_id:?}"
+            )))
+        })?;
+        let fixed_arg = create_fixed_point_constraint_arg_ast(point_ast, position)
+            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
+        self.mutate_ast(
+            &mut new_ast,
+            sketch,
+            AstMutateCommand::EditFixedPointConstraint {
+                point_key,
+                arg: fixed_arg,
+            },
+        )
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses: true,
             },
         )
         .await
@@ -5704,6 +5770,10 @@ enum AstMutateCommand {
     EditDistanceConstraintLabelPosition {
         label_position: ast::Expr,
     },
+    EditFixedPointConstraint {
+        point_key: String,
+        arg: ast::Expr,
+    },
     EditCallUnlabeled {
         arg: ast::Expr,
     },
@@ -6253,6 +6323,26 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 }
 
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditFixedPointConstraint { point_key, arg } => {
+            if let NodeMut::SketchBlock(sketch_block) = node {
+                for item in &mut sketch_block.body.items {
+                    let ast::BodyItem::ExpressionStatement(expr_stmt) = item else {
+                        continue;
+                    };
+                    let ast::Expr::CallExpressionKw(call) = &mut expr_stmt.expression else {
+                        continue;
+                    };
+                    if fixed_call_point_key(call).as_deref() == Some(point_key.as_str()) {
+                        call.unlabeled = Some(arg.clone());
+                        return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+                    }
+                }
+
+                return TraversalReturn::new_break(Err(KclError::refactor(format!(
+                    "Fixed constraint not found for point {point_key}"
+                ))));
             }
         }
         AstMutateCommand::EditCallUnlabeled { arg } => {
@@ -6806,8 +6896,35 @@ pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> a
     })))
 }
 
-/// Create an AST node for `fixed([point, [x, y]])`.
-fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
+fn ast_reference_key(expr: &ast::Expr) -> Option<String> {
+    match expr {
+        ast::Expr::Name(name) => Some(name.name.name.clone()),
+        ast::Expr::MemberExpression(member) => {
+            let object_key = ast_reference_key(&member.object)?;
+            let ast::Expr::Name(property) = &member.property else {
+                return None;
+            };
+            Some(format!("{object_key}.{}", property.name.name))
+        }
+        _ => None,
+    }
+}
+
+fn fixed_call_point_key(call: &ast::CallExpressionKw) -> Option<String> {
+    if call.callee.name.name != FIXED_FN {
+        return None;
+    }
+
+    let ast::Expr::ArrayExpression(array) = call.unlabeled.as_ref()? else {
+        return None;
+    };
+    ast_reference_key(array.elements.first()?)
+}
+
+fn create_fixed_point_constraint_arg_ast(
+    point_expr: ast::Expr,
+    position: Point2d<Number>,
+) -> anyhow::Result<ast::Expr> {
     // Create [x, y] array literal.
     let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.x,
@@ -6822,11 +6939,18 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
     })));
 
     // Create [point, [x, y]] outer array.
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
-        elements: vec![point_expr, point_array],
-        digest: None,
-        non_code_meta: Default::default(),
-    })));
+    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+        ast::ArrayExpression {
+            elements: vec![point_expr, point_array],
+            digest: None,
+            non_code_meta: Default::default(),
+        },
+    ))))
+}
+
+/// Create an AST node for `fixed([point, [x, y]])`.
+fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    let array_expr = create_fixed_point_constraint_arg_ast(point_expr, position)?;
 
     // Create fixed([...])
     Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
@@ -6839,7 +6963,6 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
         },
     ))))
 }
-
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
@@ -8872,6 +8995,170 @@ sketch(on = XY) {
         assert_point_position_close(
             point_position(&scene_delta.new_graph, point2_id),
             point_number_mm(10.0, 0.0),
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_fixed_constraint_point_position_moves_coincident_cluster() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point2 = point(at = [var 0mm, var 0mm])
+  coincident([point1, point2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let (sketch_id, point1_id, point2_id) = {
+            let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+            let sketch_id = sketch_object.id;
+            let sketch = expect_sketch(sketch_object);
+            (sketch_id, sketch.segments[0], sketch.segments[1])
+        };
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point1_id,
+                        position: point_number_mm(0.0, 0.0),
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        let (src_delta, scene_delta) = frontend
+            .edit_fixed_constraint_point_position(&mock_ctx, version, sketch_id, point1_id, point_number_mm(10.0, 20.0))
+            .await
+            .unwrap();
+
+        assert!(
+            src_delta.text.contains("fixed([point1, [10mm, 20mm]])"),
+            "{}",
+            src_delta.text
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            point_number_mm(10.0, 20.0),
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point2_id),
+            point_number_mm(10.0, 20.0),
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_preview_edit_fixed_constraint_point_position_persists_connected_solver_feedback_only() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point2 = point(at = [var 0mm, var 0mm])
+  coincident([point1, point2])
+  point3 = point(at = [var 30mm, var 30mm])
+  point4 = point(at = [var 30mm, var 30mm])
+  coincident([point3, point4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let (sketch_id, point1_id, point2_id, point3_id, point4_id) = {
+            let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+            let sketch_id = sketch_object.id;
+            let sketch = expect_sketch(sketch_object);
+            (
+                sketch_id,
+                sketch.segments[0],
+                sketch.segments[1],
+                sketch.segments[2],
+                sketch.segments[3],
+            )
+        };
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point1_id,
+                        position: point_number_mm(0.0, 0.0),
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+        frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Fixed(Fixed {
+                    points: vec![FixedPoint {
+                        point: point3_id,
+                        position: point_number_mm(30.0, 30.0),
+                    }],
+                }),
+            )
+            .await
+            .unwrap();
+
+        let (src_delta, scene_delta) = frontend
+            .preview_edit_fixed_constraint_point_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                point1_id,
+                point_number_mm(10.0, 20.0),
+            )
+            .await
+            .unwrap();
+
+        assert!(
+            src_delta.text.contains("fixed([point1, [10mm, 20mm]])"),
+            "{}",
+            src_delta.text
+        );
+        assert!(
+            src_delta.text.contains("fixed([point3, [30mm, 30mm]])"),
+            "{}",
+            src_delta.text
+        );
+        assert!(
+            src_delta.text.contains("point3 = point(at = [var 30mm, var 30mm])"),
+            "{}",
+            src_delta.text
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            point_number_mm(10.0, 20.0),
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point2_id),
+            point_number_mm(10.0, 20.0),
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point3_id),
+            point_number_mm(30.0, 30.0),
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point4_id),
+            point_number_mm(30.0, 30.0),
         );
 
         mock_ctx.close().await;
