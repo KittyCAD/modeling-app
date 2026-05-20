@@ -727,6 +727,34 @@ export fn ellipse(
 /// extrude(endSweep, length = 2, method = NEW)
 /// |> appearance(color = "#FFFF00")
 /// ```
+/// kcl, sketchSolve
+/// // Draft extrusions, both inward and outward
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -5.18mm, var 3.57mm], end = [var 2.21mm, var 3.57mm])
+///   line2 = line(start = [var 2.21mm, var 3.57mm], end = [var 2.21mm, var -0.87mm])
+///   line3 = line(start = [var 2.21mm, var -0.87mm], end = [var -5.18mm, var -0.87mm])
+///   line4 = line(start = [var -5.18mm, var -0.87mm], end = [var -5.18mm, var 3.57mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(point = [-1.485mm, 3.5675mm], sketch = sketch001)
+/// extrude001 = extrude(region001, length = 5, draftAngle = 45)
+/// sketch002 = sketch(on = XY) {
+/// }
+/// sketch003 = sketch(on = XZ) {
+///   circle1 = circle(start = [var 3.54mm, var 3.06mm], center = [var 5.59mm, var 4.56mm])
+/// }
+/// hidden002 = hide(sketch003)
+/// region002 = region(point = [7.6379824mm, 6.0585237mm], sketch = sketch003)
+/// extrude002 = extrude(region002, length = -5, draftAngle = -45)
+/// ```
 /// ```kcl,legacySketch
 /// // Surface extrude of a closed profile
 /// closedProfile = startSketchOn(XY)
@@ -784,7 +812,7 @@ export fn extrude(
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
   /// Draft angle to use while extruding
-  draftAngle?: number(Angle)
+  draftAngle?: number(Angle),
   /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.

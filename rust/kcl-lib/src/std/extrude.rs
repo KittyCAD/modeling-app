@@ -373,7 +373,11 @@ async fn inner_extrude(
                     .target(sketch_or_face_id.into())
                     .distance(LengthUnit(length.to_mm()))
                     .opposite(opposite.clone())
-                    .maybe_draft_angle(draft_angle.clone().map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))))
+                    .maybe_draft_angle(
+                        draft_angle
+                            .clone()
+                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                    )
                     .extrude_method(extrude_method)
                     .body_type(body_type)
                     .maybe_merge_coplanar_faces(hide_seams)
