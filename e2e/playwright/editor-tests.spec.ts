@@ -675,15 +675,23 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.keyboard.press(',')
 
     // Wait for the signature help to show
-    await expect(page.locator('.cm-signature-tooltip')).toBeVisible()
+    const signatureTooltip = page.locator('.cm-signature-tooltip')
+    await expect(signatureTooltip).toBeVisible()
 
     // Make sure the parameters are correct
-    await expect(page.locator('.cm-signature-tooltip')).toContainText(
-      'sketches:'
-    )
+    await expect(signatureTooltip).toContainText('sketches:')
+
+    // Long signatures should wrap inside the tooltip instead of overflowing.
+    await expect
+      .poll(async () => {
+        return await signatureTooltip.evaluate(
+          (tooltip) => tooltip.scrollWidth <= tooltip.clientWidth + 1
+        )
+      })
+      .toBe(true)
 
     // Make sure the tooltip goes away after a timeout.
-    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible({
+    await expect(signatureTooltip).not.toBeVisible({
       timeout: 15_000,
     })
   })
