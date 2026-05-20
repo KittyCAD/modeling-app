@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
+use ezpz::datatypes::inputs::DatumPoint;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
 
@@ -13,9 +14,11 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::Sketch;
 use crate::execution::AbstractSegment;
+use crate::execution::AngleConstraintMode;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::ConstraintKind;
 use crate::execution::ControlFlowKind;
 use crate::execution::EarlyReturn;
@@ -191,6 +194,93 @@ fn datum_line_from_constrainable(
             line.vars[1].y.to_constraint_id(range)?,
         ),
     ))
+}
+
+fn datum_points_from_constrainable_line(
+    line: &ConstrainableLine2d,
+    range: SourceRange,
+) -> Result<[DatumPoint; 2], KclError> {
+    Ok([
+        DatumPoint::new_xy(
+            line.vars[0].x.to_constraint_id(range)?,
+            line.vars[0].y.to_constraint_id(range)?,
+        ),
+        DatumPoint::new_xy(
+            line.vars[1].x.to_constraint_id(range)?,
+            line.vars[1].y.to_constraint_id(range)?,
+        ),
+    ])
+}
+
+fn same_datum_point(point0: DatumPoint, point1: DatumPoint) -> bool {
+    point0.x_id == point1.x_id && point0.y_id == point1.y_id
+}
+
+fn connected_datum_points(existing_constraints: &[Constraint], point0: DatumPoint, point1: DatumPoint) -> bool {
+    if same_datum_point(point0, point1) {
+        return true;
+    }
+
+    let mut visited = vec![point0];
+    let mut index = 0;
+    while let Some(current) = visited.get(index).copied() {
+        index += 1;
+
+        for constraint in existing_constraints {
+            let Constraint::PointsCoincident(a, b) = constraint else {
+                continue;
+            };
+            let next = if same_datum_point(current, *a) {
+                *b
+            } else if same_datum_point(current, *b) {
+                *a
+            } else {
+                continue;
+            };
+
+            if same_datum_point(next, point1) {
+                return true;
+            }
+            if !visited.iter().any(|point| same_datum_point(*point, next)) {
+                visited.push(next);
+            }
+        }
+    }
+
+    false
+}
+
+fn points_at_angle_constraint(
+    line0: &ConstrainableLine2d,
+    line1: &ConstrainableLine2d,
+    existing_constraints: &[Constraint],
+    angle_kind: ezpz::datatypes::AngleKind,
+    range: SourceRange,
+) -> Result<Constraint, KclError> {
+    let line0_points = datum_points_from_constrainable_line(line0, range)?;
+    let line1_points = datum_points_from_constrainable_line(line1, range)?;
+    let mut candidates = Vec::new();
+
+    for (line0_vertex_index, line0_vertex) in line0_points.iter().copied().enumerate() {
+        for (line1_vertex_index, line1_vertex) in line1_points.iter().copied().enumerate() {
+            if connected_datum_points(existing_constraints, line0_vertex, line1_vertex) {
+                candidates.push((
+                    line0_vertex,
+                    line0_points[1 - line0_vertex_index],
+                    line1_points[1 - line1_vertex_index],
+                ));
+            }
+        }
+    }
+
+    let [(vertex, point0, point1)] = candidates.as_slice() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "angle(lines = ...) requires the two lines to share exactly one endpoint".to_owned(),
+            vec![range],
+        )));
+    };
+
+    Ok(Constraint::PointsAtAngle(*vertex, *point0, *point1, angle_kind))
 }
 
 fn sketch_var_initial_value(
@@ -3627,26 +3717,8 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
-                        SketchConstraintKind::Angle { line0, line1 } => {
+                        SketchConstraintKind::Angle { line0, line1, mode } => {
                             let range = self.as_source_range();
-                            // Line 0 is points A and B.
-                            // Line 1 is points C and D.
-                            let ax = line0.vars[0].x.to_constraint_id(range)?;
-                            let ay = line0.vars[0].y.to_constraint_id(range)?;
-                            let bx = line0.vars[1].x.to_constraint_id(range)?;
-                            let by = line0.vars[1].y.to_constraint_id(range)?;
-                            let cx = line1.vars[0].x.to_constraint_id(range)?;
-                            let cy = line1.vars[0].y.to_constraint_id(range)?;
-                            let dx = line1.vars[1].x.to_constraint_id(range)?;
-                            let dy = line1.vars[1].y.to_constraint_id(range)?;
-                            let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
-                            );
-                            let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
-                            );
                             let desired_angle = match n.ty {
                                 NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
                                 | NumericType::Default {
@@ -3669,11 +3741,30 @@ impl Node<BinaryExpression> {
                                     return Err(internal_err(message, self));
                                 }
                             };
-                            let solver_constraint = Constraint::LinesAtAngle(
-                                solver_line0,
-                                solver_line1,
-                                ezpz::datatypes::AngleKind::Other(desired_angle),
-                            );
+                            let angle_kind = ezpz::datatypes::AngleKind::Other(desired_angle);
+                            let solver_constraint = match mode {
+                                AngleConstraintMode::LinesAtAngle => Constraint::LinesAtAngle(
+                                    datum_line_from_constrainable(line0, range)?,
+                                    datum_line_from_constrainable(line1, range)?,
+                                    angle_kind,
+                                ),
+                                AngleConstraintMode::PointsAtAngle => {
+                                    let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
+                                        let message =
+                                            "Being inside a sketch block should have already been checked above"
+                                                .to_owned();
+                                        debug_assert!(false, "{}", &message);
+                                        return Err(internal_err(message, self));
+                                    };
+                                    points_at_angle_constraint(
+                                        line0,
+                                        line1,
+                                        &sketch_block_state.solver_constraints,
+                                        angle_kind,
+                                        range,
+                                    )?
+                                }
+                            };
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                 let message =
@@ -5672,7 +5763,197 @@ mod test {
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
+    use crate::execution::SketchVarId;
     use crate::execution::parse_execute;
+    use crate::front::ObjectId;
+
+    fn test_line(object_id: usize, start: [usize; 2], end: [usize; 2]) -> ConstrainableLine2d {
+        ConstrainableLine2d {
+            vars: [
+                crate::front::Point2d {
+                    x: SketchVarId(start[0]),
+                    y: SketchVarId(start[1]),
+                },
+                crate::front::Point2d {
+                    x: SketchVarId(end[0]),
+                    y: SketchVarId(end[1]),
+                },
+            ],
+            object_id: ObjectId(object_id),
+        }
+    }
+
+    fn test_point(ids: [usize; 2]) -> DatumPoint {
+        DatumPoint::new_xy(ids[0].try_into().unwrap(), ids[1].try_into().unwrap())
+    }
+
+    fn assert_datum_point(point: DatumPoint, ids: [usize; 2]) {
+        assert_eq!(point.x_id, ids[0] as ezpz::Id);
+        assert_eq!(point.y_id, ids[1] as ezpz::Id);
+    }
+
+    #[test]
+    fn points_at_angle_constraint_uses_shared_endpoint() {
+        let line0 = test_line(0, [0, 1], [2, 3]);
+        let line1 = test_line(1, [0, 1], [4, 5]);
+
+        let constraint = points_at_angle_constraint(
+            &line0,
+            &line1,
+            &[],
+            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
+            SourceRange::default(),
+        )
+        .unwrap();
+
+        let Constraint::PointsAtAngle(vertex, point0, point1, _) = constraint else {
+            panic!("expected PointsAtAngle");
+        };
+        assert_datum_point(vertex, [0, 1]);
+        assert_datum_point(point0, [2, 3]);
+        assert_datum_point(point1, [4, 5]);
+    }
+
+    #[test]
+    fn points_at_angle_constraint_uses_coincident_endpoint() {
+        let line0 = test_line(0, [0, 1], [2, 3]);
+        let line1 = test_line(1, [4, 5], [6, 7]);
+        let existing_constraints = [Constraint::PointsCoincident(test_point([0, 1]), test_point([4, 5]))];
+
+        let constraint = points_at_angle_constraint(
+            &line0,
+            &line1,
+            &existing_constraints,
+            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
+            SourceRange::default(),
+        )
+        .unwrap();
+
+        let Constraint::PointsAtAngle(vertex, point0, point1, _) = constraint else {
+            panic!("expected PointsAtAngle");
+        };
+        assert_datum_point(vertex, [0, 1]);
+        assert_datum_point(point0, [2, 3]);
+        assert_datum_point(point1, [6, 7]);
+    }
+
+    #[test]
+    fn points_at_angle_constraint_requires_unique_shared_endpoint() {
+        let line0 = test_line(0, [0, 1], [2, 3]);
+        let line1 = test_line(1, [4, 5], [6, 7]);
+
+        let no_shared_endpoint = points_at_angle_constraint(
+            &line0,
+            &line1,
+            &[],
+            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
+            SourceRange::default(),
+        );
+        assert!(no_shared_endpoint.is_err());
+
+        let existing_constraints = [
+            Constraint::PointsCoincident(test_point([0, 1]), test_point([4, 5])),
+            Constraint::PointsCoincident(test_point([2, 3]), test_point([6, 7])),
+        ];
+        let ambiguous = points_at_angle_constraint(
+            &line0,
+            &line1,
+            &existing_constraints,
+            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
+            SourceRange::default(),
+        );
+        assert!(ambiguous.is_err());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_unlabeled_keeps_legacy_lines_at_angle() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  lines = [line1, line2]
+  angle(lines) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_allows_missing_unlabeled_input() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 3mm])
+  coincident([line1.end, line2.start])
+  angle(lines = [line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_requires_unique_shared_endpoint() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angle(lines = [line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angle(lines = ...) requires the two lines to share exactly one endpoint"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_wins_when_both_are_supplied() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 3mm])
+  line3 = line(start = [var 0mm, var 1mm], end = [var 1mm, var 1mm])
+  line4 = line(start = [var 0mm, var 2mm], end = [var 1mm, var 2mm])
+  coincident([line1.end, line2.start])
+  angle([line1, line2], lines = [line3, line4]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angle(lines = ...) requires the two lines to share exactly one endpoint"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_requires_unlabeled_or_labelled_lines() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  angle() == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription() {

@@ -61,7 +61,7 @@ impl ArgsStatus for Sugary {}
 // Invariants guaranteed by the `Desugared` status:
 // - There is either 0 or 1 unlabeled arguments
 // - Any lableled args are in the labeled map, and not the unlabeled Vec.
-// - The arguments match the type signature of the function exactly
+// - The arguments match the type signature of the function, allowing omitted optional args
 // - pipe_value.is_none()
 #[derive(Debug, Clone)]
 pub struct Desugared;
@@ -774,6 +774,7 @@ fn type_check_params_kw(
         if let Some(l) = l
             && fn_def.named_args.contains_key(l)
             && !args.labeled.contains_key(l)
+            && !(fn_name == Some("angle") && l == "lines")
         {
             true
         } else {
@@ -786,7 +787,7 @@ fn type_check_params_kw(
         debug_assert!(previous.is_none());
     }
 
-    if let Some((name, ty)) = &fn_def.input_arg {
+    if let Some((name, ty, default_value)) = &fn_def.input_arg {
         // Expecting an input arg
 
         if args.unlabeled.is_empty() {
@@ -807,6 +808,8 @@ fn type_check_params_kw(
                     ),
                 ));
                 result.unlabeled = vec![(Some(name.clone()), arg)];
+            } else if default_value.is_some() {
+                // Optional @input was omitted.
             } else {
                 // Just missing
                 return Err(KclError::new_argument(KclErrorDetails::new(
@@ -1013,19 +1016,25 @@ fn assign_args_to_params_kw(
         }
     }
 
-    if let Some((param_name, _)) = &fn_def.input_arg {
-        let Some(unlabeled) = args.unlabeled_kw_arg_unconverted() else {
+    if let Some((param_name, _, default_value)) = &fn_def.input_arg {
+        if let Some(unlabeled) = args.unlabeled_kw_arg_unconverted() {
+            exec_state.mut_stack().add(
+                param_name.clone(),
+                unlabeled.value.clone(),
+                unlabeled.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
+            )?;
+        } else if let Some(default_value) = default_value {
+            let value = KclValue::from_default_param(default_value.clone(), exec_state);
+            exec_state
+                .mut_stack()
+                .add(param_name.clone(), value, default_value.source_range())?;
+        } else {
             debug_assert!(false, "Bad args");
             return Err(KclError::new_internal(KclErrorDetails::new(
                 "Desugared arguments are inconsistent".to_owned(),
                 source_ranges,
             )));
-        };
-        exec_state.mut_stack().add(
-            param_name.clone(),
-            unlabeled.value.clone(),
-            unlabeled.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
-        )?;
+        }
     }
 
     Ok(())

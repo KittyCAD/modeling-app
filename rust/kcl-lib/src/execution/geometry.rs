@@ -2344,6 +2344,12 @@ pub struct SketchConstraint {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleConstraintMode {
+    LinesAtAngle,
+    PointsAtAngle,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
@@ -2351,6 +2357,9 @@ pub enum SketchConstraintKind {
     Angle {
         line0: ConstrainableLine2d,
         line1: ConstrainableLine2d,
+        #[serde(skip)]
+        #[ts(skip)]
+        mode: AngleConstraintMode,
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],
