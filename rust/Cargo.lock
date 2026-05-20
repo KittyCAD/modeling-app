@@ -2494,7 +2494,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.157"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "kcl-lib",

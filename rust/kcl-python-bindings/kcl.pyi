@@ -333,6 +333,11 @@ class RawFile:
     @property
     def name(self) -> builtins.str: ...
 
+class RequestContext:
+    @property
+    def api_token(self) -> typing.Optional[builtins.str]: ...
+    def __new__(cls, api_token:typing.Optional[builtins.str]=None) -> RequestContext: ...
+
 class SketchConstraintReport:
     r"""
     Grouped report of all sketches by constraint status.
@@ -815,59 +820,59 @@ async def default_units(path:builtins.str) -> DefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path:builtins.str) -> None:
+async def execute(path:builtins.str, request_context:typing.Optional[RequestContext]=None) -> None:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None) -> BoundingBoxResponse:
+async def execute_and_bounding_box(path:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None, request_context:typing.Optional[RequestContext]=None) -> BoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
 
-async def execute_and_export(path:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
+async def execute_and_export(path:builtins.str, export_format:FileExportFormat, request_context:typing.Optional[RequestContext]=None) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
 
-async def execute_and_measure(path:builtins.str, request:PhysicalPropertiesRequest) -> PhysicalPropertiesResponse:
+async def execute_and_measure(path:builtins.str, request:PhysicalPropertiesRequest, request_context:typing.Optional[RequestContext]=None) -> PhysicalPropertiesResponse:
     r"""
     Execute a kcl file and measure physical properties of the resulting model.
     """
 
-async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat, *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.int]:
+async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat, *, zoom:typing.Optional[builtins.bool]=None, request_context:typing.Optional[RequestContext]=None) -> builtins.list[builtins.int]:
     r"""
     Execute a kcl file and snapshot it in a specific format.
     """
 
-async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.list[builtins.int]]: ...
+async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None, request_context:typing.Optional[RequestContext]=None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code:builtins.str) -> None:
+async def execute_code(code:builtins.str, request_context:typing.Optional[RequestContext]=None) -> None:
     r"""
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None) -> BoundingBoxResponse:
+async def execute_code_and_bounding_box(code:builtins.str, entity_ids:typing.Optional[typing.Sequence[builtins.str]]=None, output_unit:typing.Optional[UnitLength]=None, request_context:typing.Optional[RequestContext]=None) -> BoundingBoxResponse:
     r"""
     Execute the kcl code and return the model's bounding box.
     """
 
-async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
+async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat, request_context:typing.Optional[RequestContext]=None) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
     """
 
-async def execute_code_and_measure(code:builtins.str, request:PhysicalPropertiesRequest) -> PhysicalPropertiesResponse:
+async def execute_code_and_measure(code:builtins.str, request:PhysicalPropertiesRequest, request_context:typing.Optional[RequestContext]=None) -> PhysicalPropertiesResponse:
     r"""
     Execute the kcl code and measure physical properties of the resulting model.
     """
 
-async def execute_code_and_snapshot(code:builtins.str, image_format:ImageFormat, *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.int]:
+async def execute_code_and_snapshot(code:builtins.str, image_format:ImageFormat, *, zoom:typing.Optional[builtins.bool]=None, request_context:typing.Optional[RequestContext]=None) -> builtins.list[builtins.int]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     """
 
-async def execute_code_and_snapshot_views(code:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.list[builtins.int]]:
+async def execute_code_and_snapshot_views(code:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None, request_context:typing.Optional[RequestContext]=None) -> builtins.list[builtins.list[builtins.int]]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     Returns one image for each camera angle you provide.
@@ -884,19 +889,19 @@ async def format_dir(dir:builtins.str) -> None:
     Format a whole directory of kcl code.
     """
 
-async def get_sketch_constraint_status(path:builtins.str) -> SketchConstraintReport:
+async def get_sketch_constraint_status(path:builtins.str, request_context:typing.Optional[RequestContext]=None) -> SketchConstraintReport:
     r"""
     Execute a kcl file and return a report of sketch constraint status.
     """
 
-async def get_sketch_constraint_status_code(code:builtins.str) -> SketchConstraintReport:
+async def get_sketch_constraint_status_code(code:builtins.str, request_context:typing.Optional[RequestContext]=None) -> SketchConstraintReport:
     r"""
     Execute kcl code and return a report of sketch constraint status.
     """
 
-async def import_and_snapshot(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.int]: ...
+async def import_and_snapshot(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, *, zoom:typing.Optional[builtins.bool]=None, request_context:typing.Optional[RequestContext]=None) -> builtins.list[builtins.int]: ...
 
-async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.list[builtins.int]]: ...
+async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None, request_context:typing.Optional[RequestContext]=None) -> builtins.list[builtins.list[builtins.int]]: ...
 
 def lint(code:builtins.str) -> builtins.list[Discovered]:
     r"""
@@ -916,12 +921,12 @@ def lint_and_fix_families(code:builtins.str, families_to_fix:typing.Sequence[Fin
     Returns any unfixed lints.
     """
 
-async def mock_execute(path:builtins.str) -> builtins.bool:
+async def mock_execute(path:builtins.str, request_context:typing.Optional[RequestContext]=None) -> builtins.bool:
     r"""
     Mock execute the kcl code from a file path.
     """
 
-async def mock_execute_code(code:builtins.str) -> builtins.bool:
+async def mock_execute_code(code:builtins.str, request_context:typing.Optional[RequestContext]=None) -> builtins.bool:
     r"""
     Mock execute the kcl code.
     """
