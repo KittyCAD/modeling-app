@@ -1,7 +1,6 @@
 import JSZip from 'jszip'
 import toast from 'react-hot-toast'
 
-import { browserSaveFile } from '@src/lib/browserSaveFile'
 import {
   EXPORT_TOAST_MESSAGES,
   PROJECT_SETTINGS_FILE_NAME,
@@ -11,9 +10,10 @@ import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import type { Project } from '@src/lib/project'
-import { err } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
 
 type ProjectZipFile = {
   relativePath: string
@@ -41,7 +41,7 @@ export async function exportProjectZip({
     wasmInstance,
   })
 
-  if (err(archive)) {
+  if (isErr(archive)) {
     toast.error(archive.message, { id: toastId })
     return
   }
@@ -70,7 +70,7 @@ export async function createProjectZipArchive({
     currentFileContents,
     wasmInstance,
   })
-  if (err(entries)) {
+  if (isErr(entries)) {
     return entries
   }
 
@@ -173,7 +173,7 @@ export async function collectProjectZipEntries({
         readExistingFile: false,
         wasmInstance,
       })
-      if (err(projectToml)) {
+      if (isErr(projectToml)) {
         return projectToml
       }
 

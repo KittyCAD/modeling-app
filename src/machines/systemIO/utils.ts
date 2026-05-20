@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 import fsZds from '@src/lib/fs-zds'
 import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
+import { isErr } from '@src/lib/trap'
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
@@ -336,7 +337,7 @@ export const collectProjectFiles = async (args: {
           .catch((e) => {
             console.error('error reading file', e)
             if (args.skipUnreadableFiles === false) {
-              return Promise.reject(e)
+              return Promise.reject(isErr(e) ? e : new Error(String(e)))
             }
             return null
           })

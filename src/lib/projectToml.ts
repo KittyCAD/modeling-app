@@ -3,7 +3,7 @@ import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
-import { err } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function getProjectTomlContents({
@@ -35,7 +35,7 @@ export async function getProjectTomlContents({
     projectSettings,
     wasmInstance
   )
-  if (err(serialized)) {
+  if (isErr(serialized)) {
     return serialized
   }
 
