@@ -327,8 +327,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 .unwrap_or_default()
         };
 
+        // The previous 60s ceiling here was too aggressive for long-running
+        // engine commands - notably large STEP / B-rep imports, which the
+        // engine itself routinely takes several minutes to process. When the
+        // ceiling fired first the user got a generic "async command timed
+        // out" message and the eventual engine response (success OR error)
+        // was discarded, masking the real outcome. 600s (10 min) gives the
+        // engine room to finish or to surface its own error.
+        const ASYNC_CMD_TIMEOUT_SECS: u64 = 600;
         let current_time = Instant::now();
-        while current_time.elapsed().as_secs() < 60 {
+        while current_time.elapsed().as_secs() < ASYNC_CMD_TIMEOUT_SECS {
             let responses = self.responses().read().await.clone();
             let Some(resp) = responses.get(&id) else {
                 // Yield to the event loop so that we don’t block the UI thread.
@@ -355,7 +363,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         Err(KclError::new_engine(KclErrorDetails::new(
-            "async command timed out".to_string(),
+            format!("async command timed out after {ASYNC_CMD_TIMEOUT_SECS}s (client-side ceiling, not an engine error)"),
             vec![source_range],
         )))
     }
