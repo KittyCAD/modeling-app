@@ -6,8 +6,8 @@ mkdir -p rust/kcl-wasm-lib/pkg
 rm -rf rust/kcl-lib/bindings
 
 cd rust
-wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg --scope kittycad
-cargo test -p kcl-lib --features artifact-graph export_bindings
+wasm-pack build kcl-wasm-lib --release --target=web --out-dir=pkg --scope=kittycad
+cargo test --release --package=kcl-lib --features=artifact-graph export_bindings
 cd ..
 
 cp rust/kcl-wasm-lib/README.md rust/kcl-wasm-lib/pkg/README.md
