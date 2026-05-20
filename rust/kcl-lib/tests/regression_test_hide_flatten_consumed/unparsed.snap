@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing regression_test_hide_flatten_consumed.kcl
+---
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.53mm, var 1.3mm], end = [var 3.53mm, var 1.3mm])
+  line2 = line(start = [var 3.53mm, var 1.3mm], end = [var 3.53mm, var 4.15mm])
+  line3 = line(start = [var 3.53mm, var 4.15mm], end = [var 0.53mm, var 4.15mm])
+  line4 = line(start = [var 0.53mm, var 4.15mm], end = [var 0.53mm, var 1.3mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [2.03mm, 1.3025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 1)
+sketch002 = sketch(on = XY) {
+  circle1 = circle(start = [var 3.98mm, var 4.53mm], center = [var 2.98mm, var 3.6mm])
+}
+hidden002 = hide(sketch002)
+region002 = region(point = [1.9818307mm, 2.6717025mm], sketch = sketch002)
+extrude002 = extrude(region002, length = 5)
+solid001 = subtract(extrude001, tools = [extrude002])
+hide(flatten([extrude001, extrude002]))

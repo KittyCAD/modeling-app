@@ -1,6 +1,6 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,6 +16,10 @@ import {
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
+interface SettingsSearchBarProps {
+  showPlugins: boolean
+}
+
 export type SettingsSearchItem = {
   name: string
   displayName: string
@@ -24,7 +28,7 @@ export type SettingsSearchItem = {
   level: ExtendedSettingsLevel
 }
 
-export function SettingsSearchBar() {
+export function SettingsSearchBar({ showPlugins }: SettingsSearchBarProps) {
   const { settings } = useApp()
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
@@ -40,8 +44,9 @@ export function SettingsSearchBar() {
   const settingsValues = settings.useSettings()
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
-      ...Object.entries(settingsValues).flatMap(
-        ([category, categorySettings]) =>
+      ...Object.entries(settingsValues)
+        .filter(([category]) => showPlugins || category !== 'plugins')
+        .flatMap(([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {
             const s = setting
             return (['project', 'user'] satisfies SettingsLevel[])
@@ -56,7 +61,7 @@ export function SettingsSearchBar() {
                 level: l,
               }))
           })
-      ),
+        ),
       ...Object.entries(interactionMap).flatMap(
         ([category, categoryKeybindings]) =>
           categoryKeybindings.map((keybinding) => ({
@@ -68,20 +73,23 @@ export function SettingsSearchBar() {
           }))
       ),
     ],
-    [settingsValues]
+    [settingsValues, showPlugins]
   )
-  const [searchResults, setSearchResults] = useState(settingsAsSearchable)
-
-  const fuse = new Fuse(settingsAsSearchable, {
-    keys: ['category', 'displayName', 'description'],
-    includeScore: true,
-  })
-
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setSearchResults(query.length > 0 ? results : settingsAsSearchable)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [query])
+  const fuse = useMemo(
+    () =>
+      new Fuse(settingsAsSearchable, {
+        keys: ['category', 'displayName', 'description'],
+        includeScore: true,
+      }),
+    [settingsAsSearchable]
+  )
+  const searchResults = useMemo(
+    () =>
+      query.length > 0
+        ? fuse.search(query).map((result) => result.item)
+        : settingsAsSearchable,
+    [fuse, query, settingsAsSearchable]
+  )
 
   function handleSelection({ level, name }: SettingsSearchItem) {
     void navigate(`?tab=${level}#${name}`)
