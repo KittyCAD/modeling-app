@@ -89,7 +89,7 @@ fn gdt_dot_leader_scale(leader_scale: Option<&TyF64>, font_size: Option<&TyF64>,
 }
 
 fn gdt_dot_leader_normal_size() -> f32 {
-    gdt_font_scale_for_height_mm(GDT_DOT_LEADER_REFERENCE_FONT_SIZE_MM) * (GDT_DOT_LEADER_REFERENCE_ENGINE_SCALE as f32)
+    gdt_font_scale_for_height_mm(GDT_DOT_LEADER_REFERENCE_FONT_SIZE_MM) * GDT_DOT_LEADER_REFERENCE_ENGINE_SCALE as f32
 }
 
 fn gdt_dimension_leader_scale(leader_scale: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
