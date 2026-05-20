@@ -1,0 +1,20 @@
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.53mm, var 1.3mm], end = [var 3.53mm, var 1.3mm])
+  line2 = line(start = [var 3.53mm, var 1.3mm], end = [var 3.53mm, var 4.15mm])
+  line3 = line(start = [var 3.53mm, var 4.15mm], end = [var 0.53mm, var 4.15mm])
+  line4 = line(start = [var 0.53mm, var 4.15mm], end = [var 0.53mm, var 1.3mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [2.03mm, 1.3025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 1, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 0.5)
