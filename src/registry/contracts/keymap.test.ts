@@ -3,9 +3,14 @@ import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapItem,
+  type KeymapScope,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   createKeymapItemsFromContributions,
   createKeymapTree,
   createKeymapTreeFromContributions,
+  findKeymapItemForCommand,
   matchKeymapKeystrokes,
   normalizeKeymapChord,
 } from '@src/registry/contracts/keymap'
@@ -118,6 +123,121 @@ describe('keymap contract', () => {
     })
   })
 
+  it('uses the highest-priority scope within a group', () => {
+    const item = createKeymapItem({
+      id: 'mode.line',
+      command: 'mode.line',
+      keystrokes: ['l'],
+      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
+    })
+
+    const tree = createKeymapTree([item])
+    const scopeMetadata = [
+      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 100),
+      createContextScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE, 1000),
+    ]
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCHING_KEYMAP_SCOPE],
+        ['l'],
+        scopeMetadata
+      )
+    ).toEqual({
+      type: 'full',
+      item,
+    })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_SKETCHING_KEYMAP_SCOPE, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        ['l'],
+        scopeMetadata
+      )
+    ).toEqual({ type: 'none' })
+  })
+
+  it('finds command bindings using effective active scopes', () => {
+    const item = createKeymapItem({
+      id: 'mode.line',
+      command: 'mode.line',
+      keystrokes: ['l'],
+      scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
+    })
+    const tree = createKeymapTree([item])
+    const scopeMetadata = [
+      createContextScope(MODE_SKETCHING_KEYMAP_SCOPE, 100),
+      createContextScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE, 1000),
+    ]
+
+    expect(
+      findKeymapItemForCommand(
+        tree,
+        'mode.line',
+        [MODE_SKETCHING_KEYMAP_SCOPE],
+        scopeMetadata
+      )
+    ).toBe(item)
+    expect(
+      findKeymapItemForCommand(
+        tree,
+        'mode.line',
+        [MODE_SKETCHING_KEYMAP_SCOPE, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        scopeMetadata
+      )
+    ).toBeUndefined()
+  })
+
+  it('lets sketch mode single-key bindings beat view command prefixes', () => {
+    const vertical = createKeymapItem({
+      id: 'sketch.vertical',
+      command: 'sketch.vertical',
+      keystrokes: ['v'],
+      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+    })
+    const viewTop = createKeymapItem({
+      id: 'view.top',
+      command: 'view.top',
+      keystrokes: ['v', '1'],
+      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+    })
+
+    const tree = createKeymapTree([viewTop, vertical])
+    const scopeMetadata = [
+      createContextScope(MODE_MODELING_KEYMAP_SCOPE, 100),
+      createContextScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE, 200),
+    ]
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_MODELING_KEYMAP_SCOPE],
+        ['v'],
+        scopeMetadata
+      )
+    ).toEqual({ type: 'prefix' })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_MODELING_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['v'],
+        scopeMetadata
+      )
+    ).toEqual({
+      type: 'full',
+      item: vertical,
+    })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_MODELING_KEYMAP_SCOPE, MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        ['v', '1'],
+        scopeMetadata
+      )
+    ).toEqual({ type: 'none' })
+  })
+
   it('normalizes JSON-style keymap document contributions into keymap items', () => {
     const tree = createKeymapTreeFromContributions([
       {
@@ -170,5 +290,14 @@ function createKeymapItem(
     source: 'test',
     scopes: [BASE_KEYMAP_SCOPE],
     ...item,
+  }
+}
+
+function createContextScope(id: string, priority: number): KeymapScope {
+  return {
+    id,
+    displayName: id,
+    group: 'context',
+    priority,
   }
 }

@@ -3,17 +3,18 @@ import type { StateFrom } from 'xstate'
 
 import {
   buildToolbarConfig,
-  getDefaultRecentToolbarItemIds,
   getConstraintToolbarToggleEvent,
+  getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
-  recordRecentToolbarItemId,
-  promoteRecentToolbarItemId,
-  resolveRecentToolbarItems,
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
+  promoteRecentToolbarItemId,
+  recordRecentToolbarItemId,
+  resolveRecentToolbarItems,
 } from '@src/lib/toolbar'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 
 const stubModelingState = (
   activeStates: string[]
@@ -43,6 +44,11 @@ describe('toolbar state helpers', () => {
         stubModelingState(['animating to sketch solve mode'])
       )
     ).toBe('sketchSolve')
+    expect(
+      modelingMachineStateToToolbarModeName(
+        stubModelingState(['animating to existing sketch solve'])
+      )
+    ).toBe('sketchSolve')
   })
 
   test('marks sketch toolbars as transitioning during camera animation states', () => {
@@ -54,6 +60,11 @@ describe('toolbar state helpers', () => {
     expect(
       isSketchToolbarTransitioning(
         stubModelingState(['animating to existing sketch'])
+      )
+    ).toBe(true)
+    expect(
+      isSketchToolbarTransitioning(
+        stubModelingState(['animating to existing sketch solve'])
       )
     ).toBe(true)
   })
@@ -223,5 +234,39 @@ describe('toolbar state helpers', () => {
         ['coincident', 'Tangent', 'Parallel']
       ).visibleItems.map((item) => item.id)
     ).toEqual(['vertical', 'coincident', 'Tangent'])
+  })
+
+  test('has a default keymap binding for every command-backed toolbar item', () => {
+    const toolbarConfig = buildToolbarConfig(
+      {
+        send: () => {},
+      },
+      { showSplineTool: true }
+    )
+    const defaultKeymapCommands = new Set(
+      defaultKeymap.bindings.map((binding) => binding.command)
+    )
+
+    const toolbarCommands = Object.values(toolbarConfig).flatMap((mode) =>
+      mode.items.flatMap((item) => {
+        if (item === 'break') {
+          return []
+        }
+
+        if ('array' in item) {
+          return item.array.flatMap((dropdownItem) =>
+            dropdownItem.command ? [dropdownItem.command] : []
+          )
+        }
+
+        return item.command ? [item.command] : []
+      })
+    )
+
+    expect(
+      [...new Set(toolbarCommands)].filter(
+        (command) => !defaultKeymapCommands.has(command)
+      )
+    ).toEqual([])
   })
 })

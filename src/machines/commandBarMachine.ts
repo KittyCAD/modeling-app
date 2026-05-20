@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
   CommandArgument,
@@ -7,13 +8,12 @@ import type {
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
-import { reportRejection } from '@src/lib/trap'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
@@ -824,6 +824,10 @@ export const commandBarMachine = setup({
     },
   },
   on: {
+    'Set kclManager': {
+      actions: 'Set kclManager',
+    },
+
     Close: {
       target: '.Closed',
       actions: 'Clear selected command',

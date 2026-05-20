@@ -18,15 +18,20 @@ import {
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
+  BASE_KEYMAP_SCOPE,
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapArguments,
   type KeymapItem,
   type KeymapScope,
   type KeymapService,
   type KeymapSource,
-  BASE_KEYMAP_SCOPE,
-  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  keymapService,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   keymapScopesValueSpec,
+  keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
 } from '@src/registry/contracts/keymap'
@@ -35,25 +40,75 @@ import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
+const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
 
 const defaultKeymapScopes: readonly KeymapScope[] = [
   {
     id: BASE_KEYMAP_SCOPE,
     displayName: 'Base',
+    priority: 0,
+    userEditable: false,
   },
   {
     id: 'cmd-palette-open',
     displayName: 'Command palette open',
+    priority: 2000,
+    userEditable: false,
   },
   {
     id: 'settings-open',
     displayName: 'Settings open',
+    priority: 1900,
+    userEditable: false,
+  },
+  {
+    id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Code editor not focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 10,
+    userEditable: false,
+  },
+  {
+    id: MODE_MODELING_KEYMAP_SCOPE,
+    displayName: 'Modeling mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 100,
+    userEditable: false,
+  },
+  {
+    id: MODE_SKETCHING_KEYMAP_SCOPE,
+    displayName: 'Sketch mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 200,
+    userEditable: false,
+  },
+  {
+    id: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+    displayName: 'Sketch no face mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 210,
+    userEditable: false,
+  },
+  {
+    id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+    displayName: 'Sketch solve mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 220,
+    userEditable: false,
+  },
+  {
+    id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Code editor focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 1000,
+    userEditable: false,
   },
 ]
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const keymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
+  const keymapScopesSignal = ctx.valueSpecs.signal(keymapScopesValueSpec)
   const activeScopes = signal<readonly string[]>([
     CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   ])
@@ -119,7 +174,11 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     if (
       !chord ||
       (source === 'global' &&
-        shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
+        shouldIgnoreKeyboardEvent(
+          event,
+          pendingKeystrokes.length > 0,
+          activeScopes.value
+        ))
     ) {
       return false
     }
@@ -127,7 +186,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
-      [...pendingKeystrokes, chord]
+      [...pendingKeystrokes, chord],
+      keymapScopesSignal.value
     )
 
     if (match.type === 'prefix') {
@@ -158,7 +218,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const retryMatch = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
-      [chord]
+      [chord],
+      keymapScopesSignal.value
     )
 
     if (retryMatch.type === 'prefix') {
@@ -298,8 +359,31 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     handleKeyDown(event, { source: 'global' })
   }
 
+  const syncEditorFocusScopeFromEventTarget = (target: EventTarget | null) => {
+    if (isEventFromEditableTarget(target)) {
+      serviceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+      serviceImpl.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+      return
+    }
+
+    serviceImpl.removeScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+    serviceImpl.applyScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+  }
+
+  const handleGlobalFocusIn = (event: FocusEvent) => {
+    syncEditorFocusScopeFromEventTarget(event.target)
+  }
+
+  const handleGlobalPointerDown = (event: PointerEvent) => {
+    syncEditorFocusScopeFromEventTarget(event.target)
+  }
+
   if (typeof window !== 'undefined') {
     window.addEventListener('keydown', handleGlobalKeyDown, { capture: true })
+    window.addEventListener('focusin', handleGlobalFocusIn, { capture: true })
+    window.addEventListener('pointerdown', handleGlobalPointerDown, {
+      capture: true,
+    })
   }
 
   return {
@@ -328,6 +412,12 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         clearPendingKeystrokes()
         if (typeof window !== 'undefined') {
           window.removeEventListener('keydown', handleGlobalKeyDown, {
+            capture: true,
+          })
+          window.removeEventListener('focusin', handleGlobalFocusIn, {
+            capture: true,
+          })
+          window.removeEventListener('pointerdown', handleGlobalPointerDown, {
             capture: true,
           })
         }
@@ -403,13 +493,20 @@ function isMacPlatform() {
 
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
-  hasPendingKeystrokes: boolean
+  hasPendingKeystrokes: boolean,
+  scopes: readonly string[]
 ) {
   if (event.metaKey || event.ctrlKey || event.altKey || hasPendingKeystrokes) {
     return false
   }
 
-  const target = event.target
+  return (
+    scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
+    isEventFromEditableTarget(event.target)
+  )
+}
+
+function isEventFromEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
   }
