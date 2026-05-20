@@ -12,4 +12,7 @@ cd ..
 
 cp rust/kcl-wasm-lib/README.md rust/kcl-wasm-lib/pkg/README.md
 cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
-npm run fmt
+
+if [ -z "${VERCEL:-}" ]; then
+  npm run fmt
+fi
