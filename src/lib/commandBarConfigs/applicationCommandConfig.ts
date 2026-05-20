@@ -8,6 +8,7 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import { exportProjectZip } from '@src/lib/exportProjectZip'
 import { isDesktop } from '@src/lib/isDesktop'
 import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
 import {
@@ -626,9 +627,31 @@ export function createApplicationCommands({
     },
   }
 
+  const exportProjectZipCommand: Command = {
+    name: 'export-project-zip',
+    displayName: 'Download project files',
+    description: 'Download every file in the current project as a ZIP archive.',
+    needsReview: false,
+    icon: 'download',
+    groupId: 'application',
+    onSubmit: async () => {
+      const project = app.project?.projectIORefSignal.value
+      const executingEditor = app.project?.executingEditor.value
+      const wasmInstance = await app.wasmPromise
+
+      await exportProjectZip({
+        project,
+        currentFilePath: app.project?.executingPath,
+        currentFileContents: executingEditor?.code,
+        wasmInstance,
+      })
+    },
+  }
+
   return [
     addKCLFileToProject,
-    ...(isDesktop() ? [checkForUpdatesCommand] : []),
+    ...(!window.electron ? [exportProjectZipCommand] : []),
+    ...(window.electron ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
     createASampleDesktopOnly,

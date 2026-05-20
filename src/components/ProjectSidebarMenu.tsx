@@ -13,7 +13,6 @@ import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -41,7 +40,7 @@ const ProjectSidebarMenu = ({
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home">
         <AppLogoLink project={project} file={file} />
-        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
+        {window.electron && <Tooltip position="bottom-left">Go home</Tooltip>}
       </div>
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
@@ -110,6 +109,7 @@ function ProjectMenuPopover({
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
+  const isRunningDesktopApp = Boolean(window.electron)
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
@@ -118,6 +118,10 @@ function ProjectMenuPopover({
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const exportProjectZipCommandInfo = {
+    name: 'export-project-zip',
+    groupId: 'application',
+  }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
@@ -138,7 +142,10 @@ function ProjectMenuPopover({
                 Project settings
               </span>
               <kbd className="hotkey">
-                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
+                {hotkeyDisplay(
+                  `mod+${isRunningDesktopApp ? '' : 'shift'}+,`,
+                  platform
+                )}
               </kbd>
             </>
           ),
@@ -195,9 +202,33 @@ function ProjectMenuPopover({
             }),
         },
         {
+          id: 'download-project-zip',
+          Element: 'button',
+          className: isRunningDesktopApp ? 'hidden' : '',
+          children: (
+            <>
+              <span className="flex-1">Download project files</span>
+              {!findCommand(exportProjectZipCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Project export unavailable
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(exportProjectZipCommandInfo),
+          onClick: () =>
+            commands.send({
+              type: 'Find and select command',
+              data: exportProjectZipCommandInfo,
+            }),
+        },
+        {
           id: 'make',
           Element: 'button',
-          className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
+          className: !isRunningDesktopApp || !machineApiEnabled ? 'hidden' : '',
           children: (
             <>
               <span>Make current part</span>
@@ -224,7 +255,7 @@ function ProjectMenuPopover({
           id: 'go-home',
           Element: 'button',
           children: 'Go to Home',
-          className: !isDesktop() ? 'hidden' : '',
+          className: !isRunningDesktopApp ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             kclManager.switchedFiles = true
@@ -239,12 +270,12 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      isRunningDesktopApp,
       machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
       kclManager.engineCommandManager,
       onProjectClose,
-      isDesktop,
     ]
   )
 

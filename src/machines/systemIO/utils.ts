@@ -274,6 +274,9 @@ export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
   projectContext?: Project
+  selectedFilePath?: string
+  warnIfProjectExceeds64Mb?: boolean
+  skipUnreadableFiles?: boolean
 }) => {
   let projectFiles: FileMeta[] = [
     {
@@ -291,7 +294,7 @@ export const collectProjectFiles = async (args: {
     }
   })
   let basePath = ''
-  if (args.projectContext?.children) {
+  if (args.projectContext) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
@@ -301,8 +304,12 @@ export const collectProjectFiles = async (args: {
         fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
 
       filePromises.push(
-        fsZds
-          .readFile(absolutePathToFileNameWithExtension)
+        Promise.resolve()
+          .then(() =>
+            args.selectedFilePath === absolutePathToFileNameWithExtension
+              ? new TextEncoder().encode(args.selectedFileContents)
+              : fsZds.readFile(absolutePathToFileNameWithExtension)
+          )
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
@@ -328,6 +335,9 @@ export const collectProjectFiles = async (args: {
           })
           .catch((e) => {
             console.error('error reading file', e)
+            if (args.skipUnreadableFiles === false) {
+              return Promise.reject(e)
+            }
             return null
           })
       )
@@ -353,7 +363,7 @@ export const collectProjectFiles = async (args: {
     await recursivelyPushFilePromisesFromPath(basePath)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
-    if (uploadSize > MB64) {
+    if (args.warnIfProjectExceeds64Mb !== false && uploadSize > MB64) {
       toast.error(
         'Your project exceeds 64Mb, this will slow down Zookeeper.\nPlease remove any unnecessary files.'
       )
