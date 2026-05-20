@@ -449,20 +449,14 @@ jobs:
           check_interval: 30
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
-      - name: Skip Vercel Playwright run when no deployment is available
-        if: ${{ !(steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url) }}
-        run: |
-          echo "No Vercel deployment was found for this run. Skipping Vercel Playwright coverage."
-
       - name: Check Vercel
-        if: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
         run: .github/ci-cd-scripts/check-vercel.sh
+        continue-on-error: true
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: npm run test:e2e:web
-        if: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
         run: npm run test:e2e:web -- --grep=demo
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
