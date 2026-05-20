@@ -24,11 +24,29 @@ export type ExchangeCardProps = Exchange & {
   isLastResponse: boolean
 }
 
-type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
-  error: any
-}
-  ? T
-  : never
+type MlCopilotServerMessageError = Extract<
+  MlCopilotServerMessage,
+  { error: unknown }
+>
+
+type MlCopilotServerMessageEndOfStream = Extract<
+  MlCopilotServerMessage,
+  { end_of_stream: unknown }
+>
+
+const getEndOfStreamResponse = (
+  responses?: MlCopilotServerMessage[]
+): MlCopilotServerMessageEndOfStream | undefined =>
+  responses?.findLast(
+    (response): response is MlCopilotServerMessageEndOfStream =>
+      'end_of_stream' in response
+  )
+
+const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
+  responses?.some(
+    (response) =>
+      'end_of_stream' in response || 'error' in response || 'info' in response
+  ) ?? false
 
 export interface IButtonCopyProps {
   content: string
@@ -77,17 +95,13 @@ export const ResponseCardToolBar = (props: {
   onClickClearChat: () => void
   isLastResponse: boolean
 }) => {
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   let contentForClipboard: string | undefined = ''
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      contentForClipboard = lastResponse.end_of_stream.whole_response
-    }
+    contentForClipboard = getEndOfStreamResponse(props.responses)?.end_of_stream
+      .whole_response
   }
 
   return (
@@ -122,9 +136,7 @@ export const ExchangeCardStatus = (props: {
 
   // Error and info also signals the end of a stream, because we'll never
   // see an end_of_stream from them.
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -142,11 +154,13 @@ export const ExchangeCardStatus = (props: {
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
       timeReasonedFor =
-        new Date(lastResponse.end_of_stream.completed_at ?? 0).getTime() -
-        new Date(lastResponse.end_of_stream.started_at ?? 0).getTime()
+        new Date(
+          endOfStreamResponse.end_of_stream.completed_at ?? 0
+        ).getTime() -
+        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
     }
   } else {
     timeReasonedFor =
@@ -196,6 +210,8 @@ type RequestCardProps = Exchange['request'] & {
   userAvatar?: ReactNode
 }
 
+const MAX_VISIBLE_ATTACHMENTS = 2
+
 const hasVisibleChildren = (children: ReactNode) => {
   return (
     (children instanceof Array && children.length > 0) ||
@@ -236,19 +252,60 @@ export const ChatBubble = (props: {
 }
 
 export const RequestCard = (props: RequestCardProps) => {
+  const [showAllAttachments, setShowAllAttachments] = useState(false)
+
   if (!isMlCopilotUserRequest(props)) {
     return null
   }
 
+  const additionalFiles = props.additional_files ?? []
+  const hasHiddenAttachments = additionalFiles.length > MAX_VISIBLE_ATTACHMENTS
+  const visibleAttachments = showAllAttachments
+    ? additionalFiles
+    : additionalFiles.slice(0, MAX_VISIBLE_ATTACHMENTS)
+
   return (
-    <ChatBubble
-      side={'right'}
-      userAvatar={props.userAvatar}
-      dataTestId="ml-request-chat-bubble"
-      className="pt-2 pb-2"
-    >
-      {props.content}
-    </ChatBubble>
+    <>
+      <ChatBubble
+        side={'right'}
+        userAvatar={props.userAvatar}
+        dataTestId="ml-request-chat-bubble"
+        className="pt-2 pb-2"
+      >
+        {props.content}
+      </ChatBubble>
+      {additionalFiles.length > 0 && (
+        <div className="flex justify-end pr-9">
+          <div
+            className="flex flex-col items-end gap-1"
+            data-testid="ml-request-chat-bubble-attachments"
+          >
+            <div className="w-full text-right text-xs font-medium text-chalkboard-70 dark:text-chalkboard-40">
+              Attachments
+            </div>
+            {visibleAttachments.map((file, index) => (
+              <div
+                key={`${file.name}-${index}`}
+                className="flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs"
+              >
+                <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
+                <span className="min-w-0 truncate">{file.name}</span>
+              </div>
+            ))}
+            {hasHiddenAttachments && (
+              <button
+                type="button"
+                onClick={() => setShowAllAttachments(!showAllAttachments)}
+                className="pt-1 pb-1 text-xs"
+                aria-expanded={showAllAttachments}
+              >
+                {showAllAttachments ? '- collapse' : '+ more'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -354,9 +411,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -371,9 +426,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }, [isEndOfStream])
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      startedAt = new Date(lastResponse.end_of_stream.started_at ?? 0)
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
+      startedAt = new Date(endOfStreamResponse.end_of_stream.started_at ?? 0)
     }
   }
 

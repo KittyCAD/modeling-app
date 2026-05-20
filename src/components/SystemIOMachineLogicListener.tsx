@@ -133,6 +133,22 @@ export function SystemIOMachineLogicListener() {
         return
       }
 
+      const fileNavigationOperations = [
+        SystemIOMachineStates.importFileFromURL,
+        SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
+        SystemIOMachineStates.renamingFileAndNavigateToFile,
+        SystemIOMachineStates.renamingFolderAndNavigateToFile,
+      ]
+      if (
+        requestedFileName.project &&
+        requestedFileName.file &&
+        fileNavigationOperations.includes(lastOperation)
+      ) {
+        return
+      }
+
       const isCreating = [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
@@ -278,6 +294,7 @@ export function SystemIOMachineLogicListener() {
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
             files: payload.files,
+            filesToDelete: payload.filesToDelete,
             override: true,
             // Gotcha: Both are called "project name" and "file name", but one of them
             // has to include the project-relative file path between the two.

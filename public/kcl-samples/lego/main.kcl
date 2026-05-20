@@ -26,10 +26,6 @@ tubeCenterY = pegCenterY + pitch / 2
 lSegments = totalLength / lbumps
 wSegments = totalWidth / wbumps
 
-// Add assertions to ensure that the number of bumps are greater than 1
-assert(lbumps, isGreaterThan = 1, error = "lbumps must be greater than 1")
-assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
-
 // Make the base
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -7.9in, var -11.9in], end = [var 7.9in, var -11.9in])

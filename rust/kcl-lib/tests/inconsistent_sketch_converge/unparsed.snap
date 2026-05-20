@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing inconsistent_sketch_converge.kcl
+---
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.83mm, var 2.98mm], end = [var 2.88mm, var 1.9mm])
+  distance([line1.start, line1.end]) == 2
+  line2 = line(start = [var -2.64mm, var -0.33mm], end = [var 1.6mm, var -0.39mm])
+  distance([line2.start, line2.end]) == 4
+  equalLength([line2, line1])
+}
+
+// This should still be evaluated and stored in program memory.
+abcdefgh = 12345

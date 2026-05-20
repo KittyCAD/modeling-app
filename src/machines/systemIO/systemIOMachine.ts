@@ -7,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   RequestedKCLFile,
+  RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
   SystemIOInput,
@@ -136,6 +137,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile
           data: {
             files: RequestedKCLFile[]
+            filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
             override?: boolean
@@ -314,6 +316,12 @@ export const systemIOMachine = setup({
           data: {
             projectId: string
             conversationId: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.deleteMlEphantConversation
+          data: {
+            projectId: string
           }
         }
       | {
@@ -624,6 +632,7 @@ export const systemIOMachine = setup({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
+            filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
@@ -768,15 +777,35 @@ export const systemIOMachine = setup({
       async (args: {
         input: {
           context: SystemIOContext
-          event: {
-            data: {
-              projectId: string
-              conversationId: string
-            }
-          }
+          event:
+            | {
+                type: SystemIOMachineEvents.saveMlEphantConversations
+                data: {
+                  projectId: string
+                  conversationId: string
+                }
+              }
+            | {
+                type: SystemIOMachineEvents.deleteMlEphantConversation
+                data: {
+                  projectId: string
+                }
+              }
         }
       }) => {
-        return new Map()
+        const next = new Map(args.input.context.mlEphantConversations)
+        if (
+          args.input.event.type ===
+          SystemIOMachineEvents.deleteMlEphantConversation
+        ) {
+          next.delete(args.input.event.data.projectId)
+        } else {
+          next.set(
+            args.input.event.data.projectId,
+            args.input.event.data.conversationId
+          )
+        }
+        return next
       }
     ),
   },
@@ -921,6 +950,9 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.gettingMlEphantConversations,
         },
         [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.deleteMlEphantConversation]: {
           target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
@@ -1434,6 +1466,7 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
+            filesToDelete: event.data.filesToDelete,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedFileNameWithExtension:
@@ -1836,11 +1869,24 @@ export const systemIOMachine = setup({
       },
     },
     [SystemIOMachineStates.savingMlEphantConversations]: {
+      on: {
+        [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+          reenter: true,
+        },
+        [SystemIOMachineEvents.deleteMlEphantConversation]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+          reenter: true,
+        },
+      },
       invoke: {
         id: SystemIOMachineActors.saveMlEphantConversations,
         src: SystemIOMachineActors.saveMlEphantConversations,
         input: ({ event, context }) => {
-          assertEvent(event, SystemIOMachineEvents.saveMlEphantConversations)
+          assertEvent(event, [
+            SystemIOMachineEvents.saveMlEphantConversations,
+            SystemIOMachineEvents.deleteMlEphantConversation,
+          ])
           return {
             context,
             event,

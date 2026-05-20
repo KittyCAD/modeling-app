@@ -34,7 +34,7 @@ test.describe('Sketch tests', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.dblclick()
@@ -132,7 +132,7 @@ test.describe('Sketch tests', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // wait for execution done
       await u.openDebugPanel()
@@ -171,7 +171,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await editor.expectEditor.toContain('startProfile(')
 
@@ -207,7 +207,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.startSketchBtn.click()
       await expect(
@@ -236,7 +236,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await test.step('Click Start Sketch button', async () => {
         await toolbar.startSketchBtn.click()
@@ -288,7 +288,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       let prevContent = await editor.getCurrentCode()
 
       await test.step('enter sketch and expect circle', async () => {
@@ -346,7 +346,7 @@ sketch001 = startSketchOn(XZ)
       })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.waitForFeatureTreeToBeBuilt()
 
       await editor.closePane()
@@ -382,7 +382,7 @@ sketch001 = startSketchOn(XZ)
       await page.setBodyDimensions(viewportSize)
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
       const { click00r } = getMovementUtils({ center, page })
 
@@ -417,7 +417,7 @@ sketch001 = startSketchOn(XZ)
       // exit the sketch, reset relative clicker
       await click00r(undefined, undefined)
       await toolbar.exitSketch()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // start a new sketch
       await toolbar.startSketchBtn.click()
@@ -517,7 +517,7 @@ sketch001 = startSketchOn(XZ)
 sketch001 = startSketchOn(-XZ)`
         )
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await doSnapAtDifferentScales(
           page,
           scene,
@@ -541,7 +541,7 @@ sketch001 = startSketchOn(-XZ)`
 sketch001 = startSketchOn(-XZ)`
         )
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await doSnapAtDifferentScales(
           page,
           scene,
@@ -575,7 +575,7 @@ sketch001 = startSketchOn(-XZ)`
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // wait for execution done
       await u.openDebugPanel()
@@ -632,7 +632,7 @@ sketch001 = startSketchOn(-XZ)`
         )
       })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.startSketchBtn.click()
 
       // Click the end face of extrude001
@@ -702,7 +702,7 @@ sketch001 = startSketchOn(-XZ)`
       })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
         format: 'ratio',
@@ -755,7 +755,7 @@ profile003 = circle(sketch003, center = [0, 0], radius = 1)
 
       await test.step('Setup', async () => {
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await scene.moveCameraTo(
           { x: 180, y: -75, z: 116 },
@@ -856,7 +856,7 @@ profile003 = circle(sketch003, center = [0, 0], radius = 1)
       const center = { x: 600, y: 250 }
       const rectangleSize = 20
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.dblclick()
@@ -917,7 +917,7 @@ sketch001 = startSketchOn(XZ)
 
       await homePage.goToModelingScene()
       await toolbar.waitForFeatureTreeToBeBuilt()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.editSketch()
       const [dragToDifferentPoint] = scene.makeDragHelpers(1000, 177, {
         debug: true,
@@ -955,7 +955,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.editSketch()
 
@@ -1000,7 +1000,7 @@ profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
       })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Enter sketch mode on first sketch via Feature Tree
       await toolbar.openFeatureTreePane()
@@ -1039,7 +1039,7 @@ test.describe('multi-profile sketching', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // open feature tree and double click the first sketch
@@ -1079,7 +1079,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
       )
     })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await toolbar.editSketch(0)
 
     await test.step('delete all profiles', async () => {
@@ -1130,7 +1130,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await editor.closePane()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
@@ -1489,7 +1489,7 @@ extrude001 = extrude(profile003, length = 5)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await toolbar.editSketch()
@@ -1515,7 +1515,7 @@ extrude001 = extrude(profile003, length = 5)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await toolbar.openFeatureTreePane()
     await toolbar.startSketchOnDefaultPlane('Front plane')
@@ -1541,7 +1541,7 @@ extrude001 = extrude(profile003, length = 5)
       )
 
       await editor.closePane()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openFeatureTreePane()
       await expect(
         await toolbar.getFeatureTreeOperation('Sketch', 0)
@@ -1573,7 +1573,7 @@ profile002 = startProfile(sketch002, at = [0, 52.55])
     })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const [startProfileAt] = scene.makeMouseHelpers(606, 184)
     const [nextPoint] = scene.makeMouseHelpers(763, 130)
@@ -1619,7 +1619,7 @@ extrude001 = extrude(thePart, length = 75)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const [objClick] = scene.makeMouseHelpers(565, 343)
     const [profilePoint1] = scene.makeMouseHelpers(609, 289)
@@ -1741,7 +1741,7 @@ extrude003 = extrude(profile011, length = 2.5)
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await toolbar.closePane(DefaultLayoutPaneID.Code)
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const camPositionForSelectingSketchOnWallProfiles = () =>
       scene.moveCameraTo(
@@ -1831,7 +1831,7 @@ loft([profile001, profile002])
 
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const [rect1Crn1] = scene.makeMouseHelpers(0.6, 0.5, { format: 'ratio' })
     const [rect1Crn2] = scene.makeMouseHelpers(0.8, 0.7, { format: 'ratio' })
@@ -1873,7 +1873,7 @@ test.describe(
         )
       })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const [objClick] = scene.makeMouseHelpers(634, 274)
       await objClick()
@@ -1913,7 +1913,7 @@ test.describe(
 
       // wait until scene is ready to be interacted with
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.startSketchBtn.click()
 
@@ -2004,7 +2004,7 @@ test.describe('manual edits during sketch mode', { tag: '@desktop' }, () => {
 
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.editSketch(1)

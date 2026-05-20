@@ -1,6 +1,6 @@
 import type { BrowserWindow } from 'electron'
 
-import { typeSafeWebContentsSend } from '@src/menu/channels'
+import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
 
@@ -30,11 +30,7 @@ export const projectFileRole = (
         label: 'Create Project',
         id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Create project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Create project'),
       },
       {
         label: 'Duplicate Project',
@@ -49,11 +45,7 @@ export const projectFileRole = (
         label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Open project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Open project'),
       },
       // TODO electronjs dot org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
@@ -61,11 +53,7 @@ export const projectFileRole = (
       {
         label: 'Add File to Project',
         id: 'File.Add file to project',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Add file to project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Add file to project'),
       },
       { type: 'separator' },
       {
@@ -74,38 +62,25 @@ export const projectFileRole = (
           {
             label: 'User Settings',
             id: 'File.Preferences.User settings',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.User settings',
-              })
-            },
+            click: sendMenuAction(mainWindow, 'File.Preferences.User settings'),
           },
           {
             label: 'Keybindings',
             id: 'File.Preferences.Keybindings',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Keybindings',
-              })
-            },
+            click: sendMenuAction(mainWindow, 'File.Preferences.Keybindings'),
           },
           {
             label: 'User Default Units',
             id: 'File.Preferences.User default units',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.User default units',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'File.Preferences.User default units'
+            ),
           },
           {
             label: 'Theme',
             id: 'File.Preferences.Theme',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Theme',
-              })
-            },
+            click: sendMenuAction(mainWindow, 'File.Preferences.Theme'),
           },
         ],
       },
@@ -114,11 +89,7 @@ export const projectFileRole = (
       {
         label: 'Sign Out',
         id: 'File.Sign out',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Sign out',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Sign out'),
       },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],
@@ -135,31 +106,11 @@ export const modelingFileRole = (
       newWindowMenuItem(actions),
       { type: 'separator' },
       // TODO: Once a safe command bar create new file and folder is implemented we can turn these on
-      // {
-      //   label: 'Create New File',
-      //   click: () => {
-      //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-      //       menuLabel: 'File.Create new file',
-      //     })
-      //   },
-      // },
-      // {
-      //   label: 'Create New Folder',
-      //   click: () => {
-      //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-      //       menuLabel: 'File.Create new folder',
-      //     })
-      //   },
-      // },
       {
         label: 'Create Project',
         id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Create project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Create project'),
       },
       {
         label: 'Duplicate Project',
@@ -174,11 +125,7 @@ export const modelingFileRole = (
         label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Open project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Open project'),
       },
       // TODO electronjs dot org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
@@ -186,20 +133,12 @@ export const modelingFileRole = (
       {
         label: 'Add File to Project',
         id: 'File.Add file to project',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Add file to project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Add file to project'),
       },
       {
         label: 'Export Current Part',
         id: 'File.Export current part',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Export current part',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Export current part'),
       },
       { type: 'separator' },
       {
@@ -208,47 +147,33 @@ export const modelingFileRole = (
           {
             label: 'Project Settings',
             id: 'File.Preferences.Project settings',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Project settings',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'File.Preferences.Project settings'
+            ),
           },
           {
             label: 'User Settings',
             id: 'File.Preferences.User settings',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.User settings',
-              })
-            },
+            click: sendMenuAction(mainWindow, 'File.Preferences.User settings'),
           },
           {
             label: 'Keybindings',
             id: 'File.Preferences.Keybindings',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Keybindings',
-              })
-            },
+            click: sendMenuAction(mainWindow, 'File.Preferences.Keybindings'),
           },
           {
             label: 'User Default Units',
             id: 'File.Preferences.User default units',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.User default units',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'File.Preferences.User default units'
+            ),
           },
           {
             label: 'Theme',
             id: 'File.Preferences.Theme',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Theme',
-              })
-            },
+            click: sendMenuAction(mainWindow, 'File.Preferences.Theme'),
           },
         ],
       },
@@ -257,11 +182,7 @@ export const modelingFileRole = (
       {
         label: 'Sign Out',
         id: 'File.Sign out',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Sign out',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'File.Sign out'),
       },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],

@@ -22,8 +22,8 @@ jobs:
     name: Build test artifacts
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: runs-on/action@v2
-      - uses: actions/create-github-app-token@v3
+      - uses: runs-on/action@v2.1.2
+      - uses: actions/create-github-app-token@v3.1.1
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -46,7 +46,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -163,8 +163,8 @@ jobs:
         partitionIndex: [1, 2, 3, 4, 5, 6]
         partitionTotal: [6]
     steps:
-      - uses: runs-on/action@v2
-      - uses: actions/create-github-app-token@v3
+      - uses: runs-on/action@v2.1.2
+      - uses: actions/create-github-app-token@v3.1.1
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -178,7 +178,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -247,11 +247,11 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
-      - uses: taiki-e/install-action@cf525cb33f51aca27cd6fa02034117ab963ff9f1
+      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         with:
           tool: wasm-pack
       - name: Rust Cache

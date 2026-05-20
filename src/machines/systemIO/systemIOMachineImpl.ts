@@ -38,15 +38,18 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
+  RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
-  collectProjectFiles,
+  SystemIOMachineEvents,
   jsonToMlConversations,
   mlConversationsToJson,
+  collectProjectFiles,
+  normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { v4 } from 'uuid'
 import { fromPromise } from 'xstate'
@@ -250,6 +253,7 @@ const sharedBulkDeleteWorkflow = async ({
     requestedProjectName: string
     context: SystemIOContext
     files: RequestedKCLFile[]
+    filesToDelete?: RequestedKCLFileDelete[]
     wasmInstance: ModuleType
   }
 }) => {
@@ -270,19 +274,28 @@ const sharedBulkDeleteWorkflow = async ({
     projectContext: project,
   })
 
-  // requestedFileName is the relative path too.
-  const filesToDelete = filesInProject.filter(
-    (f1) =>
-      input.files.some((f2) => f1.relPath === f2.requestedFileName) === false
+  const requestedFilesToDelete = new Set(
+    (input.filesToDelete ?? []).map((file) =>
+      normalizeKCLFileDeletePath(file.requestedFileName)
+    )
   )
 
+  // requestedFileName is the relative path too.
+  const filesToDelete = filesInProject.filter(
+    (file) =>
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath(file.relPath)) ===
+      true
+  )
+
+  let totalDeleted = 0
   for (const file of filesToDelete) {
     if (file.type === 'other') continue
     await fsZds.rm(file.absPath)
+    totalDeleted += 1
   }
 
   // How many files we deleted successfully
-  return filesToDelete.length
+  return totalDeleted
 }
 
 const resetDuplicatedProjectSettings = async (
@@ -715,6 +728,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
+            filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             override?: boolean
             requestedFileNameWithExtension: string
@@ -742,6 +756,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return {
             ...message,
             projectName: input.requestedProjectName,
+            fileName: input.requestedFileNameWithExtension || '',
             subRoute: input.requestedSubRoute || '',
           }
         }
@@ -1083,21 +1098,36 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async (args: {
         input: {
           context: SystemIOContext
-          event: {
-            data: {
-              projectId: string
-              conversationId: string
-            }
-          }
+          event:
+            | {
+                type: SystemIOMachineEvents.saveMlEphantConversations
+                data: {
+                  projectId: string
+                  conversationId: string
+                }
+              }
+            | {
+                type: SystemIOMachineEvents.deleteMlEphantConversation
+                data: {
+                  projectId: string
+                }
+              }
         }
       }) => {
-        const next: Map<any, any> = new Map(
+        const next = new Map<string, string>(
           args.input.context.mlEphantConversations
         )
-        next.set(
-          args.input.event.data.projectId,
-          args.input.event.data.conversationId
-        )
+        if (
+          args.input.event.type ===
+          SystemIOMachineEvents.deleteMlEphantConversation
+        ) {
+          next.delete(args.input.event.data.projectId)
+        } else {
+          next.set(
+            args.input.event.data.projectId,
+            args.input.event.data.conversationId
+          )
+        }
         const json = mlConversationsToJson(next)
         const te = new TextEncoder()
         await fsZds.writeFile(

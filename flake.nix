@@ -16,7 +16,7 @@
     overlays = [
       (import rust-overlay)
       (self: super: {
-        rustToolchain = super.rust-bin.stable.latest.default.override {
+        rustToolchain = super.rust-bin.stable."1.95.0".default.override {
           targets = ["wasm32-unknown-unknown"];
           extensions = [
             "rustfmt"

@@ -18,6 +18,8 @@ import {
   getArtifactOfTypes,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
+import { findOperationForArtifact } from '@src/lang/queryAst'
+import { prepareEditCommand } from '@src/lib/featureTree'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
@@ -38,7 +40,7 @@ export const ConnectionStream = (props: {
   authToken: string | undefined
   sketchSolveStreamDimming?: number
 }) => {
-  const { settings, project, wasmPromise } = useApp()
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -87,17 +89,18 @@ export const ConnectionStream = (props: {
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      engineCommandManager,
       isNetworkOkay,
-      modelingMachineState.value,
+      modelingMachineState,
       sceneInfra.camControls.wasDragging,
     ]
   )
 
   /**
-   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
-   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   * On double-click of editable viewport entities we enter their edit flow.
+   * TODO: This should be moved to a more central place.
    */
-  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> =
+  const enterEditModeForViewportSelection: MouseEventHandler<HTMLDivElement> =
     useCallback(
       (e) => {
         if (
@@ -123,6 +126,26 @@ export const ConnectionStream = (props: {
               return
             }
             const artifact = kclManager.artifactGraph.get(entity_id)
+            if (artifact?.type === 'gdtAnnotation') {
+              const operation = findOperationForArtifact({
+                artifact,
+                operations: kclManager.operations,
+              })
+              if (!operation) {
+                return
+              }
+
+              await prepareEditCommand({
+                artifactGraph: kclManager.artifactGraph,
+                code: kclManager.code,
+                commandBarActor: commands.actor,
+                operation,
+                rustContext: kclManager.rustContext,
+                artifact,
+              })
+              return
+            }
+
             const sketchBlockArtifact = getSketchBlockForArtifact(
               artifact,
               kclManager.artifactGraph
@@ -176,10 +199,18 @@ export const ConnectionStream = (props: {
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
+        commands.actor,
+        engineCommandManager,
         isNetworkOkay,
-        modelingMachineState.value,
-        sceneInfra.camControls.wasDragging,
         kclManager.artifactGraph,
+        kclManager.ast,
+        kclManager.code,
+        kclManager.operations,
+        kclManager.rustContext,
+        modelingMachineState,
+        sceneInfra.camControls.wasDragging,
+        sceneInfra.modelingSend,
+        wasmInstance,
       ]
     )
 
@@ -458,7 +489,7 @@ export const ConnectionStream = (props: {
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
-      onDoubleClick={enterSketchModeIfSelectingSketch}
+      onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >

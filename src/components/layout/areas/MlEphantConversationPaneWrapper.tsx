@@ -1,24 +1,27 @@
-import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { Menu } from '@headlessui/react'
-// Yea, feels bad, but literally every other pane is doing this.
-// TODO: Don't use CSS module for this? More generic module?
-import styles from './KclEditorMenu.module.css'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useSignals } from '@preact/signals-react/runtime'
+import { useEffect } from 'react'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
-import { BillingTransition } from '@src/machines/billingMachine'
-import { useSignals } from '@preact/signals-react/runtime'
+// Yea, feels bad, but literally every other pane is doing this.
+// TODO: Don't use CSS module for this? More generic module?
+import styles from './KclEditorMenu.module.css'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
-  const { auth, billing, settings, project, systemIOActor } = useApp()
+  const app = useApp()
+  const { auth, billing, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
@@ -30,6 +33,19 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  useEffect(() => {
+    if (!IS_STAGING_OR_DEBUG) return
+
+    app.debug.mlEphantManagerActor = mlEphantManagerActor
+
+    return () => {
+      if (app.debug.mlEphantManagerActor === mlEphantManagerActor) {
+        delete app.debug.mlEphantManagerActor
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
+  }, [])
 
   const sendBillingUpdate = () => {
     billing.send({

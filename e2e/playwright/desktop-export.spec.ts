@@ -38,7 +38,7 @@ test(
       const projectName = page.getByText(`bracket`)
       await expect(projectName).toBeVisible()
       await projectName.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -99,14 +99,15 @@ test(
 
       // Close the file pane
       await u.closeFilePanel()
-      await scene.settled(cmdBar)
+      await scene.settled()
+      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
       // Click the export button
       const exportButton = page.getByTestId('export-pane-button')
-      await expect(exportButton).toBeVisible()
+      await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
       // Select the first format option
@@ -191,7 +192,7 @@ extrude001 = extrude(profile001, length = 5)`
     const projectName = page.getByText(`sketch-project`)
     await expect(projectName).toBeVisible()
     await projectName.click()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Expect zero errors in gutter
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -288,7 +289,7 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     const projectName = page.getByText(`second-sketch-project`)
     await expect(projectName).toBeVisible()
     await projectName.click()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Expect zero errors in gutter
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()

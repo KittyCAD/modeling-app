@@ -18,6 +18,7 @@ disallowed-methods = [
   { path = "f64::atan",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f64::atan2", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f64::atanh", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::powf", reason = "Use squared() or floating point functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f32::hypot", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f32::min",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f32::max",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
@@ -35,4 +36,5 @@ disallowed-methods = [
   { path = "f32::atan",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f32::atan2", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f32::atanh", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::powf", reason = "Use squared() or floating point functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
 ]

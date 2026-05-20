@@ -51,7 +51,7 @@ export function resolveFeatureTreeVisibility(input: {
     }
   }
 
-  if (item.type === 'SketchSolve') {
+  if (item.type === 'GroupBegin' && item.group.type === 'SketchBlock') {
     const artifact = getArtifactFromRange(item.sourceRange, artifactGraph)
     if (artifact?.type !== 'sketchBlock') {
       return { canToggleVisibility: false }
