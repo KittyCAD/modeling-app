@@ -33,7 +33,7 @@ This file applies to TypeScript and React development under `src/`. It complemen
 - Lint with ESLint: `npm run lint`, or target a smaller path with `npx eslint src/path --max-warnings 0`.
 - Keep TypeScript types understandable and maintainable. Prefer explicit interfaces, straightforward unions, and local type guards over clever conditional types, heavy generics, or type-level plumbing.
 - Use type-only imports for types (`import type { Foo } ...`) because ESLint enforces `@typescript-eslint/consistent-type-imports`.
-- Avoid `Array.isArray()` in app code. Use `isArray()` from `@src/lib/utils` so type narrowing stays safe.
+- Use `isArray()` from `@src/lib/utils`, and any other helpful utils instead of reinventing your own.
 - Avoid ad hoc path string handling with `split('/')` or `join('/')`; use existing path utilities or platform APIs.
 - Do not use `TOML.parse` or `TOML.stringify` directly. Use the settings/test utility wrappers that preserve app-specific behavior.
 - Avoid non-ASCII characters in comments and user-facing strings unless the file already uses them or the product text requires them.
@@ -68,17 +68,14 @@ This file applies to TypeScript and React development under `src/`. It complemen
 For a typical `src/` change, prefer the smallest useful checks first:
 
 ```sh
-npm run tsc -- --pretty false
-npx eslint src/path/to/file.tsx --max-warnings 0
+make check
 npx vitest run src/path/to/file.spec.tsx
 ```
 
 Before a broad PR, run:
 
 ```sh
-npm run fmt:check
-npm run lint
-npm run tsc -- --pretty false
+make check
 npm run test:unit
 npm run test:integration
 ```
