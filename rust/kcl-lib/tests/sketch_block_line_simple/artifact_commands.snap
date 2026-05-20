@@ -68,8 +68,8 @@ description: Artifact commands sketch_block_line_simple.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.0000000040000003,
-          "y": 1.9999999979999998,
+          "x": 1.0000000000004006,
+          "y": 1.9999999999997997,
           "z": 0.0
         }
       }

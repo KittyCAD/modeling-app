@@ -90,8 +90,8 @@ description: Artifact commands sketch_block_lines_coincident_simple.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.0,
-            "y": 4.0,
+            "x": 3.0000000000007008,
+            "y": 4.000000000000701,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands sketch_block_lines_coincident_simple.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.0,
-          "y": 15.0,
+          "x": 13.999999999999599,
+          "y": 14.999999999999599,
           "z": 0.0
         }
       }
@@ -135,8 +135,8 @@ description: Artifact commands sketch_block_lines_coincident_simple.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 40.0,
-          "y": 41.0,
+          "x": 39.9999999999972,
+          "y": 40.9999999999972,
           "z": 0.0
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands sketch_block_lines_coincident_simple.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 40.0,
-            "y": 41.0,
+            "x": 39.9999999999964,
+            "y": 40.9999999999964,
             "z": 0.0
           },
           "relative": false

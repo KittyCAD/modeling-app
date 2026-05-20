@@ -68,7 +68,7 @@ description: Artifact commands tangent_circle_circle_native.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.000000012000001,
+          "x": 5.0000000080004,
           "y": 0.0,
           "z": 0.0
         }
@@ -90,7 +90,7 @@ description: Artifact commands tangent_circle_circle_native.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000004000000244143641,
+            "x": 0.0000000000004000000220476351,
             "y": 0.0
           },
           "radius": 5.000000008000001,
@@ -113,7 +113,7 @@ description: Artifact commands tangent_circle_circle_native.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.000000048000004,
+          "x": 11.000000044000403,
           "y": 0.0,
           "z": 0.0
         }
@@ -128,7 +128,7 @@ description: Artifact commands tangent_circle_circle_native.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 8.000000036000003,
+            "x": 8.000000032000402,
             "y": 0.0
           },
           "radius": 3.000000012000001,

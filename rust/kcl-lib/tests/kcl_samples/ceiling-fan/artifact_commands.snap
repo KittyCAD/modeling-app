@@ -82,8 +82,8 @@ description: Artifact commands ceiling-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000000007899654343425658,
-          "y": 0.0000000000003940913436035914,
+          "x": -0.0000000000000000000011746775226431819,
+          "y": 0.00000000000000004005904515316234,
           "z": 0.0
         }
       }
@@ -105,7 +105,7 @@ description: Artifact commands ceiling-fan.kcl
           "type": "line",
           "end": {
             "x": 17.5,
-            "y": 10.10362971081924,
+            "y": 10.10362971081885,
             "z": 0.0
           },
           "relative": false
@@ -121,8 +121,8 @@ description: Artifact commands ceiling-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.74999999963629,
-            "y": 22.59992476981353,
+            "x": 8.749999999679595,
+            "y": 22.599924769812755,
             "z": 0.0
           },
           "relative": false
@@ -138,67 +138,8 @@ description: Artifact commands ceiling-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.749999999393804,
-            "y": 116.76689358381108,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 2.91666666989926,
-            "y": 116.76659143611796
-          },
-          "radius": 5.833333337319678,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0029677350173612557
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 89.99811781114262
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.0000000000000033371395167369586,
-            "y": 122.59992477054175,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -2.916858292992129,
-            "y": 122.59992477078413,
+            "x": 8.74999999935921,
+            "y": 116.76684205360027,
             "z": 0.0
           },
           "relative": false
@@ -214,17 +155,17 @@ description: Artifact commands ceiling-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -2.916666667030536,
-            "y": 116.76659143728966
+            "x": 2.9166666669881813,
+            "y": 116.76659143615963
           },
-          "radius": 5.833333336641938,
+          "radius": 5.833333337754665,
           "start": {
             "unit": "degrees",
-            "value": 90.00188217580117
+            "value": 0.002461597991090184
           },
           "end": {
             "unit": "degrees",
-            "value": 179.9970322627459
+            "value": 89.99838954245145
           },
           "relative": false
         }
@@ -239,8 +180,67 @@ description: Artifact commands ceiling-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.749999999636284,
-            "y": 22.59992476981353,
+            "x": 0.0000000000007404905867102515,
+            "y": 122.59992477045323,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.91683061423649,
+            "y": 122.59992477077277,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -2.9166666669856287,
+            "y": 116.7665914361605
+          },
+          "radius": 5.833333336916166,
+          "start": {
+            "unit": "degrees",
+            "value": 90.00161031180559
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 179.9975395432762
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -8.749999999680336,
+            "y": 22.599924769812755,
             "z": 0.0
           },
           "relative": false
@@ -257,7 +257,7 @@ description: Artifact commands ceiling-fan.kcl
           "type": "line",
           "end": {
             "x": -17.5,
-            "y": 10.10362971081924,
+            "y": 10.10362971081885,
             "z": 0.0
           },
           "relative": false
@@ -273,8 +273,8 @@ description: Artifact commands ceiling-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000000007899654351487187,
-            "y": 0.0000000000003940913440630435,
+            "x": -0.0000000000000000000011746775226432906,
+            "y": 0.000000000000000040059045153167394,
             "z": 0.0
           },
           "relative": false

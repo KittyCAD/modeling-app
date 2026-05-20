@@ -107,7 +107,7 @@ description: Artifact commands sketch_block_lines_coincident_collinear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 20.0,
+            "x": 19.999999999997996,
             "y": 0.0,
             "z": 0.0
           },

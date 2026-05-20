@@ -50,7 +50,7 @@ description: Variables in memory after executing sketch_block_coincident_point2d
                   "point": {
                     "position": [
                       {
-                        "n": 0.9999999989999999,
+                        "n": 0.9999999999998999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +58,7 @@ description: Variables in memory after executing sketch_block_coincident_point2d
                         }
                       },
                       {
-                        "n": 2.4999999975,
+                        "n": 2.4999999999997495,
                         "ty": {
                           "mm": null,
                           "type": "Known",

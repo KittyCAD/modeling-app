@@ -156,7 +156,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.875000000380998,
+          "x": 15.87500000021204,
           "y": 0.0,
           "z": 0.0
         }
@@ -171,10 +171,10 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000008466667362968474,
+            "x": 0.000000000000004251908016974948,
             "y": 0.0
           },
-          "radius": 15.875000000296332,
+          "radius": 15.875000000212035,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -1536,7 +1536,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 18.79600000061693,
+          "x": 18.79600000020587,
           "y": 12.7,
           "z": 0.0
         }
@@ -1558,7 +1558,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.79600000061693,
+            "x": 18.79600000020587,
             "y": 53.339999999999996,
             "z": 0.0
           },
@@ -1575,7 +1575,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.60600000061693,
+            "x": 22.606000000205867,
             "y": 53.339999999999996,
             "z": 0.0
           },
@@ -1592,7 +1592,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.940589065872004,
+            "x": 62.94058906505002,
             "y": 16.509999999999998,
             "z": 0.0
           },
@@ -1609,7 +1609,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.940589065717774,
+            "x": 62.940589064947055,
             "y": 12.7,
             "z": 0.0
           },
@@ -1626,7 +1626,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.796000000822573,
+            "x": 18.79600000020589,
             "y": 12.7,
             "z": 0.0
           },
@@ -1802,7 +1802,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 18.79600000061693,
+          "x": 18.79600000020587,
           "y": 12.7,
           "z": 0.0
         }
@@ -1824,7 +1824,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.79600000061693,
+            "x": 18.79600000020587,
             "y": 53.339999999999996,
             "z": 0.0
           },
@@ -1841,7 +1841,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.60600000061693,
+            "x": 22.606000000205867,
             "y": 53.339999999999996,
             "z": 0.0
           },
@@ -1858,7 +1858,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.940589065872004,
+            "x": 62.94058906505002,
             "y": 16.509999999999998,
             "z": 0.0
           },
@@ -1875,7 +1875,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.940589065717774,
+            "x": 62.940589064947055,
             "y": 12.7,
             "z": 0.0
           },
@@ -1892,7 +1892,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.796000000822573,
+            "x": 18.79600000020589,
             "y": 12.7,
             "z": 0.0
           },

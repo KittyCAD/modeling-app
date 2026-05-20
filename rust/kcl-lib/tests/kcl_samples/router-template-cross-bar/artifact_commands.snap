@@ -69,7 +69,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": 31.880312488798783,
+          "y": 31.88031237254131,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.749999999997936,
-            "y": 31.880312488798783,
+            "x": 10.749999999997938,
+            "y": 31.88031237254131,
             "z": 0.0
           },
           "relative": false
@@ -107,314 +107,314 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.748846187107844,
-            "y": 19.99906254482337
-          },
-          "radius": 11.881249999999996,
-          "start": {
-            "unit": "degrees",
-            "value": 89.99443588771771
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 0.004520755403146131
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 22.63009615012427,
-            "y": -10.00000000000045,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63009615012427,
-            "y": -10.00000000000045,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63009615012427,
-            "y": 10.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 102.63009615012427,
-            "y": 10.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 102.63009615012427,
-            "y": 30.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63160714288048,
-            "y": 30.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 32.63160714288048,
-            "y": 41.88,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0003571428804808302,
-            "y": 41.88,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -32.63089285711952,
-            "y": 41.88,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -32.63089285711952,
-            "y": 30.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -102.63089285711952,
-            "y": 30.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -102.63089285711952,
-            "y": 10.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -32.630138892364194,
-            "y": 10.94,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -32.630138892364194,
-            "y": -10.000000000000433,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -22.63013889236419,
-            "y": -10.000000000000433,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -22.63013889236419,
-            "y": 19.999999999999567,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -10.748888929348087,
-            "y": 19.999062540749463
+            "x": 10.748846144278032,
+            "y": 19.999062428570056
           },
           "radius": 11.88125,
           "start": {
             "unit": "degrees",
-            "value": 179.99547922495088
+            "value": 89.99443568117651
           },
           "end": {
             "unit": "degrees",
-            "value": 90.00535799340012
+            "value": 0.004521316019604648
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 22.630096107285283,
+            "y": -10.00000000000045,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.63009610728528,
+            "y": -10.00000000000045,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.63009610728528,
+            "y": 10.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 102.6300961072853,
+            "y": 10.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 102.6300961072853,
+            "y": 30.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.631606934171266,
+            "y": 30.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 32.631606934171266,
+            "y": 41.88,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0003569341712607914,
+            "y": 41.88,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.63089306582874,
+            "y": 41.88,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.63089306582874,
+            "y": 30.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -102.63089306582873,
+            "y": 30.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -102.63089306582873,
+            "y": 10.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.630138802338124,
+            "y": 10.94,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -32.630138802338124,
+            "y": -9.999999999999993,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.630138802338124,
+            "y": -9.999999999999993,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.630138802338124,
+            "y": 20.000000000000007,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -10.748888839331194,
+            "y": 19.999062424500405
+          },
+          "radius": 11.88125,
+          "start": {
+            "unit": "degrees",
+            "value": 179.99547866435285
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 90.00535842749488
           },
           "relative": false
         }
@@ -430,7 +430,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 31.880312488798783,
+            "y": 31.88031237254131,
             "z": 0.0
           },
           "relative": false
@@ -891,7 +891,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -32.631249999992505,
+          "x": -32.631250000008,
           "y": 0.0,
           "z": 0.0
         }
@@ -913,7 +913,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.6312500000025,
+            "x": 32.631249999987,
             "y": 0.0,
             "z": 0.0
           },
@@ -930,7 +930,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.63124999999625,
+            "x": 32.6312499999845,
             "y": -10.0,
             "z": 0.0
           },
@@ -947,7 +947,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -32.631249999985,
+            "x": -32.631250000005494,
             "y": -10.0,
             "z": 0.0
           },
@@ -964,7 +964,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -32.63124999998875,
+            "x": -32.631250000007995,
             "y": 0.0,
             "z": 0.0
           },

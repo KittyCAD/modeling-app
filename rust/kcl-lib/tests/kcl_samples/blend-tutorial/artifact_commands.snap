@@ -69,7 +69,7 @@ description: Artifact commands blend-tutorial.kcl
         "path": "[uuid]",
         "to": {
           "x": -300.0,
-          "y": -30.0,
+          "y": -29.9999999999985,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands blend-tutorial.kcl
           "type": "line",
           "end": {
             "x": -150.0,
-            "y": 30.0,
+            "y": 29.9999999999985,
             "z": 0.0
           },
           "relative": false
@@ -163,7 +163,7 @@ description: Artifact commands blend-tutorial.kcl
         "path": "[uuid]",
         "to": {
           "x": 600.0,
-          "y": -30.0,
+          "y": -29.9999999999985,
           "z": 0.0
         }
       }
@@ -185,7 +185,7 @@ description: Artifact commands blend-tutorial.kcl
           "type": "line",
           "end": {
             "x": 300.0,
-            "y": 30.0,
+            "y": 29.9999999999985,
             "z": 0.0
           },
           "relative": false
@@ -232,7 +232,7 @@ description: Artifact commands blend-tutorial.kcl
         "path": "[uuid]",
         "to": {
           "x": -300.0,
-          "y": -30.0,
+          "y": -29.9999999999985,
           "z": 0.0
         }
       }
@@ -254,7 +254,7 @@ description: Artifact commands blend-tutorial.kcl
           "type": "line",
           "end": {
             "x": -150.0,
-            "y": 30.0,
+            "y": 29.9999999999985,
             "z": 0.0
           },
           "relative": false
@@ -363,7 +363,7 @@ description: Artifact commands blend-tutorial.kcl
         "path": "[uuid]",
         "to": {
           "x": 600.0,
-          "y": -30.0,
+          "y": -29.9999999999985,
           "z": 0.0
         }
       }
@@ -385,7 +385,7 @@ description: Artifact commands blend-tutorial.kcl
           "type": "line",
           "end": {
             "x": 300.0,
-            "y": 30.0,
+            "y": 29.9999999999985,
             "z": 0.0
           },
           "relative": false

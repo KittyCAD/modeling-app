@@ -68,8 +68,8 @@ description: Artifact commands double-hook.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000000006441673583987914,
-          "y": 0.0000000030000004687657177,
+          "x": 0.0000000000000000000302595478420229,
+          "y": 0.00000000000030042037806090513,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000000012883347174417502,
-            "y": -4.9999999939999995,
+            "x": 0.00000000000000030262573796810126,
+            "y": -4.999999996995496,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3.000000000724135,
-            "y": -4.9999999917241595
+            "x": -3.000000000740082,
+            "y": -4.999999999239338
           },
-          "radius": 3.000000000724135,
+          "radius": 3.0000000007400827,
           "start": {
             "unit": "degrees",
-            "value": -0.00000004346534152568072
+            "value": 0.000000042854233989843595
           },
           "end": {
             "unit": "degrees",
-            "value": -89.99999998597248
+            "value": -89.99999998586547
           },
           "relative": false
         }
@@ -133,7 +133,7 @@ description: Artifact commands double-hook.kcl
           "type": "line",
           "end": {
             "x": -7.0,
-            "y": -7.999999982889687,
+            "y": -7.9999999954982135,
             "z": 0.0
           },
           "relative": false
@@ -149,17 +149,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -6.999999999251992,
-            "y": -4.9999999821377
+            "x": -6.999999999259919,
+            "y": -4.99999999473831
           },
-          "radius": 3.000000000751987,
+          "radius": 3.0000000007599033,
           "start": {
             "unit": "degrees",
-            "value": -90.0000000142859
+            "value": -90.00000001413451
           },
           "end": {
             "unit": "degrees",
-            "value": -179.9999997963804
+            "value": -179.99999989952065
           },
           "relative": false
         }
@@ -174,8 +174,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.000000000000796,
-            "y": 29.0000000225,
+            "x": -10.0,
+            "y": 29.000000006005866,
             "z": 0.0
           },
           "relative": false
@@ -191,8 +191,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.000000000000796,
-            "y": 39.00000003,
+            "x": -10.0,
+            "y": 39.00000000900894,
             "z": 0.0
           },
           "relative": false
@@ -208,17 +208,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -12.99999999927666,
-            "y": 39.00000000827585
+            "x": -12.999999999259916,
+            "y": 39.000000000760664
           },
-          "radius": 2.9999999992758646,
+          "radius": 2.9999999992599165,
           "start": {
             "unit": "degrees",
-            "value": 0.00000041490079689036045
+            "value": 0.00000015753051556054607
           },
           "end": {
             "unit": "degrees",
-            "value": 90.00000001401237
+            "value": 90.00000001413457
           },
           "relative": false
         }
@@ -234,7 +234,7 @@ description: Artifact commands double-hook.kcl
           "type": "line",
           "end": {
             "x": -23.0,
-            "y": 42.00000001711032,
+            "y": 42.00000000450055,
             "z": 0.0
           },
           "relative": false
@@ -250,17 +250,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -23.000000000748006,
-            "y": 39.000000017862305
+            "x": -23.000000000740084,
+            "y": 39.00000000526045
           },
-          "radius": 2.9999999992480113,
+          "radius": 2.999999999240096,
           "start": {
             "unit": "degrees",
-            "value": 89.99999998571415
+            "value": 89.99999998586546
           },
           "end": {
             "unit": "degrees",
-            "value": 180.00000028956325
+            "value": 180.0000001004644
           },
           "relative": false
         }
@@ -275,8 +275,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25.999999999999204,
-            "y": 35.000000009000004,
+            "x": -26.0,
+            "y": 35.00000000150075,
             "z": 0.0
           },
           "relative": false
@@ -436,8 +436,8 @@ description: Artifact commands double-hook.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000000006441673583987914,
-          "y": 0.0000000030000004687657177,
+          "x": 0.0000000000000000000302595478420229,
+          "y": 0.00000000000030042037806090513,
           "z": 0.0
         }
       }
@@ -458,8 +458,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000000012883347174417502,
-            "y": -4.9999999939999995,
+            "x": 0.00000000000000030262573796810126,
+            "y": -4.999999996995496,
             "z": 0.0
           },
           "relative": false
@@ -475,17 +475,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3.000000000724135,
-            "y": -4.9999999917241595
+            "x": -3.000000000740082,
+            "y": -4.999999999239338
           },
-          "radius": 3.000000000724135,
+          "radius": 3.0000000007400827,
           "start": {
             "unit": "degrees",
-            "value": -0.00000004346534152568072
+            "value": 0.000000042854233989843595
           },
           "end": {
             "unit": "degrees",
-            "value": -89.99999998597248
+            "value": -89.99999998586547
           },
           "relative": false
         }
@@ -501,7 +501,7 @@ description: Artifact commands double-hook.kcl
           "type": "line",
           "end": {
             "x": -7.0,
-            "y": -7.999999982889687,
+            "y": -7.9999999954982135,
             "z": 0.0
           },
           "relative": false
@@ -517,17 +517,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -6.999999999251992,
-            "y": -4.9999999821377
+            "x": -6.999999999259919,
+            "y": -4.99999999473831
           },
-          "radius": 3.000000000751987,
+          "radius": 3.0000000007599033,
           "start": {
             "unit": "degrees",
-            "value": -90.0000000142859
+            "value": -90.00000001413451
           },
           "end": {
             "unit": "degrees",
-            "value": -179.9999997963804
+            "value": -179.99999989952065
           },
           "relative": false
         }
@@ -542,8 +542,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.000000000000796,
-            "y": 29.0000000225,
+            "x": -10.0,
+            "y": 29.000000006005866,
             "z": 0.0
           },
           "relative": false
@@ -559,8 +559,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.000000000000796,
-            "y": 39.00000003,
+            "x": -10.0,
+            "y": 39.00000000900894,
             "z": 0.0
           },
           "relative": false
@@ -576,17 +576,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -12.99999999927666,
-            "y": 39.00000000827585
+            "x": -12.999999999259916,
+            "y": 39.000000000760664
           },
-          "radius": 2.9999999992758646,
+          "radius": 2.9999999992599165,
           "start": {
             "unit": "degrees",
-            "value": 0.00000041490079689036045
+            "value": 0.00000015753051556054607
           },
           "end": {
             "unit": "degrees",
-            "value": 90.00000001401237
+            "value": 90.00000001413457
           },
           "relative": false
         }
@@ -602,7 +602,7 @@ description: Artifact commands double-hook.kcl
           "type": "line",
           "end": {
             "x": -23.0,
-            "y": 42.00000001711032,
+            "y": 42.00000000450055,
             "z": 0.0
           },
           "relative": false
@@ -618,17 +618,17 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -23.000000000748006,
-            "y": 39.000000017862305
+            "x": -23.000000000740084,
+            "y": 39.00000000526045
           },
-          "radius": 2.9999999992480113,
+          "radius": 2.999999999240096,
           "start": {
             "unit": "degrees",
-            "value": 89.99999998571415
+            "value": 89.99999998586546
           },
           "end": {
             "unit": "degrees",
-            "value": 180.00000028956325
+            "value": 180.0000001004644
           },
           "relative": false
         }
@@ -643,8 +643,8 @@ description: Artifact commands double-hook.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25.999999999999204,
-            "y": 35.000000009000004,
+            "x": -26.0,
+            "y": 35.00000000150075,
             "z": 0.0
           },
           "relative": false

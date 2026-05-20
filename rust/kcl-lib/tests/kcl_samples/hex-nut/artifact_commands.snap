@@ -68,8 +68,8 @@ description: Artifact commands hex-nut.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -7.937500000007031,
-          "y": 0.00000000016745749320357838,
+          "x": -7.937500000005923,
+          "y": 0.00000000016793662404005786,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.968749999908145,
-            "y": 6.874076642598355,
+            "x": -3.968749999907297,
+            "y": 6.874076642597777,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.968750000047263,
-            "y": 6.874076642514502,
+            "x": 3.9687500000470446,
+            "y": 6.87407664251357,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.937500000001131,
-            "y": 0.00000000000016382742948785395,
+            "x": 7.93750000000029,
+            "y": 0.00000000000010741523107571077,
             "z": 0.0
           },
           "relative": false
@@ -141,8 +141,8 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.968749999754038,
-            "y": -6.874076642703309,
+            "x": 3.968749999753378,
+            "y": -6.874076642702078,
             "z": 0.0
           },
           "relative": false
@@ -158,8 +158,8 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.968750000207113,
-            "y": -6.8740766424376085,
+            "x": -3.9687500002067133,
+            "y": -6.874076642436296,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.937500000007018,
-            "y": 0.0000000001674489913600015,
+            "x": -7.937500000005923,
+            "y": 0.00000000016793662318754037,
             "z": 0.0
           },
           "relative": false
@@ -190,8 +190,8 @@ description: Artifact commands hex-nut.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.5497579142016087,
-          "y": 1.7748789572988912,
+          "x": 3.549757913839849,
+          "y": 1.7748789580225925,
           "z": 0.0
         }
       }
@@ -205,17 +205,17 @@ description: Artifact commands hex-nut.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000000010301880354852022,
-            "y": -0.00000000000020196338548601018
+            "x": 0.0000000000000000010224280023983063,
+            "y": -0.000000000000000020224962511618293
           },
-          "radius": 3.96875,
+          "radius": 3.9687500000000004,
           "start": {
             "unit": "radians",
-            "value": 0.4636476090454952
+            "value": 0.4636476092493116
           },
           "end": {
             "unit": "radians",
-            "value": 6.746832916225081
+            "value": 6.746832916428898
           },
           "relative": false
         }
