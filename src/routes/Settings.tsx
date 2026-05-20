@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pluginsValueSpec } from '@kittycad/registry'
@@ -14,13 +14,28 @@ import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import { keymapService } from '@src/registry/contracts/keymap'
+
+const PLUGINS_FEATURE_FLAG = 'plugins'
+
+type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
+
+function isSettingsTab(tab: string | null): tab is SettingsTab {
+  return (
+    tab === 'user' ||
+    tab === 'project' ||
+    tab === 'keybindings' ||
+    tab === 'plugins'
+  )
+}
 
 export const Settings = () => {
   const app = useApp()
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [showPluginsTab, setShowPluginsTab] = useState(false)
   const close = () => {
     // This makes sure input texts are saved before closing the dialog (eg. default project name).
     if (document.activeElement instanceof HTMLInputElement) {
@@ -30,11 +45,31 @@ export const Settings = () => {
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
+  const defaultTab: SettingsLevel = isFileSettings ? 'project' : 'user'
+  const requestedTab = searchParams.get('tab')
+  const requestedSettingsTab = isSettingsTab(requestedTab)
+    ? requestedTab
+    : defaultTab
   const searchParamTab =
-    (searchParams.get('tab') as SettingsLevel | 'keybindings' | 'plugins') ??
-    (isFileSettings ? 'project' : 'user')
+    requestedSettingsTab === 'plugins' && !showPluginsTab
+      ? defaultTab
+      : requestedSettingsTab
 
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void userHasFeature(PLUGINS_FEATURE_FLAG, false).then((enabled) => {
+      if (!cancelled) {
+        setShowPluginsTab(enabled)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!keymap) {
@@ -101,7 +136,7 @@ export const Settings = () => {
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar />
+                <SettingsSearchBar showPlugins={showPluginsTab} />
                 <button
                   type="button"
                   onClick={close}
@@ -116,6 +151,7 @@ export const Settings = () => {
               value={searchParamTab}
               onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
               showProjectTab={isFileSettings}
+              showPluginsTab={showPluginsTab}
             />
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
@@ -129,10 +165,12 @@ export const Settings = () => {
                   <SettingsSectionsList
                     searchParamTab={searchParamTab}
                     scrollRef={scrollRef}
+                    showPlugins={showPluginsTab}
                   />
                   <AllSettingsFields
                     searchParamTab={searchParamTab}
                     isFileSettings={isFileSettings}
+                    showPlugins={showPluginsTab}
                     ref={scrollRef}
                   />
                 </>
@@ -141,13 +179,13 @@ export const Settings = () => {
                   <KeybindingsSectionsList scrollRef={scrollRef} />
                   <AllKeybindingsFields ref={scrollRef} />
                 </>
-              ) : (
+              ) : searchParamTab === 'plugins' && showPluginsTab ? (
                 <PluginsList
                   ref={scrollRef}
                   registry={app.registry}
                   plugins={app.registry.signal(pluginsValueSpec).value}
                 />
-              )}
+              ) : null}
             </div>
           </Dialog.Panel>
         </Transition.Child>
