@@ -117,6 +117,9 @@ export const MlEphantConversationPane = (props: {
     }
 
     const project: Project = props.theProject
+    // Capture the active editor baseline for fast local undo/redo of the next
+    // Zookeeper write. Backend checkpoints are for manual-edit context and
+    // future recovery, not the interactive undo path.
     props.kclManager.beginPendingZookeeperHistoryEntry()
 
     const projectFiles = await collectProjectFiles({
