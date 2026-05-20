@@ -701,6 +701,20 @@ const OperationItem = ({
           item.sourceRange,
           systemDeps.kclManager.artifactGraph
         ) ?? undefined
+      if (
+        item.type === 'GroupBegin' &&
+        item.group.type === 'SketchBlock' &&
+        artifact?.type === 'sketchBlock' &&
+        artifact.id &&
+        typeof artifact.sketchId === 'number'
+      ) {
+        // Allow double clicking on any sketch even with shift pressed
+        modelingActor.send({
+          type: 'Edit sketch solve',
+          data: { artifactId: artifact.id },
+        })
+        return
+      }
       prepareEditCommand({
         artifactGraph: systemDeps.kclManager.artifactGraph,
         code: systemDeps.kclManager.code,
@@ -712,6 +726,7 @@ const OperationItem = ({
     }
   }, [
     item,
+    modelingActor,
     commandBarActor,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,

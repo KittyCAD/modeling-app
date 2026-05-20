@@ -1003,6 +1003,7 @@ async fn inner_flatness(
     )
     .await?;
     let mut annotations = Vec::with_capacity(faces.len());
+    let display_units = exec_state.length_unit();
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         let meta = vec![Metadata::from(args.source_range)];
@@ -1015,7 +1016,7 @@ async fn inner_flatness(
             .control_frame(
                 AnnotationMbdControlFrame::builder()
                     .symbol(MbdSymbol::Flatness)
-                    .tolerance(tolerance.to_mm())
+                    .tolerance(tolerance.to_length_units(display_units))
                     .build(),
             )
             .plane_id(frame_plane.id)
@@ -1167,7 +1168,8 @@ async fn create_feature_control_annotation(
 ) -> Result<(), KclError> {
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
-    let control_frame = gdt_control_frame(symbol, tolerance.to_mm(), datums);
+    let display_units = exec_state.length_unit();
+    let control_frame = gdt_control_frame(symbol, tolerance.to_length_units(display_units), datums);
     let feature_control = AnnotationFeatureControl::builder()
         .entity_id(entity_id)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
@@ -1415,8 +1417,44 @@ gdt::distance(
 )
 "#;
 
+    const GDT_FLATNESS_KCL_TEMPLATE: &str = r#"
+@settings(defaultLengthUnit = __UNIT__, kclVersion = 2)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10mm, tagEnd = $capEnd001)
+gdt::flatness(
+  faces = [capEnd001],
+  tolerance = __TOLERANCE__,
+  framePosition = __FRAME_POSITION__,
+  framePlane = XZ,
+  fontSize = 2in,
+)
+"#;
+
     fn gdt_distance_kcl(unit: &str, tolerance: &str, frame_position: &str) -> String {
         GDT_DISTANCE_KCL_TEMPLATE
+            .replace("__UNIT__", unit)
+            .replace("__TOLERANCE__", tolerance)
+            .replace("__FRAME_POSITION__", frame_position)
+    }
+
+    fn gdt_flatness_kcl(unit: &str, tolerance: &str, frame_position: &str) -> String {
+        GDT_FLATNESS_KCL_TEMPLATE
             .replace("__UNIT__", unit)
             .replace("__TOLERANCE__", tolerance)
             .replace("__FRAME_POSITION__", frame_position)
@@ -1481,7 +1519,7 @@ gdt::distance(
         assert!((inch_scale - (inch_in_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32).abs() < f32::EPSILON);
     }
 
-    const GDT_FLATNESS_KCL_TEMPLATE: &str = r#"
+    const GDT_FLATNESS_LEADER_KCL_TEMPLATE: &str = r#"
 @settings(defaultLengthUnit = mm, kclVersion = 2)
 
 blockProfile = sketch(on = XY) {
@@ -1511,18 +1549,20 @@ gdt::flatness(
 )
 "#;
 
-    fn gdt_flatness_kcl(font_size: &str, leader_scale: Option<&str>) -> String {
-        GDT_FLATNESS_KCL_TEMPLATE.replace("__FONT_SIZE__", font_size).replace(
-            "__LEADER_SCALE__",
-            leader_scale
-                .map(|scale| format!(",\n  leaderScale = {scale}"))
-                .unwrap_or_default()
-                .as_str(),
-        )
+    fn gdt_flatness_leader_kcl(font_size: &str, leader_scale: Option<&str>) -> String {
+        GDT_FLATNESS_LEADER_KCL_TEMPLATE
+            .replace("__FONT_SIZE__", font_size)
+            .replace(
+                "__LEADER_SCALE__",
+                leader_scale
+                    .map(|scale| format!(",\n  leaderScale = {scale}"))
+                    .unwrap_or_default()
+                    .as_str(),
+            )
     }
 
     async fn gdt_flatness_feature_control(font_size: &str, leader_scale: Option<&str>) -> AnnotationFeatureControl {
-        let code = gdt_flatness_kcl(font_size, leader_scale);
+        let code = gdt_flatness_leader_kcl(font_size, leader_scale);
         let commands = gdt_commands(&code).await;
         let annotation_index = new_annotation_command_index(&commands);
         feature_control(&commands[annotation_index]).clone()
@@ -1562,6 +1602,30 @@ gdt::flatness(
             f64::from(large.font_scale) * f64::from(large.leader_scale),
             expected_scaled_dot_size,
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_flatness_uses_scene_units_for_control_frame_tolerance() {
+        let cases = [
+            ("in", "0.1in", "[10, -10]", 0.1, 254.0, -254.0),
+            ("cm", "10mm", "[1, -1]", 1.0, 10.0, -10.0),
+        ];
+
+        for (default_unit, tolerance, frame_position, expected_tolerance, expected_x, expected_y) in cases {
+            let code = gdt_flatness_kcl(default_unit, tolerance, frame_position);
+            let commands = gdt_commands(&code).await;
+            let annotation_index = new_annotation_command_index(&commands);
+            let feature_control = feature_control(&commands[annotation_index]);
+            let control_frame = feature_control.control_frame.as_ref().unwrap();
+
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_close(feature_control.offset.x, expected_x);
+            assert_close(feature_control.offset.y, expected_y);
+            assert_close(
+                f64::from(feature_control.font_scale),
+                gdt_font_scale_for_height_mm(50.8).into(),
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
