@@ -65,6 +65,9 @@ export default function useStateMachineCommands<
     isExecuting ||
     !isStreamReady ||
     disableForUnrenderedChanges
+  const useModelingDialog =
+    machineId === 'modeling' &&
+    settingsValues.commandBar.modelingDialogs.current === true
 
   useEffect(() => {
     const newCommands = Object.keys(commandBarConfig || {})
@@ -82,7 +85,15 @@ export default function useStateMachineCommands<
           forceDisable: shouldDisableEngineCommands,
         })
       })
-      .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
+      .filter((c) => c !== null)
+      .map((command) =>
+        useModelingDialog
+          ? {
+              ...command,
+              useModelingDialog,
+            }
+          : command
+      ) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commands.send({
       type: 'Add commands',
@@ -96,5 +107,5 @@ export default function useStateMachineCommands<
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [shouldDisableEngineCommands, commandBarConfig])
+  }, [shouldDisableEngineCommands, commandBarConfig, useModelingDialog])
 }

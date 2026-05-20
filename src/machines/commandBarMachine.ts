@@ -52,16 +52,6 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
   }
 }
 
-function evaluateCommandBarHidden(
-  arg: CommandArgument<unknown>,
-  context: CommandBarContext
-): boolean {
-  const machineContext = arg.machineActor?.getSnapshot().context
-  return typeof arg.hidden === 'function'
-    ? arg.hidden(context, machineContext)
-    : !!arg.hidden
-}
-
 export type CommandBarInput = {
   commands: Command[]
   wasmInstancePromise: Promise<ModuleType>
@@ -222,7 +212,10 @@ export const commandBarMachine = setup({
         // or hidden, or that is not undefined, or that is not marked as "skippable".
         // TODO validate the type of the existing arguments
         const nonHiddenArgs = Object.entries(selectedCommand.args).filter(
-          ([, arg]) => !evaluateCommandBarHidden(arg, context)
+          (a) =>
+            a[1].hidden && typeof a[1].hidden === 'function'
+              ? !a[1].hidden(context)
+              : !a[1].hidden
         )
         let argIndex = 0
         let lastRequiredArg: CommandArgumentWithName<unknown> | undefined
@@ -404,15 +397,13 @@ export const commandBarMachine = setup({
         Object.keys(context.selectedCommand?.args).length === 0
       )
     },
-    'Use modeling dialog': ({ context }) =>
-      context.selectedCommand?.groupId === 'modeling' &&
-      !!context.selectedCommand?.args &&
-      Object.keys(context.selectedCommand.args).length > 0,
     'All arguments are skippable': ({ context }) => {
       return Object.values(context.selectedCommand!.args!).every(
         (argConfig) =>
           argConfig.skip ||
-          evaluateCommandBarHidden(argConfig, context) ||
+          (typeof argConfig.hidden === 'function'
+            ? argConfig.hidden(context)
+            : argConfig.hidden) ||
           (typeof argConfig.required === 'function'
             ? !argConfig.required(context)
             : !argConfig.required)
@@ -429,7 +420,12 @@ export const commandBarMachine = setup({
         return false
       return Object.entries(selectedCommand.args).every(
         ([argName, argConfig]) => {
-          if (evaluateCommandBarHidden(argConfig, context)) return true
+          if (
+            typeof argConfig.hidden === 'function'
+              ? argConfig.hidden(context)
+              : argConfig.hidden
+          )
+            return true
           const isRequired =
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
@@ -678,11 +674,6 @@ export const commandBarMachine = setup({
           target: 'Closed',
           guard: 'Command has no arguments',
           actions: ['Execute command', 'Clear selected command'],
-        },
-        {
-          target: 'Gathering arguments',
-          guard: 'Use modeling dialog',
-          actions: ['Set current argument to first non-skippable'],
         },
         {
           target: 'Checking Arguments',

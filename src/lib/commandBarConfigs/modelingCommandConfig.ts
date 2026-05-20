@@ -156,6 +156,12 @@ const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
 
+const isEditingNodeSelection = (context: {
+  argumentsToSubmit: Record<string, unknown>
+  selectedCommand?: { useModelingDialog?: boolean }
+}) =>
+  isEditingNode(context) && context.selectedCommand?.useModelingDialog !== true
+
 // For all transforms and boolean commands
 const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
@@ -628,6 +634,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         tool: {
           defaultValue: 'line',
           required: true,
+          skip: true,
           inputType: 'string',
         },
       },
@@ -640,6 +647,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         tool: {
           defaultValue: 'tangentialArc',
           required: true,
+          skip: true,
           inputType: 'string',
         },
       },
@@ -652,6 +660,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         tool: {
           defaultValue: 'rectangle',
           required: true,
+          skip: true,
           inputType: 'string',
         },
       },
@@ -688,6 +697,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               return undefined
           }
         },
+        skip: true,
         required: (commandContext) =>
           ['gltf', 'stl', 'ply'].includes(
             commandContext.argumentsToSubmit.type as string
@@ -930,7 +940,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       length: {
         inputType: 'kcl',
@@ -1077,7 +1087,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       path: {
         inputType: 'selection',
@@ -1085,7 +1095,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: true,
         multiple: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       sectional: {
         inputType: 'boolean',
@@ -1151,7 +1161,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       vDegree: {
         inputType: 'kcl',
@@ -1217,7 +1227,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       axisOrEdge: {
         inputType: 'options',
@@ -1316,7 +1326,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       thickness: {
         inputType: 'kcl',
@@ -1363,7 +1373,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       cutAt: {
         inputType: 'vector2d',
@@ -1508,7 +1518,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       tools: {
         ...objectsTypesAndFilters,
@@ -1516,7 +1526,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
     },
   },
@@ -1553,7 +1563,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
     },
   },
@@ -1590,7 +1600,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
     },
   },
@@ -1631,7 +1641,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       tools: {
         ...objectsTypesAndFilters,
@@ -1639,7 +1649,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: false,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       merge: {
         inputType: 'boolean',
@@ -1696,7 +1706,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: false,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       offset: {
         inputType: 'kcl',
@@ -2079,7 +2089,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       radius: {
         inputType: 'kcl',
@@ -2134,7 +2144,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       length: {
         inputType: 'kcl',
@@ -2167,6 +2177,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment'],
         multiple: false,
         required: true,
+        skip: true,
       },
       length: {
         inputType: 'kcl',
@@ -2208,6 +2219,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         description: nodeToEditDescription,
         inputType: 'text',
         required: false,
+        skip: true,
         hidden: true,
       },
       namedValue: {
@@ -2280,7 +2292,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionFilter: ['object'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       color: {
         inputType: 'color',
@@ -2336,7 +2348,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       x: {
         inputType: 'kcl',
@@ -2395,7 +2407,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       roll: {
         inputType: 'kcl',
@@ -2454,7 +2466,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       x: {
         inputType: 'kcl',
@@ -2518,7 +2530,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: false, // only one object can be cloned at this time
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       variableName: {
         inputType: 'string',
@@ -2643,7 +2655,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       instances: {
         inputType: 'kcl',
@@ -2716,7 +2728,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       instances: {
         inputType: 'kcl',
@@ -2781,7 +2793,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       tolerance: {
         inputType: 'kcl',
@@ -2857,7 +2869,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       name: {
         inputType: 'string',
@@ -2931,7 +2943,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       datums: {
         ...datumsProps,
@@ -3010,7 +3022,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       datums: {
         ...datumsProps,
@@ -3093,7 +3105,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       tolerance: {
         inputType: 'kcl',
@@ -3169,7 +3181,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       datums: {
         ...datumsProps,
@@ -3248,7 +3260,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       datums: {
         ...datumsProps,
@@ -3326,7 +3338,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
-        hidden: isEditingNode,
+        hidden: isEditingNodeSelection,
       },
       annotation: {
         inputType: 'text',

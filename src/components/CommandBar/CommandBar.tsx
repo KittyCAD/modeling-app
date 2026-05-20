@@ -19,8 +19,7 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commands: cmd, project, settings, registry } = useApp()
-  const settingsValues = settings.useSettings()
+  const { commands: cmd, project, registry } = useApp()
   const keymap = registry.optional(keymapService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
@@ -28,8 +27,8 @@ export const CommandBar = () => {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
   const isModelingDialogCommand =
-    settingsValues.commandBar.modelingDialogs.current === true &&
-    selectedCommand?.groupId === 'modeling'
+    selectedCommand?.groupId === 'modeling' &&
+    selectedCommand.useModelingDialog === true
 
   // The command palette used to have light dismiss behavior, but we've decided
   // it's not a great fit for workflows where the user may want to review other
@@ -199,6 +198,7 @@ export const CommandBar = () => {
             {!isModelingDialogCommand && (
               <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
                 <button
+                  type="button"
                   data-testid="command-bar-close-button"
                   onClick={() => cmd.send({ type: 'Close' })}
                   className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"

@@ -129,6 +129,7 @@ export type Command<
   disabled?: boolean
   status?: CommandStatus
   mlBranding?: boolean
+  useModelingDialog?: boolean
   dialogLayout?: CommandDialogLayout
 }
 
