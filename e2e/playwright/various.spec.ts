@@ -251,7 +251,7 @@ test(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     // Exit sketch
-    await page.keyboard.press('Meta+Escape')
+    await page.keyboard.press('Shift+Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).not.toBeVisible()
