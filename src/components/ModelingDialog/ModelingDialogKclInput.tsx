@@ -8,8 +8,10 @@ import {
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap, tooltips } from '@codemirror/view'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { useSelector } from '@xstate/react'
 import type { ReactNode } from 'react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 import { Spinner } from '@src/components/Spinner'
 import { editorTheme } from '@src/editor/plugins/theme'
@@ -32,6 +34,9 @@ import { varMentions } from '@src/lib/varCompletionExtension'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import styles from './ModelingDialog.module.css'
+
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 export type KclCommandArgument = Extract<
   CommandArgument<unknown>,
@@ -133,7 +138,10 @@ export function ModelingDialogKclInput({
     onValidationChangeRef.current = onValidationChange
   }, [onValidationChange])
 
-  const argMachineContext = arg.machineActor?.getSnapshot().context
+  const argMachineContext = useSelector(
+    arg.machineActor,
+    machineContextSelector
+  )
   const initialVariableName = useMemo(() => {
     if (arg.variableName !== undefined) {
       return arg.variableName instanceof Function
