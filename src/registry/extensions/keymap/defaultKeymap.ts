@@ -11,9 +11,6 @@ import {
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
 
 const BASE_KEYMAP_SOURCE = 'Base'
-const EXIT_SKETCH_KEYSTROKES = isDesktop()
-  ? ['mod+escape', 'meta+escape']
-  : ['shift+escape']
 
 function createExitSketchBindings({
   id,
@@ -24,13 +21,15 @@ function createExitSketchBindings({
   scope: string
   command: string
 }): KeymapDocument['bindings'] {
-  return EXIT_SKETCH_KEYSTROKES.map((keystroke, index) => ({
-    id: index === 0 ? id : `${id}.${keystroke.replaceAll('+', '-')}`,
-    title: 'Exit Sketch',
-    scopes: [scope],
-    keystrokes: [keystroke],
-    command,
-  }))
+  return [
+    {
+      id,
+      title: 'Exit Sketch',
+      scopes: [scope],
+      keystrokes: ['shift+escape'],
+      command,
+    },
+  ]
 }
 
 export const defaultKeymap: KeymapDocument = {
