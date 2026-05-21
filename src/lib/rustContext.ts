@@ -550,7 +550,7 @@ export default class RustContext {
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
       } = !commitSolverResults
-        ? await (instance as any).preview_edit_segments_with_anchors(
+        ? await instance.preview_edit_segments_with_anchors(
             JSON.stringify(version),
             JSON.stringify(sketch),
             JSON.stringify(segments),
@@ -559,7 +559,7 @@ export default class RustContext {
             JSON.stringify(settings)
           )
         : hasDragAnchors
-          ? await (instance as any).edit_segments_with_anchors(
+          ? await instance.edit_segments_with_anchors(
               JSON.stringify(version),
               JSON.stringify(sketch),
               JSON.stringify(segments),
@@ -614,6 +614,62 @@ export default class RustContext {
         JSON.stringify(settings),
         createCheckpoint
       )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Edit a fixed constraint's stored point position in a sketch. */
+  async editFixedConstraintPointPosition(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    pointId: ApiObjectId,
+    position: ApiPoint2d<Number>,
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    commitSolverResults = true
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error(
+            'Preview fixed constraint edits cannot create sketch checkpoints'
+          )
+        )
+      }
+
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = !commitSolverResults
+        ? await (instance as any).preview_edit_fixed_constraint_point_position(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(pointId),
+            JSON.stringify(position),
+            JSON.stringify(settings)
+          )
+        : await (instance as any).edit_fixed_constraint_point_position(
+            JSON.stringify(version),
+            JSON.stringify(sketch),
+            JSON.stringify(pointId),
+            JSON.stringify(position),
+            JSON.stringify(settings),
+            createCheckpoint
+          )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
@@ -729,9 +785,7 @@ export default class RustContext {
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
       } = !commitSolverResults
-        ? await (
-            instance as any
-          ).preview_edit_distance_constraint_label_position(
+        ? await instance.preview_edit_distance_constraint_label_position(
             JSON.stringify(version),
             JSON.stringify(sketch),
             JSON.stringify(constraintId),
