@@ -29,7 +29,8 @@ import {
   getKclInputValue,
   getKclSubmitValue,
   ModelingDialogKclInput,
-} from './ModelingDialogKclInput'
+  type ModelingDialogKclValidationState,
+} from '@src/components/ModelingDialog/ModelingDialogKclInput'
 import {
   AdvancedSection,
   ArgumentField,
@@ -181,6 +182,9 @@ function hasMeaningfulDialogValue(value: unknown): boolean {
   if (typeof value === 'boolean') return true
   if (isArray(value)) return value.length > 0
   if (typeof value === 'object') {
+    if (isKclCommandValue(value)) {
+      return true
+    }
     return !isSelectionValueEmpty(value)
   }
   return true
@@ -387,6 +391,9 @@ export function ModelingDialog() {
   const [didAutoEnableSelection, setDidAutoEnableSelection] = useState(false)
   const [reviewValidationState, setReviewValidationState] =
     useState<ReviewValidationState>({ status: 'idle' })
+  const [kclValidationStates, setKclValidationStates] = useState<
+    Record<string, ModelingDialogKclValidationState>
+  >({})
   const dialogPositioningRef = useRef<HTMLDivElement>(null)
   const [dialogTopOffset, setDialogTopOffset] = useState(() =>
     getToolbarBottomOffset(null)
@@ -536,6 +543,7 @@ export function ModelingDialog() {
     setActiveSelectionArgName(null)
     setDidAutoEnableSelection(false)
     setReviewValidationState({ status: 'idle' })
+    setKclValidationStates({})
   }, [selectedCommand])
 
   useEffect(() => {
@@ -721,6 +729,24 @@ export function ModelingDialog() {
     visibleFields.find(
       (field) => !field.isDisabled && isSelectionArgument(field.arg)
     )?.argName
+  const firstVisibleKclFieldName = visibleFields.find(
+    (field) => !field.isDisabled && field.arg.inputType === 'kcl'
+  )?.argName
+  const visibleKclValidationStates = visibleFields
+    .filter((field) => !field.isDisabled && field.arg.inputType === 'kcl')
+    .map((field) => kclValidationStates[field.argName])
+    .filter((state): state is ModelingDialogKclValidationState =>
+      Boolean(state)
+    )
+  const isCheckingKclFields = visibleKclValidationStates.some(
+    (state) => state.isChecking
+  )
+  const invalidKclState = visibleKclValidationStates.find(
+    (state) => !state.canSubmit && !state.isChecking
+  )
+  const kclValidationErrorToDisplay = invalidKclState?.message
+  const validationErrorToDisplay =
+    reviewValidationErrorToDisplay || kclValidationErrorToDisplay
 
   const resolveDialogArgumentsForSubmit = useCallback(
     async ({
@@ -853,7 +879,9 @@ export function ModelingDialog() {
     if (
       !selectedCommand?.needsReview ||
       !selectedCommand.reviewValidation ||
-      !selectedCommand.args
+      !selectedCommand.args ||
+      isCheckingKclFields ||
+      invalidKclState
     ) {
       setReviewValidationState({ status: 'idle' })
       return
@@ -910,6 +938,8 @@ export function ModelingDialog() {
     }
   }, [
     commandBarState.context,
+    invalidKclState,
+    isCheckingKclFields,
     resolveDialogArgumentsForSubmit,
     selectedCommand,
   ])
@@ -929,9 +959,14 @@ export function ModelingDialog() {
     if (
       isSubmitting ||
       isCheckingArguments ||
+      isCheckingKclFields ||
+      invalidKclState ||
       reviewValidationState.status === 'checking' ||
       reviewValidationState.status === 'invalid'
     ) {
+      if (invalidKclState?.message) {
+        toast.error(invalidKclState.message)
+      }
       return
     }
 
@@ -962,7 +997,7 @@ export function ModelingDialog() {
     isDisabled,
     options,
   }: ModelingDialogField) {
-    const key = `${argName}-${arg.inputType}`
+    const key = `${selectedCommand?.name ?? 'command'}-${argName}-${arg.inputType}`
     const isSelectionField = isSelectionArgument(arg)
     const isSelecting = activeSelectionArgName === argName
     const isActivelySelecting = isSelectionField && isSelecting && !isDisabled
@@ -981,6 +1016,7 @@ export function ModelingDialog() {
       ? currentSelection
       : savedSelection
     const value = isSelectionField ? displayedSelection : draftValues[argName]
+    const submittedValue = commandBarState.context.argumentsToSubmit[argName]
     const description = arg.description ? (
       <MarkdownText
         text={arg.description}
@@ -1001,6 +1037,7 @@ export function ModelingDialog() {
         <ModelingDialogKclInput
           key={key}
           name={argName}
+          arg={arg}
           label={label}
           description={description}
           isRequired={isRequired}
@@ -1008,11 +1045,31 @@ export function ModelingDialog() {
           value={getKclInputValue(arg, value)}
           commandBarContext={dialogContext}
           selectionRanges={selectionRanges}
+          submittedValue={submittedValue}
+          autoFocus={firstVisibleKclFieldName === argName}
           onChange={(nextValue) => {
             setDraftValues((prev) => ({
               ...prev,
               [argName]: nextValue,
             }))
+          }}
+          onValidationChange={(state) => {
+            setKclValidationStates((prev) => {
+              const current = prev[argName]
+              if (
+                current &&
+                current.canSubmit === state.canSubmit &&
+                current.isChecking === state.isChecking &&
+                current.message === state.message
+              ) {
+                return prev
+              }
+
+              return {
+                ...prev,
+                [argName]: state,
+              }
+            })
           }}
         />
       )
@@ -1137,22 +1194,26 @@ export function ModelingDialog() {
               : visibleFields.map(renderField)}
           </div>
 
-          {reviewValidationErrorToDisplay && (
+          {validationErrorToDisplay && (
             <p className="mt-2 mb-0 text-xs leading-tight text-destroy-70 dark:text-destroy-40">
-              {reviewValidationErrorToDisplay}
+              {validationErrorToDisplay}
             </p>
           )}
 
           <div className="mt-3 flex shrink-0 items-center justify-end gap-1.5">
             <SubmitButton
               disabled={
-                isSubmitting || reviewValidationState.status === 'invalid'
+                isSubmitting ||
+                Boolean(invalidKclState) ||
+                reviewValidationState.status === 'invalid'
               }
               isChecking={
                 isCheckingArguments ||
+                isCheckingKclFields ||
                 reviewValidationState.status === 'checking'
               }
               checkingLabel={
+                isCheckingKclFields ||
                 reviewValidationState.status === 'checking'
                   ? 'Checking...'
                   : undefined

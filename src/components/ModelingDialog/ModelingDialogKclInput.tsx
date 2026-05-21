@@ -9,17 +9,24 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap, tooltips } from '@codemirror/view'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ReactNode } from 'react'
-import { use, useEffect, useMemo, useRef } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 
+import { Spinner } from '@src/components/Spinner'
 import { editorTheme } from '@src/editor/plugins/theme'
-import { findAllPreviousVariables, getNodeFromPath } from '@src/lang/queryAst'
+import {
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
+} from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -65,6 +72,7 @@ function getKclEditorContentAttributes(labelId: string, disabled: boolean) {
 
 export function ModelingDialogKclInput({
   name,
+  arg,
   label,
   description,
   isRequired,
@@ -72,9 +80,13 @@ export function ModelingDialogKclInput({
   value,
   commandBarContext,
   selectionRanges,
+  submittedValue,
+  autoFocus,
   onChange,
+  onValidationChange,
 }: {
   name: string
+  arg: KclCommandArgument
   label: ReactNode
   description?: ReactNode
   isRequired: boolean
@@ -82,7 +94,10 @@ export function ModelingDialogKclInput({
   value: string
   commandBarContext: CommandBarContext
   selectionRanges: Selections
-  onChange: (value: string) => void
+  submittedValue?: unknown
+  autoFocus?: boolean
+  onChange: (value: unknown) => void
+  onValidationChange: (state: ModelingDialogKclValidationState) => void
 }) {
   const { settings, wasmPromise } = useApp()
   const { kclManager } = useSingletons()
@@ -92,6 +107,15 @@ export function ModelingDialogKclInput({
   const labelId = `${inputId}-label`
   const editorWrapperRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<EditorView | null>(null)
+  const onChangeRef = useRef(onChange)
+  const onValidationChangeRef = useRef(onValidationChange)
+  const lastReportedValueRef = useRef<unknown>(Symbol('initial-kcl-value'))
+  const lastValidationStateRef = useRef<string>('')
+  const initialEditorValueRef = useRef(value)
+  const initialEditorDisabledRef = useRef(disabled)
+  const initialEditorLabelIdRef = useRef(labelId)
+  const initialEditorAutoFocusRef = useRef(autoFocus)
+  const initialEditorThemeRef = useRef(settingsValues.app.theme.current)
   const compartmentsRef = useRef({
     theme: new Compartment(),
     varMentions: new Compartment(),
@@ -100,6 +124,44 @@ export function ModelingDialogKclInput({
     editable: new Compartment(),
     contentAttributes: new Compartment(),
   })
+
+  useEffect(() => {
+    onChangeRef.current = onChange
+  }, [onChange])
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
+
+  const argMachineContext = arg.machineActor?.getSnapshot().context
+  const initialVariableName = useMemo(() => {
+    if (arg.variableName !== undefined) {
+      return arg.variableName instanceof Function
+        ? arg.variableName(commandBarContext, argMachineContext)
+        : arg.variableName
+    }
+
+    return isKclCommandValue(submittedValue) && 'variableName' in submittedValue
+      ? submittedValue.variableName
+      : name
+  }, [arg, argMachineContext, commandBarContext, name, submittedValue])
+
+  const [createNewVariable, setCreateNewVariable] = useState(
+    (isKclCommandValue(submittedValue) && 'variableName' in submittedValue) ||
+      arg.createVariable === 'byDefault' ||
+      arg.createVariable === 'force' ||
+      false
+  )
+  const [hasEditedVariableName, setHasEditedVariableName] = useState(false)
+
+  const kclValue = useMemo(() => getKclSubmitValue(arg, value), [arg, value])
+  const calculateOptions = useMemo(
+    () => ({
+      allowArrays: arg.allowArrays ?? false,
+      allowStringArrays: arg.allowStringArrays ?? false,
+    }),
+    [arg.allowArrays, arg.allowStringArrays]
+  )
 
   const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
     const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
@@ -135,21 +197,41 @@ export function ModelingDialogKclInput({
     ]
   )
 
-  const prevVariables = useMemo(
-    () =>
-      findAllPreviousVariables(
-        kclManager.astSignal.value,
-        kclManager.variablesSignal.value,
-        completionSourceRange,
-        wasmInstance
-      ).variables,
-    [
-      completionSourceRange,
-      kclManager.astSignal.value,
-      kclManager.variablesSignal.value,
-      wasmInstance,
-    ]
-  )
+  const {
+    calcResult,
+    newVariableInsertIndex,
+    valueNode,
+    newVariableName,
+    setNewVariableName,
+    isNewVariableNameUnique,
+    prevVariables,
+    isExecuting,
+  } = useCalculateKclExpression({
+    value: kclValue,
+    initialVariableName,
+    sourceRange: completionSourceRange,
+    selectionRanges,
+    rustContext: kclManager.rustContext,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
+    options: calculateOptions,
+  })
+
+  useEffect(() => {
+    if (hasEditedVariableName) {
+      return
+    }
+
+    setNewVariableName(
+      findUniqueName(kclManager.astSignal.value, initialVariableName)
+    )
+  }, [
+    hasEditedVariableName,
+    initialVariableName,
+    kclManager.astSignal.value,
+    setNewVariableName,
+  ])
 
   const varMentionData = useMemo<Completion[]>(
     () =>
@@ -176,33 +258,97 @@ export function ModelingDialogKclInput({
       }),
     [prevVariables, wasmInstance]
   )
+  const initialEditorVarMentionDataRef = useRef(varMentionData)
+  const isEmpty = value.trim() === ''
+  const canUseUncalculatedValue =
+    Boolean(arg.allowUncalculated) && valueNode !== null
+  const canSubmitKclValue =
+    isEmpty ||
+    (!isExecuting &&
+      valueNode !== null &&
+      (calcResult !== 'NAN' || canUseUncalculatedValue) &&
+      (!createNewVariable || isNewVariableNameUnique))
+  const validationMessage =
+    !isEmpty && !isExecuting && valueNode === null
+      ? 'Unable to submit undefined command value.'
+      : !isEmpty &&
+          !isExecuting &&
+          calcResult === 'NAN' &&
+          !canUseUncalculatedValue
+        ? "Can't calculate"
+        : createNewVariable && !isNewVariableNameUnique
+          ? 'Variable name unavailable'
+          : undefined
+  const resolvedKclValue = useMemo<KclCommandValue | undefined>(() => {
+    if (isEmpty || !canSubmitKclValue || valueNode === null) {
+      return undefined
+    }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The editor instance is created once; changing inputs reconfigure compartments below.
+    return createNewVariable
+      ? ({
+          valueAst: valueNode,
+          valueText: kclValue,
+          valueCalculated: calcResult,
+          variableName: newVariableName,
+          insertIndex: newVariableInsertIndex,
+          variableIdentifierAst: createLocalName(newVariableName),
+          variableDeclarationAst: createVariableDeclaration(
+            newVariableName,
+            valueNode
+          ),
+        } satisfies KclCommandValue)
+      : ({
+          valueAst: valueNode,
+          valueText: kclValue,
+          valueCalculated: calcResult,
+        } satisfies KclCommandValue)
+  }, [
+    calcResult,
+    canSubmitKclValue,
+    createNewVariable,
+    isEmpty,
+    kclValue,
+    newVariableInsertIndex,
+    newVariableName,
+    valueNode,
+  ])
+  const valueForSummary = resolvedKclValue ?? {
+    valueAst: valueNode,
+    valueText: kclValue,
+    valueCalculated: calcResult,
+  }
+
   useEffect(() => {
     if (!editorWrapperRef.current) {
       return
     }
 
+    const initialDisabled = initialEditorDisabledRef.current
     const compartments = compartmentsRef.current
     const editor = new EditorView({
       state: EditorState.create({
-        doc: value,
+        doc: initialEditorValueRef.current,
         extensions: [
           compartments.theme.of(
-            editorTheme[getResolvedTheme(settingsValues.app.theme.current)]
+            editorTheme[getResolvedTheme(initialEditorThemeRef.current)]
           ),
-          compartments.varMentions.of(varMentions(varMentionData)),
+          compartments.varMentions.of(
+            varMentions(initialEditorVarMentionDataRef.current)
+          ),
           compartments.editable.of([
-            EditorState.readOnly.of(disabled),
-            EditorView.editable.of(!disabled),
+            EditorState.readOnly.of(initialDisabled),
+            EditorView.editable.of(!initialDisabled),
           ]),
           compartments.contentAttributes.of(
-            getKclEditorContentAttributes(labelId, disabled)
+            getKclEditorContentAttributes(
+              initialEditorLabelIdRef.current,
+              initialDisabled
+            )
           ),
           compartments.setValue.of(
             EditorView.updateListener.of((update) => {
               if (update.docChanged) {
-                onChange(update.state.doc.toString())
+                onChangeRef.current(update.state.doc.toString())
               }
             })
           ),
@@ -230,6 +376,12 @@ export function ModelingDialogKclInput({
     })
 
     editorRef.current = editor
+    if (initialEditorAutoFocusRef.current && !initialDisabled) {
+      editor.focus()
+      editor.dispatch({
+        selection: { anchor: 0, head: editor.state.doc.length },
+      })
+    }
 
     return () => {
       editor.destroy()
@@ -295,6 +447,36 @@ export function ModelingDialogKclInput({
     })
   }, [value])
 
+  useEffect(() => {
+    const nextValue = resolvedKclValue ?? value
+    if (lastReportedValueRef.current === nextValue) {
+      return
+    }
+
+    lastReportedValueRef.current = nextValue
+    onChangeRef.current(nextValue)
+  }, [resolvedKclValue, value])
+
+  useEffect(() => {
+    const nextValidationState: ModelingDialogKclValidationState = {
+      canSubmit: canSubmitKclValue,
+      isChecking: !isEmpty && isExecuting,
+      message: validationMessage,
+    }
+    const nextValidationStateKey = JSON.stringify(nextValidationState)
+    if (lastValidationStateRef.current === nextValidationStateKey) {
+      return
+    }
+
+    lastValidationStateRef.current = nextValidationStateKey
+    onValidationChangeRef.current(nextValidationState)
+  }, [canSubmitKclValue, isEmpty, isExecuting, validationMessage])
+
+  const summaryClassName =
+    validationMessage && !isExecuting
+      ? 'text-destroy-80 dark:text-destroy-40'
+      : 'text-succeed-80 dark:text-succeed-40'
+
   return (
     <div
       className={['flex flex-col gap-1', disabled ? 'opacity-60' : ''].join(
@@ -314,7 +496,89 @@ export function ModelingDialogKclInput({
           disabled ? styles.kclEditorDisabled : '',
         ].join(' ')}
       />
+      {!isEmpty && (
+        <div className="flex min-w-0 items-center gap-1 text-[10px] leading-tight">
+          <span className="text-chalkboard-60 dark:text-chalkboard-40">=</span>
+          <span className={summaryClassName}>
+            {isExecuting || !calcResult ? (
+              <Spinner className="h-3 w-3 text-inherit" />
+            ) : arg.valueSummary && valueNode ? (
+              arg.valueSummary(valueForSummary, wasmInstance)
+            ) : calcResult === 'NAN' ? (
+              "Can't calculate"
+            ) : (
+              roundOffWithUnits(calcResult, 4)
+            )}
+          </span>
+        </div>
+      )}
+      {arg.createVariable !== 'disallow' && (
+        <div className="flex min-w-0 items-center gap-1.5 text-[10px] leading-tight">
+          <input
+            type="checkbox"
+            id={`${inputId}-variable-checkbox`}
+            data-testid={`${inputId}-variable-checkbox`}
+            checked={createNewVariable}
+            disabled={disabled}
+            onChange={(event) => {
+              setCreateNewVariable(event.target.checked)
+            }}
+            className="m-0 bg-chalkboard-10 dark:bg-chalkboard-80"
+          />
+          <label
+            htmlFor={`${inputId}-variable-checkbox`}
+            className="whitespace-nowrap border-none bg-transparent p-0 text-chalkboard-80 dark:text-chalkboard-20"
+          >
+            Create new variable
+          </label>
+          {createNewVariable && (
+            <>
+              <input
+                type="text"
+                id={`${inputId}-variable-name`}
+                name={`${inputId}-variable-name`}
+                className="min-w-0 flex-1 border-0 border-b border-solid border-chalkboard-50 bg-transparent px-0 py-px focus:outline-none"
+                placeholder="Variable name"
+                value={newVariableName}
+                disabled={disabled}
+                autoCapitalize="off"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck="false"
+                onChange={(event) => {
+                  setHasEditedVariableName(true)
+                  setNewVariableName(event.target.value)
+                }}
+                onKeyDown={(event) => {
+                  if (
+                    event.currentTarget.value === '' &&
+                    event.key === 'Backspace' &&
+                    arg.createVariable !== 'force'
+                  ) {
+                    setCreateNewVariable(false)
+                  }
+                }}
+              />
+              <span
+                className={
+                  isNewVariableNameUnique
+                    ? 'shrink-0 text-succeed-60 dark:text-succeed-40'
+                    : 'shrink-0 text-destroy-60 dark:text-destroy-40'
+                }
+              >
+                {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
+              </span>
+            </>
+          )}
+        </div>
+      )}
       {description}
     </div>
   )
+}
+
+export type ModelingDialogKclValidationState = {
+  canSubmit: boolean
+  isChecking: boolean
+  message?: string
 }
