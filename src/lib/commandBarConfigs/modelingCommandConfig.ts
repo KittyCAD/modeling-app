@@ -595,6 +595,26 @@ const summarizeDatumKclValue = (value?: KclCommandValue) =>
       )
     : ''
 
+export const getDefaultGdtTolerance = (
+  _commandBarContext: unknown,
+  modelingContext?: ModelingMachineContext
+) => {
+  const defaultLengthUnit =
+    modelingContext?.kclManager.fileSettings.defaultLengthUnit ||
+    DEFAULT_DEFAULT_LENGTH_UNIT
+  return `${KCL_DEFAULT_TOLERANCE}${defaultLengthUnit}`
+}
+
+const summarizeGdtToleranceKclValue = (value?: KclCommandValue) =>
+  value?.valueText ?? ''
+
+const gdtToleranceProps = {
+  inputType: 'kcl',
+  defaultValue: getDefaultGdtTolerance,
+  valueSummary: summarizeGdtToleranceKclValue,
+  required: true,
+} satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
+
 const datumsProps = {
   inputType: 'kcl',
   defaultValue: KCL_DEFAULT_DATUM_REFS,
@@ -2716,9 +2736,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2869,9 +2887,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2948,9 +2964,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3028,9 +3042,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3107,9 +3119,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3186,9 +3196,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
