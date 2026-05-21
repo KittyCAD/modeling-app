@@ -51,7 +51,7 @@ description: Operations executed module_return_using_var.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.0,
+            "value": 1,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -84,12 +84,9 @@ description: Operations executed module_return_using_var.kcl
   ],
   "rust/kcl-lib/tests/module_return_using_var/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "cube.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "cube.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -99,9 +96,6 @@ description: Operations executed module_return_using_var.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -119,7 +113,7 @@ description: Operations executed module_return_using_var.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 5.0,
+            "value": 5,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -182,7 +176,6 @@ description: Operations executed module_return_using_var.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -210,7 +203,6 @@ description: Operations executed module_return_using_var.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

@@ -9,7 +9,7 @@ description: Operations executed import_glob.kcl
       "name": "three",
       "value": {
         "type": "Number",
-        "value": 3.0,
+        "value": 3,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -36,12 +36,9 @@ description: Operations executed import_glob.kcl
   ],
   "rust/kcl-lib/tests/import_glob/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "export_constant.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "export_constant.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -51,9 +48,6 @@ description: Operations executed import_glob.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [
@@ -91,7 +85,6 @@ description: Operations executed import_glob.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -119,7 +112,6 @@ description: Operations executed import_glob.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

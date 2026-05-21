@@ -17,10 +17,6 @@ struct Variation<'a> {
     settings: &'a kcl_lib::ExecutorSettings,
 }
 
-fn operation_count(outcome: &ExecOutcome) -> usize {
-    outcome.operations.len()
-}
-
 fn root_operations(outcome: &ExecOutcome) -> &Vec<Operation> {
     outcome
         .operations
@@ -324,10 +320,10 @@ extrude001 = extrude(profile001, length = 4)
         second.artifact_graph
     );
     assert!(
-        operation_count(first) < operation_count(second),
+        first.operations.len() < second.operations.len(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        operation_count(first),
-        operation_count(second)
+        first.operations.len(),
+        second.operations.len()
     );
     let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
@@ -335,7 +331,7 @@ extrude001 = extrude(profile001, length = 4)
     assert_eq!(name, "extrude");
     // Make sure there are no duplicates.
     assert_eq!(
-        operation_count(second),
+        second.operations.len(),
         3,
         "There should be exactly this many operations in the second run. {:#?}",
         &second.operations
@@ -425,10 +421,10 @@ extrude001 = extrude(region001, length = 5)
         second.artifact_graph
     );
     assert!(
-        operation_count(first) < operation_count(second),
+        first.operations.len() < second.operations.len(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        operation_count(first),
-        operation_count(second)
+        first.operations.len(),
+        second.operations.len()
     );
     let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
@@ -876,10 +872,10 @@ import \"rectangle2.kcl\"
         second.artifact_graph
     );
     assert!(
-        operation_count(first) < operation_count(second),
+        first.operations.len() < second.operations.len(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        operation_count(first),
-        operation_count(second)
+        first.operations.len(),
+        second.operations.len()
     );
     // Make sure we have NodePaths.
     let first_graph = &first.artifact_graph;

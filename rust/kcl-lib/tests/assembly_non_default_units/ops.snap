@@ -9,7 +9,7 @@ description: Operations executed assembly_non_default_units.kcl
       "name": "radius",
       "value": {
         "type": "Number",
-        "value": 1.0,
+        "value": 1,
         "ty": {
           "type": "Default",
           "len": "in",
@@ -36,12 +36,9 @@ description: Operations executed assembly_non_default_units.kcl
   ],
   "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "other2.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "other2.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -53,15 +50,9 @@ description: Operations executed assembly_non_default_units.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "other1.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "other1.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -71,9 +62,6 @@ description: Operations executed assembly_non_default_units.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
@@ -171,7 +159,6 @@ description: Operations executed assembly_non_default_units.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -199,7 +186,6 @@ description: Operations executed assembly_non_default_units.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

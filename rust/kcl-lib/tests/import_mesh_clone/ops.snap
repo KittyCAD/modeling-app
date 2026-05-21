@@ -5,12 +5,9 @@ description: Operations executed import_mesh_clone.kcl
 {
   "rust/kcl-lib/tests/import_mesh_clone/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "../inputs/cube.obj",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "../inputs/cube.obj",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed import_mesh_clone.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -38,7 +32,7 @@ description: Operations executed import_mesh_clone.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -2000.0,
+            "value": -2000,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -50,7 +44,7 @@ description: Operations executed import_mesh_clone.kcl
         "y": {
           "value": {
             "type": "Number",
-            "value": -2000.0,
+            "value": -2000,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -154,7 +148,7 @@ description: Operations executed import_mesh_clone.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 4000.0,
+            "value": 4000,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -261,7 +255,7 @@ description: Operations executed import_mesh_clone.kcl
         "y": {
           "value": {
             "type": "Number",
-            "value": 4000.0,
+            "value": 4000,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -368,7 +362,7 @@ description: Operations executed import_mesh_clone.kcl
         "y": {
           "value": {
             "type": "Number",
-            "value": 4000.0,
+            "value": 4000,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -466,7 +460,6 @@ description: Operations executed import_mesh_clone.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -494,7 +487,6 @@ description: Operations executed import_mesh_clone.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

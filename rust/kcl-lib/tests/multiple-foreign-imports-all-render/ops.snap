@@ -31,12 +31,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "../inputs/cube.step",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "../inputs/cube.step",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -48,15 +45,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "anothercube.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "anothercube.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -68,15 +59,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "othercube.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "othercube.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -86,9 +71,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -104,7 +86,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 1020.0,
+            "value": 1020,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -152,9 +134,8 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "metalness": {
           "value": {
             "type": "Number",
-            "value": 50.0,
+            "value": 50,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -163,9 +144,8 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "roughness": {
           "value": {
             "type": "Number",
-            "value": 50.0,
+            "value": 50,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -203,7 +183,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -1020.0,
+            "value": -1020,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -251,9 +231,8 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "metalness": {
           "value": {
             "type": "Number",
-            "value": 50.0,
+            "value": 50,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -262,9 +241,8 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "roughness": {
           "value": {
             "type": "Number",
-            "value": 50.0,
+            "value": 50,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -350,7 +328,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -378,7 +355,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

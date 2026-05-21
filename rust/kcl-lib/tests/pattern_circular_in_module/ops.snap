@@ -5,12 +5,9 @@ description: Operations executed pattern_circular_in_module.kcl
 {
   "rust/kcl-lib/tests/pattern_circular_in_module/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "thing.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "thing.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed pattern_circular_in_module.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",
@@ -129,7 +123,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.0,
+            "value": 1,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -275,7 +269,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.0,
+            "value": 1,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -350,7 +344,6 @@ description: Operations executed pattern_circular_in_module.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -378,7 +371,6 @@ description: Operations executed pattern_circular_in_module.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

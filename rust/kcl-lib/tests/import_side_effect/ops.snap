@@ -38,12 +38,9 @@ description: Operations executed import_side_effect.kcl
   ],
   "rust/kcl-lib/tests/import_side_effect/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "export_side_effect.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "export_side_effect.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -53,9 +50,6 @@ description: Operations executed import_side_effect.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [
@@ -93,7 +87,6 @@ description: Operations executed import_side_effect.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -121,7 +114,6 @@ description: Operations executed import_side_effect.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },

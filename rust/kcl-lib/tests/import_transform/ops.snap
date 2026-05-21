@@ -5,12 +5,9 @@ description: Operations executed import_transform.kcl
 {
   "rust/kcl-lib/tests/import_transform/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "2-5-long-m8-chc-screw.stl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "2-5-long-m8-chc-screw.stl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed import_transform.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -170,7 +164,6 @@ description: Operations executed import_transform.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -181,7 +174,6 @@ description: Operations executed import_transform.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -192,7 +184,6 @@ description: Operations executed import_transform.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
-              "type": "Known",
               "type": "Count"
             }
           },
@@ -252,7 +243,6 @@ description: Operations executed import_transform.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
@@ -280,7 +270,6 @@ description: Operations executed import_transform.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
-          "type": "Known",
           "type": "Count"
         }
       },
