@@ -583,6 +583,11 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
+export interface PendingFeatureTreeSourceSelection {
+  path: string
+  range: [number, number, number]
+}
+
 export class File extends EventTarget {
   /** Path to file this editor is operating on */
   private pathSignal: Signal<string>
@@ -795,6 +800,8 @@ export class KclManager extends File {
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: OperationsByModule = emptyOperationsByModule()
+  pendingFeatureTreeSourceSelection: PendingFeatureTreeSourceSelection | null =
+    null
   private _logs = signal<string[]>([])
   private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])

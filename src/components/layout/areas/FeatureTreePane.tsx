@@ -69,6 +69,7 @@ import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useNavigate } from 'react-router-dom'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
@@ -76,6 +77,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { PATHS } from '@src/lib/paths'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -795,6 +797,7 @@ const OperationItem = ({
 }: OperationProps) => {
   useSignals()
   const app = useApp()
+  const navigate = useNavigate()
   const { layout } = app
   const { kclManager, commandBarActor } = systemDeps
   const useSketchSolveMode =
@@ -867,7 +870,14 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [isModuleOwned, sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
+    [
+      isModuleOwned,
+      sketchNoFace,
+      onSelect,
+      item,
+      kclManager,
+      useSketchSolveMode,
+    ]
   )
 
   const viewOperationSource = useCallback(
@@ -879,7 +889,7 @@ const OperationItem = ({
       const targetModuleId =
         item.type === 'ModuleInstance'
           ? item.moduleId
-          : providedSourceRange?.[2] ?? item.sourceRange[2]
+          : (providedSourceRange?.[2] ?? item.sourceRange[2])
       const targetModulePath = kclManager.execState.filenames[targetModuleId]
 
       const l = layout.signal.value
@@ -890,12 +900,12 @@ const OperationItem = ({
       if (targetModulePath?.type === 'Local' && app.project) {
         const targetPath = targetModulePath.value
         if (app.project.executingPath !== targetPath) {
-          const existingEditor = app.project.findEditor(targetPath)?.[1]
-          if (existingEditor) {
-            app.project.executingPath = targetPath
-          } else {
-            await app.project.openEditor(targetPath, undefined, undefined, true)
+          kclManager.pendingFeatureTreeSourceSelection = {
+            path: targetPath,
+            range: providedSourceRange ?? item.sourceRange,
           }
+          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+          return
         }
       }
 
@@ -906,7 +916,7 @@ const OperationItem = ({
 
       onSelect(targetRange)
     },
-    [app, item, kclManager.execState.filenames, layout, onSelect]
+    [app, item, kclManager, layout, navigate, onSelect]
   )
 
   const enterEditFlow = useCallback(() => {
@@ -1095,179 +1105,185 @@ const OperationItem = ({
       }
 
       return [
-            viewSourceMenuItem,
-            ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
-              ? [
-                  <ContextMenuItem
-                    onClick={() => {
-                      if (item.type !== 'GroupBegin') {
-                        return
-                      }
-                      if (item.group.type !== 'FunctionCall') {
-                        // TODO: Add module instance support.
-                        return
-                      }
-                      const functionRange = item.group.functionSourceRange
-                      // For some reason, the cursor goes to the end of the source
-                      // range we select.  So set the end equal to the beginning.
-                      functionRange[1] = functionRange[0]
-                      viewOperationSource(functionRange).catch(reportRejection)
-                    }}
-                  >
-                    View function definition
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(isOffsetPlane(item)
-              ? [
-                  <ContextMenuItem onClick={startSketchOnOffsetPlane}>
-                    Start Sketch
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
-              ? [
-                  <ContextMenuItem
-                    onClick={() => {
-                      const exportDxf = async () => {
-                        if (item.type !== 'StdLibCall') return
-                        await exportSketchToDxf(item, {
-                          engineCommandManager,
-                          kclManager,
-                          toast,
-                          uuidv4,
-                          base64Decode,
-                          browserSaveFile,
-                        })
-                      }
-                      void exportDxf()
-                    }}
-                    data-testid="context-menu-export-dxf"
-                  >
-                    Export to DXF
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
-              ? [
-                  <ContextMenuItem
-                    onClick={() => {
-                      const exportDxf = async () => {
-                        if (item.type !== 'StdLibCall') return
-                        await exportSketchToDxf(item, {
-                          engineCommandManager,
-                          kclManager,
-                          toast,
-                          uuidv4,
-                          base64Decode,
-                          browserSaveFile,
-                        })
-                      }
-                      void exportDxf()
-                    }}
-                    data-testid="context-menu-export-dxf"
-                  >
-                    Export to DXF
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' ||
-            item.type === 'VariableDeclaration' ||
-            (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
-              ? [
-                  <ContextMenuItem
-                    disabled={
-                      item.type !== 'VariableDeclaration' &&
-                      item.type === 'StdLibCall' &&
-                      stdLibMap[item.name]?.prepareToEdit === undefined
-                    }
-                    onClick={enterEditFlow}
-                    hotkey="Double click"
-                  >
-                    Edit
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' ||
-            (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
-              ? [
-                  <ContextMenuItem
-                    disabled={
-                      !(
-                        (item.type === 'GroupBegin' &&
-                          item.group.type === 'FunctionCall') ||
-                        (item.type === 'StdLibCall' &&
-                          stdLibMap[item.name]?.supportsAppearance)
-                      )
-                    }
-                    onClick={enterAppearanceFlow}
-                    data-testid="context-menu-set-appearance"
-                  >
-                    Set appearance
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
-              ? [
-                  <ContextMenuItem
-                    onClick={enterTranslateFlow}
-                    data-testid="context-menu-set-translate"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Translate
-                  </ContextMenuItem>,
-                  <ContextMenuItem
-                    onClick={enterRotateFlow}
-                    data-testid="context-menu-set-rotate"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Rotate
-                  </ContextMenuItem>,
-                  <ContextMenuItem
-                    onClick={enterScaleFlow}
-                    data-testid="context-menu-set-scale"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Scale
-                  </ContextMenuItem>,
-                  <ContextMenuItem
-                    onClick={enterCloneFlow}
-                    data-testid="context-menu-clone"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Clone
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' ||
-            item.type === 'GroupBegin' ||
-            item.type === 'VariableDeclaration'
-              ? [
-                  <ContextMenuItem
-                    onClick={deleteOperation}
-                    hotkey="Delete"
-                    data-testid="context-menu-delete"
-                  >
-                    Delete
-                  </ContextMenuItem>,
-                ]
-              : []),
-          ]
+        viewSourceMenuItem,
+        ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
+          ? [
+              <ContextMenuItem
+                onClick={() => {
+                  if (item.type !== 'GroupBegin') {
+                    return
+                  }
+                  if (item.group.type !== 'FunctionCall') {
+                    // TODO: Add module instance support.
+                    return
+                  }
+                  const functionRange = item.group.functionSourceRange
+                  // For some reason, the cursor goes to the end of the source
+                  // range we select.  So set the end equal to the beginning.
+                  functionRange[1] = functionRange[0]
+                  viewOperationSource(functionRange).catch(reportRejection)
+                }}
+              >
+                View function definition
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(isOffsetPlane(item)
+          ? [
+              <ContextMenuItem onClick={startSketchOnOffsetPlane}>
+                Start Sketch
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
+          ? [
+              <ContextMenuItem
+                onClick={() => {
+                  const exportDxf = async () => {
+                    if (item.type !== 'StdLibCall') return
+                    await exportSketchToDxf(item, {
+                      engineCommandManager,
+                      kclManager,
+                      toast,
+                      uuidv4,
+                      base64Decode,
+                      browserSaveFile,
+                    })
+                  }
+                  void exportDxf()
+                }}
+                data-testid="context-menu-export-dxf"
+              >
+                Export to DXF
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
+          ? [
+              <ContextMenuItem
+                onClick={() => {
+                  const exportDxf = async () => {
+                    if (item.type !== 'StdLibCall') return
+                    await exportSketchToDxf(item, {
+                      engineCommandManager,
+                      kclManager,
+                      toast,
+                      uuidv4,
+                      base64Decode,
+                      browserSaveFile,
+                    })
+                  }
+                  void exportDxf()
+                }}
+                data-testid="context-menu-export-dxf"
+              >
+                Export to DXF
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' ||
+        item.type === 'VariableDeclaration' ||
+        (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
+          ? [
+              <ContextMenuItem
+                disabled={
+                  item.type !== 'VariableDeclaration' &&
+                  item.type === 'StdLibCall' &&
+                  stdLibMap[item.name]?.prepareToEdit === undefined
+                }
+                onClick={enterEditFlow}
+                hotkey="Double click"
+              >
+                Edit
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' ||
+        (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+          ? [
+              <ContextMenuItem
+                disabled={
+                  !(
+                    (item.type === 'GroupBegin' &&
+                      item.group.type === 'FunctionCall') ||
+                    (item.type === 'StdLibCall' &&
+                      stdLibMap[item.name]?.supportsAppearance)
+                  )
+                }
+                onClick={enterAppearanceFlow}
+                data-testid="context-menu-set-appearance"
+              >
+                Set appearance
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
+          ? [
+              <ContextMenuItem
+                onClick={enterTranslateFlow}
+                data-testid="context-menu-set-translate"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Translate
+              </ContextMenuItem>,
+              <ContextMenuItem
+                onClick={enterRotateFlow}
+                data-testid="context-menu-set-rotate"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Rotate
+              </ContextMenuItem>,
+              <ContextMenuItem
+                onClick={enterScaleFlow}
+                data-testid="context-menu-set-scale"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Scale
+              </ContextMenuItem>,
+              <ContextMenuItem
+                onClick={enterCloneFlow}
+                data-testid="context-menu-clone"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Clone
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' ||
+        item.type === 'GroupBegin' ||
+        item.type === 'VariableDeclaration'
+          ? [
+              <ContextMenuItem
+                onClick={deleteOperation}
+                hotkey="Delete"
+                data-testid="context-menu-delete"
+              >
+                Delete
+              </ContextMenuItem>,
+            ]
+          : []),
+      ]
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [item, isModuleOwned, isStaleReference, layout.signal.value, viewOperationSource]
+    [
+      item,
+      isModuleOwned,
+      isStaleReference,
+      layout.signal.value,
+      viewOperationSource,
+    ]
   )
 
   const enabled = (!sketchNoFace || isOffsetPlane(item)) && !isStaleReference
@@ -1327,7 +1343,9 @@ const OperationItem = ({
       disabled={!enabled}
       size={size}
       visibilityToggle={
-        !isStaleReference && !isModuleOwned && visibilityState.canToggleVisibility
+        !isStaleReference &&
+        !isModuleOwned &&
+        visibilityState.canToggleVisibility
           ? {
               visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
