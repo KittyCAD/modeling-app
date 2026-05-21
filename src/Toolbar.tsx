@@ -292,12 +292,26 @@ const Toolbar_ = memo(
           isActive: itemIsActive,
         }
 
+        const title =
+          typeof maybeIconConfig.title === 'string'
+            ? maybeIconConfig.title
+            : maybeIconConfig.title(itemCallbackProps)
+        const tooltipTitle =
+          maybeIconConfig.tooltipTitle === undefined
+            ? undefined
+            : typeof maybeIconConfig.tooltipTitle === 'string'
+              ? maybeIconConfig.tooltipTitle
+              : maybeIconConfig.tooltipTitle(itemCallbackProps)
+        const iconColor =
+          typeof maybeIconConfig.iconColor === 'function'
+            ? maybeIconConfig.iconColor(itemCallbackProps)
+            : maybeIconConfig.iconColor
+
         return {
           ...maybeIconConfig,
-          title:
-            typeof maybeIconConfig.title === 'string'
-              ? maybeIconConfig.title
-              : maybeIconConfig.title(itemCallbackProps),
+          title,
+          tooltipTitle,
+          iconColor,
           description: maybeIconConfig.description,
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
@@ -542,7 +556,9 @@ const Toolbar_ = memo(
                           ) : (
                             <ToolbarItemTooltipShortContent
                               status={itemConfig.status}
-                              title={itemConfig.title}
+                              title={
+                                itemConfig.tooltipTitle ?? itemConfig.title
+                              }
                               hotkey={itemConfig.hotkey}
                               platform={platform}
                             />
@@ -659,7 +675,9 @@ const Toolbar_ = memo(
                         ) : (
                           <ToolbarItemTooltipShortContent
                             status={selectedIcon.status}
-                            title={selectedIcon.title}
+                            title={
+                              selectedIcon.tooltipTitle ?? selectedIcon.title
+                            }
                             hotkey={selectedIcon.hotkey}
                             platform={platform}
                           />
@@ -737,7 +755,7 @@ const Toolbar_ = memo(
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
-                      title={itemConfig.title}
+                      title={itemConfig.tooltipTitle ?? itemConfig.title}
                       hotkey={itemConfig.hotkey}
                       platform={platform}
                     />
@@ -922,7 +940,7 @@ const ToolbarItemTooltipRichContent = memo(
                 : ''
             }`}
           >
-            {itemConfig.title}
+            {itemConfig.tooltipTitle ?? itemConfig.title}
           </div>
           {shouldBeEnabled && hotkeyLabel ? (
             <kbd className="flex-none hotkey">{hotkeyLabel}</kbd>
