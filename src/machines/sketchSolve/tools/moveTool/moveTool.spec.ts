@@ -2285,6 +2285,144 @@ describe('createOnDragCallback', () => {
     }
   })
 
+  it('projects point drag targets onto horizontal point constraints', async () => {
+    const pointObject = createPointApiObject({ id: 5, x: 10, y: 20 })
+    const otherPointObject = createPointApiObject({ id: 6, x: 30, y: 20 })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 8,
+      type: 'Horizontal',
+      points: [5, 6],
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      pointObject,
+      otherPointObject,
+      horizontalConstraint,
+    ])
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress: vi.fn(() => false),
+      setIsSolveInProgress: vi.fn(),
+      getLastSuccessfulDragFromPoint: vi.fn(() => new Vector2(10, 20)),
+      setLastSuccessfulDragFromPoint: vi.fn(),
+      getDraggedEntityId: createDraggedEntityIdGetter(5),
+      getContextData: vi.fn(() => ({
+        selectedIds: [],
+        sketchId: 0,
+        sketchExecOutcome: { sceneGraphDelta },
+      })),
+      editSegments,
+      onNewSketchOutcome: vi.fn(),
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...createDragSnappingDeps(),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(30, 50),
+        threeD: new Vector3(30, 50, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalledWith(
+      0,
+      0,
+      [
+        {
+          id: 5,
+          ctor: {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: 30, units: 'Mm' },
+              y: { type: 'Var', value: 20, units: 'Mm' },
+            },
+          },
+        },
+      ],
+      {},
+      [5]
+    )
+  })
+
+  it('projects point drag targets onto vertical line constraints', async () => {
+    const lineStart = createPointApiObject({ id: 5, x: 10, y: 20, owner: 7 })
+    const lineEnd = createPointApiObject({ id: 6, x: 10, y: 40, owner: 7 })
+    const line = createLineApiObject({ id: 7, start: 5, end: 6 })
+    const verticalConstraint = createConstraintApiObject({
+      id: 8,
+      type: 'Vertical',
+      line: 7,
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      lineStart,
+      lineEnd,
+      line,
+      verticalConstraint,
+    ])
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress: vi.fn(() => false),
+      setIsSolveInProgress: vi.fn(),
+      getLastSuccessfulDragFromPoint: vi.fn(() => new Vector2(10, 20)),
+      setLastSuccessfulDragFromPoint: vi.fn(),
+      getDraggedEntityId: createDraggedEntityIdGetter(5),
+      getContextData: vi.fn(() => ({
+        selectedIds: [],
+        sketchId: 0,
+        sketchExecOutcome: { sceneGraphDelta },
+      })),
+      editSegments,
+      onNewSketchOutcome: vi.fn(),
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...createDragSnappingDeps(),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(30, 50),
+        threeD: new Vector3(30, 50, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalledWith(
+      0,
+      0,
+      [
+        {
+          id: 5,
+          ctor: {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: 10, units: 'Mm' },
+              y: { type: 'Var', value: 50, units: 'Mm' },
+            },
+          },
+        },
+      ],
+      {},
+      [5]
+    )
+  })
+
   it('should drag both entity under cursor and selected segments together', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()

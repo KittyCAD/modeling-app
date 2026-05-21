@@ -1,8 +1,10 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
+  ApiConstraint,
   ApiObject,
   ApiPoint2d,
   ExistingSegmentCtor,
+  Expr,
   Number as ApiNumber,
   SceneGraphDelta,
   SegmentCtor,
@@ -25,6 +27,7 @@ import { distance2d } from '@src/lib/utils2d'
 import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   axisConstraintIncludesOrigin,
+  getAxisConstraintLineId,
   getAxisConstraintPointIds,
   getCoincidentCluster,
   isControlPointSplineSegment,
@@ -185,6 +188,99 @@ function getSelectionPriority(selectionTarget: ClosestSelectionTarget) {
   return 3
 }
 
+type AxisConstraint = Extract<
+  ApiConstraint,
+  { type: 'Horizontal' | 'Vertical' }
+>
+type AxisLocks = { x: boolean; y: boolean }
+
+function axisConstraintAppliesToPointCluster(
+  constraint: AxisConstraint,
+  pointIds: Set<number>,
+  objects: ApiObject[]
+): boolean {
+  if (getAxisConstraintPointIds(constraint).some((id) => pointIds.has(id))) {
+    return true
+  }
+
+  const lineId = getAxisConstraintLineId(constraint)
+  if (lineId === null) {
+    return false
+  }
+
+  const line = objects[lineId]
+  return (
+    line?.kind.type === 'Segment' &&
+    line.kind.segment.type === 'Line' &&
+    (pointIds.has(line.kind.segment.start) ||
+      pointIds.has(line.kind.segment.end))
+  )
+}
+
+function getPointAxisLocks(pointId: number, objects: ApiObject[]): AxisLocks {
+  const pointIds = new Set(getCoincidentCluster(pointId, objects))
+  const locks = { x: false, y: false }
+
+  for (const object of objects) {
+    if (
+      isConstraint(object, 'Horizontal') &&
+      axisConstraintAppliesToPointCluster(
+        object.kind.constraint,
+        pointIds,
+        objects
+      )
+    ) {
+      locks.y = true
+    } else if (
+      isConstraint(object, 'Vertical') &&
+      axisConstraintAppliesToPointCluster(
+        object.kind.constraint,
+        pointIds,
+        objects
+      )
+    ) {
+      locks.x = true
+    }
+  }
+
+  return locks
+}
+
+function keepCurrentValueAsDragTarget(expr: Expr): Expr {
+  if (
+    typeof expr === 'object' &&
+    expr !== null &&
+    'value' in expr &&
+    'units' in expr
+  ) {
+    return { type: 'Var', value: expr.value, units: expr.units }
+  }
+
+  return expr
+}
+
+function projectPointDragForAxisConstraints({
+  pointId,
+  objects,
+  basePosition,
+  dragPosition,
+}: {
+  pointId: number
+  objects: ApiObject[]
+  basePosition: ApiPoint2d<Expr>
+  dragPosition: ApiPoint2d<Expr>
+}): ApiPoint2d<Expr> {
+  const locks = getPointAxisLocks(pointId, objects)
+  if (!locks.x && !locks.y) {
+    return dragPosition
+  }
+
+  return {
+    x: locks.x ? keepCurrentValueAsDragTarget(basePosition.x) : dragPosition.x,
+    y: locks.y ? keepCurrentValueAsDragTarget(basePosition.y) : dragPosition.y,
+  }
+}
+
 /**
  * Helper function to build a segment ctor with drag applied.
  * For the entity under cursor, uses twoD directly.
@@ -215,22 +311,20 @@ function buildSegmentCtorWithDrag({
   }
 
   if (baseCtor.type === 'Point') {
+    let position: ApiPoint2d<Expr>
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
       // Note: currentCursorPosition comes from intersectionPoint.twoD which is in world coordinates and scaled to match current units
-      return {
-        type: 'Point',
-        position: {
-          x: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.x),
-            units,
-          },
-          y: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.y),
-            units,
-          },
+      position = {
+        x: {
+          type: 'Var',
+          value: roundOff(currentCursorPosition.x),
+          units,
+        },
+        y: {
+          type: 'Var',
+          value: roundOff(currentCursorPosition.y),
+          units,
         },
       }
     } else {
@@ -239,11 +333,19 @@ function buildSegmentCtorWithDrag({
         x: baseCtor.position.x,
         y: baseCtor.position.y,
       }
-      const newPos = applyVectorToPoint2D(currentPos, dragVec)
-      return {
-        type: 'Point',
-        position: newPos,
-      }
+      position = applyVectorToPoint2D(currentPos, dragVec)
+    }
+
+    return {
+      type: 'Point',
+      position: isPointSegment(obj)
+        ? projectPointDragForAxisConstraints({
+            pointId: obj.id,
+            objects,
+            basePosition: baseCtor.position,
+            dragPosition: position,
+          })
+        : position,
     }
   } else if (baseCtor.type === 'Line') {
     // For lines, always apply the drag vector to both endpoints (translate the line)
