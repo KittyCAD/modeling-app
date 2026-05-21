@@ -73,7 +73,7 @@ description: Operations executed import_function_not_sketch.kcl
                 "value": [
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -82,7 +82,7 @@ description: Operations executed import_function_not_sketch.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 1,
+                    "value": 1.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -96,7 +96,7 @@ description: Operations executed import_function_not_sketch.kcl
                 "value": [
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -105,7 +105,7 @@ description: Operations executed import_function_not_sketch.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -175,6 +175,7 @@ description: Operations executed import_function_not_sketch.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -202,6 +203,7 @@ description: Operations executed import_function_not_sketch.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

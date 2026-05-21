@@ -138,7 +138,7 @@ description: Operations executed pattern_linear_in_module.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1,
+            "value": 1.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -303,7 +303,7 @@ description: Operations executed pattern_linear_in_module.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1,
+            "value": 1.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -382,6 +382,7 @@ description: Operations executed pattern_linear_in_module.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -409,6 +410,7 @@ description: Operations executed pattern_linear_in_module.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

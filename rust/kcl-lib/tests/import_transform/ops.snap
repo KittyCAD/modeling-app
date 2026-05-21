@@ -164,6 +164,7 @@ description: Operations executed import_transform.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -174,6 +175,7 @@ description: Operations executed import_transform.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -184,6 +186,7 @@ description: Operations executed import_transform.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -243,6 +246,7 @@ description: Operations executed import_transform.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -270,6 +274,7 @@ description: Operations executed import_transform.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

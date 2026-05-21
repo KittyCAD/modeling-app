@@ -3,13 +3,29 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_export.kcl
 ---
 {
+  "rust/kcl-lib/tests/import_export/export_1.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "export_2.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "rust/kcl-lib/tests/import_export/export_2.kcl": [
     {
       "type": "VariableDeclaration",
       "name": "three",
       "value": {
         "type": "Number",
-        "value": 3,
+        "value": 3.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -85,6 +101,7 @@ description: Operations executed import_export.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -112,6 +129,7 @@ description: Operations executed import_export.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

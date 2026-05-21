@@ -51,7 +51,7 @@ description: Operations executed module_return_using_var.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1,
+            "value": 1.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -113,7 +113,7 @@ description: Operations executed module_return_using_var.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 5,
+            "value": 5.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -176,6 +176,7 @@ description: Operations executed module_return_using_var.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -203,6 +204,7 @@ description: Operations executed module_return_using_var.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

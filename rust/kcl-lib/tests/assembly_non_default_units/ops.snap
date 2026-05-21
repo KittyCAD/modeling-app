@@ -9,7 +9,7 @@ description: Operations executed assembly_non_default_units.kcl
       "name": "radius",
       "value": {
         "type": "Number",
-        "value": 1,
+        "value": 1.0,
         "ty": {
           "type": "Default",
           "len": "in",
@@ -37,20 +37,6 @@ description: Operations executed assembly_non_default_units.kcl
   "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "other2.kcl",
-      "moduleId": 0,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "ModuleInstance",
       "name": "other1.kcl",
       "moduleId": 0,
       "nodePath": {
@@ -62,9 +48,37 @@ description: Operations executed assembly_non_default_units.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "other2.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "globals.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -159,6 +173,7 @@ description: Operations executed assembly_non_default_units.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -186,6 +201,7 @@ description: Operations executed assembly_non_default_units.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

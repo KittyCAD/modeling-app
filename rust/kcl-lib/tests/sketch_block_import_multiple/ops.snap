@@ -70,6 +70,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.73,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -78,6 +79,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.07,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -94,6 +96,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.36,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -102,6 +105,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.07,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -153,6 +157,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.73,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -161,6 +166,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.51,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -177,6 +183,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.73,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -185,6 +192,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.07,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -236,6 +244,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.36,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -244,6 +253,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.51,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -260,6 +270,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.73,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -268,6 +279,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.51,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -319,6 +331,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.36,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -327,6 +340,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.07,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -343,6 +357,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.36,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -351,6 +366,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.51,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -773,6 +789,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.04,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -781,6 +798,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.27,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -797,6 +815,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 0.86,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -805,6 +824,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.27,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -856,6 +876,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.04,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -864,6 +885,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.06,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -880,6 +902,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.04,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -888,6 +911,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.27,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -939,6 +963,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 0.86,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -947,6 +972,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.06,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -963,6 +989,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.04,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -971,6 +998,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.06,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -1022,6 +1050,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 0.86,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -1030,6 +1059,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 1.27,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -1046,6 +1076,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 0.86,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               },
@@ -1054,6 +1085,7 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "value": 3.06,
                 "ty": {
                   "mm": null,
+                  "type": "Known",
                   "type": "Length"
                 }
               }
@@ -1474,6 +1506,7 @@ description: Operations executed sketch_block_import_multiple.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -1501,6 +1534,7 @@ description: Operations executed sketch_block_import_multiple.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

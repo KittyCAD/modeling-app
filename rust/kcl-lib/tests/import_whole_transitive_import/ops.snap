@@ -34,7 +34,7 @@ description: Operations executed import_whole_transitive_import.kcl
         "z": {
           "value": {
             "type": "Number",
-            "value": 1,
+            "value": 1.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -67,11 +67,25 @@ description: Operations executed import_whole_transitive_import.kcl
   ],
   "rust/kcl-lib/tests/import_whole_transitive_import/part.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "bolt.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "thickness",
       "value": {
         "type": "Number",
-        "value": 4,
+        "value": 4.0,
         "ty": {
           "type": "Default",
           "len": "in",
@@ -139,7 +153,7 @@ description: Operations executed import_whole_transitive_import.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 10,
+            "value": 10.0,
             "ty": {
               "type": "Default",
               "len": "in",
@@ -202,6 +216,7 @@ description: Operations executed import_whole_transitive_import.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -229,6 +244,7 @@ description: Operations executed import_whole_transitive_import.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

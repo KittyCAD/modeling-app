@@ -29,7 +29,7 @@ description: Operations executed import_async.kcl
           "gearHeight": {
             "value": {
               "type": "Number",
-              "value": 7,
+              "value": 7.0,
               "ty": {
                 "type": "Default",
                 "len": "mm",
@@ -41,9 +41,10 @@ description: Operations executed import_async.kcl
           "helixAngle": {
             "value": {
               "type": "Number",
-              "value": 35,
+              "value": 35.0,
               "ty": {
                 "degrees": null,
+                "type": "Known",
                 "type": "Angle"
               }
             },
@@ -52,7 +53,7 @@ description: Operations executed import_async.kcl
           "module": {
             "value": {
               "type": "Number",
-              "value": 2,
+              "value": 2.0,
               "ty": {
                 "type": "Default",
                 "len": "mm",
@@ -64,7 +65,7 @@ description: Operations executed import_async.kcl
           "nTeeth": {
             "value": {
               "type": "Number",
-              "value": 21,
+              "value": 21.0,
               "ty": {
                 "type": "Default",
                 "len": "mm",
@@ -76,9 +77,10 @@ description: Operations executed import_async.kcl
           "pressureAngle": {
             "value": {
               "type": "Number",
-              "value": 20,
+              "value": 20.0,
               "ty": {
                 "degrees": null,
+                "type": "Known",
                 "type": "Angle"
               }
             },
@@ -104,7 +106,7 @@ description: Operations executed import_async.kcl
       "name": "pitchDiameter",
       "value": {
         "type": "Number",
-        "value": 42,
+        "value": 42.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -146,7 +148,7 @@ description: Operations executed import_async.kcl
       "name": "addendum",
       "value": {
         "type": "Number",
-        "value": 2,
+        "value": 2.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -272,7 +274,7 @@ description: Operations executed import_async.kcl
       "name": "tipDiameter",
       "value": {
         "type": "Number",
-        "value": 46,
+        "value": 46.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -314,7 +316,7 @@ description: Operations executed import_async.kcl
       "name": "keywayWidth",
       "value": {
         "type": "Number",
-        "value": 2,
+        "value": 2.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -356,7 +358,7 @@ description: Operations executed import_async.kcl
       "name": "keywayDepth",
       "value": {
         "type": "Number",
-        "value": 1,
+        "value": 1.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -398,7 +400,7 @@ description: Operations executed import_async.kcl
       "name": "holeDiam",
       "value": {
         "type": "Number",
-        "value": 7,
+        "value": 7.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -485,6 +487,7 @@ description: Operations executed import_async.kcl
         "value": 0.28975170143604745,
         "ty": {
           "radians": null,
+          "type": "Known",
           "type": "Angle"
         }
       },
@@ -573,7 +576,7 @@ description: Operations executed import_async.kcl
           "offsetHeight": {
             "value": {
               "type": "Number",
-              "value": 0,
+              "value": 0.0,
               "ty": {
                 "type": "Default",
                 "len": "mm",
@@ -621,6 +624,7 @@ description: Operations executed import_async.kcl
         "value": 1.5707963267948966,
         "ty": {
           "radians": null,
+          "type": "Known",
           "type": "Angle"
         }
       },
@@ -681,7 +685,7 @@ description: Operations executed import_async.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 0,
+            "value": 0.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -928,6 +932,7 @@ description: Operations executed import_async.kcl
         "value": 1.4640403411278755,
         "ty": {
           "radians": null,
+          "type": "Known",
           "type": "Angle"
         }
       },
@@ -1187,7 +1192,7 @@ description: Operations executed import_async.kcl
           "offsetHeight": {
             "value": {
               "type": "Number",
-              "value": 7,
+              "value": 7.0,
               "ty": {
                 "type": "Default",
                 "len": "mm",
@@ -1235,6 +1240,7 @@ description: Operations executed import_async.kcl
         "value": 1.3560427808151838,
         "ty": {
           "radians": null,
+          "type": "Known",
           "type": "Angle"
         }
       },
@@ -1295,7 +1301,7 @@ description: Operations executed import_async.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 7,
+            "value": 7.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -1559,7 +1565,7 @@ description: Operations executed import_async.kcl
         "y": {
           "value": {
             "type": "Number",
-            "value": 10,
+            "value": 10.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -1622,6 +1628,7 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -1649,6 +1656,7 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

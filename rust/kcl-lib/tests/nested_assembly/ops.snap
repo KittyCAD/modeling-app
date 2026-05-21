@@ -64,7 +64,7 @@ description: Operations executed nested_assembly.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 360,
+            "value": 360.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -82,7 +82,7 @@ description: Operations executed nested_assembly.kcl
                 "value": [
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -91,7 +91,7 @@ description: Operations executed nested_assembly.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 1,
+                    "value": 1.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -105,7 +105,7 @@ description: Operations executed nested_assembly.kcl
                 "value": [
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -114,7 +114,7 @@ description: Operations executed nested_assembly.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -140,6 +140,22 @@ description: Operations executed nested_assembly.kcl
           {
             "type": "PipeBodyItem",
             "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/main.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "imported.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
           }
         ]
       },
@@ -181,6 +197,7 @@ description: Operations executed nested_assembly.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -208,6 +225,7 @@ description: Operations executed nested_assembly.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

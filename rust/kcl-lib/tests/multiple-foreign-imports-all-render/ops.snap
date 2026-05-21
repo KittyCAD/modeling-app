@@ -5,6 +5,20 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
 {
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "../inputs/cube.step",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "clone",
       "unlabeledArg": {
@@ -46,20 +60,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "anothercube.kcl",
-      "moduleId": 0,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "ModuleInstance",
       "name": "othercube.kcl",
       "moduleId": 0,
       "nodePath": {
@@ -67,6 +67,20 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
           {
             "type": "ProgramBodyItem",
             "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "anothercube.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
           }
         ]
       },
@@ -86,7 +100,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 1020,
+            "value": 1020.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -134,8 +148,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "metalness": {
           "value": {
             "type": "Number",
-            "value": 50,
+            "value": 50.0,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -144,8 +159,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "roughness": {
           "value": {
             "type": "Number",
-            "value": 50,
+            "value": 50.0,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -183,7 +199,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -1020,
+            "value": -1020.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -231,8 +247,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "metalness": {
           "value": {
             "type": "Number",
-            "value": 50,
+            "value": 50.0,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -241,8 +258,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "roughness": {
           "value": {
             "type": "Number",
-            "value": 50,
+            "value": 50.0,
             "ty": {
+              "type": "Known",
               "type": "Count"
             }
           },
@@ -268,6 +286,20 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     }
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/othercube.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "../inputs/cube.step",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "clone",
@@ -328,6 +360,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -355,6 +388,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

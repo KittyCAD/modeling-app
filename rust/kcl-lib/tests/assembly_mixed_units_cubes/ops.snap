@@ -47,7 +47,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 5,
+            "value": 5.0,
             "ty": {
               "type": "Default",
               "len": "in",
@@ -122,7 +122,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 5,
+            "value": 5.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -218,6 +218,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -245,6 +246,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },

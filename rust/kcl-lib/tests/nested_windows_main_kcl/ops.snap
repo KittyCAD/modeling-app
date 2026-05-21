@@ -64,7 +64,7 @@ description: Operations executed nested_windows_main_kcl.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 360,
+            "value": 360.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -82,7 +82,7 @@ description: Operations executed nested_windows_main_kcl.kcl
                 "value": [
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -91,7 +91,7 @@ description: Operations executed nested_windows_main_kcl.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 1,
+                    "value": 1.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -105,7 +105,7 @@ description: Operations executed nested_windows_main_kcl.kcl
                 "value": [
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -114,7 +114,7 @@ description: Operations executed nested_windows_main_kcl.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -181,6 +181,7 @@ description: Operations executed nested_windows_main_kcl.kcl
         "type": "Number",
         "value": 2.718281828459045,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
@@ -208,6 +209,7 @@ description: Operations executed nested_windows_main_kcl.kcl
         "type": "Number",
         "value": 6.283185307179586,
         "ty": {
+          "type": "Known",
           "type": "Count"
         }
       },
