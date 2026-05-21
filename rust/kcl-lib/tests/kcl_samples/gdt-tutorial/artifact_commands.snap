@@ -297,7 +297,7 @@ description: Artifact commands gdt-tutorial.kcl
             "precision": 3,
             "font_scale": 1.25,
             "font_point_size": 36,
-            "leader_scale": 3.0
+            "leader_scale": 5.0
           },
           "feature_tag": null
         },
@@ -362,7 +362,7 @@ description: Artifact commands gdt-tutorial.kcl
             "precision": 0,
             "font_scale": 1.25,
             "font_point_size": 36,
-            "leader_scale": 3.0
+            "leader_scale": 5.0
           },
           "feature_tag": null
         },
@@ -435,7 +435,7 @@ description: Artifact commands gdt-tutorial.kcl
             "precision": 3,
             "font_scale": 1.25,
             "font_point_size": 36,
-            "leader_scale": 3.0
+            "leader_scale": 5.0
           },
           "feature_tag": null
         },
@@ -508,7 +508,7 @@ description: Artifact commands gdt-tutorial.kcl
             "precision": 3,
             "font_scale": 1.25,
             "font_point_size": 36,
-            "leader_scale": 3.0
+            "leader_scale": 5.0
           },
           "feature_tag": null
         },
@@ -600,7 +600,7 @@ description: Artifact commands gdt-tutorial.kcl
             "precision": 3,
             "font_scale": 1.25,
             "font_point_size": 36,
-            "arrow_scale": 3.0
+            "arrow_scale": 1.0
           },
           "feature_control": null,
           "feature_tag": null
@@ -666,7 +666,7 @@ description: Artifact commands gdt-tutorial.kcl
             "precision": 0,
             "font_scale": 1.25,
             "font_point_size": 36,
-            "leader_scale": 3.0
+            "leader_scale": 5.0
           },
           "feature_tag": null
         },

@@ -4,6 +4,7 @@ use std::ops::AddAssign;
 use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::SubAssign;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -2235,7 +2236,8 @@ pub struct Segment {
     /// The engine ID of the sketch that this is a part of.
     pub sketch_id: Uuid,
     #[serde(skip)]
-    pub sketch: Option<Sketch>,
+    #[ts(skip)]
+    pub sketch: Option<Arc<Sketch>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
     #[serde(skip)]

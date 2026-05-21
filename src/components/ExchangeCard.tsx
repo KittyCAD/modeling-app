@@ -24,11 +24,29 @@ export type ExchangeCardProps = Exchange & {
   isLastResponse: boolean
 }
 
-type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
-  error: any
-}
-  ? T
-  : never
+type MlCopilotServerMessageError = Extract<
+  MlCopilotServerMessage,
+  { error: unknown }
+>
+
+type MlCopilotServerMessageEndOfStream = Extract<
+  MlCopilotServerMessage,
+  { end_of_stream: unknown }
+>
+
+const getEndOfStreamResponse = (
+  responses?: MlCopilotServerMessage[]
+): MlCopilotServerMessageEndOfStream | undefined =>
+  responses?.findLast(
+    (response): response is MlCopilotServerMessageEndOfStream =>
+      'end_of_stream' in response
+  )
+
+const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
+  responses?.some(
+    (response) =>
+      'end_of_stream' in response || 'error' in response || 'info' in response
+  ) ?? false
 
 export interface IButtonCopyProps {
   content: string
@@ -77,17 +95,13 @@ export const ResponseCardToolBar = (props: {
   onClickClearChat: () => void
   isLastResponse: boolean
 }) => {
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   let contentForClipboard: string | undefined = ''
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      contentForClipboard = lastResponse.end_of_stream.whole_response
-    }
+    contentForClipboard = getEndOfStreamResponse(props.responses)?.end_of_stream
+      .whole_response
   }
 
   return (
@@ -122,9 +136,7 @@ export const ExchangeCardStatus = (props: {
 
   // Error and info also signals the end of a stream, because we'll never
   // see an end_of_stream from them.
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -142,11 +154,13 @@ export const ExchangeCardStatus = (props: {
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
       timeReasonedFor =
-        new Date(lastResponse.end_of_stream.completed_at ?? 0).getTime() -
-        new Date(lastResponse.end_of_stream.started_at ?? 0).getTime()
+        new Date(
+          endOfStreamResponse.end_of_stream.completed_at ?? 0
+        ).getTime() -
+        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
     }
   } else {
     timeReasonedFor =
@@ -397,9 +411,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -414,9 +426,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }, [isEndOfStream])
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      startedAt = new Date(lastResponse.end_of_stream.started_at ?? 0)
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
+      startedAt = new Date(endOfStreamResponse.end_of_stream.started_at ?? 0)
     }
   }
 

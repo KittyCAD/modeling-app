@@ -108,9 +108,11 @@ describe('desktop utilities', () => {
       'file3.kcl',
       '.hidden-dir',
       'directory1',
+      'dist',
     ],
     '/test/projects/valid-project/.hidden-dir': ['secret.txt'],
     '/test/projects/valid-project/directory1': [],
+    '/test/projects/valid-project/dist': ['ignored.kcl'],
     '/test/projects/project-without-kcl-files': ['file3.glb'],
     '/test/projects/another-valid-project': [
       'file4.kcl',
@@ -135,6 +137,24 @@ describe('desktop utilities', () => {
     mockElectron.path.dirname.mockImplementation((path: string) =>
       // The tests is hard coded to / so webSafe is defaulted to /
       webSafeJoin(webSafePathSplit(path).slice(0, -1))
+    )
+    mockElectron.path.relative.mockImplementation(
+      (from: string, to: string) => {
+        const fromParts = webSafePathSplit(from)
+        const toParts = webSafePathSplit(to)
+        let sharedPrefixLength = 0
+        while (
+          sharedPrefixLength < fromParts.length &&
+          sharedPrefixLength < toParts.length &&
+          fromParts[sharedPrefixLength] === toParts[sharedPrefixLength]
+        ) {
+          sharedPrefixLength += 1
+        }
+        const up = fromParts.slice(sharedPrefixLength).map(() => '..')
+        const down = toParts.slice(sharedPrefixLength)
+        const relativePath = webSafeJoin([...up, ...down])
+        return relativePath === '' ? '.' : relativePath
+      }
     )
 
     // Mock readdir to return the entries for the given path
@@ -170,7 +190,13 @@ describe('desktop utilities', () => {
     })
 
     mockElectron.exists.mockResolvedValue(true)
-    mockElectron.readFile.mockResolvedValue('')
+    mockElectron.readFile.mockImplementation(async (path: string) => {
+      if (path === '/test/projects/valid-project/.gitignore') {
+        return 'dist\nnotes.txt\n'
+      }
+
+      return ''
+    })
     mockElectron.writeFile.mockResolvedValue(undefined)
     mockElectron.getPath.mockResolvedValue('/appData')
     mockElectron.kittycad.mockResolvedValue({})
@@ -245,7 +271,6 @@ describe('desktop utilities', () => {
         'file1.kcl',
         'file3.kcl',
         'file2.stp',
-        'notes.txt',
         'boot.txt',
         'raw-metrics.txt',
         'environment.txt',
@@ -257,6 +282,9 @@ describe('desktop utilities', () => {
       mockElectron.readFile.mockImplementation(async (path: string) => {
         if (path === '/appData/settings.toml') {
           return '[settings.app]\nshow_all_files = true\n'
+        }
+        if (path === '/test/projects/valid-project/.gitignore') {
+          return 'dist\nnotes.txt\n'
         }
 
         return ''
@@ -279,7 +307,6 @@ describe('desktop utilities', () => {
         'file1.kcl',
         'file3.kcl',
         'file2.stp',
-        'notes.txt',
         'project.toml',
         'settings.toml',
         'boot.txt',
