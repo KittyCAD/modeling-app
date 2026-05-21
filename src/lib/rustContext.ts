@@ -544,7 +544,7 @@ export default class RustContext {
       }
 
       const hasDragAnchors =
-        Boolean(anchorSegmentIds?.length) || arcDragAnchors.length > 0
+        anchorSegmentIds !== undefined || arcDragAnchors.length > 0
       const result: {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
