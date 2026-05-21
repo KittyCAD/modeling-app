@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast'
 
 import { MarkdownText } from '@src/components/MarkdownText'
+import Tooltip from '@src/components/Tooltip'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import type {
@@ -72,6 +73,7 @@ type ReviewValidationState =
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
 const REVIEW_VALIDATION_DEBOUNCE_MS = 350
 const DEFAULT_DIALOG_GROUP_ID = 'parameters'
+const DISABLED_SELECTION_EDIT_TOOLTIP = "Selection edits aren't supported yet."
 const EMPTY_SELECTION: Selections = {
   graphSelections: [],
   otherSelections: [],
@@ -974,7 +976,7 @@ export function ModelingDialog() {
       capturedSelection
     )
 
-    return (
+    const field = (
       <ArgumentField
         key={key}
         name={argName}
@@ -1025,6 +1027,19 @@ export function ModelingDialog() {
         }}
       />
     )
+
+    if (isSelectionField && isDisabled) {
+      return (
+        <div key={key} className="relative">
+          {field}
+          <Tooltip position="left" hoverOnly>
+            {DISABLED_SELECTION_EDIT_TOOLTIP}
+          </Tooltip>
+        </div>
+      )
+    }
+
+    return field
   }
 
   if (!selectedCommand?.args) {
