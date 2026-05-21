@@ -2,6 +2,7 @@ import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
 import {
   closestPointOnRay,
+  cross3d,
   deg2Rad,
   isParallel,
   lerp2d,
@@ -99,6 +100,12 @@ describe('test closestPointOnRay', () => {
 describe('test lerp2d', () => {
   test('interpolates between two points', () => {
     expect(lerp2d([0, 0], [10, 20], 0.7)).toEqual([7, 14])
+  })
+})
+
+describe('test 3d vector math', () => {
+  test('calculates cross products', () => {
+    expect(cross3d([1, 0, 0], [0, 1, 0])).toEqual([0, 0, 1])
   })
 })
 

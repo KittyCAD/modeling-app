@@ -1,6 +1,8 @@
 import type { Coords2d } from '@src/lang/util'
 import { getAngle } from '@src/lib/utils'
 
+export type Coords3d = [number, number, number]
+
 export function deg2Rad(deg: number): number {
   return (deg * Math.PI) / 180
 }
@@ -99,6 +101,14 @@ export function normalizeVec(v: Coords2d): Coords2d {
 
 export function cross2d(a: Coords2d, b: Coords2d): number {
   return a[0] * b[1] - a[1] * b[0]
+}
+
+export function cross3d(a: Coords3d, b: Coords3d): Coords3d {
+  return [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ]
 }
 
 // Takes a vector given by 2 coords and rotates it 90deg CCW.

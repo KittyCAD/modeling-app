@@ -12,6 +12,7 @@ import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -76,6 +77,7 @@ import {
   mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
+import { cross3d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
@@ -1345,6 +1347,9 @@ export async function getPlaneDataFromSketchBlock(
   const offsetResult = getStableOffsetPlaneData(artifact, {
     execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
+    sketchBlock,
+    ast: systemDeps.ast,
+    wasmInstance: systemDeps.wasmInstance,
   })
   if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
@@ -1393,25 +1398,60 @@ export function getStableOffsetPlaneData(
   systemDeps: {
     execState: ExecState
     sceneInfra: SceneInfra
+    sketchBlock?: Extract<Artifact, { type: 'sketchBlock' }>
+    ast?: Node<Program>
+    wasmInstance?: ModuleType
   }
 ): Error | false | OffsetPlane {
   if (artifact?.type !== 'plane') {
     return false
   }
 
-  const planeValue = Object.values(systemDeps.execState.variables).find(
-    (value) => value?.type === 'Plane' && value.value.artifactId === artifact.id
+  const sketchBlockPlane = getSketchBlockPlaneReference(
+    systemDeps.sketchBlock,
+    systemDeps.ast,
+    systemDeps.wasmInstance
   )
 
-  if (!planeValue || planeValue.type !== 'Plane') {
+  let planeValue = Object.values(
+    systemDeps.execState.variables
+  ).find(
+    (value) => value?.type === 'Plane' && value.value.artifactId === artifact.id
+  )
+  if (!planeValue && sketchBlockPlane.name) {
+    // plane needs to be found via sketchBlockPlane in case of:
+    // sketch(on = -plane001) {
+    // ...
+    // }
+    planeValue = systemDeps.execState.variables[sketchBlockPlane.name]
+  }
+
+  if (planeValue?.type !== 'Plane') {
     return false
   }
 
   const planeInfo = planeValue.value
+  const yAxis: OffsetPlane['yAxis'] = [
+    planeInfo.yAxis.x,
+    planeInfo.yAxis.y,
+    planeInfo.yAxis.z,
+  ]
+  // plane001 = -offsetPlane(...) stores the negation on the plane variable’s xAxis, 
+  // while sketch(on = plane001) has no - in the sketch block. 
+  // Using planeInfo.zAxis directly misses that variable-level negation. 
+  // Deriving zAxis from xAxis and yAxis captures both cases
+  const xAxis: [number, number, number] = sketchBlockPlane.negated
+    ? [
+        -planeInfo.xAxis.x,
+        -planeInfo.xAxis.y,
+        -planeInfo.xAxis.z,
+      ]
+    : [planeInfo.xAxis.x, planeInfo.xAxis.y, planeInfo.xAxis.z]
+  const zAxis: OffsetPlane['zAxis'] = cross3d(xAxis, yAxis)
   return {
     type: 'offsetPlane',
-    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
-    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
+    zAxis,
+    yAxis,
     position: [
       planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
       planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
@@ -1419,8 +1459,44 @@ export function getStableOffsetPlaneData(
     ],
     planeId: artifact.id,
     pathToNode: artifact.codeRef.pathToNode,
-    negated: false,
+    negated: sketchBlockPlane.negated,
   }
+}
+
+function getSketchBlockPlaneReference(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> | undefined,
+  ast: Node<Program> | undefined,
+  wasmInstance: ModuleType | undefined
+): { name?: string; negated: boolean } {
+  if (!sketchBlock || !ast || !wasmInstance) {
+    return { negated: false }
+  }
+
+  const sketchBlockNode = getNodeFromPath<SketchBlock>(
+    ast,
+    sketchBlock.codeRef.pathToNode,
+    wasmInstance,
+    ['SketchBlock']
+  )
+  if (err(sketchBlockNode)) {
+    return { negated: false }
+  }
+
+  const onArg = sketchBlockNode.node.arguments.find(
+    (arg) => arg.label?.name === 'on'
+  )?.arg
+  if (onArg?.type === 'Name') {
+    return { name: onArg.name.name, negated: false }
+  }
+  if (
+    onArg?.type === 'UnaryExpression' &&
+    onArg.operator === '-' &&
+    onArg.argument.type === 'Name'
+  ) {
+    return { name: onArg.argument.name.name, negated: true }
+  }
+
+  return { negated: false }
 }
 
 // Uses engine sketch-mode plane data so offset-plane selection can keep the current camera-facing side.
