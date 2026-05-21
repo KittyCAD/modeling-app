@@ -13,6 +13,7 @@ import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -40,7 +41,7 @@ const ProjectSidebarMenu = ({
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home">
         <AppLogoLink project={project} file={file} />
-        {window.electron && <Tooltip position="bottom-left">Go home</Tooltip>}
+        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
       </div>
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
@@ -109,7 +110,6 @@ function ProjectMenuPopover({
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
-  const isRunningDesktopApp = Boolean(window.electron)
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
@@ -142,10 +142,7 @@ function ProjectMenuPopover({
                 Project settings
               </span>
               <kbd className="hotkey">
-                {hotkeyDisplay(
-                  `mod+${isRunningDesktopApp ? '' : 'shift'}+,`,
-                  platform
-                )}
+                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
               </kbd>
             </>
           ),
@@ -204,7 +201,7 @@ function ProjectMenuPopover({
         {
           id: 'download-project-zip',
           Element: 'button',
-          className: isRunningDesktopApp ? 'hidden' : '',
+          className: isDesktop() ? 'hidden' : '',
           children: (
             <>
               <span className="flex-1">Download project files</span>
@@ -228,7 +225,7 @@ function ProjectMenuPopover({
         {
           id: 'make',
           Element: 'button',
-          className: !isRunningDesktopApp || !machineApiEnabled ? 'hidden' : '',
+          className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
           children: (
             <>
               <span>Make current part</span>
@@ -255,7 +252,7 @@ function ProjectMenuPopover({
           id: 'go-home',
           Element: 'button',
           children: 'Go to Home',
-          className: !isRunningDesktopApp ? 'hidden' : '',
+          className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             kclManager.switchedFiles = true
@@ -270,12 +267,12 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
-      isRunningDesktopApp,
       machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
       kclManager.engineCommandManager,
       onProjectClose,
+      isDesktop,
     ]
   )
 

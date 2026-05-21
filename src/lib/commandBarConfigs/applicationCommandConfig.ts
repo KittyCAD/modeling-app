@@ -650,8 +650,8 @@ export function createApplicationCommands({
 
   return [
     addKCLFileToProject,
-    ...(!window.electron ? [exportProjectZipCommand] : []),
-    ...(window.electron ? [checkForUpdatesCommand] : []),
+    ...(!isDesktop() ? [exportProjectZipCommand] : []),
+    ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
     createASampleDesktopOnly,
