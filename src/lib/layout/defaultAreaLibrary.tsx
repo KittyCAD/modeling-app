@@ -21,6 +21,8 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { DiffView } from '@src/components/DiffView/DiffView'
+import { HistoryView } from '@src/components/DiffView/HistoryView'
 
 function ModelingArea() {
   const { auth } = useApp()
@@ -183,6 +185,16 @@ export const useDefaultAreaLibrary = () => {
           hide: () => false,
           shortcut: 'Shift + L',
           Component: LogsPane,
+        },
+        history: {
+          hide: () => false,
+          shortcut: 'Shift + H',
+          Component: HistoryView,
+        },
+        diff: {
+          hide: () => false,
+          shortcut: 'Shift + I',
+          Component: DiffView,
         },
         debug: {
           hide: () => getSettings().debug.showPanel.current === false,

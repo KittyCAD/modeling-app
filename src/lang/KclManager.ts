@@ -168,6 +168,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
+import { History } from '@src/lib/History'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -653,7 +654,21 @@ export class File extends EventTarget {
 
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
-    read: (path: string) => fsZds.readFile(path, 'utf8'),
+    read: (path: string) => {
+      fsZds.readFile(path, 'utf8')
+      return new Promise(async (resolve, reject) => {
+        try {
+          const text = await fsZds.readFile(path, 'utf8')
+          resolve(text)
+        } catch (err) {
+          if (err.message.includes('ENOENT')) {
+            resolve('')
+          } else {
+            reject(err)
+          }
+        }
+      })
+    },
     write: (path: string, content: string) =>
       fsZds.writeFile(path, File.encoder.encode(content)),
     watch: window.electron?.watchFileOn || (() => {}),
@@ -698,6 +713,7 @@ export class KclManager extends File {
 
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
+  public history: History
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -1443,8 +1459,27 @@ export class KclManager extends File {
       })
 
     const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
+    if (shouldWriteToFile) {
+      console.log(
+        'should write to file',
+        shouldWriteToFile,
+        hasWriteToFileEffect,
+        notIgnoredUpdate,
+        this.path
+      )
+    }
 
     if (shouldWriteToFile) {
+      this.history.push({
+        type: '',
+        date: new Date(),
+        absoluteFilePath: this.path || 'Missing filename.',
+        right: update.state.doc.toString(),
+        left: update.startState.doc.toString(),
+        wroteToDisk: true,
+        source: 'CodeEdit',
+        deleted: false,
+      })
       // We don't want to block on writing to file
       void this.writeToFile(update.state.doc.toString(), undefined, {
         suppressConflictToast: isProgrammaticWrite,
@@ -1713,7 +1748,19 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const diskCode = normalizeLineEndings(providedCode || (await file.read()))
+    let theCode = providedCode
+    console.log(file)
+    if (!theCode) {
+      try {
+        theCode = await file.read()
+      } catch (e) {
+        console.warn(e, file, 'fromFile cannot read file')
+        // in memory!
+        theCode = ''
+      }
+    }
+
+    const diskCode = normalizeLineEndings(theCode)
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
@@ -1755,6 +1802,7 @@ export class KclManager extends File {
     fileId = 0
   ) {
     super(path, fileId)
+    this.history = new History()
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
@@ -3095,6 +3143,7 @@ export class KclManager extends File {
 
     // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
+
     if (currentCode === code) {
       // However, if clearHistory is true, we still need to clear the history
       if (resolvedOptions.shouldClearHistory) {

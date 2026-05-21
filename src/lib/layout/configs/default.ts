@@ -24,6 +24,8 @@ export enum DefaultLayoutPaneID {
   TTC = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
+  History = 'history',
+  Diff = 'diff',
 }
 
 export function isDefaultLayoutPaneID(s: string): s is DefaultLayoutPaneID {
@@ -163,6 +165,20 @@ const secondaryPane: Layout = {
       areaType: AreaType.TTC,
       icon: 'sparkles',
     },
+    {
+      id: DefaultLayoutPaneID.History,
+      label: 'History',
+      type: LayoutType.Simple,
+      areaType: AreaType.History,
+      icon: 'code',
+    } satisfies PaneChild,
+    {
+      id: DefaultLayoutPaneID.Diff,
+      label: 'Diff',
+      type: LayoutType.Simple,
+      areaType: AreaType.Diff,
+      icon: 'code',
+    } satisfies PaneChild,
   ],
 }
 

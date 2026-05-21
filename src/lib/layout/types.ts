@@ -11,6 +11,8 @@ export enum AreaType {
   Logs = 'logs',
   ModelingScene = 'modeling',
   Debug = 'debug',
+  History = 'history',
+  Diff = 'diff',
 }
 
 export type AreaTypeId = string

@@ -124,6 +124,8 @@ export const MlEphantConversationPane = (props: {
       projectContext: project,
     })
 
+    props.kclManager.history.filesCachedFromPrompt.value = projectFiles
+
     // Only on initial project creation do we call the create endpoint, which
     // has more data for initial creations. Improvements to the TTC service
     // will close this gap in performance.

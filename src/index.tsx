@@ -18,6 +18,7 @@ import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 import { app, AppContext } from '@src/lib/boot'
+import { KclManager } from './lang/KclManager'
 
 // Here's the entry-point for the whole app 🚀
 launchApp(app)

@@ -529,7 +529,23 @@ export const ProjectExplorer = ({
             if (shouldWeNavigate && file && file.path) {
               const src = child.path
               toArchivePath(src)
-                .then((target) => {
+                .then(async (target) => {
+                  if (isFile) {
+                    const fileContents = await fsZds.readFile(src, {
+                      encoding: 'utf-8',
+                    })
+                    kclManager.history.push({
+                      type: '',
+                      date: new Date(),
+                      absoluteFilePath: src || 'Missing filename.',
+                      right: '',
+                      left: fileContents,
+                      wroteToDisk: true,
+                      source: 'CodeEdit',
+                      deleted: true,
+                    })
+                  }
+
                   systemIOActor.send({
                     type: SystemIOMachineEvents.moveRecursiveAndNavigate,
                     data: {
@@ -556,7 +572,22 @@ export const ProjectExplorer = ({
             } else {
               const src = child.path
               toArchivePath(src)
-                .then((target) => {
+                .then(async (target) => {
+                  if (isFile) {
+                    const fileContents = await fsZds.readFile(src, {
+                      encoding: 'utf-8',
+                    })
+                    kclManager.history.push({
+                      type: '',
+                      date: new Date(),
+                      absoluteFilePath: src || 'Missing filename.',
+                      right: '',
+                      left: fileContents,
+                      wroteToDisk: true,
+                      source: 'CodeEdit',
+                      deleted: true,
+                    })
+                  }
                   systemIOActor.send({
                     type: SystemIOMachineEvents.moveRecursive,
                     data: {
