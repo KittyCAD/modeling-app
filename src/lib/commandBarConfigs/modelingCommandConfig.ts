@@ -81,6 +81,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -413,6 +414,10 @@ export type ModelingCommandSchema = {
     objects: Selections
     variableName: string
   }
+  'Mirror 3D': {
+    bodies: Selections
+    across: Selections
+  }
   'Pattern Circular 3D': {
     nodeToEdit?: PathToNode
     solids: Selections
@@ -589,6 +594,26 @@ const summarizeDatumKclValue = (value?: KclCommandValue) =>
           : value.valueCalculated
       )
     : ''
+
+export const getDefaultGdtTolerance = (
+  _commandBarContext: unknown,
+  modelingContext?: ModelingMachineContext
+) => {
+  const defaultLengthUnit =
+    modelingContext?.kclManager.fileSettings.defaultLengthUnit ||
+    DEFAULT_DEFAULT_LENGTH_UNIT
+  return `${KCL_DEFAULT_TOLERANCE}${defaultLengthUnit}`
+}
+
+const summarizeGdtToleranceKclValue = (value?: KclCommandValue) =>
+  value?.valueText ?? ''
+
+const gdtToleranceProps = {
+  inputType: 'kcl',
+  defaultValue: getDefaultGdtTolerance,
+  valueSummary: summarizeGdtToleranceKclValue,
+  required: true,
+} satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
 
 const datumsProps = {
   inputType: 'kcl',
@@ -2476,6 +2501,64 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Mirror 3D': {
+    description: 'Mirror solids across a plane or edge.',
+    icon: 'mirror3d',
+    displayName: 'Mirror',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addMirror3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) {
+        return modRes
+      }
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return execRes
+      }
+    },
+    args: {
+      bodies: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      across: {
+        inputType: 'selection',
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'edgeCutEdge',
+        ],
+        clearSelectionFirst: true,
+        multiple: false,
+        required: true,
+      },
+    },
+  },
   'Pattern Circular 3D': {
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
@@ -2653,9 +2736,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2806,9 +2887,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2885,9 +2964,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2965,9 +3042,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3044,9 +3119,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3123,9 +3196,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',

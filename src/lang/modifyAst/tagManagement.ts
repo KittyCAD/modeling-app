@@ -20,6 +20,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
+  createMemberExpression,
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
@@ -27,6 +28,8 @@ import {
   getNodeFromPath,
   getEdgeCutMeta,
   getRegionTagExprFromSegmentId,
+  getSketchSegmentNameFromSourceSurface,
+  getVariableExprsFromSelection,
   isCallExprWithName,
   isSketchSegmentCallName,
 } from '@src/lang/queryAst'
@@ -514,6 +517,20 @@ function modifyAstWithTagForWallFace(
     }
   }
 
+  // No tag path, no region (surface modeling): retrieve the segment through .sketch
+  const sketchSolveSurfaceTagExpr = getSketchSolveSurfaceTagExprForWallFace(
+    astClone,
+    wallFace,
+    artifactGraph,
+    wasmInstance
+  )
+  if (sketchSolveSurfaceTagExpr) {
+    return {
+      modifiedAst: astClone,
+      expr: sketchSolveSurfaceTagExpr,
+    }
+  }
+
   const result = modifyAstWithTagForSketchSegment(
     astClone,
     pathToSegmentNode,
@@ -526,6 +543,62 @@ function modifyAstWithTagForWallFace(
     modifiedAst: modifiedAst,
     expr: createLocalName(tag),
   }
+}
+
+function getSketchSolveSurfaceTagExprForWallFace(
+  ast: Node<Program>,
+  wallFace: Extract<Artifact, { type: 'wall' }>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Expr | null {
+  const sweepArtifact = getArtifactOfTypes(
+    { key: wallFace.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  if (err(sweepArtifact)) {
+    return null
+  }
+
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sweepArtifact,
+          codeRef: sweepArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars) || sourceSurfaceVars.exprs.length !== 1) {
+    return null
+  }
+
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+    sweepArtifact,
+    wallFace,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    { fallbackToFirstSegment: false }
+  )
+  if (!sketchSegmentName) {
+    return null
+  }
+
+  return createMemberExpression(
+    createMemberExpression(
+      createMemberExpression(
+        structuredClone(sourceSurfaceVars.exprs[0]),
+        'sketch'
+      ),
+      'tags'
+    ),
+    sketchSegmentName
+  )
 }
 
 /**

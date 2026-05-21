@@ -13,8 +13,11 @@ function range(start: number, end: number, moduleId = 0): SourceRange {
 
 function sketchSolveOperation(sourceRange: SourceRange): Operation {
   return {
-    type: 'SketchSolve',
-    sketchId: 1,
+    type: 'GroupBegin',
+    group: {
+      type: 'SketchBlock',
+      sketchId: 1,
+    },
     nodePath: defaultNodePath(),
     sourceRange,
   }

@@ -34,7 +34,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Ensure no badge is present
     const codeBadge = page.locator('#code-badge')
@@ -103,7 +103,7 @@ extrude001 = extrude(sketch001, length = 5)`
     toolbar,
   }) => {
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const code = `fn check(@x) {
   return assert(x, isGreaterThan = 0)

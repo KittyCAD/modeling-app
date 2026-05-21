@@ -261,7 +261,15 @@ export class ToolbarFixture {
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
-  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+  selectTransform = async (
+    operation:
+      | 'translate'
+      | 'rotate'
+      | 'scale'
+      | 'clone'
+      | 'mirror3d'
+      | 'appearance'
+  ) => {
     await this.page
       .getByRole('button', { name: 'caret down transform: open menu' })
       .click()
@@ -359,12 +367,10 @@ export class ToolbarFixture {
    * Get a specific sketch solve group caret button from the Feature Tree pane.
    * Index is 0-based.
    */
-  async getFeatureTreeSketchBlockGroupCaret(index: number) {
+  async getFeatureTreeOperationGroupCaret(index: number) {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
-    return this.featureTreePane
-      .getByTestId('sketchblock-group-caret')
-      .nth(index)
+    return this.featureTreePane.getByTestId('operation-group-caret').nth(index)
   }
 
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {

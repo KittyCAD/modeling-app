@@ -1,7 +1,6 @@
 import type {
   ApiObject,
   Expr,
-  Freedom,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
@@ -47,6 +46,7 @@ import {
   CONSTRAINT_TYPE,
   isCircleSegment,
   isConstraint,
+  isControlPointSplineSegment,
   isConstruction as isConstructionSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -71,6 +71,7 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
+import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
@@ -211,6 +212,7 @@ export const equipTools = Object.freeze({
   dimensionTool,
   pointTool,
   lineTool,
+  splineTool,
   centerArcTool,
   circleTool,
   tangentialArcTool,
@@ -370,6 +372,22 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       construction: obj.kind.segment.construction,
     }
+  } else if (isControlPointSplineSegment(obj)) {
+    const points = obj.kind.segment.controls
+      .map((pointId) => getLinkedPoint({ objects, pointId }))
+      .filter((point) => point !== null)
+    if (points.length !== obj.kind.segment.controls.length) {
+      console.error(
+        'Failed to find linked points for ControlPointSpline segment',
+        obj
+      )
+      return null
+    }
+    return {
+      type: 'ControlPointSpline',
+      points,
+      construction: obj.kind.segment.construction,
+    }
   }
   return null
 }
@@ -379,34 +397,32 @@ export function buildSegmentCtorFromObject(
  * Determines the correct segment update method based on the input type.
  */
 export function updateSegmentGroup({
+  apiObject,
   group,
-  input,
   state,
   scale,
   theme,
   hasSolveErrors,
   objects,
 }: {
+  apiObject: ApiObject
   group: Group
-  input: SegmentCtor
   state: SegmentRenderState
   scale: number
   theme: Themes
   hasSolveErrors: boolean
   objects: ApiObject[]
 }): void {
-  const idNum = Number(group.name)
-  if (Number.isNaN(idNum)) {
+  const input = buildSegmentCtorFromObject(apiObject, objects)
+  if (!input) {
     return
   }
 
-  const segmentObj = objects[idNum]
-  const freedomResult: Freedom | null = segmentObj
-    ? deriveSegmentFreedom(segmentObj, objects)
-    : null
+  const freedomResult = deriveSegmentFreedom(apiObject, objects)
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -417,6 +433,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -427,6 +444,7 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Arc') {
     segmentUtilsMap.ArcSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -437,6 +455,18 @@ export function updateSegmentGroup({
     })
   } else if (input.type === 'Circle') {
     segmentUtilsMap.CircleSegment.update({
+      apiObject,
+      input,
+      theme,
+      scale,
+      group,
+      state,
+      hasSolveErrors,
+      freedom: freedomResult,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    segmentUtilsMap.ControlPointSplineSegment.update({
+      apiObject,
       input,
       theme,
       scale,
@@ -453,38 +483,52 @@ export function updateSegmentGroup({
  * Determines the correct segment init method based on the input type.
  */
 function initSegmentGroup({
-  input,
-  id,
+  apiObject,
   objects,
 }: {
-  input: SegmentCtor
-  id: number
+  apiObject: ApiObject
   objects: ApiObject[]
 }): Group | Error {
-  const segmentObj = objects[id]
-  const isConstruction = isConstructionSegment(segmentObj)
+  const input = buildSegmentCtorFromObject(apiObject, objects)
+  if (!input) {
+    return new Error(`Unknown input type: ${(apiObject.kind as any).type}`)
+  }
+
+  const id = apiObject.id
+  const isConstruction = isConstructionSegment(apiObject)
 
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
     })
   } else if (input.type === 'Circle') {
     group = segmentUtilsMap.CircleSegment.init({
+      apiObject,
+      input,
+      id,
+      isConstruction,
+    })
+  } else if (input.type === 'ControlPointSpline') {
+    group = segmentUtilsMap.ControlPointSplineSegment.init({
+      apiObject,
       input,
       id,
       isConstruction,
@@ -625,8 +669,7 @@ export function updateSceneGraphFromDelta({
         return
       }
       const newGroup = initSegmentGroup({
-        input: ctor,
-        id: obj.id,
+        apiObject: obj,
         objects,
       })
       if (newGroup instanceof Error) {
@@ -647,8 +690,8 @@ export function updateSceneGraphFromDelta({
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
-      input: ctor,
       state,
       scale: factor,
       theme: context.sceneInfra.theme,
@@ -908,8 +951,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         return
       }
       updateSegmentGroup({
+        apiObject: obj,
         group,
-        input: ctor,
         state: getSegmentRenderState(
           obj.id,
           context.selectedIds,
@@ -1096,8 +1139,8 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     }
 
     updateSegmentGroup({
+      apiObject: obj,
       group,
-      input: ctor,
       state: getSegmentRenderState(
         obj.id,
         context.selectedIds,

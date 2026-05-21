@@ -163,7 +163,7 @@ sketch001 = startSketchOn(XY)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
@@ -675,15 +675,23 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.keyboard.press(',')
 
     // Wait for the signature help to show
-    await expect(page.locator('.cm-signature-tooltip')).toBeVisible()
+    const signatureTooltip = page.locator('.cm-signature-tooltip')
+    await expect(signatureTooltip).toBeVisible()
 
     // Make sure the parameters are correct
-    await expect(page.locator('.cm-signature-tooltip')).toContainText(
-      'sketches:'
-    )
+    await expect(signatureTooltip).toContainText('sketches:')
+
+    // Long signatures should wrap inside the tooltip instead of overflowing.
+    await expect
+      .poll(async () => {
+        return await signatureTooltip.evaluate(
+          (tooltip) => tooltip.scrollWidth <= tooltip.clientWidth + 1
+        )
+      })
+      .toBe(true)
 
     // Make sure the tooltip goes away after a timeout.
-    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible({
+    await expect(signatureTooltip).not.toBeVisible({
       timeout: 15_000,
     })
   })
@@ -1064,7 +1072,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
@@ -1115,7 +1123,7 @@ sketch001 = startSketchOn(XZ)
       commandName: 'Extrude',
     })
     await cmdBar.progressCmdBar()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
@@ -1157,7 +1165,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     }, ogCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     let prevContent = await editor.getCurrentCode()
     await toolbar.editSketch()
@@ -1239,14 +1247,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     await test.step(`Open the empty file`, async () => {
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
     await test.step(`Write the import function line`, async () => {
       await u.codeLocator.fill(`import 'cube.obj'\ncube`)
       await page.waitForTimeout(800)
     })
     await test.step(`Verify that we see no errors`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(errorIndicators).toHaveCount(0)
     })
   })
@@ -1264,7 +1272,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     // wait until scene is ready to be interacted with
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await toolbar.startSketchBtn.click()
 
@@ -1379,7 +1387,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       // wait until scene is ready to be interacted with
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Test toolbar button correct selection', async () => {
@@ -1424,7 +1432,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     // Wait for connection, this is especially important for this test, because safeParse is invoked when
     // connection is established which would interfere with the test if it happened during later steps.
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Code with no error
     await u.codeLocator.fill(`x = 7`)
