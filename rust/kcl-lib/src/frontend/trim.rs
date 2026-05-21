@@ -440,7 +440,7 @@ fn rewrite_constraint_with_map(
                 .collect(),
         })),
         Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
-            point: rewrite_object_id(midpoint.point, rewrite_map),
+            point: rewrite_constraint_segment(midpoint.point, rewrite_map),
             segment: rewrite_object_id(midpoint.segment, rewrite_map),
         })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
@@ -4979,8 +4979,13 @@ pub(crate) fn build_trim_plan(
             };
 
             let references_trimmed_segment = midpoint.segment == trim_spawn_id;
-            let references_trimmed_endpoint = original_start_point_id.is_some_and(|id| midpoint.point == id)
-                || original_end_point_id.is_some_and(|id| midpoint.point == id);
+            let references_trimmed_endpoint = match midpoint.point {
+                ConstraintSegment::Segment(point_id) => {
+                    original_start_point_id.is_some_and(|id| point_id == id)
+                        || original_end_point_id.is_some_and(|id| point_id == id)
+                }
+                ConstraintSegment::Origin(_) => false,
+            };
 
             if references_trimmed_segment || references_trimmed_endpoint {
                 constraints_to_delete_set.insert(obj.id);

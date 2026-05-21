@@ -205,6 +205,73 @@ describe('constraintToolHelpers', () => {
     })
   })
 
+  it('prepares midpoint payloads from origin-segment selections', () => {
+    const lineStart = createPointApiObject({ id: 1 })
+    const lineEnd = createPointApiObject({ id: 2 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const center = createPointApiObject({ id: 3 })
+    const arcStart = createPointApiObject({ id: 4 })
+    const arcEnd = createPointApiObject({ id: 5 })
+    const arc = createArcApiObject({ id: 11, center: 3, start: 4, end: 5 })
+    const objects = createObjectsArray([
+      lineStart,
+      lineEnd,
+      line,
+      center,
+      arcStart,
+      arcEnd,
+      arc,
+    ])
+
+    const originLineApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 10],
+      objects,
+      applyOptions
+    )
+    expect(originLineApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 10,
+    })
+
+    const lineOriginApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [10, ORIGIN_TARGET],
+      objects,
+      applyOptions
+    )
+    expect(lineOriginApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 10,
+    })
+
+    const originArcApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 11],
+      objects,
+      applyOptions
+    )
+    expect(originArcApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 11,
+    })
+
+    const arcOriginApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [11, ORIGIN_TARGET],
+      objects,
+      applyOptions
+    )
+    expect(arcOriginApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 11,
+    })
+  })
+
   it('prepares equal-length payloads from the full valid current selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })

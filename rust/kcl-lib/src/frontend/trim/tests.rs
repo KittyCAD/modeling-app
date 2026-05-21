@@ -1068,7 +1068,7 @@ mod sync {
             axis: ObjectId(77),
         });
         let midpoint = Constraint::Midpoint(crate::frontend::sketch::Midpoint {
-            point: ObjectId(1),
+            point: crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(1)),
             segment: ObjectId(2),
         });
 
@@ -1106,7 +1106,10 @@ mod sync {
         else {
             panic!("expected midpoint rewrite");
         };
-        assert_eq!(rewritten_midpoint.point, ObjectId(101));
+        assert_eq!(
+            rewritten_midpoint.point,
+            crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(101))
+        );
         assert_eq!(rewritten_midpoint.segment, ObjectId(202));
     }
 

@@ -26,7 +26,7 @@ import {
 } from '@src/lib/operations'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
@@ -701,6 +701,20 @@ const OperationItem = ({
           item.sourceRange,
           systemDeps.kclManager.artifactGraph
         ) ?? undefined
+      if (
+        item.type === 'GroupBegin' &&
+        item.group.type === 'SketchBlock' &&
+        artifact?.type === 'sketchBlock' &&
+        artifact.id &&
+        typeof artifact.sketchId === 'number'
+      ) {
+        // Allow double clicking on any sketch even with shift pressed
+        modelingActor.send({
+          type: 'Edit sketch solve',
+          data: { artifactId: artifact.id },
+        })
+        return
+      }
       prepareEditCommand({
         artifactGraph: systemDeps.kclManager.artifactGraph,
         code: systemDeps.kclManager.code,
@@ -712,6 +726,7 @@ const OperationItem = ({
     }
   }, [
     item,
+    modelingActor,
     commandBarActor,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,
@@ -1120,6 +1135,9 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
+  const selectedDefaultPlaneId = getSelectedDefaultPlane(
+    modelingState.context.selectionRanges
+  )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {
@@ -1206,6 +1224,7 @@ const DefaultPlanes = ({
           icon={'plane'}
           name={plane.name}
           disabled={disabled}
+          isSelected={selectedDefaultPlaneId === plane.id}
           onClick={disabled ? undefined : () => onClickPlane(plane.id)}
           menuItems={
             disabled

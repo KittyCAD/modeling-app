@@ -51,7 +51,11 @@ node_modules/.package-lock.json: package.json package-lock.json
 	npm install
 
 $(WASM_PACK):
+ifdef WINDOWS
 	npm run install:wasm-pack:cargo
+else
+	npm run install:wasm-pack:sh
+endif
 
 ###############################################################################
 # BUILD
