@@ -3724,15 +3724,15 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'tolerance',
-            currentArgValue: '0.1mm',
+            currentArgValue: '0.1in',
             headerArguments: {
               Faces: '1 face',
               Tolerance: '',
             },
             highlightedHeaderArg: 'tolerance',
           })
-          // Set tolerance to 0.1mm
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1mm')
+          // Set tolerance to 0.1in
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1in')
         })
 
         await test.step('Review basic parameters', async () => {
@@ -3742,7 +3742,7 @@ extrude001 = extrude(region001, length = 30)`
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
             },
           })
         })
@@ -3758,7 +3758,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgValue: '3',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '',
             },
             highlightedHeaderArg: 'precision',
@@ -3772,7 +3772,7 @@ extrude001 = extrude(region001, length = 30)`
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
             },
           })
@@ -3788,7 +3788,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgValue: '[0, 0]',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '',
             },
@@ -3804,7 +3804,7 @@ extrude001 = extrude(region001, length = 30)`
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
             },
@@ -3820,7 +3820,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgValue: '',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: '',
@@ -3835,7 +3835,7 @@ extrude001 = extrude(region001, length = 30)`
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3852,7 +3852,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgValue: '10mm',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3869,7 +3869,7 @@ extrude001 = extrude(region001, length = 30)`
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3885,7 +3885,7 @@ extrude001 = extrude(region001, length = 30)`
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
-        await editor.expectEditor.toContain('tolerance = 0.1mm')
+        await editor.expectEditor.toContain('tolerance = 0.1in')
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
         await editor.expectEditor.toContain('framePlane = XY')
@@ -3906,9 +3906,9 @@ extrude001 = extrude(region001, length = 30)`
           stage: 'arguments',
           commandName: 'GDT Flatness',
           currentArgKey: 'tolerance',
-          currentArgValue: '0.1mm',
+          currentArgValue: '0.1in',
           headerArguments: {
-            Tolerance: '0.1mm',
+            Tolerance: '0.1in',
             Precision: '5',
             FramePosition: '[10, 10]',
             FramePlane: 'XY',
@@ -3924,9 +3924,9 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'tolerance',
-            currentArgValue: '0.1mm',
+            currentArgValue: '0.1in',
             headerArguments: {
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3934,15 +3934,15 @@ extrude001 = extrude(region001, length = 30)`
             },
             highlightedHeaderArg: 'tolerance',
           })
-          // Update tolerance from 0.1mm to 0.2mm
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2mm')
+          // Update tolerance from 0.1in to 0.2in
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2in')
           await cmdBar.progressCmdBar()
           // Review changes to tolerance
           await cmdBar.expectState({
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3959,7 +3959,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgKey: 'precision',
             currentArgValue: '5',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3975,7 +3975,7 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3992,7 +3992,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgKey: 'framePosition',
             currentArgValue: '[10, 10]',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -4009,7 +4009,7 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
@@ -4026,7 +4026,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgKey: 'framePlane',
             currentArgValue: '',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
@@ -4041,7 +4041,7 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
@@ -4058,7 +4058,7 @@ extrude001 = extrude(region001, length = 30)`
             currentArgKey: 'fontSize',
             currentArgValue: '12mm',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
@@ -4074,7 +4074,7 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
@@ -4089,7 +4089,7 @@ extrude001 = extrude(region001, length = 30)`
         await scene.settled()
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
-        await editor.expectEditor.toContain('tolerance = 0.2mm')
+        await editor.expectEditor.toContain('tolerance = 0.2in')
         await editor.expectEditor.toContain('precision = 3')
         await editor.expectEditor.toContain('framePosition = [20, 30]')
         await editor.expectEditor.toContain('framePlane = XZ')
