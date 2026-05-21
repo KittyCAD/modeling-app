@@ -1,0 +1,35 @@
+.kclEditor {
+  @apply w-full border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight;
+}
+
+.kclEditorDisabled {
+  @apply cursor-not-allowed bg-chalkboard-10 text-chalkboard-60 dark:bg-chalkboard-90 dark:text-chalkboard-50;
+}
+
+.kclEditor :global(.cm-editor) {
+  @apply bg-transparent;
+}
+
+.kclEditor :global(.cm-editor.cm-focused) {
+  outline: none;
+}
+
+.kclEditor:focus-within {
+  @apply outline outline-1 outline-offset-0 outline-primary;
+}
+
+.kclEditor :global(.cm-scroller) {
+  font-family: inherit;
+  line-height: inherit;
+  overflow: hidden;
+}
+
+.kclEditor :global(.cm-content) {
+  caret-color: currentColor;
+  min-height: 1rem;
+  padding: 0;
+}
+
+.kclEditor :global(.cm-line) {
+  padding: 0;
+}

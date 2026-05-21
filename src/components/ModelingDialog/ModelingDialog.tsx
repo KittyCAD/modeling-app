@@ -26,6 +26,11 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
+  getKclInputValue,
+  getKclSubmitValue,
+  ModelingDialogKclInput,
+} from './ModelingDialogKclInput'
+import {
   AdvancedSection,
   ArgumentField,
   ArgumentGroup,
@@ -195,6 +200,10 @@ function toTitleCase(value: string): string {
     .replace(/[-_]/g, ' ')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/\b\w/g, (match) => match.toUpperCase())
+}
+
+function capitalizeFirstLetter(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
 function resolveDialogGroups(
@@ -470,10 +479,10 @@ export function ModelingDialog() {
             : undefined
         let resolvedValue = existingValue ?? defaultValue
 
-        if (
-          (arg.inputType === 'kcl' ||
-            arg.inputType === 'vector2d' ||
-            arg.inputType === 'vector3d') &&
+        if (arg.inputType === 'kcl') {
+          nextValues[argName] = getKclInputValue(arg, resolvedValue)
+        } else if (
+          (arg.inputType === 'vector2d' || arg.inputType === 'vector3d') &&
           isKclCommandValue(resolvedValue)
         ) {
           nextValues[argName] = resolvedValue.valueText
@@ -785,11 +794,13 @@ export function ModelingDialog() {
           } else if (typeof value === 'string') {
             const trimmed = value.trim()
             const expression =
-              arg.inputType === 'vector2d' || arg.inputType === 'vector3d'
-                ? trimmed.startsWith('[')
-                  ? trimmed
-                  : `[${trimmed}]`
-                : trimmed
+              arg.inputType === 'kcl'
+                ? getKclSubmitValue(arg, value)
+                : arg.inputType === 'vector2d' || arg.inputType === 'vector3d'
+                  ? trimmed.startsWith('[')
+                    ? trimmed
+                    : `[${trimmed}]`
+                  : trimmed
             const parsed = await stringToKclExpression(
               expression,
               kclManager.rustContext,
@@ -798,6 +809,8 @@ export function ModelingDialog() {
                   arg.inputType === 'vector2d' ||
                   arg.inputType === 'vector3d' ||
                   arg.allowArrays,
+                allowStringArrays:
+                  arg.inputType === 'kcl' ? arg.allowStringArrays : undefined,
               }
             )
             if (err(parsed) || 'errors' in parsed) {
@@ -968,6 +981,12 @@ export function ModelingDialog() {
       ? currentSelection
       : savedSelection
     const value = isSelectionField ? displayedSelection : draftValues[argName]
+    const description = arg.description ? (
+      <MarkdownText
+        text={arg.description}
+        className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
+      />
+    ) : undefined
 
     const capturedSelection =
       isSelectionField && displayedSelection ? displayedSelection : undefined
@@ -975,21 +994,37 @@ export function ModelingDialog() {
       kclManager.astSignal.value,
       capturedSelection
     )
+    const label = capitalizeFirstLetter(arg.displayName || argName)
+
+    if (arg.inputType === 'kcl') {
+      return (
+        <ModelingDialogKclInput
+          key={key}
+          name={argName}
+          label={label}
+          description={description}
+          isRequired={isRequired}
+          disabled={isDisabled}
+          value={getKclInputValue(arg, value)}
+          commandBarContext={dialogContext}
+          selectionRanges={selectionRanges}
+          onChange={(nextValue) => {
+            setDraftValues((prev) => ({
+              ...prev,
+              [argName]: nextValue,
+            }))
+          }}
+        />
+      )
+    }
 
     const field = (
       <ArgumentField
         key={key}
         name={argName}
         inputType={arg.inputType}
-        label={arg.displayName || argName}
-        description={
-          arg.description ? (
-            <MarkdownText
-              text={arg.description}
-              className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-            />
-          ) : undefined
-        }
+        label={label}
+        description={description}
         isRequired={isRequired}
         disabled={isDisabled}
         options={options}
