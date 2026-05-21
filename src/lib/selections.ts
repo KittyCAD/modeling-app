@@ -12,7 +12,6 @@ import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -77,7 +76,6 @@ import {
   mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
-import { cross3d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
@@ -1348,8 +1346,6 @@ export async function getPlaneDataFromSketchBlock(
     execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
     sketchBlock,
-    ast: systemDeps.ast,
-    wasmInstance: systemDeps.wasmInstance,
   })
   if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
@@ -1391,85 +1387,37 @@ export function selectDefaultSketchPlane(
   return true
 }
 
-// Returns the same result regardless of current camera view using executed KCL plane values,
-// which is what we need when editing a sketch that is on an offset plane facing backwards.
-//
-// Cases that are handled
-//
-// 1. Variable is negated (execState.variables.plane001.value is already the negated plane,
-// sketchBlockPlane.negated is false and planeInfo.xAxis contains the negation already,
-// but zAxis doesn't contain the negation!):
-//  plane001 = -offsetPlane(XZ, offset = 0mm)
-//  sketch001 = sketch(on = plane001) { ... }
-//
-// 2. The negation is at the sketch use-site, we look up plane001 and we need to manually negate xAxis
-//  plane001 = offsetPlane(XZ, offset = 0mm)
-//  sketch001 = sketch(on = -plane001) { ... }
-// Here sketchBlock.planeId points to the negated artifact, not the original plane001, and the negated
-// artifact is missing from execState.variables. So we have to parse the sketchBlock AST to recover
-// plane001 and read it from variables.
-//
-// In the case of 1. zAxis doesn't contain the negation, so it's better to use xAxis which does,
-// and compute zAxis = xAxis x yAxis.
-//
-// Previously we only flipped zAxis if needed, but that missed this case because here
-// sketchBlockPlane.negated is false and zAxis doesn't contain the negation, only xAxis does:
-// plane001 = -offsetPlane(XZ, offset = 0mm)
-// sketch001 = sketch(on = plane001) { ... }
-
+// Uses the executed sketch `on` plane so editing an offset-plane sketch is
+// independent of camera-facing scene data.
 export function getStableOffsetPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {
     execState: ExecState
     sceneInfra: SceneInfra
     sketchBlock?: Extract<Artifact, { type: 'sketchBlock' }>
-    ast?: Node<Program>
-    wasmInstance?: ModuleType
   }
 ): Error | false | OffsetPlane {
   if (artifact?.type !== 'plane') {
     return false
   }
 
-  const sketchBlockPlane = getSketchBlockPlaneReference(
-    systemDeps.sketchBlock,
-    systemDeps.ast,
-    systemDeps.wasmInstance
-  )
-
-  let planeValue = Object.values(systemDeps.execState.variables).find(
-    (value) => value?.type === 'Plane' && value.value.artifactId === artifact.id
-  )
-  if (!planeValue && sketchBlockPlane.name) {
-    // plane needs to be found via sketchBlockPlane in case of:
-    // sketch(on = -plane001) { ... }
-    planeValue = systemDeps.execState.variables[sketchBlockPlane.name]
-  }
+  const planeValue =
+    getSketchOnPlaneValue(systemDeps.sketchBlock, systemDeps.execState) ??
+    Object.values(systemDeps.execState.variables).find(
+      (value) =>
+        value?.type === 'Plane' && value.value.artifactId === artifact.id
+    )
 
   if (planeValue?.type !== 'Plane') {
     return false
   }
 
   const planeInfo = planeValue.value
-  const yAxis: OffsetPlane['yAxis'] = [
-    planeInfo.yAxis.x,
-    planeInfo.yAxis.y,
-    planeInfo.yAxis.z,
-  ]
-
-  // Manually negate, eg.:
-  //  plane001 = offsetPlane(XZ, offset = 0mm)
-  //  sketch001 = sketch(on = -plane001) { ... }
-  const xAxis: [number, number, number] = sketchBlockPlane.negated
-    ? [-planeInfo.xAxis.x, -planeInfo.xAxis.y, -planeInfo.xAxis.z]
-    : [planeInfo.xAxis.x, planeInfo.xAxis.y, planeInfo.xAxis.z]
-
-  const zAxis: OffsetPlane['zAxis'] = cross3d(xAxis, yAxis)
 
   return {
     type: 'offsetPlane',
-    zAxis,
-    yAxis,
+    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
+    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
     position: [
       planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
       planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
@@ -1477,44 +1425,21 @@ export function getStableOffsetPlaneData(
     ],
     planeId: artifact.id,
     pathToNode: artifact.codeRef.pathToNode,
-    negated: sketchBlockPlane.negated,
+    negated: false,
   }
 }
 
-function getSketchBlockPlaneReference(
+function getSketchOnPlaneValue(
   sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> | undefined,
-  ast: Node<Program> | undefined,
-  wasmInstance: ModuleType | undefined
-): { name?: string; negated: boolean } {
-  if (!sketchBlock || !ast || !wasmInstance) {
-    return { negated: false }
+  execState: ExecState
+) {
+  if (typeof sketchBlock?.sketchId !== 'number') {
+    return undefined
   }
 
-  const sketchBlockNode = getNodeFromPath<SketchBlock>(
-    ast,
-    sketchBlock.codeRef.pathToNode,
-    wasmInstance,
-    ['SketchBlock']
-  )
-  if (err(sketchBlockNode)) {
-    return { negated: false }
-  }
-
-  const onArg = sketchBlockNode.node.arguments.find(
-    (arg) => arg.label?.name === 'on'
-  )?.arg
-  if (onArg?.type === 'Name') {
-    return { name: onArg.name.name, negated: false }
-  }
-  if (
-    onArg?.type === 'UnaryExpression' &&
-    onArg.operator === '-' &&
-    onArg.argument.type === 'Name'
-  ) {
-    return { name: onArg.argument.name.name, negated: true }
-  }
-
-  return { negated: false }
+  const sketchOnValue =
+    execState.variables[`__sketch_${sketchBlock.sketchId}_on`]
+  return sketchOnValue?.type === 'Plane' ? sketchOnValue : undefined
 }
 
 // Uses engine sketch-mode plane data so offset-plane selection can keep the current camera-facing side.

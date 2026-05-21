@@ -1582,7 +1582,13 @@ sketch001 = sketch(on = ${on}) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
 }`
 
-  const axis = (point: Point3d) => [point.x, point.y, point.z]
+  const normalizeSignedZero = (value: number) =>
+    Object.is(value, -0) ? 0 : value
+
+  const normalizeAxis = (axis: readonly number[]) =>
+    axis.map(normalizeSignedZero)
+
+  const axis = (point: Point3d) => normalizeAxis([point.x, point.y, point.z])
 
   const getPlaneVariable = (
     variables: ExecState['variables'],
@@ -1600,6 +1606,7 @@ sketch001 = sketch(on = ${on}) {
   ): Promise<{
     result: ReturnType<typeof getStableOffsetPlaneData>
     plane001: Plane
+    sketchOnPlane: Plane
     effectiveArtifactHasVariable: boolean
   }> => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
@@ -1622,13 +1629,15 @@ sketch001 = sketch(on = ${on}) {
         baseUnitMultiplier: 1,
       } as Pick<SceneInfra, 'baseUnitMultiplier'> as SceneInfra,
       sketchBlock,
-      ast,
-      wasmInstance: instance,
     })
 
     return {
       result,
       plane001: getPlaneVariable(execState.variables, 'plane001'),
+      sketchOnPlane: getPlaneVariable(
+        execState.variables,
+        `__sketch_${sketchBlock.sketchId}_on`
+      ),
       effectiveArtifactHasVariable: Object.values(execState.variables).some(
         (value) =>
           value?.type === 'Plane' && value.value.artifactId === artifact.id
@@ -1636,48 +1645,55 @@ sketch001 = sketch(on = ${on}) {
     }
   }
 
-  test('derives zAxis from xAxis when variable-level plane negation leaves raw zAxis stale', async () => {
-    const { result, plane001 } = await setupStableOffsetPlaneData(
-      code('plane001', '-offsetPlane(XZ, offset = 0mm)')
-    )
+  test('uses the Rust-provided zAxis for variable-level plane negation', async () => {
+    const { result, plane001, sketchOnPlane } =
+      await setupStableOffsetPlaneData(
+        code('plane001', '-offsetPlane(XZ, offset = 0mm)')
+      )
 
     expect(axis(plane001.xAxis)).toEqual([-1, 0, 0])
-    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, 1, 0])
+    expect(axis(sketchOnPlane.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchOnPlane.zAxis)).toEqual([0, 1, 0])
 
     if (result === false || result instanceof Error) {
       throw new Error(`Expected offset plane data, got ${String(result)}`)
     }
-    expect(result.zAxis[1]).toBe(1)
+    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
   })
 
   test('keeps the same zAxis for non-negated offset planes', async () => {
-    const { result, plane001, effectiveArtifactHasVariable } =
+    const { result, plane001, sketchOnPlane, effectiveArtifactHasVariable } =
       await setupStableOffsetPlaneData(code('plane001'))
 
     expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
     expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchOnPlane.xAxis)).toEqual([1, 0, 0])
+    expect(axis(sketchOnPlane.zAxis)).toEqual([0, -1, 0])
     expect(effectiveArtifactHasVariable).toBe(true)
 
     if (result === false || result instanceof Error) {
       throw new Error(`Expected offset plane data, got ${String(result)}`)
     }
     expect(result.negated).toBe(false)
-    expect(result.zAxis).toEqual([0, -1, 0])
+    expect(normalizeAxis(result.zAxis)).toEqual([0, -1, 0])
   })
 
   test('resolves sketch use-site negation when the effective plane artifact is not in variables', async () => {
-    const { result, plane001, effectiveArtifactHasVariable } =
+    const { result, plane001, sketchOnPlane, effectiveArtifactHasVariable } =
       await setupStableOffsetPlaneData(code('-plane001'))
 
     expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
     expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchOnPlane.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchOnPlane.zAxis)).toEqual([0, 1, 0])
     expect(effectiveArtifactHasVariable).toBe(false)
 
     if (result === false || result instanceof Error) {
       throw new Error(`Expected offset plane data, got ${String(result)}`)
     }
-    expect(result.negated).toBe(true)
-    expect(result.zAxis[1]).toBe(1)
+    expect(result.negated).toBe(false)
+    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
   })
 })
 

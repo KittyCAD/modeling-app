@@ -5182,6 +5182,7 @@ impl Node<UnaryExpression> {
                         if plane.info.x_axis.z != 0.0 {
                             plane.info.x_axis.z *= -1.0;
                         }
+                        plane.info.z_axis = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;
