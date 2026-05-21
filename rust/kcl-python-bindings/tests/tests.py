@@ -658,35 +658,10 @@ async def test_sketch_constraint_status_parse_error_returns_report():
     assert "Unexpected token" in report.kcl_error.text
 
 
-no_overlap_subtract_code = """@settings(kclVersion = 2.0)
-
-cubeSketch = sketch(on = XY) {
-bottom = line(start = [var 0, var 0], end = [var 10, var 0])
-right = line(start = [var 10, var 0], end = [var 10, var 10])
-top = line(start = [var 10, var 10], end = [var 0, var 10])
-left = line(start = [var 0, var 10], end = [var 0, var 0])
-coincident([bottom.end, right.start])
-coincident([right.end, top.start])
-coincident([top.end, left.start])
-coincident([left.end, bottom.start])
-}
-cube = extrude(region(point = [5, 5], sketch = cubeSketch), length = 10)
-
-cylinderSketch = sketch(on = XY) {
-c = circle(start = [var 102, var 100], center = [var 100, var 100])
-}
-hidden001 = hide(cylinderSketch)
-region001 = region(point = [98.0025mm, 100mm], sketch = cylinderSketch)
-cylinder = extrude(region001, length = 10)
-
-result = subtract(cube, tools = [cylinder])
-"""
-
-
 @requires_engine
 @pytest.mark.asyncio
 async def test_exec_outcome_report_renders_csg_no_overlap_warning():
-    outcome = await kcl.execute_code(no_overlap_subtract_code)
+    outcome = await kcl.execute(os.path.join(files_dir, "warning.kcl"))
     issues = outcome.issues()
     assert len(issues) >= 1
     warning = next((i for i in issues if i.is_warning()), None)
