@@ -1322,8 +1322,8 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
-  const offsetResult = await getOffsetSketchPlaneData(artifact, {
-    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+  const offsetResult = getStableOffsetPlaneData(artifact, {
+    execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
   })
   if (!isErr(offsetResult) && offsetResult) {
@@ -1366,6 +1366,46 @@ export function selectDefaultSketchPlane(
   return true
 }
 
+// Returns the same result regardless of current camera view using executed KCL plane values,
+// which is what we need when editing a sketch that is on an offset plane facing backwards.
+export function getStableOffsetPlaneData(
+  artifact: Artifact | undefined,
+  systemDeps: {
+    execState: ExecState
+    sceneInfra: SceneInfra
+  }
+): Error | false | OffsetPlane {
+  if (artifact?.type !== 'plane') {
+    return false
+  }
+
+  const planeValue = Object.values(systemDeps.execState.variables).find(
+    (value) => value?.type === 'Plane' && value.value.artifactId === artifact.id
+  )
+
+  if (!planeValue || planeValue.type !== 'Plane') {
+    return false
+  }
+
+  const planeInfo = planeValue.value
+  return {
+    type: 'offsetPlane',
+    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
+    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
+    position: [
+      planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.z / systemDeps.sceneInfra.baseUnitMultiplier,
+    ],
+    planeId: artifact.id,
+    pathToNode: artifact.codeRef.pathToNode,
+    negated: false,
+  }
+}
+
+// Uses engine sketch-mode plane data so offset-plane selection can keep the current camera-facing side.
+// The returned value depends on current camera view, ie. when viewing the back side zAxis will be flipped
+// due to getFaceDetails().
 export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {
