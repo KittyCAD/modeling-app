@@ -660,6 +660,20 @@ async def test_sketch_constraint_status_parse_error_returns_report():
 
 @requires_engine
 @pytest.mark.asyncio
+async def test_exec_outcome_report_renders_csg_no_overlap_warning():
+    outcome = await kcl.execute(os.path.join(files_dir, "warning.kcl"))
+    issues = outcome.issues()
+    assert len(issues) >= 1
+    warning = next((i for i in issues if i.is_warning()), None)
+    assert warning is not None
+    report = outcome.report(warning)
+    assert isinstance(report, str)
+    assert len(report) > 0
+    assert "had no overlap" in report
+
+
+@requires_engine
+@pytest.mark.asyncio
 async def test_sketch_constraint_status_execution_error_returns_partial_report():
     report = await kcl.get_sketch_constraint_status_code(
         execution_error_after_sketch_code
