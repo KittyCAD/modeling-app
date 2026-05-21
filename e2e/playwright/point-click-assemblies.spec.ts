@@ -677,7 +677,6 @@ test.describe(
           complexPlmFileName,
           'cube.step',
           'main.kcl',
-          'thumbnail.png',
         ])
         await toolbar.openFile(complexPlmFileName)
 

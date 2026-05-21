@@ -64,8 +64,8 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
 
-/** The default KCL tolerance expression */
-export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+/** The default KCL tolerance magnitude. Command configs add the active file unit. */
+export const KCL_DEFAULT_TOLERANCE = '0.1'
 
 /** The default KCL datum reference expression */
 export const KCL_DEFAULT_DATUM_REFS = `["A"]`
