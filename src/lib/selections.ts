@@ -1393,6 +1393,30 @@ export function selectDefaultSketchPlane(
 
 // Returns the same result regardless of current camera view using executed KCL plane values,
 // which is what we need when editing a sketch that is on an offset plane facing backwards.
+//
+// Cases that are handled
+//
+// 1. Variable is negated (execState.variables.plane001.value is already the negated plane,
+// sketchBlockPlane.negated is false and planeInfo.xAxis contains the negation already,
+// but zAxis doesn't contain the negation!):
+//  plane001 = -offsetPlane(XZ, offset = 0mm)
+//  sketch001 = sketch(on = plane001) { ... }
+//
+// 2. The negation is at the sketch use-site, we look up plane001 and we need to manually negate xAxis
+//  plane001 = offsetPlane(XZ, offset = 0mm)
+//  sketch001 = sketch(on = -plane001) { ... }
+// Here sketchBlock.planeId points to the negated artifact, not the original plane001, and the negated
+// artifact is missing from execState.variables. So we have to parse the sketchBlock AST to recover
+// plane001 and read it from variables.
+//
+// In the case of 1. zAxis doesn't contain the negation, so it's better to use xAxis which does,
+// and compute zAxis = xAxis x yAxis.
+//
+// Previously we only flipped zAxis if needed, but that missed this case because here
+// sketchBlockPlane.negated is false and zAxis doesn't contain the negation, only xAxis does:
+// plane001 = -offsetPlane(XZ, offset = 0mm)
+// sketch001 = sketch(on = plane001) { ... }
+
 export function getStableOffsetPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {
@@ -1418,9 +1442,7 @@ export function getStableOffsetPlaneData(
   )
   if (!planeValue && sketchBlockPlane.name) {
     // plane needs to be found via sketchBlockPlane in case of:
-    // sketch(on = -plane001) {
-    // ...
-    // }
+    // sketch(on = -plane001) { ... }
     planeValue = systemDeps.execState.variables[sketchBlockPlane.name]
   }
 
@@ -1434,14 +1456,16 @@ export function getStableOffsetPlaneData(
     planeInfo.yAxis.y,
     planeInfo.yAxis.z,
   ]
-  // plane001 = -offsetPlane(...) stores the negation on the plane variable’s xAxis,
-  // while sketch(on = plane001) has no - in the sketch block.
-  // Using planeInfo.zAxis directly misses that variable-level negation.
-  // Deriving zAxis from xAxis and yAxis captures both cases
+
+  // Manually negate, eg.:
+  //  plane001 = offsetPlane(XZ, offset = 0mm)
+  //  sketch001 = sketch(on = -plane001) { ... }
   const xAxis: [number, number, number] = sketchBlockPlane.negated
     ? [-planeInfo.xAxis.x, -planeInfo.xAxis.y, -planeInfo.xAxis.z]
     : [planeInfo.xAxis.x, planeInfo.xAxis.y, planeInfo.xAxis.z]
+
   const zAxis: OffsetPlane['zAxis'] = cross3d(xAxis, yAxis)
+
   return {
     type: 'offsetPlane',
     zAxis,
