@@ -7,6 +7,7 @@ import {
 } from '@codemirror/autocomplete'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap, tooltips } from '@codemirror/view'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { useSelector } from '@xstate/react'
 import type { ReactNode } from 'react'
@@ -104,6 +105,7 @@ export function ModelingDialogKclInput({
   onChange: (value: unknown) => void
   onValidationChange: (state: ModelingDialogKclValidationState) => void
 }) {
+  useSignals()
   const { settings, wasmPromise } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(wasmPromise)
@@ -116,6 +118,7 @@ export function ModelingDialogKclInput({
   const onValidationChangeRef = useRef(onValidationChange)
   const lastReportedValueRef = useRef<unknown>(Symbol('initial-kcl-value'))
   const lastValidationStateRef = useRef<string>('')
+  const isSyncingEditorValueRef = useRef(false)
   const initialEditorValueRef = useRef(value)
   const initialEditorDisabledRef = useRef(disabled)
   const initialEditorLabelIdRef = useRef(labelId)
@@ -271,22 +274,24 @@ export function ModelingDialogKclInput({
   const canUseUncalculatedValue =
     Boolean(arg.allowUncalculated) && valueNode !== null
   const canSubmitKclValue =
-    isEmpty ||
+    (isEmpty && !isRequired) ||
     (!isExecuting &&
       valueNode !== null &&
       (calcResult !== 'NAN' || canUseUncalculatedValue) &&
       (!createNewVariable || isNewVariableNameUnique))
   const validationMessage =
-    !isEmpty && !isExecuting && valueNode === null
-      ? 'Unable to submit undefined command value.'
-      : !isEmpty &&
-          !isExecuting &&
-          calcResult === 'NAN' &&
-          !canUseUncalculatedValue
-        ? "Can't calculate"
-        : createNewVariable && !isNewVariableNameUnique
-          ? 'Variable name unavailable'
-          : undefined
+    isEmpty && isRequired
+      ? 'Enter a value.'
+      : !isEmpty && !isExecuting && valueNode === null
+        ? 'Unable to submit undefined command value.'
+        : !isEmpty &&
+            !isExecuting &&
+            calcResult === 'NAN' &&
+            !canUseUncalculatedValue
+          ? "Can't calculate"
+          : createNewVariable && !isNewVariableNameUnique
+            ? 'Variable name unavailable'
+            : undefined
   const resolvedKclValue = useMemo<KclCommandValue | undefined>(() => {
     if (isEmpty || !canSubmitKclValue || valueNode === null) {
       return undefined
@@ -355,7 +360,7 @@ export function ModelingDialogKclInput({
           ),
           compartments.setValue.of(
             EditorView.updateListener.of((update) => {
-              if (update.docChanged) {
+              if (update.docChanged && !isSyncingEditorValueRef.current) {
                 onChangeRef.current(update.state.doc.toString())
               }
             })
@@ -446,13 +451,18 @@ export function ModelingDialogKclInput({
       return
     }
 
-    editorRef.current.dispatch({
-      changes: {
-        from: 0,
-        to: editorRef.current.state.doc.length,
-        insert: value,
-      },
-    })
+    isSyncingEditorValueRef.current = true
+    try {
+      editorRef.current.dispatch({
+        changes: {
+          from: 0,
+          to: editorRef.current.state.doc.length,
+          insert: value,
+        },
+      })
+    } finally {
+      isSyncingEditorValueRef.current = false
+    }
   }, [value])
 
   useEffect(() => {

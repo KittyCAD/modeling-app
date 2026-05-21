@@ -1,3 +1,5 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import { useSelector } from '@xstate/react'
 import {
   useCallback,
   useEffect,
@@ -7,30 +9,8 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
-import { MarkdownText } from '@src/components/MarkdownText'
-import Tooltip from '@src/components/Tooltip'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { isKclCommandValue } from '@src/lib/commandUtils'
-import type {
-  CommandArgument,
-  CommandArgumentOption,
-  CommandDialogGroup,
-} from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  getKclInputValue,
-  getKclSubmitValue,
-  ModelingDialogKclInput,
-  type ModelingDialogKclValidationState,
-} from '@src/components/ModelingDialog/ModelingDialogKclInput'
 import {
   AdvancedSection,
   ArgumentField,
@@ -40,6 +20,35 @@ import {
   type SelectionListItem,
   SubmitButton,
 } from '@kittycad/ui-components'
+import { MarkdownText } from '@src/components/MarkdownText'
+import {
+  ModelingDialogKclInput,
+  type ModelingDialogKclValidationState,
+  getKclInputValue,
+  getKclSubmitValue,
+} from '@src/components/ModelingDialog/ModelingDialogKclInput'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import { useApp, useSingletons } from '@src/lib/boot'
+import type {
+  CommandArgument,
+  CommandArgumentOption,
+  CommandDialogGroup,
+} from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
+import {
+  canSubmitSelectionArg,
+  getSelectionCountByType,
+  getSelectionTypeDisplayText,
+  handleSelectionBatch,
+} from '@src/lib/selections'
+import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type ModelingDialogField = {
   argName: string
@@ -63,12 +72,17 @@ type SelectionCommandArgument = Extract<
   CommandArgument<unknown>,
   { inputType: 'selection' | 'selectionMixed' }
 >
+type MachineContext = SnapshotFrom<AnyStateMachine>['context']
 
 type DialogArgumentResolution =
   | { ok: true; argumentsToSubmit: Record<string, unknown> }
   | {
       ok: false
-      reason: 'missingCommand' | 'missingRequired' | 'invalidExpression'
+      reason:
+        | 'missingCommand'
+        | 'missingRequired'
+        | 'invalidExpression'
+        | 'invalidSelection'
       message?: string
     }
 
@@ -90,13 +104,20 @@ const DEFAULT_DIALOG_GROUP: CommandDialogGroup = {
   title: 'Parameters',
 }
 
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
+
 function getToolbarBottomOffset(wrapper: HTMLElement | null): number {
-  if (typeof window === 'undefined') return 0
+  if (typeof window === 'undefined') {
+    return 0
+  }
 
   const toolbar = window.document.querySelector<HTMLElement>(
     '[data-testid="toolbar"]'
   )
-  if (!toolbar) return 0
+  if (!toolbar) {
+    return 0
+  }
 
   const wrapperTop = wrapper?.getBoundingClientRect().top ?? 0
   return Math.max(
@@ -108,7 +129,9 @@ function getToolbarBottomOffset(wrapper: HTMLElement | null): number {
 }
 
 function isSelectionValueEmpty(value: unknown): boolean {
-  if (!value || typeof value !== 'object') return true
+  if (!value || typeof value !== 'object') {
+    return true
+  }
 
   const selection = value as Partial<Selections>
   const graphSelections = isArray(selection.graphSelections)
@@ -127,12 +150,91 @@ function isSelectionArgument(
   return arg.inputType === 'selection' || arg.inputType === 'selectionMixed'
 }
 
+function hasNonZeroGraphSelection(selection: Selections | undefined): boolean {
+  return (
+    selection?.graphSelections.some(
+      (graphSelection) =>
+        graphSelection.codeRef.range[1] - graphSelection.codeRef.range[0] !== 0
+    ) ?? false
+  )
+}
+
+function isBodyOnlySelectionArgument(arg: SelectionCommandArgument): boolean {
+  return (
+    arg.inputType === 'selectionMixed' &&
+    arg.selectionTypes.every(
+      (type) => type === 'path' || type === 'sweep' || type === 'compositeSolid'
+    )
+  )
+}
+
+function canSubmitDialogSelection(
+  ast: Parameters<typeof getSelectionCountByType>[0],
+  arg: SelectionCommandArgument,
+  selection: Selections | undefined,
+  isRequired: boolean
+): boolean {
+  if (!selection) {
+    return (
+      !isRequired ||
+      (arg.inputType === 'selectionMixed' && Boolean(arg.allowNoSelection))
+    )
+  }
+  if (
+    arg.inputType === 'selectionMixed' &&
+    (!isRequired || arg.allowNoSelection)
+  ) {
+    return true
+  }
+  if (
+    arg.inputType === 'selectionMixed' &&
+    hasNonZeroGraphSelection(selection)
+  ) {
+    return true
+  }
+  return canSubmitSelectionArg(getSelectionCountByType(ast, selection), arg)
+}
+
+function getSelectionValidationMessage(
+  argName: string,
+  arg: SelectionCommandArgument,
+  selection: Selections | undefined
+): string {
+  const label = arg.displayName || argName
+  return selection ? `Invalid selection for "${label}".` : `Select "${label}".`
+}
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message) {
+    return error.message
+  }
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    typeof error.message === 'string' &&
+    error.message
+  ) {
+    return error.message
+  }
+  if (typeof error === 'string' && error) {
+    return error
+  }
+  const stringified = String(error)
+  if (stringified && stringified !== '[object Object]') {
+    return stringified
+  }
+  return fallback
+}
+
 function removeSelectionItem(
   value: unknown,
   source: CapturedSelectionListItem['source'],
   selectionIndex: number
 ): Selections | undefined {
-  if (!value || typeof value !== 'object') return undefined
+  if (!value || typeof value !== 'object') {
+    return undefined
+  }
 
   const graphSelections = isArray(
     (value as Partial<Selections>).graphSelections
@@ -178,9 +280,15 @@ function getDraftOrSubmittedValue(
 }
 
 function hasMeaningfulDialogValue(value: unknown): boolean {
-  if (value === undefined || value === null || value === '') return false
-  if (typeof value === 'boolean') return true
-  if (isArray(value)) return value.length > 0
+  if (value === undefined || value === null || value === '') {
+    return false
+  }
+  if (typeof value === 'boolean') {
+    return true
+  }
+  if (isArray(value)) {
+    return value.length > 0
+  }
   if (typeof value === 'object') {
     if (isKclCommandValue(value)) {
       return true
@@ -215,7 +323,9 @@ function resolveDialogGroups(
   groups: CommandDialogGroup[] | undefined,
   draftValues: Record<string, unknown>
 ): ResolvedModelingDialogGroup[] {
-  if (!groups?.length) return []
+  if (!groups?.length) {
+    return []
+  }
 
   const groupMap = new Map<string, ResolvedModelingDialogGroup>()
   const orderedGroups: ResolvedModelingDialogGroup[] = []
@@ -276,12 +386,12 @@ function resolveContextValue(
 async function resolveDefaultValue(
   arg: CommandArgument<unknown>,
   context: CommandBarContext,
-  wasmInstance: unknown
+  wasmInstance: unknown,
+  machineContext?: MachineContext
 ): Promise<unknown> {
   if (!('defaultValue' in arg) || arg.defaultValue === undefined) {
     return undefined
   }
-  const machineContext = arg.machineActor?.getSnapshot().context
   if (typeof arg.defaultValue === 'function') {
     return arg.defaultValue(context, machineContext, wasmInstance as never)
   }
@@ -290,9 +400,9 @@ async function resolveDefaultValue(
 
 function evaluateVisibility(
   arg: CommandArgument<unknown>,
-  context: CommandBarContext
+  context: CommandBarContext,
+  machineContext?: MachineContext
 ): { isHidden: boolean; isRequired: boolean; isDisabled: boolean } {
-  const machineContext = arg.machineActor?.getSnapshot().context
   const shouldShowDisabledSelectionInEdit =
     isSelectionArgument(arg) && Boolean(context.argumentsToSubmit.nodeToEdit)
   const isRawHidden =
@@ -313,10 +423,12 @@ function evaluateVisibility(
 
 function getOptions(
   arg: CommandArgument<unknown>,
-  context: CommandBarContext
+  context: CommandBarContext,
+  machineContext?: MachineContext
 ): CommandArgumentOption<unknown>[] {
-  if (arg.inputType !== 'options') return []
-  const machineContext = arg.machineActor?.getSnapshot().context
+  if (arg.inputType !== 'options') {
+    return []
+  }
   if (typeof arg.options === 'function') {
     return arg.options(context, machineContext)
   }
@@ -327,7 +439,9 @@ function selectionSummary(
   ast: unknown,
   selection: Selections | undefined
 ): string {
-  if (!selection) return 'No selection captured'
+  if (!selection) {
+    return 'No selection captured'
+  }
   return getSelectionTypeDisplayText(ast as never, selection) ?? 'No selection'
 }
 
@@ -340,7 +454,9 @@ function getSelectionListItems(
   ast: unknown,
   selection: Selections | undefined
 ): CapturedSelectionListItem[] {
-  if (!selection) return []
+  if (!selection) {
+    return []
+  }
 
   const items: CapturedSelectionListItem[] = []
 
@@ -372,6 +488,7 @@ function getSelectionListItems(
 }
 
 export function ModelingDialog() {
+  useSignals()
   const { commands, wasmPromise } = useApp()
   const { kclManager } = useSingletons()
   const {
@@ -382,8 +499,18 @@ export function ModelingDialog() {
   const {
     context: { selectedCommand, reviewValidationError },
   } = commandBarState
+  const selectedCommandKey = selectedCommand
+    ? `${selectedCommand.groupId}:${selectedCommand.name}`
+    : undefined
+  const selectedMachineContext = useSelector(
+    selectedCommand?.machineActor,
+    machineContextSelector
+  )
 
   const [draftValues, setDraftValues] = useState<Record<string, unknown>>({})
+  const [dirtyArgNames, setDirtyArgNames] = useState<ReadonlySet<string>>(
+    () => new Set()
+  )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSelectionArgName, setActiveSelectionArgName] = useState<
     string | null
@@ -402,6 +529,41 @@ export function ModelingDialog() {
     typeof window === 'undefined'
       ? null
       : window.document.getElementById(MODELING_AREA_CONTAINER_ID)
+  )
+  const dirtyArgNamesRef = useRef(dirtyArgNames)
+  const selectionRangesRef = useRef(selectionRanges)
+  const initializedCommandRef = useRef<typeof selectedCommand>(undefined)
+
+  useEffect(() => {
+    dirtyArgNamesRef.current = dirtyArgNames
+  }, [dirtyArgNames])
+
+  useEffect(() => {
+    selectionRangesRef.current = selectionRanges
+  }, [selectionRanges])
+
+  const markArgumentDirty = useCallback((argName: string) => {
+    setDirtyArgNames((prev) => {
+      if (prev.has(argName)) {
+        return prev
+      }
+      const next = new Set(prev)
+      next.add(argName)
+      return next
+    })
+  }, [])
+
+  const coerceSelectionForArgument = useCallback(
+    (
+      arg: SelectionCommandArgument,
+      selection: Selections | undefined
+    ): Selections | undefined | Error => {
+      if (!selection || !isBodyOnlySelectionArgument(arg)) {
+        return selection
+      }
+      return coerceSelectionsToBody(selection, kclManager.artifactGraph)
+    },
+    [kclManager.artifactGraph]
   )
 
   const dialogArgumentsToSubmit = useMemo(() => {
@@ -436,11 +598,14 @@ export function ModelingDialog() {
   )
 
   const fields = useMemo<ModelingDialogField[]>(() => {
-    if (!selectedCommand?.args) return []
+    if (!selectedCommand?.args) {
+      return []
+    }
     return Object.entries(selectedCommand.args).map(([argName, arg]) => {
       const { isHidden, isRequired, isDisabled } = evaluateVisibility(
         arg,
-        dialogContext
+        dialogContext,
+        selectedMachineContext
       )
       return {
         argName,
@@ -448,16 +613,17 @@ export function ModelingDialog() {
         isHidden,
         isRequired,
         isDisabled,
-        options: getOptions(arg, dialogContext),
+        options: getOptions(arg, dialogContext, selectedMachineContext),
       }
     })
-  }, [selectedCommand?.args, dialogContext])
+  }, [selectedCommand?.args, dialogContext, selectedMachineContext])
 
   useEffect(() => {
     let isCancelled = false
 
     async function initDraftValues() {
       if (!selectedCommand?.args) {
+        initializedCommandRef.current = undefined
         setDraftValues({})
         return
       }
@@ -465,7 +631,9 @@ export function ModelingDialog() {
       const nextValues: Record<string, unknown> = {}
 
       for (const [argName, arg] of Object.entries(selectedCommand.args)) {
-        if (isSelectionArgument(arg)) continue
+        if (isSelectionArgument(arg)) {
+          continue
+        }
 
         const contextWithDraft: CommandBarContext = {
           ...commandBarState.context,
@@ -474,7 +642,11 @@ export function ModelingDialog() {
             ...nextValues,
           },
         }
-        const { isRequired } = evaluateVisibility(arg, contextWithDraft)
+        const { isRequired } = evaluateVisibility(
+          arg,
+          contextWithDraft,
+          selectedMachineContext
+        )
         const existingValue = resolveContextValue(
           commandBarState.context.argumentsToSubmit[argName],
           contextWithDraft
@@ -482,9 +654,14 @@ export function ModelingDialog() {
         const defaultValue =
           existingValue === undefined &&
           shouldResolveDefaultValue(arg, isRequired)
-            ? await resolveDefaultValue(arg, contextWithDraft, wasmInstance)
+            ? await resolveDefaultValue(
+                arg,
+                contextWithDraft,
+                wasmInstance,
+                selectedMachineContext
+              )
             : undefined
-        let resolvedValue = existingValue ?? defaultValue
+        const resolvedValue = existingValue ?? defaultValue
 
         if (arg.inputType === 'kcl') {
           nextValues[argName] = getKclInputValue(arg, resolvedValue)
@@ -499,7 +676,20 @@ export function ModelingDialog() {
       }
 
       if (!isCancelled) {
-        setDraftValues(nextValues)
+        setDraftValues((prev) => {
+          if (initializedCommandRef.current !== selectedCommand) {
+            initializedCommandRef.current = selectedCommand
+            return nextValues
+          }
+
+          const nextDraftValues = { ...prev }
+          for (const [argName, value] of Object.entries(nextValues)) {
+            if (!dirtyArgNamesRef.current.has(argName)) {
+              nextDraftValues[argName] = value
+            }
+          }
+          return nextDraftValues
+        })
       }
     }
 
@@ -508,14 +698,18 @@ export function ModelingDialog() {
     return () => {
       isCancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- initialize form on command selection
-  }, [selectedCommand, wasmPromise])
+  }, [
+    commandBarState.context,
+    selectedCommand,
+    selectedMachineContext,
+    wasmPromise,
+  ])
 
   useEffect(() => {
     modelingAreaContainerRef.current = window.document.getElementById(
       MODELING_AREA_CONTAINER_ID
     )
-  }, [selectedCommand])
+  }, [])
 
   useLayoutEffect(() => {
     const updateDialogTopOffset = () => {
@@ -527,7 +721,9 @@ export function ModelingDialog() {
     const toolbar = window.document.querySelector<HTMLElement>(
       '[data-testid="toolbar"]'
     )
-    if (!toolbar) return
+    if (!toolbar) {
+      return
+    }
 
     const observer = new ResizeObserver(updateDialogTopOffset)
     observer.observe(toolbar)
@@ -537,37 +733,81 @@ export function ModelingDialog() {
       observer.disconnect()
       window.removeEventListener('resize', updateDialogTopOffset)
     }
-  }, [selectedCommand])
+  }, [])
 
   useEffect(() => {
+    if (!selectedCommandKey) {
+      return
+    }
+    setDirtyArgNames(new Set())
     setActiveSelectionArgName(null)
     setDidAutoEnableSelection(false)
     setReviewValidationState({ status: 'idle' })
     setKclValidationStates({})
-  }, [selectedCommand])
+  }, [selectedCommandKey])
 
   useEffect(() => {
-    if (!activeSelectionArgName || !selectedCommand?.args) return
+    if (!activeSelectionArgName || !selectedCommand?.args) {
+      return
+    }
     const arg = selectedCommand.args[activeSelectionArgName]
     if (!arg || !isSelectionArgument(arg)) {
       return
     }
 
     let isCancelled = false
+    const shouldShowPlanes = arg.selectionTypes.includes('plane')
+
+    if (shouldShowPlanes) {
+      kclManager.showPlanes().catch((error) => {
+        console.error('Failed to show selection planes', error)
+      })
+    }
+
     void wasmPromise.then((wasmInstance) => {
-      if (isCancelled) return
+      if (isCancelled) {
+        return
+      }
       if (arg.selectionFilter) {
-        kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+        const selectionToRestore = coerceSelectionForArgument(
+          arg,
+          selectionValueOrUndefined(selectionRangesRef.current)
+        )
+        if (err(selectionToRestore)) {
+          toast.error(selectionToRestore.message)
+          return
+        }
+        kclManager.setSelectionFilter(
+          arg.selectionFilter,
+          wasmInstance,
+          selectionToRestore,
+          handleSelectionBatch
+        )
       }
     })
 
     return () => {
       isCancelled = true
       void wasmPromise.then((wasmInstance) => {
-        kclManager.setSelectionFilterToDefault(wasmInstance)
+        kclManager.setSelectionFilterToDefault(
+          wasmInstance,
+          selectionRangesRef.current,
+          handleSelectionBatch
+        )
+        if (shouldShowPlanes && !kclManager._isAstEmpty(kclManager.ast)) {
+          kclManager.hidePlanes().catch((error) => {
+            console.error('Failed to hide selection planes', error)
+          })
+        }
       })
     }
-  }, [activeSelectionArgName, kclManager, selectedCommand?.args, wasmPromise])
+  }, [
+    activeSelectionArgName,
+    coerceSelectionForArgument,
+    kclManager,
+    selectedCommand?.args,
+    wasmPromise,
+  ])
 
   const startSelectingArgument = useCallback(
     (argName: string, arg: CommandArgument<unknown>) => {
@@ -594,7 +834,10 @@ export function ModelingDialog() {
       })
       setActiveSelectionArgName(argName)
 
-      if (!isSelectionArgument(arg)) return
+      if (!isSelectionArgument(arg)) {
+        return
+      }
+      markArgumentDirty(argName)
 
       const savedSelection = getDraftOrSubmittedValue(
         draftValues,
@@ -602,11 +845,19 @@ export function ModelingDialog() {
         argName
       )
       if (!isSelectionValueEmpty(savedSelection)) {
+        const selectionForArgument = coerceSelectionForArgument(
+          arg,
+          savedSelection as Selections
+        )
+        if (err(selectionForArgument)) {
+          toast.error(selectionForArgument.message)
+          return
+        }
         modelingSend({
           type: 'Set selection',
           data: {
             selectionType: 'completeSelection',
-            selection: structuredClone(savedSelection as Selections),
+            selection: structuredClone(selectionForArgument as Selections),
           },
         })
       } else if (arg.clearSelectionFirst) {
@@ -617,13 +868,33 @@ export function ModelingDialog() {
             selection: EMPTY_SELECTION,
           },
         })
+      } else if (!isSelectionValueEmpty(selectionRanges)) {
+        const selectionForArgument = coerceSelectionForArgument(
+          arg,
+          selectionRanges
+        )
+        if (err(selectionForArgument)) {
+          toast.error(selectionForArgument.message)
+          return
+        }
+        if (selectionForArgument) {
+          modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'completeSelection',
+              selection: selectionForArgument,
+            },
+          })
+        }
       }
     },
     [
       activeSelectionArgName,
       commandBarState.context.argumentsToSubmit,
       commands,
+      coerceSelectionForArgument,
       draftValues,
+      markArgumentDirty,
       modelingSend,
       selectedCommand?.args,
       selectionRanges,
@@ -645,6 +916,7 @@ export function ModelingDialog() {
 
       const selectionForScene = nextSelection ?? EMPTY_SELECTION
 
+      markArgumentDirty(argName)
       setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
@@ -654,11 +926,12 @@ export function ModelingDialog() {
         },
       })
     },
-    [modelingSend, selectionRanges]
+    [markArgumentDirty, modelingSend, selectionRanges]
   )
 
   const clearSceneSelection = useCallback(
     (argName: string) => {
+      markArgumentDirty(argName)
       setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
@@ -668,11 +941,13 @@ export function ModelingDialog() {
         },
       })
     },
-    [modelingSend]
+    [markArgumentDirty, modelingSend]
   )
 
   useLayoutEffect(() => {
-    if (didAutoEnableSelection || activeSelectionArgName !== null) return
+    if (didAutoEnableSelection || activeSelectionArgName !== null) {
+      return
+    }
 
     const hasAnySelectionArg = fields.some(({ arg }) =>
       isSelectionArgument(arg)
@@ -729,6 +1004,49 @@ export function ModelingDialog() {
     visibleFields.find(
       (field) => !field.isDisabled && isSelectionArgument(field.arg)
     )?.argName
+  const invalidSelectionState = visibleFields
+    .filter(
+      (
+        field
+      ): field is ModelingDialogField & { arg: SelectionCommandArgument } =>
+        !field.isDisabled && isSelectionArgument(field.arg)
+    )
+    .map((field) => {
+      const rawSelection =
+        field.argName === activeSelectionFieldName
+          ? selectionValueOrUndefined(selectionRanges)
+          : selectionValueOrUndefined(
+              getDraftOrSubmittedValue(
+                draftValues,
+                commandBarState.context.argumentsToSubmit,
+                field.argName
+              )
+            )
+      const selection = coerceSelectionForArgument(field.arg, rawSelection)
+      if (err(selection)) {
+        return {
+          argName: field.argName,
+          message: selection.message,
+        }
+      }
+      return canSubmitDialogSelection(
+        kclManager.astSignal.value,
+        field.arg,
+        selection,
+        field.isRequired
+      )
+        ? undefined
+        : {
+            argName: field.argName,
+            message: getSelectionValidationMessage(
+              field.argName,
+              field.arg,
+              selection
+            ),
+          }
+    })
+    .find(Boolean)
+  const invalidSelectionMessage = invalidSelectionState?.message
   const firstVisibleKclFieldName = visibleFields.find(
     (field) => !field.isDisabled && field.arg.inputType === 'kcl'
   )?.argName
@@ -746,14 +1064,16 @@ export function ModelingDialog() {
   )
   const kclValidationErrorToDisplay = invalidKclState?.message
   const validationErrorToDisplay =
-    reviewValidationErrorToDisplay || kclValidationErrorToDisplay
+    reviewValidationErrorToDisplay ||
+    kclValidationErrorToDisplay ||
+    invalidSelectionMessage
 
   const resolveDialogArgumentsForSubmit = useCallback(
     async ({
-      showInvalidExpressionToast = false,
+      showValidationToast = false,
       stopOnMissingRequired = false,
     }: {
-      showInvalidExpressionToast?: boolean
+      showValidationToast?: boolean
       stopOnMissingRequired?: boolean
     } = {}): Promise<DialogArgumentResolution> => {
       if (!selectedCommand?.args) {
@@ -771,7 +1091,17 @@ export function ModelingDialog() {
           ...commandBarState.context,
           argumentsToSubmit,
         }
-        const { isRequired } = evaluateVisibility(arg, currentContext)
+        const { isRequired, isDisabled } = evaluateVisibility(
+          arg,
+          currentContext,
+          selectedMachineContext
+        )
+        if (isDisabled && isSelectionArgument(arg)) {
+          argumentsToSubmit[argName] = selectionValueOrUndefined(
+            commandBarState.context.argumentsToSubmit[argName]
+          )
+          continue
+        }
         let value = isSelectionArgument(arg)
           ? argName === activeSelectionFieldName
             ? selectionRanges
@@ -785,17 +1115,63 @@ export function ModelingDialog() {
           const defaultValue = await resolveDefaultValue(
             arg,
             currentContext,
-            wasmInstance
+            wasmInstance,
+            selectedMachineContext
           )
           value = defaultValue
         }
 
-        if (isSelectionArgument(arg) && isSelectionValueEmpty(value)) {
-          value = undefined
+        if (isSelectionArgument(arg)) {
+          const rawSelection = selectionValueOrUndefined(value)
+          const selection = coerceSelectionForArgument(arg, rawSelection)
+          if (err(selection)) {
+            if (showValidationToast) {
+              toast.error(selection.message)
+            }
+            return {
+              ok: false,
+              reason: 'invalidSelection',
+              message: selection.message,
+            }
+          }
+          value = selection
+          if (isSelectionValueEmpty(value)) {
+            value = undefined
+          }
+
+          if (
+            !canSubmitDialogSelection(
+              kclManager.astSignal.value,
+              arg,
+              selection,
+              isRequired
+            )
+          ) {
+            const message = getSelectionValidationMessage(
+              argName,
+              arg,
+              selection
+            )
+            if (showValidationToast) {
+              toast.error(message)
+            }
+            return {
+              ok: false,
+              reason:
+                stopOnMissingRequired && !selection
+                  ? 'missingRequired'
+                  : 'invalidSelection',
+              message,
+            }
+          }
         }
 
         if (arg.inputType === 'options') {
-          const options = getOptions(arg, currentContext)
+          const options = getOptions(
+            arg,
+            currentContext,
+            selectedMachineContext
+          )
           if (value === undefined && options.length > 0 && isRequired) {
             value = (options.find((option) => option.isCurrent) || options[0])
               .value
@@ -842,7 +1218,7 @@ export function ModelingDialog() {
             if (err(parsed) || 'errors' in parsed) {
               const label = arg.displayName || argName
               const message = `Invalid expression for "${label}"`
-              if (showInvalidExpressionToast) {
+              if (showValidationToast) {
                 toast.error(message)
               }
               return { ok: false, reason: 'invalidExpression', message }
@@ -851,12 +1227,13 @@ export function ModelingDialog() {
           }
         }
 
-        if (
-          stopOnMissingRequired &&
-          isRequired &&
-          isMissingRequiredDialogValue(arg, value)
-        ) {
-          return { ok: false, reason: 'missingRequired' }
+        if (isRequired && isMissingRequiredDialogValue(arg, value)) {
+          const label = arg.displayName || argName
+          const message = `Enter "${label}".`
+          if (showValidationToast) {
+            toast.error(message)
+          }
+          return { ok: false, reason: 'missingRequired', message }
         }
 
         argumentsToSubmit[argName] = value
@@ -867,9 +1244,12 @@ export function ModelingDialog() {
     [
       activeSelectionFieldName,
       commandBarState.context,
+      coerceSelectionForArgument,
       draftValues,
+      kclManager.astSignal.value,
       kclManager.rustContext,
       selectedCommand?.args,
+      selectedMachineContext,
       selectionRanges,
       wasmPromise,
     ]
@@ -881,7 +1261,8 @@ export function ModelingDialog() {
       !selectedCommand.reviewValidation ||
       !selectedCommand.args ||
       isCheckingKclFields ||
-      invalidKclState
+      invalidKclState ||
+      invalidSelectionMessage
     ) {
       setReviewValidationState({ status: 'idle' })
       return
@@ -925,7 +1306,7 @@ export function ModelingDialog() {
           if (!isCancelled) {
             setReviewValidationState({
               status: 'invalid',
-              error: 'Unable to validate command.',
+              error: getErrorMessage(error, 'Unable to validate command.'),
             })
           }
         }
@@ -939,6 +1320,7 @@ export function ModelingDialog() {
   }, [
     commandBarState.context,
     invalidKclState,
+    invalidSelectionMessage,
     isCheckingKclFields,
     resolveDialogArgumentsForSubmit,
     selectedCommand,
@@ -961,11 +1343,14 @@ export function ModelingDialog() {
       isCheckingArguments ||
       isCheckingKclFields ||
       invalidKclState ||
+      invalidSelectionState ||
       reviewValidationState.status === 'checking' ||
       reviewValidationState.status === 'invalid'
     ) {
       if (invalidKclState?.message) {
         toast.error(invalidKclState.message)
+      } else if (invalidSelectionState?.message) {
+        toast.error(invalidSelectionState.message)
       }
       return
     }
@@ -974,7 +1359,7 @@ export function ModelingDialog() {
 
     try {
       const resolvedArguments = await resolveDialogArgumentsForSubmit({
-        showInvalidExpressionToast: true,
+        showValidationToast: true,
       })
 
       if (!resolvedArguments.ok) {
@@ -1048,6 +1433,9 @@ export function ModelingDialog() {
           submittedValue={submittedValue}
           autoFocus={firstVisibleKclFieldName === argName}
           onChange={(nextValue) => {
+            if (typeof nextValue === 'string') {
+              markArgumentDirty(argName)
+            }
             setDraftValues((prev) => ({
               ...prev,
               [argName]: nextValue,
@@ -1097,7 +1485,10 @@ export function ModelingDialog() {
           currentSelection
         )}
         onChange={(nextValue) => {
-          if (isSelectionField) return
+          if (isSelectionField) {
+            return
+          }
+          markArgumentDirty(argName)
           setDraftValues((prev) => ({
             ...prev,
             [argName]: nextValue,
@@ -1205,6 +1596,7 @@ export function ModelingDialog() {
               disabled={
                 isSubmitting ||
                 Boolean(invalidKclState) ||
+                Boolean(invalidSelectionState) ||
                 reviewValidationState.status === 'invalid'
               }
               isChecking={
