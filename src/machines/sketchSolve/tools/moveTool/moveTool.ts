@@ -1,5 +1,6 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
+  ArcDragAnchor,
   ApiConstraint,
   ApiObject,
   ApiPoint2d,
@@ -96,6 +97,7 @@ type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
   constraintLabelEdits: ConstraintLabelEdit[]
   dragAnchorSegmentIds: number[]
+  arcDragAnchors: ArcDragAnchor[]
 }
 
 type ClosestSelectionTarget = {
@@ -396,7 +398,7 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
-function buildConstraintLabelPosition(
+function buildApiPoint2d(
   position: Vector2,
   units: NumericSuffix
 ): ApiPoint2d<ApiNumber> {
@@ -410,6 +412,41 @@ function buildConstraintLabelPosition(
       units,
     },
   }
+}
+
+function buildConstraintLabelPosition(
+  position: Vector2,
+  units: NumericSuffix
+): ApiPoint2d<ApiNumber> {
+  return buildApiPoint2d(position, units)
+}
+
+function buildArcDragAnchors({
+  draggedEntityId,
+  objects,
+  target,
+  units,
+}: {
+  draggedEntityId: number | null
+  objects: Array<ApiObject>
+  target: Vector2
+  units: NumericSuffix
+}): ArcDragAnchor[] {
+  if (draggedEntityId === null) {
+    return []
+  }
+
+  const obj = objects[draggedEntityId]
+  if (obj?.kind.type !== 'Segment' || obj.kind.segment.type !== 'Arc') {
+    return []
+  }
+
+  return [
+    {
+      arcId: draggedEntityId,
+      target: buildApiPoint2d(target, units),
+    },
+  ]
 }
 
 function isConstraintWithDraggableLabel(obj: ApiObject | undefined) {
@@ -1292,7 +1329,8 @@ export function createOnDragCallback({
     sketchId: number,
     segments: Array<ExistingSegmentCtor>,
     settings: DeepPartial<Configuration>,
-    dragAnchorSegmentIds?: number[]
+    dragAnchorSegmentIds?: number[],
+    arcDragAnchors?: ArcDragAnchor[]
   ) => Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -1447,11 +1485,22 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const arcDragAnchors = buildArcDragAnchors({
+        draggedEntityId: entityUnderCursorId,
+        objects,
+        target: twoD,
+        units,
+      })
+      const arcDragAnchorIds = new Set(
+        arcDragAnchors.map((anchor) => anchor.arcId)
+      )
       const dragAnchorSegmentIds = Array.from(
         new Set(
           [entityUnderCursorId, ...selectedIds].filter(
             (id): id is number =>
-              id !== null && objects[id]?.kind.type === 'Segment'
+              id !== null &&
+              objects[id]?.kind.type === 'Segment' &&
+              !arcDragAnchorIds.has(id)
           )
         )
       )
@@ -1500,7 +1549,8 @@ export function createOnDragCallback({
         sketchId,
         segmentsToEdit,
         settings,
-        dragAnchorSegmentIds
+        dragAnchorSegmentIds,
+        arcDragAnchors
       ).catch((err) => {
         if (!isActiveDragSession()) {
           return null
@@ -1513,7 +1563,10 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
         let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
-        if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
+        if (
+          arcDragAnchors.length === 0 &&
+          !hasSketchSolveIssues(result.sceneGraphDelta)
+        ) {
           const constraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
               objectsBeforeDrag: objects,
@@ -1552,6 +1605,7 @@ export function createOnDragCallback({
           segmentsToEdit,
           constraintLabelEdits: appliedConstraintLabelEdits,
           dragAnchorSegmentIds,
+          arcDragAnchors,
         })
         setLastSuccessfulDragFromPoint(twoD.clone())
         onNewSketchOutcome({
@@ -1934,7 +1988,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
             constraintLabelEdits: ConstraintLabelEdit[] = [],
-            dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id)
+            dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id),
+            arcDragAnchors: ArcDragAnchor[] = []
           ) => {
             let latestResult = await context.rustContext.editSegments(
               0,
@@ -1942,7 +1997,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
               segmentsToEdit,
               settings,
               constraintLabelEdits.length === 0,
-              dragAnchorSegmentIds
+              dragAnchorSegmentIds,
+              true,
+              arcDragAnchors
             )
 
             for (const [
@@ -2154,7 +2211,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
               result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
                 lastGoodPreview.constraintLabelEdits,
-                lastGoodPreview.dragAnchorSegmentIds
+                lastGoodPreview.dragAnchorSegmentIds,
+                lastGoodPreview.arcDragAnchors
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -2259,7 +2317,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         sketchId: number,
         segments: Array<ExistingSegmentCtor>,
         settings: DeepPartial<Configuration>,
-        dragAnchorSegmentIds?: number[]
+        dragAnchorSegmentIds?: number[],
+        arcDragAnchors?: ArcDragAnchor[]
       ) => {
         return context.rustContext.editSegments(
           version,
@@ -2268,7 +2327,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           settings,
           false,
           dragAnchorSegmentIds,
-          false
+          false,
+          arcDragAnchors
         )
       },
       editDistanceConstraintLabelPosition: async (

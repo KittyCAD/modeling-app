@@ -10,6 +10,7 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
+use crate::ArcDragAnchor;
 use crate::ExecOutcome;
 use crate::ExecutorContext;
 use crate::KclError;
@@ -227,6 +228,9 @@ pub struct FrontendState {
     /// One-shot drag anchors for the next segment edit. These ids define which
     /// edited points/segments become temporary fixed constraints during solve.
     next_drag_anchor_segment_ids: Option<AhashIndexSet<ObjectId>>,
+    /// One-shot arc-body drag anchors for the next segment edit. These add a
+    /// temporary solver point on the dragged arc that follows the cursor.
+    next_arc_drag_anchors: Option<Vec<ArcDragAnchor>>,
     /// One-shot override for whether the next edit commits solver-updated
     /// initial guesses back into KCL. Drag previews keep this off so only the
     /// explicit drag edit feeds the next solve.
@@ -255,6 +259,7 @@ impl FrontendState {
             },
             point_freedom_cache: HashMap::new(),
             next_drag_anchor_segment_ids: None,
+            next_arc_drag_anchors: None,
             next_edit_commits_solver_solutions: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
@@ -306,11 +311,26 @@ impl FrontendState {
         segments: Vec<ExistingSegmentCtor>,
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.edit_segments_with_drag_anchors(ctx, version, sketch, segments, anchor_segment_ids, Vec::new())
+            .await
+    }
+
+    pub async fn edit_segments_with_drag_anchors(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+        anchor_segment_ids: Vec<ObjectId>,
+        arc_drag_anchors: Vec<ArcDragAnchor>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         let previous_anchor_ids = self
             .next_drag_anchor_segment_ids
             .replace(anchor_segment_ids.into_iter().collect());
+        let previous_arc_drag_anchors = self.next_arc_drag_anchors.replace(arc_drag_anchors);
         let result = SketchApi::edit_segments(self, ctx, version, sketch, segments).await;
         self.next_drag_anchor_segment_ids = previous_anchor_ids;
+        self.next_arc_drag_anchors = previous_arc_drag_anchors;
         result
     }
 
@@ -322,12 +342,27 @@ impl FrontendState {
         segments: Vec<ExistingSegmentCtor>,
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.preview_edit_segments_with_drag_anchors(ctx, version, sketch, segments, anchor_segment_ids, Vec::new())
+            .await
+    }
+
+    pub async fn preview_edit_segments_with_drag_anchors(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+        anchor_segment_ids: Vec<ObjectId>,
+        arc_drag_anchors: Vec<ArcDragAnchor>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         let previous_anchor_ids = self
             .next_drag_anchor_segment_ids
             .replace(anchor_segment_ids.into_iter().collect());
+        let previous_arc_drag_anchors = self.next_arc_drag_anchors.replace(arc_drag_anchors);
         let previous_commit_mode = self.next_edit_commits_solver_solutions.replace(false);
         let result = SketchApi::edit_segments(self, ctx, version, sketch, segments).await;
         self.next_drag_anchor_segment_ids = previous_anchor_ids;
+        self.next_arc_drag_anchors = previous_arc_drag_anchors;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
         result
     }
@@ -373,6 +408,7 @@ impl FrontendState {
         self.scene_graph = checkpoint.scene_graph.clone();
         self.point_freedom_cache = checkpoint.point_freedom_cache;
         self.next_drag_anchor_segment_ids = None;
+        self.next_arc_drag_anchors = None;
         self.next_edit_commits_solver_solutions = None;
 
         if let Some(mock_memory) = checkpoint.mock_memory {
@@ -3291,10 +3327,12 @@ impl FrontendState {
         };
 
         // Execute.
+        let arc_drag_anchors = self.next_arc_drag_anchors.take().unwrap_or_default();
         let mock_config = MockConfig {
             sketch_block_id: Some(sketch),
             freedom_analysis: is_delete,
             segment_ids_edited: segment_ids_edited.clone(),
+            arc_drag_anchors,
             ..Default::default()
         };
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;

@@ -11,6 +11,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
+use crate::ArcDragAnchor;
 use crate::CompilationIssue;
 use crate::EngineManager;
 use crate::ExecutorContext;
@@ -82,6 +83,8 @@ pub(super) struct GlobalState {
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Arc-body drag anchors that temporarily pull an arc point toward the cursor.
+    pub arc_drag_anchors: Vec<ArcDragAnchor>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -312,8 +315,10 @@ impl ExecState {
 
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
+        global.arc_drag_anchors = mock_config.arc_drag_anchors.clone();
         ExecState {
-            global: GlobalState::new(&exec_context.settings, segment_ids_edited),
+            global,
             mod_local: ModuleState::new(
                 ModulePath::Main,
                 ProgramMemory::new(),
@@ -544,6 +549,14 @@ impl ExecState {
 
     pub fn segment_ids_edited_contains(&self, object_id: &ObjectId) -> bool {
         self.global.segment_ids_edited.contains(object_id)
+    }
+
+    pub fn arc_drag_anchor_target(&self, object_id: &ObjectId) -> Option<&crate::front::Point2d<crate::front::Number>> {
+        self.global
+            .arc_drag_anchors
+            .iter()
+            .find(|anchor| &anchor.arc_id == object_id)
+            .map(|anchor| &anchor.target)
     }
 
     pub(super) fn is_in_sketch_block(&self) -> bool {
@@ -885,6 +898,7 @@ impl GlobalState {
             issues: Default::default(),
             id_to_source: Default::default(),
             segment_ids_edited,
+            arc_drag_anchors: Vec::new(),
         };
 
         let root_id = ModuleId::default();

@@ -100,6 +100,7 @@ pub use errors::KclError;
 pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
+pub use execution::ArcDragAnchor;
 pub use execution::ConstraintKind;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;

@@ -7,6 +7,7 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type {
+  ArcDragAnchor,
   ApiConstraint,
   ApiFile,
   ApiFileId,
@@ -530,7 +531,8 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     createCheckpoint = false,
     anchorSegmentIds?: ApiObjectId[],
-    commitSolverResults = true
+    commitSolverResults = true,
+    arcDragAnchors: ArcDragAnchor[] = []
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
@@ -541,6 +543,8 @@ export default class RustContext {
         )
       }
 
+      const hasDragAnchors =
+        Boolean(anchorSegmentIds?.length) || arcDragAnchors.length > 0
       const result: {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
@@ -551,14 +555,16 @@ export default class RustContext {
             JSON.stringify(sketch),
             JSON.stringify(segments),
             JSON.stringify(anchorSegmentIds ?? []),
+            JSON.stringify(arcDragAnchors),
             JSON.stringify(settings)
           )
-        : anchorSegmentIds?.length
+        : hasDragAnchors
           ? await (instance as any).edit_segments_with_anchors(
               JSON.stringify(version),
               JSON.stringify(sketch),
               JSON.stringify(segments),
-              JSON.stringify(anchorSegmentIds),
+              JSON.stringify(anchorSegmentIds ?? []),
+              JSON.stringify(arcDragAnchors),
               JSON.stringify(settings),
               createCheckpoint
             )

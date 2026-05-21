@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_lib::ArcDragAnchor;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::front::Error;
@@ -454,6 +455,7 @@ impl Context {
         sketch_json: &str,
         segments_json: &str,
         anchor_segment_ids_json: &str,
+        arc_drag_anchors_json: &str,
         settings: &str,
         create_checkpoint: bool,
     ) -> Result<JsValue, JsValue> {
@@ -467,6 +469,8 @@ impl Context {
             serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
         let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
             .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
+        let arc_drag_anchors: Vec<ArcDragAnchor> = serde_json::from_str(arc_drag_anchors_json)
+            .map_err(|e| format!("Could not deserialize arc drag anchors: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
             format!("Could not create KCL executor context for edit segments with anchors. {TRUE_BUG} Details: {e}")
@@ -475,7 +479,7 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .edit_segments_with_anchor_ids(&ctx, version, sketch, segments, anchor_segment_ids)
+            .edit_segments_with_drag_anchors(&ctx, version, sketch, segments, anchor_segment_ids, arc_drag_anchors)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {
@@ -510,6 +514,7 @@ impl Context {
         sketch_json: &str,
         segments_json: &str,
         anchor_segment_ids_json: &str,
+        arc_drag_anchors_json: &str,
         settings: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
@@ -522,6 +527,8 @@ impl Context {
             serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
         let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
             .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
+        let arc_drag_anchors: Vec<ArcDragAnchor> = serde_json::from_str(arc_drag_anchors_json)
+            .map_err(|e| format!("Could not deserialize arc drag anchors: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
             format!(
@@ -532,7 +539,14 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .preview_edit_segments_with_anchor_ids(&ctx, version, sketch, segments, anchor_segment_ids)
+            .preview_edit_segments_with_drag_anchors(
+                &ctx,
+                version,
+                sketch,
+                segments,
+                anchor_segment_ids,
+                arc_drag_anchors,
+            )
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let result = kcl_lib::front::SketchMutationOutcome {
