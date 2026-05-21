@@ -418,6 +418,8 @@ sketch001 = startSketchOn(XZ)
       await click00r(undefined, undefined)
       await toolbar.exitSketch()
       await scene.settled()
+      await clickCenter()
+      await page.waitForTimeout(400)
 
       // start a new sketch
       await toolbar.startSketchBtn.click()
