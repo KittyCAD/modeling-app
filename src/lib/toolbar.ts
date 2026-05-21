@@ -2338,26 +2338,25 @@ function getSelectedSketchTargetPlane(selectionRanges: Selections) {
 }
 
 const sketchIconColors = {
-  default: '#fff',
   faceOrPlane: '#eab308',
   xy: '#ef4444',
   xz: '#3b82f6',
   yz: '#22c55e',
 }
 
-function getSelectedSketchIconColor(selectionRanges: Selections): string {
+function getSelectedSketchIconColor(
+  selectionRanges: Selections
+): string | undefined {
   const defaultPlane = getSelectedDefaultPlane(selectionRanges)
   if (defaultPlane) {
-    return (
-      sketchIconColors[
-        defaultPlane.name.toLowerCase() as keyof typeof sketchIconColors
-      ] ?? sketchIconColors.default
-    )
+    return sketchIconColors[
+      defaultPlane.name.toLowerCase() as keyof typeof sketchIconColors
+    ]
   }
 
   return getSelectedSketchTargetPlane(selectionRanges)
     ? sketchIconColors.faceOrPlane
-    : sketchIconColors.default
+    : undefined
 }
 
 export const useToolbarConfig = () => {
