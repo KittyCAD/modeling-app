@@ -3775,7 +3775,7 @@ impl FrontendState {
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
         let sketch_id = sketch;
-        let point_ast = self.point_id_to_ast_reference(midpoint.point, new_ast)?;
+        let point_ast = self.axis_constraint_segment_to_ast(&midpoint.point, new_ast)?;
 
         let segment_object = self
             .scene_graph
@@ -4690,7 +4690,11 @@ impl FrontendState {
                     lines_equal_length.lines.iter().copied().any(segment_or_owner_matches)
                 }
                 Constraint::Midpoint(midpoint) => {
-                    segment_or_owner_matches(midpoint.segment) || segment_or_owner_matches(midpoint.point)
+                    segment_or_owner_matches(midpoint.segment)
+                        || matches!(
+                            midpoint.point,
+                            ConstraintSegment::Segment(point) if segment_or_owner_matches(point)
+                        )
                 }
                 Constraint::Parallel(parallel) => parallel.lines.iter().copied().any(segment_or_owner_matches),
                 Constraint::Perpendicular(perpendicular) => {
@@ -12346,7 +12350,7 @@ sketch(on = XY) {
         let line_id = *sketch.segments.get(3).unwrap();
 
         let constraint = Constraint::Midpoint(Midpoint {
-            point: point_id,
+            point: ConstraintSegment::from(point_id),
             segment: line_id,
         });
         let (src_delta, scene_delta) = frontend
@@ -12455,7 +12459,7 @@ sketch(on = XY) {
         let arc_id = *sketch.segments.get(4).unwrap();
 
         let constraint = Constraint::Midpoint(Midpoint {
-            point: point_id,
+            point: ConstraintSegment::from(point_id),
             segment: arc_id,
         });
         let (src_delta, scene_delta) = frontend
@@ -12475,6 +12479,106 @@ sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             8,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_origin_line_midpoint() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 6, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch.segments.get(2).unwrap();
+
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: ConstraintSegment::ORIGIN,
+            segment: line_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 6, var 4])
+  midpoint(line1, point = ORIGIN)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            6,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_origin_arc_midpoint() {
+        let initial_source = "\
+sketch(on = XY) {
+  arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arc_id = *sketch.segments.get(3).unwrap();
+
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: ConstraintSegment::ORIGIN,
+            segment: arc_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  midpoint(arc1, point = ORIGIN)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            7,
             "{:#?}",
             scene_delta.new_graph.objects
         );
