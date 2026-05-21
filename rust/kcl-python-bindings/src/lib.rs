@@ -200,11 +200,66 @@ async fn new_context_state(
     Ok((ctx, state))
 }
 
+/// Wrapper for [kcl_lib::kcl_error::CompilationIssue].
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CompilationIssue {
+    inner: kcl_lib::CompilationIssue,
+}
+
+impl From<kcl_lib::kcl_error::CompilationIssue> for CompilationIssue {
+    fn from(value: kcl_lib::kcl_error::CompilationIssue) -> Self {
+        Self { inner: value }
+    }
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl CompilationIssue {
+    pub fn is_warning(&self) -> bool {
+        self.inner.severity.is_warning()
+    }
+
+    pub fn is_err(&self) -> bool {
+        self.inner.severity.is_err()
+    }
+
+    pub fn is_fatal(&self) -> bool {
+        self.inner.severity.is_fatal()
+    }
+}
+
+/// Returned from execution functions.
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+#[derive(Debug, Clone)]
+struct ExecOutcome {
+    issues: Vec<CompilationIssue>,
+    code: String,
+    filename: String,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl ExecOutcome {
+    fn issues(&self) -> PyResult<Vec<CompilationIssue>> {
+        Ok(self.issues.clone())
+    }
+
+    /// Render the given compilation issue as a miette report string, using
+    /// the source code and filename captured at execution time.
+    fn report(&self, issue: &CompilationIssue) -> String {
+        kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, issue.inner.clone())
+    }
+}
+
 struct ExecutedKcl {
     ctx: ExecutorContext,
     program: kcl_lib::Program,
     code: String,
     filename: String,
+    issues: Vec<kcl_lib::CompilationIssue>,
 }
 
 async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
@@ -221,18 +276,31 @@ async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
         return Err(into_miette(err, &code));
     }
 
+    let issues = state.issues().to_vec();
+
     Ok(ExecutedKcl {
         ctx,
         program,
         code,
         filename,
+        issues,
     })
 }
 
-async fn execute_impl(input: KclInput, mock: bool) -> PyResult<()> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, mock).await?;
+async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
+    let ExecutedKcl {
+        ctx,
+        issues,
+        code,
+        filename,
+        ..
+    } = run_kcl(input, mock).await?;
     ctx.close().await;
-    Ok(())
+    Ok(ExecOutcome {
+        issues: issues.into_iter().map(CompilationIssue::from).collect(),
+        code,
+        filename,
+    })
 }
 
 async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
@@ -322,6 +390,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
         program,
         code,
         filename,
+        issues: _,
     } = run_kcl(input, false).await?;
 
     let settings = match program.meta_settings() {
@@ -419,14 +488,14 @@ fn parse_code(code: String) -> PyResult<bool> {
 /// Execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn execute(path: String) -> PyResult<()> {
+async fn execute(path: String) -> PyResult<ExecOutcome> {
     spawn_py(async move { execute_impl(KclInput::Path(path), false).await }).await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn execute_code(code: String) -> PyResult<()> {
+async fn execute_code(code: String) -> PyResult<ExecOutcome> {
     spawn_py(async move { execute_impl(KclInput::Code(code), false).await }).await
 }
 
@@ -1127,3 +1196,69 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
 // Define a function to gather stub information.
 define_stub_info_gatherer!(stub_info);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Cube and cylinder positioned so they do not overlap, then subtracted.
+    /// The engine should report no intersection, which the executor records as
+    /// a no-overlap warning on the `subtract(...)` source range.
+    const NO_OVERLAP_SUBTRACT_KCL: &str = r#"@settings(kclVersion = 2.0)
+
+cubeSketch = sketch(on = XY) {
+  bottom = line(start = [var 0, var 0], end = [var 10, var 0])
+  right = line(start = [var 10, var 0], end = [var 10, var 10])
+  top = line(start = [var 10, var 10], end = [var 0, var 10])
+  left = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+cube = extrude(region(point = [5, 5], sketch = cubeSketch), length = 10)
+
+cylinderSketch = sketch(on = XY) {
+  c = circle(start = [var 102, var 100], center = [var 100, var 100])
+}
+hidden001 = hide(cylinderSketch)
+region001 = region(point = [98.0025mm, 100mm], sketch = cylinderSketch)
+cylinder = extrude(region001, length = 10)
+
+result = subtract(cube, tools = [cylinder])
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exec_outcome_report_renders_csg_no_overlap_warning() {
+        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false)
+            .await
+            .expect("execute_impl should succeed for valid non-overlapping subtract");
+
+        let warning = outcome
+            .issues
+            .iter()
+            .find(|issue| issue.is_warning())
+            .unwrap_or_else(|| panic!("expected at least one warning issue, got: {:?}", outcome.issues));
+        assert!(!warning.is_err());
+        assert!(!warning.is_fatal());
+
+        let report = outcome.report(warning);
+
+        assert!(
+            report.contains("had no overlap"),
+            "report missing warning message text: {report}"
+        );
+        // The labeled span should point at the `subtract(...)` call site, so
+        // that line of the KCL source should appear in the rendered snippet.
+        assert!(
+            report.contains("result = subtract(cube, tools = [cylinder])"),
+            "report should include the subtract call from the source snippet: {report}"
+        );
+        // miette renders a line:column header for the labeled span. The
+        // `subtract` call is on line 18, column 10 of the KCL source.
+        assert!(
+            report.contains("[22:10]"),
+            "report should include a line:column marker for the source span: {report}"
+        );
+    }
+}
