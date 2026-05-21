@@ -1413,9 +1413,7 @@ export function getStableOffsetPlaneData(
     systemDeps.wasmInstance
   )
 
-  let planeValue = Object.values(
-    systemDeps.execState.variables
-  ).find(
+  let planeValue = Object.values(systemDeps.execState.variables).find(
     (value) => value?.type === 'Plane' && value.value.artifactId === artifact.id
   )
   if (!planeValue && sketchBlockPlane.name) {
@@ -1436,16 +1434,12 @@ export function getStableOffsetPlaneData(
     planeInfo.yAxis.y,
     planeInfo.yAxis.z,
   ]
-  // plane001 = -offsetPlane(...) stores the negation on the plane variable’s xAxis, 
-  // while sketch(on = plane001) has no - in the sketch block. 
-  // Using planeInfo.zAxis directly misses that variable-level negation. 
+  // plane001 = -offsetPlane(...) stores the negation on the plane variable’s xAxis,
+  // while sketch(on = plane001) has no - in the sketch block.
+  // Using planeInfo.zAxis directly misses that variable-level negation.
   // Deriving zAxis from xAxis and yAxis captures both cases
   const xAxis: [number, number, number] = sketchBlockPlane.negated
-    ? [
-        -planeInfo.xAxis.x,
-        -planeInfo.xAxis.y,
-        -planeInfo.xAxis.z,
-      ]
+    ? [-planeInfo.xAxis.x, -planeInfo.xAxis.y, -planeInfo.xAxis.z]
     : [planeInfo.xAxis.x, planeInfo.xAxis.y, planeInfo.xAxis.z]
   const zAxis: OffsetPlane['zAxis'] = cross3d(xAxis, yAxis)
   return {
