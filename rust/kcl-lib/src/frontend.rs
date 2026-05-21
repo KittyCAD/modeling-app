@@ -173,6 +173,7 @@ enum EditDeleteKind {
     DeleteNonSketch,
 }
 
+/// Options that control how an edit is re-executed and written back.
 struct ExecuteAfterEditOptions {
     segment_ids_edited: AhashIndexSet<ObjectId>,
     edit_kind: EditDeleteKind,
@@ -303,6 +304,13 @@ impl FrontendState {
         Ok(checkpoint_id)
     }
 
+    /// Edit sketch segments while using only the supplied segment ids as
+    /// temporary drag anchors.
+    ///
+    /// The normal edit path treats the edited segment ids as the anchor set.
+    /// This variant lets callers narrow that set, or pass an empty set to avoid
+    /// generating temporary fixed constraints for semantic edits such as
+    /// toggling construction state.
     pub async fn edit_segments_with_anchor_ids(
         &mut self,
         ctx: &ExecutorContext,
@@ -315,6 +323,12 @@ impl FrontendState {
             .await
     }
 
+    /// Edit sketch segments with explicit point/segment anchors and optional
+    /// arc-body drag anchors.
+    ///
+    /// Arc-body drag anchors synthesize a temporary point-on-arc constraint at
+    /// the cursor parameter, allowing arc body drags to be represented without
+    /// pinning the entire arc.
     pub async fn edit_segments_with_drag_anchors(
         &mut self,
         ctx: &ExecutorContext,
@@ -334,6 +348,12 @@ impl FrontendState {
         result
     }
 
+    /// Preview a segment edit with explicit temporary drag anchors and no KCL
+    /// solver writeback.
+    ///
+    /// This still returns solved preview geometry, but it leaves solver-updated
+    /// initial guesses out of the returned source so drag previews do not feed
+    /// back into persistent sketch state.
     pub async fn preview_edit_segments_with_anchor_ids(
         &mut self,
         ctx: &ExecutorContext,
@@ -346,6 +366,12 @@ impl FrontendState {
             .await
     }
 
+    /// Preview a segment edit with explicit temporary drag anchors, arc-body
+    /// anchors, and no KCL writeback.
+    ///
+    /// This is the preview counterpart to
+    /// [`Self::edit_segments_with_drag_anchors`]. It restores the one-shot
+    /// anchor and commit-mode overrides after the edit finishes.
     pub async fn preview_edit_segments_with_drag_anchors(
         &mut self,
         ctx: &ExecutorContext,
@@ -367,6 +393,12 @@ impl FrontendState {
         result
     }
 
+    /// Preview a distance-constraint label edit without committing
+    /// solver-updated initial guesses.
+    ///
+    /// Label previews can still use anchor ids so the preview solve follows the
+    /// active drag, but the label movement itself should not advance persistent
+    /// KCL state until drag completion.
     pub async fn preview_edit_distance_constraint_label_position(
         &mut self,
         ctx: &ExecutorContext,
@@ -6863,6 +6895,8 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         assert!((actual.y.value - expected.y.value).abs() < 1e-6);
     }
 
+    /// Build a millimeter-valued point expression for concise sketch edit test
+    /// setup.
     fn point_expr_mm(x: f64, y: f64) -> Point2d<Expr> {
         Point2d {
             x: Expr::Var(Number {
@@ -6876,6 +6910,8 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         }
     }
 
+    /// Build a millimeter-valued numeric point for comparing solved scene graph
+    /// positions.
     fn point_number_mm(x: f64, y: f64) -> Point2d<Number> {
         Point2d {
             x: Number {
@@ -8487,6 +8523,8 @@ sketch(on = XY) {
         mock_ctx.close().await;
     }
 
+    /// Preview segment edits should return solved geometry without persisting
+    /// solver feedback to KCL.
     #[tokio::test(flavor = "multi_thread")]
     async fn test_preview_edit_segments_does_not_persist_solver_feedback() {
         let initial_source = "\
@@ -8630,6 +8668,8 @@ cylinder = startSketchOn(XY)
         assert_eq!(source_delta.text, initial_source);
     }
 
+    /// Explicit drag anchors should limit which edited points become temporary
+    /// fixed constraints.
     #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_segments_with_anchor_ids_limits_drag_fixed_constraints() {
         let initial_source = "\
