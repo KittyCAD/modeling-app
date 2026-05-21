@@ -7,12 +7,11 @@ import {
   EngineConnectionStateType,
   initialConnectingTypeGroupState,
 } from '@src/network/utils'
-import type { EngineConnectionState } from '@src/network/utils'
 
 export const NetworkContext = createContext<NetworkStatus>({
   immediateState: {
     type: EngineConnectionStateType.Disconnected,
-  } as EngineConnectionState,
+  },
   hasIssues: undefined,
   overallState: NetworkHealthState.Disconnected,
   internetConnected: true,
@@ -26,7 +25,7 @@ export const NetworkContext = createContext<NetworkStatus>({
   setHasCopied: (b: boolean) => {},
   hasCopied: false,
   ping: undefined,
-} as NetworkStatus)
+})
 export const useNetworkContext = () => {
   return useContext(NetworkContext)
 }

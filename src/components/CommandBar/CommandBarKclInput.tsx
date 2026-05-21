@@ -369,7 +369,7 @@ function CommandBarKclInput({
               valueAst: valueNode,
               valueText: kclValue,
               valueCalculated: calcResult,
-            } as KclCommandValue)
+            })
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (
