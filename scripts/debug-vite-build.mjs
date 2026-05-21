@@ -4,10 +4,9 @@
  * This helps diagnose Vercel build hangs after "computing gzip size...".
  */
 import { createRequire } from 'node:module'
+import whyIsNodeRunning from 'why-is-node-running'
 
-// Install the open-handle trackers before anything else
 const require = createRequire(import.meta.url)
-const whyIsNodeRunning = require('why-is-node-running')
 const wtf = require('wtfnode')
 
 // Run vite build programmatically
@@ -45,7 +44,7 @@ try {
   process.exit(1)
 }
 
-// Give a moment for any async cleanup
+// Dump handles then force exit
 setTimeout(() => {
   console.log(`[debug] === FINAL DUMP (5s after build, ${elapsed()}s total) ===`)
   console.log(`[debug] Active handles: ${process._getActiveHandles().length}`)
@@ -57,9 +56,6 @@ setTimeout(() => {
   whyIsNodeRunning()
   console.log('[debug] === END FINAL DUMP ===')
 
-  // Force exit after dumping
-  setTimeout(() => {
-    console.log('[debug] Force-exiting process after handle dump')
-    process.exit(0)
-  }, 2000)
+  console.log('[debug] Force-exiting process')
+  process.exit(0)
 }, 5000)
