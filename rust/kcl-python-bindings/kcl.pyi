@@ -28,6 +28,14 @@ class BoundingBoxResponse:
 class CameraLookAt:
     def __new__(cls, vantage:Point3d, center:Point3d, up:Point3d) -> CameraLookAt: ...
 
+class CompilationIssue:
+    r"""
+    Wrapper for [kcl_lib::kcl_error::CompilationIssue].
+    """
+    def is_warning(self) -> builtins.bool: ...
+    def is_err(self) -> builtins.bool: ...
+    def is_fatal(self) -> builtins.bool: ...
+
 class DefaultUnits:
     @property
     def length(self) -> UnitLength: ...
@@ -54,6 +62,17 @@ class DxfExportOptions:
     def __new__(cls) -> DxfExportOptions:
         r"""
         Set the options to their defaults.
+        """
+
+class ExecOutcome:
+    r"""
+    Returned from execution functions.
+    """
+    def issues(self) -> builtins.list[CompilationIssue]: ...
+    def report(self, issue:CompilationIssue) -> builtins.str:
+        r"""
+        Render the given compilation issue as a miette report string, using
+        the source code and filename captured at execution time.
         """
 
 class ExportFile:
@@ -815,7 +834,7 @@ async def default_units(path:builtins.str) -> DefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path:builtins.str) -> None:
+async def execute(path:builtins.str) -> ExecOutcome:
     r"""
     Execute the kcl code from a file path.
     """
@@ -842,7 +861,7 @@ async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat, *, z
 
 async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:typing.Optional[builtins.bool]=None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code:builtins.str) -> None:
+async def execute_code(code:builtins.str) -> ExecOutcome:
     r"""
     Execute the kcl code.
     """

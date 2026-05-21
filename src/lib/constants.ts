@@ -98,6 +98,9 @@ export const KCL_DEFAULT_COLOR = `#3c73ff`
 export const SKETCH_SELECTION_RGB = [255, 183, 39]
 /** The sketch mode revamp selection rgb values as a string */
 export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
+export const SKETCH_DEFAULT_PLANE_XY = '#ef4444'
+export const SKETCH_DEFAULT_PLANE_XZ = '#3b82f6'
+export const SKETCH_DEFAULT_PLANE_YZ = '#22c55e'
 
 /**
  * Converts an RGB array [r, g, b] to a single integer color value (0xRRGGBB format).
