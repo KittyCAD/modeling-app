@@ -1435,9 +1435,7 @@ describe('pattern copy selection highlighting', () => {
       nodePath: [],
     },
   } as unknown as Artifact
-  const artifactGraph = new Map([
-    [patternArtifact.id, patternArtifact],
-  ]) as ArtifactGraph
+  const artifactGraph = new Map([[patternArtifact.id, patternArtifact]])
 
   test('maps pattern code selections to copied engine entities', () => {
     const selections: Selection[] = [

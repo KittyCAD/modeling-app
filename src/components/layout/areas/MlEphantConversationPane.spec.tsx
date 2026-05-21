@@ -47,7 +47,7 @@ const completedConversation: Conversation = {
           end_of_stream: {
             whole_response: 'Done.',
           },
-        } as any,
+        },
       ],
       deltasAggregated: 'Done.',
     },
