@@ -32,21 +32,21 @@ gdt::flatness(
   tolerance = 0.001mm,
   precision = 3,
   framePlane = XY,
-  leaderScale = 3,
+  leaderScale = 1,
   fontSize = 10mm,
 )
 gdt::datum(
   face = region001.tags.line3,
   name = "A",
   framePlane = XZ,
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::perpendicularity(
   faces = [capEnd001],
   tolerance = 0.1mm,
   datums = ["A"],
   framePlane = XZ,
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::parallelism(
   faces = [region001.tags.line2],
@@ -54,7 +54,7 @@ gdt::parallelism(
   datums = ["A"],
   framePlane = XZ,
   framePosition = [-100, 100],
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::distance(
   from = getCommonEdge(faces = [
@@ -67,11 +67,11 @@ gdt::distance(
   ]),
   tolerance = 0.1mm,
   framePlane = XZ,
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::annotation(
   faces = [region001.tags.line4],
   annotation = "BREAK ALL SHARP EDGES",
   framePosition = [100, -100],
-  leaderScale = 3,
+  leaderScale = 1,
 )

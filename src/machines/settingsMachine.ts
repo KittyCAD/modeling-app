@@ -18,9 +18,9 @@ import {
 } from '@src/lib/commandBarConfigs/settingsCommandConfig'
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
+import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type {
   BaseUnit,
   SetEventTypes,
@@ -39,8 +39,8 @@ import {
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
@@ -80,6 +80,7 @@ export const settingsMachine = setup({
           }
         }
       | { type: 'load.project'; project: Project }
+      | { type: 'reload.settings' }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
   },
@@ -144,6 +145,23 @@ export const settingsMachine = setup({
         {
           extensionSettings: input.extensionSettings,
           projectPath: input.project.path,
+        }
+      )
+      return settings
+    }),
+    reloadSettings: fromPromise<
+      SettingsType,
+      {
+        currentProject?: Project
+        extensionSettings: ResolvedExtensionSettings
+        wasmInstancePromise: Promise<ModuleType>
+      }
+    >(async ({ input }) => {
+      const { settings } = await loadAndValidateSettings(
+        input.wasmInstancePromise,
+        {
+          extensionSettings: input.extensionSettings,
+          projectPath: input.currentProject?.path,
         }
       )
       return settings
@@ -499,6 +517,10 @@ export const settingsMachine = setup({
           target: 'loadingProject',
         },
 
+        'reload.settings': {
+          target: 'reloadingSettings',
+        },
+
         'clear.project': {
           target: 'idle',
           reenter: true,
@@ -512,6 +534,34 @@ export const settingsMachine = setup({
             })),
           ],
         },
+      },
+    },
+    reloadingSettings: {
+      invoke: {
+        src: 'reloadSettings',
+        onDone: {
+          target: 'idle',
+          actions: [
+            'setAllSettings',
+            'sendThemeToWatcher',
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
+          ],
+        },
+        onError: {
+          target: 'idle',
+          actions: ({ event }) => {
+            console.error('Error reloading settings', event)
+          },
+        },
+        input: ({ context }) => ({
+          currentProject: context.currentProject,
+          extensionSettings: context.extensionSettings,
+          wasmInstancePromise: context.wasmInstancePromise,
+        }),
       },
     },
 

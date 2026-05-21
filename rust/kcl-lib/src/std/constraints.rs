@@ -78,6 +78,51 @@ fn point2d_is_origin(point2d: &KclValue) -> bool {
     x.n == 0.0 && y.n == 0.0
 }
 
+fn fixed_origin_datum_point(
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+    constraint_name: &str,
+) -> Result<(DatumPoint, [SolverConstraint; 2]), KclError> {
+    let sketch_var_ty = solver_numeric_type(exec_state);
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{constraint_name}() can only be used inside a sketch block"),
+            vec![range],
+        )));
+    };
+
+    let origin_x_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: origin_x_id,
+            initial_value: 0.0,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    let origin_y_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: origin_y_id,
+            initial_value: 0.0,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    let origin_x = origin_x_id.to_constraint_id(range)?;
+    let origin_y = origin_y_id.to_constraint_id(range)?;
+
+    Ok((
+        DatumPoint::new_xy(origin_x, origin_y),
+        [
+            SolverConstraint::Fixed(origin_x, 0.0),
+            SolverConstraint::Fixed(origin_y, 0.0),
+        ],
+    ))
+}
+
 #[derive(Debug, Clone, Copy)]
 struct LineVars {
     start: [SketchVarId; 2],
@@ -3002,9 +3047,21 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
 }
 
 #[derive(Debug, Clone, Copy)]
-struct MidpointPointVars {
-    coords: [SketchVarId; 2],
-    object_id: ObjectId,
+enum MidpointPointVars {
+    Segment {
+        coords: [SketchVarId; 2],
+        constraint_segment: ConstraintSegment,
+    },
+    Origin,
+}
+
+impl MidpointPointVars {
+    fn constraint_segment(self) -> ConstraintSegment {
+        match self {
+            Self::Segment { constraint_segment, .. } => constraint_segment,
+            Self::Origin => ConstraintSegment::ORIGIN,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -3031,10 +3088,14 @@ impl MidpointTargetVars {
 }
 
 fn extract_midpoint_point(segment_value: &KclValue, range: crate::SourceRange) -> Result<MidpointPointVars, KclError> {
+    if point2d_is_origin(segment_value) {
+        return Ok(MidpointPointVars::Origin);
+    }
+
     let KclValue::Segment { value: segment } = segment_value else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "midpoint() point must be a point Segment, but found {}",
+                "midpoint() point must be a point Segment or ORIGIN, but found {}",
                 segment_value.human_friendly_type()
             ),
             vec![range],
@@ -3059,9 +3120,9 @@ fn extract_midpoint_point(segment_value: &KclValue, range: crate::SourceRange) -
         )));
     };
 
-    Ok(MidpointPointVars {
+    Ok(MidpointPointVars::Segment {
         coords: [*point_x, *point_y],
-        object_id: unsolved.object_id,
+        constraint_segment: unsolved.object_id.into(),
     })
 }
 
@@ -3138,11 +3199,23 @@ fn extract_midpoint_target(
 pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let target: KclValue =
         args.get_unlabeled_kw_arg("input", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
-    let point: KclValue = args.get_kw_arg("point", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let point: KclValue = args.get_kw_arg(
+        "point",
+        &RuntimeType::Union(vec![RuntimeType::segment(), RuntimeType::point2d()]),
+        exec_state,
+    )?;
     let range = args.source_range;
 
     let point = extract_midpoint_point(&point, range)?;
     let target = extract_midpoint_target(&target, range)?;
+
+    let (solver_point, origin_constraints) = match point {
+        MidpointPointVars::Segment { coords, .. } => (datum_point(coords, range)?, None),
+        MidpointPointVars::Origin => {
+            let (origin_point, origin_constraints) = fixed_origin_datum_point(exec_state, range, "midpoint")?;
+            (origin_point, Some(origin_constraints))
+        }
+    };
 
     let constraint_id = exec_state.next_object_id();
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -3152,7 +3225,10 @@ pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         )));
     };
 
-    let solver_point = datum_point(point.coords, range)?;
+    if let Some(origin_constraints) = origin_constraints {
+        sketch_state.solver_constraints.extend(origin_constraints);
+    }
+
     match target {
         MidpointTargetVars::Line { start, end, .. } => {
             sketch_state.solver_constraints.push(SolverConstraint::Midpoint(
@@ -3175,7 +3251,7 @@ pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     }
 
     let constraint = Constraint::Midpoint(Midpoint {
-        point: point.object_id,
+        point: point.constraint_segment(),
         segment: target.object_id(),
     });
     sketch_state.sketch_constraints.push(constraint_id);
