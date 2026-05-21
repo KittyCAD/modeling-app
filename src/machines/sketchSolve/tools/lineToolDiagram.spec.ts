@@ -324,14 +324,22 @@ describe('lineTool - XState', () => {
         targetName: 'another non-origin point',
         coincidentSegments: [1, 99],
         snapTarget: { type: 'point', id: 99 },
-        targetObjects: [createPointApiObject({ id: 99, x: 5, y: 5 })],
+        targetObjects: [
+          createPointApiObject({ id: 99, x: 5, y: 5, owner: 100 }),
+          createPointApiObject({ id: 101, x: 10, y: 5, owner: 100 }),
+          createLineApiObject({ id: 100, start: 99, end: 101 }),
+        ],
         expectedState: 'ready for user click',
       },
       {
         targetName: 'another real point at the origin',
         coincidentSegments: [1, 99],
         snapTarget: { type: 'point', id: 99 },
-        targetObjects: [createPointApiObject({ id: 99, x: 0, y: 0 })],
+        targetObjects: [
+          createPointApiObject({ id: 99, x: 0, y: 0, owner: 100 }),
+          createPointApiObject({ id: 101, x: 10, y: 0, owner: 100 }),
+          createLineApiObject({ id: 100, start: 99, end: 101 }),
+        ],
         expectedState: 'ready for user click',
       },
       {
