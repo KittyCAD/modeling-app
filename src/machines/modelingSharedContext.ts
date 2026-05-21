@@ -8,8 +8,9 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { MachineManager } from '@src/lib/MachineManager'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
-export const dummyInitSketchGraphDelta = Object.freeze({
+export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
   new_graph: {
     project: 0,
     file: 0,
