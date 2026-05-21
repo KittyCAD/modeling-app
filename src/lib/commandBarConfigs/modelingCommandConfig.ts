@@ -198,6 +198,7 @@ export type ModelingCommandSchema = {
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
+    draftAngle?: KclCommandValue
     twistAngle?: KclCommandValue
     twistAngleStep?: KclCommandValue
     twistCenter?: KclCommandValue
@@ -951,6 +952,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tagEnd: {
         inputType: 'tagDeclarator',
+        required: false,
+      },
+      draftAngle: {
+        inputType: 'kcl',
         required: false,
       },
       twistAngle: {

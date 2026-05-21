@@ -91,6 +91,23 @@ function segmentArtifact(id: string): Artifact {
   }
 }
 
+function pathArtifact(id: string): Artifact {
+  return {
+    type: 'path',
+    id,
+    subType: 'sketch',
+    planeId: 'plane-id',
+    segIds: [],
+    consumed: false,
+    trajectorySweepId: null,
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+  }
+}
+
 function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
   return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
@@ -355,6 +372,54 @@ describe('operations.test.ts', () => {
       defaultNodePath()
     )
   }
+
+  describe('Extrude edit flow', () => {
+    it('preserves draftAngle in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        draftAngle: {
+          value: { type: 'Number', value: 45, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '45deg'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        draftAngle?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Extrude')
+      expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
+    })
+  })
 
   describe('GDT edit flow', () => {
     it.each([

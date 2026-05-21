@@ -69,6 +69,7 @@ export function addExtrude({
   bidirectionalLength,
   tagStart,
   tagEnd,
+  draftAngle,
   twistAngle,
   twistAngleStep,
   twistCenter,
@@ -87,6 +88,7 @@ export function addExtrude({
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  draftAngle?: KclCommandValue
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
@@ -200,6 +202,9 @@ export function addExtrude({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const draftAngleExpr = draftAngle
+    ? [createLabeledArg('draftAngle', valueOrVariable(draftAngle))]
+    : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
     : []
@@ -234,6 +239,7 @@ export function addExtrude({
     ...bidirectionalLengthExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...draftAngleExpr,
     ...twistAngleExpr,
     ...twistAngleStepExpr,
     ...twistCenterExpr,
@@ -256,6 +262,9 @@ export function addExtrude({
       modifiedAst,
       mNodeToEdit
     )
+  }
+  if (draftAngle && 'variableName' in draftAngle && draftAngle.variableName) {
+    insertVariableAndOffsetPathToNode(draftAngle, modifiedAst, mNodeToEdit)
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
