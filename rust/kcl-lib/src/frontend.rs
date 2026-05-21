@@ -4571,15 +4571,14 @@ impl FrontendState {
         let mut settled_ast = self.program.ast.clone();
         let mut committed_solver_value = false;
         for (var_range, value) in &outcome.var_solutions {
-            let rounded = value.round(3);
             let Some(current_literal) = numeric_literal_at_source_range(&settled_ast, *var_range) else {
                 return Err(commit_failure());
             };
-            if !var_solution_needs_commit(&current_literal, rounded, default_length_unit) {
+            if !var_solution_needs_commit(&current_literal, *value, default_length_unit) {
                 continue;
             }
             committed_solver_value = true;
-            let rounded = preserve_var_solution_literal_style(&current_literal, rounded, default_length_unit);
+            let value = preserve_var_solution_literal_style(&current_literal, *value, default_length_unit);
             let source_ref = SourceRef::Simple {
                 range: *var_range,
                 node_path: None,
@@ -4587,7 +4586,7 @@ impl FrontendState {
             mutate_ast_node_by_source_ref(
                 &mut settled_ast,
                 &source_ref,
-                AstMutateCommand::EditVarInitialValue { value: rounded },
+                AstMutateCommand::EditVarInitialValue { value },
             )
             .map_err(|_| commit_failure())?;
         }
@@ -10523,7 +10522,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  circle1 = circle(start = [var 4.33, var -0], center = [var -0.34, var -0.09])
+  circle1 = circle(start = [var 4.33, var 0], center = [var -0.34, var -0.09])
   arc1 = arc(start = [var 15.33, var -0.01], end = [var 10.01, var 4.33], center = [var 11.34, var 0.53])
   distance([circle1, arc1]) == 3mm
 }
@@ -12885,7 +12884,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.32])
+  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.31])
   arc2 = arc(start = [var 5.49, var 2.26], end = [var 11.58, var -3.47], center = [var 9.34, var 0.25])
   line1 = line(start = [var -0.44, var -10], end = [var -0.37, var 10])
   symmetric([arc1, arc2], axis = line1)
