@@ -280,10 +280,7 @@ async function enterSketch(input: unknown) {
 function exitSketch(input: unknown) {
   const state = getModelingState(input)
 
-  if (
-    state?.matches({ Sketch: 'SketchIdle' }) ||
-    state?.matches('Sketch no face')
-  ) {
+  if (state?.matches('Sketch') || state?.matches('Sketch no face')) {
     return sendModelingEvent(input, { type: 'Cancel' })
   }
 

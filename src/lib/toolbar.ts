@@ -4,16 +4,24 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
+import {
+  SKETCH_DEFAULT_PLANE_XY,
+  SKETCH_DEFAULT_PLANE_XZ,
+  SKETCH_DEFAULT_PLANE_YZ,
+  SKETCH_SELECTION_RGB_STR,
+} from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import {
@@ -96,7 +104,7 @@ export type ToolbarItem = {
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
   sketchSolveToolName?: string
-  iconColor?: string
+  iconColor?: string | ((props: ToolbarItemCallbackProps) => string | undefined)
   alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: (
@@ -104,6 +112,7 @@ export type ToolbarItem = {
     wasmInstance: ModuleType
   ) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
+  tooltipTitle?: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
   description: string
   extraInfo?: string
@@ -116,9 +125,11 @@ export type ToolbarItem = {
 
 export type ToolbarItemResolved = Omit<
   ToolbarItem,
-  'disabled' | 'isActive' | 'title'
+  'disabled' | 'isActive' | 'title' | 'tooltipTitle' | 'iconColor'
 > & {
   title: string
+  tooltipTitle?: string
+  iconColor?: string
   disabled?: boolean
   hotkey?: HotkeySequence
   isActive?: boolean
@@ -513,10 +524,26 @@ export function buildToolbarConfig(
             const isSketchBlock = isSketchBlockSelected(
               modelingState.context.selectionRanges
             )
+            const selectedSketchTarget =
+              getSelectedSketchTarget(modelingState.context.selectionRanges)
+                ?.id ?? null
 
             // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
               modelingSend({ type: 'Enter sketch' })
+            } else if (selectedSketchTarget) {
+              modelingSend({
+                type: 'Enter sketch',
+                data: {
+                  forceNewSketch: true,
+                  keepDefaultPlaneVisibility: true,
+                },
+              })
+              void selectSketchPlane(
+                selectedSketchTarget,
+                modelingState.context.store.useSketchSolveMode?.current,
+                modelingState.context.kclManager
+              )
             } else {
               // No sketch context - start new sketch
               modelingSend({
@@ -526,6 +553,8 @@ export function buildToolbarConfig(
             }
           },
           icon: 'sketch',
+          iconColor: ({ modelingState }) =>
+            getSelectedSketchIconColor(modelingState.context.selectionRanges),
           status: 'available',
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
@@ -534,9 +563,27 @@ export function buildToolbarConfig(
 
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
               return 'Edit Sketch'
-            } else {
-              return 'Start Sketch'
             }
+
+            return 'Start Sketch'
+          },
+          tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) => {
+            const isSketchBlock = isSketchBlockSelected(
+              modelingState.context.selectionRanges
+            )
+
+            if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+              return 'Edit Sketch'
+            }
+
+            const selectedSketchTarget = getSelectedSketchTarget(
+              modelingState.context.selectionRanges
+            )
+            if (selectedSketchTarget) {
+              return selectedSketchTarget.title
+            }
+
+            return 'Start Sketch'
           },
           showTitle: true,
           description: 'Start drawing a 2D sketch.',
@@ -2255,6 +2302,65 @@ export function buildToolbarConfig(
       ],
     },
   }
+}
+
+function getSelectedSketchTarget(selectionRanges: Selections): {
+  id: string
+  title: string
+} | null {
+  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
+  if (defaultPlane) {
+    return {
+      id: defaultPlane.id,
+      title: `Start Sketch on ${defaultPlane.name.toUpperCase()}`,
+    }
+  }
+
+  const planeSelection = getSelectedSketchTargetPlane(selectionRanges)
+  const artifact = planeSelection?.artifact
+  if (!artifact?.id) {
+    return null
+  }
+
+  return {
+    id: artifact.id,
+    title:
+      artifact.type === 'plane'
+        ? 'Start Sketch on plane'
+        : 'Start Sketch on face',
+  }
+}
+
+function getSelectedSketchTargetPlane(selectionRanges: Selections) {
+  return selectionRanges.graphSelections.find((selection) => {
+    const artifact = selection.artifact
+    return (
+      artifact?.type === 'plane' ||
+      artifact?.type === 'wall' ||
+      artifact?.type === 'cap' ||
+      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
+    )
+  })
+}
+
+function getSelectedSketchIconColor(
+  selectionRanges: Selections
+): string | undefined {
+  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
+  if (defaultPlane) {
+    switch (defaultPlane.name.toLowerCase()) {
+      case 'xy':
+        return SKETCH_DEFAULT_PLANE_XY
+      case 'xz':
+        return SKETCH_DEFAULT_PLANE_XZ
+      case 'yz':
+        return SKETCH_DEFAULT_PLANE_YZ
+    }
+  }
+
+  return getSelectedSketchTargetPlane(selectionRanges)
+    ? `rgb(${SKETCH_SELECTION_RGB_STR})`
+    : undefined
 }
 
 export const useToolbarConfig = () => {
