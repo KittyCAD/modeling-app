@@ -21,6 +21,7 @@ use crate::SourceRange;
 use crate::engine::PlaneName;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
+use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
 use crate::front::Constraint;
 use crate::front::ObjectId;
@@ -312,6 +313,9 @@ pub struct SketchBlock {
     /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,
+    /// The evaluated plane data backing the sketch block, when the sketch is on a plane.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plane_info: Option<PlaneInfo>,
     /// The path artifact ID created from the sketch block, if there is one.
     /// There are edge cases when a path isn't created, like when there are no
     /// segments.
@@ -1332,6 +1336,7 @@ fn remap_artifact_for_clone(
             id: remap_id_for_clone(source.id, entity_id_map),
             standard_plane: source.standard_plane,
             plane_id: remap_opt_id_for_clone(source.plane_id, entity_id_map),
+            plane_info: source.plane_info.clone(),
             path_id: remap_opt_id_for_clone(source.path_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
             sketch_id: source.sketch_id,

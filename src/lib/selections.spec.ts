@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -1606,7 +1607,7 @@ sketch001 = sketch(on = ${on}) {
   ): Promise<{
     result: ReturnType<typeof getStableOffsetPlaneData>
     plane001: Plane
-    sketchOnPlane: Plane
+    sketchBlockPlaneInfo: PlaneInfo
     effectiveArtifactHasVariable: boolean
   }> => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
@@ -1623,6 +1624,9 @@ sketch001 = sketch(on = ${on}) {
     if (artifact?.type !== 'plane') {
       throw new Error('Expected sketch block planeId to point to a plane')
     }
+    if (!sketchBlock.planeInfo) {
+      throw new Error('Expected sketch block with evaluated planeInfo')
+    }
     const result = getStableOffsetPlaneData(artifact, {
       execState,
       sceneInfra: {
@@ -1634,10 +1638,7 @@ sketch001 = sketch(on = ${on}) {
     return {
       result,
       plane001: getPlaneVariable(execState.variables, 'plane001'),
-      sketchOnPlane: getPlaneVariable(
-        execState.variables,
-        `__sketch_${sketchBlock.sketchId}_on`
-      ),
+      sketchBlockPlaneInfo: sketchBlock.planeInfo,
       effectiveArtifactHasVariable: Object.values(execState.variables).some(
         (value) =>
           value?.type === 'Plane' && value.value.artifactId === artifact.id
@@ -1646,15 +1647,15 @@ sketch001 = sketch(on = ${on}) {
   }
 
   test('uses the Rust-provided zAxis for variable-level plane negation', async () => {
-    const { result, plane001, sketchOnPlane } =
+    const { result, plane001, sketchBlockPlaneInfo } =
       await setupStableOffsetPlaneData(
         code('plane001', '-offsetPlane(XZ, offset = 0mm)')
       )
 
     expect(axis(plane001.xAxis)).toEqual([-1, 0, 0])
     expect(axis(plane001.zAxis)).toEqual([0, 1, 0])
-    expect(axis(sketchOnPlane.xAxis)).toEqual([-1, 0, 0])
-    expect(axis(sketchOnPlane.zAxis)).toEqual([0, 1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
 
     if (result === false || result instanceof Error) {
       throw new Error(`Expected offset plane data, got ${String(result)}`)
@@ -1663,13 +1664,17 @@ sketch001 = sketch(on = ${on}) {
   })
 
   test('keeps the same zAxis for non-negated offset planes', async () => {
-    const { result, plane001, sketchOnPlane, effectiveArtifactHasVariable } =
-      await setupStableOffsetPlaneData(code('plane001'))
+    const {
+      result,
+      plane001,
+      sketchBlockPlaneInfo,
+      effectiveArtifactHasVariable,
+    } = await setupStableOffsetPlaneData(code('plane001'))
 
     expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
     expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
-    expect(axis(sketchOnPlane.xAxis)).toEqual([1, 0, 0])
-    expect(axis(sketchOnPlane.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, -1, 0])
     expect(effectiveArtifactHasVariable).toBe(true)
 
     if (result === false || result instanceof Error) {
@@ -1680,13 +1685,17 @@ sketch001 = sketch(on = ${on}) {
   })
 
   test('resolves sketch use-site negation when the effective plane artifact is not in variables', async () => {
-    const { result, plane001, sketchOnPlane, effectiveArtifactHasVariable } =
-      await setupStableOffsetPlaneData(code('-plane001'))
+    const {
+      result,
+      plane001,
+      sketchBlockPlaneInfo,
+      effectiveArtifactHasVariable,
+    } = await setupStableOffsetPlaneData(code('-plane001'))
 
     expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
     expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
-    expect(axis(sketchOnPlane.xAxis)).toEqual([-1, 0, 0])
-    expect(axis(sketchOnPlane.zAxis)).toEqual([0, 1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
     expect(effectiveArtifactHasVariable).toBe(false)
 
     if (result === false || result instanceof Error) {

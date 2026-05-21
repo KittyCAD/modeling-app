@@ -1401,18 +1401,11 @@ export function getStableOffsetPlaneData(
     return false
   }
 
-  const planeValue =
-    getSketchOnPlaneValue(systemDeps.sketchBlock, systemDeps.execState) ??
-    Object.values(systemDeps.execState.variables).find(
-      (value) =>
-        value?.type === 'Plane' && value.value.artifactId === artifact.id
-    )
+  const planeInfo = systemDeps.sketchBlock?.planeInfo
 
-  if (planeValue?.type !== 'Plane') {
+  if (!planeInfo) {
     return false
   }
-
-  const planeInfo = planeValue.value
 
   return {
     type: 'offsetPlane',
@@ -1427,19 +1420,6 @@ export function getStableOffsetPlaneData(
     pathToNode: artifact.codeRef.pathToNode,
     negated: false,
   }
-}
-
-function getSketchOnPlaneValue(
-  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> | undefined,
-  execState: ExecState
-) {
-  if (typeof sketchBlock?.sketchId !== 'number') {
-    return undefined
-  }
-
-  const sketchOnValue =
-    execState.variables[`__sketch_${sketchBlock.sketchId}_on`]
-  return sketchOnValue?.type === 'Plane' ? sketchOnValue : undefined
 }
 
 // Uses engine sketch-mode plane data so offset-plane selection can keep the current camera-facing side.

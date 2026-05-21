@@ -1620,6 +1620,10 @@ impl Node<SketchBlock> {
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Face(_) => None,
+            };
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
@@ -1648,6 +1652,7 @@ impl Node<SketchBlock> {
                 id: artifact_id,
                 standard_plane,
                 plane_id: plane_artifact_id,
+                plane_info,
                 // Fill this in later once we create the path. We can't just add
                 // the artifact later because order relative to constraint
                 // artifacts is significant.
