@@ -2944,14 +2944,14 @@ export function getOperationLabel(op: Operation): string {
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
-      } else if (op.group.type === 'ModuleInstance') {
-        return op.group.name
       } else if (op.group.type === 'SketchBlock') {
         return 'Sketch'
       } else {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
       }
+    case 'ModuleInstance':
+      return op.name
     case 'GroupEnd':
       return 'Group end'
     default:
@@ -3131,9 +3131,6 @@ export function getOperationIcon(op: Operation): CustomIconName {
     case 'VariableDeclaration':
       return 'make-variable'
     case 'GroupBegin':
-      if (op.group.type === 'ModuleInstance') {
-        return 'import' // TODO: Use insert icon.
-      }
       if (op.group.type === 'FunctionCall') {
         return 'function'
       }
@@ -3141,6 +3138,8 @@ export function getOperationIcon(op: Operation): CustomIconName {
         return 'sketch'
       }
       return 'make-variable'
+    case 'ModuleInstance':
+      return 'import' // TODO: Use insert icon.
     case 'GroupEnd':
       return 'questionMark'
     default:
@@ -3197,7 +3196,7 @@ export function getOperationVariableName(
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
-    !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
+    op.type !== 'ModuleInstance'
   ) {
     return undefined
   }
@@ -3210,7 +3209,7 @@ export function getOperationVariableName(
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
   // If this is a module instance, the variable name is the import alias.
-  if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
+  if (op.type === 'ModuleInstance') {
     const statement = getNodeFromPath<ImportStatement>(
       program,
       pathToNode,

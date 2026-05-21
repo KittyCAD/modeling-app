@@ -30,7 +30,17 @@ import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, type SourceRange } from '@src/lang/wasm'
+import {
+  base64Decode,
+  countOperations,
+  emptyOperationsByModule,
+  getAllOperations,
+  getCurrentModuleId,
+  getOperationsForModule,
+  ROOT_MODULE_ID,
+  type OperationsByModule,
+  type SourceRange,
+} from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -68,6 +78,81 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 type Singletons = ReturnType<typeof useSingletons>
+
+type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
+
+type OperationTreeBranch = {
+  parent: ModuleInstanceOperation
+  children: OperationTreeNode[]
+}
+
+type OperationTreeNode = Operation | Operation[] | OperationTreeBranch
+
+function isOperationTreeBranch(
+  node: OperationTreeNode
+): node is OperationTreeBranch {
+  return !isArray(node) && 'parent' in node && 'children' in node
+}
+
+function getOperationTreeNodeKey(node: OperationTreeNode): string {
+  if (isArray(node)) {
+    const first = node[0]
+    const last = node[node.length - 1]
+    return `group-${
+      first?.type ?? 'unknown'
+    }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
+      last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+    }`
+  }
+
+  if (isOperationTreeBranch(node)) {
+    return `module-${node.parent.moduleId}-${node.parent.sourceRange[0]}`
+  }
+
+  return `${node.type}-${
+    'name' in node ? node.name : 'anonymous'
+  }-${'sourceRange' in node ? node.sourceRange[0] : 'start'}`
+}
+
+function buildModuleOperationList(operations: Operation[]) {
+  return groupNestedOperations(
+    groupOperationTypeStreaks(filterOperations(operations), [
+      'VariableDeclaration',
+    ]),
+    operations,
+    (groupBegin) => groupBegin.group.type === 'SketchBlock'
+  )
+}
+
+function buildOperationTree(
+  operationsByModule: OperationsByModule,
+  moduleId: number,
+  visited = new Set<number>()
+): OperationTreeNode[] {
+  if (visited.has(moduleId)) {
+    return []
+  }
+
+  const nextVisited = new Set(visited)
+  nextVisited.add(moduleId)
+
+  return buildModuleOperationList(
+    getOperationsForModule(operationsByModule, moduleId)
+  ).map((item) => {
+    if (isArray(item) || item.type !== 'ModuleInstance') {
+      return item
+    }
+
+    return {
+      parent: item,
+      children: buildOperationTree(
+        operationsByModule,
+        item.moduleId,
+        nextVisited
+      ),
+    }
+  })
+}
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
@@ -173,16 +258,19 @@ export const FeatureTreePaneContents = memo(() => {
 
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return error.operations && error.operations.length > acc.length
-      ? error.operations
-      : acc
-  }, [] as Operation[])
+  const longestErrorOperationsByModule = kclManager.errors.reduce(
+    (acc, error) => {
+      return countOperations(error.operations) > countOperations(acc)
+        ? error.operations
+        : acc
+    },
+    emptyOperationsByModule()
+  )
 
-  const unfilteredOperationList = !hasParseErrors
+  const unfilteredOperationsByModule = !hasParseErrors
     ? !kclManager.errors.length
-      ? kclManager.operations
-      : longestErrorOperationList
+      ? kclManager.operationsByModule
+      : longestErrorOperationsByModule
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
@@ -196,12 +284,12 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupNestedOperations(
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ]),
-    unfilteredOperationList,
-    (groupBegin) => groupBegin.group.type === 'SketchBlock'
+  const currentModuleId =
+    getCurrentModuleId(kclManager.execState.filenames, kclManager.path) ??
+    ROOT_MODULE_ID
+  const operationList = buildOperationTree(
+    unfilteredOperationsByModule,
+    currentModuleId
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
@@ -300,48 +388,19 @@ export const FeatureTreePaneContents = memo(() => {
                 </div>
               </div>
             )}
-            {operationList.map((opOrList) => {
-              const key = (() => {
-                if (!isArray(opOrList)) {
-                  return `${opOrList.type}-${
-                    'name' in opOrList ? opOrList.name : 'anonymous'
-                  }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'}`
-                }
-                const first = opOrList[0]
-                const last = opOrList[opOrList.length - 1]
-                return `group-${
-                  first?.type ?? 'unknown'
-                }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
-                  last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
-                }`
-              })()
-
-              return isArray(opOrList) ? (
-                <OperationItemGroup
-                  key={key}
-                  items={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              ) : (
-                <OperationItem
-                  key={key}
-                  item={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              )
-            })}
+            {operationList.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={operationsCode}
+                isStaleReference={isReadOnlyFeatureTree}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+              />
+            ))}
           </>
         )}
       </section>
@@ -487,6 +546,105 @@ function OperationItemGroup({
       </Disclosure.Panel>
     </Disclosure>
   )
+}
+
+function OperationBranchGroup({
+  parentItem,
+  childItems,
+  code,
+  isStaleReference,
+  sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
+}: Omit<OperationProps, 'item'> & {
+  parentItem: ModuleInstanceOperation
+  childItems: OperationTreeNode[]
+}) {
+  if (childItems.length === 0) {
+    return (
+      <OperationItem
+        item={parentItem}
+        code={code}
+        isStaleReference={isStaleReference}
+        sketchNoFace={sketchNoFace}
+        systemDeps={systemDeps}
+        modelingActor={modelingActor}
+        engineCommandManager={engineCommandManager}
+        onSelect={onSelect}
+      />
+    )
+  }
+
+  return (
+    <Disclosure>
+      <div className="flex items-start gap-1">
+        <Disclosure.Button
+          data-testid="operation-group-caret"
+          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+        >
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <OperationItem
+            item={parentItem}
+            code={code}
+            isStaleReference={isStaleReference}
+            sketchNoFace={sketchNoFace}
+            systemDeps={systemDeps}
+            modelingActor={modelingActor}
+            engineCommandManager={engineCommandManager}
+            onSelect={onSelect}
+          />
+        </div>
+      </div>
+      <Disclosure.Panel>
+        <div className="border-l b-4 ml-6">
+          {childItems.map((node) => {
+            return (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={code}
+                isStaleReference={isStaleReference}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={onSelect}
+              />
+            )
+          })}
+        </div>
+      </Disclosure.Panel>
+    </Disclosure>
+  )
+}
+
+function OperationTreeNodeItem({
+  node,
+  ...props
+}: Omit<OperationProps, 'item'> & { node: OperationTreeNode }) {
+  if (isArray(node)) {
+    return <OperationItemGroup items={node} {...props} />
+  }
+
+  if (isOperationTreeBranch(node)) {
+    return (
+      <OperationBranchGroup
+        parentItem={node.parent}
+        childItems={node.children}
+        {...props}
+      />
+    )
+  }
+
+  return <OperationItem item={node} {...props} />
 }
 
 type OpValueProps = {
@@ -1037,7 +1195,7 @@ const OperationItem = ({
 
   const visibilityState = resolveFeatureTreeVisibility({
     item,
-    operations: kclManager.operations ?? [],
+    operations: getAllOperations(kclManager.operationsByModule),
     artifactGraph: kclManager.artifactGraph,
   })
 

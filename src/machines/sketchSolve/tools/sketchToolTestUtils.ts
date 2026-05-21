@@ -6,6 +6,7 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import { Themes } from '@src/lib/theme'
 
 /**
@@ -43,7 +44,7 @@ export function createSceneGraphDelta(
     exec_outcome: {
       issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
