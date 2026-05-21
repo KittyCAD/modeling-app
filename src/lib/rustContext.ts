@@ -550,7 +550,7 @@ export default class RustContext {
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
       } = !commitSolverResults
-        ? await (instance as any).preview_edit_segments_with_anchors(
+        ? await instance.preview_edit_segments_with_anchors(
             JSON.stringify(version),
             JSON.stringify(sketch),
             JSON.stringify(segments),
@@ -559,7 +559,7 @@ export default class RustContext {
             JSON.stringify(settings)
           )
         : hasDragAnchors
-          ? await (instance as any).edit_segments_with_anchors(
+          ? await instance.edit_segments_with_anchors(
               JSON.stringify(version),
               JSON.stringify(sketch),
               JSON.stringify(segments),
@@ -729,9 +729,7 @@ export default class RustContext {
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
       } = !commitSolverResults
-        ? await (
-            instance as any
-          ).preview_edit_distance_constraint_label_position(
+        ? await instance.preview_edit_distance_constraint_label_position(
             JSON.stringify(version),
             JSON.stringify(sketch),
             JSON.stringify(constraintId),
