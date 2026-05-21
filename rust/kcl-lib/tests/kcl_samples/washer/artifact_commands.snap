@@ -68,7 +68,7 @@ description: Artifact commands washer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.5626000000508,
+          "x": 5.562600000025402,
           "y": 0.0,
           "z": 0.0
         }
@@ -90,10 +90,10 @@ description: Artifact commands washer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000025399999847706605,
+            "x": 0.0000000000000025399999898501526,
             "y": 0.0
           },
-          "radius": 5.5626000000254,
+          "radius": 5.562600000025399,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -113,7 +113,7 @@ description: Artifact commands washer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.5780999999238,
+          "x": 2.5780999999618963,
           "y": 0.0,
           "z": 0.0
         }
@@ -128,10 +128,10 @@ description: Artifact commands washer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000000003810000527930693,
+            "x": -0.000000000000003810000535549932,
             "y": 0.0
           },
-          "radius": 2.5780999999619,
+          "radius": 2.5780999999619003,
           "start": {
             "unit": "radians",
             "value": 0.0

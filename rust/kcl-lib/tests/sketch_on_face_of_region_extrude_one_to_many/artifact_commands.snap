@@ -68,8 +68,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_many.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000000000008331965970786588,
-          "y": 0.000000000000000000003109110386983066,
+          "x": -0.000000000000000000008332392171173431,
+          "y": 0.0000000000000000000000025486621927343605,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_many.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 29.668887996034876,
-            "y": 0.000000000000000027865596450687793,
+            "x": 29.668889010206673,
+            "y": 0.000000000000000027840397801411527,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_many.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.834443998017436,
-            "y": 4.960000000000001
+            "x": 14.834444505103335,
+            "y": 4.96
           },
-          "radius": 15.641685610263224,
+          "radius": 15.641686091179256,
           "start": {
             "unit": "degrees",
-            "value": -18.487718537412313
+            "value": -18.48771794840766
           },
           "end": {
             "unit": "degrees",
-            "value": 198.4877185374123
+            "value": 198.48771794840764
           },
           "relative": false
         }

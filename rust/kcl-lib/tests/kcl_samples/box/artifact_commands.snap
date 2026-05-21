@@ -68,7 +68,7 @@ description: Artifact commands box.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.000000000000013,
+          "x": -5.000000000000005,
           "y": -5.0,
           "z": 0.0
         }
@@ -90,7 +90,7 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999999988,
+            "x": 4.999999999999996,
             "y": -5.0,
             "z": 0.0
           },
@@ -107,8 +107,8 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.999999999999989,
-            "y": 4.999999999999999,
+            "x": 4.999999999999996,
+            "y": 5.0,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.000000000000015,
-            "y": 4.999999999999999,
+            "x": -5.000000000000006,
+            "y": 5.0,
             "z": 0.0
           },
           "relative": false
@@ -141,7 +141,7 @@ description: Artifact commands box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.000000000000014,
+            "x": -5.000000000000005,
             "y": -5.0,
             "z": 0.0
           },

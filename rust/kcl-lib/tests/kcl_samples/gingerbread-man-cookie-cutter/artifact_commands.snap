@@ -90,8 +90,8 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -87.99932870719708,
-            "y": -112.0005283126162,
+            "x": -87.99932800367615,
+            "y": -112.00052800690959,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -127.75276137595901,
-            "y": -80.7680122895937
+            "x": -127.75276133205134,
+            "y": -80.76801232092936
           },
-          "radius": 50.55497469169721,
+          "radius": 50.554975002155544,
           "start": {
             "unit": "degrees",
-            "value": -38.15515558607679
+            "value": -38.15515482386906
           },
           "end": {
             "unit": "degrees",
-            "value": -213.31588062394235
+            "value": -213.31587999070877
           },
           "relative": false
         }
@@ -166,8 +166,8 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -187.00007631383218,
-            "y": 130.0001009847176,
+            "x": -187.00007635186114,
+            "y": 130.00010092149085,
             "z": 0.0
           },
           "relative": false
@@ -183,17 +183,17 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -210.82971203084693,
-            "y": 161.579584208389
+            "x": -210.82971201382063,
+            "y": 161.57958418386497
           },
-          "radius": 39.561538128335826,
+          "radius": 39.561538126067575,
           "start": {
             "unit": "degrees",
-            "value": -52.96207582572321
+            "value": -52.96207592313307
           },
           "end": {
             "unit": "degrees",
-            "value": -237.64763230947725
+            "value": -237.6476323522454
           },
           "relative": false
         }
@@ -208,8 +208,8 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -108.00032698694014,
-            "y": 290.00042884692436,
+            "x": -108.0003270577402,
+            "y": 290.00042923929686,
             "z": 0.0
           },
           "relative": false
@@ -225,17 +225,17 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -36.88954649391802,
-            "y": 197.18020170809174
+            "x": -36.889547184631624,
+            "y": 197.18020166455125
           },
-          "radius": 116.92877177338029,
+          "radius": 116.92877174241279,
           "start": {
             "unit": "degrees",
-            "value": 127.45619402404881
+            "value": 127.45619365301572
           },
           "end": {
             "unit": "degrees",
-            "value": 100.89988582466768
+            "value": 100.89988548979636
           },
           "relative": false
         }
@@ -250,8 +250,8 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -59.00001558628023,
-            "y": 334.99978567546725,
+            "x": -59.00001560006461,
+            "y": 334.9997860691353,
             "z": 0.0
           },
           "relative": false
@@ -267,17 +267,17 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.6002542570635043,
-            "y": 433.700953594384
+            "x": 0.6002542918528917,
+            "y": 433.700953724911
           },
-          "radius": 115.30009849934034,
+          "radius": 115.30009829919032,
           "start": {
             "unit": "degrees",
-            "value": -121.12549559315927
+            "value": -121.12549568141472
           },
           "end": {
             "unit": "degrees",
-            "value": -269.7017171693335
+            "value": -269.70171715169766
           },
           "relative": false
         }

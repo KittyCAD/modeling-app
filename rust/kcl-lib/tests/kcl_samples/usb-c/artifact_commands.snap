@@ -662,8 +662,8 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000000018741355216480233,
-            "y": -2.7930526779796474,
+            "x": -0.00000000000000000973217670981375,
+            "y": -2.7928660310900892,
             "z": 0.0
           },
           "relative": false
@@ -679,50 +679,8 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.400092255786426,
-            "y": -2.793052677979611,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 4.399964528429169,
-            "y": -1.1930526824048928
-          },
-          "radius": 1.60000000067293,
-          "start": {
-            "unit": "degrees",
-            "value": -89.99542610093508
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -0.002964787341470308
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 5.999964527376074,
-            "y": 1.3942434952429417,
+            "x": 4.400057254025409,
+            "y": -2.792866031090064,
             "z": 0.0
           },
           "relative": false
@@ -738,17 +696,17 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 4.39996452800475,
-            "y": 1.3941938794393745
+            "x": 4.399970811850405,
+            "y": -1.192866033234235
           },
-          "radius": 1.6000000001406138,
+          "radius": 1.6000000001909072,
           "start": {
             "unit": "degrees",
-            "value": 0.0017767350885983526
+            "value": -89.99690451762409
           },
           "end": {
             "unit": "degrees",
-            "value": 90.50251593011892
+            "value": -0.001944717850745653
           },
           "relative": false
         }
@@ -763,8 +721,8 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.41399613935175,
-            "y": 2.9177419240134674,
+            "x": 5.999970811006876,
+            "y": 1.3948926861448956,
             "z": 0.0
           },
           "relative": false
@@ -780,17 +738,17 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -4.400035474338019,
-            "y": 1.3178028313455594
+            "x": 4.399970811252948,
+            "y": 1.3948640323633381
           },
-          "radius": 1.6000000001295733,
+          "radius": 1.6000000000105028,
           "start": {
             "unit": "degrees",
-            "value": 90.49993583399038
+            "value": 0.0010260879690063072
           },
           "end": {
             "unit": "degrees",
-            "value": 179.997046998772
+            "value": 90.50803722633535
           },
           "relative": false
         }
@@ -805,8 +763,8 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.000035473219524,
-            "y": -1.1931280782145917,
+            "x": -4.414176843229081,
+            "y": 2.9172567913350447,
             "z": 0.0
           },
           "relative": false
@@ -822,17 +780,17 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -4.400035474708854,
-            "y": -1.1930526780753805
+            "x": -4.400029189888277,
+            "y": 1.3173193413065258
           },
-          "radius": 1.6000000002872885,
+          "radius": 1.6000000000308783,
           "start": {
             "unit": "degrees",
-            "value": -179.9972999314048
+            "value": 90.50663211858387
           },
           "end": {
             "unit": "degrees",
-            "value": -90.0020333439209
+            "value": 179.99800615547252
           },
           "relative": false
         }
@@ -847,8 +805,50 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000000028112032946425494,
-            "y": -2.7930526779796456,
+            "x": -6.000029188993104,
+            "y": -1.1929164418847655,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -4.400029189710291,
+            "y": -1.1928660311329353
+          },
+          "radius": 1.600000000076952,
+          "start": {
+            "unit": "degrees",
+            "value": -179.99819479792356
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -90.0010049792604
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.000000000000000014598265402796098,
+            "y": -2.7928660310900892,
             "z": 0.0
           },
           "relative": false
@@ -1033,7 +1033,7 @@ description: Artifact commands usb-c.kcl
           "type": "line",
           "end": {
             "x": -26.0,
-            "y": 0.00009323314399202928,
+            "y": 0.00009319952403339429,
             "z": 0.0
           },
           "relative": false
@@ -1049,17 +1049,17 @@ description: Artifact commands usb-c.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -25.999847283457623,
-            "y": 21.999920494010706
+            "x": -25.99984718528389,
+            "y": 21.999920562702506
           },
-          "radius": 21.99982726139677,
+          "radius": 21.999827363709212,
           "start": {
             "unit": "degrees",
-            "value": -90.00039773100198
+            "value": -90.00039798668125
           },
           "end": {
             "unit": "degrees",
-            "value": -144.99557594811205
+            "value": -144.99557586881545
           },
           "relative": false
         }

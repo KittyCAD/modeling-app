@@ -68,7 +68,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     ],
                     "end": [
                       {
-                        "n": 3.0,
+                        "n": 3.0000000000007008,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 4.0,
+                        "n": 4.000000000000701,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -170,7 +170,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                   "line": {
                     "start": [
                       {
-                        "n": 14.0,
+                        "n": 13.999999999999599,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -178,7 +178,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 15.0,
+                        "n": 14.999999999999599,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -290,7 +290,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                   "line": {
                     "start": [
                       {
-                        "n": 40.0,
+                        "n": 39.9999999999972,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -298,7 +298,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 41.0,
+                        "n": 40.9999999999972,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -428,7 +428,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     ],
                     "end": [
                       {
-                        "n": 40.0,
+                        "n": 39.9999999999964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -436,7 +436,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       },
                       {
-                        "n": 41.0,
+                        "n": 40.9999999999964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -545,8 +545,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "value": "l1"
                   },
                   "to": [
-                    3.0,
-                    4.0
+                    3.0000000000007008,
+                    4.000000000000701
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -557,13 +557,13 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    3.0,
-                    4.0
+                    3.0000000000007008,
+                    4.000000000000701
                   ],
                   "tag": null,
                   "to": [
-                    14.0,
-                    15.0
+                    13.999999999999599,
+                    14.999999999999599
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -574,8 +574,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    14.0,
-                    15.0
+                    13.999999999999599,
+                    14.999999999999599
                   ],
                   "tag": {
                     "commentStart": 217,
@@ -603,8 +603,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                   ],
                   "tag": null,
                   "to": [
-                    40.0,
-                    41.0
+                    39.9999999999972,
+                    40.9999999999972
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -615,8 +615,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "sourceRange": []
                   },
                   "from": [
-                    40.0,
-                    41.0
+                    39.9999999999972,
+                    40.9999999999972
                   ],
                   "tag": {
                     "commentStart": 382,
@@ -668,8 +668,8 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                     "value": "l4"
                   },
                   "to": [
-                    40.0,
-                    41.0
+                    39.9999999999964,
+                    40.9999999999964
                   ],
                   "type": "ToPoint",
                   "units": "mm"

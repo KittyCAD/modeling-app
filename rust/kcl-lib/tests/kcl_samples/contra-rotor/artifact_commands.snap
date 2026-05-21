@@ -571,8 +571,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 126.00847957475659,
-          "y": 81.55901590419246,
+          "x": 126.00847957461409,
+          "y": 81.5590159044093,
           "z": 0.0
         }
       }
@@ -593,17 +593,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000015204252772133248,
-            "y": 0.0000000000009840958333519114
+            "x": 0.0000000000000001520424845052729,
+            "y": 0.00000000000000009840956174954744
           },
           "radius": 150.10000000000542,
           "start": {
             "unit": "radians",
-            "value": 0.5744397283244538
+            "value": 0.5744397283261824
           },
           "end": {
             "unit": "radians",
-            "value": 6.85762503550404
+            "value": 6.857625035505769
           },
           "relative": false
         }
@@ -774,7 +774,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": 66.66666666666667,
-          "y": 0.00000000000001458362296387249,
+          "y": 0.0000000000000000021821241262051877,
           "z": 0.0
         }
       }
@@ -795,8 +795,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 66.66666666666666,
-            "y": 64.99999999999999,
+            "x": 66.66666666666663,
+            "y": 64.99999999999997,
             "z": 0.0
           },
           "relative": false
@@ -811,7 +811,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": 1150.0,
-          "y": 100.00000000000004,
+          "y": 99.99999999999999,
           "z": 0.0
         }
       }
@@ -825,13 +825,13 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 761.9477401129946,
+            "x": 761.9477401129942,
             "y": -1500.0
           },
           "radius": 1646.3853001054802,
           "start": {
             "unit": "degrees",
-            "value": 76.36713808934641
+            "value": 76.3671380893464
           },
           "end": {
             "unit": "degrees",
@@ -848,8 +848,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 66.6666666666667,
-          "y": 0.000000000000046867469970920234,
+          "x": 66.66666666666667,
+          "y": 0.000000000000000007013814492377479,
           "z": 0.0
         }
       }
@@ -864,7 +864,7 @@ description: Artifact commands contra-rotor.kcl
           "type": "line",
           "end": {
             "x": 1250.0,
-            "y": 0.0000000000000438399193136421,
+            "y": -0.000000000000004523255970786685,
             "z": 0.0
           },
           "relative": false
@@ -880,17 +880,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1117.9811061943294,
-            "y": -32.01889380567064
+            "x": 1117.9811061943292,
+            "y": -32.018893805670864
           },
-          "radius": 135.84622881115158,
+          "radius": 135.84622881115183,
           "start": {
             "unit": "degrees",
-            "value": 13.6328619106536
+            "value": 13.632861910653647
           },
           "end": {
             "unit": "degrees",
-            "value": 76.36713808934645
+            "value": 76.36713808934638
           },
           "relative": false
         }
@@ -918,17 +918,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 135.9385027933189,
-            "y": 114.23945376342508
+            "x": 135.93850182143095,
+            "y": 114.23945051588258
           },
-          "radius": 84.98888802236587,
+          "radius": 84.98888534870247,
           "start": {
             "unit": "degrees",
-            "value": -144.5942177849536
+            "value": -144.59421918982488
           },
           "end": {
             "unit": "degrees",
-            "value": -68.8042706806128
+            "value": -68.8042692781618
           },
           "relative": false
         }
@@ -1071,8 +1071,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 87.97653434258939,
-          "y": 47.54081830456,
+          "x": 87.97653431690273,
+          "y": 47.54081835209442,
           "z": 0.0
         }
       }
@@ -1093,17 +1093,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000004398677961642942,
-            "y": 0.00000000000000023769605987206157
+            "x": 0.000000000000000000026393843775229664,
+            "y": 0.000000000000000000014262720680875967
           },
-          "radius": 99.99999999999999,
+          "radius": 100.00000000000001,
           "start": {
             "unit": "radians",
-            "value": 0.49542794167471493
+            "value": 0.49542794221502273
           },
           "end": {
             "unit": "radians",
-            "value": 6.778613248854301
+            "value": 6.778613249394609
           },
           "relative": false
         }
@@ -1271,8 +1271,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 250.0000000000046,
-          "y": 0.0000000000017416502358199175,
+          "x": 250.00000000000043,
+          "y": 0.00000000000000017423822930610032,
           "z": 0.0
         }
       }
@@ -1293,17 +1293,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000012789769243681803,
-            "y": -1984.3134832984833
+            "x": 0.0000000000006536993168992922,
+            "y": -1984.3134832984854
           },
-          "radius": 2000.0000000000423,
+          "radius": 2000.000000000042,
           "start": {
             "unit": "degrees",
-            "value": 82.81924421854178
+            "value": 82.81924421854188
           },
           "end": {
             "unit": "degrees",
-            "value": 97.18075578145822
+            "value": 97.18075578145815
           },
           "relative": false
         }
@@ -1318,17 +1318,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000010516032489249483,
-            "y": 1984.3134832984817
+            "x": 0.0000000000004547473508864641,
+            "y": 1984.3134832984797
           },
-          "radius": 2000.000000000037,
+          "radius": 2000.0000000000368,
           "start": {
             "unit": "degrees",
-            "value": -97.18075578145823
+            "value": -97.18075578145816
           },
           "end": {
             "unit": "degrees",
-            "value": -82.81924421854178
+            "value": -82.81924421854185
           },
           "relative": false
         }
@@ -1613,8 +1613,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 78.03026335260436,
-          "y": 62.54021107354219,
+          "x": 78.03026335261279,
+          "y": 62.54021107353167,
           "z": 0.0
         }
       }
@@ -1635,17 +1635,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000000000000017310854032939009,
-            "y": 0.000000000000000044833527517244634
+            "x": -0.000000000000000000006144699063446662,
+            "y": 0.0000000000000000000019604105796601813
           },
           "radius": 100.0,
           "start": {
             "unit": "radians",
-            "value": 0.6756467532231542
+            "value": 0.6756467532230194
           },
           "end": {
             "unit": "radians",
-            "value": 6.958832060402741
+            "value": 6.958832060402606
           },
           "relative": false
         }
@@ -1658,8 +1658,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 70.49834387991312,
-          "y": -22.49407722467217,
+          "x": 70.49834504658824,
+          "y": -22.494073568213167,
           "z": 0.0
         }
       }
@@ -1673,17 +1673,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000003164573522980537,
-            "y": 0.0000000000000000905718797824202
+            "x": -0.000000000000000000012289020079503993,
+            "y": 0.0000000000000000000039208940626897796
           },
           "radius": 74.0,
           "start": {
             "unit": "radians",
-            "value": -0.3088612998772939
+            "value": -0.30886124801140924
           },
           "end": {
             "unit": "radians",
-            "value": 5.974324007302292
+            "value": 5.974324059168177
           },
           "relative": false
         }
@@ -1881,7 +1881,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": 16.10539444474445,
-          "y": 78.36208438893898,
+          "y": 78.362084388939,
           "z": 0.0
         }
       }
@@ -1902,10 +1902,10 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000000003552713678800501,
+            "x": -0.0,
             "y": -0.0
           },
-          "radius": 80.0,
+          "radius": 80.00000000000001,
           "start": {
             "unit": "degrees",
             "value": 78.38599063924008
@@ -1925,8 +1925,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000000000009462465543979064,
-          "y": 0.000000000000002927177372302958,
+          "x": -0.0000000000000000000902565705207636,
+          "y": 0.0000000000000000002930725872082672,
           "z": 0.0
         }
       }
@@ -1941,7 +1941,7 @@ description: Artifact commands contra-rotor.kcl
           "type": "line",
           "end": {
             "x": 16.10539444474445,
-            "y": 78.36208438893898,
+            "y": 78.362084388939,
             "z": 0.0
           },
           "relative": false
@@ -1955,8 +1955,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000000001243415295759049,
-          "y": 0.000000000000004339452227748493,
+          "x": -0.00000000000000000009323378511986766,
+          "y": 0.0000000000000000004344671353453718,
           "z": 0.0
         }
       }
@@ -1970,8 +1970,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.10539444474445,
-            "y": 78.36208438893898,
+            "x": -16.105394444744455,
+            "y": 78.362084388939,
             "z": 0.0
           },
           "relative": false
@@ -2608,8 +2608,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 13.975723473706081,
-          "y": 68.00000000000036,
+          "x": 13.975723473705925,
+          "y": 68.00000000000013,
           "z": 0.0
         }
       }
@@ -2630,8 +2630,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.08623037773726,
-            "y": 88.00000000000036,
+            "x": 18.086230377737074,
+            "y": 88.00000000000014,
             "z": 0.0
           },
           "relative": false
@@ -2645,8 +2645,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 13.975723473706113,
-          "y": 68.00000000000045,
+          "x": 13.975723473705925,
+          "y": 68.00000000000013,
           "z": 0.0
         }
       }
@@ -2660,17 +2660,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.000000000000012434497875801753,
-            "y": 0.00000000000011368683772161603
+            "x": 0.0000000000000017763568394002505,
+            "y": 0.000000000000014210854715202004
           },
-          "radius": 69.42132847053236,
+          "radius": 69.4213284705321,
           "start": {
             "unit": "degrees",
-            "value": 78.38599063923587
+            "value": 78.385990639236
           },
           "end": {
             "unit": "degrees",
-            "value": 101.61400936075977
+            "value": 101.61400936075987
           },
           "relative": false
         }
@@ -2685,8 +2685,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -18.0862303777369,
-            "y": 88.00000000000041,
+            "x": -18.08623037773697,
+            "y": 88.00000000000016,
             "z": 0.0
           },
           "relative": false
@@ -2702,8 +2702,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000001585241231071486,
-            "y": 88.00000000000038,
+            "x": 0.000000000000042222898476198666,
+            "y": 88.00000000000016,
             "z": 0.0
           },
           "relative": false
@@ -2719,8 +2719,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.08623037773725,
-            "y": 88.00000000000037,
+            "x": 18.086230377737074,
+            "y": 88.00000000000014,
             "z": 0.0
           },
           "relative": false
@@ -3412,7 +3412,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000000000042475007123570765,
+            "x": 0.000000000000000000025486704524246022,
             "y": 0.0
           },
           "radius": 85.05,
@@ -3625,7 +3625,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": 66.66666666666667,
-          "y": 0.00000000000001458362296387249,
+          "y": 0.0000000000000000021821241262051877,
           "z": 0.0
         }
       }
@@ -3646,8 +3646,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 66.66666666666666,
-            "y": 64.99999999999999,
+            "x": 66.66666666666663,
+            "y": 64.99999999999997,
             "z": 0.0
           },
           "relative": false
@@ -3662,7 +3662,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": 1150.0,
-          "y": 100.00000000000004,
+          "y": 99.99999999999999,
           "z": 0.0
         }
       }
@@ -3676,13 +3676,13 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 761.9477401129946,
+            "x": 761.9477401129942,
             "y": -1500.0
           },
           "radius": 1646.3853001054802,
           "start": {
             "unit": "degrees",
-            "value": 76.36713808934641
+            "value": 76.3671380893464
           },
           "end": {
             "unit": "degrees",
@@ -3699,8 +3699,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 66.6666666666667,
-          "y": 0.000000000000046867469970920234,
+          "x": 66.66666666666667,
+          "y": 0.000000000000000007013814492377479,
           "z": 0.0
         }
       }
@@ -3715,7 +3715,7 @@ description: Artifact commands contra-rotor.kcl
           "type": "line",
           "end": {
             "x": 1250.0,
-            "y": 0.0000000000000438399193136421,
+            "y": -0.000000000000004523255970786685,
             "z": 0.0
           },
           "relative": false
@@ -3731,17 +3731,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1117.9811061943294,
-            "y": -32.01889380567064
+            "x": 1117.9811061943292,
+            "y": -32.018893805670864
           },
-          "radius": 135.84622881115158,
+          "radius": 135.84622881115183,
           "start": {
             "unit": "degrees",
-            "value": 13.6328619106536
+            "value": 13.632861910653647
           },
           "end": {
             "unit": "degrees",
-            "value": 76.36713808934645
+            "value": 76.36713808934638
           },
           "relative": false
         }
@@ -3769,17 +3769,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 135.9385027933189,
-            "y": 114.23945376342508
+            "x": 135.93850182143095,
+            "y": 114.23945051588258
           },
-          "radius": 84.98888802236587,
+          "radius": 84.98888534870247,
           "start": {
             "unit": "degrees",
-            "value": -144.5942177849536
+            "value": -144.59421918982488
           },
           "end": {
             "unit": "degrees",
-            "value": -68.8042706806128
+            "value": -68.8042692781618
           },
           "relative": false
         }
@@ -3922,8 +3922,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 87.97653434258939,
-          "y": 47.54081830456,
+          "x": 87.97653431690273,
+          "y": 47.54081835209442,
           "z": 0.0
         }
       }
@@ -3944,17 +3944,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000004398677961642942,
-            "y": 0.00000000000000023769605987206157
+            "x": 0.000000000000000000026393843775229664,
+            "y": 0.000000000000000000014262720680875967
           },
-          "radius": 99.99999999999999,
+          "radius": 100.00000000000001,
           "start": {
             "unit": "radians",
-            "value": 0.49542794167471493
+            "value": 0.49542794221502273
           },
           "end": {
             "unit": "radians",
-            "value": 6.778613248854301
+            "value": 6.778613249394609
           },
           "relative": false
         }
@@ -4122,8 +4122,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 250.0000000000046,
-          "y": 0.0000000000017416502358199175,
+          "x": 250.00000000000043,
+          "y": 0.00000000000000017423822930610032,
           "z": 0.0
         }
       }
@@ -4144,17 +4144,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000012789769243681803,
-            "y": -1984.3134832984833
+            "x": 0.0000000000006536993168992922,
+            "y": -1984.3134832984854
           },
-          "radius": 2000.0000000000423,
+          "radius": 2000.000000000042,
           "start": {
             "unit": "degrees",
-            "value": 82.81924421854178
+            "value": 82.81924421854188
           },
           "end": {
             "unit": "degrees",
-            "value": 97.18075578145822
+            "value": 97.18075578145815
           },
           "relative": false
         }
@@ -4169,17 +4169,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000010516032489249483,
-            "y": 1984.3134832984817
+            "x": 0.0000000000004547473508864641,
+            "y": 1984.3134832984797
           },
-          "radius": 2000.000000000037,
+          "radius": 2000.0000000000368,
           "start": {
             "unit": "degrees",
-            "value": -97.18075578145823
+            "value": -97.18075578145816
           },
           "end": {
             "unit": "degrees",
-            "value": -82.81924421854178
+            "value": -82.81924421854185
           },
           "relative": false
         }
@@ -4464,7 +4464,7 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 78.03026335261535,
+          "x": 78.0302633526126,
           "y": 62.54021107353029,
           "z": 0.0
         }
@@ -4486,17 +4486,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000004018989120726891,
-            "y": -0.0000000000015774504067584438
+            "x": 0.00000000000000040189882671834484,
+            "y": -0.000000000000000157745019303792
           },
           "radius": 99.99999999999898,
           "start": {
             "unit": "radians",
-            "value": 0.67564675322303
+            "value": 0.6756467532230098
           },
           "end": {
             "unit": "radians",
-            "value": 6.958832060402616
+            "value": 6.958832060402596
           },
           "relative": false
         }
@@ -4509,8 +4509,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 50.01571765852773,
-          "y": -15.958633622737826,
+          "x": 50.01571765837406,
+          "y": -15.958633623190469,
           "z": 0.0
         }
       }
@@ -4524,17 +4524,17 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000008301330935832408,
-            "y": -0.0000000000029438274386941933
+            "x": 0.0000000000000008301328868431283,
+            "y": -0.00000000000000029438269462847957
           },
-          "radius": 52.50000000001349,
+          "radius": 52.50000000001348,
           "start": {
             "unit": "radians",
-            "value": -0.3088612549689212
+            "value": -0.3088612549780301
           },
           "end": {
             "unit": "radians",
-            "value": 5.974324052210665
+            "value": 5.974324052201556
           },
           "relative": false
         }
@@ -4732,7 +4732,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": 58.5,
-          "y": 0.0000000000000000004633706977792186,
+          "y": -0.0000000000000000000003294477845803866,
           "z": 0.0
         }
       }
@@ -4754,12 +4754,12 @@ description: Artifact commands contra-rotor.kcl
           "type": "arc",
           "center": {
             "x": -0.0,
-            "y": 0.0000000000000000004633699507216305
+            "y": 0.00000000000000000000004598648618934668
           },
           "radius": 58.5,
           "start": {
             "unit": "degrees",
-            "value": 0.0000000000000000000000007316794333873466
+            "value": -0.00000000000000000000036770596922525615
           },
           "end": {
             "unit": "degrees",
@@ -4776,8 +4776,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000000015858377888465995,
-          "y": 0.0000000000000000004635898940782225,
+          "x": 0.00000000000000000000015695869085381446,
+          "y": 0.00000000000000000000004595157769221365,
           "z": 0.0
         }
       }
@@ -4792,7 +4792,7 @@ description: Artifact commands contra-rotor.kcl
           "type": "line",
           "end": {
             "x": 58.5,
-            "y": 0.0000000000000000004631288998705955,
+            "y": -0.00000000000000000000032944777949593155,
             "z": 0.0
           },
           "relative": false
@@ -4806,8 +4806,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000000001587259680310758,
-          "y": 0.0000000000000000004631309659036172,
+          "x": 0.00000000000000000000015698161640896725,
+          "y": 0.00000000000000000000004592005969459936,
           "z": 0.0
         }
       }
@@ -4821,7 +4821,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 49.20605898479132,
+            "x": 49.20605898479131,
             "y": 31.638801481491644,
             "z": 0.0
           },
@@ -5035,8 +5035,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000000000006337537289206244,
-          "y": 0.000000000005243804324954392,
+          "x": -0.00000000000000000000004693596682324201,
+          "y": 0.0000000000000005272226555332003,
           "z": 0.0
         }
       }
@@ -5057,8 +5057,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000000006337537276531169,
-            "y": -29.999999999994756,
+            "x": -0.000000000000000000000046935966729243004,
+            "y": -30.0,
             "z": 0.0
           },
           "relative": false
@@ -5074,8 +5074,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 49.00000000001262,
-            "y": -57.999999999994756,
+            "x": 49.00000000001268,
+            "y": -58.0,
             "z": 0.0
           },
           "relative": false
@@ -5091,8 +5091,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 70.00000000001262,
-            "y": -57.999999999994756,
+            "x": 70.00000000001269,
+            "y": -58.0,
             "z": 0.0
           },
           "relative": false
@@ -5108,8 +5108,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 70.00000000002524,
-            "y": -81.99999999999692,
+            "x": 70.00000000002537,
+            "y": -81.99999999999493,
             "z": 0.0
           },
           "relative": false
@@ -5123,8 +5123,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -180.00000000001262,
-          "y": -0.00000000000717811471937496,
+          "x": -180.00000000001268,
+          "y": -0.000000000012488204211219811,
           "z": 0.0
         }
       }
@@ -5138,8 +5138,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000000006337537308218858,
-            "y": 0.0000000000052438043406858066,
+            "x": -0.0000000000000000000000469359668232561,
+            "y": 0.0000000000000005272226555333587,
             "z": 0.0
           },
           "relative": false
@@ -5153,46 +5153,8 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 54.00000000004687,
-          "y": -97.99999999997348,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 54.000000000055884,
-            "y": -82.00000000000053
-          },
-          "radius": 15.999999999972957,
-          "start": {
-            "unit": "degrees",
-            "value": -90.00000000003229
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 0.00000000001292577422548958
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -180.00000000002524,
-          "y": -0.00000000001960003378661384,
+          "x": 54.00000000003806,
+          "y": -97.99999999998224,
           "z": 0.0
         }
       }
@@ -5206,17 +5168,55 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 54.000000000093706,
-            "y": 230.36734693924157
+            "x": 54.00000000003806,
+            "y": -81.99999999999493
           },
-          "radius": 328.367346939201,
+          "radius": 15.99999999998731,
           "start": {
             "unit": "degrees",
-            "value": -135.44820430343623
+            "value": -90.0
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000000000819
+            "value": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -180.00000000001268,
+          "y": -0.00000000001248945308436445,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 54.00000000005076,
+            "y": 230.36734693901585
+          },
+          "radius": 328.3673469389981,
+          "start": {
+            "unit": "degrees",
+            "value": -135.4482043034584
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -90.00000000000223
           },
           "relative": false
         }
@@ -5762,7 +5762,7 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 13.659438315323591,
+          "x": 13.659438315323593,
           "y": 46.5,
           "z": 0.0
         }
@@ -5784,7 +5784,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 19.534465547720835,
+            "x": 19.53446554772084,
             "y": 66.5,
             "z": 0.0
           },
@@ -5799,7 +5799,7 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 13.659438315323591,
+          "x": 13.659438315323593,
           "y": 46.5,
           "z": 0.0
         }
@@ -5814,7 +5814,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
+            "x": 0.0000000000000017763568394002505,
             "y": -0.000000000000007105427357601002
           },
           "radius": 48.464732074882356,
@@ -5839,7 +5839,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -19.53446554772084,
+            "x": -19.534465547720835,
             "y": 66.5,
             "z": 0.0
           },
@@ -5856,7 +5856,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000014883760817653357,
+            "x": -0.00000000000000037942767066419994,
             "y": 66.5,
             "z": 0.0
           },
@@ -5873,7 +5873,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 19.534465547720835,
+            "x": 19.53446554772084,
             "y": 66.5,
             "z": 0.0
           },
@@ -6359,7 +6359,7 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 80.05000000000001,
+          "x": 80.05,
           "y": 0.0,
           "z": 0.0
         }
@@ -6381,10 +6381,10 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000003997500658510644,
+            "x": 0.000000000000000000023986604405445437,
             "y": 0.0
           },
-          "radius": 80.05000000000001,
+          "radius": 80.05,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -6912,7 +6912,7 @@ description: Artifact commands contra-rotor.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 80.05000000000001,
+          "x": 80.05,
           "y": 0.0,
           "z": 0.0
         }
@@ -6934,10 +6934,10 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000003997500658510644,
+            "x": 0.000000000000000000023986604405445437,
             "y": 0.0
           },
-          "radius": 80.05000000000001,
+          "radius": 80.05,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -7566,7 +7566,7 @@ description: Artifact commands contra-rotor.kcl
         "path": "[uuid]",
         "to": {
           "x": -300.0,
-          "y": -0.00000000000008059144104561981,
+          "y": -0.000000000000008092178177746662,
           "z": 0.0
         }
       }
@@ -7587,8 +7587,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000011639171737175236,
-            "y": -0.0000000000000553478110917752,
+            "x": -0.00000000000000000041876525158622215,
+            "y": -0.0000000000000000016181606478746495,
             "z": 0.0
           },
           "relative": false
@@ -7604,25 +7604,8 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000021110803208864782,
-            "y": -50.00000000000015,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -300.0,
-            "y": -50.000000000000135,
+            "x": -0.000000000000004187909773995809,
+            "y": -50.00000000000002,
             "z": 0.0
           },
           "relative": false
@@ -7639,7 +7622,24 @@ description: Artifact commands contra-rotor.kcl
           "type": "line",
           "end": {
             "x": -300.0,
-            "y": -0.00000000000010303994062407285,
+            "y": -50.000000000000014,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -300.0,
+            "y": -0.000000000000008092901967400091,
             "z": 0.0
           },
           "relative": false
@@ -8094,7 +8094,7 @@ description: Artifact commands contra-rotor.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000002497500401606497,
+            "x": 0.000000000000000000014986002077054792,
             "y": 0.0
           },
           "radius": 50.05,

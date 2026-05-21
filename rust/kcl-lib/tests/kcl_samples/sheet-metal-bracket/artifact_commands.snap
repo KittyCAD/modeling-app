@@ -68,8 +68,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -106.72931294028842,
-          "y": 0.025432480687717335,
+          "x": -106.72947722790019,
+          "y": 0.025495173367490596,
           "z": 0.0
         }
       }
@@ -90,76 +90,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -69.91748713517948,
-            "y": -0.055217427047986656,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -69.91748713515337,
-          "y": -0.05521741632901484,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -69.9024736734583,
-            "y": 6.367299575010128
-          },
-          "radius": 6.422534539266572,
-          "start": {
-            "unit": "degrees",
-            "value": -90.13393602933272
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -14.93968423720062
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -63.69703525543674,
-          "y": 4.711556922874502,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -48.81663818043017,
-            "y": 60.46276440178179,
+            "x": -69.91766990462462,
+            "y": -0.055163149968482594,
             "z": 0.0
           },
           "relative": false
@@ -175,17 +107,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -45.77493288797002,
-            "y": 59.65110685719513
+            "x": -69.9027049882399,
+            "y": 6.367364256710178
           },
-          "radius": 3.1481358064518923,
+          "radius": 6.4225448412806685,
           "start": {
             "unit": "degrees",
-            "value": 165.0591547113032
+            "value": -90.13350273865821
           },
           "end": {
             "unit": "degrees",
-            "value": 89.98750687459943
+            "value": -14.94005409914803
           },
           "relative": false
         }
@@ -198,8 +130,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -45.77424644971988,
-          "y": 62.79924264935002,
+          "x": -63.69726730938471,
+          "y": 4.7115788918379184,
           "z": 0.0
         }
       }
@@ -213,8 +145,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 45.70285641574229,
-            "y": 62.79924264934927,
+            "x": -48.81675225462041,
+            "y": 60.46276527713299,
             "z": 0.0
           },
           "relative": false
@@ -230,17 +162,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 45.70342271233745,
-            "y": 59.65144419546893
+            "x": -45.774948012918834,
+            "y": 59.65108104269137
           },
-          "radius": 3.147798504819401,
+          "radius": 3.148238291691844,
           "start": {
             "unit": "degrees",
-            "value": 90.01030764992757
+            "value": 165.05914968315145
           },
           "end": {
             "unit": "degrees",
-            "value": 15.011100386323024
+            "value": 89.98781418290224
           },
           "relative": false
         }
@@ -253,8 +185,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 48.74380465741888,
-          "y": 60.46674344078982,
+          "x": -45.774278437310905,
+          "y": 62.7993193198556,
           "z": 0.0
         }
       }
@@ -268,8 +200,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 63.69537225319575,
-            "y": 4.734580564835821,
+            "x": 45.70283325500294,
+            "y": 62.799319319854796,
             "z": 0.0
           },
           "relative": false
@@ -285,19 +217,32 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 69.81917295127897,
-            "y": 6.376821411293786
+            "x": 45.7033846992193,
+            "y": 59.65144176705069
           },
-          "radius": 6.3401805958205655,
+          "radius": 3.14787760110502,
           "start": {
             "unit": "degrees",
-            "value": -164.98801162876558
+            "value": 90.01003705683627
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00361783206151
+            "value": 15.011585830397495
           },
           "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 48.74383612781803,
+          "y": 60.4667872616071,
+          "z": 0.0
         }
       }
     },
@@ -310,42 +255,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 106.6306867653096,
-            "y": 0.03664083162214517,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 106.63068676531077,
-            "y": 3.054469452387824,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 69.81877261890014,
-            "y": 3.054469452387129,
+            "x": 63.69522221363776,
+            "y": 4.734565291626397,
             "z": 0.0
           },
           "relative": false
@@ -361,32 +272,19 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 69.81962284131359,
-            "y": 6.215260685700358
+            "x": 69.81901144424796,
+            "y": 6.376832782277435
           },
-          "radius": 3.160791347664049,
+          "radius": 6.340176421187874,
           "start": {
             "unit": "degrees",
-            "value": -90.01541201274222
+            "value": -164.98775222176224
           },
           "end": {
             "unit": "degrees",
-            "value": -164.96854356763393
+            "value": -90.00347602969762
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 66.76698246442388,
-          "y": 5.3955116166006505,
-          "z": 0.0
         }
       }
     },
@@ -399,8 +297,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 51.815414868647814,
-            "y": 61.1276744925515,
+            "x": 106.63052248016967,
+            "y": 0.036656376865241556,
             "z": 0.0
           },
           "relative": false
@@ -411,51 +309,13 @@ description: Artifact commands sheet-metal-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 51.81541485681232,
-          "y": 61.12767448937383,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 45.75633524864514,
-            "y": 59.50137599836187
-          },
-          "radius": 6.273539071367543,
-          "start": {
-            "unit": "degrees",
-            "value": 15.024462687983837
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 89.99513491709881
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
-            "x": -45.72023491985439,
-            "y": 65.77491504126672,
+            "x": 106.63052248017037,
+            "y": 3.054328332587753,
             "z": 0.0
           },
           "relative": false
@@ -466,64 +326,13 @@ description: Artifact commands sheet-metal-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -45.720234919852786,
-          "y": 65.77491502844131,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -45.71956397738227,
-            "y": 59.32398473408327
-          },
-          "radius": 6.450930329249426,
-          "start": {
-            "unit": "degrees",
-            "value": 90.00595916712221
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 165.0625336949848
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -51.952502757148494,
-          "y": 60.98680661307366,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
-            "x": -66.83289983215504,
-            "y": 5.23559913416472,
+            "x": 69.81862679739278,
+            "y": 3.0543283325873087,
             "z": 0.0
           },
           "relative": false
@@ -539,17 +348,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -69.9179413742304,
-            "y": 6.058608425642821
+            "x": 69.81947180125822,
+            "y": 6.215260018510794
           },
-          "radius": 3.19293369962327,
+          "radius": 3.160931798869855,
           "start": {
             "unit": "degrees",
-            "value": -14.937165756742063
+            "value": -90.01531673532318
           },
           "end": {
             "unit": "degrees",
-            "value": -89.99026348638874
+            "value": -164.96897009019057
           },
           "relative": false
         }
@@ -562,8 +371,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -69.91739879388672,
-          "y": 2.8656747417256074,
+          "x": 66.76668968100441,
+          "y": 5.395497247506293,
           "z": 0.0
         }
       }
@@ -577,8 +386,173 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -106.72931294029603,
-            "y": 2.8656747417241726,
+            "x": 51.81530359518551,
+            "y": 61.1277192174837,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 45.756447340515564,
+            "y": 59.5015817524576
+          },
+          "radius": 6.273281610920606,
+          "start": {
+            "unit": "degrees",
+            "value": 15.02357108489426
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 89.99590292494379
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 45.756895926880354,
+          "y": 65.77486333177761,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -45.72021576543196,
+            "y": 65.77486333177546,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -45.71964733463101,
+            "y": 59.32389798034675
+          },
+          "radius": 6.45096537647253,
+          "start": {
+            "unit": "degrees",
+            "value": 90.00504865302807
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 165.06181195684542
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -51.95259902220139,
+          "y": 60.98680740582661,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -66.83311407696569,
+            "y": 5.235621020529836,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -69.91809066992712,
+            "y": 6.058678306416725
+          },
+          "radius": 3.1928833168425514,
+          "start": {
+            "unit": "degrees",
+            "value": -14.938298325401092
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -89.99086383706803
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -69.91758154512743,
+          "y": 2.865795003774896,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -106.72947722790279,
+            "y": 2.8657950037734246,
             "z": 0.0
           },
           "relative": false
@@ -595,7 +569,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           "type": "line",
           "end": {
             "x": -107.94999999999999,
-            "y": 2.8656747417232413,
+            "y": 2.8657950037731066,
             "z": 0.0
           },
           "relative": false
@@ -609,8 +583,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -106.72931294029361,
-          "y": 2.865674741723862,
+          "x": -106.72947722790279,
+          "y": 2.8657950037734246,
           "z": 0.0
         }
       }
@@ -624,8 +598,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -106.72931294029108,
-            "y": 0.02543248068755759,
+            "x": -106.72947722790019,
+            "y": 0.02549517336749058,
             "z": 0.0
           },
           "relative": false
@@ -779,8 +753,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -86.5221016373004,
-          "y": 56.687962243142486,
+          "x": -86.52208929917781,
+          "y": 56.687957260282666,
           "z": 0.0
         }
       }
@@ -802,16 +776,16 @@ description: Artifact commands sheet-metal-bracket.kcl
           "type": "arc",
           "center": {
             "x": -88.89999999999998,
-            "y": 50.80000000000007
+            "y": 50.8
           },
-          "radius": 6.350000000000011,
+          "radius": 6.350000000000002,
           "start": {
             "unit": "radians",
-            "value": 1.186968853304562
+            "value": 1.1869667578210494
           },
           "end": {
             "unit": "radians",
-            "value": 7.470154160484148
+            "value": 7.470152065000636
           },
           "relative": false
         }
@@ -824,8 +798,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -94.29021614955371,
-          "y": -47.44320541869306,
+          "x": -94.29021261508723,
+          "y": -47.44319974318485,
           "z": 0.0
         }
       }
@@ -840,16 +814,16 @@ description: Artifact commands sheet-metal-bracket.kcl
           "type": "arc",
           "center": {
             "x": -88.89999999999998,
-            "y": -50.79999999999992
+            "y": -50.8
           },
-          "radius": 6.350000000000069,
+          "radius": 6.35,
           "start": {
             "unit": "radians",
-            "value": 2.5846079426973394
+            "value": 2.5846068897692125
           },
           "end": {
             "unit": "radians",
-            "value": 8.867793249876925
+            "value": 8.867792196948798
           },
           "relative": false
         }
@@ -862,8 +836,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 94.91168027276869,
-          "y": -48.75495714030135,
+          "x": 94.91167662726,
+          "y": -48.75494642386661,
           "z": 0.0
         }
       }
@@ -877,17 +851,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 88.90000000000002,
-            "y": -50.79999999999993
+            "x": 88.89999999999999,
+            "y": -50.8
           },
-          "radius": 6.350000000000019,
+          "radius": 6.350000000000004,
           "start": {
             "unit": "radians",
-            "value": 0.32789827534648897
+            "value": 0.3279000579492825
           },
           "end": {
             "unit": "radians",
-            "value": 6.611083582526075
+            "value": 6.611085365128869
           },
           "relative": false
         }
@@ -900,8 +874,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 92.54650485924589,
-          "y": 55.99860580458812,
+          "x": 92.54651632085394,
+          "y": 55.99859776495026,
           "z": 0.0
         }
       }
@@ -915,17 +889,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 88.90000000000002,
-            "y": 50.800000000000075
+            "x": 88.89999999999999,
+            "y": 50.8
           },
-          "radius": 6.350000000000014,
+          "radius": 6.350000000000002,
           "start": {
             "unit": "radians",
-            "value": 0.9591052430586735
+            "value": 0.9591030383104434
           },
           "end": {
             "unit": "radians",
-            "value": 7.24229055023826
+            "value": 7.24228834549003
           },
           "relative": false
         }
@@ -938,8 +912,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 28.229865696737967,
-          "y": 41.93056998218636,
+          "x": 28.22985930796117,
+          "y": 41.930574701940365,
           "z": 0.0
         }
       }
@@ -953,17 +927,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 25.400000000000034,
-            "y": 38.100000000000136
+            "x": 25.4,
+            "y": 38.099999999999994
           },
-          "radius": 4.762500000000028,
+          "radius": 4.762500000000003,
           "start": {
             "unit": "radians",
-            "value": 0.9345287576017766
+            "value": 0.934530425440464
           },
           "end": {
             "unit": "radians",
-            "value": 7.2177140647813625
+            "value": 7.21771573262005
           },
           "relative": false
         }
@@ -976,8 +950,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -29.03193176026171,
-          "y": 41.18066193192378,
+          "x": -29.03194048146862,
+          "y": 41.18065165006846,
           "z": 0.0
         }
       }
@@ -991,17 +965,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -25.399999999999988,
-            "y": 38.10000000000014
+            "x": -25.400000000000006,
+            "y": 38.099999999999994
           },
-          "radius": 4.7625000000001325,
+          "radius": 4.762500000000003,
           "start": {
             "unit": "radians",
-            "value": 2.4381353172542104
+            "value": 2.438138148211238
           },
           "end": {
             "unit": "radians",
-            "value": 8.721320624433798
+            "value": 8.721323455390824
           },
           "relative": false
         }
@@ -1014,8 +988,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -29.487576790356147,
-          "y": -40.54399718349708,
+          "x": -29.48757961724221,
+          "y": -40.54399245553378,
           "z": 0.0
         }
       }
@@ -1029,17 +1003,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -25.39999999999998,
-            "y": -38.099999999999895
+            "x": -25.4,
+            "y": -38.1
           },
-          "radius": 4.762500000000061,
+          "radius": 4.762500000000003,
           "start": {
             "unit": "radians",
-            "value": -2.6027123903180076
+            "value": -2.602713546984166
           },
           "end": {
             "unit": "radians",
-            "value": 3.6804729168615786
+            "value": 3.68047176019542
           },
           "relative": false
         }
@@ -1052,8 +1026,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 30.078484016685913,
-          "y": -38.990614145192296,
+          "x": 30.078483737813574,
+          "y": -38.99061561013378,
           "z": 0.0
         }
       }
@@ -1067,17 +1041,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 25.400000000000038,
-            "y": -38.099999999999866
+            "x": 25.400000000000006,
+            "y": -38.099999999999994
           },
-          "radius": 4.762500000000214,
+          "radius": 4.762499999999999,
           "start": {
             "unit": "radians",
-            "value": -0.18811307832968444
+            "value": -0.1881133914527885
           },
           "end": {
             "unit": "radians",
-            "value": 6.095072228849902
+            "value": 6.095071915726797
           },
           "relative": false
         }
@@ -1105,17 +1079,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000000002373107554799786,
-            "y": 0.0000000000001233393255069458
+            "x": 0.0000000000000000000733403048159024,
+            "y": 0.0000000000000000005666845610753199
           },
-          "radius": 25.899282847214007,
+          "radius": 25.899282847214128,
           "start": {
             "unit": "radians",
-            "value": 1.7085325177552428
+            "value": 1.7085325177552413
           },
           "end": {
             "unit": "radians",
-            "value": 7.991717824934829
+            "value": 7.9917178249348275
           },
           "relative": false
         }

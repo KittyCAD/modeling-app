@@ -68,8 +68,8 @@ description: Artifact commands c-shape-solid.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.898979485566363,
-          "y": 0.9999999999999833,
+          "x": 4.89897948556664,
+          "y": 0.9999999999995646,
           "z": 0.0
         }
       }
@@ -90,17 +90,17 @@ description: Artifact commands c-shape-solid.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000017763568394002505,
-            "y": -0.000000000000002220446049250313
+            "x": -0.0,
+            "y": -0.0
           },
-          "radius": 5.000000000000002,
+          "radius": 5.000000000000191,
           "start": {
             "unit": "degrees",
-            "value": 11.536959032815314
+            "value": 11.53695903280995
           },
           "end": {
             "unit": "degrees",
-            "value": 348.46304096718444
+            "value": 348.46304096718416
           },
           "relative": false
         }
@@ -113,8 +113,8 @@ description: Artifact commands c-shape-solid.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.898979485566362,
-          "y": 0.999999999999983,
+          "x": 4.89897948556664,
+          "y": 0.9999999999995646,
           "z": 0.0
         }
       }
@@ -128,8 +128,8 @@ description: Artifact commands c-shape-solid.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.949874371066207,
-            "y": 0.9999999999999829,
+            "x": 9.94987437106632,
+            "y": 0.9999999999995643,
             "z": 0.0
           },
           "relative": false
@@ -145,17 +145,17 @@ description: Artifact commands c-shape-solid.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000017763568394002505,
-            "y": -0.0000000000000021094237467877974
+            "x": -0.0,
+            "y": -0.0
           },
-          "radius": 10.000000000000004,
+          "radius": 10.000000000000076,
           "start": {
             "unit": "degrees",
-            "value": 5.739170477266699
+            "value": 5.739170477264233
           },
           "end": {
             "unit": "degrees",
-            "value": 354.26082952273316
+            "value": 354.2608295227308
           },
           "relative": false
         }
@@ -170,8 +170,8 @@ description: Artifact commands c-shape-solid.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.898979485566386,
-            "y": -1.0000000000000162,
+            "x": 4.898979485568284,
+            "y": -1.000000000000429,
             "z": 0.0
           },
           "relative": false

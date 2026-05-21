@@ -79,11 +79,11 @@ description: Variables in memory after executing pipe.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000023750001870083803,
+              -0.000000000000023750001917579055,
               0.0
             ],
             "from": [
-              1.18749999905,
+              1.1874999992874762,
               0.0
             ],
             "radius": 1.1874999992875,
@@ -96,7 +96,7 @@ description: Variables in memory after executing pipe.kcl
               "value": "circle1"
             },
             "to": [
-              1.18749999905,
+              1.1874999992874762,
               0.0
             ],
             "type": "Circle",
@@ -136,11 +136,11 @@ description: Variables in memory after executing pipe.kcl
         },
         "start": {
           "from": [
-            1.18749999905,
+            1.1874999992874762,
             0.0
           ],
           "to": [
-            1.18749999905,
+            1.1874999992874762,
             0.0
           ],
           "units": "in",
@@ -213,7 +213,7 @@ description: Variables in memory after executing pipe.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 1.18749999905,
+                        "n": 1.1874999992874762,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -231,7 +231,7 @@ description: Variables in memory after executing pipe.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000023750001870083803,
+                        "n": -0.000000000000023750001917579055,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -333,7 +333,7 @@ description: Variables in memory after executing pipe.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.9761870726831523,
+                        "n": 0.9761870657452726,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -341,7 +341,7 @@ description: Variables in memory after executing pipe.kcl
                         }
                       },
                       {
-                        "n": 0.21693041543317135,
+                        "n": 0.21693044318874677,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -351,7 +351,7 @@ description: Variables in memory after executing pipe.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000007338130096224303,
+                        "n": 0.00000000000007338128993338675,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -359,7 +359,7 @@ description: Variables in memory after executing pipe.kcl
                         }
                       },
                       {
-                        "n": 0.000000000163069585449449,
+                        "n": 0.000000000000016306955785692667,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -457,11 +457,11 @@ description: Variables in memory after executing pipe.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000023750001870083803,
+                    -0.000000000000023750001917579055,
                     0.0
                   ],
                   "from": [
-                    1.18749999905,
+                    1.1874999992874762,
                     0.0
                   ],
                   "radius": 1.1874999992875,
@@ -474,7 +474,7 @@ description: Variables in memory after executing pipe.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    1.18749999905,
+                    1.1874999992874762,
                     0.0
                   ],
                   "type": "Circle",
@@ -486,13 +486,13 @@ description: Variables in memory after executing pipe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.18749999905,
+                    1.1874999992874762,
                     0.0
                   ],
                   "tag": null,
                   "to": [
-                    0.9761870726831523,
-                    0.21693041543317135
+                    0.9761870657452726,
+                    0.21693044318874677
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -504,14 +504,14 @@ description: Variables in memory after executing pipe.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000007338130096224303,
-                    0.000000000163069585449449
+                    0.00000000000007338128993338675,
+                    0.000000000000016306955785692667
                   ],
                   "from": [
-                    0.9761870726831523,
-                    0.21693041543317135
+                    0.9761870657452726,
+                    0.21693044318874677
                   ],
-                  "radius": 1.0000000022551416,
+                  "radius": 1.0000000022551403,
                   "tag": {
                     "commentStart": 460,
                     "end": 467,
@@ -521,8 +521,8 @@ description: Variables in memory after executing pipe.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    0.9761870726831523,
-                    0.21693041543317135
+                    0.9761870657452726,
+                    0.21693044318874677
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -561,11 +561,11 @@ description: Variables in memory after executing pipe.kcl
               },
               "start": {
                 "from": [
-                  1.18749999905,
+                  1.1874999992874762,
                   0.0
                 ],
                 "to": [
-                  1.18749999905,
+                  1.1874999992874762,
                   0.0
                 ],
                 "units": "in",
@@ -619,11 +619,11 @@ description: Variables in memory after executing pipe.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000023750001870083803,
+            -0.000000000000023750001917579055,
             0.0
           ],
           "from": [
-            1.18749999905,
+            1.1874999992874762,
             0.0
           ],
           "radius": 1.1874999992875,
@@ -636,7 +636,7 @@ description: Variables in memory after executing pipe.kcl
             "value": "circle1"
           },
           "to": [
-            1.18749999905,
+            1.1874999992874762,
             0.0
           ],
           "type": "Circle",
@@ -676,11 +676,11 @@ description: Variables in memory after executing pipe.kcl
       },
       "start": {
         "from": [
-          1.18749999905,
+          1.1874999992874762,
           0.0
         ],
         "to": [
-          1.18749999905,
+          1.1874999992874762,
           0.0
         ],
         "units": "in",

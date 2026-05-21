@@ -68,8 +68,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000000004483326665686962,
-          "y": 31.750000000017927,
+          "x": 0.00000000000000000011588902048039875,
+          "y": 31.75,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.462500000017215,
-            "y": 31.750000000026894,
+            "x": 17.462500000008347,
+            "y": 31.75000000000266,
             "z": 0.0
           },
           "relative": false
@@ -107,110 +107,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.46250000003891,
-            "y": 15.87500000005238,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 17.462500017539856,
-          "y": 15.875000000061345,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 25.399999973809017,
-            "y": 15.87713164250154
-          },
-          "radius": 7.937500242499047,
-          "start": {
-            "unit": "degrees",
-            "value": -179.984613025135
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -0.002741357904420555
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 33.337500024734865,
-          "y": 15.876751867089878,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.33750002473996,
-            "y": 31.751751867079047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 68.26250002476577,
-            "y": 31.751751867088423,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 68.26250002478383,
-            "y": 15.876751867111636,
+            "x": 17.462500000013854,
+            "y": 15.87500000000904,
             "z": 0.0
           },
           "relative": false
@@ -226,17 +124,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 76.20000000890607,
-            "y": 15.877859503342835
+            "x": 25.39999998489368,
+            "y": 15.876120028497349
           },
-          "radius": 7.93750006140463,
+          "radius": 7.937500063901166,
           "start": {
             "unit": "degrees",
-            "value": -179.99200467640964
+            "value": -179.99191522456556
           },
           "end": {
             "unit": "degrees",
-            "value": -0.004592968931608345
+            "value": 0.001559861198633449
           },
           "relative": false
         }
@@ -249,8 +147,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 84.1375000154991,
-          "y": 15.87722321405232,
+          "x": 33.3375000188042,
+          "y": 15.876336124664038,
           "z": 0.0
         }
       }
@@ -264,8 +162,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 84.13750001550768,
-            "y": 31.752223214033826,
+            "x": 33.33750001880753,
+            "y": 31.751336124659016,
             "z": 0.0
           },
           "relative": false
@@ -281,8 +179,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 101.6000000155335,
-            "y": 31.75222321402688,
+            "x": 68.26250001881589,
+            "y": 31.751336124660046,
             "z": 0.0
           },
           "relative": false
@@ -298,246 +196,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 102.79036601142533,
-            "y": 26.596181621187526,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 102.79036604210485,
-          "y": 26.596181628261498,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 118.25909747469512,
-            "y": 30.16465155843667
-          },
-          "radius": 15.875000150430578,
-          "start": {
-            "unit": "degrees",
-            "value": -167.0097345730126
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -89.99254513352149
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 118.2611630021491,
-          "y": 14.289651624487806,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 143.66116300215992,
-            "y": 14.289651624488325,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 143.6611630021667,
-            "y": -0.00040477040663131406,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -143.66116300216896,
-            "y": -0.00040477040776931185,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -143.66116300216493,
-            "y": 14.289651624487187,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -118.26116300214461,
-            "y": 14.289651624490082,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -118.26116300213788,
-          "y": 14.289651668534333,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -118.25909747471907,
-            "y": 30.164651558438955
-          },
-          "radius": 15.875000024279535,
-          "start": {
-            "unit": "degrees",
-            "value": -90.00745486637602
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -12.99026542715587
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -102.79036601145975,
-          "y": 26.596181621144325,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -101.60000001557654,
-            "y": 31.752223213978706,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -84.13750001554212,
-            "y": 31.752223213987644,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -84.13750001552492,
-            "y": 15.877223214009115,
+            "x": 68.26250001882023,
+            "y": 15.876336124667128,
             "z": 0.0
           },
           "relative": false
@@ -553,17 +213,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -76.20000001515041,
-            "y": 15.877859503339076
+            "x": 76.20000001472884,
+            "y": 15.876906772899344
           },
-          "radius": 7.937500025877753,
+          "radius": 7.93750001642133,
           "start": {
             "unit": "degrees",
-            "value": -179.99540703079356
+            "value": -179.9958808522516
           },
           "end": {
             "unit": "degrees",
-            "value": -0.00799532365549237
+            "value": -0.002793469303430711
           },
           "relative": false
         }
@@ -576,8 +236,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -68.26250002480965,
-          "y": 15.876751867097486,
+          "x": 84.13750000892615,
+          "y": 15.87651977820644,
           "z": 0.0
         }
       }
@@ -591,8 +251,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -68.26250002480022,
-            "y": 31.751751867077953,
+            "x": 84.13750000893047,
+            "y": 31.751519778198865,
             "z": 0.0
           },
           "relative": false
@@ -608,8 +268,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -33.33750002476578,
-            "y": 31.751751867069917,
+            "x": 101.60000000893882,
+            "y": 31.75151977819679,
             "z": 0.0
           },
           "relative": false
@@ -625,24 +285,11 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -33.33750002475208,
-            "y": 15.876751867075727,
+            "x": 102.79036600483225,
+            "y": 26.595478185368805,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.3375000586883,
-          "y": 15.876751867069366,
-          "z": 0.0
         }
       }
     },
@@ -655,17 +302,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -25.39999997382623,
-            "y": 15.877131642513211
+            "x": 118.25883914240787,
+            "y": 30.16506707075202
           },
-          "radius": 7.937500093947388,
+          "radius": 15.875000032080305,
           "start": {
             "unit": "degrees",
-            "value": -179.99725864190918
+            "value": -167.00558985882458
           },
           "end": {
             "unit": "degrees",
-            "value": -0.01538697481982683
+            "value": -89.99507390000804
           },
           "relative": false
         }
@@ -678,8 +325,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -17.462500000056124,
-          "y": 15.87500000007031,
+          "x": 118.2602040219528,
+          "y": 14.290067123158533,
           "z": 0.0
         }
       }
@@ -693,8 +340,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -17.462500000043036,
-            "y": 31.750000000044825,
+            "x": 143.66020402195804,
+            "y": 14.290067123158803,
             "z": 0.0
           },
           "relative": false
@@ -710,8 +357,309 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000008607893723302292,
-            "y": 31.750000000026894,
+            "x": 143.66020402195937,
+            "y": 0.000010728269618648718,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -143.66020387274332,
+            "y": 0.000010728269618026342,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -143.66020387274202,
+            "y": 14.2900671231599,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -118.26020387273414,
+            "y": 14.29006712315963,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -118.25883913697429,
+            "y": 30.165067070767318
+          },
+          "radius": 15.875000006269222,
+          "start": {
+            "unit": "degrees",
+            "value": -90.00492558105546
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -12.994410228636074
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -102.7903660048395,
+          "y": 26.595478161773475,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -101.60000000894604,
+            "y": 31.751519754601464,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -84.13750000893353,
+            "y": 31.75151975460354,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -84.1375000089292,
+            "y": 15.87651975461111,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -76.20000001473745,
+            "y": 15.87690682353493
+          },
+          "radius": 7.937500003629365,
+          "start": {
+            "unit": "degrees",
+            "value": -179.99720599487065
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -0.004118510058911607
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -68.26250001882597,
+          "y": 15.876336263645356,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -68.26250001882163,
+            "y": 31.751336263638272,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.337500018809095,
+            "y": 31.751336263637246,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.33750001880577,
+            "y": 15.876336263642267,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -25.3999999849023,
+            "y": 15.876119994279037
+          },
+          "radius": 7.937500036849762,
+          "start": {
+            "unit": "degrees",
+            "value": 179.99843888860536
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 359.99191547158506
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -17.46250000001803,
+          "y": 15.875000000011699,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -17.462500000012522,
+            "y": 31.750000000002654,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.0000000000000004173295093525636,
+            "y": 31.75,
             "z": 0.0
           },
           "relative": false
@@ -1099,8 +1047,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 68.26250002292319,
-          "y": 31.752085820136447,
+          "x": 68.26250002329016,
+          "y": 31.752047372626382,
           "z": 0.0
         }
       }
@@ -1121,17 +1069,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 76.19999999999999,
+            "x": 76.2,
             "y": 43.65625
           },
-          "radius": 14.307796151302995,
+          "radius": 14.307828139652703,
           "start": {
             "unit": "degrees",
-            "value": -123.69470069245104
+            "value": -123.69461527741146
           },
           "end": {
             "unit": "degrees",
-            "value": -56.30529930754899
+            "value": -56.30538472258877
           },
           "relative": false
         }
@@ -1146,24 +1094,11 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 84.13749997708068,
-            "y": 15.877085820126773,
+            "x": 84.13749997671374,
+            "y": 15.877047372618524,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 84.13749996180113,
-          "y": 15.87708582012097,
-          "z": 0.0
         }
       }
     },
@@ -1176,32 +1111,19 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 76.19999999999999,
-            "y": 15.875000000046438
+            "x": 76.20000000000154,
+            "y": 15.87500000001566
           },
-          "radius": 7.937500235857526,
+          "radius": 7.9375002407584665,
           "start": {
             "unit": "degrees",
-            "value": 0.015056212273206604
+            "value": 0.014778684343615081
           },
           "end": {
             "unit": "degrees",
-            "value": 179.98494378775473
+            "value": 179.98522131568436
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 68.26250002291931,
-          "y": 15.877085820122904,
-          "z": 0.0
         }
       }
     },
@@ -1214,8 +1136,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 68.26250002292319,
-            "y": 31.752085820134514,
+            "x": 68.26250002329016,
+            "y": 31.752047372626382,
             "z": 0.0
           },
           "relative": false
@@ -1549,8 +1471,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -68.26250000107949,
-          "y": 15.875000004063999,
+          "x": -68.2625000003815,
+          "y": 15.875000001398488,
           "z": 0.0
         }
       }
@@ -1571,17 +1493,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -76.20000000076199,
-            "y": 15.875000003301999
+            "x": -76.2000000002543,
+            "y": 15.875000001144093
           },
-          "radius": 7.9374999996825055,
+          "radius": 7.9374999998728075,
           "start": {
             "unit": "radians",
-            "value": 0.00000000009600000794691555
+            "value": 0.00000000003204974063970865
           },
           "end": {
             "unit": "radians",
-            "value": 6.283185307275586
+            "value": 6.283185307211636
           },
           "relative": false
         }
@@ -1594,8 +1516,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -70.29450000120649,
-          "y": 15.875000004572,
+          "x": -70.29450000038142,
+          "y": 15.87500000139819,
           "z": 0.0
         }
       }
@@ -1609,17 +1531,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -76.20000000088899,
-            "y": 15.87500000381
+            "x": -76.2000000002543,
+            "y": 15.875000001144144
           },
-          "radius": 5.905499999682504,
+          "radius": 5.905499999872896,
           "start": {
             "unit": "radians",
-            "value": 0.00000000012903226874763017
+            "value": 0.000000000043018396492294094
           },
           "end": {
             "unit": "radians",
-            "value": 6.283185307308618
+            "value": 6.283185307222604
           },
           "relative": false
         }

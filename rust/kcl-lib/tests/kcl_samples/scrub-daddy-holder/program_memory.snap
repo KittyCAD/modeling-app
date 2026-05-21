@@ -1827,14 +1827,14 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           "ccw": true,
           "center": [
-            16.999999992630176,
-            0.0007208569889428887
+            16.999999992629586,
+            0.0007208683436528431
           ],
           "from": [
-            15.397057062824118,
-            -2.652687134391831
+            15.397587893762429,
+            -2.653007729372268
           ],
-          "radius": 3.1000000007965456,
+          "radius": 3.1000000007953474,
           "tag": {
             "commentStart": 828,
             "end": 835,
@@ -1844,8 +1844,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "value": "circle1"
           },
           "to": [
-            15.397057062824118,
-            -2.652687134391831
+            15.397587893762429,
+            -2.653007729372268
           ],
           "type": "Circle",
           "units": "mm"
@@ -1884,12 +1884,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "start": {
         "from": [
-          15.397057062824118,
-          -2.652687134391831
+          15.397587893762429,
+          -2.653007729372268
         ],
         "to": [
-          15.397057062824118,
-          -2.652687134391831
+          15.397587893762429,
+          -2.653007729372268
         ],
         "units": "mm",
         "tag": null,
@@ -1925,7 +1925,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 15.397057062824118,
+                        "n": 15.397587893762429,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1933,7 +1933,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": -2.652687134391831,
+                        "n": -2.653007729372268,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1943,7 +1943,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     ],
                     "center": [
                       {
-                        "n": 16.999999992630176,
+                        "n": 16.999999992629586,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1951,7 +1951,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": 0.0007208569889428887,
+                        "n": 0.0007208683436528431,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2045,7 +2045,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000006015160830148392,
+                        "n": 0.000000000000000006011369313429627,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2053,7 +2053,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000037144191601217483,
+                        "n": 0.000000000000000037144569899794415,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2063,7 +2063,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     ],
                     "end": [
                       {
-                        "n": 16.999999992630116,
+                        "n": 16.999999992629586,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2071,7 +2071,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": 0.0007208569887073754,
+                        "n": 0.0007208683436528197,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2170,14 +2170,14 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   },
                   "ccw": true,
                   "center": [
-                    16.999999992630176,
-                    0.0007208569889428887
+                    16.999999992629586,
+                    0.0007208683436528431
                   ],
                   "from": [
-                    15.397057062824118,
-                    -2.652687134391831
+                    15.397587893762429,
+                    -2.653007729372268
                   ],
-                  "radius": 3.1000000007965456,
+                  "radius": 3.1000000007953474,
                   "tag": {
                     "commentStart": 828,
                     "end": 835,
@@ -2187,8 +2187,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    15.397057062824118,
-                    -2.652687134391831
+                    15.397587893762429,
+                    -2.653007729372268
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -2227,12 +2227,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               },
               "start": {
                 "from": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.397587893762429,
+                  -2.653007729372268
                 ],
                 "to": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.397587893762429,
+                  -2.653007729372268
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2305,14 +2305,14 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 "ccw": true,
                 "center": [
-                  16.999999992630176,
-                  0.0007208569889428887
+                  16.999999992629586,
+                  0.0007208683436528431
                 ],
                 "from": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.397587893762429,
+                  -2.653007729372268
                 ],
-                "radius": 3.1000000007965456,
+                "radius": 3.1000000007953474,
                 "tag": {
                   "commentStart": 828,
                   "end": 835,
@@ -2322,8 +2322,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.397587893762429,
+                  -2.653007729372268
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -2362,12 +2362,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "start": {
               "from": [
-                15.397057062824118,
-                -2.652687134391831
+                15.397587893762429,
+                -2.653007729372268
               ],
               "to": [
-                15.397057062824118,
-                -2.652687134391831
+                15.397587893762429,
+                -2.653007729372268
               ],
               "units": "mm",
               "tag": null,
@@ -2427,14 +2427,14 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 "ccw": true,
                 "center": [
-                  16.999999992630176,
-                  0.0007208569889428887
+                  16.999999992629586,
+                  0.0007208683436528431
                 ],
                 "from": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.397587893762429,
+                  -2.653007729372268
                 ],
-                "radius": 3.1000000007965456,
+                "radius": 3.1000000007953474,
                 "tag": {
                   "commentStart": 828,
                   "end": 835,
@@ -2444,8 +2444,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.397587893762429,
+                  -2.653007729372268
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -2484,12 +2484,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "start": {
               "from": [
-                15.397057062824118,
-                -2.652687134391831
+                15.397587893762429,
+                -2.653007729372268
               ],
               "to": [
-                15.397057062824118,
-                -2.652687134391831
+                15.397587893762429,
+                -2.653007729372268
               ],
               "units": "mm",
               "tag": null,

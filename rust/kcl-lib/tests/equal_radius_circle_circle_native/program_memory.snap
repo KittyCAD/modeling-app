@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing equal_circle_circle_native.kcl
+description: Variables in memory after executing equal_radius_circle_circle_native.kcl
 ---
 {
   "__sketch_1_on": {
@@ -50,7 +50,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 4.999999999,
+                        "n": 4.9999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000010000000814903708,
+                        "n": 0.00000000000010000001133233571,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -170,7 +170,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 14.999999995,
+                        "n": 14.9999999979997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -188,7 +188,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                     ],
                     "center": [
                       {
-                        "n": 9.999999999,
+                        "n": 9.9999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -294,14 +294,14 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000010000000814903708,
+                    0.00000000000010000001133233571,
                     0.0
                   ],
                   "from": [
-                    4.999999999,
+                    4.9999999999999,
                     0.0
                   ],
-                  "radius": 4.999999998,
+                  "radius": 4.999999999999799,
                   "tag": {
                     "commentStart": 65,
                     "end": 66,
@@ -311,7 +311,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                     "value": "a"
                   },
                   "to": [
-                    4.999999999,
+                    4.9999999999999,
                     0.0
                   ],
                   "type": "Circle",
@@ -323,12 +323,12 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.999999999,
+                    4.9999999999999,
                     0.0
                   ],
                   "tag": null,
                   "to": [
-                    14.999999995,
+                    14.9999999979997,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -341,14 +341,14 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                   },
                   "ccw": true,
                   "center": [
-                    9.999999999,
+                    9.9999999999999,
                     0.0
                   ],
                   "from": [
-                    14.999999995,
+                    14.9999999979997,
                     0.0
                   ],
-                  "radius": 4.999999996,
+                  "radius": 4.999999997999799,
                   "tag": {
                     "commentStart": 135,
                     "end": 136,
@@ -358,7 +358,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                     "value": "b"
                   },
                   "to": [
-                    14.999999995,
+                    14.9999999979997,
                     0.0
                   ],
                   "type": "Circle",
@@ -398,11 +398,11 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
               },
               "start": {
                 "from": [
-                  4.999999999,
+                  4.9999999999999,
                   0.0
                 ],
                 "to": [
-                  4.999999999,
+                  4.9999999999999,
                   0.0
                 ],
                 "units": "mm",

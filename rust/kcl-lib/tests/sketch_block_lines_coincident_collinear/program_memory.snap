@@ -170,7 +170,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_c
                   "line": {
                     "start": [
                       {
-                        "n": 10.0,
+                        "n": 9.999999999998998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -188,7 +188,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_c
                     ],
                     "end": [
                       {
-                        "n": 20.0,
+                        "n": 19.999999999997996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -329,7 +329,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_c
                     "value": "line2"
                   },
                   "to": [
-                    20.0,
+                    19.999999999997996,
                     0.0
                   ],
                   "type": "ToPoint",

@@ -69,7 +69,7 @@ description: Artifact commands sketch_block_arc_using_center_simple.kcl
         "path": "[uuid]",
         "to": {
           "x": 1.0,
-          "y": -0.00000000000000000000000000001417067217479522,
+          "y": -0.00000000000000000000000000000000000014162831445746426,
           "z": 0.0
         }
       }
@@ -91,12 +91,12 @@ description: Artifact commands sketch_block_arc_using_center_simple.kcl
           "type": "arc",
           "center": {
             "x": -0.0,
-            "y": 0.00000000000000004646246887037477
+            "y": 0.0000000000000000000046461201076379456
           },
           "radius": 1.0,
           "start": {
             "unit": "degrees",
-            "value": -0.0000000000000026621033720312555
+            "value": -0.00000000000000000026620307327852204
           },
           "end": {
             "unit": "degrees",

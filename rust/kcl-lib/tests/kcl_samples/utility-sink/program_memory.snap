@@ -685,7 +685,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "tag": {
@@ -697,7 +697,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -709,7 +709,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "tag": {
@@ -721,7 +721,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -733,7 +733,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "tag": {
@@ -745,7 +745,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -757,7 +757,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "tag": {
@@ -769,7 +769,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -809,11 +809,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "to": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "units": "mm",
@@ -927,7 +927,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "tag": {
@@ -939,7 +939,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -951,7 +951,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "tag": {
@@ -963,7 +963,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -975,7 +975,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "tag": {
@@ -987,7 +987,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -999,7 +999,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "tag": {
@@ -1011,7 +1011,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1051,11 +1051,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "to": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "units": "mm",
@@ -1169,7 +1169,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "tag": {
@@ -1181,7 +1181,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -1193,7 +1193,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "tag": {
@@ -1205,7 +1205,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -1217,7 +1217,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "tag": {
@@ -1229,7 +1229,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1241,7 +1241,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "tag": {
@@ -1253,7 +1253,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1293,11 +1293,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "to": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "units": "mm",
@@ -1411,7 +1411,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "tag": {
@@ -1423,7 +1423,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -1435,7 +1435,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "tag": {
@@ -1447,7 +1447,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -1459,7 +1459,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "tag": {
@@ -1471,7 +1471,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1483,7 +1483,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "tag": {
@@ -1495,7 +1495,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1535,11 +1535,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "to": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "units": "mm",
@@ -1664,7 +1664,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 591.499999985,
+                        "n": 591.4999999929962,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1682,7 +1682,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 14.999999994,
+                        "n": 14.999999997998708,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1784,7 +1784,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 14.999999994,
+                        "n": 14.999999997998708,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1802,7 +1802,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 14.999999992,
+                        "n": 14.999999995997818,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1907,7 +1907,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    14.999999994,
+                    14.999999997998708,
                     0.0
                   ],
                   "tag": {
@@ -1919,7 +1919,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "leftEdge"
                   },
                   "to": [
-                    14.999999992,
+                    14.999999995997818,
                     13.0
                   ],
                   "type": "ToPoint",
@@ -1931,7 +1931,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    14.999999992,
+                    14.999999995997818,
                     13.0
                   ],
                   "tag": {
@@ -1943,7 +1943,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "topEdge"
                   },
                   "to": [
-                    591.499999988,
+                    591.4999999939968,
                     13.0
                   ],
                   "type": "ToPoint",
@@ -1955,7 +1955,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    591.499999988,
+                    591.4999999939968,
                     13.0
                   ],
                   "tag": {
@@ -1967,7 +1967,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "rightEdge"
                   },
                   "to": [
-                    591.4999999855,
+                    591.4999999929963,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -1979,7 +1979,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    591.4999999855,
+                    591.4999999929963,
                     0.0
                   ],
                   "tag": {
@@ -1991,7 +1991,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "bottomEdge"
                   },
                   "to": [
-                    14.999999994,
+                    14.999999997998708,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -2031,11 +2031,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "units": "mm",
@@ -2084,7 +2084,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 591.4999999865,
+                        "n": 591.4999999939965,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2102,7 +2102,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 591.4999999855,
+                        "n": 591.4999999929963,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2204,7 +2204,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000020000001045547796,
+                        "n": -0.00000000000020008906048101426,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2222,7 +2222,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 14.999999996,
+                        "n": 14.99999999799891,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2325,7 +2325,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 14.99999999,
+                        "n": 14.99999999599762,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2343,7 +2343,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 591.499999988,
+                        "n": 591.4999999939968,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2448,7 +2448,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            14.999999994,
+            14.999999997998708,
             0.0
           ],
           "tag": {
@@ -2460,7 +2460,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "leftEdge"
           },
           "to": [
-            14.999999992,
+            14.999999995997818,
             13.0
           ],
           "type": "ToPoint",
@@ -2472,7 +2472,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            14.999999992,
+            14.999999995997818,
             13.0
           ],
           "tag": {
@@ -2484,7 +2484,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "topEdge"
           },
           "to": [
-            591.499999988,
+            591.4999999939968,
             13.0
           ],
           "type": "ToPoint",
@@ -2496,7 +2496,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            591.499999988,
+            591.4999999939968,
             13.0
           ],
           "tag": {
@@ -2508,7 +2508,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "rightEdge"
           },
           "to": [
-            591.4999999855,
+            591.4999999929963,
             0.0
           ],
           "type": "ToPoint",
@@ -2520,7 +2520,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            591.4999999855,
+            591.4999999929963,
             0.0
           ],
           "tag": {
@@ -2532,7 +2532,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "bottomEdge"
           },
           "to": [
-            14.999999994,
+            14.999999997998708,
             0.0
           ],
           "type": "ToPoint",
@@ -2572,11 +2572,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          14.999999994,
+          14.999999997998708,
           0.0
         ],
         "to": [
-          14.999999994,
+          14.999999997998708,
           0.0
         ],
         "units": "mm",
@@ -2688,7 +2688,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "tag": {
@@ -2700,7 +2700,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -2712,7 +2712,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "tag": {
@@ -2724,7 +2724,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -2736,7 +2736,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "tag": {
@@ -2748,7 +2748,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2760,7 +2760,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "tag": {
@@ -2772,7 +2772,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2812,11 +2812,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "to": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "units": "mm",
@@ -2930,7 +2930,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "tag": {
@@ -2942,7 +2942,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -2954,7 +2954,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.999999992,
+                  14.999999995997818,
                   13.0
                 ],
                 "tag": {
@@ -2966,7 +2966,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -2978,7 +2978,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.499999988,
+                  591.4999999939968,
                   13.0
                 ],
                 "tag": {
@@ -2990,7 +2990,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3002,7 +3002,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  591.4999999855,
+                  591.4999999929963,
                   0.0
                 ],
                 "tag": {
@@ -3014,7 +3014,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  14.999999994,
+                  14.999999997998708,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3054,11 +3054,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "to": [
-                14.999999994,
+                14.999999997998708,
                 0.0
               ],
               "units": "mm",
@@ -3174,7 +3174,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              14.999999994,
+              14.999999997998708,
               0.0
             ],
             "tag": {
@@ -3186,7 +3186,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "leftEdge"
             },
             "to": [
-              14.999999992,
+              14.999999995997818,
               13.0
             ],
             "type": "ToPoint",
@@ -3198,7 +3198,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              14.999999992,
+              14.999999995997818,
               13.0
             ],
             "tag": {
@@ -3210,7 +3210,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "topEdge"
             },
             "to": [
-              591.499999988,
+              591.4999999939968,
               13.0
             ],
             "type": "ToPoint",
@@ -3222,7 +3222,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              591.499999988,
+              591.4999999939968,
               13.0
             ],
             "tag": {
@@ -3234,7 +3234,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "rightEdge"
             },
             "to": [
-              591.4999999855,
+              591.4999999929963,
               0.0
             ],
             "type": "ToPoint",
@@ -3246,7 +3246,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              591.4999999855,
+              591.4999999929963,
               0.0
             ],
             "tag": {
@@ -3258,7 +3258,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "bottomEdge"
             },
             "to": [
-              14.999999994,
+              14.999999997998708,
               0.0
             ],
             "type": "ToPoint",
@@ -3298,11 +3298,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            14.999999994,
+            14.999999997998708,
             0.0
           ],
           "to": [
-            14.999999994,
+            14.999999997998708,
             0.0
           ],
           "units": "mm",
@@ -11905,7 +11905,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   0.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "tag": {
                   "commentStart": 21589,
@@ -11965,7 +11965,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "to": [
                   13.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -11977,7 +11977,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   13.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "tag": {
                   "commentStart": 21818,
@@ -11989,7 +11989,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "to": [
                   0.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -12029,11 +12029,11 @@ description: Variables in memory after executing utility-sink.kcl
             "start": {
               "from": [
                 0.0,
-                14.999999999999995
+                15.0
               ],
               "to": [
                 0.0,
-                14.999999999999995
+                15.0
               ],
               "units": "mm",
               "tag": null,
@@ -12147,7 +12147,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   0.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "tag": {
                   "commentStart": 21589,
@@ -12207,7 +12207,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "to": [
                   13.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -12219,7 +12219,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   13.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "tag": {
                   "commentStart": 21818,
@@ -12231,7 +12231,7 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "to": [
                   0.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -12271,11 +12271,11 @@ description: Variables in memory after executing utility-sink.kcl
             "start": {
               "from": [
                 0.0,
-                14.999999999999995
+                15.0
               ],
               "to": [
                 0.0,
-                14.999999999999995
+                15.0
               ],
               "units": "mm",
               "tag": null,
@@ -12347,7 +12347,7 @@ description: Variables in memory after executing utility-sink.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999995,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12365,7 +12365,7 @@ description: Variables in memory after executing utility-sink.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999995,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12467,7 +12467,7 @@ description: Variables in memory after executing utility-sink.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999995,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12583,7 +12583,7 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "from": [
                     0.0,
-                    14.999999999999995
+                    15.0
                   ],
                   "tag": {
                     "commentStart": 21589,
@@ -12643,7 +12643,7 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "to": [
                     13.0,
-                    14.999999999999995
+                    15.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -12655,7 +12655,7 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "from": [
                     13.0,
-                    14.999999999999995
+                    15.0
                   ],
                   "tag": {
                     "commentStart": 21818,
@@ -12667,7 +12667,7 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "to": [
                     0.0,
-                    14.999999999999995
+                    15.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -12707,11 +12707,11 @@ description: Variables in memory after executing utility-sink.kcl
               "start": {
                 "from": [
                   0.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "to": [
                   0.0,
-                  14.999999999999995
+                  15.0
                 ],
                 "units": "mm",
                 "tag": null,
@@ -12785,7 +12785,7 @@ description: Variables in memory after executing utility-sink.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999995,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12887,7 +12887,7 @@ description: Variables in memory after executing utility-sink.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000001794000046000635,
+                        "n": -0.00000000000000000007295991819776554,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12905,7 +12905,7 @@ description: Variables in memory after executing utility-sink.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13124,7 +13124,7 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "from": [
             0.0,
-            14.999999999999995
+            15.0
           ],
           "tag": {
             "commentStart": 21589,
@@ -13184,7 +13184,7 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "to": [
             13.0,
-            14.999999999999995
+            15.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -13196,7 +13196,7 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "from": [
             13.0,
-            14.999999999999995
+            15.0
           ],
           "tag": {
             "commentStart": 21818,
@@ -13208,7 +13208,7 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "to": [
             0.0,
-            14.999999999999995
+            15.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -13248,11 +13248,11 @@ description: Variables in memory after executing utility-sink.kcl
       "start": {
         "from": [
           0.0,
-          14.999999999999995
+          15.0
         ],
         "to": [
           0.0,
-          14.999999999999995
+          15.0
         ],
         "units": "mm",
         "tag": null,
@@ -13361,7 +13361,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "from": [
               0.0,
-              14.999999999999995
+              15.0
             ],
             "tag": {
               "commentStart": 21589,
@@ -13421,7 +13421,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "to": [
               13.0,
-              14.999999999999995
+              15.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -13433,7 +13433,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "from": [
               13.0,
-              14.999999999999995
+              15.0
             ],
             "tag": {
               "commentStart": 21818,
@@ -13445,7 +13445,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "to": [
               0.0,
-              14.999999999999995
+              15.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -13485,11 +13485,11 @@ description: Variables in memory after executing utility-sink.kcl
         "start": {
           "from": [
             0.0,
-            14.999999999999995
+            15.0
           ],
           "to": [
             0.0,
-            14.999999999999995
+            15.0
           ],
           "units": "mm",
           "tag": null,
@@ -13623,7 +13623,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.500000013,
+                  593.500000004505,
                   0.0
                 ],
                 "tag": {
@@ -13635,7 +13635,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -13647,7 +13647,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "tag": {
@@ -13659,7 +13659,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -13671,7 +13671,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "tag": {
@@ -13683,7 +13683,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13695,7 +13695,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "tag": {
@@ -13707,7 +13707,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  593.5000000135,
+                  593.500000004505,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13747,11 +13747,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "to": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "units": "mm",
@@ -13808,7 +13808,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.500000013,
+                  593.500000004505,
                   0.0
                 ],
                 "tag": {
@@ -13820,7 +13820,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -13832,7 +13832,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "tag": {
@@ -13844,7 +13844,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -13856,7 +13856,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "tag": {
@@ -13868,7 +13868,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13880,7 +13880,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "tag": {
@@ -13892,7 +13892,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  593.5000000135,
+                  593.500000004505,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13932,11 +13932,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "to": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "units": "mm",
@@ -14034,7 +14034,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 606.5000000235,
+                        "n": 606.5000000105082,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14052,7 +14052,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.5000000135,
+                        "n": 593.500000004505,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14154,7 +14154,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 593.500000013,
+                        "n": 593.500000004505,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14172,7 +14172,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.5000000160001,
+                        "n": 593.5000000075065,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14277,7 +14277,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    593.500000013,
+                    593.500000004505,
                     0.0
                   ],
                   "tag": {
@@ -14289,7 +14289,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "leftEdge"
                   },
                   "to": [
-                    593.5000000160001,
+                    593.5000000075065,
                     13.0
                   ],
                   "type": "ToPoint",
@@ -14301,7 +14301,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    593.5000000160001,
+                    593.5000000075065,
                     13.0
                   ],
                   "tag": {
@@ -14313,7 +14313,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "topEdge"
                   },
                   "to": [
-                    606.5000000205,
+                    606.5000000095076,
                     13.0
                   ],
                   "type": "ToPoint",
@@ -14325,7 +14325,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    606.5000000205,
+                    606.5000000095076,
                     13.0
                   ],
                   "tag": {
@@ -14337,7 +14337,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "rightEdge"
                   },
                   "to": [
-                    606.500000023,
+                    606.5000000105081,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -14349,7 +14349,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    606.500000023,
+                    606.5000000105081,
                     0.0
                   ],
                   "tag": {
@@ -14361,7 +14361,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "bottomEdge"
                   },
                   "to": [
-                    593.5000000135,
+                    593.500000004505,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -14401,11 +14401,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  593.500000013,
+                  593.500000004505,
                   0.0
                 ],
                 "to": [
-                  593.500000013,
+                  593.500000004505,
                   0.0
                 ],
                 "units": "mm",
@@ -14436,7 +14436,7 @@ description: Variables in memory after executing utility-sink.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": "mm",
-              "isClosed": "no"
+              "isClosed": "implicitly"
             }
           }
         },
@@ -14454,7 +14454,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 606.500000022,
+                        "n": 606.5000000095077,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14472,7 +14472,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 606.500000023,
+                        "n": 606.5000000105081,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14574,7 +14574,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000004500000370081669,
+                        "n": 0.0000000000004504089831829182,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14592,7 +14592,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.500000009,
+                        "n": 593.5000000045045,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14695,7 +14695,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 593.5000000185,
+                        "n": 593.5000000075067,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14713,7 +14713,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 606.5000000205,
+                        "n": 606.5000000095076,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14821,7 +14821,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "tag": {
@@ -14833,7 +14833,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "leftEdge"
               },
               "to": [
-                593.5000000160001,
+                593.5000000075065,
                 13.0
               ],
               "type": "ToPoint",
@@ -14845,7 +14845,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                593.5000000160001,
+                593.5000000075065,
                 13.0
               ],
               "tag": {
@@ -14857,7 +14857,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "topEdge"
               },
               "to": [
-                606.5000000205,
+                606.5000000095076,
                 13.0
               ],
               "type": "ToPoint",
@@ -14869,7 +14869,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                606.5000000205,
+                606.5000000095076,
                 13.0
               ],
               "tag": {
@@ -14881,7 +14881,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "rightEdge"
               },
               "to": [
-                606.500000023,
+                606.5000000105081,
                 0.0
               ],
               "type": "ToPoint",
@@ -14893,7 +14893,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                606.500000023,
+                606.5000000105081,
                 0.0
               ],
               "tag": {
@@ -14905,7 +14905,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "bottomEdge"
               },
               "to": [
-                593.5000000135,
+                593.500000004505,
                 0.0
               ],
               "type": "ToPoint",
@@ -14945,11 +14945,11 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "start": {
             "from": [
-              593.500000013,
+              593.500000004505,
               0.0
             ],
             "to": [
-              593.500000013,
+              593.500000004505,
               0.0
             ],
             "units": "mm",
@@ -14995,7 +14995,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "tag": {
@@ -15007,7 +15007,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "leftEdge"
               },
               "to": [
-                593.5000000160001,
+                593.5000000075065,
                 13.0
               ],
               "type": "ToPoint",
@@ -15019,7 +15019,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                593.5000000160001,
+                593.5000000075065,
                 13.0
               ],
               "tag": {
@@ -15031,7 +15031,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "topEdge"
               },
               "to": [
-                606.5000000205,
+                606.5000000095076,
                 13.0
               ],
               "type": "ToPoint",
@@ -15043,7 +15043,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                606.5000000205,
+                606.5000000095076,
                 13.0
               ],
               "tag": {
@@ -15055,7 +15055,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "rightEdge"
               },
               "to": [
-                606.500000023,
+                606.5000000105081,
                 0.0
               ],
               "type": "ToPoint",
@@ -15067,7 +15067,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "sourceRange": []
               },
               "from": [
-                606.500000023,
+                606.5000000105081,
                 0.0
               ],
               "tag": {
@@ -15079,7 +15079,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "value": "bottomEdge"
               },
               "to": [
-                593.5000000135,
+                593.500000004505,
                 0.0
               ],
               "type": "ToPoint",
@@ -15119,11 +15119,11 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "start": {
             "from": [
-              593.500000013,
+              593.500000004505,
               0.0
             ],
             "to": [
-              593.500000013,
+              593.500000004505,
               0.0
             ],
             "units": "mm",
@@ -15237,7 +15237,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.500000013,
+                  593.500000004505,
                   0.0
                 ],
                 "tag": {
@@ -15249,7 +15249,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -15261,7 +15261,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "tag": {
@@ -15273,7 +15273,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -15285,7 +15285,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "tag": {
@@ -15297,7 +15297,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -15309,7 +15309,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "tag": {
@@ -15321,7 +15321,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  593.5000000135,
+                  593.500000004505,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -15361,11 +15361,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "to": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "units": "mm",
@@ -15422,7 +15422,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.500000013,
+                  593.500000004505,
                   0.0
                 ],
                 "tag": {
@@ -15434,7 +15434,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "leftEdge"
                 },
                 "to": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -15446,7 +15446,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  593.5000000160001,
+                  593.5000000075065,
                   13.0
                 ],
                 "tag": {
@@ -15458,7 +15458,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "type": "ToPoint",
@@ -15470,7 +15470,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.5000000205,
+                  606.5000000095076,
                   13.0
                 ],
                 "tag": {
@@ -15482,7 +15482,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "rightEdge"
                 },
                 "to": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -15494,7 +15494,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  606.500000023,
+                  606.5000000105081,
                   0.0
                 ],
                 "tag": {
@@ -15506,7 +15506,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "value": "bottomEdge"
                 },
                 "to": [
-                  593.5000000135,
+                  593.500000004505,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -15546,11 +15546,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "start": {
               "from": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "to": [
-                593.500000013,
+                593.500000004505,
                 0.0
               ],
               "units": "mm",
@@ -15704,7 +15704,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              298.750000001,
+              298.7500000005001,
               42.0
             ],
             "tag": {
@@ -15716,7 +15716,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "leftEdge"
             },
             "to": [
-              298.7500000005,
+              298.7499999999994,
               488.0
             ],
             "type": "ToPoint",
@@ -15728,7 +15728,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              298.7500000005,
+              298.7499999999994,
               488.0
             ],
             "tag": {
@@ -15740,7 +15740,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "topEdge"
             },
             "to": [
-              888.24999999875,
+              888.2499999989985,
               488.0
             ],
             "type": "ToPoint",
@@ -15752,7 +15752,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              888.24999999875,
+              888.2499999989985,
               488.0
             ],
             "tag": {
@@ -15764,7 +15764,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "rightEdge"
             },
             "to": [
-              888.2499999975,
+              888.2499999984979,
               42.0
             ],
             "type": "ToPoint",
@@ -15776,7 +15776,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              888.2499999975,
+              888.2499999984979,
               42.0
             ],
             "tag": {
@@ -15788,7 +15788,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "bottomEdge"
             },
             "to": [
-              298.75000000125,
+              298.75000000050017,
               42.0
             ],
             "type": "ToPoint",
@@ -15821,11 +15821,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            298.750000001,
+            298.7500000005001,
             42.0
           ],
           "to": [
-            298.750000001,
+            298.7500000005001,
             42.0
           ],
           "units": "mm",
@@ -15939,7 +15939,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              -296.750000001,
+              -296.7500000005001,
               40.0
             ],
             "tag": {
@@ -15951,7 +15951,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "leftEdge"
             },
             "to": [
-              -296.7500000005,
+              -296.7499999999994,
               490.0
             ],
             "type": "ToPoint",
@@ -15963,7 +15963,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              -296.7500000005,
+              -296.7499999999994,
               490.0
             ],
             "tag": {
@@ -15975,7 +15975,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "topEdge"
             },
             "to": [
-              -890.24999999875,
+              -890.2499999989985,
               490.0
             ],
             "type": "ToPoint",
@@ -15987,7 +15987,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              -890.24999999875,
+              -890.2499999989985,
               490.0
             ],
             "tag": {
@@ -15999,7 +15999,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "rightEdge"
             },
             "to": [
-              -890.2499999975,
+              -890.2499999984979,
               40.0
             ],
             "type": "ToPoint",
@@ -16011,7 +16011,7 @@ description: Variables in memory after executing utility-sink.kcl
               "sourceRange": []
             },
             "from": [
-              -890.2499999975,
+              -890.2499999984979,
               40.0
             ],
             "tag": {
@@ -16023,7 +16023,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "bottomEdge"
             },
             "to": [
-              -296.75000000125,
+              -296.75000000050017,
               40.0
             ],
             "type": "ToPoint",
@@ -16056,11 +16056,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            -296.750000001,
+            -296.7500000005001,
             40.0
           ],
           "to": [
-            -296.750000001,
+            -296.7500000005001,
             40.0
           ],
           "units": "mm",
@@ -16132,7 +16132,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 888.24999999725,
+                        "n": 888.2499999984979,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16150,7 +16150,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 298.75000000125,
+                        "n": 298.75000000050017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16245,7 +16245,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000002499999159766843,
+                        "n": 0.00000000000002500399644851194,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16263,7 +16263,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000004999998322033685,
+                        "n": 0.0000000002500649684815929,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16359,7 +16359,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 298.750000001,
+                        "n": 298.7500000005001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16377,7 +16377,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 298.7500000005,
+                        "n": 298.7499999999994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16475,7 +16475,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    298.750000001,
+                    298.7500000005001,
                     42.0
                   ],
                   "tag": {
@@ -16487,7 +16487,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "leftEdge"
                   },
                   "to": [
-                    298.7500000005,
+                    298.7499999999994,
                     488.0
                   ],
                   "type": "ToPoint",
@@ -16499,7 +16499,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    298.7500000005,
+                    298.7499999999994,
                     488.0
                   ],
                   "tag": {
@@ -16511,7 +16511,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "topEdge"
                   },
                   "to": [
-                    888.24999999875,
+                    888.2499999989985,
                     488.0
                   ],
                   "type": "ToPoint",
@@ -16523,7 +16523,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    888.24999999875,
+                    888.2499999989985,
                     488.0
                   ],
                   "tag": {
@@ -16535,7 +16535,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "rightEdge"
                   },
                   "to": [
-                    888.2499999975,
+                    888.2499999984979,
                     42.0
                   ],
                   "type": "ToPoint",
@@ -16547,7 +16547,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    888.2499999975,
+                    888.2499999984979,
                     42.0
                   ],
                   "tag": {
@@ -16559,7 +16559,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "bottomEdge"
                   },
                   "to": [
-                    298.75000000125,
+                    298.75000000050017,
                     42.0
                   ],
                   "type": "ToPoint",
@@ -16592,11 +16592,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  298.750000001,
+                  298.7500000005001,
                   42.0
                 ],
                 "to": [
-                  298.750000001,
+                  298.7500000005001,
                   42.0
                 ],
                 "units": "mm",
@@ -16627,7 +16627,7 @@ description: Variables in memory after executing utility-sink.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": "mm",
-              "isClosed": "no"
+              "isClosed": "implicitly"
             }
           }
         },
@@ -16645,7 +16645,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000007499997489300526,
+                        "n": 0.00000000025008997247806647,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16663,7 +16663,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 298.750000001,
+                        "n": 298.7500000005001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16759,7 +16759,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 888.249999998,
+                        "n": 888.2499999989984,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16777,7 +16777,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 888.2499999975,
+                        "n": 888.2499999984979,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16872,7 +16872,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 298.74999999975,
+                        "n": 298.7499999999993,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16890,7 +16890,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 888.24999999875,
+                        "n": 888.2499999989985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16988,7 +16988,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            298.750000001,
+            298.7500000005001,
             42.0
           ],
           "tag": {
@@ -17000,7 +17000,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "leftEdge"
           },
           "to": [
-            298.7500000005,
+            298.7499999999994,
             488.0
           ],
           "type": "ToPoint",
@@ -17012,7 +17012,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            298.7500000005,
+            298.7499999999994,
             488.0
           ],
           "tag": {
@@ -17024,7 +17024,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "topEdge"
           },
           "to": [
-            888.24999999875,
+            888.2499999989985,
             488.0
           ],
           "type": "ToPoint",
@@ -17036,7 +17036,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            888.24999999875,
+            888.2499999989985,
             488.0
           ],
           "tag": {
@@ -17048,7 +17048,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "rightEdge"
           },
           "to": [
-            888.2499999975,
+            888.2499999984979,
             42.0
           ],
           "type": "ToPoint",
@@ -17060,7 +17060,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            888.2499999975,
+            888.2499999984979,
             42.0
           ],
           "tag": {
@@ -17072,7 +17072,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "bottomEdge"
           },
           "to": [
-            298.75000000125,
+            298.75000000050017,
             42.0
           ],
           "type": "ToPoint",
@@ -17105,11 +17105,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          298.750000001,
+          298.7500000005001,
           42.0
         ],
         "to": [
-          298.750000001,
+          298.7500000005001,
           42.0
         ],
         "units": "mm",
@@ -17185,7 +17185,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -890.24999999725,
+                        "n": -890.2499999984979,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17203,7 +17203,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": -296.75000000125,
+                        "n": -296.75000000050017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17298,7 +17298,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000002499999159766843,
+                        "n": -0.00000000000002500399644851194,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17316,7 +17316,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000004999998322033685,
+                        "n": -0.0000000002500649684815929,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17412,7 +17412,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -296.750000001,
+                        "n": -296.7500000005001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17430,7 +17430,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": -296.7500000005,
+                        "n": -296.7499999999994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17528,7 +17528,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -296.750000001,
+                    -296.7500000005001,
                     40.0
                   ],
                   "tag": {
@@ -17540,7 +17540,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "leftEdge"
                   },
                   "to": [
-                    -296.7500000005,
+                    -296.7499999999994,
                     490.0
                   ],
                   "type": "ToPoint",
@@ -17552,7 +17552,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -296.7500000005,
+                    -296.7499999999994,
                     490.0
                   ],
                   "tag": {
@@ -17564,7 +17564,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "topEdge"
                   },
                   "to": [
-                    -890.24999999875,
+                    -890.2499999989985,
                     490.0
                   ],
                   "type": "ToPoint",
@@ -17576,7 +17576,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -890.24999999875,
+                    -890.2499999989985,
                     490.0
                   ],
                   "tag": {
@@ -17588,7 +17588,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "rightEdge"
                   },
                   "to": [
-                    -890.2499999975,
+                    -890.2499999984979,
                     40.0
                   ],
                   "type": "ToPoint",
@@ -17600,7 +17600,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -890.2499999975,
+                    -890.2499999984979,
                     40.0
                   ],
                   "tag": {
@@ -17612,7 +17612,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "bottomEdge"
                   },
                   "to": [
-                    -296.75000000125,
+                    -296.75000000050017,
                     40.0
                   ],
                   "type": "ToPoint",
@@ -17645,11 +17645,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  -296.750000001,
+                  -296.7500000005001,
                   40.0
                 ],
                 "to": [
-                  -296.750000001,
+                  -296.7500000005001,
                   40.0
                 ],
                 "units": "mm",
@@ -17680,7 +17680,7 @@ description: Variables in memory after executing utility-sink.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": "mm",
-              "isClosed": "no"
+              "isClosed": "implicitly"
             }
           }
         },
@@ -17698,7 +17698,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000007499997489300526,
+                        "n": -0.00000000025008997247806647,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17716,7 +17716,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": -296.750000001,
+                        "n": -296.7500000005001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17812,7 +17812,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -890.249999998,
+                        "n": -890.2499999989984,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17830,7 +17830,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": -890.2499999975,
+                        "n": -890.2499999984979,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17925,7 +17925,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -296.74999999975,
+                        "n": -296.7499999999993,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -17943,7 +17943,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": -890.24999999875,
+                        "n": -890.2499999989985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -18041,7 +18041,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            -296.750000001,
+            -296.7500000005001,
             40.0
           ],
           "tag": {
@@ -18053,7 +18053,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "leftEdge"
           },
           "to": [
-            -296.7500000005,
+            -296.7499999999994,
             490.0
           ],
           "type": "ToPoint",
@@ -18065,7 +18065,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            -296.7500000005,
+            -296.7499999999994,
             490.0
           ],
           "tag": {
@@ -18077,7 +18077,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "topEdge"
           },
           "to": [
-            -890.24999999875,
+            -890.2499999989985,
             490.0
           ],
           "type": "ToPoint",
@@ -18089,7 +18089,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            -890.24999999875,
+            -890.2499999989985,
             490.0
           ],
           "tag": {
@@ -18101,7 +18101,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "rightEdge"
           },
           "to": [
-            -890.2499999975,
+            -890.2499999984979,
             40.0
           ],
           "type": "ToPoint",
@@ -18113,7 +18113,7 @@ description: Variables in memory after executing utility-sink.kcl
             "sourceRange": []
           },
           "from": [
-            -890.2499999975,
+            -890.2499999984979,
             40.0
           ],
           "tag": {
@@ -18125,7 +18125,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "bottomEdge"
           },
           "to": [
-            -296.75000000125,
+            -296.75000000050017,
             40.0
           ],
           "type": "ToPoint",
@@ -18158,11 +18158,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          -296.750000001,
+          -296.7500000005001,
           40.0
         ],
         "to": [
-          -296.750000001,
+          -296.7500000005001,
           40.0
         ],
         "units": "mm",
@@ -19442,14 +19442,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               1000.0
             ],
             "from": [
-              597.500000013,
+              597.5000000060079,
               1000.0
             ],
-            "radius": 4.000000000999989,
+            "radius": 4.000000001001354,
             "tag": {
               "commentStart": 17978,
               "end": 17993,
@@ -19459,7 +19459,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapHandleCircle"
             },
             "to": [
-              597.500000013,
+              597.5000000060079,
               1000.0
             ],
             "type": "Circle",
@@ -19499,11 +19499,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            597.500000013,
+            597.5000000060079,
             1000.0
           ],
           "to": [
-            597.500000013,
+            597.5000000060079,
             1000.0
           ],
           "units": "mm",
@@ -19548,14 +19548,14 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "ccw": true,
           "center": [
-            593.500000012,
+            593.5000000050065,
             1000.0
           ],
           "from": [
-            597.500000013,
+            597.5000000060079,
             1000.0
           ],
-          "radius": 4.000000000999989,
+          "radius": 4.000000001001354,
           "tag": {
             "commentStart": 17978,
             "end": 17993,
@@ -19565,7 +19565,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "tapHandleCircle"
           },
           "to": [
-            597.500000013,
+            597.5000000060079,
             1000.0
           ],
           "type": "Circle",
@@ -19605,11 +19605,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          597.500000013,
+          597.5000000060079,
           1000.0
         ],
         "to": [
-          597.500000013,
+          597.5000000060079,
           1000.0
         ],
         "units": "mm",
@@ -19665,14 +19665,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               1000.0
             ],
             "from": [
-              597.500000013,
+              597.5000000060079,
               1000.0
             ],
-            "radius": 4.000000000999989,
+            "radius": 4.000000001001354,
             "tag": {
               "commentStart": 17978,
               "end": 17993,
@@ -19682,7 +19682,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapHandleCircle"
             },
             "to": [
-              597.500000013,
+              597.5000000060079,
               1000.0
             ],
             "type": "Circle",
@@ -19722,11 +19722,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            597.500000013,
+            597.5000000060079,
             1000.0
           ],
           "to": [
-            597.500000013,
+            597.5000000060079,
             1000.0
           ],
           "units": "mm",
@@ -19768,7 +19768,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000007500000195469146,
+                        "n": 0.000000002503437476492058,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19786,7 +19786,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.50000001,
+                        "n": 593.5000000050064,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19889,7 +19889,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000002500000061823048,
+                        "n": 0.0000000000002502936889113734,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19907,7 +19907,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000050000001261460965,
+                        "n": 0.0000000025031871828028955,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20014,14 +20014,14 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "ccw": true,
                   "center": [
-                    593.500000012,
+                    593.5000000050065,
                     1000.0
                   ],
                   "from": [
-                    597.500000013,
+                    597.5000000060079,
                     1000.0
                   ],
-                  "radius": 4.000000000999989,
+                  "radius": 4.000000001001354,
                   "tag": {
                     "commentStart": 17978,
                     "end": 17993,
@@ -20031,7 +20031,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "tapHandleCircle"
                   },
                   "to": [
-                    597.500000013,
+                    597.5000000060079,
                     1000.0
                   ],
                   "type": "Circle",
@@ -20071,11 +20071,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  597.500000013,
+                  597.5000000060079,
                   1000.0
                 ],
                 "to": [
-                  597.500000013,
+                  597.5000000060079,
                   1000.0
                 ],
                 "units": "mm",
@@ -20112,7 +20112,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 593.5000000125,
+                        "n": 593.5000000050067,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20130,7 +20130,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 597.5000000135,
+                        "n": 597.500000006008,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20233,7 +20233,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 597.500000013,
+                        "n": 597.5000000060079,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20251,7 +20251,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "center": [
                       {
-                        "n": 593.500000012,
+                        "n": 593.5000000050065,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20378,14 +20378,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               950.0
             ],
             "from": [
-              603.500000013,
+              603.5000000060079,
               950.0
             ],
-            "radius": 10.00000000099999,
+            "radius": 10.000000001001354,
             "tag": {
               "commentStart": 16617,
               "end": 16630,
@@ -20395,7 +20395,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapNoseCircle"
             },
             "to": [
-              603.500000013,
+              603.5000000060079,
               950.0
             ],
             "type": "Circle",
@@ -20435,11 +20435,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            603.500000013,
+            603.5000000060079,
             950.0
           ],
           "to": [
-            603.500000013,
+            603.5000000060079,
             950.0
           ],
           "units": "mm",
@@ -20484,14 +20484,14 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "ccw": true,
           "center": [
-            593.500000012,
+            593.5000000050065,
             950.0
           ],
           "from": [
-            603.500000013,
+            603.5000000060079,
             950.0
           ],
-          "radius": 10.00000000099999,
+          "radius": 10.000000001001354,
           "tag": {
             "commentStart": 16617,
             "end": 16630,
@@ -20501,7 +20501,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "tapNoseCircle"
           },
           "to": [
-            603.500000013,
+            603.5000000060079,
             950.0
           ],
           "type": "Circle",
@@ -20541,11 +20541,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          603.500000013,
+          603.5000000060079,
           950.0
         ],
         "to": [
-          603.500000013,
+          603.5000000060079,
           950.0
         ],
         "units": "mm",
@@ -20601,14 +20601,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               950.0
             ],
             "from": [
-              603.500000013,
+              603.5000000060079,
               950.0
             ],
-            "radius": 10.00000000099999,
+            "radius": 10.000000001001354,
             "tag": {
               "commentStart": 16617,
               "end": 16630,
@@ -20618,7 +20618,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapNoseCircle"
             },
             "to": [
-              603.500000013,
+              603.5000000060079,
               950.0
             ],
             "type": "Circle",
@@ -20658,11 +20658,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            603.500000013,
+            603.5000000060079,
             950.0
           ],
           "to": [
-            603.500000013,
+            603.5000000060079,
             950.0
           ],
           "units": "mm",
@@ -20704,7 +20704,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000007500000195469146,
+                        "n": 0.000000002503437476492058,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20722,7 +20722,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.50000001,
+                        "n": 593.5000000050064,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20825,7 +20825,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000002500000061823048,
+                        "n": 0.0000000000002502936889113734,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20843,7 +20843,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000050000001261460965,
+                        "n": 0.0000000025031871828028955,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -20950,14 +20950,14 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "ccw": true,
                   "center": [
-                    593.500000012,
+                    593.5000000050065,
                     950.0
                   ],
                   "from": [
-                    603.500000013,
+                    603.5000000060079,
                     950.0
                   ],
-                  "radius": 10.00000000099999,
+                  "radius": 10.000000001001354,
                   "tag": {
                     "commentStart": 16617,
                     "end": 16630,
@@ -20967,7 +20967,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "tapNoseCircle"
                   },
                   "to": [
-                    603.500000013,
+                    603.5000000060079,
                     950.0
                   ],
                   "type": "Circle",
@@ -21007,11 +21007,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  603.500000013,
+                  603.5000000060079,
                   950.0
                 ],
                 "to": [
-                  603.500000013,
+                  603.5000000060079,
                   950.0
                 ],
                 "units": "mm",
@@ -21048,7 +21048,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 593.5000000125,
+                        "n": 593.5000000050067,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21066,7 +21066,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 603.5000000135,
+                        "n": 603.500000006008,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21169,7 +21169,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 603.500000013,
+                        "n": 603.5000000060079,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21187,7 +21187,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "center": [
                       {
-                        "n": 593.500000012,
+                        "n": 593.5000000050065,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21314,14 +21314,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               545.0
             ],
             "from": [
-              608.500000013,
+              608.5000000060079,
               545.0
             ],
-            "radius": 15.00000000099999,
+            "radius": 15.000000001001354,
             "tag": {
               "commentStart": 15240,
               "end": 15255,
@@ -21331,7 +21331,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapPillarCircle"
             },
             "to": [
-              608.500000013,
+              608.5000000060079,
               545.0
             ],
             "type": "Circle",
@@ -21371,11 +21371,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            608.500000013,
+            608.5000000060079,
             545.0
           ],
           "to": [
-            608.500000013,
+            608.5000000060079,
             545.0
           ],
           "units": "mm",
@@ -21420,14 +21420,14 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "ccw": true,
           "center": [
-            593.500000012,
+            593.5000000050065,
             545.0
           ],
           "from": [
-            608.500000013,
+            608.5000000060079,
             545.0
           ],
-          "radius": 15.00000000099999,
+          "radius": 15.000000001001354,
           "tag": {
             "commentStart": 15240,
             "end": 15255,
@@ -21437,7 +21437,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "tapPillarCircle"
           },
           "to": [
-            608.500000013,
+            608.5000000060079,
             545.0
           ],
           "type": "Circle",
@@ -21477,11 +21477,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          608.500000013,
+          608.5000000060079,
           545.0
         ],
         "to": [
-          608.500000013,
+          608.5000000060079,
           545.0
         ],
         "units": "mm",
@@ -21537,14 +21537,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               545.0
             ],
             "from": [
-              608.500000013,
+              608.5000000060079,
               545.0
             ],
-            "radius": 15.00000000099999,
+            "radius": 15.000000001001354,
             "tag": {
               "commentStart": 15240,
               "end": 15255,
@@ -21554,7 +21554,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapPillarCircle"
             },
             "to": [
-              608.500000013,
+              608.5000000060079,
               545.0
             ],
             "type": "Circle",
@@ -21594,11 +21594,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            608.500000013,
+            608.5000000060079,
             545.0
           ],
           "to": [
-            608.500000013,
+            608.5000000060079,
             545.0
           ],
           "units": "mm",
@@ -21640,7 +21640,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000007500000195469146,
+                        "n": 0.000000002503437476492058,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21658,7 +21658,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.50000001,
+                        "n": 593.5000000050064,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21761,7 +21761,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000002500000061823048,
+                        "n": 0.0000000000002502936889113734,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21779,7 +21779,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000050000001261460965,
+                        "n": 0.0000000025031871828028955,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21886,14 +21886,14 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "ccw": true,
                   "center": [
-                    593.500000012,
+                    593.5000000050065,
                     545.0
                   ],
                   "from": [
-                    608.500000013,
+                    608.5000000060079,
                     545.0
                   ],
-                  "radius": 15.00000000099999,
+                  "radius": 15.000000001001354,
                   "tag": {
                     "commentStart": 15240,
                     "end": 15255,
@@ -21903,7 +21903,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "tapPillarCircle"
                   },
                   "to": [
-                    608.500000013,
+                    608.5000000060079,
                     545.0
                   ],
                   "type": "Circle",
@@ -21943,11 +21943,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  608.500000013,
+                  608.5000000060079,
                   545.0
                 ],
                 "to": [
-                  608.500000013,
+                  608.5000000060079,
                   545.0
                 ],
                 "units": "mm",
@@ -21984,7 +21984,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 593.5000000125,
+                        "n": 593.5000000050067,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22002,7 +22002,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 608.5000000135,
+                        "n": 608.500000006008,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22105,7 +22105,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 608.500000013,
+                        "n": 608.5000000060079,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22123,7 +22123,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "center": [
                       {
-                        "n": 593.500000012,
+                        "n": 593.5000000050065,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22250,14 +22250,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               545.0
             ],
             "from": [
-              633.500000013,
+              633.5000000060079,
               545.0
             ],
-            "radius": 40.00000000099999,
+            "radius": 40.000000001001354,
             "tag": {
               "commentStart": 13878,
               "end": 13892,
@@ -22267,7 +22267,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapPlateCircle"
             },
             "to": [
-              633.500000013,
+              633.5000000060079,
               545.0
             ],
             "type": "Circle",
@@ -22307,11 +22307,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            633.500000013,
+            633.5000000060079,
             545.0
           ],
           "to": [
-            633.500000013,
+            633.5000000060079,
             545.0
           ],
           "units": "mm",
@@ -22356,14 +22356,14 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "ccw": true,
           "center": [
-            593.500000012,
+            593.5000000050065,
             545.0
           ],
           "from": [
-            633.500000013,
+            633.5000000060079,
             545.0
           ],
-          "radius": 40.00000000099999,
+          "radius": 40.000000001001354,
           "tag": {
             "commentStart": 13878,
             "end": 13892,
@@ -22373,7 +22373,7 @@ description: Variables in memory after executing utility-sink.kcl
             "value": "tapPlateCircle"
           },
           "to": [
-            633.500000013,
+            633.5000000060079,
             545.0
           ],
           "type": "Circle",
@@ -22413,11 +22413,11 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "start": {
         "from": [
-          633.500000013,
+          633.5000000060079,
           545.0
         ],
         "to": [
-          633.500000013,
+          633.5000000060079,
           545.0
         ],
         "units": "mm",
@@ -22473,14 +22473,14 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "ccw": true,
             "center": [
-              593.500000012,
+              593.5000000050065,
               545.0
             ],
             "from": [
-              633.500000013,
+              633.5000000060079,
               545.0
             ],
-            "radius": 40.00000000099999,
+            "radius": 40.000000001001354,
             "tag": {
               "commentStart": 13878,
               "end": 13892,
@@ -22490,7 +22490,7 @@ description: Variables in memory after executing utility-sink.kcl
               "value": "tapPlateCircle"
             },
             "to": [
-              633.500000013,
+              633.5000000060079,
               545.0
             ],
             "type": "Circle",
@@ -22530,11 +22530,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "start": {
           "from": [
-            633.500000013,
+            633.5000000060079,
             545.0
           ],
           "to": [
-            633.500000013,
+            633.5000000060079,
             545.0
           ],
           "units": "mm",
@@ -22576,7 +22576,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000007500000195469146,
+                        "n": 0.000000002503437476492058,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22594,7 +22594,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 593.50000001,
+                        "n": 593.5000000050064,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22697,7 +22697,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000002500000061823048,
+                        "n": 0.0000000000002502936889113734,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22715,7 +22715,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000050000001261460965,
+                        "n": 0.0000000025031871828028955,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22822,14 +22822,14 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "ccw": true,
                   "center": [
-                    593.500000012,
+                    593.5000000050065,
                     545.0
                   ],
                   "from": [
-                    633.500000013,
+                    633.5000000060079,
                     545.0
                   ],
-                  "radius": 40.00000000099999,
+                  "radius": 40.000000001001354,
                   "tag": {
                     "commentStart": 13878,
                     "end": 13892,
@@ -22839,7 +22839,7 @@ description: Variables in memory after executing utility-sink.kcl
                     "value": "tapPlateCircle"
                   },
                   "to": [
-                    633.500000013,
+                    633.5000000060079,
                     545.0
                   ],
                   "type": "Circle",
@@ -22879,11 +22879,11 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "start": {
                 "from": [
-                  633.500000013,
+                  633.5000000060079,
                   545.0
                 ],
                 "to": [
-                  633.500000013,
+                  633.5000000060079,
                   545.0
                 ],
                 "units": "mm",
@@ -22920,7 +22920,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 593.5000000125,
+                        "n": 593.5000000050067,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -22938,7 +22938,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "end": [
                       {
-                        "n": 633.5000000135,
+                        "n": 633.500000006008,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -23041,7 +23041,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 633.500000013,
+                        "n": 633.5000000060079,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -23059,7 +23059,7 @@ description: Variables in memory after executing utility-sink.kcl
                     ],
                     "center": [
                       {
-                        "n": 593.500000012,
+                        "n": 593.5000000050065,
                         "ty": {
                           "mm": null,
                           "type": "Known",

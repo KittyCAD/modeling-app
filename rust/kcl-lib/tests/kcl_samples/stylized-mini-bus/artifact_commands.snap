@@ -68,8 +68,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1949.9999959999996,
-          "y": 399.9999994000001,
+          "x": -1949.9999999996,
+          "y": 399.99999999994,
           "z": 0.0
         }
       }
@@ -90,24 +90,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1950.0000002000004,
-            "y": 399.9999986,
+            "x": 1949.9999961969845,
+            "y": 399.99999919885704,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1949.9999973500003,
-          "y": 399.9999982,
-          "z": 0.0
         }
       }
     },
@@ -120,24 +107,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1949.99999545,
-            "y": 750.0000019000004,
+            "x": 1949.999994294127,
+            "y": 750.000001502003,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1949.9999945,
-          "y": 750.0000016500004,
-          "z": 0.0
         }
       }
     },
@@ -150,24 +124,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1949.9999842999982,
-            "y": 750.0000011500003,
+            "x": -1949.999996093745,
+            "y": 750.0000010013467,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -1949.9999862499983,
-          "y": 750.0000004000002,
-          "z": 0.0
         }
       }
     },
@@ -180,8 +141,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1949.999990149999,
-            "y": 399.99999900000006,
+            "x": -1949.9999999990143,
+            "y": 399.99999999989996,
             "z": 0.0
           },
           "relative": false
@@ -352,8 +313,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -525.0000000033983,
-          "y": 350.0000000001905,
+          "x": -525.0000000005354,
+          "y": 350.00000000003814,
           "z": 0.0
         }
       }
@@ -374,8 +335,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000020267,
-            "y": 804.663338826553,
+            "x": -262.5000000002728,
+            "y": 804.6633388245049,
             "z": 0.0
           },
           "relative": false
@@ -391,8 +352,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000007751,
-            "y": 804.6633388266686,
+            "x": 262.5000000003203,
+            "y": 804.6633388244738,
             "z": 0.0
           },
           "relative": false
@@ -408,8 +369,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 525.0000000017147,
-            "y": 350.0000000000272,
+            "x": 525.0000000005668,
+            "y": 349.9999999999999,
             "z": 0.0
           },
           "relative": false
@@ -425,8 +386,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000005006,
-            "y": -104.66333882676334,
+            "x": 262.5000000003198,
+            "y": -104.66333882447402,
             "z": 0.0
           },
           "relative": false
@@ -442,8 +403,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000023643,
-            "y": -104.66333882642047,
+            "x": -262.5000000003363,
+            "y": -104.66333882446685,
             "z": 0.0
           },
           "relative": false
@@ -459,8 +420,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -525.000000003414,
-            "y": 350.00000000016325,
+            "x": -525.0000000005354,
+            "y": 350.00000000003814,
             "z": 0.0
           },
           "relative": false
@@ -903,8 +864,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1849.999996,
-          "y": 749.9999963999998,
+          "x": -1849.9999999995996,
+          "y": 749.9999999996395,
           "z": 0.0
         }
       }
@@ -925,24 +886,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1850.0000006,
-            "y": 749.9999948999997,
+            "x": 1849.9999965973443,
+            "y": 749.999998497609,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1849.9999980499997,
-          "y": 749.9999941499997,
-          "z": 0.0
         }
       }
     },
@@ -955,24 +903,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1849.9999963499995,
-            "y": 1149.9999948999996,
+            "x": 1849.9999948947877,
+            "y": 1149.9999990984018,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1849.9999954999994,
-          "y": 1149.9999950499996,
-          "z": 0.0
         }
       }
     },
@@ -985,24 +920,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1849.9999848999987,
-            "y": 1149.9999953499996,
+            "x": -1849.9999962940449,
+            "y": 1149.9999993987956,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -1849.9999867499987,
-          "y": 1149.9999957999999,
-          "z": 0.0
         }
       }
     },
@@ -1015,8 +937,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1849.9999904499994,
-            "y": 749.9999956499997,
+            "x": -1849.999999999044,
+            "y": 749.9999999995644,
             "z": 0.0
           },
           "relative": false
@@ -1677,8 +1599,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 349.99999977499994,
-          "y": 349.99999959999997,
+          "x": 349.99999991495685,
+          "y": 349.999999819978,
           "z": 0.0
         }
       }
@@ -1699,8 +1621,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000019500001439964887,
-            "y": 349.99999973999996
+            "x": -0.000000055043131511056664,
+            "y": 349.99999995997797
           },
           "radius": 349.99999997,
           "start": {
@@ -1722,8 +1644,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 174.99999984999997,
-          "y": 349.99999998,
+          "x": 174.99999994996085,
+          "y": 350.000000059992,
           "z": 0.0
         }
       }
@@ -1737,8 +1659,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000015500001109003403,
-            "y": 349.99999987999996
+            "x": -0.00000005503913123872106,
+            "y": 349.99999995999195
           },
           "radius": 175.00000000499998,
           "start": {
@@ -2634,7 +2556,7 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 834.9999981550001,
+          "x": 834.9999993648792,
           "y": 950.0,
           "z": 0.0
         }
@@ -2656,7 +2578,7 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 674.99999879,
+            "x": 674.999999999879,
             "y": 950.0
           },
           "radius": 159.9999993650001,
@@ -2969,8 +2891,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -819.9999908799992,
-          "y": 829.9999963999998,
+          "x": -819.9999999990872,
+          "y": 829.9999999996396,
           "z": 0.0
         }
       }
@@ -2991,24 +2913,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -459.9999850399987,
-            "y": 829.9999947399997,
+            "x": -459.99999415383775,
+            "y": 829.9999983373924,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -459.99998065999836,
-          "y": 829.9999939099996,
-          "z": 0.0
         }
       }
     },
@@ -3021,24 +2930,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -459.99997773999814,
-            "y": 1069.9999956999998,
+            "x": -459.9999912294468,
+            "y": 1069.999999579062,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -459.999976279998,
-          "y": 1069.9999957699997,
-          "z": 0.0
         }
       }
     },
@@ -3051,24 +2947,11 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -819.9999859599985,
-            "y": 1069.9999959099998,
+            "x": -819.999998356625,
+            "y": 1069.9999997192458,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -819.9999867799986,
-          "y": 1069.9999961199997,
-          "z": 0.0
         }
       }
     },
@@ -3081,8 +2964,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -819.9999884199989,
-            "y": 829.9999955699997,
+            "x": -819.999999998841,
+            "y": 829.9999999995565,
             "z": 0.0
           },
           "relative": false

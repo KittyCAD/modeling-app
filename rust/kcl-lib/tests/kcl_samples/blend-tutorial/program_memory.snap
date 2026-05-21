@@ -149,7 +149,7 @@ description: Variables in memory after executing blend-tutorial.kcl
             },
             "from": [
               -300.0,
-              -30.0
+              -29.9999999999985
             ],
             "tag": {
               "commentStart": 0,
@@ -161,7 +161,7 @@ description: Variables in memory after executing blend-tutorial.kcl
             },
             "to": [
               -150.0,
-              30.0
+              29.9999999999985
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -201,11 +201,11 @@ description: Variables in memory after executing blend-tutorial.kcl
         "start": {
           "from": [
             -300.0,
-            -30.0
+            -29.9999999999985
           ],
           "to": [
             -300.0,
-            -30.0
+            -29.9999999999985
           ],
           "units": "mm",
           "tag": null,
@@ -265,7 +265,7 @@ description: Variables in memory after executing blend-tutorial.kcl
             },
             "from": [
               600.0,
-              -30.0
+              -29.9999999999985
             ],
             "tag": {
               "commentStart": 0,
@@ -277,7 +277,7 @@ description: Variables in memory after executing blend-tutorial.kcl
             },
             "to": [
               300.0,
-              30.0
+              29.9999999999985
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -317,11 +317,11 @@ description: Variables in memory after executing blend-tutorial.kcl
         "start": {
           "from": [
             600.0,
-            -30.0
+            -29.9999999999985
           ],
           "to": [
             600.0,
-            -30.0
+            -29.9999999999985
           ],
           "units": "mm",
           "tag": null,
@@ -476,7 +476,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           },
           "from": [
             -300.0,
-            -30.0
+            -29.9999999999985
           ],
           "tag": {
             "commentStart": 199,
@@ -488,7 +488,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           },
           "to": [
             -150.0,
-            30.0
+            29.9999999999985
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -528,11 +528,11 @@ description: Variables in memory after executing blend-tutorial.kcl
       "start": {
         "from": [
           -300.0,
-          -30.0
+          -29.9999999999985
         ],
         "to": [
           -300.0,
-          -30.0
+          -29.9999999999985
         ],
         "units": "mm",
         "tag": null,
@@ -566,7 +566,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           },
           "from": [
             600.0,
-            -30.0
+            -29.9999999999985
           ],
           "tag": {
             "commentStart": 558,
@@ -578,7 +578,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           },
           "to": [
             300.0,
-            30.0
+            29.9999999999985
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -618,11 +618,11 @@ description: Variables in memory after executing blend-tutorial.kcl
       "start": {
         "from": [
           600.0,
-          -30.0
+          -29.9999999999985
         ],
         "to": [
           600.0,
-          -30.0
+          -29.9999999999985
         ],
         "units": "mm",
         "tag": null,
@@ -761,7 +761,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                         }
                       },
                       {
-                        "n": -30.0,
+                        "n": -29.9999999999985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -779,7 +779,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                         }
                       },
                       {
-                        "n": 30.0,
+                        "n": 29.9999999999985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -877,7 +877,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                   },
                   "from": [
                     -300.0,
-                    -30.0
+                    -29.9999999999985
                   ],
                   "tag": {
                     "commentStart": 199,
@@ -889,7 +889,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                   },
                   "to": [
                     -150.0,
-                    30.0
+                    29.9999999999985
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -929,11 +929,11 @@ description: Variables in memory after executing blend-tutorial.kcl
               "start": {
                 "from": [
                   -300.0,
-                  -30.0
+                  -29.9999999999985
                 ],
                 "to": [
                   -300.0,
-                  -30.0
+                  -29.9999999999985
                 ],
                 "units": "mm",
                 "tag": null,
@@ -983,7 +983,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                         }
                       },
                       {
-                        "n": -30.0,
+                        "n": -29.9999999999985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1001,7 +1001,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                         }
                       },
                       {
-                        "n": 30.0,
+                        "n": 29.9999999999985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1099,7 +1099,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                   },
                   "from": [
                     600.0,
-                    -30.0
+                    -29.9999999999985
                   ],
                   "tag": {
                     "commentStart": 558,
@@ -1111,7 +1111,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                   },
                   "to": [
                     300.0,
-                    30.0
+                    29.9999999999985
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1151,11 +1151,11 @@ description: Variables in memory after executing blend-tutorial.kcl
               "start": {
                 "from": [
                   600.0,
-                  -30.0
+                  -29.9999999999985
                 ],
                 "to": [
                   600.0,
-                  -30.0
+                  -29.9999999999985
                 ],
                 "units": "mm",
                 "tag": null,

@@ -1212,7 +1212,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 593.500000013,
+          "x": 593.500000004505,
           "y": 0.0,
           "z": 0.0
         }
@@ -1234,7 +1234,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 593.5000000160001,
+            "x": 593.5000000075065,
             "y": 13.0,
             "z": 0.0
           },
@@ -1251,7 +1251,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 606.5000000205,
+            "x": 606.5000000095076,
             "y": 13.0,
             "z": 0.0
           },
@@ -1268,7 +1268,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 606.500000023,
+            "x": 606.5000000105081,
             "y": 0.0,
             "z": 0.0
           },
@@ -1285,7 +1285,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 593.5000000135,
+            "x": 593.500000004505,
             "y": 0.0,
             "z": 0.0
           },
@@ -2364,7 +2364,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -296.750000001,
+          "x": -296.7500000005001,
           "y": 40.0,
           "z": 0.0
         }
@@ -2386,7 +2386,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -296.7500000005,
+            "x": -296.7499999999994,
             "y": 490.0,
             "z": 0.0
           },
@@ -2403,7 +2403,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -890.24999999875,
+            "x": -890.2499999989985,
             "y": 490.0,
             "z": 0.0
           },
@@ -2420,7 +2420,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -890.2499999975,
+            "x": -890.2499999984979,
             "y": 40.0,
             "z": 0.0
           },
@@ -2437,7 +2437,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -296.75000000125,
+            "x": -296.75000000050017,
             "y": 40.0,
             "z": 0.0
           },
@@ -2550,7 +2550,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 298.750000001,
+          "x": 298.7500000005001,
           "y": 42.0,
           "z": 0.0
         }
@@ -2572,7 +2572,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 298.7500000005,
+            "x": 298.7499999999994,
             "y": 488.0,
             "z": 0.0
           },
@@ -2589,7 +2589,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 888.24999999875,
+            "x": 888.2499999989985,
             "y": 488.0,
             "z": 0.0
           },
@@ -2606,7 +2606,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 888.2499999975,
+            "x": 888.2499999984979,
             "y": 42.0,
             "z": 0.0
           },
@@ -2623,7 +2623,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 298.75000000125,
+            "x": 298.75000000050017,
             "y": 42.0,
             "z": 0.0
           },
@@ -2788,7 +2788,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 633.500000013,
+          "x": 633.5000000060079,
           "y": 545.0,
           "z": 0.0
         }
@@ -2810,10 +2810,10 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.500000012,
+            "x": 593.5000000050065,
             "y": 545.0
           },
-          "radius": 40.00000000099999,
+          "radius": 40.000000001001354,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -2997,7 +2997,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 608.500000013,
+          "x": 608.5000000060079,
           "y": 545.0,
           "z": 0.0
         }
@@ -3019,10 +3019,10 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.500000012,
+            "x": 593.5000000050065,
             "y": 545.0
           },
-          "radius": 15.00000000099999,
+          "radius": 15.000000001001354,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -3206,7 +3206,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 603.500000013,
+          "x": 603.5000000060079,
           "y": 950.0,
           "z": 0.0
         }
@@ -3228,10 +3228,10 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.500000012,
+            "x": 593.5000000050065,
             "y": 950.0
           },
-          "radius": 10.00000000099999,
+          "radius": 10.000000001001354,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -3415,7 +3415,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 597.500000013,
+          "x": 597.5000000060079,
           "y": 1000.0,
           "z": 0.0
         }
@@ -3437,10 +3437,10 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.500000012,
+            "x": 593.5000000050065,
             "y": 1000.0
           },
-          "radius": 4.000000000999989,
+          "radius": 4.000000001001354,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -3624,7 +3624,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.999999994,
+          "x": 14.999999997998708,
           "y": 0.0,
           "z": 0.0
         }
@@ -3646,7 +3646,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.999999992,
+            "x": 14.999999995997818,
             "y": 13.0,
             "z": 0.0
           },
@@ -3663,7 +3663,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 591.499999988,
+            "x": 591.4999999939968,
             "y": 13.0,
             "z": 0.0
           },
@@ -3680,7 +3680,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 591.4999999855,
+            "x": 591.4999999929963,
             "y": 0.0,
             "z": 0.0
           },
@@ -3697,7 +3697,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.999999994,
+            "x": 14.999999997998708,
             "y": 0.0,
             "z": 0.0
           },
@@ -3948,7 +3948,7 @@ description: Artifact commands utility-sink.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": 14.999999999999995,
+          "y": 15.0,
           "z": 0.0
         }
       }
@@ -4004,7 +4004,7 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 13.0,
-            "y": 14.999999999999995,
+            "y": 15.0,
             "z": 0.0
           },
           "relative": false
@@ -4021,7 +4021,7 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 14.999999999999995,
+            "y": 15.0,
             "z": 0.0
           },
           "relative": false

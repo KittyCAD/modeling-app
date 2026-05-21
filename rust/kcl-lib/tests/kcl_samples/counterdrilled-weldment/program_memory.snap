@@ -3166,7 +3166,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "tag": {
@@ -3178,7 +3178,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "innerWall"
                 },
                 "to": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -3190,7 +3190,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "tag": {
@@ -3202,7 +3202,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -3214,7 +3214,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "tag": {
@@ -3226,7 +3226,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "slopedEdge"
                 },
                 "to": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "type": "ToPoint",
@@ -3238,7 +3238,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "tag": {
@@ -3250,7 +3250,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "outerRise"
                 },
                 "to": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -3262,7 +3262,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "tag": {
@@ -3274,7 +3274,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "baseEdge"
                 },
                 "to": [
-                  0.7400000000323849,
+                  0.740000000008106,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -3314,11 +3314,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             },
             "start": {
               "from": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "to": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "units": "in",
@@ -3450,7 +3450,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "tag": {
@@ -3462,7 +3462,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "innerWall"
                 },
                 "to": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -3474,7 +3474,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "tag": {
@@ -3486,7 +3486,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -3498,7 +3498,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "tag": {
@@ -3510,7 +3510,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "slopedEdge"
                 },
                 "to": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "type": "ToPoint",
@@ -3522,7 +3522,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "tag": {
@@ -3534,7 +3534,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "outerRise"
                 },
                 "to": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -3546,7 +3546,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "tag": {
@@ -3558,7 +3558,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "baseEdge"
                 },
                 "to": [
-                  0.7400000000323849,
+                  0.740000000008106,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -3598,11 +3598,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             },
             "start": {
               "from": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "to": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "units": "in",
@@ -3739,7 +3739,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "tag": {
@@ -3751,7 +3751,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "innerWall"
                 },
                 "to": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -3763,7 +3763,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "tag": {
@@ -3775,7 +3775,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -3787,7 +3787,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "tag": {
@@ -3799,7 +3799,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "slopedEdge"
                 },
                 "to": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "type": "ToPoint",
@@ -3811,7 +3811,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "tag": {
@@ -3823,7 +3823,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "outerRise"
                 },
                 "to": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -3835,7 +3835,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "tag": {
@@ -3847,7 +3847,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "baseEdge"
                 },
                 "to": [
-                  0.7400000000323849,
+                  0.740000000008106,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -3887,11 +3887,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             },
             "start": {
               "from": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "to": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "units": "in",
@@ -4023,7 +4023,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "tag": {
@@ -4035,7 +4035,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "innerWall"
                 },
                 "to": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -4047,7 +4047,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   2.1
                 ],
                 "tag": {
@@ -4059,7 +4059,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 },
                 "to": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "type": "ToPoint",
@@ -4071,7 +4071,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.8900000000242886,
+                  0.8900000000081051,
                   2.1
                 ],
                 "tag": {
@@ -4083,7 +4083,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "slopedEdge"
                 },
                 "to": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "type": "ToPoint",
@@ -4095,7 +4095,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947475276,
+                  2.477975947442914,
                   0.65
                 ],
                 "tag": {
@@ -4107,7 +4107,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "outerRise"
                 },
                 "to": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -4119,7 +4119,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.477975947469204,
+                  2.4779759474388605,
                   0.5
                 ],
                 "tag": {
@@ -4131,7 +4131,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "baseEdge"
                 },
                 "to": [
-                  0.7400000000323849,
+                  0.740000000008106,
                   0.5
                 ],
                 "type": "ToPoint",
@@ -4171,11 +4171,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             },
             "start": {
               "from": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "to": [
-                0.7400000000242887,
+                0.7400000000081051,
                 0.5
               ],
               "units": "in",
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7400000000323849,
+                        "n": 0.740000000008106,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4253,7 +4253,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.4779759474631313,
+                        "n": 2.4779759474388596,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4355,7 +4355,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000008096210460121357,
+                        "n": 0.0000000000000008103487843530562,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4363,7 +4363,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000000000005551115332626891,
+                        "n": 0.000000000000000000000000000005558629399086379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4373,7 +4373,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7400000000161924,
+                        "n": 0.7400000000081043,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4476,7 +4476,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7400000000242887,
+                        "n": 0.7400000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4494,7 +4494,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7400000000242887,
+                        "n": 0.7400000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4599,7 +4599,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7400000000242887,
+                    0.7400000000081051,
                     0.5
                   ],
                   "tag": {
@@ -4611,7 +4611,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "innerWall"
                   },
                   "to": [
-                    0.7400000000242887,
+                    0.7400000000081051,
                     2.1
                   ],
                   "type": "ToPoint",
@@ -4623,7 +4623,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7400000000242887,
+                    0.7400000000081051,
                     2.1
                   ],
                   "tag": {
@@ -4635,7 +4635,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "topEdge"
                   },
                   "to": [
-                    0.8900000000242886,
+                    0.8900000000081051,
                     2.1
                   ],
                   "type": "ToPoint",
@@ -4647,7 +4647,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.8900000000242886,
+                    0.8900000000081051,
                     2.1
                   ],
                   "tag": {
@@ -4659,7 +4659,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "slopedEdge"
                   },
                   "to": [
-                    2.477975947475276,
+                    2.477975947442914,
                     0.65
                   ],
                   "type": "ToPoint",
@@ -4671,7 +4671,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.477975947475276,
+                    2.477975947442914,
                     0.65
                   ],
                   "tag": {
@@ -4683,7 +4683,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "outerRise"
                   },
                   "to": [
-                    2.477975947469204,
+                    2.4779759474388605,
                     0.5
                   ],
                   "type": "ToPoint",
@@ -4695,7 +4695,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.477975947469204,
+                    2.4779759474388605,
                     0.5
                   ],
                   "tag": {
@@ -4707,7 +4707,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "baseEdge"
                   },
                   "to": [
-                    0.7400000000323849,
+                    0.740000000008106,
                     0.5
                   ],
                   "type": "ToPoint",
@@ -4747,11 +4747,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               "start": {
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "to": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "units": "in",
@@ -4804,7 +4804,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.477975947469204,
+                        "n": 2.4779759474388605,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4822,7 +4822,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.4779759474732517,
+                        "n": 2.477975947442914,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4924,7 +4924,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.477975947475276,
+                        "n": 2.477975947442914,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4942,7 +4942,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.8900000000242886,
+                        "n": 0.8900000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5044,7 +5044,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.8900000000242886,
+                        "n": 0.8900000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5062,7 +5062,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7400000000242887,
+                        "n": 0.7400000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5170,7 +5170,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7400000000323849,
+                        "n": 0.740000000008106,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5188,7 +5188,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.4779759474631313,
+                        "n": 2.4779759474388596,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5290,7 +5290,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000008096210460121357,
+                        "n": 0.0000000000000008103487843530562,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5298,7 +5298,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000000000005551115332626891,
+                        "n": 0.000000000000000000000000000005558629399086379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5308,7 +5308,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7400000000161924,
+                        "n": 0.7400000000081043,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5411,7 +5411,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7400000000242887,
+                        "n": 0.7400000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5429,7 +5429,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7400000000242887,
+                        "n": 0.7400000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5534,7 +5534,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7400000000242887,
+                    0.7400000000081051,
                     0.5
                   ],
                   "tag": {
@@ -5546,7 +5546,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "innerWall"
                   },
                   "to": [
-                    0.7400000000242887,
+                    0.7400000000081051,
                     2.1
                   ],
                   "type": "ToPoint",
@@ -5558,7 +5558,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7400000000242887,
+                    0.7400000000081051,
                     2.1
                   ],
                   "tag": {
@@ -5570,7 +5570,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "topEdge"
                   },
                   "to": [
-                    0.8900000000242886,
+                    0.8900000000081051,
                     2.1
                   ],
                   "type": "ToPoint",
@@ -5582,7 +5582,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.8900000000242886,
+                    0.8900000000081051,
                     2.1
                   ],
                   "tag": {
@@ -5594,7 +5594,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "slopedEdge"
                   },
                   "to": [
-                    2.477975947475276,
+                    2.477975947442914,
                     0.65
                   ],
                   "type": "ToPoint",
@@ -5606,7 +5606,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.477975947475276,
+                    2.477975947442914,
                     0.65
                   ],
                   "tag": {
@@ -5618,7 +5618,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "outerRise"
                   },
                   "to": [
-                    2.477975947469204,
+                    2.4779759474388605,
                     0.5
                   ],
                   "type": "ToPoint",
@@ -5630,7 +5630,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.477975947469204,
+                    2.4779759474388605,
                     0.5
                   ],
                   "tag": {
@@ -5642,7 +5642,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "baseEdge"
                   },
                   "to": [
-                    0.7400000000323849,
+                    0.740000000008106,
                     0.5
                   ],
                   "type": "ToPoint",
@@ -5682,11 +5682,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               "start": {
                 "from": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "to": [
-                  0.7400000000242887,
+                  0.7400000000081051,
                   0.5
                 ],
                 "units": "in",
@@ -5739,7 +5739,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.477975947469204,
+                        "n": 2.4779759474388605,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5757,7 +5757,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.4779759474732517,
+                        "n": 2.477975947442914,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5859,7 +5859,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.477975947475276,
+                        "n": 2.477975947442914,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5877,7 +5877,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.8900000000242886,
+                        "n": 0.8900000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5979,7 +5979,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.8900000000242886,
+                        "n": 0.8900000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5997,7 +5997,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7400000000242887,
+                        "n": 0.7400000000081051,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6102,7 +6102,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            0.7400000000242887,
+            0.7400000000081051,
             0.5
           ],
           "tag": {
@@ -6114,7 +6114,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "innerWall"
           },
           "to": [
-            0.7400000000242887,
+            0.7400000000081051,
             2.1
           ],
           "type": "ToPoint",
@@ -6126,7 +6126,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            0.7400000000242887,
+            0.7400000000081051,
             2.1
           ],
           "tag": {
@@ -6138,7 +6138,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           },
           "to": [
-            0.8900000000242886,
+            0.8900000000081051,
             2.1
           ],
           "type": "ToPoint",
@@ -6150,7 +6150,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            0.8900000000242886,
+            0.8900000000081051,
             2.1
           ],
           "tag": {
@@ -6162,7 +6162,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "slopedEdge"
           },
           "to": [
-            2.477975947475276,
+            2.477975947442914,
             0.65
           ],
           "type": "ToPoint",
@@ -6174,7 +6174,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            2.477975947475276,
+            2.477975947442914,
             0.65
           ],
           "tag": {
@@ -6186,7 +6186,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "outerRise"
           },
           "to": [
-            2.477975947469204,
+            2.4779759474388605,
             0.5
           ],
           "type": "ToPoint",
@@ -6198,7 +6198,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            2.477975947469204,
+            2.4779759474388605,
             0.5
           ],
           "tag": {
@@ -6210,7 +6210,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "baseEdge"
           },
           "to": [
-            0.7400000000323849,
+            0.740000000008106,
             0.5
           ],
           "type": "ToPoint",
@@ -6250,11 +6250,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       },
       "start": {
         "from": [
-          0.7400000000242887,
+          0.7400000000081051,
           0.5
         ],
         "to": [
-          0.7400000000242887,
+          0.7400000000081051,
           0.5
         ],
         "units": "in",
@@ -6304,7 +6304,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            0.7400000000242887,
+            0.7400000000081051,
             0.5
           ],
           "tag": {
@@ -6316,7 +6316,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "innerWall"
           },
           "to": [
-            0.7400000000242887,
+            0.7400000000081051,
             2.1
           ],
           "type": "ToPoint",
@@ -6328,7 +6328,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            0.7400000000242887,
+            0.7400000000081051,
             2.1
           ],
           "tag": {
@@ -6340,7 +6340,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           },
           "to": [
-            0.8900000000242886,
+            0.8900000000081051,
             2.1
           ],
           "type": "ToPoint",
@@ -6352,7 +6352,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            0.8900000000242886,
+            0.8900000000081051,
             2.1
           ],
           "tag": {
@@ -6364,7 +6364,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "slopedEdge"
           },
           "to": [
-            2.477975947475276,
+            2.477975947442914,
             0.65
           ],
           "type": "ToPoint",
@@ -6376,7 +6376,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            2.477975947475276,
+            2.477975947442914,
             0.65
           ],
           "tag": {
@@ -6388,7 +6388,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "outerRise"
           },
           "to": [
-            2.477975947469204,
+            2.4779759474388605,
             0.5
           ],
           "type": "ToPoint",
@@ -6400,7 +6400,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            2.477975947469204,
+            2.4779759474388605,
             0.5
           ],
           "tag": {
@@ -6412,7 +6412,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "baseEdge"
           },
           "to": [
-            0.7400000000323849,
+            0.740000000008106,
             0.5
           ],
           "type": "ToPoint",
@@ -6452,11 +6452,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       },
       "start": {
         "from": [
-          0.7400000000242887,
+          0.7400000000081051,
           0.5
         ],
         "to": [
-          0.7400000000242887,
+          0.7400000000081051,
           0.5
         ],
         "units": "in",
@@ -6583,7 +6583,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              0.7400000000242887,
+              0.7400000000081051,
               0.5
             ],
             "tag": {
@@ -6595,7 +6595,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "innerWall"
             },
             "to": [
-              0.7400000000242887,
+              0.7400000000081051,
               2.1
             ],
             "type": "ToPoint",
@@ -6607,7 +6607,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              0.7400000000242887,
+              0.7400000000081051,
               2.1
             ],
             "tag": {
@@ -6619,7 +6619,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "topEdge"
             },
             "to": [
-              0.8900000000242886,
+              0.8900000000081051,
               2.1
             ],
             "type": "ToPoint",
@@ -6631,7 +6631,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              0.8900000000242886,
+              0.8900000000081051,
               2.1
             ],
             "tag": {
@@ -6643,7 +6643,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "slopedEdge"
             },
             "to": [
-              2.477975947475276,
+              2.477975947442914,
               0.65
             ],
             "type": "ToPoint",
@@ -6655,7 +6655,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              2.477975947475276,
+              2.477975947442914,
               0.65
             ],
             "tag": {
@@ -6667,7 +6667,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "outerRise"
             },
             "to": [
-              2.477975947469204,
+              2.4779759474388605,
               0.5
             ],
             "type": "ToPoint",
@@ -6679,7 +6679,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              2.477975947469204,
+              2.4779759474388605,
               0.5
             ],
             "tag": {
@@ -6691,7 +6691,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "baseEdge"
             },
             "to": [
-              0.7400000000323849,
+              0.740000000008106,
               0.5
             ],
             "type": "ToPoint",
@@ -6731,11 +6731,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         "start": {
           "from": [
-            0.7400000000242887,
+            0.7400000000081051,
             0.5
           ],
           "to": [
-            0.7400000000242887,
+            0.7400000000081051,
             0.5
           ],
           "units": "in",
@@ -6867,7 +6867,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              0.7400000000242887,
+              0.7400000000081051,
               0.5
             ],
             "tag": {
@@ -6879,7 +6879,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "innerWall"
             },
             "to": [
-              0.7400000000242887,
+              0.7400000000081051,
               2.1
             ],
             "type": "ToPoint",
@@ -6891,7 +6891,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              0.7400000000242887,
+              0.7400000000081051,
               2.1
             ],
             "tag": {
@@ -6903,7 +6903,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "topEdge"
             },
             "to": [
-              0.8900000000242886,
+              0.8900000000081051,
               2.1
             ],
             "type": "ToPoint",
@@ -6915,7 +6915,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              0.8900000000242886,
+              0.8900000000081051,
               2.1
             ],
             "tag": {
@@ -6927,7 +6927,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "slopedEdge"
             },
             "to": [
-              2.477975947475276,
+              2.477975947442914,
               0.65
             ],
             "type": "ToPoint",
@@ -6939,7 +6939,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              2.477975947475276,
+              2.477975947442914,
               0.65
             ],
             "tag": {
@@ -6951,7 +6951,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "outerRise"
             },
             "to": [
-              2.477975947469204,
+              2.4779759474388605,
               0.5
             ],
             "type": "ToPoint",
@@ -6963,7 +6963,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              2.477975947469204,
+              2.4779759474388605,
               0.5
             ],
             "tag": {
@@ -6975,7 +6975,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "baseEdge"
             },
             "to": [
-              0.7400000000323849,
+              0.740000000008106,
               0.5
             ],
             "type": "ToPoint",
@@ -7015,11 +7015,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         "start": {
           "from": [
-            0.7400000000242887,
+            0.7400000000081051,
             0.5
           ],
           "to": [
-            0.7400000000242887,
+            0.7400000000081051,
             0.5
           ],
           "units": "in",
@@ -9644,7 +9644,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.625000000015,
+                        "n": 0.6250000000083481,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9662,7 +9662,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000000033333336074679032,
+                        "n": 0.00000000000000016739795342421055,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9764,7 +9764,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000066666672149358065,
+                        "n": 0.0000000000000008346959114458149,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9782,7 +9782,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.6250000000133333,
+                        "n": 0.6250000000083478,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10109,7 +10109,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "tag": null,
                   "to": [
-                    0.625000000015,
+                    0.6250000000083481,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -10122,14 +10122,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000000033333336074679032,
+                    0.00000000000000016739795342421055,
                     0.0
                   ],
                   "from": [
-                    0.625000000015,
+                    0.6250000000083481,
                     0.0
                   ],
-                  "radius": 0.6250000000116667,
+                  "radius": 0.6250000000083479,
                   "tag": {
                     "commentStart": 2272,
                     "end": 2281,
@@ -10139,7 +10139,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "value": "innerHole"
                   },
                   "to": [
-                    0.625000000015,
+                    0.6250000000083481,
                     0.0
                   ],
                   "type": "Circle",
