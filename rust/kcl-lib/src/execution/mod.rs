@@ -93,7 +93,7 @@ pub struct OperationsByModule {
 }
 
 impl OperationsByModule {
-    pub fn len(&self) -> usize {
+    pub fn count(&self) -> usize {
         self.map.values().map(Vec::len).sum()
     }
 
@@ -3385,12 +3385,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.operations.len(), 1);
+        assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
-        assert_eq!(mock_result.operations.len(), 1);
+        assert_eq!(mock_result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
         let code2 = code.to_owned()
             + r#"
@@ -3398,7 +3398,7 @@ extrude001 = extrude(profile001, length = 10)
 "#;
         let program2 = crate::Program::parse_no_errs(&code2).unwrap();
         let result = ctx.run_with_caching(program2).await.unwrap();
-        assert_eq!(result.operations.len(), 2);
+        assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 2);
 
         ctx.close().await;
         mock_ctx.close().await;
