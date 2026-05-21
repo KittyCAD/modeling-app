@@ -45,13 +45,6 @@ type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
   project: Project
 }
 
-type ProjectSettingsCloud = Record<
-  string,
-  {
-    project_id?: string
-  }
->
-
 type UploadFile = {
   name: string
   data: Blob
@@ -368,7 +361,7 @@ async function getCloudProjectIdForEnvironment(
       projectPath,
       wasmInstance
     )
-    const cloud = (projectSettings.cloud ?? {}) as ProjectSettingsCloud
+    const cloud = projectSettings.cloud ?? {}
     return cloud[environmentName]?.project_id
   } catch (error) {
     return new Error(
@@ -388,7 +381,7 @@ async function persistCloudProjectIdForEnvironment(
       projectPath,
       wasmInstance
     )
-    const cloud = { ...(projectSettings.cloud ?? {}) } as ProjectSettingsCloud
+    const cloud = { ...(projectSettings.cloud ?? {}) }
     cloud[environmentName] = {
       ...(cloud[environmentName] ?? {}),
       project_id: projectId,

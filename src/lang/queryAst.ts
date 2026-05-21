@@ -849,7 +849,7 @@ export function hasSketchPipeBeenExtruded(
 /** File must contain at least one sketch that has not been extruded already */
 export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
   const theMap: any = {}
-  traverse(ast as any, {
+  traverse(ast, {
     enter(node) {
       if (
         node.type === 'VariableDeclarator' &&
@@ -916,7 +916,7 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
 
 export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
   const theMap: any = {}
-  traverse(ast as any, {
+  traverse(ast, {
     enter(node) {
       if (
         node.type === 'VariableDeclarator' &&
@@ -1584,7 +1584,7 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
-  return { graphSelections, otherSelections: [] } as Selections
+  return { graphSelections, otherSelections: [] }
 }
 
 export function findOperationArtifact(
