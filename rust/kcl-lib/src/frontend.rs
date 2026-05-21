@@ -651,7 +651,10 @@ fn constraint_connection_ids(constraint: &Constraint) -> Vec<ObjectId> {
         Constraint::Horizontal(Horizontal::Line { line }) => vec![*line],
         Constraint::Horizontal(Horizontal::Points { points }) => constraint_segment_object_ids(points),
         Constraint::LinesEqualLength(lines_equal_length) => lines_equal_length.lines.clone(),
-        Constraint::Midpoint(midpoint) => vec![midpoint.point, midpoint.segment],
+        Constraint::Midpoint(midpoint) => constraint_segment_object_ids(std::slice::from_ref(&midpoint.point))
+            .into_iter()
+            .chain(std::iter::once(midpoint.segment))
+            .collect(),
         Constraint::Parallel(parallel) => parallel.lines.clone(),
         Constraint::Perpendicular(perpendicular) => perpendicular.lines.clone(),
         Constraint::Radius(radius) => vec![radius.arc],

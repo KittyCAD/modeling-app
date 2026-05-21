@@ -12,6 +12,7 @@ import type { Themes } from '@src/lib/theme'
 import type {
   ApiConstraint,
   ApiObject,
+  ExistingSegmentCtor,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -3440,11 +3441,12 @@ describe('createOnDragCallback', () => {
       sketchId: 0,
       sketchExecOutcome: { sceneGraphDelta },
     }))
-    const editSegments = vi.fn(() =>
-      Promise.resolve({
-        kclSource: { text: 'updated code' },
-        sceneGraphDelta,
-      })
+    const editSegments = vi.fn(
+      (_version: number, _sketchId: number, _segments: ExistingSegmentCtor[]) =>
+        Promise.resolve({
+          kclSource: { text: 'updated code' },
+          sceneGraphDelta,
+        })
     )
     const onNewSketchOutcome = vi.fn()
     const dragSnappingDeps = createDragSnappingDeps()
@@ -3504,6 +3506,103 @@ describe('createOnDragCallback', () => {
       ],
       {},
       [2]
+    )
+  })
+
+  it('projects kinematic connected point drag targets onto horizontal constraints', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(10, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const pivot = createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 })
+    const draggedPoint = createPointApiObject({
+      id: 2,
+      x: 10,
+      y: 0,
+      owner: 4,
+    })
+    const connectedPoint = createPointApiObject({
+      id: 3,
+      x: 10,
+      y: 10,
+      owner: 5,
+    })
+    const firstLine = createLineApiObject({ id: 4, start: 1, end: 2 })
+    const secondLine = createLineApiObject({ id: 5, start: 2, end: 3 })
+    const originCoincident = createCoincidentConstraintApiObject({
+      id: 6,
+      segments: [1, 'ORIGIN'],
+    })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 7,
+      type: 'Horizontal',
+      points: [2, 'ORIGIN'],
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      pivot,
+      draggedPoint,
+      connectedPoint,
+      firstLine,
+      secondLine,
+      originCoincident,
+      horizontalConstraint,
+    ])
+    const editSegments = vi.fn(
+      (_version: number, _sketchId: number, _segments: ExistingSegmentCtor[]) =>
+        Promise.resolve({
+          kclSource: { text: 'updated code' },
+          sceneGraphDelta,
+        })
+    )
+    const dragSnappingDeps = createDragSnappingDeps()
+    dragSnappingDeps.getDragStartOutcome.mockReturnValue({
+      kclSource: { text: 'baseline code' },
+      sceneGraphDelta,
+    })
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData: vi.fn(() => ({
+        selectedIds: [2],
+        sketchId: 0,
+        sketchExecOutcome: { sceneGraphDelta },
+      })),
+      editSegments,
+      onNewSketchOutcome: vi.fn(),
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(10, 10),
+        threeD: new Vector3(10, 10, 0),
+      },
+      selected: undefined,
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
+      intersects: [],
+    })
+
+    const segmentsToEdit = editSegments.mock.calls[0]?.[2]
+    expect(segmentsToEdit).toEqual(
+      expect.arrayContaining([
+        {
+          id: 2,
+          ctor: {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: 10, units: 'Mm' },
+              y: { type: 'Var', value: 0, units: 'Mm' },
+            },
+          },
+        },
+      ])
     )
   })
 
@@ -3588,6 +3687,8 @@ describe('createOnDragCallback', () => {
       segmentsToEdit: [],
       constraintLabelEdits: [],
       dragAnchorSegmentIds: [1],
+      constraintLabelAnchorSegmentIds: [1],
+      arcDragAnchors: [],
       fixedPositionEdit: {
         pointId: 1,
         position: {
@@ -3601,6 +3702,83 @@ describe('createOnDragCallback', () => {
       writeToDisk: false,
       suppressExecOutcomeIssues: true,
     })
+  })
+
+  it('projects fixed point drag position edits onto horizontal constraints', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(2)
+    const fixedPoint = createPointApiObject({
+      id: 1,
+      x: 0,
+      y: 0,
+      freedom: 'Fixed',
+    })
+    const draggedPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const coincidentConstraint = createCoincidentConstraintApiObject({
+      id: 21,
+      segments: [1, 2],
+    })
+    const horizontalConstraint = createConstraintApiObject({
+      id: 22,
+      type: 'Horizontal',
+      points: [1, 'ORIGIN'],
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      fixedPoint,
+      draggedPoint,
+      coincidentConstraint,
+      horizontalConstraint,
+    ])
+    const result = {
+      kclSource: { text: 'updated code' },
+      sceneGraphDelta,
+    }
+    const editFixedConstraintPointPosition = vi.fn(() =>
+      Promise.resolve(result)
+    )
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData: vi.fn(() => ({
+        selectedIds: [2],
+        sketchId: 0,
+        sketchExecOutcome: { sceneGraphDelta },
+      })),
+      editSegments: vi.fn(),
+      editFixedConstraintPointPosition,
+      onNewSketchOutcome: vi.fn(),
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...createDragSnappingDeps(),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(10, 20),
+        threeD: new Vector3(10, 20, 0),
+      },
+      selected: undefined,
+      mouseEvent: new MouseEvent('click', { shiftKey: true }),
+      intersects: [],
+    })
+
+    expect(editFixedConstraintPointPosition).toHaveBeenCalledWith(
+      0,
+      0,
+      1,
+      {
+        x: { value: 10, units: 'Mm' },
+        y: { value: 0, units: 'Mm' },
+      },
+      {}
+    )
   })
 
   it('drops a stale preview result when the drag session changes before the solve resolves', async () => {

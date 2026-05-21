@@ -104,6 +104,7 @@ type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
   constraintLabelEdits: ConstraintLabelEdit[]
   dragAnchorSegmentIds: number[]
+  constraintLabelAnchorSegmentIds: number[]
   arcDragAnchors: ArcDragAnchor[]
   fixedPositionEdit: FixedPositionEdit | null
 }
@@ -664,6 +665,31 @@ function getPointSegmentPosition(pointId: number, objects: ApiObject[]) {
   )
 }
 
+function projectPointVectorForAxisConstraints({
+  pointId,
+  objects,
+  position,
+}: {
+  pointId: number
+  objects: ApiObject[]
+  position: Vector2
+}): Vector2 {
+  const locks = getPointAxisLocks(pointId, objects)
+  if (!locks.x && !locks.y) {
+    return position
+  }
+
+  const basePosition = getPointSegmentPosition(pointId, objects)
+  if (!basePosition) {
+    return position
+  }
+
+  return new Vector2(
+    locks.x ? basePosition.x : position.x,
+    locks.y ? basePosition.y : position.y
+  )
+}
+
 function buildKinematicConnectedPointDrag({
   draggedPointId,
   selectedIds,
@@ -743,9 +769,14 @@ function buildKinematicConnectedPointDrag({
       pointId === draggedPointId
         ? currentCursorPosition
         : rotatePointAroundPivot(pointStartPosition, pivotPosition, angleDelta)
+    const projectedPosition = projectPointVectorForAxisConstraints({
+      pointId,
+      objects: dragStartObjects,
+      position: nextPosition,
+    })
     segmentsToEdit.push({
       id: pointId,
-      ctor: buildPointCtorFromVector(nextPosition, units),
+      ctor: buildPointCtorFromVector(projectedPosition, units),
     })
   }
 
@@ -996,7 +1027,10 @@ function getConstraintConnectionIds(obj: ApiObject): number[] {
     case 'Perpendicular':
       return constraint.lines
     case 'Midpoint':
-      return [constraint.point, constraint.segment]
+      return [
+        ...constraintSegmentObjectIds([constraint.point]),
+        constraint.segment,
+      ]
     case 'Symmetric':
       return [...constraint.input, constraint.axis]
     case 'Tangent':
@@ -1887,9 +1921,14 @@ export function createOnDragCallback({
 
       if (fixedDragTarget?.type === 'fixed') {
         onUpdateDragSnapping(null)
+        const fixedPosition = projectPointVectorForAxisConstraints({
+          pointId: fixedDragTarget.pointId,
+          objects,
+          position: twoD,
+        })
         const fixedPositionEdit: FixedPositionEdit = {
           pointId: fixedDragTarget.pointId,
-          position: buildConstraintLabelPosition(twoD, units),
+          position: buildConstraintLabelPosition(fixedPosition, units),
         }
         const settings = await getJsAppSettings()
         if (!isActiveDragSession()) {
@@ -1916,6 +1955,7 @@ export function createOnDragCallback({
             segmentsToEdit: [],
             constraintLabelEdits: [],
             dragAnchorSegmentIds: [fixedPositionEdit.pointId],
+            constraintLabelAnchorSegmentIds: [fixedPositionEdit.pointId],
             arcDragAnchors: [],
             fixedPositionEdit,
           })
@@ -1939,15 +1979,16 @@ export function createOnDragCallback({
       const arcDragAnchorIds = new Set(
         arcDragAnchors.map((anchor) => anchor.arcId)
       )
-      let dragAnchorSegmentIds = Array.from(
+      const constraintLabelAnchorSegmentIds = Array.from(
         new Set(
           [entityUnderCursorId, ...selectedIds].filter(
             (id): id is number =>
-              id !== null &&
-              objects[id]?.kind.type === 'Segment' &&
-              !arcDragAnchorIds.has(id)
+              id !== null && objects[id]?.kind.type === 'Segment'
           )
         )
+      )
+      let dragAnchorSegmentIds = constraintLabelAnchorSegmentIds.filter(
+        (id) => !arcDragAnchorIds.has(id)
       )
       const kinematicPointDrag =
         entityUnderCursorId === null
@@ -2005,14 +2046,24 @@ export function createOnDragCallback({
       }
       // Get sketchId from context data (needed for editSegments)
       const sketchId = getContextData().sketchId
-      let result = await editSegments(
-        0,
-        sketchId,
-        segmentsToEdit,
-        settings,
-        dragAnchorSegmentIds,
-        arcDragAnchors
-      ).catch((err) => {
+      const editSegmentsPromise =
+        arcDragAnchors.length > 0
+          ? editSegments(
+              0,
+              sketchId,
+              segmentsToEdit,
+              settings,
+              dragAnchorSegmentIds,
+              arcDragAnchors
+            )
+          : editSegments(
+              0,
+              sketchId,
+              segmentsToEdit,
+              settings,
+              dragAnchorSegmentIds
+            )
+      let result = await editSegmentsPromise.catch((err) => {
         if (!isActiveDragSession()) {
           return null
         }
@@ -2024,10 +2075,7 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
         let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
-        if (
-          arcDragAnchors.length === 0 &&
-          !hasSketchSolveIssues(result.sceneGraphDelta)
-        ) {
+        if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
           const constraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
               objectsBeforeDrag: objects,
@@ -2042,7 +2090,7 @@ export function createOnDragCallback({
               version: 0,
               sketchId,
               settings,
-              anchorSegmentIds: dragAnchorSegmentIds,
+              anchorSegmentIds: constraintLabelAnchorSegmentIds,
             }).catch((err) => {
               if (!isActiveDragSession()) {
                 return null
@@ -2066,6 +2114,7 @@ export function createOnDragCallback({
           segmentsToEdit,
           constraintLabelEdits: appliedConstraintLabelEdits,
           dragAnchorSegmentIds,
+          constraintLabelAnchorSegmentIds,
           arcDragAnchors,
           fixedPositionEdit: null,
         })
@@ -2451,18 +2500,29 @@ export function setUpOnDragAndSelectionClickCallbacks({
             segmentsToEdit: ExistingSegmentCtor[],
             constraintLabelEdits: ConstraintLabelEdit[] = [],
             dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id),
-            arcDragAnchors: ArcDragAnchor[] = []
+            arcDragAnchors: ArcDragAnchor[] = [],
+            constraintLabelAnchorSegmentIds = dragAnchorSegmentIds
           ) => {
-            let latestResult = await context.rustContext.editSegments(
-              0,
-              context.sketchId,
-              segmentsToEdit,
-              settings,
-              constraintLabelEdits.length === 0,
-              dragAnchorSegmentIds,
-              true,
-              arcDragAnchors
-            )
+            let latestResult =
+              arcDragAnchors.length > 0
+                ? await context.rustContext.editSegments(
+                    0,
+                    context.sketchId,
+                    segmentsToEdit,
+                    settings,
+                    constraintLabelEdits.length === 0,
+                    dragAnchorSegmentIds,
+                    true,
+                    arcDragAnchors
+                  )
+                : await context.rustContext.editSegments(
+                    0,
+                    context.sketchId,
+                    segmentsToEdit,
+                    settings,
+                    constraintLabelEdits.length === 0,
+                    dragAnchorSegmentIds
+                  )
 
             for (const [
               index,
@@ -2476,7 +2536,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   labelPosition,
                   settings,
                   index === constraintLabelEdits.length - 1,
-                  dragAnchorSegmentIds
+                  constraintLabelAnchorSegmentIds
                 )
             }
 
@@ -2526,7 +2586,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
               const recoveredCommit = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
                 lastGoodPreview.constraintLabelEdits,
-                lastGoodPreview.dragAnchorSegmentIds
+                lastGoodPreview.dragAnchorSegmentIds,
+                lastGoodPreview.arcDragAnchors,
+                lastGoodPreview.constraintLabelAnchorSegmentIds
               )
 
               if (recoveredCommit.checkpointId != null) {
@@ -2700,7 +2762,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 lastGoodPreview.segmentsToEdit,
                 lastGoodPreview.constraintLabelEdits,
                 lastGoodPreview.dragAnchorSegmentIds,
-                lastGoodPreview.arcDragAnchors
+                lastGoodPreview.arcDragAnchors,
+                lastGoodPreview.constraintLabelAnchorSegmentIds
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
