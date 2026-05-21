@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor } from 'xstate'
 
-import type { SourceDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type RustContext from '@src/lib/rustContext'
 import { machine } from '@src/machines/sketchSolve/tools/pointTool'
 import {
   createMockKclManager,
@@ -17,9 +15,6 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
-
-type AddSegmentResult = Awaited<ReturnType<RustContext['addSegment']>>
-type AddConstraintResult = Awaited<ReturnType<RustContext['addConstraint']>>
 
 vi.mock('@src/machines/sketchSolve/tools/toolSnappingUtils', () => ({
   clearToolSnappingState: vi.fn(),
@@ -132,17 +127,17 @@ describe('pointTool', () => {
       const addSegmentSpy = vi
         .spyOn(rustContext, 'addSegment')
         .mockResolvedValue({
-          kclSource: { text: 'point' } as SourceDelta,
+          kclSource: { text: 'point' },
           sceneGraphDelta: createSceneGraphDelta([point], [1]),
           checkpointId: null,
-        } as AddSegmentResult)
+        })
       const addConstraintSpy = vi
         .spyOn(rustContext, 'addConstraint')
         .mockResolvedValue({
-          kclSource: { text: 'snap' } as SourceDelta,
+          kclSource: { text: 'snap' },
           sceneGraphDelta: createSceneGraphDelta([], [10]),
           checkpointId: null,
-        } as AddConstraintResult)
+        })
 
       const callbacks = setCallbacksMock.mock.calls.at(-1)?.[0]
       callbacks?.onClick?.({

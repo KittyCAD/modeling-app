@@ -10,15 +10,12 @@ export function createKCClient(
 ): Client {
   const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
   const injectedFetch = ((input: any, init?: any) => {
-    const impl =
-      typeof fetch !== 'undefined'
-        ? fetch
-        : (isomorphicFetch as unknown as typeof fetch)
+    const impl = typeof fetch !== 'undefined' ? fetch : isomorphicFetch
     const opts: RequestInit = { ...(init || {}) }
     if (!isDesktop()) {
       opts.credentials = 'include'
     }
-    return impl(input, opts as any)
+    return impl(input, opts)
   }) as typeof fetch
   return new Client({ token, baseUrl, fetch: injectedFetch })
 }
