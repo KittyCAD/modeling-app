@@ -50,7 +50,7 @@ export function SelectionList<Item extends SelectionListItem>({
             className={[
               'rounded-sm px-1 py-px text-[9px] leading-none',
               isActive
-                ? 'bg-primary text-chalkboard-10'
+                ? 'bg-primary/15 text-primary ring-1 ring-primary/30 dark:bg-primary/20 dark:text-primary'
                 : 'bg-chalkboard-20 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30',
             ].join(' ')}
           >

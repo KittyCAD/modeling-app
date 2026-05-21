@@ -231,7 +231,7 @@ export function ArgumentField<Item extends SelectionListItem>({
             disabled
               ? 'border-chalkboard-20 bg-chalkboard-10/30 dark:border-chalkboard-80 dark:bg-chalkboard-100/30'
               : isSelecting
-                ? 'border-primary bg-primary/10 ring-1 ring-primary dark:bg-primary/15'
+                ? 'border-primary/70 bg-primary/[0.03] dark:border-primary/60 dark:bg-primary/[0.08]'
                 : 'border-chalkboard-20 bg-chalkboard-10/40 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/40 dark:hover:border-chalkboard-50 dark:hover:bg-chalkboard-90/60',
           ].join(' ')}
         >
@@ -259,7 +259,7 @@ export function ArgumentField<Item extends SelectionListItem>({
               onClear={disabled ? undefined : onClearSelection}
             />
             {isSelecting && currentSelectionLabel && (
-              <p className="my-1 mb-0 text-[10px] leading-tight text-primary dark:text-primary">
+              <p className="my-1 mb-0 text-[10px] leading-tight text-primary/80 dark:text-primary/80">
                 Selecting now: {currentSelectionLabel}
               </p>
             )}

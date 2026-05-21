@@ -1552,7 +1552,7 @@ export function ModelingDialog() {
           onSubmit={(event) => {
             void handleSubmit(event)
           }}
-          className="flex min-h-0 w-full flex-col px-3 pb-3 pt-2 text-xs"
+          className="flex min-h-0 w-full flex-col px-3 pt-2 text-xs"
         >
           {selectedCommand.description && (
             <p className="mt-1 mb-2 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-40">
@@ -1585,13 +1585,14 @@ export function ModelingDialog() {
               : visibleFields.map(renderField)}
           </div>
 
-          {validationErrorToDisplay && (
-            <p className="mt-2 mb-0 text-xs leading-tight text-destroy-70 dark:text-destroy-40">
-              {validationErrorToDisplay}
-            </p>
-          )}
-
-          <div className="mt-3 flex shrink-0 items-center justify-end gap-1.5">
+          <div className="sticky bottom-0 -mx-3 mt-3 flex shrink-0 items-center justify-between gap-3 border-chalkboard-20 border-t bg-chalkboard-10 px-3 py-3 dark:border-chalkboard-80 dark:bg-chalkboard-100">
+            <div className="min-w-0 flex-1">
+              {validationErrorToDisplay && (
+                <p className="my-0 text-xs leading-tight text-destroy-70 dark:text-destroy-40">
+                  {validationErrorToDisplay}
+                </p>
+              )}
+            </div>
             <SubmitButton
               disabled={
                 isSubmitting ||

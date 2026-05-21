@@ -52,7 +52,7 @@ export function ChoiceGroup<Value = unknown>({
   return (
     <fieldset
       disabled={disabled}
-      className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10 p-0.5 disabled:opacity-60 dark:border-chalkboard-70 dark:bg-chalkboard-100"
+      className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-0.5 rounded-sm border border-chalkboard-20 bg-chalkboard-10/40 p-0.5 disabled:opacity-60 dark:border-chalkboard-80 dark:bg-chalkboard-100/40"
     >
       <legend className="sr-only">{ariaLabel || name}</legend>
       {options.map((option) => {
@@ -72,11 +72,11 @@ export function ChoiceGroup<Value = unknown>({
               onChange(option.value)
             }}
             className={[
-              'm-0 min-h-7 min-w-0 rounded-sm border-0 px-2 py-1 text-xs leading-tight',
+              'm-0 min-h-7 min-w-0 rounded-sm border border-transparent px-2 py-1 text-xs leading-tight',
               'focus:outline-current disabled:cursor-not-allowed disabled:opacity-50',
               isSelected
-                ? 'bg-primary text-chalkboard-10 shadow-sm'
-                : 'bg-transparent text-chalkboard-80 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80',
+                ? 'border-primary/50 bg-primary/[0.08] text-primary shadow-sm dark:border-primary/50 dark:bg-primary/[0.12] dark:text-primary'
+                : 'bg-transparent text-chalkboard-70 hover:bg-chalkboard-10 dark:text-chalkboard-30 dark:hover:bg-chalkboard-90',
             ].join(' ')}
           >
             <span className="block truncate">{option.name}</span>
