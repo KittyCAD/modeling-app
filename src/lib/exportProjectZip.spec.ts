@@ -4,14 +4,19 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { createProjectZipArchive } from '@src/lib/exportProjectZip'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { buildTheWorldNode } from '@src/unitTestUtils'
 
 const createdProjectPaths: string[] = []
+let wasmInstance: ModuleType
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
     options: {},
   })
+  const { instance } = await buildTheWorldNode()
+  wasmInstance = await instance
 })
 
 function makeProject(projectPath: string): Project {
@@ -66,7 +71,7 @@ describe('createProjectZipArchive', () => {
       project: makeProject(projectPath),
       currentFilePath: fsZds.join(projectPath, 'main.kcl'),
       currentFileContents: 'unsaved = true',
-      wasmInstance: {} as never,
+      wasmInstance,
     })
 
     expect(archive).not.toBeInstanceOf(Error)
