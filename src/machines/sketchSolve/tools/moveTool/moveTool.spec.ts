@@ -972,7 +972,8 @@ describe('createOnDragCallback', () => {
           },
         ],
         {},
-        [3]
+        [3],
+        []
       )
       expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
         0,
@@ -995,7 +996,7 @@ describe('createOnDragCallback', () => {
   )
 
   it.each(['Radius', 'Diameter'] as const)(
-    'should move explicit %s constraint labels with dragged arcs without rotating labels',
+    'should leave explicit %s constraint labels stable with dragged arcs',
     async (constraintType) => {
       const setIsSolveInProgress = vi.fn()
       const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
@@ -1086,19 +1087,9 @@ describe('createOnDragCallback', () => {
         intersects: [],
       })
 
-      expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
-        0,
-        2,
-        8,
-        {
-          x: { value: 7, units: 'Mm' },
-          y: { value: 7, units: 'Mm' },
-        },
-        {},
-        [3]
-      )
+      expect(editDistanceConstraintLabelPosition).not.toHaveBeenCalled()
       expect(onNewSketchOutcome).toHaveBeenCalledWith({
-        kclSource: { text: 'label updated' },
+        kclSource: { text: 'segments updated' },
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
@@ -1472,7 +1463,7 @@ describe('createOnDragCallback', () => {
       rustContext.editSegments.mock.calls[1]?.[2]
     )
     expect(rustContext.editSegments.mock.calls[2]?.[4]).toBe(true)
-    expect(rustContext.editSegments.mock.calls[2]?.[6]).toBeUndefined()
+    expect(rustContext.editSegments.mock.calls[2]?.[6]).toBe(true)
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
@@ -2349,7 +2340,8 @@ describe('createOnDragCallback', () => {
         },
       ],
       {},
-      [5]
+      [5],
+      []
     )
   })
 
@@ -2419,7 +2411,8 @@ describe('createOnDragCallback', () => {
         },
       ],
       {},
-      [5]
+      [5],
+      []
     )
   })
 
