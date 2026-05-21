@@ -77,6 +77,7 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       outDir: 'build',
+      reportCompressedSize: false,
     },
     resolve: {
       alias: {

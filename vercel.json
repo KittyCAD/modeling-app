@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
   "git": {
     "deploymentEnabled": {
       "main": false,
