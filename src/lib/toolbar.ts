@@ -4,6 +4,12 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
+import {
+  SKETCH_DEFAULT_PLANE_XY,
+  SKETCH_DEFAULT_PLANE_XZ,
+  SKETCH_DEFAULT_PLANE_YZ,
+  SKETCH_SELECTION_RGB_STR,
+} from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
@@ -2337,27 +2343,24 @@ function getSelectedSketchTargetPlane(selectionRanges: Selections) {
   })
 }
 
-const sketchIconColors = {
-  default: '#fff',
-  faceOrPlane: '#eab308',
-  xy: '#ef4444',
-  xz: '#3b82f6',
-  yz: '#22c55e',
-}
-
-function getSelectedSketchIconColor(selectionRanges: Selections): string {
+function getSelectedSketchIconColor(
+  selectionRanges: Selections
+): string | undefined {
   const defaultPlane = getSelectedDefaultPlane(selectionRanges)
   if (defaultPlane) {
-    return (
-      sketchIconColors[
-        defaultPlane.name.toLowerCase() as keyof typeof sketchIconColors
-      ] ?? sketchIconColors.default
-    )
+    switch (defaultPlane.name.toLowerCase()) {
+      case 'xy':
+        return SKETCH_DEFAULT_PLANE_XY
+      case 'xz':
+        return SKETCH_DEFAULT_PLANE_XZ
+      case 'yz':
+        return SKETCH_DEFAULT_PLANE_YZ
+    }
   }
 
   return getSelectedSketchTargetPlane(selectionRanges)
-    ? sketchIconColors.faceOrPlane
-    : sketchIconColors.default
+    ? `rgb(${SKETCH_SELECTION_RGB_STR})`
+    : undefined
 }
 
 export const useToolbarConfig = () => {

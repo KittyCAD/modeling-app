@@ -16,6 +16,7 @@ import {
   getCoincidentCluster,
   getArcPoints,
   getLinePoints,
+  isConstraintSegmentId,
   isArcLikeSegment,
   isArcSegment,
   isConstraint,
@@ -229,7 +230,7 @@ export function findSegmentsForInvisibleConstraint(
         return [
           constraint.kind.constraint.point,
           constraint.kind.constraint.segment,
-        ]
+        ].filter(isConstraintSegmentId)
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
@@ -408,7 +409,10 @@ function isConstrainingPointCluster(
         pointIds.includes(id)
       )
     case 'Midpoint':
-      return pointIds.includes(constraint.kind.constraint.point)
+      return (
+        isConstraintSegmentId(constraint.kind.constraint.point) &&
+        pointIds.includes(constraint.kind.constraint.point)
+      )
     default:
       return false
   }

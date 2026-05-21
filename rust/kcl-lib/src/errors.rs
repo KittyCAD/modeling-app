@@ -521,6 +521,62 @@ impl miette::Diagnostic for Report {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
+#[error("{}", self.issue.message)]
+pub struct CompilationIssueReport {
+    pub issue: CompilationIssue,
+    pub kcl_source: String,
+    pub filename: String,
+}
+
+impl miette::Diagnostic for CompilationIssueReport {
+    fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
+        let tag = match self.issue.tag {
+            Tag::Deprecated => "deprecated",
+            Tag::Unnecessary => "unnecessary",
+            Tag::UnknownNumericUnits => "unknown-numeric-units",
+            Tag::None => return None,
+        };
+        Some(Box::new(format!("KCL {tag}")))
+    }
+
+    fn severity(&self) -> Option<miette::Severity> {
+        Some(match self.issue.severity {
+            Severity::Warning => miette::Severity::Warning,
+            Severity::Error | Severity::Fatal => miette::Severity::Error,
+        })
+    }
+
+    fn help<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
+        self.issue
+            .suggestion
+            .as_ref()
+            .map(|s| Box::new(s.title.clone()) as Box<dyn std::fmt::Display>)
+    }
+
+    fn source_code(&self) -> Option<&dyn miette::SourceCode> {
+        Some(&self.kcl_source)
+    }
+
+    fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
+        let span = miette::SourceSpan::from(self.issue.source_range);
+        let label = miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span);
+        Some(Box::new(std::iter::once(label)))
+    }
+}
+
+/// Render a [`CompilationIssue`] as a miette report string, mirroring the
+/// formatting used for [`Report`].
+pub fn render_compilation_issue_miette(filename: &str, source: &str, issue: CompilationIssue) -> String {
+    let report = CompilationIssueReport {
+        issue,
+        kcl_source: source.to_owned(),
+        filename: filename.to_owned(),
+    };
+    let report = miette::Report::new(report);
+    format!("{report:?}")
+}
+
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
 #[serde(rename_all = "camelCase")]
 #[error("{message}")]
