@@ -1,5 +1,9 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ commands: { send: vi.fn() } }),
+}))
 
 import {
   buildToolbarConfig,
@@ -9,6 +13,7 @@ import {
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
+  type ToolbarItem,
   promoteRecentToolbarItemId,
   recordRecentToolbarItemId,
   resolveRecentToolbarItems,
@@ -35,6 +40,21 @@ function findConstraintsDropdown() {
     > =>
       item !== 'break' && typeof item !== 'string' && item.id === 'constraints'
   )
+}
+
+function findModelingToolbarItem(id: string): ToolbarItem {
+  const item = buildToolbarConfig({
+    send: () => {},
+  }).modeling.items.find(
+    (item): item is ToolbarItem =>
+      item !== 'break' && !('array' in item) && item.id === id
+  )
+
+  if (!item) {
+    throw new Error(`Could not find toolbar item ${id}`)
+  }
+
+  return item
 }
 
 describe('toolbar state helpers', () => {
@@ -141,6 +161,89 @@ describe('toolbar state helpers', () => {
       verticalConstraintTool: 'vertical',
       perpendicularConstraintTool: 'perpendicular',
       fixedConstraintTool: 'fix',
+    })
+  })
+
+  test('starts sketch solve on an already-selected plane', () => {
+    const modelingSend = vi.fn()
+    const sketchItem = findModelingToolbarItem('sketch')
+    const modelingState = {
+      context: {
+        kclManager: { sceneInfra: { modelingSend } },
+        selectionRanges: {
+          graphSelections: [
+            {
+              artifact: {
+                id: 'plane-001',
+                type: 'plane',
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        store: {
+          useSketchSolveMode: { current: true },
+        },
+      },
+    } as unknown as StateFrom<typeof modelingMachine>
+
+    sketchItem.onClick({
+      modelingSend,
+      modelingState,
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(modelingSend).toHaveBeenNthCalledWith(1, {
+      type: 'Enter sketch',
+      data: {
+        forceNewSketch: true,
+        keepDefaultPlaneVisibility: true,
+      },
+    })
+    expect(modelingSend).toHaveBeenNthCalledWith(2, {
+      type: 'Select sketch solve plane',
+      data: 'plane-001',
+    })
+  })
+
+  test('starts sketch solve on an already-selected default plane', () => {
+    const modelingSend = vi.fn()
+    const sketchItem = findModelingToolbarItem('sketch')
+    const modelingState = {
+      context: {
+        kclManager: { sceneInfra: { modelingSend } },
+        selectionRanges: {
+          graphSelections: [],
+          otherSelections: [{ id: 'default-plane-xy', name: 'XY' }],
+        },
+        store: {
+          useSketchSolveMode: { current: true },
+        },
+      },
+    } as unknown as StateFrom<typeof modelingMachine>
+
+    sketchItem.onClick({
+      modelingSend,
+      modelingState,
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(modelingSend).toHaveBeenNthCalledWith(1, {
+      type: 'Enter sketch',
+      data: {
+        forceNewSketch: true,
+        keepDefaultPlaneVisibility: true,
+      },
+    })
+    expect(modelingSend).toHaveBeenNthCalledWith(2, {
+      type: 'Select sketch solve plane',
+      data: 'default-plane-xy',
     })
   })
 
