@@ -178,6 +178,75 @@ describe('mlEphantManagerMachine', () => {
     })
   })
 
+  describe('CacheSetupAndConnect', () => {
+    it('restarts setup when a different project conversation is requested while ready', async () => {
+      const setupConversationIds: Array<string | undefined> = []
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async ({ input }) => {
+            setupConversationIds.push(input.event.conversationId)
+            return {
+              ws: new TestSocket() as TestWebSocket,
+              conversation: { exchanges: [] },
+              conversationId: input.event.conversationId,
+            }
+          }),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'project-a-conversation-id',
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'project-a',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.Ready)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'project-b-conversation-id',
+      })
+
+      await waitFor(
+        actor,
+        (state) =>
+          state.matches(MlEphantManagerStates.WaitForContinueCheck) &&
+          state.context.conversationId === 'project-b-conversation-id'
+      )
+
+      expect(setupConversationIds).toStrictEqual([
+        'project-a-conversation-id',
+        'project-b-conversation-id',
+      ])
+      expect(actor.getSnapshot().context.conversationId).toBe(
+        'project-b-conversation-id'
+      )
+
+      actor.stop()
+    })
+  })
+
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket

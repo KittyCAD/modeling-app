@@ -653,6 +653,18 @@ export const mlEphantManagerMachine = setup({
         modeOptions: event.modeOptions,
       }
     }),
+    resetForSetup: assign({
+      abruptlyClosed: false,
+      lastMessageId: undefined,
+      lastMessageType: undefined,
+      conversation: undefined,
+      conversationId: undefined,
+      defaultMode: undefined,
+      modeOptions: undefined,
+      awaitingResponse: false,
+      attachmentsLoadedForCurrentPrompt: true,
+      pendingBackendShutdown: false,
+    }),
     disconnectIfIdle: ({ context }) => {
       if (!context.awaitingResponse) {
         logZookeeperDisconnect(
@@ -708,7 +720,7 @@ export const mlEphantManagerMachine = setup({
   },
   actors: {
     [MlEphantManagerStates.Setup]: fromPromise(async function (
-      args: XSInput<MlEphantManagerStates.Setup>
+      args: XSInput<MlEphantManagerStates.Setup> & { signal?: AbortSignal }
     ): Promise<Partial<MlEphantManagerContext>> {
       assertEvent(args.input.event, MlEphantManagerStates.Setup)
 
@@ -741,6 +753,14 @@ export const mlEphantManagerMachine = setup({
 
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
+      if (args.signal?.aborted) {
+        closeMlEphantWebSocket(ws)
+        throw new Error('Zookeeper setup aborted')
+      }
+      const closeOnAbort = () => {
+        closeMlEphantWebSocket(ws)
+      }
+      args.signal?.addEventListener('abort', closeOnAbort, { once: true })
 
       logZookeeperDisconnect('websocket opened and authenticated', {
         conversationId,
@@ -889,6 +909,7 @@ export const mlEphantManagerMachine = setup({
               )
               devCalledClose = true
               ws.close()
+              args.signal?.removeEventListener('abort', closeOnAbort)
               // Pass that the conversation is not found to the onError handler which will set the conversationId
               // to undefined to get us a new id.
               onRejected(MlEphantSetupErrors.ConversationNotFound)
@@ -949,6 +970,7 @@ export const mlEphantManagerMachine = setup({
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
               setupResolved = true
+              args.signal?.removeEventListener('abort', closeOnAbort)
               onFulfilled({
                 abruptlyClosed: false,
                 lastMessageId: undefined,
@@ -983,6 +1005,7 @@ export const mlEphantManagerMachine = setup({
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
+            args.signal?.removeEventListener('abort', closeOnAbort)
             const intentionallyClosed = intentionalMlEphantCloses.has(ws)
             if (intentionallyClosed) {
               intentionalMlEphantCloses.delete(ws)
@@ -1192,28 +1215,15 @@ export const mlEphantManagerMachine = setup({
     [MlEphantManagerTransitions.ModesReceive]: {
       actions: ['assignModeOptions'],
     },
+    [MlEphantManagerTransitions.CacheSetupAndConnect]: {
+      target: `.${MlEphantManagerStates.Setup}`,
+      reenter: true,
+      actions: ['resetForSetup', 'cacheSetup'],
+    },
   },
   states: {
     [S.Await]: {
       on: {
-        [MlEphantManagerTransitions.CacheSetupAndConnect]: {
-          target: MlEphantManagerStates.Setup,
-          actions: [
-            assign({
-              abruptlyClosed: false,
-              lastMessageId: undefined,
-              lastMessageType: undefined,
-              conversation: undefined,
-              conversationId: undefined,
-              defaultMode: undefined,
-              modeOptions: undefined,
-              awaitingResponse: false,
-              attachmentsLoadedForCurrentPrompt: true,
-              pendingBackendShutdown: false,
-            }),
-            'cacheSetup',
-          ],
-        },
         ...transitions([MlEphantManagerStates.Setup]),
       },
     },
