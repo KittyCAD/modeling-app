@@ -433,8 +433,8 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 1200 # average build times are 17-18 minutes
-          check_interval: 30
+          max_timeout: 1000 # average build times are <16 minutes
+          check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Wait for Vercel (staging)
@@ -445,8 +445,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: staging
-          max_timeout: 1200 # average build times are 17-18 minutes
-          check_interval: 30
+          max_timeout: 1000 # average build times are <16 minutes
+          check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Check Vercel
