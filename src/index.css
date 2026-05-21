@@ -312,9 +312,22 @@ code,
 }
 
 #code-mirror-override .cm-tooltip-hover,
+.cm-tooltip-hover,
 #code-mirror-override .cm-signature-tooltip,
 .cm-signature-tooltip {
-  @apply py-1 px-2 w-max max-w-md;
+  @apply py-1 px-2;
+  /* Preserve Tailwind max-w-md while preventing viewport overflow. */
+  max-width: min(28rem, calc(100vw - 1rem));
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+#code-mirror-override .cm-tooltip-hover pre,
+.cm-tooltip-hover pre,
+#code-mirror-override .cm-signature-tooltip pre,
+.cm-signature-tooltip pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 #code-mirror-override .cm-completionInfo {
