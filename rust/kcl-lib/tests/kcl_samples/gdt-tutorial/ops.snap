@@ -1023,7 +1023,7 @@ description: Operations executed gdt-tutorial.kcl
         "leaderScale": {
           "value": {
             "type": "Number",
-            "value": 3.0,
+            "value": 1.0,
             "ty": {
               "type": "Known",
               "type": "Count"
@@ -1091,7 +1091,7 @@ description: Operations executed gdt-tutorial.kcl
         "leaderScale": {
           "value": {
             "type": "Number",
-            "value": 3.0,
+            "value": 1.0,
             "ty": {
               "type": "Known",
               "type": "Count"
@@ -1160,7 +1160,7 @@ description: Operations executed gdt-tutorial.kcl
         "leaderScale": {
           "value": {
             "type": "Number",
-            "value": 3.0,
+            "value": 1.0,
             "ty": {
               "type": "Known",
               "type": "Count"
@@ -1260,7 +1260,7 @@ description: Operations executed gdt-tutorial.kcl
         "leaderScale": {
           "value": {
             "type": "Number",
-            "value": 3.0,
+            "value": 1.0,
             "ty": {
               "type": "Known",
               "type": "Count"
@@ -1316,7 +1316,7 @@ description: Operations executed gdt-tutorial.kcl
         "leaderScale": {
           "value": {
             "type": "Number",
-            "value": 3.0,
+            "value": 1.0,
             "ty": {
               "type": "Known",
               "type": "Count"
@@ -1411,7 +1411,7 @@ description: Operations executed gdt-tutorial.kcl
         "leaderScale": {
           "value": {
             "type": "Number",
-            "value": 3.0,
+            "value": 1.0,
             "ty": {
               "type": "Known",
               "type": "Count"
