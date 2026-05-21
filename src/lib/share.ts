@@ -11,6 +11,7 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
+import { getProjectTomlContents } from '@src/lib/projectToml'
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -319,7 +320,10 @@ async function buildProjectUploadFiles({
     return files
   }
 
-  const projectToml = await getProjectTomlContents(project.path, wasmInstance)
+  const projectToml = await getProjectTomlContents({
+    projectPath: project.path,
+    wasmInstance,
+  })
   if (err(projectToml)) {
     return projectToml
   }
@@ -331,31 +335,6 @@ async function buildProjectUploadFiles({
       data: new Blob([projectToml], { type: 'text/plain' }),
     },
   ]
-}
-
-async function getProjectTomlContents(
-  projectPath: string,
-  wasmInstance: ModuleType
-): Promise<string | Error> {
-  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-
-  try {
-    return await fsZds.readFile(projectTomlPath, { encoding: 'utf-8' })
-  } catch {
-    const projectSettings = await readProjectSettingsFile(
-      projectPath,
-      wasmInstance
-    )
-    const serialized = serializeProjectConfiguration(
-      projectSettings,
-      wasmInstance
-    )
-    if (err(serialized)) {
-      return serialized
-    }
-
-    return serialized
-  }
 }
 
 async function getCloudProjectIdForEnvironment(
