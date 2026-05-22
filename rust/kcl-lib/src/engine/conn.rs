@@ -526,7 +526,7 @@ impl EngineManager for EngineConnection {
             .await?;
 
         // Wait for the response.
-        let response_timeout = 300;
+        let response_timeout = 600;
         let current_time = std::time::Instant::now();
         while current_time.elapsed().as_secs() < response_timeout {
             let guard = self.socket_health.read().await;

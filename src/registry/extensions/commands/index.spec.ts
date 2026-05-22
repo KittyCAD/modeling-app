@@ -94,6 +94,31 @@ describe('commands extension', () => {
     ])
   })
 
+  it('exits sketch solve mode while a sketch solve tool is equipped', () => {
+    const sentEvents: unknown[] = []
+    const kclManager = {
+      modelingState: {
+        matches: (state: unknown) => state === 'sketchSolveMode',
+        context: { sketchSolveToolName: 'lineTool' },
+      },
+      sendModelingEvent: (event: unknown) => {
+        sentEvents.push(event)
+        return true
+      },
+    } as unknown as KclManager
+
+    const command = toolbarCommands.find(
+      (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.exit
+    )
+
+    expect(
+      command?.onSubmit({
+        context: { kclManager } as CommandBarContext,
+      })
+    ).toBe(true)
+    expect(sentEvents).toEqual([{ type: 'Exit sketch' }])
+  })
+
   it('runs toolbar commands selected by keymaps against the command bar KclManager', () => {
     const sentEvents: unknown[] = []
     const kclManager = {
