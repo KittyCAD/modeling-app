@@ -5,7 +5,6 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
-import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
@@ -102,18 +101,22 @@ function getOperationTreeNodeKey(node: OperationTreeNode): string {
     const last = node[node.length - 1]
     return `group-${
       first?.type ?? 'unknown'
-    }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
-      last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+    }-${first ? getOperationKey(first) : 'start'}-${
+      last ? getOperationKey(last) : 'end'
     }`
   }
 
   if (isOperationTreeBranch(node)) {
-    return `module-${node.parent.moduleId}-${node.parent.sourceRange[0]}`
+    return `module-${getModuleInstanceKey(node.parent)}`
   }
 
-  return `${node.type}-${
-    'name' in node ? node.name : 'anonymous'
-  }-${'sourceRange' in node ? node.sourceRange[0] : 'start'}`
+  return getOperationKey(node)
+}
+
+function getOperationKey(operation: Operation): string {
+  return `${operation.type}-${
+    'name' in operation ? operation.name : 'anonymous'
+  }-${'sourceRange' in operation ? operation.sourceRange.join('-') : 'start'}`
 }
 
 function buildModuleOperationList(operations: Operation[]) {
@@ -126,17 +129,86 @@ function buildModuleOperationList(operations: Operation[]) {
   )
 }
 
-function buildOperationTree(
+export function buildOperationTree(
+  operationsByModule: OperationsByModule,
+  moduleId: number
+): OperationTreeNode[] {
+  const nodes = buildModuleOperationTree(
+    operationsByModule,
+    moduleId,
+    new Set()
+  )
+  const displayedModuleInstances = new Set<string>()
+  collectModuleInstanceKeys(nodes, displayedModuleInstances)
+
+  for (const operations of Object.values(operationsByModule.map)) {
+    for (const operation of operations ?? []) {
+      if (operation.type !== 'ModuleInstance') {
+        continue
+      }
+
+      const key = getModuleInstanceKey(operation)
+      if (displayedModuleInstances.has(key)) {
+        continue
+      }
+
+      const node = {
+        parent: operation,
+        children: buildModuleOperationTree(
+          operationsByModule,
+          operation.moduleId,
+          new Set([operation.sourceRange[2]])
+        ),
+      }
+      nodes.push(node)
+      collectModuleInstanceKeys([node], displayedModuleInstances)
+    }
+  }
+
+  return nodes
+}
+
+function getModuleInstanceKey(operation: ModuleInstanceOperation): string {
+  return `${operation.moduleId}-${operation.sourceRange.join('-')}`
+}
+
+function collectModuleInstanceKeys(
+  nodes: OperationTreeNode[],
+  keys: Set<string>
+) {
+  for (const node of nodes) {
+    if (isArray(node)) {
+      for (const operation of node) {
+        if (operation.type === 'ModuleInstance') {
+          keys.add(getModuleInstanceKey(operation))
+        }
+      }
+      continue
+    }
+
+    if (isOperationTreeBranch(node)) {
+      keys.add(getModuleInstanceKey(node.parent))
+      collectModuleInstanceKeys(node.children, keys)
+      continue
+    }
+
+    if (node.type === 'ModuleInstance') {
+      keys.add(getModuleInstanceKey(node))
+    }
+  }
+}
+
+function buildModuleOperationTree(
   operationsByModule: OperationsByModule,
   moduleId: number,
-  visited = new Set<number>()
+  path: Set<number>
 ): OperationTreeNode[] {
-  if (visited.has(moduleId)) {
+  if (path.has(moduleId)) {
     return []
   }
 
-  const nextVisited = new Set(visited)
-  nextVisited.add(moduleId)
+  const nextPath = new Set(path)
+  nextPath.add(moduleId)
 
   return buildModuleOperationList(
     getOperationsForModule(operationsByModule, moduleId)
@@ -147,10 +219,10 @@ function buildOperationTree(
 
     return {
       parent: item,
-      children: buildOperationTree(
+      children: buildModuleOperationTree(
         operationsByModule,
         item.moduleId,
-        nextVisited
+        nextPath
       ),
     }
   })
@@ -269,11 +341,13 @@ export const FeatureTreePaneContents = memo(() => {
     emptyOperationsByModule()
   )
 
-  const unfilteredOperationsByModule = !hasParseErrors
-    ? !kclManager.errors.length
-      ? kclManager.operationsByModule
-      : longestErrorOperationsByModule
-    : kclManager.lastSuccessfulOperations
+  const unfilteredOperationsByModule = kclManager.isExecuting
+    ? kclManager.operationsByModule
+    : !hasParseErrors
+      ? !kclManager.errors.length
+        ? kclManager.operationsByModule
+        : longestErrorOperationsByModule
+      : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
@@ -318,98 +392,90 @@ export const FeatureTreePaneContents = memo(() => {
         data-testid="debug-panel"
         className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
-        {kclManager.isExecuting && operationList.length === 0 ? (
-          <Loading className="h-full" isDummy={true}>
-            Building feature tree...
-          </Loading>
-        ) : (
-          <>
-            {kclManager.isExecuting && operationList.length > 0 && (
-              <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
-                Updating feature tree...
-              </div>
-            )}
-            {!modelingState.matches('Sketch') && (
-              <DefaultPlanes
-                systemDeps={systemDeps}
-                disabled={disableModelingForUnrenderedChanges}
-              />
-            )}
-            {disableModelingForUnrenderedChanges && !hasParseErrors && (
-              <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
-                <p className="font-medium">
-                  Feature tree actions are disabled.
-                </p>
-                <p className="text-xs opacity-80">
-                  {getUnrenderedChangesDisabledReason()}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      executionService?.executeCode().catch(reportRejection)
-                    }}
-                    disabled={kclManager.isExecuting || !executionService}
-                    className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
-                  >
-                    <CustomIcon name="play" className="w-5 h-5" />
-                    <span>Execute</span>
-                    {unrenderedExecuteHotkeyLabel && (
-                      <kbd className="hotkey text-xs">
-                        {unrenderedExecuteHotkeyLabel}
-                      </kbd>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-            {hasParseErrors && (
-              <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
-                <p className="font-medium">
-                  KCL parse errors are blocking the current feature tree.
-                </p>
-                <p className="whitespace-pre-wrap break-words text-xs">
-                  {firstParseDiagnostic?.message ||
-                    'Fix the parse error to rebuild the feature tree.'}
-                </p>
-                <p className="text-xs text-chalkboard-20">
-                  {isShowingStaleFeatureTree
-                    ? 'Showing the last successful feature tree as a read-only reference. It may not match the current code.'
-                    : 'No successful feature tree is available yet for this file.'}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={goToError}
-                    className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
-                  >
-                    View error
-                  </button>
-                  {firstParseAction && (
-                    <button
-                      onClick={applyParseQuickFix}
-                      className="bg-destroy-70 text-chalkboard-10 p-1 rounded-sm flex-none hover:bg-destroy-60 border-transparent"
-                    >
-                      {firstParseAction.name}
-                    </button>
+        <>
+          {kclManager.isExecuting && (
+            <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
+              Updating feature tree...
+            </div>
+          )}
+          {!modelingState.matches('Sketch') && (
+            <DefaultPlanes
+              systemDeps={systemDeps}
+              disabled={disableModelingForUnrenderedChanges}
+            />
+          )}
+          {disableModelingForUnrenderedChanges && !hasParseErrors && (
+            <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
+              <p className="font-medium">Feature tree actions are disabled.</p>
+              <p className="text-xs opacity-80">
+                {getUnrenderedChangesDisabledReason()}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    executionService?.executeCode().catch(reportRejection)
+                  }}
+                  disabled={kclManager.isExecuting || !executionService}
+                  className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
+                >
+                  <CustomIcon name="play" className="w-5 h-5" />
+                  <span>Execute</span>
+                  {unrenderedExecuteHotkeyLabel && (
+                    <kbd className="hotkey text-xs">
+                      {unrenderedExecuteHotkeyLabel}
+                    </kbd>
                   )}
-                </div>
+                </button>
               </div>
-            )}
-            {operationList.map((node) => (
-              <OperationTreeNodeItem
-                key={getOperationTreeNodeKey(node)}
-                node={node}
-                code={operationsCode}
-                isStaleReference={isReadOnlyFeatureTree}
-                sketchNoFace={sketchNoFace}
-                systemDeps={systemDeps}
-                modelingActor={modelingActor}
-                engineCommandManager={engineCommandManager}
-                onSelect={selectOperation}
-              />
-            ))}
-          </>
-        )}
+            </div>
+          )}
+          {hasParseErrors && (
+            <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
+              <p className="font-medium">
+                KCL parse errors are blocking the current feature tree.
+              </p>
+              <p className="whitespace-pre-wrap break-words text-xs">
+                {firstParseDiagnostic?.message ||
+                  'Fix the parse error to rebuild the feature tree.'}
+              </p>
+              <p className="text-xs text-chalkboard-20">
+                {isShowingStaleFeatureTree
+                  ? 'Showing the last successful feature tree as a read-only reference. It may not match the current code.'
+                  : 'No successful feature tree is available yet for this file.'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={goToError}
+                  className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+                >
+                  View error
+                </button>
+                {firstParseAction && (
+                  <button
+                    onClick={applyParseQuickFix}
+                    className="bg-destroy-70 text-chalkboard-10 p-1 rounded-sm flex-none hover:bg-destroy-60 border-transparent"
+                  >
+                    {firstParseAction.name}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+          {operationList.map((node) => (
+            <OperationTreeNodeItem
+              key={getOperationTreeNodeKey(node)}
+              node={node}
+              code={operationsCode}
+              isStaleReference={isReadOnlyFeatureTree}
+              sketchNoFace={sketchNoFace}
+              systemDeps={systemDeps}
+              modelingActor={modelingActor}
+              engineCommandManager={engineCommandManager}
+              onSelect={selectOperation}
+            />
+          ))}
+        </>
       </section>
     </div>
   )
@@ -498,12 +564,9 @@ function OperationItemGroup({
         <Disclosure.Panel>
           <div className="border-l b-4 ml-6">
             {childItems.map((item) => {
-              const key = `${item.type}-${
-                'name' in item ? item.name : 'anonymous'
-              }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
               return (
                 <OperationItem
-                  key={key}
+                  key={getOperationKey(item)}
                   item={item}
                   code={code}
                   isStaleReference={isStaleReference}
@@ -538,12 +601,9 @@ function OperationItemGroup({
       <Disclosure.Panel as="ul" className="border-b b-4">
         <div className="border-l b-4 ml-4">
           {contentItems.map((op) => {
-            const key = `${op.type}-${
-              'name' in op ? op.name : 'anonymous'
-            }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
             return (
               <OperationItem
-                key={key}
+                key={getOperationKey(op)}
                 item={op}
                 code={code}
                 isStaleReference={isStaleReference}

@@ -808,8 +808,8 @@ export class KclManager extends File {
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: OperationsByModule = emptyOperationsByModule()
-  pendingFeatureTreeSourceSelection: PendingFeatureTreeSourceSelection | null =
-    null
+  private _pendingFeatureTreeSourceSelection =
+    signal<PendingFeatureTreeSourceSelection | null>(null)
   private _logs = signal<string[]>([])
   private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])
@@ -1073,6 +1073,13 @@ export class KclManager extends File {
   }
   get execStateSignal() {
     return this._execState
+  }
+  get pendingFeatureTreeSourceSelection() {
+    return this._pendingFeatureTreeSourceSelection.value
+  }
+  set pendingFeatureTreeSourceSelection(pendingFeatureTreeSourceSelection: PendingFeatureTreeSourceSelection | null) {
+    this._pendingFeatureTreeSourceSelection.value =
+      pendingFeatureTreeSourceSelection
   }
 
   // Get the kcl version from the wasm module
@@ -2112,6 +2119,8 @@ export class KclManager extends File {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
+    this.errors = []
+    this.logs = []
     this.setSketchSolveDiagnostics([])
     this.beginLiveOperationUpdates(currentExecutionId)
 

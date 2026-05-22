@@ -30,6 +30,7 @@ import {
   importFileExtensions,
   relevantFileExtensions,
 } from '@src/lang/wasmUtils'
+import { isArray } from '@src/lib/utils'
 import {
   isExtensionAnImportExtension,
   isExtensionARelevantExtension,
@@ -55,7 +56,7 @@ function normalizeOperationsByModule(operationsByModule: OperationsByModule) {
 }
 
 function normalizeOperation(operation: unknown): unknown {
-  if (Array.isArray(operation)) {
+  if (isArray(operation)) {
     return operation.map((item) => normalizeOperation(item))
   }
 

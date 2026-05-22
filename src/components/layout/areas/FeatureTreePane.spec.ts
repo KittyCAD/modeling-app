@@ -1,10 +1,43 @@
 import { describe, it, expect } from 'vitest'
-import { getFeatureTreeValueDetail } from '@src/components/layout/areas/FeatureTreePane'
+import {
+  buildOperationTree,
+  getFeatureTreeValueDetail,
+} from '@src/components/layout/areas/FeatureTreePane'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { defaultNodePath } from '@src/lang/wasm'
+import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 
 describe('FeatureTreePane', () => {
+  describe('buildOperationTree', () => {
+    function createModuleInstanceOperation(
+      moduleId: number,
+      sourceRange: [number, number, number],
+      name = `module${moduleId}`
+    ): Operation {
+      return {
+        type: 'ModuleInstance',
+        name,
+        moduleId,
+        nodePath: defaultNodePath(),
+        sourceRange,
+      }
+    }
+
+    it('shows every ModuleInstance even when they point to the same module', () => {
+      const operationsByModule: OperationsByModule = {
+        map: {
+          0: [createModuleInstanceOperation(1, [0, 10, 0], 'first')],
+          2: [createModuleInstanceOperation(1, [0, 11, 2], 'second')],
+        },
+      }
+
+      const tree = buildOperationTree(operationsByModule, 0)
+
+      expect(JSON.stringify(tree)).toContain('first')
+      expect(JSON.stringify(tree)).toContain('second')
+    })
+  })
+
   describe('getFeatureTreeValueDetail', () => {
     describe('VariableDeclaration operations', () => {
       function createVariableDeclarationOperation(
