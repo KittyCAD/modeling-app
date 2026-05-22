@@ -6,11 +6,11 @@ import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
 import {
+  COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
+  SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
-  COOKIE_NAME_PREFIX,
-  SIDEBAR_BUTTON_SUFFIX,
 } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -175,12 +175,10 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    // kclManager is available on the window object.
-    //@ts-ignore this is in an entirely different context that tsc can't see.
+    const { kclManager } = window.app.singletons
     kclManager.editorView.dispatch({
       selection: {
-        //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: kclManager.editorView.docView.length,
+        anchor: kclManager.editorView.state.doc.length,
       },
       scrollIntoView: true,
     })

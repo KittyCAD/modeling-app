@@ -80,7 +80,7 @@ export function createSelectionFromArtifacts(
     return {
       codeRef: codeRefs[0],
       artifact,
-    } as Selection
+    }
   })
   return {
     graphSelections,
@@ -91,13 +91,10 @@ export function createSelectionFromArtifacts(
 export function createSelectionFromPathArtifact(
   artifacts: (Artifact & { codeRef: CodeRef })[]
 ): Selections {
-  const graphSelections = artifacts.map(
-    (artifact) =>
-      ({
-        codeRef: artifact.codeRef,
-        artifact,
-      }) as Selection
-  )
+  const graphSelections = artifacts.map((artifact) => ({
+    codeRef: artifact.codeRef,
+    artifact,
+  }))
   return {
     graphSelections,
     otherSelections: [],

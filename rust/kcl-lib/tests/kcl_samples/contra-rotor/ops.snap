@@ -5,6 +5,34 @@ description: Operations executed contra-rotor.kcl
 {
   "public/kcl-samples/contra-rotor/contra-assembly.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "contra-shaft.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "contra-propeller-assembly.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {
@@ -775,6 +803,36 @@ description: Operations executed contra-rotor.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "public/kcl-samples/contra-rotor/contra-propeller-assembly.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "contra-propeller-hub.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "contra-propeller-blades.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
           }
         ]
       },
@@ -12146,72 +12204,9 @@ description: Operations executed contra-rotor.kcl
   ],
   "public/kcl-samples/contra-rotor/main.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "tertiary.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "secondary-assembly.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "contra-assembly.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "primary-assembly.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "primary-assembly.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -12223,10 +12218,91 @@ description: Operations executed contra-rotor.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "ModuleInstance",
+      "name": "contra-assembly.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "secondary-assembly.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "tertiary.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "public/kcl-samples/contra-rotor/primary-assembly.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "primary-shaft.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "primary-propeller-assembly.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "primary-propeller-nose-cone.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "translate",
@@ -12972,6 +13048,36 @@ description: Operations executed contra-rotor.kcl
           },
           {
             "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "public/kcl-samples/contra-rotor/primary-propeller-assembly.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "primary-propeller-hub.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "primary-propeller-blades.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
             "index": 1
           }
         ]
@@ -26131,6 +26237,20 @@ description: Operations executed contra-rotor.kcl
     }
   ],
   "public/kcl-samples/contra-rotor/secondary-assembly.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "secondary-shaft.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "VariableDeclaration",
       "name": "position",

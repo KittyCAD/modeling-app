@@ -1,5 +1,6 @@
 import type { KCLError } from '@src/lang/errors'
 import { kclErrorsToDiagnostics, toUtf8, toUtf16 } from '@src/lang/errors'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { expect, describe, it } from 'vitest'
@@ -43,7 +44,7 @@ describe('test kclErrToDiagnostic', () => {
         kclBacktrace: [],
         nonFatal: [],
         variables: {},
-        operations: [],
+        operations: emptyOperationsByModule(),
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
@@ -57,7 +58,7 @@ describe('test kclErrToDiagnostic', () => {
         kclBacktrace: [],
         nonFatal: [],
         variables: {},
-        operations: [],
+        operations: emptyOperationsByModule(),
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
         defaultPlanes: null,
