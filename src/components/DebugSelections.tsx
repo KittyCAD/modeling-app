@@ -5,6 +5,12 @@ import { processCodeMirrorRanges } from '@src/lib/selections'
 import { use } from 'react'
 import { EditorSelection } from '@codemirror/state'
 import { defaultSourceRange } from '@src/lang/sourceRange'
+import {
+  countOperations,
+  emptyOperationsByModule,
+  ROOT_MODULE_ID,
+  getOperationsForModule,
+} from '@src/lang/wasm'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
@@ -211,10 +217,10 @@ function generateOperationList(deps: SingletonDeps) {
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
   const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return error.operations && error.operations.length > acc.length
+    return countOperations(error.operations) > countOperations(acc)
       ? error.operations
       : acc
-  }, [] as Operation[])
+  }, emptyOperationsByModule())
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
@@ -223,10 +229,12 @@ function generateOperationList(deps: SingletonDeps) {
     : kclManager.lastSuccessfulOperations
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList =
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ]) || []
+  const operationList = groupOperationTypeStreaks(
+    filterOperations(
+      getOperationsForModule(unfilteredOperationList, ROOT_MODULE_ID)
+    ),
+    ['VariableDeclaration']
+  )
 
   return operationList.flat()
 }

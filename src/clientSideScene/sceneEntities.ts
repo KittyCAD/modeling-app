@@ -2130,7 +2130,7 @@ export class SceneEntities {
         radius,
         ccw: true,
       },
-      fnName: 'arc' as ToolTip,
+      fnName: 'arc',
       pathToNode: sketchEntryNodePath,
       wasmInstance,
     })

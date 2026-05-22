@@ -17,6 +17,13 @@ struct Variation<'a> {
     settings: &'a kcl_lib::ExecutorSettings,
 }
 
+fn root_operations(outcome: &ExecOutcome) -> &Vec<Operation> {
+    outcome
+        .operations
+        .get(&kcl_lib::ModuleId::default())
+        .expect("root module operations should exist")
+}
+
 async fn cache_test(
     test_name: &str,
     variations: Vec<Variation<'_>>,
@@ -313,18 +320,18 @@ extrude001 = extrude(profile001, length = 4)
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
-    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+    let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
     };
     assert_eq!(name, "extrude");
     // Make sure there are no duplicates.
     assert_eq!(
-        second.operations.len(),
+        root_operations(second).len(),
         3,
         "There should be exactly this many operations in the second run. {:#?}",
         &second.operations
@@ -414,12 +421,12 @@ extrude001 = extrude(region001, length = 5)
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
-    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+    let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
     };
     assert_eq!(name, "extrude");
@@ -865,10 +872,10 @@ import \"rectangle2.kcl\"
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
     // Make sure we have NodePaths.
     let first_graph = &first.artifact_graph;

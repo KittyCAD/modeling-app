@@ -16,6 +16,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
@@ -781,7 +782,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
     exec_outcome: {
       issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,

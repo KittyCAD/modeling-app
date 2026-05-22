@@ -48,7 +48,7 @@ function createTestMachine(mockActors?: {
       modAndSolveFirstClick: fromPromise(
         mockActors?.modAndSolveFirstClick ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
             draft: {
               lineIds: [1, 2, 3, 4],
@@ -164,7 +164,7 @@ describe('rectTool - XState', () => {
 
     it('should pass the first click snap target into rectangle creation', async () => {
       const modAndSolveFirstClick = vi.fn(async () => ({
-        kclSource: { text: 'test' } as SourceDelta,
+        kclSource: { text: 'test' },
         sceneGraphDelta: createSceneGraphDelta([], []),
         draft: {
           lineIds: [1, 2, 3, 4] as [number, number, number, number],
