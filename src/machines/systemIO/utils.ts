@@ -1,6 +1,6 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
-import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_FOLDER, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -379,6 +379,13 @@ export const collectProjectFiles = async (args: {
         const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
 
         if (Boolean(stat.mode & fsZdsConstants.S_IFDIR)) {
+          // In browser-backed projects, opening a standalone file from the
+          // documents root can make the app's project storage folder appear
+          // beside the active file. That folder is not part of the current
+          // Zookeeper project and causes false manual-edit diffs.
+          if (path === basePath && entry === PROJECT_FOLDER) {
+            continue
+          }
           await recursivelyPushFilePromisesFromPath(
             absolutePathToFileNameWithExtension
           )
