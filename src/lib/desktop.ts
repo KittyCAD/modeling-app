@@ -39,6 +39,12 @@ import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import env from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
+import {
+  appendGitignoreForDirectory,
+  createInitialGitignoreStack,
+  isPathIgnoredByGitignore,
+  type GitignoreStackEntry,
+} from '@src/lib/gitignore'
 
 function getProjectSettingsSection(
   config: DeepPartial<Configuration> | Configuration
@@ -47,7 +53,7 @@ function getProjectSettingsSection(
   return projectSettings &&
     typeof projectSettings === 'object' &&
     !isArray(projectSettings)
-    ? (projectSettings as { [key: string]: JsonValue })
+    ? projectSettings
     : undefined
 }
 
@@ -290,8 +296,10 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   targetPath: string,
+  projectRoot: string,
   canReadWritePath: boolean,
-  showAllFiles: boolean
+  showAllFiles: boolean,
+  gitignoreStack: GitignoreStackEntry[]
 ) => {
   const configurationFileNames = new Set([
     SETTINGS_FILE_NAME,
@@ -350,12 +358,24 @@ const collectAllFilesRecursiveFrom = async (
 
     const ePath = fsZds.join(targetPath, e)
     const isEDir = await statIsDirectory(ePath)
+    const relativePath = fsZds.relative(projectRoot, ePath).replace(/\\/g, '/')
+
+    if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isEDir)) {
+      continue
+    }
 
     if (isEDir) {
+      const childGitignoreStack = await appendGitignoreForDirectory(
+        gitignoreStack,
+        ePath,
+        projectRoot
+      )
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
+        projectRoot,
         canReadWritePath,
-        showAllFiles
+        showAllFiles,
+        childGitignoreStack
       )
       children.push(subChildren)
     } else {
@@ -497,11 +517,15 @@ export async function getProjectInfo(
   const appSettings = await readAppSettingsFile(wasmInstance)
   const showAllFiles = appSettings.settings?.app?.show_all_files === true
 
+  const gitignoreStack = await createInitialGitignoreStack(projectPath)
+
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
+    projectPath,
     canReadWriteProjectPath,
-    showAllFiles
+    showAllFiles,
+    gitignoreStack
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string

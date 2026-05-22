@@ -129,6 +129,22 @@ export function SystemIOMachineLogicListener() {
         return
       }
 
+      const fileNavigationOperations = [
+        SystemIOMachineStates.importFileFromURL,
+        SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
+        SystemIOMachineStates.renamingFileAndNavigateToFile,
+        SystemIOMachineStates.renamingFolderAndNavigateToFile,
+      ]
+      if (
+        requestedFileName.project &&
+        requestedFileName.file &&
+        fileNavigationOperations.includes(lastOperation)
+      ) {
+        return
+      }
+
       const isCreating = [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,

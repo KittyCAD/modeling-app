@@ -1795,7 +1795,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       await editor.expectEditor.toContain(lineToStay)
 
       // Exit sketch mode
-      await page.keyboard.press('Meta+Escape')
+      await page.keyboard.press('Shift+Escape')
       await scene.settled()
     })
 

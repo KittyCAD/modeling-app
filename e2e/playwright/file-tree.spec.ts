@@ -61,7 +61,7 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
     const fileName = 'Untitled.kcl'
     await test.step('check sketch mode is exited when creating new file', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.Files)
-      await toolbar.expectFileTreeState(['main.kcl', 'thumbnail.png'])
+      await toolbar.expectFileTreeState(['main.kcl'])
 
       await toolbar.createFile({ fileName, waitForToastToDisappear: true })
 
@@ -73,7 +73,7 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
       await toolbar.openFile('main.kcl')
       await page.waitForTimeout(2000)
       await toolbar.editSketch()
-      await toolbar.expectFileTreeState(['main.kcl', 'thumbnail.png', fileName])
+      await toolbar.expectFileTreeState(['main.kcl', fileName])
     })
     await test.step('check sketch mode is exited when opening a different file', async () => {
       await toolbar.openFile(fileName)
@@ -231,15 +231,10 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       const { createNewFolder } = await getUtils(page, test)
 
       await createNewFolder('folder')
-      await toolbar.expectFileTreeState(['folder', 'main.kcl', 'thumbnail.png'])
+      await toolbar.expectFileTreeState(['folder', 'main.kcl'])
 
       await createNewFolder('folder.kcl')
-      await toolbar.expectFileTreeState([
-        'folder',
-        'folder.kcl',
-        'main.kcl',
-        'thumbnail.png',
-      ])
+      await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
 
       await expect(toolbar.fileName).toHaveText('main.kcl')
     }

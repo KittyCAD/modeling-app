@@ -190,9 +190,8 @@ function getSettingsPayloadFieldValue(
   payload: DeepPartial<SaveSettingsPayload>,
   selector: AppOnlySettingsFieldSelector
 ): unknown {
-  return (payload[selector.category] as Record<string, unknown> | undefined)?.[
-    selector.field
-  ]
+  const payloadRecord = payload as Record<string, Record<string, unknown>>
+  return payloadRecord[selector.category]?.[selector.field]
 }
 
 function setSettingsPayloadFieldValue(

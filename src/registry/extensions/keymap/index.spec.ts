@@ -4,13 +4,20 @@ import {
   defineRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { commandSystemService } from '@src/registry/contracts/commands'
+import { isDesktop } from '@src/lib/isDesktop'
 import {
+  type CommandSystemService,
+  commandSystemService,
+} from '@src/registry/contracts/commands'
+import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import { describe, expect, it, vi } from 'vitest'
 import keymapExtension from '.'
 
@@ -26,6 +33,31 @@ describe('keymap extension', () => {
     ).toBe('Base')
 
     registry[Symbol.dispose]()
+  })
+
+  it('uses a browser-safe Exit Sketch keybinding outside the desktop app', () => {
+    const expectedExitSketchKeystroke = isDesktop()
+      ? 'mod+escape'
+      : 'shift+escape'
+
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketching.exit'
+      )?.keystrokes
+    ).toEqual([expectedExitSketchKeystroke])
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketch-solve.exit'
+      )?.keystrokes
+    ).toEqual([expectedExitSketchKeystroke])
+
+    expect(
+      defaultKeymap.bindings.some(
+        (binding) =>
+          binding.id === 'toolbar.sketching.exit.meta-escape' &&
+          binding.keystrokes[0] === 'meta+escape'
+      )
+    ).toBe(isDesktop())
   })
 
   it('marks a partial match and awaits more input', () => {
@@ -138,7 +170,7 @@ describe('keymap extension', () => {
               },
               send,
               useState: vi.fn(),
-            } as any),
+            } as unknown as CommandSystemService),
           ],
         }),
       ]
@@ -178,6 +210,8 @@ describe('keymap extension', () => {
     const keymap = registry.get(keymapService)
     const target = document.createElement('div')
     target.contentEditable = 'true'
+    document.body.append(target)
+    target.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
     const globalEvent = createKeyboardEventWithTarget('Escape', target)
     const codeMirrorEvent = createKeyboardEventWithTarget('Escape', target)
 
@@ -186,6 +220,73 @@ describe('keymap extension', () => {
       keymap.handleKeyDown(codeMirrorEvent, { source: 'codeMirror' })
     ).toBe(true)
 
+    target.remove()
+    registry[Symbol.dispose]()
+  })
+
+  it('does not run mode keybindings from CodeMirror while the editor is focused', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const event = new KeyboardEvent('keydown', { key: 'l' })
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    keymap.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+    keymap.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+
+    expect(keymap.handleKeyDown(event, { source: 'codeMirror' })).toBe(false)
+
+    registry[Symbol.dispose]()
+  })
+
+  it('keeps editor focus priority until focus moves outside editable content', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const editableTarget = document.createElement('div')
+    editableTarget.contentEditable = 'true'
+    document.body.append(editableTarget)
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    editableTarget.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', editableTarget), {
+        source: 'global',
+      })
+    ).toBe(false)
+
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', editableTarget), {
+        source: 'global',
+      })
+    ).toBe(true)
+
+    editableTarget.remove()
     registry[Symbol.dispose]()
   })
 

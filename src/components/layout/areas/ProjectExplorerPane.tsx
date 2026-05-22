@@ -128,6 +128,16 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     )
   }, [layout])
 
+  const downloadProjectZip = useCallback(() => {
+    commands.send({
+      type: 'Find and select command',
+      data: {
+        name: 'export-project-zip',
+        groupId: 'application',
+      },
+    })
+  }, [commands])
+
   const onRowDoubleClicked = useCallback(
     (entry: FileExplorerEntry) => {
       if (
@@ -242,6 +252,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onCollapseExplorer={() => {
               setCollapsedPressed(performance.now())
             }}
+            onDownloadProject={
+              !window.electron ? downloadProjectZip : undefined
+            }
           />
         }
         onClose={props.onClose}

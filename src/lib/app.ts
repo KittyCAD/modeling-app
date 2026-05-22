@@ -63,6 +63,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
@@ -80,7 +81,6 @@ import type {
   Subscription,
 } from 'xstate'
 import { createActor } from 'xstate'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -116,7 +116,6 @@ function createAppRegistryItems({
 declare global {
   interface Window {
     app: App
-    kclManager: KclManager
     engineCommandManager: ConnectionManager
     rustContext: RustContext
     engineDebugger: Debugger
@@ -561,7 +560,6 @@ export class App implements AppSubsystems {
     if (typeof window !== 'undefined') {
       // Accessible for tests mostly
       window.engineCommandManager = kclManager.engineCommandManager
-      window.kclManager = kclManager
       window.rustContext = kclManager.rustContext
       window.engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>

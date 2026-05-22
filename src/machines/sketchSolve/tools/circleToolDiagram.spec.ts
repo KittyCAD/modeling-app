@@ -34,7 +34,7 @@ function createTestMachine(mockActors?: {
       createCircle: fromPromise(
         mockActors?.createCircle ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
           }))
       ),
@@ -179,7 +179,7 @@ describe('circleTool - XState', () => {
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
           createCircle: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta(
               [centerPoint, startPoint, circleObj],
               [1, 2, 3]

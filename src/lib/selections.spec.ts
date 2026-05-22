@@ -1,6 +1,5 @@
 import { describe, expect, test, vi } from 'vitest'
 
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
@@ -12,6 +11,7 @@ import {
   findLastRangeStartingBefore,
   getSelectionTypeDisplayText,
   handleSelectionBatch,
+  selectSketchPlane,
 } from '@src/lib/selections'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -1429,9 +1429,7 @@ describe('pattern copy selection highlighting', () => {
       nodePath: [],
     },
   } as unknown as Artifact
-  const artifactGraph = new Map([
-    [patternArtifact.id, patternArtifact],
-  ]) as ArtifactGraph
+  const artifactGraph = new Map([[patternArtifact.id, patternArtifact]])
 
   test('maps pattern code selections to copied engine entities', () => {
     const selections: Selection[] = [
