@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -8,8 +9,9 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { MachineManager } from '@src/lib/MachineManager'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
-export const dummyInitSketchGraphDelta = Object.freeze({
+export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
   new_graph: {
     project: 0,
     file: 0,
@@ -31,7 +33,7 @@ export const dummyInitSketchGraphDelta = Object.freeze({
   exec_outcome: {
     issues: [],
     variables: {},
-    operations: [],
+    operations: emptyOperationsByModule(),
     artifactGraph: { map: {}, itemCount: 0 },
     filenames: {},
     defaultPlanes: null,

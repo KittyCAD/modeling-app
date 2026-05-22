@@ -18,6 +18,7 @@ import {
   getArtifactOfTypes,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
+import { getAllOperations } from '@src/lang/wasm'
 import { findOperationForArtifact } from '@src/lang/queryAst'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
@@ -129,7 +130,7 @@ export const ConnectionStream = (props: {
             if (artifact?.type === 'gdtAnnotation') {
               const operation = findOperationForArtifact({
                 artifact,
-                operations: kclManager.operations,
+                operations: getAllOperations(kclManager.operationsByModule),
               })
               if (!operation) {
                 return
@@ -205,7 +206,7 @@ export const ConnectionStream = (props: {
         kclManager.artifactGraph,
         kclManager.ast,
         kclManager.code,
-        kclManager.operations,
+        kclManager.operationsByModule,
         kclManager.rustContext,
         modelingMachineState,
         sceneInfra.camControls.wasDragging,
