@@ -107,6 +107,7 @@ impl GlobalState {
 
     pub fn reconstitute_exec_state(&self) -> exec_state::ExecState {
         exec_state::ExecState {
+            execution_callbacks: Default::default(),
             global: self.exec_state.clone(),
             mod_local: self.main.exec_state.clone(),
         }

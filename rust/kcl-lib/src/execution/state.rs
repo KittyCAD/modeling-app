@@ -29,8 +29,10 @@ use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
+use crate::execution::ExecutionCallbacks;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
 use crate::execution::SketchVarId;
@@ -59,6 +61,7 @@ use crate::parsing::ast::types::TagNode;
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
+    pub(super) execution_callbacks: ExecutionCallbacks,
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
 }
@@ -328,6 +331,7 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global: GlobalState::new(&exec_context.settings, Default::default()),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
@@ -336,6 +340,7 @@ impl ExecState {
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global: GlobalState::new(&exec_context.settings, segment_ids_edited),
             mod_local: ModuleState::new(
                 ModulePath::Main,
@@ -351,6 +356,7 @@ impl ExecState {
         let global = GlobalState::new(&exec_context.settings, Default::default());
 
         *self = ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
             mod_local: ModuleState::new(
                 self.mod_local.path.clone(),
@@ -668,7 +674,16 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
+        let module_id = self.mod_local.id_generator.module_id.unwrap_or_default();
+        let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
+        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned() {
+            self.execution_callbacks.on_operation(OperationCallbackArgs {
+                module_id,
+                operation,
+                index,
+            });
+        }
     }
 
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {

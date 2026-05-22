@@ -28,7 +28,7 @@ import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import type { ExecState } from '@src/lang/wasm'
+import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -68,7 +68,8 @@ export default class RustContext {
 
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
-      projectFsManager
+      projectFsManager,
+      undefined
     )
 
     return ctxInstance
@@ -77,7 +78,11 @@ export default class RustContext {
   /** Create a new Context instance for operations that need a separate context (e.g., transpilation) */
   async createNewContext(): Promise<Context> {
     const instance = await this.wasmInstancePromise
-    return new instance.Context(this.engineCommandManager, projectFsManager)
+    return new instance.Context(
+      this.engineCommandManager,
+      projectFsManager,
+      undefined
+    )
   }
 
   private createFromInstance(instance: ModuleType) {
@@ -85,7 +90,8 @@ export default class RustContext {
 
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
-      projectFsManager
+      projectFsManager,
+      undefined
     )
 
     this.ctxInstance = ctxInstance
@@ -135,12 +141,16 @@ export default class RustContext {
   async execute(
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
-    path?: string
+    path?: string,
+    callbacks?: ExecCallbacks
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    const executionContext = callbacks
+      ? instance.cloneWithExecuteCallbacks(callbacks)
+      : instance
 
     try {
-      const result: SceneGraphDelta = await instance.execute(
+      const result: SceneGraphDelta = await executionContext.execute(
         JSON.stringify(node),
         path,
         JSON.stringify(settings)
@@ -164,16 +174,20 @@ export default class RustContext {
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string,
-    usePrevMemory?: boolean
+    usePrevMemory?: boolean,
+    callbacks?: ExecCallbacks
   ): Promise<ExecState> {
     const instance = await this._checkContextInstance()
+    const executionContext = callbacks
+      ? instance.cloneWithExecuteCallbacks(callbacks)
+      : instance
 
     if (usePrevMemory === undefined) {
       usePrevMemory = true
     }
 
     try {
-      const result = await instance.executeMock(
+      const result = await executionContext.executeMock(
         JSON.stringify(node),
         path,
         JSON.stringify(settings),

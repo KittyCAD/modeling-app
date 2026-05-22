@@ -244,6 +244,16 @@ export interface OperationsByModule {
   map: { [moduleId: number]: Operation[] }
 }
 
+export interface OperationCallbackArgs {
+  moduleId: number
+  operation: Operation
+  index: number
+}
+
+export interface ExecCallbacks {
+  onOperation(args: OperationCallbackArgs): void
+}
+
 export const ROOT_MODULE_ID = 0
 
 export type PathToNode = [string | number, string][]

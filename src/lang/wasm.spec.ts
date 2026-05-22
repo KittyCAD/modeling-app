@@ -3,9 +3,15 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
-import type { ParseResult } from '@src/lang/wasm'
+import type {
+  ExecCallbacks,
+  OperationCallbackArgs,
+  OperationsByModule,
+  ParseResult,
+} from '@src/lang/wasm'
 import {
   assertParse,
+  countOperations,
   errFromErrWithOutputs,
   formatNumberLiteral,
   parse,
@@ -32,6 +38,41 @@ import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
+
+function normalizeOperationsByModule(operationsByModule: OperationsByModule) {
+  return {
+    map: Object.fromEntries(
+      Object.entries(operationsByModule.map)
+        .filter(([, operations]) => operations.length > 0)
+        .map(([moduleId, operations]) => [
+          moduleId,
+          operations.map((operation) => normalizeOperation(operation)),
+        ])
+    ),
+  }
+}
+
+function normalizeOperation(operation: unknown): unknown {
+  if (Array.isArray(operation)) {
+    return operation.map((item) => normalizeOperation(item))
+  }
+
+  if (!operation || typeof operation !== 'object') {
+    return operation
+  }
+
+  const normalized = Object.fromEntries(
+    Object.entries(operation).map(([key, value]) => {
+      if (key === 'nodePath') {
+        return [key, { steps: [] }]
+      }
+
+      return [key, normalizeOperation(value)]
+    })
+  )
+
+  return normalized
+}
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -69,6 +110,34 @@ it('can execute parsed AST', async () => {
   )
   expect(err(execState)).toEqual(false)
   expect(execState.variables['x']?.value).toEqual(1)
+})
+
+it('matches client-built operations map to ExecOutcome.operations', async () => {
+  const ast = assertParse(
+    'base = 2\nheight = base + 3\narea = base * height\n',
+    instanceInThisFile
+  )
+  const callbackOperations: OperationsByModule = { map: {} }
+  const callbacks: ExecCallbacks = {
+    onOperation({ moduleId, operation, index }: OperationCallbackArgs) {
+      const operations = callbackOperations.map[moduleId] ?? []
+      operations[index] = operation
+      callbackOperations.map[moduleId] = operations
+    },
+  }
+
+  const execState = await rustContextInThisFile.executeMock(
+    ast,
+    {},
+    undefined,
+    false,
+    callbacks
+  )
+
+  expect(countOperations(callbackOperations)).toBeGreaterThan(0)
+  expect(normalizeOperationsByModule(callbackOperations)).toEqual(
+    normalizeOperationsByModule(execState.operations)
+  )
 })
 
 it('formats numbers with units', () => {

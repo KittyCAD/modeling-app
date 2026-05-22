@@ -92,6 +92,38 @@ pub struct OperationsByModule {
     pub map: IndexMap<ModuleId, Vec<Operation>>,
 }
 
+#[derive(Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OperationCallbackArgs {
+    pub module_id: ModuleId,
+    pub operation: Operation,
+    pub index: usize,
+}
+
+pub type OperationCallback = Arc<dyn Fn(OperationCallbackArgs) + Send + Sync + 'static>;
+
+#[derive(Clone, Default)]
+pub struct ExecutionCallbacks {
+    pub on_operation: Option<OperationCallback>,
+}
+
+impl std::fmt::Debug for ExecutionCallbacks {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ExecutionCallbacks")
+            .field("has_on_operation", &self.on_operation.is_some())
+            .finish()
+    }
+}
+
+impl ExecutionCallbacks {
+    pub fn on_operation(&self, args: OperationCallbackArgs) {
+        if let Some(callback) = &self.on_operation {
+            callback(args);
+        }
+    }
+}
+
 impl OperationsByModule {
     pub fn count(&self) -> usize {
         self.map.values().map(Vec::len).sum()
@@ -767,6 +799,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
+    pub execution_callbacks: ExecutionCallbacks,
 }
 
 /// The executor settings.
@@ -915,6 +948,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Live,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -925,6 +959,7 @@ impl ExecutorContext {
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
+            execution_callbacks: self.execution_callbacks.clone(),
         }
     }
 
@@ -980,6 +1015,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -991,6 +1027,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -1015,6 +1052,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         })
     }
 
@@ -1026,6 +1064,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -2048,6 +2087,7 @@ pub(crate) async fn parse_execute_with_project_dir(
             ..Default::default()
         },
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;

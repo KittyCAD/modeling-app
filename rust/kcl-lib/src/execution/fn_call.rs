@@ -1205,6 +1205,7 @@ mod test {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
+                execution_callbacks: Default::default(),
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();

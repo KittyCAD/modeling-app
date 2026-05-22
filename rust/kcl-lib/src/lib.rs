@@ -105,6 +105,8 @@ pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
+pub use execution::ExecutionCallbacks;
+pub use execution::OperationCallbackArgs;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;

@@ -5917,6 +5917,7 @@ d = b + c
                 ..Default::default()
             },
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 
