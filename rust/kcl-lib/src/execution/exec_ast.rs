@@ -734,6 +734,23 @@ impl ExecutorContext {
                         .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;
 
+                    if let ModulePath::Local {
+                        value,
+                        original_import_path,
+                    } = &module_path
+                    {
+                        let name = match original_import_path {
+                            Some(value) => value.to_string_lossy(),
+                            None => value.file_name().unwrap_or_default(),
+                        };
+                        exec_state.push_op(Operation::ModuleInstance {
+                            name,
+                            module_id,
+                            node_path: NodePath::placeholder(),
+                            source_range,
+                        });
+                    }
+
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
                             let (env_ref, module_exports) =

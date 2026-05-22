@@ -19,7 +19,7 @@ use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
-use crate::execution::Operation;
+use crate::execution::OperationsByModule;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -214,7 +214,7 @@ pub struct KclErrorWithOutputs {
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
     pub variables: IndexMap<String, KclValue>,
-    pub operations: Vec<Operation>,
+    pub operations: OperationsByModule,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
     // reason.
     pub _artifact_commands: Vec<ArtifactCommand>,
@@ -237,7 +237,7 @@ impl KclErrorWithOutputs {
         error: KclError,
         non_fatal: Vec<CompilationIssue>,
         variables: IndexMap<String, KclValue>,
-        operations: Vec<Operation>,
+        operations: OperationsByModule,
         artifact_commands: Vec<ArtifactCommand>,
         artifact_graph: ArtifactGraph,
         scene_objects: Vec<Object>,
