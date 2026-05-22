@@ -5048,11 +5048,15 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let sweep_source_ref = SourceRef::Simple {
+            let sweep_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
                 range: sweep_range.0,
                 node_path: sweep_range.1.clone(),
-            };
-            let sweep_ref = get_or_insert_ast_reference(ast, &sweep_source_ref, "solid", None)?;
+                },
+                "solid",
+                None,
+            )?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve sweep reference for selected wall: artifact_id={:?}",
@@ -5096,11 +5100,15 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let sweep_source_ref = SourceRef::Simple {
+            let sweep_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
                 range: range.0,
                 node_path: range.1.clone(),
-            };
-            let sweep_ref = get_or_insert_ast_reference(ast, &sweep_source_ref, "solid", None)?;
+                },
+                "solid",
+                None,
+            )?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve sweep reference for selected cap: artifact_id={:?}",
