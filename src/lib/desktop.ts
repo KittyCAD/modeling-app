@@ -50,7 +50,7 @@ function getProjectSettingsSection(
   return projectSettings &&
     typeof projectSettings === 'object' &&
     !isArray(projectSettings)
-    ? (projectSettings as { [key: string]: JsonValue })
+    ? projectSettings
     : undefined
 }
 
@@ -812,9 +812,7 @@ export const readAppSettingsFile = async (
             {},
             getProjectSettingsSection(parsedAppConfig),
             initialProjectDirConfig
-          ) as {
-            [key: string]: JsonValue
-          },
+          ),
         },
       }
       return mergedConfig
@@ -838,7 +836,7 @@ export const readAppSettingsFile = async (
           {},
           getProjectSettingsSection(defaultAppConfig),
           initialProjectDirConfig
-        ) as { [key: string]: JsonValue },
+        ),
       },
     }
     return mergedDefaultConfig

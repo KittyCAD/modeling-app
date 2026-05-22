@@ -211,7 +211,7 @@ export class SceneInfra {
     })
   }
 
-  modelingSend: SendType = (() => {}) as any
+  modelingSend: SendType = () => {}
 
   setSend(send: SendType) {
     this.modelingSend = send

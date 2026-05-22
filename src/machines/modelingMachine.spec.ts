@@ -6,7 +6,6 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
 } from '@src/lang/wasm'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -118,9 +117,7 @@ describe('modelingMachine.test.ts', () => {
     SetAngleLengthModal: vi.fn(),
   }))
 
-  const toastErrorSpy = vi
-    .spyOn(toast, 'error')
-    .mockImplementation(() => '' as any)
+  const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
 
   // Add this function before the test cases
   // Utility function to wait for a condition to be met
@@ -1675,8 +1672,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })
@@ -1751,8 +1747,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })

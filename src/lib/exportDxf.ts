@@ -179,7 +179,7 @@ export async function exportSketchToDxf(
           return null
         }
 
-        return files as Array<{ name?: string; contents: string }>
+        return files
       } catch {
         return null
       }

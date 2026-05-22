@@ -44,14 +44,14 @@ function createTestMachine(mockActors?: {
       createArc: fromPromise(
         mockActors?.createArc ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
           }))
       ),
       finalizeArc: fromPromise(
         mockActors?.finalizeArc ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
           }))
       ),
@@ -200,7 +200,7 @@ describe('centerArcTool - XState', () => {
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
           createArc: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta(
               [centerPoint, startPoint, endPoint, arcObj],
               [1, 2, 3, 4]
@@ -242,7 +242,7 @@ describe('centerArcTool - XState', () => {
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
           createArc: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta(
               [centerPoint, startPoint, endPoint, arcObj],
               [1, 2, 3, 4]
@@ -283,14 +283,14 @@ describe('centerArcTool - XState', () => {
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
           createArc: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta(
               [centerPoint, startPoint, endPoint, arcObj],
               [1, 2, 3, 4]
             ),
           }),
           finalizeArc: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta(
               [centerPoint, startPoint, endPoint, arcObj],
               [1, 2, 3, 4]
@@ -358,7 +358,7 @@ describe('centerArcTool - XState', () => {
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
           createArc: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta(
               [centerPoint, startPoint, endPoint, arcObj],
               [1, 2, 3, 4]
