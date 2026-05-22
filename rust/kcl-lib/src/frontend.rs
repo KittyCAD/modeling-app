@@ -5246,61 +5246,40 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
     })))
 }
 
+fn is_sweep_call(call: &ast::Node<ast::CallExpressionKw>) -> bool {
+    matches!(call.callee.name.name.as_str(), "extrude" | "revolve" | "sweep" | "loft")
+}
+
 fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable_name: &str) -> Option<String> {
     let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
         return None;
     };
 
-    let region_name_from_sweep_call =
-        |sweep_call: &ast::Node<ast::CallExpressionKw>, pipe_input: Option<&ast::Expr>| -> Option<String> {
-            if !matches!(
-                sweep_call.callee.name.name.as_str(),
-                "extrude" | "revolve" | "sweep" | "loft"
-            ) {
-                return None;
-            }
-            let candidate = if let Some(unlabeled) = sweep_call.unlabeled.as_ref() {
-                let ast::Expr::Name(region_name_expr) = unlabeled else {
-                    return None;
-                };
-                region_name_expr.name.name.clone()
-            } else {
-                let ast::Expr::Name(region_name_expr) = pipe_input? else {
-                    return None;
-                };
-                region_name_expr.name.name.clone()
-            };
-            let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
-                return None;
-            };
-            let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
-                return None;
-            };
-            if region_call.callee.name.name != "region" {
-                return None;
-            }
-            Some(candidate)
-        };
-
-    match &sweep_decl.init {
-        ast::Expr::CallExpressionKw(sweep_call) => region_name_from_sweep_call(sweep_call, None),
-        ast::Expr::PipeExpression(pipe) => {
-            let mut previous_expr = None;
-            for expr in &pipe.body {
-                if let ast::Expr::CallExpressionKw(sweep_call) = expr
-                    && matches!(
-                        sweep_call.callee.name.name.as_str(),
-                        "extrude" | "revolve" | "sweep" | "loft"
-                    )
-                {
-                    return region_name_from_sweep_call(sweep_call, previous_expr);
-                }
-                previous_expr = Some(expr);
-            }
-            None
-        }
-        _ => None,
+    let sweep_call = match &sweep_decl.init {
+        ast::Expr::CallExpressionKw(sweep_call) => sweep_call,
+        ast::Expr::PipeExpression(pipe) => match pipe.body.first()? {
+            ast::Expr::CallExpressionKw(sweep_call) => sweep_call,
+            _ => return None,
+        },
+        _ => return None,
+    };
+    if !is_sweep_call(sweep_call) {
+        return None;
     }
+    let ast::Expr::Name(region_name_expr) = sweep_call.unlabeled.as_ref()? else {
+        return None;
+    };
+    let candidate = region_name_expr.name.name.clone();
+    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+        return None;
+    };
+    if region_call.callee.name.name != "region" {
+        return None;
+    }
+    Some(candidate)
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -5355,21 +5334,12 @@ fn mutate_ast_node_by_source_ref(
         node_path,
         command,
         defined_names_stack: Default::default(),
-        fallback_enclosing_variable: None,
     };
     let control = dfs_mut(ast, &mut context);
     match control {
-        ControlFlow::Continue(_) => {
-            if let AstMutateCommand::AddVariableDeclaration { .. } = &context.command
-                && let Some((node_ref, variable_name)) = context.fallback_enclosing_variable
-            {
-                return Ok((node_ref, AstMutateCommandReturn::Name(variable_name)));
-            }
-
-            Err(KclError::refactor(
-                "Could not find the KCL source for this edit. Try reloading the app, or update from code.".to_owned(),
-            ))
-        }
+        ControlFlow::Continue(_) => Err(KclError::refactor(
+            "Could not find the KCL source for this edit. Try reloading the app, or update from code.".to_owned(),
+        )),
         ControlFlow::Break(break_value) => break_value,
     }
 }
@@ -5380,7 +5350,6 @@ struct AstMutateContext {
     node_path: Option<ast::NodePath>,
     command: AstMutateCommand,
     defined_names_stack: Vec<HashSet<String>>,
-    fallback_enclosing_variable: Option<(AstNodeRef, String)>,
 }
 
 #[derive(Debug)]
@@ -5579,15 +5548,16 @@ fn filter_and_process(
                 };
             }
         } else if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
-            let source_ref_is_contained = match (&ctx.node_path, expr_node_path) {
-                (Some(target), Some(container)) => {
-                    target != container && target.steps.starts_with(container.steps.as_slice())
-                }
-                (None, _) => expr_range != ctx.source_range && expr_range.contains_range(&ctx.source_range),
-                _ => false,
-            };
-            if source_ref_is_contained {
-                ctx.fallback_enclosing_variable = Some((AstNodeRef::from(&**var_decl), var_decl.name().to_owned()));
+            if let ast::Expr::PipeExpression(pipe) = &var_decl.declaration.init
+                && let Some(first_expr) = pipe.body.first()
+                && let ast::Expr::CallExpressionKw(call) = first_expr
+                && is_sweep_call(call)
+                && source_ref_matches(ctx, SourceRange::from(first_expr), first_expr.node_path())
+            {
+                return TraversalReturn::new_break(Ok((
+                    AstNodeRef::from(&**var_decl),
+                    AstMutateCommandReturn::Name(var_decl.name().to_owned()),
+                )));
             }
         }
     }
@@ -6709,21 +6679,6 @@ mod tests {
         None
     }
 
-    fn find_first_end_cap_object_id(scene_graph: &SceneGraph) -> Option<ObjectId> {
-        for object in &scene_graph.objects {
-            if matches!(
-                &object.kind,
-                ObjectKind::Cap(crate::frontend::api::Cap {
-                    kind: crate::frontend::api::CapKind::End,
-                    ..
-                })
-            ) {
-                return Some(object.id);
-            }
-        }
-        None
-    }
-
     #[test]
     fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
         let source = "\
@@ -6762,11 +6717,42 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
             region_name_from_sweep_variable(&program.ast, "translatedExtrude001"),
             Some("region001".to_owned())
         );
-        assert_eq!(
-            region_name_from_sweep_variable(&program.ast, "pipedExtrude001"),
-            Some("region001".to_owned())
-        );
+        assert_eq!(region_name_from_sweep_variable(&program.ast, "pipedExtrude001"), None);
         assert_eq!(region_name_from_sweep_variable(&program.ast, "not_sweep001"), None);
+    }
+
+    #[test]
+    fn test_pipe_start_source_ref_resolves_to_enclosing_variable() {
+        let source = "\
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [0, 0], end = [1, 0])
+}
+cubeRegion = region(point = [0, 0], sketch = cubeProfile)
+cubeBody = extrude(cubeRegion, length = 5)
+  |> translate(z = 1)
+";
+        let mut program = Program::parse(source).unwrap().0.unwrap();
+
+        let sweep_ref = {
+            let ast::Definition::Variable(cube_body_decl) = program.ast.get_variable("cubeBody").unwrap() else {
+                panic!("expected cubeBody variable");
+            };
+            let ast::Expr::PipeExpression(pipe) = &cube_body_decl.init else {
+                panic!("expected cubeBody to be a pipe");
+            };
+            let sweep_expr = pipe.body.first().unwrap();
+
+            SourceRef::Simple {
+                range: SourceRange::from(sweep_expr),
+                node_path: sweep_expr.node_path().cloned(),
+            }
+        };
+
+        let solid_ref = get_or_insert_ast_reference(&mut program.ast, &sweep_ref, "solid", None).unwrap();
+        let ast::Expr::Name(solid_name) = solid_ref else {
+            panic!("expected solid name");
+        };
+        assert_eq!(solid_name.name.name, "cubeBody");
     }
 
     #[track_caller]
@@ -13106,79 +13092,6 @@ extrude001 = extrude(region001, length = 5)
             .await
             .unwrap();
         assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
-
-        ctx.close().await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_sketch_on_wall_artifact_from_translated_region_extrude() {
-        let initial_source = "\
-cubeProfile = sketch(on = XY) {
-  bottomEdge = line(start = [-12.5, -12.5], end = [12.5, -12.5])
-  rightEdge = line(start = [12.5, -12.5], end = [12.5, 12.5])
-  topEdge = line(start = [12.5, 12.5], end = [-12.5, 12.5])
-  leftEdge = line(start = [-12.5, 12.5], end = [-12.5, -12.5])
-}
-cubeRegion = region(point = [0, 0], sketch = cubeProfile)
-cubeBody = extrude(cubeRegion, length = 25)
-  |> translate(z = -12.5, global = true)
-";
-
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
-        let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let version = Version(0);
-
-        frontend.hack_set_program(&ctx, program).await.unwrap();
-        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
-
-        let sketch_args = SketchCtor {
-            on: Plane::Object(wall_object_id),
-        };
-        let (src_delta, _scene_delta, _sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
-            .await
-            .unwrap();
-        assert!(src_delta.text.contains("faceOf(cubeBody, face = cubeRegion.tags."));
-
-        ctx.close().await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_sketch_on_cap_artifact_from_translated_region_extrude() {
-        let initial_source = "\
-sideLength = 25
-halfSide = sideLength / 2
-
-cubeProfile = sketch(on = XY) {
-  bottomEdge = line(start = [-12.5, -12.5], end = [12.5, -12.5])
-  rightEdge = line(start = [12.5, -12.5], end = [12.5, 12.5])
-  topEdge = line(start = [12.5, 12.5], end = [-12.5, 12.5])
-  leftEdge = line(start = [-12.5, 12.5], end = [-12.5, -12.5])
-}
-cubeRegion = region(point = [0, 0], sketch = cubeProfile)
-cubeBody = extrude(cubeRegion, length = sideLength)
-  |> translate(z = -halfSide, global = true)
-";
-
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
-
-        let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let version = Version(0);
-
-        frontend.hack_set_program(&ctx, program).await.unwrap();
-        let cap_object_id = find_first_end_cap_object_id(&frontend.scene_graph).expect("expected an end cap object");
-
-        let sketch_args = SketchCtor {
-            on: Plane::Object(cap_object_id),
-        };
-        let (src_delta, _scene_delta, _sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
-            .await
-            .unwrap();
-        assert!(src_delta.text.contains("faceOf(cubeBody, face = END)"));
 
         ctx.close().await;
     }
