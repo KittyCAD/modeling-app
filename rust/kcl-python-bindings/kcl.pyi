@@ -228,10 +228,6 @@ class InputFormat3d:
     
     ...
 
-class KclError(builtins.Exception):
-    def __new__(cls, _message:typing.Any, retryable:builtins.bool=False) -> KclError: ...
-    def is_retryable(self) -> builtins.bool: ...
-
 class KclErrorInfo:
     r"""
     Full KCL error details associated with an incomplete report.
