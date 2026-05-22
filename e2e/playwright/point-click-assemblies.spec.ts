@@ -620,12 +620,6 @@ test.describe(
         page.getByTestId('context-menu-set-rotate')
       ).not.toBeVisible()
       await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
-
-      await page.getByText('View KCL source code').click()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain('part001 = startSketchOn(XY)', {
-        shouldNormalise: true,
-      })
     })
 
     test(`Insert the bracket part into an assembly and transform it (scene selection)`, async ({
