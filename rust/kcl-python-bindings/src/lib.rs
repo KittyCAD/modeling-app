@@ -145,14 +145,15 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
     PyErr::new::<PyKclError, _>((error.to_string(), retryable))
 }
 
-#[pyo3_stub_gen::derive::gen_stub_pyclass]
+// Keep the stub for this exception manual in `kcl.pyi`. `pyo3_stub_gen`
+// generates code for this `PyException` subclass that does not compile on
+// PyPy, because it references `pyo3::prepare_freethreaded_python`.
 #[pyclass(name = "KclError", extends = PyException)]
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
 }
 
-#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl PyKclError {
     #[new]
