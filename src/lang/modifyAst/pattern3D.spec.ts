@@ -78,13 +78,10 @@ describe('pattern3D.test.ts', () => {
   function createSelectionFromPathArtifact(
     artifacts: (Artifact & { codeRef: CodeRef })[]
   ): Selections {
-    const graphSelections = artifacts.map(
-      (artifact) =>
-        ({
-          codeRef: artifact.codeRef,
-          artifact,
-        }) as Selection
-    )
+    const graphSelections = artifacts.map((artifact) => ({
+      codeRef: artifact.codeRef,
+      artifact,
+    }))
     return {
       graphSelections,
       otherSelections: [],

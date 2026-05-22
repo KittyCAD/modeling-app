@@ -217,8 +217,9 @@ export class ElectronZoo {
       this.context.addInitScript = async function (a, b) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
         // This code works perfectly fine.
-        await oldContextAddInitScript.apply(this, [a, b])
+        const disposable = await oldContextAddInitScript.apply(this, [a, b])
         await that.page.reload()
+        return disposable
       }
 
       // Intentionally changing `this`, so no need to bind.
@@ -227,8 +228,9 @@ export class ElectronZoo {
       this.page.addInitScript = async function (a: any, b: any) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
         // This code works perfectly fine.
-        await oldPageAddInitScript.apply(this, [a, b])
+        const disposable = await oldPageAddInitScript.apply(this, [a, b])
         await that.page.reload()
+        return disposable
       }
     }
 
@@ -388,8 +390,9 @@ const fixturesForWeb = {
     const oldPageAddInitScript = page.addInitScript
     page.addInitScript = async function (...args) {
       // @ts-expect-error
-      await oldPageAddInitScript.apply(this, args)
+      const disposable = await oldPageAddInitScript.apply(this, args)
       await page.reload()
+      return disposable
     }
 
     // Intentionally changing `this`, so no need to bind.
@@ -397,8 +400,9 @@ const fixturesForWeb = {
     const oldContextAddInitScript = context.addInitScript
     context.addInitScript = async function (...args) {
       // @ts-expect-error
-      await oldContextAddInitScript.apply(this, args)
+      const disposable = await oldContextAddInitScript.apply(this, args)
       await page.reload()
+      return disposable
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)

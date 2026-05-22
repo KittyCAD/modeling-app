@@ -1,11 +1,8 @@
 import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
 import path from 'path'
-
-import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import {
   TEST_SETTINGS_CORRUPTED,
@@ -57,9 +54,7 @@ test.describe(
 
         // Override beforeEach test setup
         // with corrupted settings
-        await tronApp.cleanProjectDir(
-          TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
-        )
+        await tronApp.cleanProjectDir(TEST_SETTINGS_CORRUPTED)
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
