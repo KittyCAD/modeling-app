@@ -5051,8 +5051,8 @@ fn sketch_face_of_scene_object_ast_expr(
             let sweep_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
-                range: sweep_range.0,
-                node_path: sweep_range.1.clone(),
+                    range: sweep_range.0,
+                    node_path: sweep_range.1.clone(),
                 },
                 "solid",
                 None,
@@ -5103,8 +5103,8 @@ fn sketch_face_of_scene_object_ast_expr(
             let sweep_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
-                range: range.0,
-                node_path: range.1.clone(),
+                    range: range.0,
+                    node_path: range.1.clone(),
                 },
                 "solid",
                 None,
