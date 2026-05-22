@@ -351,15 +351,6 @@ impl KclErrorWithOutputs {
             related,
         })
     }
-
-    /// Returns whether this error is transient and the operation should be retried.
-    ///
-    /// This duplicates the [`IsRetryable`] trait method as an inherent method so
-    /// downstream crates can call it through the public error type without
-    /// needing access to the trait path from this private module.
-    pub fn is_retryable(&self) -> bool {
-        <Self as IsRetryable>::is_retryable(self)
-    }
 }
 
 impl IsRetryable for KclErrorWithOutputs {
@@ -699,15 +690,6 @@ impl KclError {
 
     pub fn is_undefined_value(&self) -> bool {
         matches!(self, KclError::UndefinedValue { .. })
-    }
-
-    /// Returns whether this error is transient and the operation should be retried.
-    ///
-    /// This duplicates the [`IsRetryable`] trait method as an inherent method so
-    /// downstream crates can call it through the public error type without
-    /// needing access to the trait path from this private module.
-    pub fn is_retryable(&self) -> bool {
-        <Self as IsRetryable>::is_retryable(self)
     }
 
     /// Get the error message.

@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use kcl_lib::ExecutorContext;
+use kcl_lib::IsRetryable;
 use kcl_lib::lint::Discovered;
 use kcl_lib::lint::FindingFamily;
 use kcl_lib::lint::checks;
