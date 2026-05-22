@@ -30,6 +30,7 @@ use pyo3::pyclass;
 use pyo3::pyfunction;
 use pyo3::pymethods;
 use pyo3::pymodule;
+use pyo3::types::PyAny;
 use pyo3::types::PyModule;
 use pyo3::wrap_pyfunction;
 use pyo3_stub_gen::define_stub_info_gatherer;
@@ -65,7 +66,8 @@ where
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
-    pyo3::exceptions::PyException::new_err(render_miette(error, code))
+    let retryable = error.is_retryable();
+    PyErr::new::<PyKclError, _>((render_miette(error, code), retryable))
 }
 
 fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
@@ -75,7 +77,8 @@ fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
 }
 
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
-    pyo3::exceptions::PyException::new_err(render_miette_for_parse(filename, input, error))
+    let retryable = error.is_retryable();
+    PyErr::new::<PyKclError, _>((render_miette_for_parse(filename, input, error), retryable))
 }
 
 fn render_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> String {
@@ -134,6 +137,32 @@ struct KclProgram {
     program: kcl_lib::Program,
     path: Option<PathBuf>,
     filename: String,
+}
+
+fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
+    let retryable = error.is_retryable();
+    PyErr::new::<PyKclError, _>((error.to_string(), retryable))
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass(name = "KclError", extends = PyException)]
+#[derive(Debug, Clone)]
+struct PyKclError {
+    retryable: bool,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl PyKclError {
+    #[new]
+    #[pyo3(signature = (_message, retryable = false))]
+    fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
+        Self { retryable }
+    }
+
+    fn is_retryable(&self) -> bool {
+        self.retryable
+    }
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
@@ -328,6 +357,9 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             Ok(outcome.sketch_constraint_report().into())
         }
         Err(err) => {
+            if err.is_retryable() {
+                return Err(into_miette(err, &code));
+            }
             let error_text = render_miette(err.clone(), &code);
             let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
             report.is_complete = false;
@@ -424,7 +456,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
         Ok(x) => x,
         Err(e) => {
             ctx.close().await;
-            return Err(e.into());
+            return Err(into_kcl_exception(e));
         }
     };
 
@@ -618,7 +650,8 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
             Default::default(),
             &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles::builder().files(files).format(format).build()),
         )
-        .await?;
+        .await
+        .map_err(into_kcl_exception)?;
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::ImportFiles(data),
     } = resp
@@ -772,12 +805,14 @@ async fn take_snaps(
             let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
             ctx.engine
                 .send_modeling_cmd(&ctx.engine_batch, uuid::Uuid::new_v4(), Default::default(), &view_cmd)
-                .await?;
+                .await
+                .map_err(into_kcl_exception)?;
         } else {
             let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric::builder().padding(0.0).build());
             ctx.engine
                 .send_modeling_cmd(&ctx.engine_batch, uuid::Uuid::new_v4(), Default::default(), &view_cmd)
-                .await?;
+                .await
+                .map_err(into_kcl_exception)?;
         }
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
@@ -796,7 +831,8 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
                 kittycad_modeling_cmds::DefaultCameraSetOrthographic::builder().build(),
             ),
         )
-        .await?;
+        .await
+        .map_err(into_kcl_exception)?;
 
     // Zoom to fit.
     if zoom {
@@ -813,7 +849,8 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
                         .build(),
                 ),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
     }
 
     // Send a snapshot request to the engine.
@@ -829,7 +866,8 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
                     .build(),
             ),
         )
-        .await?;
+        .await
+        .map_err(into_kcl_exception)?;
 
     let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::TakeSnapshot(data),
@@ -866,7 +904,8 @@ async fn measure_model_properties(
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(volume_req),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::Volume(volume_resp),
         } = volume_resp
@@ -887,7 +926,8 @@ async fn measure_model_properties(
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(mass_req),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::Mass(mass_resp),
         } = mass_resp
@@ -908,7 +948,8 @@ async fn measure_model_properties(
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(center_of_mass_req),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::CenterOfMass(center_of_mass_resp),
         } = center_of_mass_resp
@@ -929,7 +970,8 @@ async fn measure_model_properties(
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(density_req),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::Density(density_resp),
         } = density_resp
@@ -950,7 +992,8 @@ async fn measure_model_properties(
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(surface_area_req),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area_resp),
         } = surface_area_resp
@@ -971,7 +1014,8 @@ async fn measure_model_properties(
                 kcl_lib::SourceRange::default(),
                 &ModelingCmd::from(bb_req),
             )
-            .await?;
+            .await
+            .map_err(into_kcl_exception)?;
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::BoundingBox(bb_resp),
         } = bb_resp
@@ -1004,7 +1048,8 @@ async fn get_bounding_box(
                     .build(),
             ),
         )
-        .await?;
+        .await
+        .map_err(into_kcl_exception)?;
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::BoundingBox(bounding_box_resp),
     } = bounding_box_resp
@@ -1122,6 +1167,7 @@ fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> P
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
+    m.add_class::<PyKclError>()?;
     m.add_class::<DefaultUnits>()?;
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
