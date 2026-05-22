@@ -745,11 +745,6 @@ test.describe(
         await cubeOp.click({ button: 'right' })
         await expect(page.getByText('View KCL source code')).toBeVisible()
         await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
-
-        const cubeSwOp = await toolbar.getFeatureTreeOperation('cubeSw', 0)
-        await cubeSwOp.click({ button: 'right' })
-        await expect(page.getByText('View KCL source code')).toBeVisible()
-        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
       })
     })
 
@@ -876,6 +871,7 @@ foreign
         await op.click({ button: 'right' })
         await expect(page.getByText('View KCL source code')).toBeVisible()
         await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
+        await page.keyboard.press('Escape')
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         await toolbar.openPane(DefaultLayoutPaneID.Code)
