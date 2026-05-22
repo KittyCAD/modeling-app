@@ -159,7 +159,7 @@ export const CommandBar = () => {
           <WrapperComponent.Panel
             className={
               isModelingDialogCommand
-                ? 'relative z-50 pointer-events-auto w-full pt-2 mx-auto bg-transparent border-none shadow-none max-w-none'
+                ? 'relative z-50 pointer-events-none w-full pt-2 mx-auto bg-transparent border-none shadow-none max-w-none'
                 : 'relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70'
             }
             as="div"
