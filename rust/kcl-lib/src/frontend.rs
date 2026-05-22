@@ -26,6 +26,7 @@ use crate::execution::cache::SketchModeState;
 use crate::execution::cache::clear_mem_cache;
 use crate::execution::cache::read_old_memory;
 use crate::execution::cache::write_old_memory;
+use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
@@ -3197,29 +3198,7 @@ impl FrontendState {
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
 
-        let new_source = {
-            // Feed back sketch var solutions into the source.
-            //
-            // The interpreter is returning all var solutions from the sketch
-            // block we're editing.
-            let mut new_ast = self.program.ast.clone();
-            for (var_range, value) in &outcome.var_solutions {
-                let rounded = value.round(3);
-                let source_ref = SourceRef::Simple {
-                    range: *var_range,
-                    node_path: None,
-                };
-                mutate_ast_node_by_source_ref(
-                    &mut new_ast,
-                    &source_ref,
-                    AstMutateCommand::EditVarInitialValue { value: rounded },
-                )
-                .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
-            }
-            source_from_ast(&new_ast)
-        };
-
-        let src_delta = SourceDelta { text: new_source };
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "editing")?;
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: is_delete,
@@ -4563,14 +4542,14 @@ impl FrontendState {
             vec![constraint_id]
         };
 
-        // Only now, after all operations succeeded, update self.program
-        // This ensures state is only modified if everything succeeds
+        // Only now, after all operations succeeded, update self.program.
+        // This ensures state is only modified if everything succeeds.
         self.program = new_program;
 
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
 
-        let src_delta = SourceDelta { text: new_source };
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraint")?;
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: false,
@@ -4578,6 +4557,58 @@ impl FrontendState {
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
+    }
+
+    fn commit_var_solutions_to_program(&mut self, outcome: &ExecOutcome, operation: &str) -> ExecResult<SourceDelta> {
+        let commit_failure = || {
+            KclErrorWithOutputs::from_error_outcome(
+                KclError::refactor(format!("Could not update KCL after {operation}.")),
+                outcome.clone(),
+            )
+        };
+
+        let default_length_unit = self.default_length_unit();
+        let mut settled_ast = self.program.ast.clone();
+        let mut committed_solver_value = false;
+        for (var_range, value) in &outcome.var_solutions {
+            let Some(current_literal) = numeric_literal_at_source_range(&settled_ast, *var_range) else {
+                return Err(commit_failure());
+            };
+            if !var_solution_needs_commit(&current_literal, *value, default_length_unit) {
+                continue;
+            }
+            committed_solver_value = true;
+            let value = preserve_var_solution_literal_style(&current_literal, *value, default_length_unit);
+            let source_ref = SourceRef::Simple {
+                range: *var_range,
+                node_path: None,
+            };
+            mutate_ast_node_by_source_ref(
+                &mut settled_ast,
+                &source_ref,
+                AstMutateCommand::EditVarInitialValue { value },
+            )
+            .map_err(|_| commit_failure())?;
+        }
+
+        if !committed_solver_value {
+            return Ok(SourceDelta {
+                text: self.program.original_file_contents.clone(),
+            });
+        }
+
+        let settled_source = source_from_ast(&settled_ast);
+        let (settled_program, errors) = Program::parse(&settled_source).map_err(|_| commit_failure())?;
+        if !errors.is_empty() {
+            return Err(commit_failure());
+        }
+        let Some(settled_program) = settled_program else {
+            return Err(commit_failure());
+        };
+
+        self.program = settled_program;
+
+        Ok(SourceDelta { text: settled_source })
     }
 
     // Find constraints that reference the given segments.
@@ -6073,6 +6104,106 @@ fn find_sketch_block_added_item(
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
     // TODO: Don't duplicate this from lib.rs Program.
     ast.recast_top(&Default::default(), 0)
+}
+
+struct FindNumericLiteral {
+    target: SourceRange,
+    found: Cell<Option<ast::NumericLiteral>>,
+}
+
+impl<'a> crate::walk::Visitor<'a> for &FindNumericLiteral {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+        let Ok(node_range) = SourceRange::try_from(&node) else {
+            return Ok(true);
+        };
+
+        if node_range == self.target
+            && let crate::walk::Node::NumericLiteral(literal) = node
+        {
+            self.found.set(Some(literal.inner.clone()));
+            return Ok(false);
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: SourceRange) -> Option<ast::NumericLiteral> {
+    let find = FindNumericLiteral {
+        target,
+        found: Cell::new(None),
+    };
+    let node = crate::walk::Node::from(ast);
+    node.visit(&find).ok()?;
+    find.found.into_inner()
+}
+
+fn suffix_length_unit(suffix: NumericSuffix) -> Option<UnitLength> {
+    match suffix {
+        NumericSuffix::Mm => Some(UnitLength::Millimeters),
+        NumericSuffix::Cm => Some(UnitLength::Centimeters),
+        NumericSuffix::M => Some(UnitLength::Meters),
+        NumericSuffix::Inch => Some(UnitLength::Inches),
+        NumericSuffix::Ft => Some(UnitLength::Feet),
+        NumericSuffix::Yd => Some(UnitLength::Yards),
+        _ => None,
+    }
+}
+
+fn number_value_in_default_length_units(number: Number, default_length_unit: UnitLength) -> f64 {
+    match suffix_length_unit(number.units) {
+        Some(unit) => adjust_length(unit, number.value, default_length_unit).0,
+        None => number.value,
+    }
+}
+
+fn literal_value_in_default_length_units(literal: &ast::NumericLiteral, default_length_unit: UnitLength) -> f64 {
+    match suffix_length_unit(literal.suffix) {
+        Some(unit) => adjust_length(unit, literal.value, default_length_unit).0,
+        None => literal.value,
+    }
+}
+
+fn var_solution_needs_commit(
+    current_literal: &ast::NumericLiteral,
+    solved_value: Number,
+    default_length_unit: UnitLength,
+) -> bool {
+    let current = literal_value_in_default_length_units(current_literal, default_length_unit);
+    let solved = number_value_in_default_length_units(solved_value, default_length_unit);
+
+    (current - solved).abs() > 1e-9
+}
+
+fn preserve_var_solution_literal_style(
+    current_literal: &ast::NumericLiteral,
+    solved_value: Number,
+    default_length_unit: UnitLength,
+) -> Number {
+    if current_literal.suffix == NumericSuffix::None {
+        return Number {
+            value: number_value_in_default_length_units(solved_value, default_length_unit),
+            units: NumericSuffix::None,
+        };
+    }
+
+    let Some(current_unit) = suffix_length_unit(current_literal.suffix) else {
+        return solved_value;
+    };
+
+    let solved_default_value = number_value_in_default_length_units(solved_value, default_length_unit);
+    Number {
+        value: adjust_length(default_length_unit, solved_default_value, current_unit).0,
+        units: current_literal.suffix,
+    }
 }
 
 pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
@@ -7792,9 +7923,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
+  point(at = [var 1, var 2])
   // describe the middle point
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -7837,7 +7968,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
+  point(at = [var 1, var 2])
   // describe the trailing point
 }
 "
@@ -7937,7 +8068,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   /* above first - moves to middle */
   /* above middle - stays */
-  point(at = [var 3mm, var 4mm])
+  point(at = [var 3, var 4])
   /* above last - moves to trailing meta */
 }
 "
@@ -7994,7 +8125,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line(start = [var 127mm, var 152.4mm], end = [var 3mm, var 4mm])
+  line(start = [var 5in, var 6in], end = [var 3, var 4])
 }
 "
         );
@@ -8051,7 +8182,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line(start = [var 1mm, var 2mm], end = [var 127mm, var 152.4mm])
+  line(start = [var 1, var 2], end = [var 5in, var 6in])
 }
 "
         );
@@ -8116,8 +8247,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
-  line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
+  line1 = line(start = [var 0, var 0], end = [var 4.14, var 5.32])
+  line2 = line(start = [var 4.14, var 5.32], end = [var 9, var 10])
   fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
@@ -8133,6 +8264,134 @@ sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_segments_persists_solver_feedback_for_next_mock_execute() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  fixed([line1.start, [0, 0]])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_end_id = *sketch.segments.get(4).unwrap();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line2_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 9.0,
+                        units: NumericSuffix::None,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 10.0,
+                        units: NumericSuffix::None,
+                    }),
+                },
+            }),
+        }];
+        let (edited_source, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, edited_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraint_persists_solver_feedback_for_next_mock_execute() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::Fixed(Fixed {
+            points: vec![FixedPoint {
+                point: line_end_id,
+                position: Point2d {
+                    x: Number {
+                        value: 20.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    y: Number {
+                        value: 0.0,
+                        units: NumericSuffix::Mm,
+                    },
+                },
+            }],
+        });
+        let (constraint_source, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+
+        assert!(
+            constraint_source
+                .text
+                .contains("line1 = line(start = [var 0, var 0], end = [var 20, var 0])"),
+            "{}",
+            constraint_source.text
+        );
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, constraint_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    #[test]
+    fn test_no_solver_feedback_preserves_original_source() {
+        let initial_source = "\
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+cylinder = startSketchOn(XY)
+    |> circle(center= [0, 0], radius= 22)
+    |> extrude(length = 14)
+";
+        let mut frontend = FrontendState::new();
+        frontend.program = Program::parse(initial_source).unwrap().0.unwrap();
+        let outcome = ExecOutcome {
+            variables: Default::default(),
+            operations: Default::default(),
+            artifact_graph: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
+            var_solutions: Default::default(),
+            issues: Default::default(),
+            filenames: Default::default(),
+            default_planes: Default::default(),
+        };
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(source_delta.text, initial_source);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -8168,8 +8427,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 1, var 2])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8213,8 +8472,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 1, var 2])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8260,7 +8519,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8305,9 +8564,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 4mm])
-  point(at = [var 5mm, var 6mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8350,7 +8609,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -8397,7 +8656,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -8445,7 +8704,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
 }
 "
         );
@@ -8492,7 +8751,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
 }
 "
         );
@@ -8539,7 +8798,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
 }
 "
         );
@@ -8650,8 +8909,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   equalLength([line1, line2])
 }
 "
@@ -8876,7 +9135,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -8922,8 +9181,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   parallel([line1, line2])
 }
 "
@@ -8980,7 +9239,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -9026,8 +9285,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
 }
 "
         );
@@ -9073,7 +9332,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
   point2 = point(at = [3, 4])
   coincident([point1, point2])
 }
@@ -9132,9 +9391,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
   point2 = point(at = [var 3, var 4])
-  point3 = point(at = [var 5, var 6])
+  point3 = point(at = [var 3, var 4])
   coincident([point1, point2, point3])
 }
 "
@@ -9219,7 +9478,7 @@ sketch(on = XY) {
                 true,
                 "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 0, var 0])
   coincident([ORIGIN, point1])
 }
 ",
@@ -9228,7 +9487,7 @@ sketch(on = XY) {
                 false,
                 "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 0, var 0])
   coincident([point1, ORIGIN])
 }
 ",
@@ -9315,8 +9574,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 1, var 2], end = [var 4, var 5])
+  line2 = line(start = [var 4, var 5], end = [var 7, var 8])
   coincident([line1.end, line2.start])
 }
 "
@@ -9396,8 +9655,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-  line1 = line(start = [var 9mm, var 1mm], end = [var 10mm, var 2mm])
+  circle1 = circle(start = [var 7.02mm, var 0mm], center = [var -0.01mm, var 0.22mm])
+  line1 = line(start = [var 7mm, var 0.78mm], end = [var 10mm, var 2mm])
   coincident([line1.start, circle1])
 }
 "
@@ -9603,8 +9862,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
+  point1 = point(at = [var 1.29, var 2.29])
+  point2 = point(at = [var 2.71, var 3.71])
   distance([point1, point2]) == 2mm
 }
 "
@@ -9672,8 +9931,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
+  point1 = point(at = [var 1.29, var 2.29])
+  point2 = point(at = [var 2.71, var 3.71])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -9760,8 +10019,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 2])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -10057,7 +10316,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  arc1 = arc(start = [var -4.13mm, var -0.59mm], end = [var -3.47mm, var 3.38mm], center = [var -4.55mm, var 1.52mm])
+  arc1 = arc(start = [var -4.16mm, var -0.43mm], end = [var -3.53mm, var 3.28mm], center = [var -4.91mm, var 1.61mm])
   distance([arc1, ORIGIN]) == 3mm
 }
 "
@@ -10263,8 +10522,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
-  arc1 = arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+  circle1 = circle(start = [var 4.33, var 0], center = [var -0.34, var -0.09])
+  arc1 = arc(start = [var 15.33, var -0.01], end = [var 10.01, var 4.33], center = [var 11.34, var 0.53])
   distance([circle1, arc1]) == 3mm
 }
 "
@@ -10389,8 +10648,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  line2 = line(start = [var 0, var 0], end = [var 0, var 10])
+  line1 = line(start = [var 4.98, var -0.07], end = [var 4.98, var 0.14])
+  line2 = line(start = [var 0.02, var 4.3], end = [var 0.03, var 5.65])
   distance([line1, line2]) == 5mm
 }
 "
@@ -10532,7 +10791,7 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   radius(arc1) == 5mm
 }
 "
@@ -10608,7 +10867,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
 }
 "
@@ -10821,7 +11080,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 2, var 3])
   fixed([point1, [2mm, 3mm]])
 }
 "
@@ -10903,8 +11162,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
+  point1 = point(at = [var 2, var 3])
+  point2 = point(at = [var 4, var 5])
   fixed([point1, [2mm, 3mm]])
   fixed([point2, [4mm, 5mm]])
 }
@@ -10970,7 +11229,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1 = line(start = [var 2, var 3], end = [var 3, var 4])
   fixed([line1.start, [2mm, 3mm]])
 }
 "
@@ -11105,7 +11364,7 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   diameter(arc1) == 10mm
 }
 "
@@ -11181,7 +11440,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
 }
 "
@@ -11363,7 +11622,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1 = line(start = [var 1, var 3], end = [var 3, var 3])
   horizontal(line1)
 }
 "
@@ -11758,7 +12017,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1 = line(start = [var 2, var 2], end = [var 2, var 4])
   vertical(line1)
 }
 "
@@ -11811,7 +12070,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 3.1mm])
+  p0 = point(at = [var 4mm, var 3.1mm])
   pf = point(at = [4, 4])
   vertical([p0, pf])
 }
@@ -11865,7 +12124,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 3.1mm])
+  p0 = point(at = [var -2.23mm, var 4mm])
   pf = point(at = [4, 4])
   horizontal([p0, pf])
 }
@@ -11915,7 +12174,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 3.1mm])
+  p0 = point(at = [var -2.23mm, var 0mm])
   horizontal([p0, ORIGIN])
 }
 "
@@ -12197,8 +12456,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 2, var 3], end = [var 2, var 3])
+  line2 = line(start = [var 6, var 7], end = [var 6, var 7])
   perpendicular([line1, line2])
 }
 "
@@ -12255,8 +12514,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 0.9, var 2.36], end = [var 3.1, var 3.64])
+  line2 = line(start = [var 5.36, var 5.9], end = [var 6.64, var 8.1])
   angle([line1, line2]) == 30deg
 }
 "
@@ -12307,8 +12566,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  line1 = line(start = [var 0.84, var 2.13], end = [var 3.82, var 3.27])
+  arc1 = arc(start = [var 4.51, var 2.03], end = [var 7.05, var 2.02], center = [var 5.78, var 2.55])
   tangent([line1, arc1])
 }
 "
@@ -12361,8 +12620,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 1])
-  line1 = line(start = [var 0, var 0], end = [var 6, var 4])
+  point1 = point(at = [var 2.33, var 1.67])
+  line1 = line(start = [var -0.67, var -0.33], end = [var 5.33, var 3.67])
   midpoint(line1, point = point1)
 }
 "
@@ -12470,8 +12729,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 6, var 3])
-  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  point1 = point(at = [var 6, var 2.35])
+  arc1 = arc(start = [var 6, var 2.35], end = [var 6, var 2.35], center = [var 6, var 1.94])
   midpoint(arc1, point = point1)
 }
 "
@@ -12521,7 +12780,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 6, var 4])
+  line1 = line(start = [var -3, var -2], end = [var 3, var 2])
   midpoint(line1, point = ORIGIN)
 }
 "
@@ -12571,7 +12830,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  arc1 = arc(start = [var 0.35, var 2.24], end = [var 1.62, var -1.58], center = [var 2.34, var 0.78])
   midpoint(arc1, point = ORIGIN)
 }
 "
@@ -12625,9 +12884,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
-  arc2 = arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
-  line1 = line(start = [var 0, var -10], end = [var 0, var 10])
+  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.31])
+  arc2 = arc(start = [var 5.49, var 2.26], end = [var 11.58, var -3.47], center = [var 9.34, var 0.25])
+  line1 = line(start = [var -0.44, var -10], end = [var -0.37, var 10])
   symmetric([arc1, arc2], axis = line1)
 }
 "
@@ -13111,47 +13370,11 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        let edited_sketch1_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
-        // Only the first sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        assert_eq!(src_delta.text, edited_sketch1_source);
         // Exit sketch. Objects from the entire program should be present.
         //
         // - startSketchOn(XY) Plane 1
@@ -13221,10 +13444,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -13239,47 +13462,11 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        let edited_sketch2_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
-        // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        assert_eq!(src_delta.text, edited_sketch2_source);
 
         ctx.close().await;
         mock_ctx.close().await;
