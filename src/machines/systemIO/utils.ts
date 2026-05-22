@@ -4,6 +4,12 @@ import { FILE_EXT, PROJECT_FOLDER, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import {
+  appendGitignoreForDirectory,
+  createInitialGitignoreStack,
+  isPathIgnoredByGitignore,
+  type GitignoreStackEntry,
+} from '@src/lib/gitignore'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
@@ -382,22 +388,42 @@ export const collectProjectFiles = async (args: {
       )
     }
 
-    const recursivelyPushFilePromisesFromPath = async (path: string) => {
+    const recursivelyPushFilePromisesFromPath = async (
+      path: string,
+      gitignoreStack: GitignoreStackEntry[]
+    ) => {
       const entries = await fsZds.readdir(path)
       for (const entry of entries) {
         const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
+        const relativePath = (
+          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+        ).replace(/\\/g, '/')
         const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
+        const isDirectory = Boolean(stat.mode & fsZdsConstants.S_IFDIR)
 
-        if (Boolean(stat.mode & fsZdsConstants.S_IFDIR)) {
-          // In browser-backed projects, opening a standalone file from the
-          // documents root can make the app's project storage folder appear
-          // beside the active file. That folder is not part of the current
-          // Zookeeper project and causes false manual-edit diffs.
-          if (path === basePath && entry === PROJECT_FOLDER) {
-            continue
-          }
+        // In browser-backed projects, opening a standalone file from the
+        // documents root can make the app's project storage folder appear
+        // beside the active file. That folder is not part of the current
+        // Zookeeper project and causes false manual-edit diffs.
+        if (path === basePath && entry === PROJECT_FOLDER) {
+          continue
+        }
+
+        if (
+          isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+        ) {
+          continue
+        }
+
+        if (isDirectory) {
+          const childGitignoreStack = await appendGitignoreForDirectory(
+            gitignoreStack,
+            absolutePathToFileNameWithExtension,
+            basePath
+          )
           await recursivelyPushFilePromisesFromPath(
-            absolutePathToFileNameWithExtension
+            absolutePathToFileNameWithExtension,
+            childGitignoreStack
           )
           continue
         }
@@ -406,7 +432,8 @@ export const collectProjectFiles = async (args: {
       }
     }
 
-    await recursivelyPushFilePromisesFromPath(basePath)
+    const gitignoreStack = await createInitialGitignoreStack(basePath)
+    await recursivelyPushFilePromisesFromPath(basePath, gitignoreStack)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
     if (args.warnIfProjectExceeds64Mb !== false && uploadSize > MB64) {
