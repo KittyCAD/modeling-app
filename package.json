@@ -233,6 +233,6 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^4.1.6",
     "vitest-webgl-canvas-mock": "^1.1.0",
-    "ws": "^8.20.1"
+    "ws": "^8.21.0"
   }
 }
