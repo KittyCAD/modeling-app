@@ -727,7 +727,7 @@ export fn ellipse(
 /// extrude(endSweep, length = 2, method = NEW)
 /// |> appearance(color = "#FFFF00")
 /// ```
-/// kcl, sketchSolve
+/// ``` kcl, sketchSolve
 /// // Draft extrusions, both inward and outward
 /// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var -5.18mm, var 3.57mm], end = [var 2.21mm, var 3.57mm])
