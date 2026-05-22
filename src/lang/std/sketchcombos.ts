@@ -2162,7 +2162,7 @@ export function transformAstSketchLines({
             }
     const fnName = fnNameToToolTipFromSegment(
       seg,
-      transformTo || (call.node.callee.name.name as ToolTip)
+      transformTo || call.node.callee.name.name
     )
     if (err(fnName)) return fnName
     const replacedSketchLine = replaceSketchLine({

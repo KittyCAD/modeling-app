@@ -10,7 +10,7 @@ type DimensionToolEvent = BaseToolEvent
 
 export const machine = setup({
   types: {
-    context: {} as Record<string, unknown>,
+    context: {},
     events: {} as DimensionToolEvent,
     input: {} as {
       sceneInfra: SceneInfra

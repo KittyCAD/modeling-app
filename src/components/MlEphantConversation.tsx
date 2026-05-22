@@ -1,4 +1,3 @@
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import { Popover } from '@headlessui/react'
@@ -12,7 +11,6 @@ import type {
 } from '@src/machines/mlEphantManagerMachine'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
@@ -124,8 +122,6 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface MlEphantExtraInputsProps {
-  // TODO: Expand to a list with no type restriction
-  context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
@@ -141,10 +137,6 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   return (
     <div className="flex-1 flex min-w-0 items-end">
       <div className="flex flex-row w-fit-content items-end gap-1">
-        {/* TODO: Generalize to a MlCopilotContexts component */}
-        {props.context && (
-          <MlCopilotSelectionsContext selections={props.context} />
-        )}
         {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
           <MlCopilotModes
             onClick={props.onSetMode}
@@ -202,24 +194,7 @@ export interface MlEphantContextsProps {
   contexts: MlEphantManagerPromptContext[]
 }
 
-const MlCopilotSelectionsContext = (props: {
-  selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-}) => {
-  const { kclManager } = useSingletons()
-  const selectionText = getSelectionTypeDisplayText(
-    kclManager.astSignal.value,
-    props.selections.data
-  )
-  return selectionText ? (
-    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
-      <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
-      {selectionText}
-    </button>
-  ) : null
-}
-
 interface MlEphantConversationInputProps {
-  contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
   onCancel: MlEphantConversationProps['onCancel']
@@ -423,10 +398,6 @@ export const MlEphantConversationInput = (
     appendAttachments(files)
   }
 
-  const selectionsContext:
-    | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-    | undefined = props.contexts.filter((m) => m.type === 'selections')[0]
-
   return (
     <div className="flex flex-col p-4 gap-2">
       <div
@@ -501,7 +472,6 @@ export const MlEphantConversationInput = (
         )}
         <div className="flex items-end">
           <MlEphantExtraInputs
-            context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
               userHasPickedMode.current = true
@@ -550,7 +520,8 @@ export const MlEphantConversationInput = (
         </div>
       </div>
       <div className="text-3 text-xs">
-        Zookeeper can make mistakes. Always verify information.
+        Zookeeper can make mistakes. We send selection context to help. Always
+        verify information.
       </div>
     </div>
   )
@@ -714,7 +685,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <MlEphantConversationInput
-              contexts={props.contexts}
               disabled={
                 Boolean(props.blockedReason) ||
                 props.disabled ||
