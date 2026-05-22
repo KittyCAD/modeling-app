@@ -393,7 +393,7 @@ async function resolveDefaultValue(
     return undefined
   }
   if (typeof arg.defaultValue === 'function') {
-    return arg.defaultValue(context, machineContext, wasmInstance as never)
+    return arg.defaultValue(context, machineContext, wasmInstance)
   }
   return arg.defaultValue
 }
