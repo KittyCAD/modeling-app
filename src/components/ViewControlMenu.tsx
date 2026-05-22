@@ -15,7 +15,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { selectSketchPlane } from '@src/lib/selections'
 import {
   DefaultLayoutPaneID,
   getOpenPanes,

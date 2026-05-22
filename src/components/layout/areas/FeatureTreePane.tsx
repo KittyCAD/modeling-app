@@ -26,7 +26,7 @@ import {
 } from '@src/lib/operations'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
@@ -1135,6 +1135,9 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
+  const selectedDefaultPlaneId = getSelectedDefaultPlane(
+    modelingState.context.selectionRanges
+  )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {
@@ -1221,6 +1224,7 @@ const DefaultPlanes = ({
           icon={'plane'}
           name={plane.name}
           disabled={disabled}
+          isSelected={selectedDefaultPlaneId === plane.id}
           onClick={disabled ? undefined : () => onClickPlane(plane.id)}
           menuItems={
             disabled

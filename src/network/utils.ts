@@ -227,7 +227,7 @@ export function toRTCSessionDescriptionInit(
   return {
     sdp: desc.sdp,
     // Force the type to be one of the valid RTCSdpType values
-    type: desc.type as RTCSdpType,
+    type: desc.type,
   }
 }
 
