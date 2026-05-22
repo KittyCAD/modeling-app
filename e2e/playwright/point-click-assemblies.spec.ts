@@ -568,8 +568,7 @@ test.describe(
       })
     }
 
-    test(`Insert the bracket part into an assembly and transform it (feature-tree selection)`, async ({
-      context,
+    test(`Module feature tree items are source-only`, async ({
       page,
       homePage,
       scene,
@@ -581,17 +580,52 @@ test.describe(
     }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
       test.slow()
-      await testBracketInsertionThenTransformsThenDeletion(
-        context,
-        page,
-        homePage,
-        scene,
-        editor,
+
+      const projectName = 'assembly'
+      await folderSetupFn(async (dir) => {
+        const bracketDir = path.join(dir, projectName)
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await Promise.all([
+          fsp.copyFile(
+            path.join('public', 'kcl-samples-legacy', 'bracket', 'main.kcl'),
+            path.join(bracketDir, 'bracket.kcl')
+          ),
+          fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+        ])
+      })
+      await page.setBodyDimensions({ width: 1200, height: 800 })
+      await homePage.openProject(projectName)
+      await scene.settled()
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+      await insertPartIntoAssembly(
+        'bracket.kcl',
+        'bracket',
         toolbar,
         cmdBar,
-        'feature-tree',
-        folderSetupFn
+        page
       )
+
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+      await op.click({ button: 'right' })
+
+      await expect(page.getByText('View KCL source code')).toBeVisible()
+      await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
+      await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
+      await expect(
+        page.getByTestId('context-menu-set-translate')
+      ).not.toBeVisible()
+      await expect(
+        page.getByTestId('context-menu-set-rotate')
+      ).not.toBeVisible()
+      await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
+
+      await page.getByText('View KCL source code').click()
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain('part001 = startSketchOn(XY)', {
+        shouldNormalise: true,
+      })
     })
 
     test(`Insert the bracket part into an assembly and transform it (scene selection)`, async ({
@@ -711,42 +745,17 @@ test.describe(
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
-      await test.step('Delete first part using the feature tree', async () => {
-        page.on('console', console.log)
+      await test.step('Module feature tree items do not offer delete', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('cube', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        const cubeOp = await toolbar.getFeatureTreeOperation('cube', 0)
+        await cubeOp.click({ button: 'right' })
+        await expect(page.getByText('View KCL source code')).toBeVisible()
+        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
 
-        // Expect only the import statement to be there
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
-          import "${complexPlmFileName}" as cubeSw
-        `,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Delete second part using the feature tree', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-        // Expect empty editor and scene
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.not.toContain(
-          `import "${complexPlmFileName}" as cubeSw`
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        const cubeSwOp = await toolbar.getFeatureTreeOperation('cubeSw', 0)
+        await cubeSwOp.click({ button: 'right' })
+        await expect(page.getByText('View KCL source code')).toBeVisible()
+        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
       })
     })
 
@@ -867,64 +876,14 @@ foreign
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      await test.step('Clone the part using the feature tree', async () => {
+      await test.step('Module feature tree items do not offer clone', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation('washer', 0)
         await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-clone').click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            VariableName: '',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Clone',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'variableName',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '1 plane',
-            VariableName: '',
-          },
-          highlightedHeaderArg: 'variableName',
-          commandName: 'Clone',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 plane',
-            VariableName: 'clone001',
-          },
-          commandName: 'Clone',
-        })
-        await cmdBar.submit()
-        await scene.settled()
+        await expect(page.getByText('View KCL source code')).toBeVisible()
+        await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
-        // Expect changes
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(cloneLine, {
-          shouldNormalise: true,
-        })
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-      })
-
-      await test.step('Delete clone using the feature tree', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-        // Expect empty editor and scene
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.not.toContain(cloneLine, {
           shouldNormalise: true,
