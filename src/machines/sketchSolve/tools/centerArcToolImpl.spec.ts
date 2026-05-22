@@ -12,6 +12,7 @@ import type {
   SourceDelta,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import type { DoneActorEvent } from 'xstate'
 import {
   createMockKclManager,
@@ -65,7 +66,7 @@ function createSceneGraphDelta(
     exec_outcome: {
       issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
@@ -287,7 +288,7 @@ describe('centerArcToolImpl', () => {
 
       const event = {
         output: {
-          kclSource: { text: 'test' } as SourceDelta,
+          kclSource: { text: 'test' },
           sceneGraphDelta,
         },
       } as DoneActorEvent<{
@@ -377,7 +378,7 @@ describe('centerArcToolImpl', () => {
       const event: FinalizingArcEvent = {
         type: 'xstate.done.actor.0.Center arc tool.Finalizing arc',
         output: {
-          kclSource: { text: 'test' } as SourceDelta,
+          kclSource: { text: 'test' },
           sceneGraphDelta,
         },
       }
@@ -432,7 +433,7 @@ describe('centerArcToolImpl', () => {
       const event: CreatingArcEvent = {
         type: 'xstate.done.actor.0.Center arc tool.Creating arc',
         output: {
-          kclSource: { text: 'test' } as SourceDelta,
+          kclSource: { text: 'test' },
           sceneGraphDelta,
         },
       }

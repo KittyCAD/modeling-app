@@ -577,7 +577,7 @@ describe('KclManager diagnostics', () => {
       sceneGraph: sceneGraphDelta.new_graph,
       execOutcome: sceneGraphDelta.exec_outcome,
       checkpointId,
-    } as Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>)
+    })
 
     kclManager.editorView.dispatch({
       changes: { from: 4, to: 4, insert: ' fresh' },
@@ -666,7 +666,7 @@ describe('KclManager diagnostics', () => {
       sceneGraph: sceneGraphDelta.new_graph,
       execOutcome: sceneGraphDelta.exec_outcome,
       checkpointId: 55,
-    } as Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>)
+    })
     await flushPromises()
 
     expect(kclManager.code).toBe('base stale newer')
@@ -791,11 +791,7 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager, 'writeToFile')
       .mockResolvedValue(undefined)
 
-    await kclManager.updateEditorWithAstAndWriteToFile(
-      createEmptyAst() as unknown as Parameters<
-        typeof kclManager.updateEditorWithAstAndWriteToFile
-      >[0]
-    )
+    await kclManager.updateEditorWithAstAndWriteToFile(createEmptyAst())
 
     expect(kclManager.code).toBe('preserve me')
     expect(writeToFileSpy).not.toHaveBeenCalled()
