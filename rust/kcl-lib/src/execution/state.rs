@@ -17,6 +17,7 @@ use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
 use crate::NodePath;
+use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::errors::KclError;
@@ -83,6 +84,8 @@ pub(super) struct GlobalState {
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
 }
 
 impl GlobalState {
@@ -335,8 +338,10 @@ impl ExecState {
 
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
+        global.drag_anchors = mock_config.drag_anchors.clone();
         ExecState {
-            global: GlobalState::new(&exec_context.settings, segment_ids_edited),
+            global,
             mod_local: ModuleState::new(
                 ModulePath::Main,
                 ProgramMemory::new(),
@@ -567,6 +572,14 @@ impl ExecState {
 
     pub fn segment_ids_edited_contains(&self, object_id: &ObjectId) -> bool {
         self.global.segment_ids_edited.contains(object_id)
+    }
+
+    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&crate::front::Point2d<crate::front::Number>> {
+        self.global
+            .drag_anchors
+            .iter()
+            .find(|anchor| &anchor.segment_id == object_id)
+            .map(|anchor| &anchor.target)
     }
 
     pub(super) fn is_in_sketch_block(&self) -> bool {
@@ -908,6 +921,7 @@ impl GlobalState {
             issues: Default::default(),
             id_to_source: Default::default(),
             segment_ids_edited,
+            drag_anchors: Vec::new(),
         };
 
         let root_id = ModuleId::default();

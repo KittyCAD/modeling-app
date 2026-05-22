@@ -503,7 +503,7 @@ impl ExecOutcome {
 }
 
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -514,6 +514,16 @@ pub struct MockConfig {
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SegmentDragAnchor {
+    pub segment_id: ObjectId,
+    pub target: crate::front::Point2d<Number>,
 }
 
 impl Default for MockConfig {
@@ -524,6 +534,7 @@ impl Default for MockConfig {
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
+            drag_anchors: Vec::new(),
         }
     }
 }
