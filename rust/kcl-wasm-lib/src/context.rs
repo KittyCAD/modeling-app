@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::EngineManager;
-use kcl_lib::ExecutionCallbacks;
 use kcl_lib::ExecOutcome;
+use kcl_lib::ExecutionCallbacks;
 use kcl_lib::KclError;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::MockConfig;
@@ -135,17 +135,9 @@ impl Context {
         }
 
         let mut ctx = if is_mock {
-            kcl_lib::ExecutorContext::new_mock(
-                self.mock_engine.clone(),
-                self.fs.clone(),
-                settings,
-            )
+            kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
         } else {
-            kcl_lib::ExecutorContext::new_with_engine_and_fs(
-                self.engine.clone(),
-                self.fs.clone(),
-                settings,
-            )
+            kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
         };
 
         ctx.execution_callbacks = rust_execution_callbacks(self.execution_callbacks.clone());
