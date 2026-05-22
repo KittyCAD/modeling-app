@@ -284,6 +284,27 @@ export function emptyOperationsByModule(): OperationsByModule {
   return { map: {} }
 }
 
+export function applyOperationCallbackToOperationsByModule(input: {
+  operationsByModule: OperationsByModule
+  callback: OperationCallbackArgs
+}): OperationsByModule {
+  const {
+    operationsByModule,
+    callback: { moduleId, operation, index },
+  } = input
+  const nextOperations = [
+    ...(operationsByModule.map[moduleId] ?? []),
+  ] as Operation[]
+  nextOperations[index] = operation
+
+  return {
+    map: {
+      ...operationsByModule.map,
+      [moduleId]: nextOperations,
+    },
+  }
+}
+
 /**
  * Create an empty ExecState.  This is useful on init to prevent needing an
  * Option.

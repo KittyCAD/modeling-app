@@ -318,12 +318,17 @@ export const FeatureTreePaneContents = memo(() => {
         data-testid="debug-panel"
         className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
-        {kclManager.isExecuting ? (
+        {kclManager.isExecuting && operationList.length === 0 ? (
           <Loading className="h-full" isDummy={true}>
             Building feature tree...
           </Loading>
         ) : (
           <>
+            {kclManager.isExecuting && operationList.length > 0 && (
+              <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
+                Updating feature tree...
+              </div>
+            )}
             {!modelingState.matches('Sketch') && (
               <DefaultPlanes
                 systemDeps={systemDeps}
