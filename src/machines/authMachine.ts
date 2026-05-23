@@ -59,18 +59,7 @@ console.table([
 ])
 
 export const authMachine = setup({
-  types: {} as {
-    context: UserContext
-    events:
-      | Events
-      | {
-          type: 'xstate.done.actor.check-logged-in'
-          output: {
-            user: UserResponse
-            token: string
-          }
-        }
-  },
+  types: {},
   actors: {
     getUser: fromPromise(({ input }: { input: { token?: string } }) =>
       getUser(input)

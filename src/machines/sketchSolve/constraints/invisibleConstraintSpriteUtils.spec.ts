@@ -194,6 +194,32 @@ describe('invisibleConstraintSpriteUtils', () => {
     expect(findInvisibleConstraintsForSegment(arc, objects)).toEqual([20])
   })
 
+  it('handles midpoint constraints that use ORIGIN as the constrained point', () => {
+    const lineStart = createPointApiObject({ id: 1, x: -5, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 5, y: 0 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const midpoint = createConstraintApiObject(20, {
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 10,
+    })
+    const objects = createObjectsArray([lineStart, lineEnd, line, midpoint])
+
+    expect(
+      getInvisibleConstraintAnchor(
+        midpoint as InvisibleConstraintObject,
+        objects
+      )?.toArray()
+    ).toEqual([0, 0, 0])
+    expect(
+      findSegmentsForInvisibleConstraint(
+        midpoint as InvisibleConstraintObject,
+        objects
+      )
+    ).toEqual([10])
+    expect(findInvisibleConstraintsForSegment(line, objects)).toEqual([20])
+  })
+
   it('finds the invisible constraints related to a hovered line', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 10, y: 0 })

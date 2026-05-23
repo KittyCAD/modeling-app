@@ -67,7 +67,7 @@ import {
 } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import { err, isErr } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
@@ -80,6 +80,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  DefaultPlaneSelection,
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
@@ -468,6 +469,13 @@ export function handleSelectionBatch({
         id: s.id,
         range: defaultSourceRange(),
       })
+      return
+    }
+    if (isDefaultPlaneSelection(s)) {
+      selectionToEngine.push({
+        id: s.id,
+        range: defaultSourceRange(),
+      })
     }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
@@ -505,6 +513,18 @@ export function handleSelectionBatch({
 type SelectionToEngine = {
   id?: string
   range: SourceRange
+}
+
+export function isDefaultPlaneSelection(
+  selection: Selections['otherSelections'][number]
+): selection is DefaultPlaneSelection {
+  return (
+    typeof selection === 'object' && selection !== null && 'name' in selection
+  )
+}
+
+export function getSelectedDefaultPlane(selectionRanges: Selections) {
+  return selectionRanges.otherSelections.find(isDefaultPlaneSelection)
 }
 
 export function processCodeMirrorRanges({
@@ -745,7 +765,7 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
       incrementOrInitializeSelectionType('engineRegion')
-    } else if ('name' in selection) {
+    } else if (isDefaultPlaneSelection(selection)) {
       incrementOrInitializeSelectionType('plane')
     } else if (
       selection.type === 'enginePrimitive' &&
@@ -1462,6 +1482,63 @@ export async function selectOffsetSketchPlane(
     return false
   }
   return true
+}
+
+export async function selectSketchPlane(
+  planeOrFaceId: string | undefined,
+  useSketchSolveMode: boolean | undefined,
+  kclManager?: KclManager
+) {
+  try {
+    if (!kclManager) return
+    if (!planeOrFaceId) return
+
+    if (useSketchSolveMode) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId, {
+      sceneInfra: kclManager.sceneInfra,
+      rustContext: kclManager.rustContext,
+    })
+    if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+      return
+    }
+
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    })
+    if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+      return
+    }
+
+    const sweepFaceSelected = await selectionBodyFace(
+      planeOrFaceId,
+      kclManager.artifactGraph,
+      kclManager.ast,
+      kclManager.execState,
+      {
+        rustContext: kclManager.rustContext,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      }
+    )
+    if (sweepFaceSelected) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch plane',
+        data: sweepFaceSelected,
+      })
+    }
+  } catch (err) {
+    reportRejection(err)
+  }
 }
 
 export async function selectionBodyFace(

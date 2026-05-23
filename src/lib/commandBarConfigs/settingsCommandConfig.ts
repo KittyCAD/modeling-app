@@ -43,14 +43,14 @@ const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
   options:
     isProjectAvailable && hideOnLevel !== 'project'
       ? [
-          { name: 'User', value: 'user' as SettingsLevel },
+          { name: 'User', value: 'user' },
           {
             name: 'Project',
-            value: 'project' as SettingsLevel,
+            value: 'project',
             isCurrent: true,
           },
         ]
-      : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
+      : [{ name: 'User', value: 'user', isCurrent: true }],
   machineActor: actor,
 })
 

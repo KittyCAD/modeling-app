@@ -337,11 +337,13 @@ fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> Runtim
 
 #[cfg(test)]
 mod tests {
+    use crate::errors::Severity;
+    use crate::errors::Tag;
     use crate::execution::KclValue;
     use crate::execution::MockConfig;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn flatten_consumed_solid_does_not_report_kcl_error() {
+    async fn flatten_consumed_solid_reports_deprecation_warning() {
         let code = r#"
 targetSketch = sketch(on = XY) {
   line1 = line(start = [var -10, var -10], end = [var 10, var -10])
@@ -387,6 +389,20 @@ flattened = flatten([[target]])
                     panic!("expected `flattened` to be an array, got: {flattened:?}");
                 };
                 assert_eq!(value.len(), 1);
+                assert!(
+                    outcome.issues.iter().any(|issue| {
+                        issue.severity == Severity::Warning
+                            && issue.tag == Tag::Deprecated
+                            && issue
+                                .message
+                                .contains("Calling `flatten` with a consumed solid is deprecated")
+                            && issue
+                                .message
+                                .contains("`target` was already consumed by a `subtract` operation")
+                    }),
+                    "expected flatten consumed-solid deprecation warning, got: {:#?}",
+                    outcome.issues
+                );
             }
             Err(err) => {
                 let message = err.error.message();
@@ -394,7 +410,7 @@ flattened = flatten([[target]])
                     message.contains("`target` was already consumed by a `subtract` operation"),
                     "{message}"
                 );
-                panic!("flatten should ignore consumed-solid validation, but failed with: {message}");
+                panic!("flatten should warn for consumed-solid validation, but failed with: {message}");
             }
         }
     }

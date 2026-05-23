@@ -1,4 +1,5 @@
 use std::f64::consts::TAU;
+use std::sync::Arc;
 
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
@@ -493,9 +494,10 @@ pub(crate) async fn create_segments_in_engine(
     }
 
     // Add the sketch to each segment.
-    if outer_sketch.is_some() {
+    if let Some(sketch) = &outer_sketch {
+        let shared_sketch = Arc::new(sketch.clone());
         for segment in segments {
-            segment.sketch = outer_sketch.clone();
+            segment.sketch = Some(Arc::clone(&shared_sketch));
         }
     }
 

@@ -136,20 +136,11 @@ function userReturn(): Operation {
 
 function moduleBegin(name: string): Operation {
   return {
-    type: 'GroupBegin',
-    group: {
-      type: 'ModuleInstance',
-      name,
-      moduleId: 0,
-    },
+    type: 'ModuleInstance',
+    name,
+    moduleId: 0,
     nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
-  }
-}
-
-function moduleEnd(): Operation {
-  return {
-    type: 'GroupEnd',
   }
 }
 
@@ -249,10 +240,8 @@ describe('operations.test.ts', () => {
       const operations = [
         stdlib('std1'),
         moduleBegin('foo'),
-        moduleEnd(),
         stdlib('std2'),
         moduleBegin('bar'),
-        moduleEnd(),
         stdlib('std3'),
       ]
       const actual = filterOperations(operations)
@@ -650,7 +639,7 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
 
       const actual = groupOperationTypeStreaks(
         ops,
-        ['GroupBegin', 'StdLibCall'],
+        ['GroupBegin', 'StdLibCall', 'ModuleInstance'],
         2
       )
 

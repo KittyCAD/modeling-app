@@ -83,10 +83,26 @@ pub enum Severity {
 }
 
 impl Severity {
+    pub fn is_warning(self) -> bool {
+        match self {
+            Severity::Warning => true,
+            Severity::Error => false,
+            Severity::Fatal => false,
+        }
+    }
+
     pub fn is_err(self) -> bool {
         match self {
             Severity::Warning => false,
             Severity::Error | Severity::Fatal => true,
+        }
+    }
+
+    pub fn is_fatal(self) -> bool {
+        match self {
+            Severity::Warning => false,
+            Severity::Error => false,
+            Severity::Fatal => true,
         }
     }
 }

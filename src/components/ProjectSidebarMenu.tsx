@@ -129,6 +129,10 @@ function ProjectMenuPopover({
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const exportProjectZipCommandInfo = {
+    name: 'export-project-zip',
+    groupId: 'application',
+  }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = useCallback(
     (obj: { name: string; groupId: string }) =>
@@ -209,6 +213,30 @@ function ProjectMenuPopover({
             commands.send({
               type: 'Find and select command',
               data: exportCommandInfo,
+            }),
+        },
+        {
+          id: 'download-project-zip',
+          Element: 'button',
+          className: isDesktop() ? 'hidden' : '',
+          children: (
+            <>
+              <span className="flex-1">Download project files</span>
+              {!findCommand(exportProjectZipCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Project export unavailable
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(exportProjectZipCommandInfo),
+          onClick: () =>
+            commands.send({
+              type: 'Find and select command',
+              data: exportProjectZipCommandInfo,
             }),
         },
         {

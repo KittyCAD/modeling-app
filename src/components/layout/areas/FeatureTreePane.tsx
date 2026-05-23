@@ -26,11 +26,21 @@ import {
 } from '@src/lib/operations'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, type SourceRange } from '@src/lang/wasm'
+import {
+  base64Decode,
+  countOperations,
+  emptyOperationsByModule,
+  getAllOperations,
+  getCurrentModuleId,
+  getOperationsForModule,
+  ROOT_MODULE_ID,
+  type OperationsByModule,
+  type SourceRange,
+} from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -59,6 +69,7 @@ import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useNavigate } from 'react-router-dom'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
@@ -66,8 +77,84 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { PATHS } from '@src/lib/paths'
 
 type Singletons = ReturnType<typeof useSingletons>
+
+type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
+
+type OperationTreeBranch = {
+  parent: ModuleInstanceOperation
+  children: OperationTreeNode[]
+}
+
+type OperationTreeNode = Operation | Operation[] | OperationTreeBranch
+
+function isOperationTreeBranch(
+  node: OperationTreeNode
+): node is OperationTreeBranch {
+  return !isArray(node) && 'parent' in node && 'children' in node
+}
+
+function getOperationTreeNodeKey(node: OperationTreeNode): string {
+  if (isArray(node)) {
+    const first = node[0]
+    const last = node[node.length - 1]
+    return `group-${
+      first?.type ?? 'unknown'
+    }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
+      last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+    }`
+  }
+
+  if (isOperationTreeBranch(node)) {
+    return `module-${node.parent.moduleId}-${node.parent.sourceRange[0]}`
+  }
+
+  return `${node.type}-${
+    'name' in node ? node.name : 'anonymous'
+  }-${'sourceRange' in node ? node.sourceRange[0] : 'start'}`
+}
+
+function buildModuleOperationList(operations: Operation[]) {
+  return groupNestedOperations(
+    groupOperationTypeStreaks(filterOperations(operations), [
+      'VariableDeclaration',
+    ]),
+    operations,
+    (groupBegin) => groupBegin.group.type === 'SketchBlock'
+  )
+}
+
+function buildOperationTree(
+  operationsByModule: OperationsByModule,
+  moduleId: number,
+  visited = new Set<number>()
+): OperationTreeNode[] {
+  if (visited.has(moduleId)) {
+    return []
+  }
+
+  const nextVisited = new Set(visited)
+  nextVisited.add(moduleId)
+
+  return buildModuleOperationList(
+    getOperationsForModule(operationsByModule, moduleId)
+  ).map((item) => {
+    if (isArray(item) || item.type !== 'ModuleInstance') {
+      return item
+    }
+
+    return {
+      parent: item,
+      children: buildOperationTree(
+        operationsByModule,
+        item.moduleId,
+        nextVisited
+      ),
+    }
+  })
+}
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
@@ -173,16 +260,19 @@ export const FeatureTreePaneContents = memo(() => {
 
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return error.operations && error.operations.length > acc.length
-      ? error.operations
-      : acc
-  }, [] as Operation[])
+  const longestErrorOperationsByModule = kclManager.errors.reduce(
+    (acc, error) => {
+      return countOperations(error.operations) > countOperations(acc)
+        ? error.operations
+        : acc
+    },
+    emptyOperationsByModule()
+  )
 
-  const unfilteredOperationList = !hasParseErrors
+  const unfilteredOperationsByModule = !hasParseErrors
     ? !kclManager.errors.length
-      ? kclManager.operations
-      : longestErrorOperationList
+      ? kclManager.operationsByModule
+      : longestErrorOperationsByModule
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
@@ -196,12 +286,12 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupNestedOperations(
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ]),
-    unfilteredOperationList,
-    (groupBegin) => groupBegin.group.type === 'SketchBlock'
+  const currentModuleId =
+    getCurrentModuleId(kclManager.execState.filenames, kclManager.path) ??
+    ROOT_MODULE_ID
+  const operationList = buildOperationTree(
+    unfilteredOperationsByModule,
+    currentModuleId
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
@@ -300,48 +390,19 @@ export const FeatureTreePaneContents = memo(() => {
                 </div>
               </div>
             )}
-            {operationList.map((opOrList) => {
-              const key = (() => {
-                if (!isArray(opOrList)) {
-                  return `${opOrList.type}-${
-                    'name' in opOrList ? opOrList.name : 'anonymous'
-                  }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'}`
-                }
-                const first = opOrList[0]
-                const last = opOrList[opOrList.length - 1]
-                return `group-${
-                  first?.type ?? 'unknown'
-                }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
-                  last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
-                }`
-              })()
-
-              return isArray(opOrList) ? (
-                <OperationItemGroup
-                  key={key}
-                  items={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              ) : (
-                <OperationItem
-                  key={key}
-                  item={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              )
-            })}
+            {operationList.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={operationsCode}
+                isStaleReference={isReadOnlyFeatureTree}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+              />
+            ))}
           </>
         )}
       </section>
@@ -366,7 +427,11 @@ function OperationItemGroup({
   modelingActor,
   engineCommandManager,
   onSelect,
-}: Omit<OperationProps, 'item'> & { items: Operation[] }) {
+  isModuleOwned = false,
+}: Omit<OperationProps, 'item'> & {
+  items: Operation[]
+  isModuleOwned?: boolean
+}) {
   const contentItems = items.filter((item) => item.type !== 'GroupEnd')
   if (contentItems.length === 0) {
     return null
@@ -393,6 +458,7 @@ function OperationItemGroup({
           modelingActor={modelingActor}
           engineCommandManager={engineCommandManager}
           onSelect={onSelect}
+          isModuleOwned={isModuleOwned}
         />
       )
     }
@@ -420,6 +486,7 @@ function OperationItemGroup({
               modelingActor={modelingActor}
               engineCommandManager={engineCommandManager}
               onSelect={onSelect}
+              isModuleOwned={isModuleOwned}
             />
           </div>
         </div>
@@ -441,6 +508,7 @@ function OperationItemGroup({
                   engineCommandManager={engineCommandManager}
                   onSelect={onSelect}
                   size="sm"
+                  isModuleOwned={isModuleOwned}
                 />
               )
             })}
@@ -480,6 +548,7 @@ function OperationItemGroup({
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
                 size="sm"
+                isModuleOwned={isModuleOwned}
               />
             )
           })}
@@ -487,6 +556,113 @@ function OperationItemGroup({
       </Disclosure.Panel>
     </Disclosure>
   )
+}
+
+function OperationBranchGroup({
+  parentItem,
+  childItems,
+  code,
+  isStaleReference,
+  sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
+  isModuleOwned = false,
+}: Omit<OperationProps, 'item'> & {
+  parentItem: ModuleInstanceOperation
+  childItems: OperationTreeNode[]
+  isModuleOwned?: boolean
+}) {
+  if (childItems.length === 0) {
+    return (
+      <OperationItem
+        item={parentItem}
+        code={code}
+        isStaleReference={isStaleReference}
+        sketchNoFace={sketchNoFace}
+        systemDeps={systemDeps}
+        modelingActor={modelingActor}
+        engineCommandManager={engineCommandManager}
+        onSelect={onSelect}
+        isModuleOwned={true}
+      />
+    )
+  }
+
+  return (
+    <Disclosure>
+      <div className="flex items-start gap-1">
+        <Disclosure.Button
+          data-testid="operation-group-caret"
+          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+        >
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <OperationItem
+            item={parentItem}
+            code={code}
+            isStaleReference={isStaleReference}
+            sketchNoFace={sketchNoFace}
+            systemDeps={systemDeps}
+            modelingActor={modelingActor}
+            engineCommandManager={engineCommandManager}
+            onSelect={onSelect}
+            isModuleOwned={true}
+          />
+        </div>
+      </div>
+      <Disclosure.Panel>
+        <div className="border-l b-4 ml-6">
+          {childItems.map((node) => {
+            return (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={code}
+                isStaleReference={isStaleReference}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={onSelect}
+                isModuleOwned={true}
+              />
+            )
+          })}
+        </div>
+      </Disclosure.Panel>
+    </Disclosure>
+  )
+}
+
+function OperationTreeNodeItem({
+  node,
+  ...props
+}: Omit<OperationProps, 'item'> & {
+  node: OperationTreeNode
+  isModuleOwned?: boolean
+}) {
+  if (isArray(node)) {
+    return <OperationItemGroup items={node} {...props} />
+  }
+
+  if (isOperationTreeBranch(node)) {
+    return (
+      <OperationBranchGroup
+        parentItem={node.parent}
+        childItems={node.children}
+        {...props}
+      />
+    )
+  }
+
+  return <OperationItem item={node} {...props} />
 }
 
 type OpValueProps = {
@@ -601,6 +777,7 @@ interface OperationProps {
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
   size?: 'default' | 'sm'
+  isModuleOwned?: boolean
 }
 /**
  * A button with an icon, name, and context menu
@@ -616,9 +793,12 @@ const OperationItem = ({
   modelingActor,
   engineCommandManager,
   size,
+  isModuleOwned = false,
 }: OperationProps) => {
   useSignals()
-  const { layout } = useApp()
+  const app = useApp()
+  const navigate = useNavigate()
+  const { layout } = app
   const { kclManager, commandBarActor } = systemDeps
   const useSketchSolveMode =
     modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
@@ -648,7 +828,7 @@ const OperationItem = ({
   }, [item, ast, wasmInstance])
 
   const errors = useMemo(() => {
-    if (isStaleReference) {
+    if (isStaleReference || isModuleOwned) {
       return []
     }
     return diagnostics.filter(
@@ -659,10 +839,13 @@ const OperationItem = ({
         diag.to <= toUtf16(item.sourceRange[1], code)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [diagnostics.length, isStaleReference])
+  }, [diagnostics.length, isModuleOwned, isStaleReference])
 
   const selectOperation = useCallback(
     async (providedSourceRange?: SourceRange) => {
+      if (isModuleOwned) {
+        return
+      }
       if (sketchNoFace) {
         if (isOffsetPlane(item)) {
           const artifact = findOperationPlaneArtifact(
@@ -687,10 +870,59 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
+    [
+      isModuleOwned,
+      sketchNoFace,
+      onSelect,
+      item,
+      kclManager,
+      useSketchSolveMode,
+    ]
+  )
+
+  const viewOperationSource = useCallback(
+    async (providedSourceRange?: SourceRange) => {
+      if (item.type === 'GroupEnd') {
+        return
+      }
+
+      const targetModuleId =
+        item.type === 'ModuleInstance'
+          ? item.moduleId
+          : (providedSourceRange?.[2] ?? item.sourceRange[2])
+      const targetModulePath = kclManager.execState.filenames[targetModuleId]
+
+      const l = layout.signal.value
+      if (!isCodePaneOpen(l)) {
+        openCodePane(l, layout.set)
+      }
+
+      if (targetModulePath?.type === 'Local' && app.project) {
+        const targetPath = targetModulePath.value
+        if (app.project.executingPath !== targetPath) {
+          kclManager.pendingFeatureTreeSourceSelection = {
+            path: targetPath,
+            range: providedSourceRange ?? item.sourceRange,
+          }
+          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+          return
+        }
+      }
+
+      const moduleStartRange: SourceRange = [0, 0, targetModuleId]
+      const targetRange =
+        providedSourceRange ??
+        (item.type === 'ModuleInstance' ? moduleStartRange : item.sourceRange)
+
+      onSelect(targetRange)
+    },
+    [app, item, kclManager, layout, navigate, onSelect]
   )
 
   const enterEditFlow = useCallback(() => {
+    if (isModuleOwned) {
+      return
+    }
     if (
       item.type === 'StdLibCall' ||
       item.type === 'VariableDeclaration' ||
@@ -701,6 +933,20 @@ const OperationItem = ({
           item.sourceRange,
           systemDeps.kclManager.artifactGraph
         ) ?? undefined
+      if (
+        item.type === 'GroupBegin' &&
+        item.group.type === 'SketchBlock' &&
+        artifact?.type === 'sketchBlock' &&
+        artifact.id &&
+        typeof artifact.sketchId === 'number'
+      ) {
+        // Allow double clicking on any sketch even with shift pressed
+        modelingActor.send({
+          type: 'Edit sketch solve',
+          data: { artifactId: artifact.id },
+        })
+        return
+      }
       prepareEditCommand({
         artifactGraph: systemDeps.kclManager.artifactGraph,
         code: systemDeps.kclManager.code,
@@ -711,7 +957,9 @@ const OperationItem = ({
       }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
   }, [
+    isModuleOwned,
     item,
+    modelingActor,
     commandBarActor,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,
@@ -719,6 +967,7 @@ const OperationItem = ({
   ])
 
   function enterAppearanceFlow() {
+    if (isModuleOwned) return
     selectOperation()
       .then(() => {
         if (
@@ -735,6 +984,7 @@ const OperationItem = ({
   }
 
   function enterTranslateFlow() {
+    if (isModuleOwned) return
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
@@ -748,6 +998,7 @@ const OperationItem = ({
   }
 
   function enterRotateFlow() {
+    if (isModuleOwned) return
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
@@ -761,6 +1012,7 @@ const OperationItem = ({
   }
 
   function enterScaleFlow() {
+    if (isModuleOwned) return
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
@@ -774,6 +1026,7 @@ const OperationItem = ({
   }
 
   function enterCloneFlow() {
+    if (isModuleOwned) return
     selectOperation()
       .then(() => {
         if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
@@ -787,6 +1040,9 @@ const OperationItem = ({
   }
 
   function deleteOperation() {
+    if (isModuleOwned) {
+      return
+    }
     if (
       item.type === 'StdLibCall' ||
       item.type === 'GroupBegin' ||
@@ -806,6 +1062,9 @@ const OperationItem = ({
   }
 
   function startSketchOnOffsetPlane() {
+    if (isModuleOwned) {
+      return
+    }
     if (isOffsetPlane(item)) {
       const artifact = findOperationPlaneArtifact(
         item,
@@ -823,206 +1082,215 @@ const OperationItem = ({
   }
 
   const menuItems = useMemo(
-    () =>
-      isStaleReference
-        ? []
-        : [
-            <ContextMenuItem
-              onClick={() => {
-                if (item.type === 'GroupEnd') {
-                  return
+    () => {
+      const viewSourceMenuItem = (
+        <ContextMenuItem
+          onClick={() => {
+            if (item.type === 'GroupEnd') {
+              return
+            }
+            void viewOperationSource().catch(reportRejection)
+          }}
+        >
+          View KCL source code
+        </ContextMenuItem>
+      )
+
+      if (isStaleReference) {
+        return []
+      }
+
+      if (isModuleOwned) {
+        return [viewSourceMenuItem]
+      }
+
+      return [
+        viewSourceMenuItem,
+        ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
+          ? [
+              <ContextMenuItem
+                onClick={() => {
+                  if (item.type !== 'GroupBegin') {
+                    return
+                  }
+                  if (item.group.type !== 'FunctionCall') {
+                    // TODO: Add module instance support.
+                    return
+                  }
+                  const functionRange = item.group.functionSourceRange
+                  // For some reason, the cursor goes to the end of the source
+                  // range we select.  So set the end equal to the beginning.
+                  functionRange[1] = functionRange[0]
+                  viewOperationSource(functionRange).catch(reportRejection)
+                }}
+              >
+                View function definition
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(isOffsetPlane(item)
+          ? [
+              <ContextMenuItem onClick={startSketchOnOffsetPlane}>
+                Start Sketch
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
+          ? [
+              <ContextMenuItem
+                onClick={() => {
+                  const exportDxf = async () => {
+                    if (item.type !== 'StdLibCall') return
+                    await exportSketchToDxf(item, {
+                      engineCommandManager,
+                      kclManager,
+                      toast,
+                      uuidv4,
+                      base64Decode,
+                      browserSaveFile,
+                    })
+                  }
+                  void exportDxf()
+                }}
+                data-testid="context-menu-export-dxf"
+              >
+                Export to DXF
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
+          ? [
+              <ContextMenuItem
+                onClick={() => {
+                  const exportDxf = async () => {
+                    if (item.type !== 'StdLibCall') return
+                    await exportSketchToDxf(item, {
+                      engineCommandManager,
+                      kclManager,
+                      toast,
+                      uuidv4,
+                      base64Decode,
+                      browserSaveFile,
+                    })
+                  }
+                  void exportDxf()
+                }}
+                data-testid="context-menu-export-dxf"
+              >
+                Export to DXF
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' ||
+        item.type === 'VariableDeclaration' ||
+        (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
+          ? [
+              <ContextMenuItem
+                disabled={
+                  item.type !== 'VariableDeclaration' &&
+                  item.type === 'StdLibCall' &&
+                  stdLibMap[item.name]?.prepareToEdit === undefined
                 }
-                const l = layout.signal.value
-                if (!isCodePaneOpen(l)) {
-                  openCodePane(l, layout.set)
+                onClick={enterEditFlow}
+                hotkey="Double click"
+              >
+                Edit
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' ||
+        (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+          ? [
+              <ContextMenuItem
+                disabled={
+                  !(
+                    (item.type === 'GroupBegin' &&
+                      item.group.type === 'FunctionCall') ||
+                    (item.type === 'StdLibCall' &&
+                      stdLibMap[item.name]?.supportsAppearance)
+                  )
                 }
-                selectOperation().catch(reportRejection)
-              }}
-            >
-              View KCL source code
-            </ContextMenuItem>,
-            ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
-              ? [
-                  <ContextMenuItem
-                    onClick={() => {
-                      if (item.type !== 'GroupBegin') {
-                        return
-                      }
-                      if (item.group.type !== 'FunctionCall') {
-                        // TODO: Add module instance support.
-                        return
-                      }
-                      const functionRange = item.group.functionSourceRange
-                      // For some reason, the cursor goes to the end of the source
-                      // range we select.  So set the end equal to the beginning.
-                      functionRange[1] = functionRange[0]
-                      const l = layout.signal.value
-                      if (!isCodePaneOpen(l)) {
-                        openCodePane(l, layout.set)
-                      }
-                      selectOperation(functionRange).catch(reportRejection)
-                    }}
-                  >
-                    View function definition
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(isOffsetPlane(item)
-              ? [
-                  <ContextMenuItem onClick={startSketchOnOffsetPlane}>
-                    Start Sketch
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
-              ? [
-                  <ContextMenuItem
-                    onClick={() => {
-                      const exportDxf = async () => {
-                        if (item.type !== 'StdLibCall') return
-                        await exportSketchToDxf(item, {
-                          engineCommandManager,
-                          kclManager,
-                          toast,
-                          uuidv4,
-                          base64Decode,
-                          browserSaveFile,
-                        })
-                      }
-                      void exportDxf()
-                    }}
-                    data-testid="context-menu-export-dxf"
-                  >
-                    Export to DXF
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
-              ? [
-                  <ContextMenuItem
-                    onClick={() => {
-                      const exportDxf = async () => {
-                        if (item.type !== 'StdLibCall') return
-                        await exportSketchToDxf(item, {
-                          engineCommandManager,
-                          kclManager,
-                          toast,
-                          uuidv4,
-                          base64Decode,
-                          browserSaveFile,
-                        })
-                      }
-                      void exportDxf()
-                    }}
-                    data-testid="context-menu-export-dxf"
-                  >
-                    Export to DXF
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' ||
-            item.type === 'VariableDeclaration' ||
-            (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
-              ? [
-                  <ContextMenuItem
-                    disabled={
-                      item.type !== 'VariableDeclaration' &&
-                      item.type === 'StdLibCall' &&
-                      stdLibMap[item.name]?.prepareToEdit === undefined
-                    }
-                    onClick={enterEditFlow}
-                    hotkey="Double click"
-                  >
-                    Edit
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' ||
-            (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
-              ? [
-                  <ContextMenuItem
-                    disabled={
-                      !(
-                        (item.type === 'GroupBegin' &&
-                          item.group.type === 'FunctionCall') ||
-                        (item.type === 'StdLibCall' &&
-                          stdLibMap[item.name]?.supportsAppearance)
-                      )
-                    }
-                    onClick={enterAppearanceFlow}
-                    data-testid="context-menu-set-appearance"
-                  >
-                    Set appearance
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
-              ? [
-                  <ContextMenuItem
-                    onClick={enterTranslateFlow}
-                    data-testid="context-menu-set-translate"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Translate
-                  </ContextMenuItem>,
-                  <ContextMenuItem
-                    onClick={enterRotateFlow}
-                    data-testid="context-menu-set-rotate"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Rotate
-                  </ContextMenuItem>,
-                  <ContextMenuItem
-                    onClick={enterScaleFlow}
-                    data-testid="context-menu-set-scale"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Scale
-                  </ContextMenuItem>,
-                  <ContextMenuItem
-                    onClick={enterCloneFlow}
-                    data-testid="context-menu-clone"
-                    disabled={
-                      item.type !== 'GroupBegin' &&
-                      !stdLibMap[item.name]?.supportsTransform
-                    }
-                  >
-                    Clone
-                  </ContextMenuItem>,
-                ]
-              : []),
-            ...(item.type === 'StdLibCall' ||
-            item.type === 'GroupBegin' ||
-            item.type === 'VariableDeclaration'
-              ? [
-                  <ContextMenuItem
-                    onClick={deleteOperation}
-                    hotkey="Delete"
-                    data-testid="context-menu-delete"
-                  >
-                    Delete
-                  </ContextMenuItem>,
-                ]
-              : []),
-          ],
+                onClick={enterAppearanceFlow}
+                data-testid="context-menu-set-appearance"
+              >
+                Set appearance
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
+          ? [
+              <ContextMenuItem
+                onClick={enterTranslateFlow}
+                data-testid="context-menu-set-translate"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Translate
+              </ContextMenuItem>,
+              <ContextMenuItem
+                onClick={enterRotateFlow}
+                data-testid="context-menu-set-rotate"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Rotate
+              </ContextMenuItem>,
+              <ContextMenuItem
+                onClick={enterScaleFlow}
+                data-testid="context-menu-set-scale"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Scale
+              </ContextMenuItem>,
+              <ContextMenuItem
+                onClick={enterCloneFlow}
+                data-testid="context-menu-clone"
+                disabled={
+                  item.type !== 'GroupBegin' &&
+                  !stdLibMap[item.name]?.supportsTransform
+                }
+              >
+                Clone
+              </ContextMenuItem>,
+            ]
+          : []),
+        ...(item.type === 'StdLibCall' ||
+        item.type === 'GroupBegin' ||
+        item.type === 'VariableDeclaration'
+          ? [
+              <ContextMenuItem
+                onClick={deleteOperation}
+                hotkey="Delete"
+                data-testid="context-menu-delete"
+              >
+                Delete
+              </ContextMenuItem>,
+            ]
+          : []),
+      ]
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [item, isStaleReference, layout.signal.value]
+    [
+      item,
+      isModuleOwned,
+      isStaleReference,
+      layout.signal.value,
+      viewOperationSource,
+    ]
   )
 
   const enabled = (!sketchNoFace || isOffsetPlane(item)) && !isStaleReference
 
   const visibilityState = resolveFeatureTreeVisibility({
     item,
-    operations: kclManager.operations ?? [],
+    operations: getAllOperations(kclManager.operationsByModule),
     artifactGraph: kclManager.artifactGraph,
   })
 
@@ -1034,44 +1302,50 @@ const OperationItem = ({
       variableName={variableName}
       valueDetail={valueDetail}
       Tooltip={
-        <Tooltip
-          delay={500}
-          position="bottom-left"
-          wrapperClassName="left-0 right-0"
-          contentClassName="text-sm max-w-full"
-        >
-          <VariableTooltipContents
-            variableName={variableName}
-            valueDetail={valueDetail}
-            name={name}
-            type={item.type}
-          />
-        </Tooltip>
+        isModuleOwned ? undefined : (
+          <Tooltip
+            delay={500}
+            position="bottom-left"
+            wrapperClassName="left-0 right-0"
+            contentClassName="text-sm max-w-full"
+          >
+            <VariableTooltipContents
+              variableName={variableName}
+              valueDetail={valueDetail}
+              name={name}
+              type={item.type}
+            />
+          </Tooltip>
+        )
       }
       menuItems={menuItems}
       onClick={
-        isStaleReference
+        isStaleReference || isModuleOwned
           ? undefined
           : () => {
               void selectOperation()
             }
       }
       onContextMenu={
-        isStaleReference
+        isStaleReference || isModuleOwned
           ? undefined
           : () => {
               void selectOperation()
             }
       }
       onDoubleClick={
-        sketchNoFace || isStaleReference ? undefined : enterEditFlow
+        sketchNoFace || isStaleReference || isModuleOwned
+          ? undefined
+          : enterEditFlow
       } // no double click in "Sketch no face" mode
       isSelected={isSelected}
       errors={errors}
       disabled={!enabled}
       size={size}
       visibilityToggle={
-        !isStaleReference && visibilityState.canToggleVisibility
+        !isStaleReference &&
+        !isModuleOwned &&
+        visibilityState.canToggleVisibility
           ? {
               visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
@@ -1120,6 +1394,9 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
+  const selectedDefaultPlaneId = getSelectedDefaultPlane(
+    modelingState.context.selectionRanges
+  )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {
@@ -1206,6 +1483,7 @@ const DefaultPlanes = ({
           icon={'plane'}
           name={plane.name}
           disabled={disabled}
+          isSelected={selectedDefaultPlaneId === plane.id}
           onClick={disabled ? undefined : () => onClickPlane(plane.id)}
           menuItems={
             disabled
