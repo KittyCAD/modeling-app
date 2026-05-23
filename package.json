@@ -74,7 +74,7 @@
     "three": "^0.184.0",
     "ua-parser-js": "^1.0.37",
     "uuid": "^14.0.0",
-    "vite-plugin-node-polyfills": "^0.26.0",
+    "vite-plugin-node-polyfills": "^0.27.0",
     "vscode-jsonrpc": "^8.2.1",
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.1.0",
