@@ -69,6 +69,22 @@ export function takeViewportScreenshot(): string {
   return compositeCanvas.toDataURL('image/png')
 }
 
+export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
+  const [header, base64] = dataUrl.split(',')
+  if (!header || !base64) {
+    return new Error('Invalid data URL')
+  }
+
+  const mime = header.match(/:(.*?);/)?.[1] ?? 'application/octet-stream'
+  const bytes = atob(base64)
+  const buf = new Uint8Array(bytes.length)
+  for (let i = 0; i < bytes.length; i++) {
+    buf[i] = bytes.charCodeAt(i)
+  }
+
+  return new File([buf], fileName, { type: mime })
+}
+
 export function createThumbnailPNGOnDesktop({
   projectDirectoryWithoutEndingSlash,
 }: {
