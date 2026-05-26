@@ -16,6 +16,7 @@ extrude(
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  draftAngle?: number(Angle),
   twistAngle?: number(Angle),
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
@@ -44,6 +45,7 @@ can change this behavior by using the `method` parameter. See
 | `bidirectionalLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
+| `draftAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Draft angle to use while extruding | No |
 | `twistAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`. | No |
 | `twistAngleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Only used if `twistAngle` is given, defaults to 15 degrees. | No |
 | `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the plane's origin. Only used if `twistAngle` is given, defaults to [0, 0] i.e. plane origin. | No |
@@ -485,6 +487,50 @@ extrude(endSweep, length = 2, method = NEW)
 </model-viewer>
 
 ```kcl
+// Draft extrusions, both inward and outward
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -5.18mm, var 3.57mm], end = [var 2.21mm, var 3.57mm])
+  line2 = line(start = [var 2.21mm, var 3.57mm], end = [var 2.21mm, var -0.87mm])
+  line3 = line(start = [var 2.21mm, var -0.87mm], end = [var -5.18mm, var -0.87mm])
+  line4 = line(start = [var -5.18mm, var -0.87mm], end = [var -5.18mm, var 3.57mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [-1.485mm, 3.5675mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, draftAngle = 45)
+sketch002 = sketch(on = XY) {
+}
+sketch003 = sketch(on = XZ) {
+  circle1 = circle(start = [var 3.54mm, var 3.06mm], center = [var 5.59mm, var 4.56mm])
+}
+hidden002 = hide(sketch003)
+region002 = region(point = [7.6379824mm, 6.0585237mm], sketch = sketch003)
+extrude002 = extrude(region002, length = -5, draftAngle = -45)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude12_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude12.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
 // Surface extrude of a closed profile
 closedProfile = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -498,10 +544,10 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude12_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude13_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude12.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude13.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -532,10 +578,10 @@ solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude13_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude14_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude13.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude14.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
@@ -576,10 +622,10 @@ extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude14_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude15_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude14.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude15.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
