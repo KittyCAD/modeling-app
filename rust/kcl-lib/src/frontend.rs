@@ -4583,10 +4583,11 @@ impl FrontendState {
                 }
                 None => {
                     // Bare `var` with no initial literal to compare against;
-                    // always commit, using the default length unit as the style.
+                    // always commit, using the module's default length unit as
+                    // an explicit suffix so the written value carries units.
                     Number {
                         value: number_value_in_default_length_units(*value, default_length_unit),
-                        units: NumericSuffix::None,
+                        units: default_length_unit.into(),
                     }
                 }
             };
@@ -8756,9 +8757,11 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
+        // Default length unit (mm; no `@settings(defaultLengthUnit = …)`) is
+        // written as an explicit suffix so the bare var commits with units.
         assert!(
-            source_delta.text.contains("var 7"),
-            "expected bare var to receive the solved value; got:\n{}",
+            source_delta.text.contains("var 7mm"),
+            "expected bare var to receive the solved value with the module's default unit suffix; got:\n{}",
             source_delta.text
         );
     }
