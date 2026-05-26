@@ -120,7 +120,10 @@ impl Context {
             kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
         };
 
-        ctx.execution_callbacks = self.execution_callbacks.clone().map(Arc::new);
+        ctx.execution_callbacks = self
+            .execution_callbacks
+            .clone()
+            .map(|callbacks| Arc::new(callbacks) as Arc<dyn ExecutionCallbacks>);
         Ok(ctx)
     }
 
