@@ -509,6 +509,9 @@ async fn hide_inner(
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use crate::errors::Severity;
+    use crate::errors::Tag;
+    use crate::execution::MockConfig;
     use crate::execution::parse_execute;
 
     const PIPE: &str = r#"sweepPath = startSketchOn(XZ)
@@ -761,6 +764,63 @@ sweepSketch = startSketchOn(XY)
     |> hide()
 "#;
         parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn hide_consumed_solid_reports_deprecation_warning() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+result = subtract(target, tools = [tool])
+hidden = hide(target)
+"#;
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let outcome = outcome.unwrap();
+
+        assert!(
+            outcome.issues.iter().any(|issue| {
+                issue.severity == Severity::Warning
+                    && issue.tag == Tag::Deprecated
+                    && issue
+                        .message
+                        .contains("Calling `hide` with a consumed solid is deprecated")
+                    && issue
+                        .message
+                        .contains("`target` was already consumed by a `subtract` operation")
+            }),
+            "expected hide consumed-solid deprecation warning, got: {:#?}",
+            outcome.issues
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
