@@ -8586,15 +8586,13 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert!(
-            source_delta.text.contains("var 25mm"),
-            "expected updated literal in output; got:\n{}",
-            source_delta.text
-        );
-        assert!(
-            !source_delta.text.contains("var 10mm"),
-            "expected old literal to be gone; got:\n{}",
-            source_delta.text
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 25mm, var 0])
+}
+",
         );
     }
 
@@ -8652,15 +8650,16 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert!(
-            source_delta.text.contains("var 30mm"),
-            "expected commit to land via node_path despite stale source range; got:\n{}",
-            source_delta.text
-        );
-        assert!(
-            !source_delta.text.contains("var 10mm"),
-            "expected old literal to be gone; got:\n{}",
-            source_delta.text
+        assert_eq!(
+            source_delta.text,
+            "\
+// added comment
+// added comment
+
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 30mm, var 0])
+}
+",
         );
     }
 
@@ -8700,20 +8699,13 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert!(
-            source_delta.text.contains("var 33mm"),
-            "expected node_path target updated; got:\n{}",
-            source_delta.text
-        );
-        assert!(
-            source_delta.text.contains("var 20mm"),
-            "expected var 20mm untouched (source_range did not win); got:\n{}",
-            source_delta.text
-        );
-        assert!(
-            !source_delta.text.contains("var 10mm"),
-            "expected var 10mm replaced; got:\n{}",
-            source_delta.text
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 33mm, var 0mm], end = [var 20mm, var 0mm])
+}
+",
         );
     }
 
@@ -8759,10 +8751,16 @@ sketch(on = XY) {
 
         // Default length unit (mm; no `@settings(defaultLengthUnit = …)`) is
         // written as an explicit suffix so the bare var commits with units.
-        assert!(
-            source_delta.text.contains("var 7mm"),
-            "expected bare var to receive the solved value with the module's default unit suffix; got:\n{}",
-            source_delta.text
+        // The recast adds a blank line after the `@settings` annotation.
+        assert_eq!(
+            source_delta.text,
+            "\
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+
+sketch(on = XY) {
+  line1 = line(start = [var 7mm, var 0mm], end = [var 10mm, var 0])
+}
+",
         );
     }
 
