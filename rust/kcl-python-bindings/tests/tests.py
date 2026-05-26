@@ -325,14 +325,14 @@ async def test_kcl_execute_and_measure():
 
         # Send the request
         request = kcl.PhysicalPropertiesRequest()
-        request.set_volume(kcl.UnitVolume.CubicCentimeters)
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
         request.set_center_of_mass(kcl.UnitLength.Centimeters)
         response = await kcl.execute_code_and_measure(code, request)
         assert response is not None
 
         # Check the response is as expected.
-        assert response.get_volume() == pytest.approx(0.94557216312, rel=0, abs=1e-5)
-        assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
+        assert response.get_volume() == pytest.approx(945.57216312, rel=0, abs=1e-5)
+        assert response.get_volume_unit() == kcl.UnitVolume.CubicMillimeters
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
         assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
