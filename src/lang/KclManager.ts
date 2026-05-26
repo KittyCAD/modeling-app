@@ -660,7 +660,22 @@ export class File extends EventTarget {
 
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
-    read: (path: string) => fsZds.readFile(path, 'utf8'),
+    read: (path: string): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        fsZds
+          .readFile(path, 'utf8')
+          .then((text) => {
+            resolve(text)
+          })
+          .catch((err) => {
+            if (err.message.includes('ENOENT')) {
+              resolve('')
+            } else {
+              reject(err)
+            }
+          })
+      })
+    },
     write: (path: string, content: string) =>
       fsZds.writeFile(path, File.encoder.encode(content)),
     watch: window.electron?.watchFileOn || (() => {}),
