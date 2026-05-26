@@ -4571,7 +4571,8 @@ impl FrontendState {
         let mut settled_ast = self.program.ast.clone();
         let mut committed_solver_value = false;
         for (var_range, node_path, value) in &outcome.var_solutions {
-            let Some(current_literal) = numeric_literal_at_source_range(&settled_ast, *var_range) else {
+            let Some(current_literal) = numeric_literal_at_node_path(&settled_ast, node_path.as_ref(), *var_range)
+            else {
                 return Err(commit_failure());
             };
             if !var_solution_needs_commit(&current_literal, *value, default_length_unit) {
@@ -6141,6 +6142,60 @@ impl<'a> crate::walk::Visitor<'a> for &FindNumericLiteral {
 fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: SourceRange) -> Option<ast::NumericLiteral> {
     let find = FindNumericLiteral {
         target,
+        found: Cell::new(None),
+    };
+    let node = crate::walk::Node::from(ast);
+    node.visit(&find).ok()?;
+    find.found.into_inner()
+}
+
+struct FindSketchVarInitialByNodePath<'a> {
+    target: &'a ast::NodePath,
+    found: Cell<Option<ast::NumericLiteral>>,
+}
+
+impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'b>) -> anyhow::Result<bool, Self::Error> {
+        if let crate::walk::Node::SketchVar(sketch_var) = node
+            && sketch_var.node_path.as_ref() == Some(self.target)
+        {
+            if let Some(initial) = &sketch_var.initial {
+                self.found.set(Some(initial.inner.clone()));
+            }
+            return Ok(false);
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+/// Find the initial numeric literal of the SketchVar identified by
+/// `node_path`. Falls back to source-range matching when `node_path` is
+/// `None` (e.g. for synthesized vars), since source ranges break under
+/// whitespace shifts elsewhere in the file.
+fn numeric_literal_at_node_path(
+    ast: &ast::Node<ast::Program>,
+    node_path: Option<&ast::NodePath>,
+    source_range: SourceRange,
+) -> Option<ast::NumericLiteral> {
+    let Some(node_path) = node_path else {
+        let message = "numeric_literal_at_node_path: missing node_path on var solution; falling back to source-range lookup, which can fail under whitespace shifts";
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::warn_1(&message.into());
+        #[cfg(not(target_arch = "wasm32"))]
+        eprintln!("WARNING: {message}");
+        return numeric_literal_at_source_range(ast, source_range);
+    };
+    let find = FindSketchVarInitialByNodePath {
+        target: node_path,
         found: Cell::new(None),
     };
     let node = crate::walk::Node::from(ast);
