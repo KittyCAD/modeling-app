@@ -759,11 +759,11 @@ export fn ellipse(
 /// hidden001 = hide(sketch001)
 /// 
 /// // Extrude the regions, with a positive draft, negative draft, and no draft at all.
-/// // The sketch gets _smaller_ as it's extruded.
+/// // Positive draft means the sketch gets _smaller_ as it gets extruded.
 /// positiveDraft = extrude(region001, length = 2, draftAngle = 30deg)
-/// // The sketch gets _bigger_ as it's extruded.
+/// // Negative draft means the sketch gets _bigger_ as it gets extruded.
 /// negativeDraft = extrude(region002, length = 2, draftAngle = -30deg)
-/// // The sketch stays the exact same size as it's extruded.
+/// // No draft means the sketch stays the exact same size as it gets extruded.
 /// zeroDraft = extrude(region003, length = 2)
 /// ```
 /// ```kcl,legacySketch
