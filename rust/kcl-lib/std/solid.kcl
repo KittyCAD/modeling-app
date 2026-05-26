@@ -108,6 +108,8 @@ export fn fillet(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
+  /// Fillet algorithm version. Leave unspecified to use the engine default.
+  @(experimental = true) version?: number(Count),
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.

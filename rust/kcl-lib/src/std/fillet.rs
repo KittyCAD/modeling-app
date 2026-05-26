@@ -96,11 +96,24 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
+    let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let version = version.map(|v| u8::try_from(v).unwrap_or(0));
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
+    let value = inner_fillet(
+        solid,
+        radius,
+        tags,
+        tolerance,
+        csg_algorithm,
+        version,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -111,6 +124,7 @@ async fn inner_fillet(
     tags: Vec<EdgeReference>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
+    version: Option<u8>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -165,6 +179,7 @@ async fn inner_fillet(
                         tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
                     .cut_type(CutType::Fillet)
+                    .maybe_version(version)
                     .build(),
             ),
         )
