@@ -84,12 +84,9 @@ description: Operations executed mbd_name_multi_file.kcl
   ],
   "rust/kcl-lib/tests/mbd_name_multi_file/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "left.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "left.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -101,15 +98,9 @@ description: Operations executed mbd_name_multi_file.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "right.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "right.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -119,12 +110,23 @@ description: Operations executed mbd_name_multi_file.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "rust/kcl-lib/tests/mbd_name_multi_file/left.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "common.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "gdt::name",
@@ -195,6 +197,20 @@ description: Operations executed mbd_name_multi_file.kcl
     }
   ],
   "rust/kcl-lib/tests/mbd_name_multi_file/right.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "common.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "gdt::name",
