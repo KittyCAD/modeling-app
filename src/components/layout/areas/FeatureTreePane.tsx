@@ -34,12 +34,18 @@ import {
   countOperations,
   emptyOperationsByModule,
   getAllOperations,
-  getCurrentModuleId,
-  getOperationsForModule,
   ROOT_MODULE_ID,
   type OperationsByModule,
   type SourceRange,
 } from '@src/lang/wasm'
+import {
+  buildOperationTree,
+  isOperationTreeBranch,
+  getOperationTreeNodeKey,
+  getOperationKey,
+  type OperationTreeNode,
+} from '@src/lib/featureTreeOperationTree'
+export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -82,151 +88,6 @@ type Singletons = ReturnType<typeof useSingletons>
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
 
-type OperationTreeBranch = {
-  parent: ModuleInstanceOperation
-  children: OperationTreeNode[]
-}
-
-type OperationTreeNode = Operation | Operation[] | OperationTreeBranch
-
-function isOperationTreeBranch(
-  node: OperationTreeNode
-): node is OperationTreeBranch {
-  return !isArray(node) && 'parent' in node && 'children' in node
-}
-
-function getOperationTreeNodeKey(node: OperationTreeNode): string {
-  if (isArray(node)) {
-    const first = node[0]
-    const last = node[node.length - 1]
-    return `group-${
-      first?.type ?? 'unknown'
-    }-${first ? getOperationKey(first) : 'start'}-${
-      last ? getOperationKey(last) : 'end'
-    }`
-  }
-
-  if (isOperationTreeBranch(node)) {
-    return `module-${getModuleInstanceKey(node.parent)}`
-  }
-
-  return getOperationKey(node)
-}
-
-function getOperationKey(operation: Operation): string {
-  return `${operation.type}-${
-    'name' in operation ? operation.name : 'anonymous'
-  }-${'sourceRange' in operation ? operation.sourceRange.join('-') : 'start'}`
-}
-
-function buildModuleOperationList(operations: Operation[]) {
-  return groupNestedOperations(
-    groupOperationTypeStreaks(filterOperations(operations), [
-      'VariableDeclaration',
-    ]),
-    operations,
-    (groupBegin) => groupBegin.group.type === 'SketchBlock'
-  )
-}
-
-export function buildOperationTree(
-  operationsByModule: OperationsByModule,
-  moduleId: number
-): OperationTreeNode[] {
-  const nodes = buildModuleOperationTree(
-    operationsByModule,
-    moduleId,
-    new Set()
-  )
-  const displayedModuleInstances = new Set<string>()
-  collectModuleInstanceKeys(nodes, displayedModuleInstances)
-
-  for (const operations of Object.values(operationsByModule.map)) {
-    for (const operation of operations ?? []) {
-      if (operation.type !== 'ModuleInstance') {
-        continue
-      }
-
-      const key = getModuleInstanceKey(operation)
-      if (displayedModuleInstances.has(key)) {
-        continue
-      }
-
-      const node = {
-        parent: operation,
-        children: buildModuleOperationTree(
-          operationsByModule,
-          operation.moduleId,
-          new Set([operation.sourceRange[2]])
-        ),
-      }
-      nodes.push(node)
-      collectModuleInstanceKeys([node], displayedModuleInstances)
-    }
-  }
-
-  return nodes
-}
-
-function getModuleInstanceKey(operation: ModuleInstanceOperation): string {
-  return `${operation.moduleId}-${operation.sourceRange.join('-')}`
-}
-
-function collectModuleInstanceKeys(
-  nodes: OperationTreeNode[],
-  keys: Set<string>
-) {
-  for (const node of nodes) {
-    if (isArray(node)) {
-      for (const operation of node) {
-        if (operation.type === 'ModuleInstance') {
-          keys.add(getModuleInstanceKey(operation))
-        }
-      }
-      continue
-    }
-
-    if (isOperationTreeBranch(node)) {
-      keys.add(getModuleInstanceKey(node.parent))
-      collectModuleInstanceKeys(node.children, keys)
-      continue
-    }
-
-    if (node.type === 'ModuleInstance') {
-      keys.add(getModuleInstanceKey(node))
-    }
-  }
-}
-
-function buildModuleOperationTree(
-  operationsByModule: OperationsByModule,
-  moduleId: number,
-  path: Set<number>
-): OperationTreeNode[] {
-  if (path.has(moduleId)) {
-    return []
-  }
-
-  const nextPath = new Set(path)
-  nextPath.add(moduleId)
-
-  return buildModuleOperationList(
-    getOperationsForModule(operationsByModule, moduleId)
-  ).map((item) => {
-    if (isArray(item) || item.type !== 'ModuleInstance') {
-      return item
-    }
-
-    return {
-      parent: item,
-      children: buildModuleOperationTree(
-        operationsByModule,
-        item.moduleId,
-        nextPath
-      ),
-    }
-  })
-}
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
@@ -360,12 +221,9 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const currentModuleId =
-    getCurrentModuleId(kclManager.execState.filenames, kclManager.path) ??
-    ROOT_MODULE_ID
   const operationList = buildOperationTree(
     unfilteredOperationsByModule,
-    currentModuleId
+    ROOT_MODULE_ID
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
@@ -656,7 +514,7 @@ function OperationBranchGroup({
   }
 
   return (
-    <Disclosure>
+    <Disclosure defaultOpen>
       <div className="flex items-start gap-1">
         <Disclosure.Button
           data-testid="operation-group-caret"

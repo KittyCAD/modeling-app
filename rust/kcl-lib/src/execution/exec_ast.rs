@@ -734,15 +734,10 @@ impl ExecutorContext {
                         .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;
 
-                    if let ModulePath::Local {
-                        value,
-                        original_import_path,
-                    } = &module_path
-                    {
-                        let name = match original_import_path {
-                            Some(value) => value.to_string_lossy(),
-                            None => value.file_name().unwrap_or_default(),
-                        };
+                    if let ModulePath::Local { value, .. } = &module_path {
+                        let name = import_stmt
+                            .module_name()
+                            .unwrap_or_else(|| value.file_name().unwrap_or_default());
                         exec_state.push_op(Operation::ModuleInstance {
                             name,
                             module_id,

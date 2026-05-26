@@ -50,3 +50,7 @@ Refactor note
 
 Module state note
 - Store the module id directly on `ModuleState` so callbacks and other module-local logic do not have to recover it from construction-only helper state.
+
+Feature tree module ordering note
+- Build the feature tree from the root module so imported module contents appear under their module instance instead of replacing the top-level tree when an imported file is open.
+- Display module names for imported module nodes instead of the imported file path, and do not add a separate top-level `main.kcl` wrapper.
