@@ -599,6 +599,7 @@ export function groupSelectionsByBodyAndAddTags(
       )
       if (err(sweep)) return sweep
       bodySelectionForSolids = {
+        artifact: sweep as Artifact,
         codeRef: sweep.codeRef,
       }
     }
@@ -617,6 +618,7 @@ export function groupSelectionsByBodyAndAddTags(
       nodeToEdit,
       {
         lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )
     if (err(vars)) return vars
@@ -1011,6 +1013,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
         nodeToEdit,
         {
           lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
         }
       )
       if (err(vars)) return vars

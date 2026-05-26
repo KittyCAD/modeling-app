@@ -34,7 +34,12 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode, SourceRange } from '@src/lang/wasm'
-import { assertParse, defaultNodePath, recast } from '@src/lang/wasm'
+import {
+  assertParse,
+  defaultNodePath,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   enginelessExecutor,
@@ -894,10 +899,10 @@ part001 = startSketchOn(plane001)
     const { operations, artifactGraph } = execState
 
     expect(operations).toBeTruthy()
-    expect(operations.length).toBeGreaterThan(0)
+    expect(getAllOperations(operations).length).toBeGreaterThan(0)
 
     // Find an offsetPlane operation
-    const offsetPlaneOp = operations.find(
+    const offsetPlaneOp = getAllOperations(operations).find(
       (op) => op.type === 'StdLibCall' && op.name === 'offsetPlane'
     )
     expect(offsetPlaneOp).toBeTruthy()
@@ -1423,7 +1428,7 @@ extrude001 = extrude(profile001, length = 1)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1454,7 +1459,7 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'extrude'
     )
@@ -1490,7 +1495,7 @@ bodyType = SURFACE,
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'revolve'
     )
@@ -1521,7 +1526,7 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'extrude'
     )
@@ -1563,7 +1568,7 @@ sweep001 = sweep([sketch001.line2, sketch001.line1], path = [sketch002.line1, sk
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'sweep'
     )
@@ -1593,7 +1598,7 @@ extrude002 = extrude(capEnd001, length = 5)
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.findLast(
+    const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1624,7 +1629,7 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'revolve'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1661,7 +1666,7 @@ appearance(extrude001, color = '#FF0000')`
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'appearance'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1695,7 +1700,7 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.findLast(
+    const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {

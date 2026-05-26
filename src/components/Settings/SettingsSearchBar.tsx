@@ -64,13 +64,15 @@ export function SettingsSearchBar({ showPlugins }: SettingsSearchBarProps) {
         ),
       ...Object.entries(interactionMap).flatMap(
         ([category, categoryKeybindings]) =>
-          categoryKeybindings.map((keybinding) => ({
-            name: keybinding.name,
-            displayName: keybinding.title,
-            description: keybinding.description,
-            category: category,
-            level: 'keybindings' as ExtendedSettingsLevel,
-          }))
+          categoryKeybindings.map(
+            (keybinding): SettingsSearchItem => ({
+              name: keybinding.name,
+              displayName: keybinding.title,
+              description: keybinding.description,
+              category: category,
+              level: 'keybindings',
+            })
+          )
       ),
     ],
     [settingsValues, showPlugins]

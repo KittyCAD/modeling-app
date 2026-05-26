@@ -72,7 +72,7 @@ function createHarness({
     types: {
       context: {} as ParentContext,
       events: {} as ParentEvent,
-      input: {} as Record<string, never>,
+      input: {},
     },
     actors: {
       childTool: childMachine,

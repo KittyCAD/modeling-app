@@ -71,8 +71,8 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
     get actor() {
       return ensureActor()
     },
-    send: ((...args: Parameters<CommandSystemService['send']>) =>
-      ensureActor().send(...args)) as CommandSystemService['send'],
+    send: (...args: Parameters<CommandSystemService['send']>) =>
+      ensureActor().send(...args),
     useState: () => useSelector(ensureActor(), (state) => state),
   }
 
