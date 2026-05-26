@@ -8473,6 +8473,296 @@ cylinder = startSketchOn(XY)
         assert_eq!(source_delta.text, initial_source);
     }
 
+    /// Walks a program collecting `(literal_source_range, sketch_var_node_path)`
+    /// for every SketchVar whose initial NumericLiteral has the given value.
+    fn collect_sketch_var_literals_with_value(program: &Program, value: f64) -> Vec<(SourceRange, ast::NodePath)> {
+        use std::cell::RefCell;
+        struct Collector {
+            target: f64,
+            out: RefCell<Vec<(SourceRange, ast::NodePath)>>,
+        }
+        impl<'a> crate::walk::Visitor<'a> for &Collector {
+            type Error = crate::front::Error;
+            fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+                if let crate::walk::Node::SketchVar(sketch_var) = node
+                    && let (Some(initial), Some(node_path)) = (&sketch_var.initial, &sketch_var.node_path)
+                    && (initial.value - self.target).abs() < 1e-9
+                {
+                    self.out
+                        .borrow_mut()
+                        .push((SourceRange::from(initial.as_ref()), node_path.clone()));
+                }
+                for child in node.children().iter() {
+                    if !child.visit(*self)? {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            }
+        }
+        let collector = Collector {
+            target: value,
+            out: Default::default(),
+        };
+        let _ = crate::walk::Node::from(&program.ast).visit(&collector);
+        collector.out.into_inner()
+    }
+
+    /// Walk a program collecting `(sketch_var_source_range, sketch_var_node_path)`
+    /// for every SketchVar (including bare `var`).
+    fn collect_all_sketch_vars(program: &Program) -> Vec<(SourceRange, ast::NodePath)> {
+        use std::cell::RefCell;
+        struct Collector {
+            out: RefCell<Vec<(SourceRange, ast::NodePath)>>,
+        }
+        impl<'a> crate::walk::Visitor<'a> for &Collector {
+            type Error = crate::front::Error;
+            fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+                if let crate::walk::Node::SketchVar(sketch_var) = node
+                    && let Some(node_path) = &sketch_var.node_path
+                {
+                    self.out
+                        .borrow_mut()
+                        .push((SourceRange::from(sketch_var), node_path.clone()));
+                }
+                for child in node.children().iter() {
+                    if !child.visit(*self)? {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            }
+        }
+        let collector = Collector {
+            out: Default::default(),
+        };
+        let _ = crate::walk::Node::from(&program.ast).visit(&collector);
+        collector.out.into_inner()
+    }
+
+    fn empty_exec_outcome_with_var_solutions(
+        var_solutions: Vec<(SourceRange, Option<ast::NodePath>, Number)>,
+    ) -> ExecOutcome {
+        ExecOutcome {
+            variables: Default::default(),
+            operations: Default::default(),
+            artifact_graph: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
+            var_solutions,
+            issues: Default::default(),
+            filenames: Default::default(),
+            default_planes: Default::default(),
+        }
+    }
+
+    /// Happy path: commit a var solution to a `var N` inside a sketch block
+    /// using a correct NodePath. Confirms the node-path code path produces the
+    /// expected source mutation.
+    #[test]
+    fn test_commit_var_solution_by_node_path_updates_sketch_var() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let matches = collect_sketch_var_literals_with_value(&program, 10.0);
+        assert_eq!(matches.len(), 1, "expected exactly one `var 10mm`");
+        let (literal_range, node_path) = matches.into_iter().next().unwrap();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            literal_range,
+            Some(node_path),
+            Number {
+                value: 25.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert!(
+            source_delta.text.contains("var 25mm"),
+            "expected updated literal in output; got:\n{}",
+            source_delta.text
+        );
+        assert!(
+            !source_delta.text.contains("var 10mm"),
+            "expected old literal to be gone; got:\n{}",
+            source_delta.text
+        );
+    }
+
+    /// Whitespace inserted earlier in the source shifts the original SketchVar
+    /// SourceRange. With NodePath propagation the commit should still target
+    /// the right `var`. We simulate this by collecting node_paths against a
+    /// "compact" source, then loading the frontend with a "padded" source
+    /// (whose byte offsets differ), and feeding the original (now stale)
+    /// source range plus the correct node_path back into the commit.
+    #[test]
+    fn test_commit_var_solution_survives_whitespace_shift_earlier_in_file() {
+        let compact_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let padded_source = "\
+// added comment\n// added comment\n\nsketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let compact_program = Program::parse(compact_source).unwrap().0.unwrap();
+        let padded_program = Program::parse(padded_source).unwrap().0.unwrap();
+
+        let compact_match = collect_sketch_var_literals_with_value(&compact_program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm` in compact source");
+        let padded_match = collect_sketch_var_literals_with_value(&padded_program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm` in padded source");
+
+        assert_ne!(
+            compact_match.0, padded_match.0,
+            "byte offsets must differ for this test to be meaningful"
+        );
+        assert_eq!(
+            compact_match.1, padded_match.1,
+            "node paths must agree across whitespace; that's the whole point of NodePath",
+        );
+
+        let mut frontend = FrontendState::new();
+        frontend.program = padded_program;
+
+        // Stale source range from the compact source + correct node_path.
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            compact_match.0,
+            Some(compact_match.1),
+            Number {
+                value: 30.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert!(
+            source_delta.text.contains("var 30mm"),
+            "expected commit to land via node_path despite stale source range; got:\n{}",
+            source_delta.text
+        );
+        assert!(
+            !source_delta.text.contains("var 10mm"),
+            "expected old literal to be gone; got:\n{}",
+            source_delta.text
+        );
+    }
+
+    /// When multiple `var` declarations exist and the stale source range
+    /// happens to land on a *different* var, the node_path must take
+    /// precedence and the right var gets updated.
+    #[test]
+    fn test_commit_var_solution_node_path_wins_when_source_range_points_at_wrong_var() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 10mm, var 0mm], end = [var 20mm, var 0mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let var_10 = collect_sketch_var_literals_with_value(&program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm`");
+        let var_20 = collect_sketch_var_literals_with_value(&program, 20.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 20mm`");
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        // Use var 20mm's source range, but var 10mm's node_path. node_path wins.
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            var_20.0,
+            Some(var_10.1),
+            Number {
+                value: 33.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert!(
+            source_delta.text.contains("var 33mm"),
+            "expected node_path target updated; got:\n{}",
+            source_delta.text
+        );
+        assert!(
+            source_delta.text.contains("var 20mm"),
+            "expected var 20mm untouched (source_range did not win); got:\n{}",
+            source_delta.text
+        );
+        assert!(
+            !source_delta.text.contains("var 10mm"),
+            "expected var 10mm replaced; got:\n{}",
+            source_delta.text
+        );
+    }
+
+    /// Bare `var` (no initial literal) is only locatable via node_path. With
+    /// the EditVarInitialValue handler now operating on the SketchVar node, a
+    /// solver solution should fill the initial value in. The
+    /// `@settings(experimentalFeatures = allow)` is required because bare `var`
+    /// is gated as an experimental feature; without it the re-parse of the
+    /// recast source rejects bare `var` declarations.
+    #[test]
+    fn test_commit_var_solution_writes_back_into_bare_var() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+sketch(on = XY) {
+  line1 = line(start = [var, var 0mm], end = [var 10mm, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        // Pick the first bare `var`; collect_all_sketch_vars returns every
+        // SketchVar, including bare ones.
+        let bare = collect_all_sketch_vars(&program)
+            .into_iter()
+            .find(|(range, _)| {
+                // The bare `var` is exactly the 3 characters "var".
+                range.end() - range.start() == 3
+            })
+            .expect("expected at least one bare `var`");
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            bare.0,
+            Some(bare.1),
+            Number {
+                value: 7.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert!(
+            source_delta.text.contains("var 7"),
+            "expected bare var to receive the solved value; got:\n{}",
+            source_delta.text
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_point_without_var() {
         let initial_source = "\
