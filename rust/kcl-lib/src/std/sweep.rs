@@ -206,7 +206,7 @@ async fn inner_sweep(
             );
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a sketch for extrusion".to_owned(),
+                "Expected a sketch for sweeping".to_owned(),
                 vec![args.source_range],
             )));
         }
