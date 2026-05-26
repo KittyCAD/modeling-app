@@ -1,4 +1,4 @@
-import path from 'node:path'
+import path from 'path'
 import {
   type ProjectResponse,
   type ProjectSummaryResponse,
@@ -530,9 +530,7 @@ async function parseDownloadedProject({
     const files = await Promise.all(
       entries.map(async (entry) => ({
         relativePath: stripArchiveRoot(entry.name, rootDirectory),
-        data: Uint8Array.from(
-          await entry.async('uint8array')
-        ) as Uint8Array<ArrayBuffer>,
+        data: Uint8Array.from(await entry.async('uint8array')),
       }))
     )
 
@@ -554,7 +552,7 @@ function getCommonArchiveRoot(paths: string[]) {
   }
 
   const firstSegments = normalizedPaths.map(
-    (entryPath) => entryPath.split('/')[0]
+    (entryPath) => entryPath.split(path.sep)[0]
   )
   const [firstSegment] = firstSegments
   if (
@@ -751,7 +749,7 @@ async function syncProjectToCloud(projectPath: string) {
         dirtyProjects.delete(projectPath)
         return
       }
-      throw error
+      return error
     }
 
     const files = await buildProjectUploadFiles(projectPath)
@@ -869,9 +867,7 @@ async function collectLocalProjectFiles(projectPath: string) {
         relativePath: path
           .relative(projectPath, entryPath)
           .replaceAll(path.sep, '/'),
-        data: Uint8Array.from(
-          await local.readFile(entryPath)
-        ) as Uint8Array<ArrayBuffer>,
+        data: Uint8Array.from(await local.readFile(entryPath)),
       })
     }
   }
@@ -945,7 +941,9 @@ const readdir: IZooDesignStudioFS['readdir'] = async (
         await ensureLocalDirectory(targetPath)
         return []
       }
-      throw error
+      // TODO: readdir doesn't seem to allow returning an error yet, just report out for now.
+      console.error(error)
+      return []
     }
   }
 

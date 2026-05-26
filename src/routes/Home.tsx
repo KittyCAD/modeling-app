@@ -64,7 +64,6 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,

@@ -9,10 +9,8 @@ import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
 import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
 import {
   PATHS,
@@ -28,9 +26,6 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type { LoaderFunction } from 'react-router-dom'
-import { redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
