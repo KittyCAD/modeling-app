@@ -4571,15 +4571,26 @@ impl FrontendState {
         let mut settled_ast = self.program.ast.clone();
         let mut committed_solver_value = false;
         for (var_range, node_path, value) in &outcome.var_solutions {
-            let Some(current_literal) = numeric_literal_at_node_path(&settled_ast, node_path.as_ref(), *var_range)
-            else {
+            let Some(lookup) = numeric_literal_at_node_path(&settled_ast, node_path.as_ref(), *var_range) else {
                 return Err(commit_failure());
             };
-            if !var_solution_needs_commit(&current_literal, *value, default_length_unit) {
-                continue;
-            }
+            let new_value = match &lookup {
+                Some(current_literal) => {
+                    if !var_solution_needs_commit(current_literal, *value, default_length_unit) {
+                        continue;
+                    }
+                    preserve_var_solution_literal_style(current_literal, *value, default_length_unit)
+                }
+                None => {
+                    // Bare `var` with no initial literal to compare against;
+                    // always commit, using the default length unit as the style.
+                    Number {
+                        value: number_value_in_default_length_units(*value, default_length_unit),
+                        units: NumericSuffix::None,
+                    }
+                }
+            };
             committed_solver_value = true;
-            let value = preserve_var_solution_literal_style(&current_literal, *value, default_length_unit);
             let source_ref = SourceRef::Simple {
                 range: *var_range,
                 node_path: node_path.clone(),
@@ -4587,7 +4598,7 @@ impl FrontendState {
             mutate_ast_node_by_source_ref(
                 &mut settled_ast,
                 &source_ref,
-                AstMutateCommand::EditVarInitialValue { value },
+                AstMutateCommand::EditVarInitialValue { value: new_value },
             )
             .map_err(|_| commit_failure())?;
         }
@@ -6151,7 +6162,8 @@ fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: Source
 
 struct FindSketchVarInitialByNodePath<'a> {
     target: &'a ast::NodePath,
-    found: Cell<Option<ast::NumericLiteral>>,
+    sketch_var_found: Cell<bool>,
+    initial_literal: Cell<Option<ast::NumericLiteral>>,
 }
 
 impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
@@ -6161,8 +6173,9 @@ impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
         if let crate::walk::Node::SketchVar(sketch_var) = node
             && sketch_var.node_path.as_ref() == Some(self.target)
         {
+            self.sketch_var_found.set(true);
             if let Some(initial) = &sketch_var.initial {
-                self.found.set(Some(initial.inner.clone()));
+                self.initial_literal.set(Some(initial.inner.clone()));
             }
             return Ok(false);
         }
@@ -6177,30 +6190,39 @@ impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
     }
 }
 
-/// Find the initial numeric literal of the SketchVar identified by
-/// `node_path`. Falls back to source-range matching when `node_path` is
-/// `None` (e.g. for synthesized vars), since source ranges break under
-/// whitespace shifts elsewhere in the file.
+/// Locate the source `var` declaration corresponding to a sketch-var solution.
+///
+/// The outer [`Option`] distinguishes "no matching target" (commit must fail)
+/// from "target found." The inner [`Option`] is the initial numeric literal of
+/// the [`SketchVar`], if any; bare `var` declarations return `Some(None)`.
+///
+/// When `node_path` is `None` (e.g. for older outcomes that predate the
+/// node-path propagation), this falls back to source-range matching, which
+/// can break under whitespace shifts elsewhere in the file.
 fn numeric_literal_at_node_path(
     ast: &ast::Node<ast::Program>,
     node_path: Option<&ast::NodePath>,
     source_range: SourceRange,
-) -> Option<ast::NumericLiteral> {
+) -> Option<Option<ast::NumericLiteral>> {
     let Some(node_path) = node_path else {
         let message = "numeric_literal_at_node_path: missing node_path on var solution; falling back to source-range lookup, which can fail under whitespace shifts";
         #[cfg(target_arch = "wasm32")]
         web_sys::console::warn_1(&message.into());
         #[cfg(not(target_arch = "wasm32"))]
         eprintln!("WARNING: {message}");
-        return numeric_literal_at_source_range(ast, source_range);
+        return numeric_literal_at_source_range(ast, source_range).map(Some);
     };
     let find = FindSketchVarInitialByNodePath {
         target: node_path,
-        found: Cell::new(None),
+        sketch_var_found: Cell::new(false),
+        initial_literal: Cell::new(None),
     };
     let node = crate::walk::Node::from(ast);
     node.visit(&find).ok()?;
-    find.found.into_inner()
+    if !find.sketch_var_found.get() {
+        return None;
+    }
+    Some(find.initial_literal.into_inner())
 }
 
 fn suffix_length_unit(suffix: NumericSuffix) -> Option<UnitLength> {
