@@ -822,7 +822,8 @@ export fn extrude(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
-  /// Draft angle to use while extruding
+  /// Positive draft angle means the sketch gets smaller while extruding.
+  /// Negative draft angle means the sketch gets bigger while extruding.
   draftAngle?: number(Angle),
   /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
