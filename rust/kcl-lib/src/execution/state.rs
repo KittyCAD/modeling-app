@@ -677,14 +677,14 @@ impl ExecState {
     pub(crate) fn push_op(&mut self, op: Operation) {
         let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
-        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned() {
-            if let Some(callbacks) = &self.execution_callbacks {
-                callbacks.on_operation(OperationCallbackArgs {
-                    module_id: self.mod_local.module_id,
-                    operation,
-                    index,
-                });
-            }
+        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
+            && let Some(callbacks) = &self.execution_callbacks
+        {
+            callbacks.on_operation(OperationCallbackArgs {
+                module_id: self.mod_local.module_id,
+                operation,
+                index,
+            });
         }
     }
 
