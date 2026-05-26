@@ -167,6 +167,8 @@ pub struct ModuleArtifactState {
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    /// The id of this module.
+    pub module_id: ModuleId,
     /// The id generator for this module.
     pub id_generator: IdGenerator,
     pub stack: Stack,
@@ -673,13 +675,12 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
-        let module_id = self.mod_local.id_generator.module_id.unwrap_or_default();
         let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
         if let Some(operation) = self.mod_local.artifacts.operations.last().cloned() {
             if let Some(callbacks) = &self.execution_callbacks {
                 callbacks.on_operation(OperationCallbackArgs {
-                    module_id,
+                    module_id: self.mod_local.module_id,
                     operation,
                     index,
                 });
@@ -1065,7 +1066,9 @@ impl ModuleState {
         sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
+        let state_module_id = module_id.unwrap_or_default();
         ModuleState {
+            module_id: state_module_id,
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,

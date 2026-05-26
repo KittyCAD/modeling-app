@@ -47,3 +47,6 @@ Refactor note
 - Model execution callbacks as a trait-backed handler, similar to the wasm file-system adapter.
 - Keep the JavaScript callbacks packed into one object while Rust forwards known callback methods through the trait.
 - Preserve the public behavior of `onOperation(args)` on the TypeScript side.
+
+Module state note
+- Store the module id directly on `ModuleState` so callbacks and other module-local logic do not have to recover it from construction-only helper state.
