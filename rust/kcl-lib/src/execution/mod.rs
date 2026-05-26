@@ -101,27 +101,8 @@ pub struct OperationCallbackArgs {
     pub index: usize,
 }
 
-pub type OperationCallback = Arc<dyn Fn(OperationCallbackArgs) + Send + Sync + 'static>;
-
-#[derive(Clone, Default)]
-pub struct ExecutionCallbacks {
-    pub on_operation: Option<OperationCallback>,
-}
-
-impl std::fmt::Debug for ExecutionCallbacks {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("ExecutionCallbacks")
-            .field("has_on_operation", &self.on_operation.is_some())
-            .finish()
-    }
-}
-
-impl ExecutionCallbacks {
-    pub fn on_operation(&self, args: OperationCallbackArgs) {
-        if let Some(callback) = &self.on_operation {
-            callback(args);
-        }
-    }
+pub trait ExecutionCallbacks: std::fmt::Debug + Send + Sync + 'static {
+    fn on_operation(&self, _args: OperationCallbackArgs) {}
 }
 
 impl OperationsByModule {
@@ -799,7 +780,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
-    pub execution_callbacks: ExecutionCallbacks,
+    pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
 }
 
 /// The executor settings.

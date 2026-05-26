@@ -29,7 +29,6 @@ use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
-use crate::execution::ExecutionCallbacks;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
 use crate::execution::OperationCallbackArgs;
@@ -61,7 +60,7 @@ use crate::parsing::ast::types::TagNode;
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
-    pub(super) execution_callbacks: ExecutionCallbacks,
+    pub(super) execution_callbacks: Option<std::sync::Arc<dyn crate::execution::ExecutionCallbacks>>,
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
 }
@@ -678,11 +677,13 @@ impl ExecState {
         let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
         if let Some(operation) = self.mod_local.artifacts.operations.last().cloned() {
-            self.execution_callbacks.on_operation(OperationCallbackArgs {
-                module_id,
-                operation,
-                index,
-            });
+            if let Some(callbacks) = &self.execution_callbacks {
+                callbacks.on_operation(OperationCallbackArgs {
+                    module_id,
+                    operation,
+                    index,
+                });
+            }
         }
     }
 

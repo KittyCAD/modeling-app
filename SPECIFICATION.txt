@@ -42,3 +42,8 @@ Verification
 - Rust should compile for touched crates if feasible.
 - Add focused tests for callback emission from `push_op` if there is a practical test seam.
 - Verify callback registration on the wasm/TypeScript boundary if there is an existing test seam.
+
+Refactor note
+- Model execution callbacks as a trait-backed handler, similar to the wasm file-system adapter.
+- Keep the JavaScript callbacks packed into one object while Rust forwards known callback methods through the trait.
+- Preserve the public behavior of `onOperation(args)` on the TypeScript side.

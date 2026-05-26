@@ -28,40 +28,20 @@ extern "C" {
     fn on_operation(this: &JsExecutionCallbacks, args: JsValue);
 }
 
-#[derive(Clone)]
-struct SendableJsExecutionCallbacks(JsExecutionCallbacks);
+impl ExecutionCallbacks for JsExecutionCallbacks {
+    fn on_operation(&self, args: OperationCallbackArgs) {
+        let js_args = match JsValue::from_serde(&args) {
+            Ok(value) => value,
+            Err(err) => {
+                web_sys::console::error_1(&JsValue::from_str(&format!(
+                    "Failed to serialize operation callback args: {err}"
+                )));
+                return;
+            }
+        };
 
-unsafe impl Send for SendableJsExecutionCallbacks {}
-unsafe impl Sync for SendableJsExecutionCallbacks {}
-
-impl SendableJsExecutionCallbacks {
-    fn into_rust_callbacks(self) -> ExecutionCallbacks {
-        let on_operation = self.0;
-
-        ExecutionCallbacks {
-            on_operation: Some(Arc::new(move |args: OperationCallbackArgs| {
-                let js_args = match JsValue::from_serde(&args) {
-                    Ok(value) => value,
-                    Err(err) => {
-                        web_sys::console::error_1(&JsValue::from_str(&format!(
-                            "Failed to serialize operation callback args: {err}"
-                        )));
-                        return;
-                    }
-                };
-
-                on_operation.on_operation(js_args);
-            })),
-        }
+        self.on_operation(js_args);
     }
-}
-
-fn rust_execution_callbacks(callbacks: Option<JsExecutionCallbacks>) -> ExecutionCallbacks {
-    let Some(callbacks) = callbacks.map(SendableJsExecutionCallbacks) else {
-        return ExecutionCallbacks::default();
-    };
-
-    callbacks.into_rust_callbacks()
 }
 
 #[wasm_bindgen]
@@ -140,7 +120,7 @@ impl Context {
             kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
         };
 
-        ctx.execution_callbacks = rust_execution_callbacks(self.execution_callbacks.clone());
+        ctx.execution_callbacks = self.execution_callbacks.clone().map(Arc::new);
         Ok(ctx)
     }
 
