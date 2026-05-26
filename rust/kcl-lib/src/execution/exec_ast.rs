@@ -1812,6 +1812,12 @@ impl Node<SketchBlock> {
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                if !outcome.converged {
+                    exec_state.warn(
+                        CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                        annotations::WARN_SOLVER,
+                    );
+                }
                 (outcome, freedom)
             }
             Err(failure) => {
@@ -1819,12 +1825,11 @@ impl Node<SketchBlock> {
                     NonLinearSystemError::FaerMatrix { .. }
                     | NonLinearSystemError::Faer { .. }
                     | NonLinearSystemError::FaerSolve { .. }
-                    | NonLinearSystemError::FaerSvd(..)
-                    | NonLinearSystemError::DidNotConverge => {
+                    | NonLinearSystemError::FaerSvd(..) => {
                         // Constraint solver failed to find a solution. Build a
                         // solution that is the initial guesses.
                         exec_state.warn(
-                            CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            CompilationIssue::err(range, "Internal error in constraint solver".to_owned()),
                             annotations::WARN_SOLVER,
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
@@ -1835,6 +1840,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                converged: false,
                             },
                             None,
                         )
