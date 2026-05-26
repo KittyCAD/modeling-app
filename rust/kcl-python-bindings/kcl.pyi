@@ -961,6 +961,10 @@ def relevant_file_extensions() -> builtins.list[builtins.str]:
     """
 
 
+class KclError(builtins.Exception):
+    def __new__(cls, _message: typing.Any, retryable: builtins.bool = False) -> KclError: ...
+    def is_retryable(self) -> builtins.bool: ...
+
 class PanicException(BaseException):
     r"""
     The exception raised when Rust code called from Python panics.

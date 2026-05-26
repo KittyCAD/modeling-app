@@ -97,6 +97,7 @@ pub use errors::CompilationIssue;
 pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
 pub use errors::ExecError;
+pub use errors::IsRetryable;
 pub use errors::KclError;
 pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
