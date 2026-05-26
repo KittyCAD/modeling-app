@@ -397,6 +397,7 @@ fn generate_function_from_kcl(
                         .or_else(|| arg.ty.as_ref().and_then(|t| docs_for_type(t, kcl_std)))
                         .unwrap_or_default(),
                 "required": arg.kind.required(),
+                "experimental": arg.experimental,
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
             })
         })
