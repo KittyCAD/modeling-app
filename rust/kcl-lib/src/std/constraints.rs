@@ -97,6 +97,8 @@ fn fixed_origin_datum_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -107,6 +109,8 @@ fn fixed_origin_datum_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3465,6 +3469,8 @@ fn create_hidden_point(
             id: x_id,
             initial_value: initial_position[0],
             ty: sketch_var_ty,
+            // Synthesized symmetric() support point coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3475,6 +3481,8 @@ fn create_hidden_point(
             id: y_id,
             initial_value: initial_position[1],
             ty: sketch_var_ty,
+            // Synthesized symmetric() support point coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -4324,6 +4332,8 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
                 id: radius_id,
                 initial_value: radius_initial_value,
                 ty: sketch_var_ty,
+                // Synthesized shared radius for equalRadius() across circulars; not source-backed.
+                node_path: None,
                 meta: vec![],
             }),
         });
