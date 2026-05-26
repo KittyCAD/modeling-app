@@ -729,7 +729,7 @@ export fn ellipse(
 /// ```
 /// ``` kcl, sketchSolve
 /// // Examples showing extrude with a positive/negative draft.
-/// @settings(kclVersion = 2.0)
+/// @settings(experimentalFeatures = allow, kclVersion = 2.0)
 /// 
 /// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
@@ -825,7 +825,7 @@ export fn extrude(
   /// Positive draft angle means the sketch gets smaller while extruding, i.e. inwards draft.
   /// Negative draft angle means the sketch gets bigger while extruding, i.e. outwards draft.
   /// Defaults to zero, i.e. 
-  draftAngle?: number(Angle),
+  @(experimental = true) draftAngle?: number(Angle),
   /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.

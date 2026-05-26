@@ -488,7 +488,7 @@ extrude(endSweep, length = 2, method = NEW)
 
 ```kcl
 // Examples showing extrude with a positive/negative draft.
-@settings(kclVersion = 2.0)
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
