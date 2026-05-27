@@ -46,6 +46,7 @@ use crate::execution::DefaultPlanes;
 use crate::execution::IdGenerator;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
+use crate::settings::types::default_backface_color;
 use crate::settings::types::default_backface_color_struct;
 
 lazy_static::lazy_static! {
@@ -888,7 +889,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<(), KclError> {
-        let backface = csscolorparser::parse(&settings.default_backface_color)
+        let bf = settings
+            .default_backface_color
+            .clone()
+            .unwrap_or(default_backface_color());
+        let backface = csscolorparser::parse(&bf)
             .map(|color| kcmc::shared::Color::from_rgba(color.r, color.g, color.b, color.a))
             .unwrap_or(default_backface_color_struct());
         self.batch_modeling_cmd(

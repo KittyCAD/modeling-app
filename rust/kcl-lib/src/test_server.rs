@@ -208,7 +208,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         fixed_size_grid: true,
         skip_artifact_graph: false,
         heartbeats: None,
-        default_backface_color: "#00D5FF".to_owned(),
+        default_backface_color: Some("#00D5FF".to_owned()),
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
