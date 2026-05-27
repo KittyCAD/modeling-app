@@ -26,7 +26,7 @@ delete(@objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [
 
 ```kcl
 // Basic example, showing deleting something.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 // Make a cylinder
 sketch001 = sketch(on = XY) {
@@ -54,7 +54,7 @@ delete(cylinder)
 
 ```kcl
 // Example showing how to delete bodies after splitting them.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 // Make a cylinder.
 sketch001 = startSketchOn(XY)
