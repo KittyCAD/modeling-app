@@ -11,15 +11,12 @@ import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
-  filterOperations,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
-  groupNestedOperations,
   onHide,
-  groupOperationTypeStreaks,
   stdLibMap,
   onUnhide,
 } from '@src/lib/operations'
@@ -35,7 +32,6 @@ import {
   emptyOperationsByModule,
   getAllOperations,
   ROOT_MODULE_ID,
-  type OperationsByModule,
   type SourceRange,
 } from '@src/lang/wasm'
 import {

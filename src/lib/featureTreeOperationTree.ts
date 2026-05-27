@@ -82,6 +82,11 @@ export function buildOperationTree(
         continue
       }
 
+      // Skip if this module was already expanded elsewhere in the tree.
+      if (expandedModules.has(operation.moduleId)) {
+        continue
+      }
+
       const node = {
         parent: operation,
         children: buildModuleOperationTree(
