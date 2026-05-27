@@ -223,6 +223,9 @@ export const FeatureTreePaneContents = memo(() => {
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
+  // Live execution tracking: expand only the active module branch.
+  const liveActiveModuleId = kclManager.liveActiveModuleId
+
   function goToError() {
     const l = layout.signal.value
     if (!isCodePaneOpen(l)) {
@@ -327,6 +330,7 @@ export const FeatureTreePaneContents = memo(() => {
               modelingActor={modelingActor}
               engineCommandManager={engineCommandManager}
               onSelect={selectOperation}
+              liveActiveModuleId={liveActiveModuleId}
             />
           ))}
         </>
@@ -488,6 +492,7 @@ function OperationBranchGroup({
   engineCommandManager,
   onSelect,
   isModuleOwned = false,
+  liveActiveModuleId,
 }: Omit<OperationProps, 'item'> & {
   parentItem: ModuleInstanceOperation
   childItems: OperationTreeNode[]
@@ -509,8 +514,18 @@ function OperationBranchGroup({
     )
   }
 
+  // During live execution, only expand the branch whose module received the
+  // latest operation.  Outside live execution every branch defaults open.
+  // Changing the key forces a Disclosure remount with the new defaultOpen
+  // (headlessui v1 does not support a controlled `open` prop).
+  const isLive = liveActiveModuleId != null
+  const shouldBeOpen = !isLive || liveActiveModuleId === parentItem.moduleId
+
   return (
-    <Disclosure defaultOpen>
+    <Disclosure
+      key={`${parentItem.moduleId}-${shouldBeOpen}`}
+      defaultOpen={shouldBeOpen}
+    >
       <div className="flex items-start gap-1">
         <Disclosure.Button
           data-testid="operation-group-caret"
@@ -697,6 +712,8 @@ interface OperationProps {
   onSelect: (sourceRange: SourceRange) => void
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
+  /** During live execution, the module that received the latest operation. */
+  liveActiveModuleId?: number | null
 }
 /**
  * A button with an icon, name, and context menu
@@ -729,7 +746,9 @@ const OperationItem = ({
   const sourceRange =
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
-  const isSelected = useMemo(() => {
+  const isLiveLatest =
+    kclManager.liveLatestOperationKey === getOperationKey(item)
+  const isEditorSelected = useMemo(() => {
     if (!sourceRange) {
       return false
     }
@@ -738,6 +757,7 @@ const OperationItem = ({
       return isOverlap(sourceRange, topLevelRange(from, to))
     })
   }, [kclManager.editorState.selection, sourceRange])
+  const isSelected = isLiveLatest || isEditorSelected
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
   }, [item, code])

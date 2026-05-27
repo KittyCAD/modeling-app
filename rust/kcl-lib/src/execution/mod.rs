@@ -1689,8 +1689,14 @@ impl ExecutorContext {
             }
         }
 
-        // Since we haven't technically started executing the root module yet,
-        // move any setup artifacts accumulated so far into the root state.
+        // The early-pushed ModuleInstance operations have already served their
+        // purpose (firing onOperation callbacks for the live feature tree).
+        // Clear them so they don't duplicate the operations the root module
+        // body will produce when it actually executes its import statements.
+        exec_state.mod_local.artifacts.operations.clear();
+
+        // Move any remaining setup artifacts (non-operation data from the
+        // prelude, etc.) into the root state.
         exec_state
             .global
             .root_module_artifacts

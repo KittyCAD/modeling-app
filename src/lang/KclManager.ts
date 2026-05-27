@@ -11,6 +11,7 @@ import {
   compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
+import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
@@ -803,6 +804,10 @@ export class KclManager extends File {
     emptyOperationsByModule()
   )
   private _showLiveOperationsByModule = signal(false)
+  /** The module that received the most recent live operation callback. */
+  private _liveActiveModuleId = signal<number | null>(null)
+  /** Operation key (from getOperationKey) of the most recent live operation. */
+  private _liveLatestOperationKey = signal<string | null>(null)
   private activeLiveOperationExecutionId: number | null = null
 
   private _variables = signal<VariableMap>({})
@@ -857,6 +862,12 @@ export class KclManager extends File {
     return this._showLiveOperationsByModule.value
       ? this._liveOperationsByModule.value
       : this.execState.operations
+  }
+  get liveActiveModuleId() {
+    return this._liveActiveModuleId.value
+  }
+  get liveLatestOperationKey() {
+    return this._liveLatestOperationKey.value
   }
   /**
    * A client-side representation of the commands that have been sent,
@@ -1032,6 +1043,8 @@ export class KclManager extends File {
   private beginLiveOperationUpdates(executionId: number) {
     this.activeLiveOperationExecutionId = executionId
     this._liveOperationsByModule.value = emptyOperationsByModule()
+    this._liveActiveModuleId.value = null
+    this._liveLatestOperationKey.value = null
     this._showLiveOperationsByModule.value = true
     this.dispatchUpdateOperations([])
   }
@@ -1039,6 +1052,8 @@ export class KclManager extends File {
   private endLiveOperationUpdates() {
     this.activeLiveOperationExecutionId = null
     this._showLiveOperationsByModule.value = false
+    this._liveActiveModuleId.value = null
+    this._liveLatestOperationKey.value = null
     this._liveOperationsByModule.value = emptyOperationsByModule()
   }
 
@@ -1051,6 +1066,9 @@ export class KclManager extends File {
         ) {
           return
         }
+
+        this._liveActiveModuleId.value = callback.moduleId
+        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
 
         const operationsByModule = applyOperationCallbackToOperationsByModule({
           operationsByModule: this._liveOperationsByModule.value,
