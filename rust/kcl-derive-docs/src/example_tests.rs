@@ -384,6 +384,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-hide-1",
     "std-transform-hide-2",
     "std-transform-hide-3",
+    "std-transform-delete-0",
+    "std-transform-delete-1",
     "std-units-toDegrees-0",
     "std-units-toRadians-0",
     "std-vector-add-0",

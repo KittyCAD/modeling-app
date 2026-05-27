@@ -505,6 +505,33 @@ async fn hide_inner(
     Ok(objects)
 }
 
+/// Delete solids, sketches, helices, or imported objects.
+pub async fn delete(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let objects = args.get_unlabeled_kw_arg(
+        "objects",
+        &RuntimeType::Union(vec![
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::helices(),
+            RuntimeType::imported(),
+            RuntimeType::gdts(),
+        ]),
+        exec_state,
+    )?;
+
+    delete_inner(objects, exec_state, args).await.map(|()| KclValue::none())
+}
+
+async fn delete_inner(mut objects: HideableGeometry, exec_state: &mut ExecState, args: Args) -> Result<(), KclError> {
+    let ids = objects.ids(&args.ctx).await?.into_iter().collect();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(mcmd::RemoveSceneObjects::builder().object_ids(ids).build()),
+        )
+        .await
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
