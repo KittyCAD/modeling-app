@@ -763,8 +763,12 @@ const OperationItem = ({
   }, [item, code])
 
   const variableName = useMemo(() => {
+    // Module-owned operations have a nodePath relative to their own module's
+    // AST, not the currently open file.  Looking up the variable name in the
+    // wrong AST would return a bogus result (e.g. the parent module's alias).
+    if (isModuleOwned) return undefined
     return getOperationVariableName(item, ast, wasmInstance)
-  }, [item, ast, wasmInstance])
+  }, [item, ast, wasmInstance, isModuleOwned])
 
   const errors = useMemo(() => {
     if (isStaleReference || isModuleOwned) {
