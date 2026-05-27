@@ -160,6 +160,13 @@ describe('systemIOMachine - XState', () => {
 
         try {
           actor.send({
+            type: SystemIOMachineEvents.navigateToProject,
+            data: {
+              requestedProjectName: 'demo-project',
+            },
+          })
+
+          actor.send({
             type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
             data: {
               files: [],

@@ -1377,7 +1377,7 @@ export const systemIOMachine = setup({
                   subRoute: output.subRoute,
                 }
               },
-              requestedProjectName: ({ context, event }) => {
+              requestedProjectName: ({ event }) => {
                 const output = (
                   event as {
                     output: {
@@ -1389,7 +1389,7 @@ export const systemIOMachine = setup({
                 ).output
 
                 if (output.fileName) {
-                  return context.requestedProjectName
+                  return { name: NO_PROJECT_DIRECTORY }
                 }
 
                 return {
