@@ -71,6 +71,15 @@ const getDropTargetPath = (
   return getParentAbsolutePath(target.path)
 }
 
+const rowPathMatchesTreeParent = (
+  row: FileExplorerEntry,
+  project: Project
+): boolean => {
+  const [, ...relativeParentParts] = desktopSafePathSplit(row.parentPath)
+  const expectedParentPath = joinOSPaths(project.path, ...relativeParentParts)
+  return getParentAbsolutePath(row.path) === expectedParentPath
+}
+
 const readAllDirectoryEntriesRecursively = async (
   dirEntry: FileSystemDirectoryEntry
 ): Promise<FileSystemEntry[]> => {
@@ -448,7 +457,10 @@ export const ProjectExplorer = ({
 
     const openedRowsForRender = { ...openedRows }
     const currentFileRow = file?.path
-      ? flattenedData.find((child) => child.path === file.path)
+      ? flattenedData.find(
+          (child) =>
+            child.path === file.path && rowPathMatchesTreeParent(child, project)
+        )
       : undefined
     let openedRowsChanged = false
     if (currentFileRow) {
