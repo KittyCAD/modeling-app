@@ -10,7 +10,7 @@ use crate::bridge::bounding_box::BoundingBoxResponse;
 
 /// Set of physical properties you'd like to run on the model.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, Debug, Clone)]
 pub struct PhysicalPropertiesRequest {
     pub volume: Option<kcmc::Volume>,
@@ -23,7 +23,7 @@ pub struct PhysicalPropertiesRequest {
 
 /// Resulting data from a `PhysicalPropertiesRequest`.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, Debug, Clone)]
 pub struct PhysicalPropertiesResponse {
     pub volume: Option<mout::Volume>,

@@ -45,10 +45,7 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
-import {
-  MlEphantManagerReactContext,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
@@ -86,8 +83,6 @@ export function OpenedProject() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
-
   const location = useLocation()
   const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
@@ -170,14 +165,6 @@ export function OpenedProject() {
       project?.executingPath ? project.executingFileEntry.value : null
     )
   }, [onProjectOpen, projectName, projectPath, project])
-
-  useEffect(() => {
-    // Clear conversation
-    mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projectName, projectPath])
 
   useHotKeyListener(kclManager)
 
