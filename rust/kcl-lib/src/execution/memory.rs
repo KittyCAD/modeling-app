@@ -8,13 +8,14 @@ mod legacy;
 
 use std::env;
 
-pub use legacy::EnvironmentRef;
 pub(crate) use legacy::MODULE_PREFIX;
 pub(crate) use legacy::ProgramMemory;
 pub(crate) use legacy::RETURN_NAME;
 pub(crate) use legacy::SKETCH_PREFIX;
 pub(crate) use legacy::Stack;
 pub(crate) use legacy::TYPE_PREFIX;
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum MemoryBackendKind {
@@ -39,6 +40,59 @@ impl MemoryBackendKind {
             Err(env::VarError::NotUnicode(_)) => {
                 panic!("{} must be valid unicode.", Self::ENV_VAR)
             }
+        }
+    }
+}
+
+/// An index pointing to an environment at a point in time.
+///
+/// The first field indexes an environment, the second field is an epoch. An epoch of 0 indicates
+/// a dummy, error, or placeholder env ref, and an epoch of `usize::MAX` represents the current most
+/// recent epoch.
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS)]
+pub struct EnvironmentRef(usize, usize);
+
+impl EnvironmentRef {
+    pub fn dummy() -> Self {
+        Self(usize::MAX, 0)
+    }
+
+    fn current(index: usize) -> Self {
+        Self(index, usize::MAX)
+    }
+
+    fn at_epoch(index: usize, epoch: usize) -> Self {
+        Self(index, epoch)
+    }
+
+    fn is_regular(&self) -> bool {
+        self.0 < usize::MAX && self.1 > 0
+    }
+
+    fn index(&self) -> usize {
+        self.0
+    }
+
+    fn epoch(&self) -> usize {
+        self.1
+    }
+
+    fn skip_env(&self) -> bool {
+        self.0 == usize::MAX
+    }
+
+    /// Replace only the env index if it matches `old`.
+    pub fn replace_env(&mut self, old: Self, new: Self) {
+        if self.0 == old.0 {
+            self.0 = new.0;
+        }
+    }
+
+    /// Replace if it matches `old`.
+    pub fn replace_env_and_epoch(&mut self, old: Self, new: Self) {
+        if self.0 == old.0 && self.1 == old.1 {
+            self.0 = new.0;
+            self.1 = new.1;
         }
     }
 }
@@ -310,10 +364,10 @@ mod characterization_tests {
             let importer = &mut exporter.memory.clone().new_stack();
             importer.push_new_root_env(false);
 
-            let imported_tag = importer.memory.get_from(tag_name, export_env, sr(), 0).unwrap().clone();
+            let imported_tag = importer.memory.get_from_owned(tag_name, export_env, sr(), 0).unwrap();
             importer.add(tag_name.to_owned(), imported_tag, sr()).unwrap();
 
-            let imported_solid = importer.memory.get_from("body", export_env, sr(), 0).unwrap().clone();
+            let imported_solid = importer.memory.get_from_owned("body", export_env, sr(), 0).unwrap();
             importer.add("body".to_owned(), imported_solid, sr()).unwrap();
 
             importer.update(tag_name, |value, update_epoch| {
@@ -348,7 +402,7 @@ mod characterization_tests {
                 solid_value_id,
             );
 
-            let fresh_imported_solid = importer.memory.get_from("body", export_env, sr(), 0).unwrap().clone();
+            let fresh_imported_solid = importer.memory.get_from_owned("body", export_env, sr(), 0).unwrap();
             assert_solid_ids(&fresh_imported_solid, backend, solid_id, solid_value_id);
         });
     }
@@ -585,6 +639,7 @@ mod characterization_tests {
 
             assert!(!stack.cur_frame_contains("outer"), "{backend:?}");
             assert!(stack.cur_frame_contains("inner"), "{backend:?}");
+            assert_eq!(stack.get_owned("inner", sr()).unwrap(), val(2), "{backend:?}");
             assert_number(stack, backend, "outer", 1);
             assert_number(stack, backend, "inner", 2);
 

@@ -758,13 +758,12 @@ impl ExecutorContext {
                             for import_item in items {
                                 // Extract the item from the module.
                                 let mem = &exec_state.stack().memory;
-                                let mut value = mem
-                                    .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
-                                    .cloned();
+                                let mut value =
+                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
                                 let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
                                 let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
+                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
                                     return Err(KclError::new_undefined_value(
@@ -861,14 +860,13 @@ impl ExecutorContext {
                                 let item = exec_state
                                     .stack()
                                     .memory
-                                    .get_from(name, env_ref, source_range, 0)
+                                    .get_from_owned(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         internal_err(
                                             format!("{name} is not defined in module (but was exported?)"),
                                             source_range,
                                         )
-                                    })?
-                                    .clone();
+                                    })?;
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
@@ -2120,7 +2118,7 @@ impl Node<SketchBlock> {
             let sketch_id = exec_state.next_object_id();
             exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
 
             let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
                 let message =
@@ -2166,8 +2164,7 @@ impl Node<SketchBlock> {
             let value = exec_state
                 .stack()
                 .memory
-                .get_from(&name, env_ref, source_range, 0)?
-                .clone();
+                .get_from_owned(&name, env_ref, source_range, 0)?;
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
@@ -2367,18 +2364,21 @@ impl Node<Name> {
                     .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
             };
 
-            let KclValue::Module { value: module_id, .. } = value else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Identifier in path must refer to a module, found {}",
-                        value.human_friendly_type()
-                    ),
-                    p.as_source_ranges(),
-                )));
+            let module_id = match value {
+                KclValue::Module { value, .. } => *value,
+                value => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Identifier in path must refer to a module, found {}",
+                            value.human_friendly_type()
+                        ),
+                        p.as_source_ranges(),
+                    )));
+                }
             };
 
             mem_spec = Some(
-                ctx.exec_module_for_items(*module_id, exec_state, p.as_source_range())
+                ctx.exec_module_for_items(module_id, exec_state, p.as_source_range())
                     .await?,
             );
         }
