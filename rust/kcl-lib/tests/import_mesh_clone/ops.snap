@@ -425,17 +425,6 @@ description: Operations executed import_mesh_clone.kcl
       "sourceRange": []
     }
   ],
-  "rust/kcl-lib/tests/inputs/cube.obj": [
-    {
-      "type": "ModuleInstance",
-      "name": "yellow",
-      "moduleId": 0,
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    }
-  ],
   "std::math": [
     {
       "type": "VariableDeclaration",

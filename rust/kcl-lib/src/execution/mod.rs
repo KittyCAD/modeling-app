@@ -1600,8 +1600,12 @@ impl ExecutorContext {
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
+                            // Foreign modules don't produce their own operations;
+                            // use a fresh artifact state instead of capturing the
+                            // cloned root module's artifacts (which may contain
+                            // early-pushed ModuleInstance operations).
                             result.map(|val| {
-                                ModuleRepr::Foreign(geom.clone(), Some((val, exec_state.mod_local.artifacts.clone())))
+                                ModuleRepr::Foreign(geom.clone(), Some((val, Default::default())))
                             })
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
