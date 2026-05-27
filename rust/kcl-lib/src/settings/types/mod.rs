@@ -3,6 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
+use kittycad_modeling_cmds::shared::Color;
 use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -215,6 +216,17 @@ impl From<BackfaceDefault> for String {
     }
 }
 
+impl BackfaceDefault {
+    pub fn to_color(&self) -> Color {
+        let color_str = &self.0;
+        match csscolorparser::parse(color_str) {
+            Ok(x) => Color::from_rgba(x.r, x.g, x.b, 1.0),
+            // If the colour couldn't be parsed, just use the default blue.
+            Err(_) => default_backface_color_struct(),
+        }
+    }
+}
+
 /// Settings that affect the behavior while modeling.
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate, Default)]
 #[serde(rename_all = "snake_case")]
@@ -237,8 +249,8 @@ pub struct ModelingSettings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_ssao: Option<DefaultTrue>,
     /// The default color to use for surface backfaces.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub backface_color: Option<BackfaceDefault>,
+    #[serde(default)]
+    pub backface_color: BackfaceDefault,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_scale_grid: Option<bool>,
@@ -257,8 +269,13 @@ fn default_length_unit_millimeters() -> UnitLength {
 }
 
 // Also defined at src/lib/constants.ts#L333-L335
-fn default_backface_color() -> String {
+pub fn default_backface_color() -> String {
+    // (0, 213, 255)
     "#00D5FF".to_string()
+}
+// Also defined at src/lib/constants.ts#L333-L335
+pub fn default_backface_color_struct() -> Color {
+    Color::from_rgba(0.0, 213.0 / 255.0, 1.0, 1.0)
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -338,14 +355,7 @@ mod tests {
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
         assert_eq!(
-            parsed
-                .clone()
-                .settings
-                .modeling
-                .unwrap_or_default()
-                .backface_color
-                .unwrap_or_default()
-                .0,
+            parsed.clone().settings.modeling.unwrap_or_default().backface_color.0,
             default_backface_color()
         );
 
@@ -356,13 +366,7 @@ mod tests {
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
         assert_eq!(
-            parsed
-                .settings
-                .modeling
-                .unwrap_or_default()
-                .backface_color
-                .unwrap_or_default()
-                .0,
+            parsed.settings.modeling.unwrap_or_default().backface_color.0,
             default_backface_color()
         );
     }
@@ -497,14 +501,7 @@ backface_color = "#112233"
 
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
         assert_eq!(
-            parsed
-                .clone()
-                .settings
-                .modeling
-                .unwrap_or_default()
-                .backface_color
-                .unwrap_or_default()
-                .0,
+            parsed.clone().settings.modeling.unwrap_or_default().backface_color.0,
             "#112233"
         );
 

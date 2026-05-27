@@ -38,6 +38,7 @@ use tokio::sync::RwLock;
 use uuid::Uuid;
 use web_time::Instant;
 
+use crate::ExecutorSettings;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -45,6 +46,7 @@ use crate::execution::DefaultPlanes;
 use crate::execution::IdGenerator;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
+use crate::settings::types::default_backface_color_struct;
 
 lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
@@ -440,6 +442,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             id_generator,
         )
         .await?;
+
+        // Set up user's color choices.
+        self.set_user_colors(batch_context, settings, source_range, id_generator)
+            .await?;
 
         // We do not have commands for changing ssao on the fly.
 
@@ -873,6 +879,30 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             format!("Failed to find response for command ID: {id:?}"),
             vec![],
         )))
+    }
+
+    async fn set_user_colors(
+        &self,
+        batch_context: &EngineBatchContext,
+        settings: &ExecutorSettings,
+        source_range: SourceRange,
+        id_generator: &mut IdGenerator,
+    ) -> Result<(), KclError> {
+        let backface = csscolorparser::parse(&settings.default_backface_color)
+            .map(|color| kcmc::shared::Color::from_rgba(color.r, color.g, color.b, color.a))
+            .unwrap_or(default_backface_color_struct());
+        self.batch_modeling_cmd(
+            batch_context,
+            id_generator.next_uuid(),
+            source_range,
+            &ModelingCmd::from(
+                mcmd::SetDefaultSystemProperties::builder()
+                    .backface_color(backface)
+                    .build(),
+            ),
+        )
+        .await?;
+        Ok(())
     }
 
     async fn modify_grid(

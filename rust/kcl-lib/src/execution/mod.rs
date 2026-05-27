@@ -85,6 +85,7 @@ use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
+use crate::settings::types::default_backface_color;
 
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Default)]
 #[ts(export)]
@@ -801,6 +802,10 @@ pub struct ExecutorSettings {
     /// If None, no heartbeats will be sent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heartbeats: Option<u64>,
+    /// If given, sets the default backface colour.
+    /// If not, defaults to whatever the engine's default is.
+    #[serde(default = "default_backface_color")]
+    pub default_backface_color: String,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -819,6 +824,7 @@ impl Default for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: default_backface_color(),
         }
     }
 }
@@ -842,6 +848,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: modeling_settings.backface_color.0,
         }
     }
 }
@@ -864,6 +871,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: modeling.backface_color.0,
         }
     }
 }
@@ -880,6 +888,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: default_backface_color(),
         }
     }
 }
@@ -1072,6 +1081,7 @@ impl ExecutorContext {
                 fixed_size_grid: false,
                 skip_artifact_graph: false,
                 heartbeats: None,
+                default_backface_color: default_backface_color(),
             },
             None,
             engine_addr,
