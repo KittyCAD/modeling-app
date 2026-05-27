@@ -115,6 +115,7 @@ export function PublishDialog({
 
   const titleIsValid = title.trim().length > 0
   const descriptionIsValid = description.trim().length > 0
+  const categoriesIsValid = selectedCategoryIds.length > 0
   const lastSubmittedText = useMemo(
     () => getLastSubmittedText(publicationDetails),
     [publicationDetails]
@@ -126,6 +127,7 @@ export function PublishDialog({
     if (
       !titleIsValid ||
       !descriptionIsValid ||
+      !categoriesIsValid ||
       isSubmitting ||
       publishDisabled
     ) {
@@ -240,10 +242,17 @@ export function PublishDialog({
 
             <div className="flex flex-col gap-3">
               <p className="text-xs font-medium uppercase tracking-[0.14em] text-chalkboard-60 dark:text-chalkboard-40">
-                Categories
+                Categories*
               </p>
 
-              <div className="max-h-72 overflow-y-auto rounded-xl border border-chalkboard-20/80 bg-chalkboard-10/70 p-2 dark:border-chalkboard-80/70 dark:bg-chalkboard-100/40">
+              <div
+                aria-invalid={hasTriedSubmit && !categoriesIsValid}
+                className={`max-h-72 overflow-y-auto rounded-xl border bg-chalkboard-10/70 p-2 dark:bg-chalkboard-100/40 ${
+                  hasTriedSubmit && !categoriesIsValid
+                    ? 'border-destroy-60'
+                    : 'border-chalkboard-20/80 dark:border-chalkboard-80/70'
+                }`}
+              >
                 {isLoadingCategories ? (
                   <div className="px-2 py-6 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                     Loading Aquarium categories...
@@ -320,6 +329,11 @@ export function PublishDialog({
                   </div>
                 )}
               </div>
+              {hasTriedSubmit && !categoriesIsValid && (
+                <p className="text-xs leading-5 text-destroy-60 dark:text-destroy-40">
+                  Select at least one category.
+                </p>
+              )}
             </div>
           </section>
 
