@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing mbd_name_multi_file.kcl
+---
+{
+  "__mod_left": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_right": {
+    "type": "Module",
+    "value": 3
+  }
+}

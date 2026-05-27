@@ -266,11 +266,52 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png, false).await
+/// Options for running a simulation test. Use this with
+/// [`execute_with_options`] when adding new simulation tests.
+#[derive(Debug, Clone)]
+struct TestOptions {
+    /// True to render the model to a PNG and compare it to a reference
+    /// image.
+    render_to_png: bool,
+    /// True to request a STEP export from the engine and assert that
+    /// non-empty step contents come back.
+    export_step: bool,
 }
 
-async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+impl Default for TestOptions {
+    fn default() -> Self {
+        Self {
+            render_to_png: true,
+            export_step: false,
+        }
+    }
+}
+
+async fn execute(test_name: &str, render_to_png: bool) {
+    // Preserve the historical behavior of this entry point: render-to-png
+    // is caller-controlled, no step export.
+    execute_test(
+        &Test::new(test_name),
+        TestOptions {
+            render_to_png,
+            export_step: false,
+        },
+    )
+    .await
+}
+
+/// Entry point for new simulation tests. Use [`TestOptions`] to control
+/// which assertions and snapshots run.
+#[allow(dead_code)]
+async fn execute_with_options(test_name: &str, opts: TestOptions) {
+    execute_test(&Test::new(test_name), opts).await
+}
+
+async fn execute_test(test: &Test, opts: TestOptions) {
+    let TestOptions {
+        render_to_png,
+        export_step,
+    } = opts;
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
@@ -5302,6 +5343,27 @@ mod tangent_arc_arc_math_only {
         super::execute(TEST_NAME, true).await
     }
 }
+mod mbd_name_simple {
+    const TEST_NAME: &str = "mbd_name_simple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute_with_options(TEST_NAME, super::TestOptions::default()).await
+    }
+}
 mod endless_impeller {
     const TEST_NAME: &str = "endless_impeller";
 
@@ -5658,5 +5720,61 @@ mod christmas_tree_mirror3d_union {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod mbd_name_multi_file {
+    const TEST_NAME: &str = "mbd_name_multi_file";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute_with_options(
+            TEST_NAME,
+            super::TestOptions {
+                render_to_png: true,
+                ..Default::default()
+            },
+        )
+        .await
+    }
+}
+mod mbd_name_using_face_id {
+    const TEST_NAME: &str = "mbd_name_using_face_id";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute_with_options(
+            TEST_NAME,
+            super::TestOptions {
+                render_to_png: true,
+                ..Default::default()
+            },
+        )
+        .await
     }
 }

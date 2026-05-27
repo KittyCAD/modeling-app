@@ -56,10 +56,7 @@ pub struct Snapshot3d {
 pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let image = do_execute_and_snapshot(&ctx, program)
-        .await
-        .map(|(_, _, snap)| snap)
-        .map_err(|err| err.error)?;
+    let (_, _, image) = do_execute_and_snapshot(&ctx, program).await.map_err(|err| err.error)?;
     let gltf_res = ctx
         .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
         .await;

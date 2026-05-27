@@ -1,0 +1,51 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing mbd_name_simple.kcl
+---
+@settings(kclVersion = 2.0)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(
+  region(point = [5mm, 5mm], sketch = blockProfile),
+  length = 5mm,
+  tagStart = $bottom,
+  tagEnd = $top,
+)
+
+// TaggedFace: tag must resolve to the adjacent face UUID, not an edge UUID.
+gdt::name(face = top, name = "topFace")
+gdt::name(face = bottom, name = "bottom-face")
+
+// TaggedFace via the sketch's face-tag map.
+gdt::name(face = block.sketch.tags.edge1, name = "side_1_face")
+
+// Face value (not a TaggedFace): exercises the Face branch of the impl.
+edge2Face = faceOf(block, face = block.sketch.tags.edge2)
+gdt::name(face = edge2Face, name = "edge2_face_value")
+
+// Edge by UUID returned from getCommonEdge.
+sharedEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
+gdt::name(edge = sharedEdge, name = "top-edge2-edge")
+
+// Last-name-wins: final entry for top's face UUID must be "topFace_final".
+gdt::name(face = top, name = "topFace_final")
+
+// Empty string clears the entry for bottom's face UUID.
+gdt::name(face = bottom, name = "")
+
+// All allowed character classes in one name.
+gdt::name(face = block.sketch.tags.edge3, name = "Mixed_name-WITH-123")

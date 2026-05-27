@@ -1,0 +1,18 @@
+// Tests `gdt::name` with faces and edges identified by the index-based
+// helpers `faceId` and `edgeId`. These helpers are how callers refer to
+// geometry that can't be tagged directly (e.g. imported STEP files or
+// operations that don't yet support tagging their outputs).
+
+@settings(kclVersion = 2.0)
+
+cylinder = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 4.09)
+  |> extrude(length = 5)
+
+// `faceId` returns a `TaggedFace`. `gdt::name` resolves it to the face's
+// engine UUID via the adjacent-face lookup, the same as for sketch-tag
+// faces.
+gdt::name(face = faceId(cylinder, index = 2), name = "top_face_via_faceId")
+
+// `edgeId` returns an `Edge` (a UUID). `gdt::name` uses it directly.
+gdt::name(edge = edgeId(cylinder, index = 2), name = "top_edge_via_edgeId")
