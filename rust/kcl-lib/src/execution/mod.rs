@@ -292,7 +292,7 @@ pub struct ExecOutcome {
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
