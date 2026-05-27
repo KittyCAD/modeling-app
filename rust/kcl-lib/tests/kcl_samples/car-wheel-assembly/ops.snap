@@ -6,7 +6,7 @@ description: Operations executed car-wheel-assembly.kcl
   "public/kcl-samples/car-wheel-assembly/brake-rotor.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -4795,7 +4795,7 @@ description: Operations executed car-wheel-assembly.kcl
   "public/kcl-samples/car-wheel-assembly/car-tire.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -7756,7 +7756,7 @@ description: Operations executed car-wheel-assembly.kcl
   "public/kcl-samples/car-wheel-assembly/car-wheel.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -16971,7 +16971,7 @@ description: Operations executed car-wheel-assembly.kcl
   "public/kcl-samples/car-wheel-assembly/lug-nut.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -18035,7 +18035,7 @@ description: Operations executed car-wheel-assembly.kcl
   "public/kcl-samples/car-wheel-assembly/main.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -18049,7 +18049,7 @@ description: Operations executed car-wheel-assembly.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "brake-rotor.kcl",
+      "name": "brakeRotor",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -18063,7 +18063,7 @@ description: Operations executed car-wheel-assembly.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "car-tire.kcl",
+      "name": "carTire",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -18077,7 +18077,7 @@ description: Operations executed car-wheel-assembly.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "car-wheel.kcl",
+      "name": "carWheel",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -18091,7 +18091,7 @@ description: Operations executed car-wheel-assembly.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "lug-nut.kcl",
+      "name": "lugNut",
       "moduleId": 0,
       "nodePath": {
         "steps": [

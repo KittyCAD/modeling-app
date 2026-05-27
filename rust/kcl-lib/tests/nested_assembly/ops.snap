@@ -6,7 +6,7 @@ description: Operations executed nested_assembly.kcl
   "rust/kcl-lib/tests/nested_assembly/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "nested/foo/bar/main.kcl",
+      "name": "bar",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -149,7 +149,7 @@ description: Operations executed nested_assembly.kcl
   "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/main.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "imported.kcl",
+      "name": "imported",
       "moduleId": 0,
       "nodePath": {
         "steps": [
