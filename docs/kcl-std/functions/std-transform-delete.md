@@ -5,6 +5,8 @@ excerpt: "Deletes something from the scene. Once it's deleted, you can't use it 
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Deletes something from the scene. Once it's deleted, you can't use it anymore. This means deleting something twice is an error, as is hiding something after you delete it.
 
 ```kcl
@@ -24,6 +26,8 @@ delete(@objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [
 
 ```kcl
 // Basic example, showing deleting something.
+@settings(experimentalFeatures = allow)
+
 // Make a cylinder
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var -2mm, var 1mm], center = [var -1mm, var 0.5mm])
@@ -50,6 +54,8 @@ delete(cylinder)
 
 ```kcl
 // Example showing how to delete bodies after splitting them.
+@settings(experimentalFeatures = allow)
+
 // Make a cylinder.
 sketch001 = startSketchOn(XY)
 profile001 = circle(

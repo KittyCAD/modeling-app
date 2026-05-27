@@ -47,10 +47,10 @@ description: Variables in memory after executing delete_body.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 51,
-            "end": 58,
+            "commentStart": 92,
+            "end": 99,
             "moduleId": 0,
-            "start": 51,
+            "start": 92,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -78,10 +78,10 @@ description: Variables in memory after executing delete_body.kcl
             ],
             "radius": 1.118033988749895,
             "tag": {
-              "commentStart": 51,
-              "end": 58,
+              "commentStart": 92,
+              "end": 99,
               "moduleId": 0,
-              "start": 51,
+              "start": 92,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -305,10 +305,10 @@ description: Variables in memory after executing delete_body.kcl
                   ],
                   "radius": 1.118033988749895,
                   "tag": {
-                    "commentStart": 51,
-                    "end": 58,
+                    "commentStart": 92,
+                    "end": 99,
                     "moduleId": 0,
-                    "start": 51,
+                    "start": 92,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
