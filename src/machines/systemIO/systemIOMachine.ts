@@ -1377,18 +1377,24 @@ export const systemIOMachine = setup({
                   subRoute: output.subRoute,
                 }
               },
-              requestedProjectName: ({ event }) => {
+              requestedProjectName: ({ context, event }) => {
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
+                ).output
+
+                if (output.fileName) {
+                  return context.requestedProjectName
+                }
+
                 return {
-                  name: (
-                    event as {
-                      output: { projectName: string; subRoute?: string }
-                    }
-                  ).output.projectName,
-                  subRoute: (
-                    event as {
-                      output: { projectName: string; subRoute?: string }
-                    }
-                  ).output.subRoute,
+                  name: output.projectName,
+                  subRoute: output.subRoute,
                 }
               },
             }),

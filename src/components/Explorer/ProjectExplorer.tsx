@@ -446,6 +446,21 @@ export const ProjectExplorer = ({
       // insert fake row if one is present
     }
 
+    const openedRowsForRender = { ...openedRows }
+    const currentFileRow = file?.path
+      ? flattenedData.find((child) => child.path === file.path)
+      : undefined
+    let openedRowsChanged = false
+    if (currentFileRow) {
+      const pathIterator = desktopSafePathSplit(currentFileRow.parentPath)
+      while (pathIterator.length > 0) {
+        const key = desktopSafePathJoin(pathIterator)
+        openedRowsChanged = openedRowsChanged || !openedRowsForRender[key]
+        openedRowsForRender[key] = true
+        pathIterator.pop()
+      }
+    }
+
     const requestedRows: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
@@ -458,14 +473,15 @@ export const ProjectExplorer = ({
         const pathIterator = desktopSafePathSplit(child.parentPath)
         while (pathIterator.length > 0) {
           const key = desktopSafePathJoin(pathIterator)
-          const isOpened = openedRows[key] || project.name === key
+          const isOpened = openedRowsForRender[key] || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened
           pathIterator.pop()
         }
 
-        const isOpen = openedRows[child.key]
+        const isOpen = openedRowsForRender[child.key]
         const render =
-          (openedRows[child.parentPath] || project.name === child.parentPath) &&
+          (openedRowsForRender[child.parentPath] ||
+            project.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
@@ -903,11 +919,22 @@ export const ProjectExplorer = ({
       return row.render && skipPlaceHolder
     })
 
+    const currentFileRowIndex = requestedRowsToRender.findIndex(
+      (row) => row.path === file?.path
+    )
+    if (currentFileRowIndex >= 0) {
+      setSelectedRowWrapper(requestedRowsToRender[currentFileRowIndex])
+      setActiveIndex(currentFileRowIndex)
+    }
+    if (openedRowsChanged) {
+      setOpenedRows(openedRowsForRender)
+      openedRowsRef.current = openedRowsForRender
+    }
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
     previousProject.current = project
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [project, openedRows, fakeRow, activeIndex, errors])
+  }, [project, openedRows, fakeRow, activeIndex, errors, file?.path])
 
   // Handle clicks and keyboard presses within the global DOM level
   useEffect(() => {
