@@ -140,11 +140,11 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
     let mut types = HashMap::new();
     types.insert("Primitive types".to_owned(), Vec::new());
 
-    let mut module_experimental: HashMap<String, bool> = HashMap::new();
-    module_experimental.insert(kcl_lib.qual_name.clone(), kcl_lib.properties.experimental);
+    let mut module_properties: HashMap<String, Properties> = HashMap::new();
+    module_properties.insert(kcl_lib.qual_name.clone(), kcl_lib.properties.clone());
     for d in kcl_lib.all_docs() {
         if let DocData::Mod(m) = d {
-            module_experimental.insert(m.qual_name.clone(), m.properties.experimental);
+            module_properties.insert(m.qual_name.clone(), m.properties.clone());
         }
     }
 
@@ -171,7 +171,7 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut fns)| {
             fns.sort();
-            let experimental = module_experimental.get(&m).copied().unwrap_or(false);
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
@@ -192,7 +192,7 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut consts)| {
             consts.sort();
-            let experimental = module_experimental.get(&m).copied().unwrap_or(false);
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
@@ -218,7 +218,7 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
                 format!("{STDLIB_LINK_PREFIX}/modules/{}", m.replace("::", "-"))
             };
             tys.sort();
-            let experimental = module_experimental.get(&m).copied().unwrap_or(false);
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": file_name,
