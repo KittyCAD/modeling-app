@@ -859,6 +859,8 @@ pub struct ExampleProperties {
 pub struct ArgData {
     /// The name of the argument.
     pub name: String,
+    /// Whether this argument is experimental.
+    pub experimental: bool,
     /// The type of the argument.
     pub ty: Option<String>,
     /// If the argument is required.
@@ -901,6 +903,7 @@ impl ArgData {
         let mut result = ArgData {
             snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
+            experimental: arg.experimental,
             ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
