@@ -2092,6 +2092,8 @@ pub struct SketchVar {
     pub id: SketchVarId,
     pub initial_value: f64,
     pub ty: NumericType,
+    /// Used for solver feedback to source.
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }

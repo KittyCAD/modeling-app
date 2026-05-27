@@ -295,6 +295,7 @@ mod tests {
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  draftAngle?: number(Angle),
   twistAngle?: number(Angle),
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,

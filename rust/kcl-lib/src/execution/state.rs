@@ -31,6 +31,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
 use crate::execution::SketchVarId;
 use crate::execution::UnsolvedSegment;
@@ -82,6 +83,28 @@ pub(super) struct GlobalState {
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+}
+
+impl GlobalState {
+    pub(crate) fn operations_by_module(&self) -> OperationsByModule {
+        let mut operations = OperationsByModule::default();
+        operations.insert(ModuleId::default(), self.root_module_artifacts.operations.clone());
+
+        for (module_id, module_info) in &self.module_infos {
+            match &module_info.repr {
+                ModuleRepr::Root => {}
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    operations.insert(*module_id, outcome.artifacts.operations.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, artifacts))) => {
+                    operations.insert(*module_id, artifacts.operations.clone());
+                }
+                ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+
+        operations
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -137,7 +160,7 @@ pub struct ModuleArtifactState {
     /// Map from artifact ID to object ID in the scene.
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
 }
 
 #[derive(Debug, Clone)]
@@ -400,7 +423,7 @@ impl ExecState {
         ExecOutcome {
             variables: self.mod_local.variables(main_ref),
             filenames: self.global.filenames(),
-            operations: self.global.root_module_artifacts.operations,
+            operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
@@ -764,7 +787,7 @@ impl ExecState {
             main_ref
                 .map(|main_ref| self.mod_local.variables(main_ref))
                 .unwrap_or_default(),
-            self.global.root_module_artifacts.operations.clone(),
+            self.global.operations_by_module(),
             Default::default(),
             self.global.artifacts.graph.clone(),
             self.global.root_module_artifacts.scene_objects.clone(),
@@ -1069,15 +1092,15 @@ impl SketchBlockState {
         &self,
         solve_outcome: &Solved,
         solution_ty: NumericType,
-        range: SourceRange,
-    ) -> Result<Vec<(SourceRange, Number)>, KclError> {
+        sketch_block_range: SourceRange,
+    ) -> Result<Vec<(SourceRange, Option<NodePath>, Number)>, KclError> {
         self.sketch_vars
             .iter()
             .map(|v| {
                 let Some(sketch_var) = v.as_sketch_var() else {
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         "Expected sketch variable".to_owned(),
-                        vec![range],
+                        vec![sketch_block_range],
                     )));
                 };
                 let var_index = sketch_var.id.0;
@@ -1094,14 +1117,14 @@ impl SketchBlockState {
                     units: solution_ty.try_into().map_err(|_| {
                         KclError::new_internal(KclErrorDetails::new(
                             "Failed to convert numeric type to units".to_owned(),
-                            vec![range],
+                            vec![sketch_block_range],
                         ))
                     })?,
                 };
                 let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
                     return Ok(None);
                 };
-                Ok(Some((source_range, solved_value)))
+                Ok(Some((source_range, sketch_var.node_path.clone(), solved_value)))
             })
             .filter_map(Result::transpose)
             .collect::<Result<Vec<_>, KclError>>()

@@ -213,7 +213,7 @@ export const parse = (
       [],
       [],
       {},
-      [],
+      emptyOperationsByModule(),
       defaultArtifactGraph(),
       {},
       null
@@ -240,6 +240,12 @@ export function assertParse(code: string, instance: ModuleType): Node<Program> {
 
 export type VariableMap = { [key in string]?: KclValue }
 
+export interface OperationsByModule {
+  map: { [moduleId: number]: Operation[] }
+}
+
+export const ROOT_MODULE_ID = 0
+
 export type PathToNode = [string | number, string][]
 
 export const isPathToNodeNumber = (
@@ -257,11 +263,15 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
 
 export interface ExecState {
   variables: { [key in string]?: KclValue }
-  operations: Operation[]
+  operations: OperationsByModule
   artifactGraph: ArtifactGraph
   issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
+}
+
+export function emptyOperationsByModule(): OperationsByModule {
+  return { map: {} }
 }
 
 /**
@@ -271,12 +281,70 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     variables: {},
-    operations: [],
+    operations: emptyOperationsByModule(),
     artifactGraph: defaultArtifactGraph(),
     issues: [],
     filenames: [],
     defaultPlanes: null,
   }
+}
+
+export function getOperationsForModule(
+  operationsByModule: OperationsByModule | undefined,
+  moduleId: number | undefined
+): Operation[] {
+  if (moduleId === undefined) {
+    return []
+  }
+
+  return operationsByModule?.map[moduleId] ?? []
+}
+
+export function getRootOperations(
+  operationsByModule: OperationsByModule | undefined
+): Operation[] {
+  return getOperationsForModule(operationsByModule, ROOT_MODULE_ID)
+}
+
+export function getAllOperations(
+  operationsByModule: OperationsByModule | undefined
+): Operation[] {
+  return Object.values(operationsByModule?.map ?? {}).flatMap(
+    (operations) => operations ?? []
+  )
+}
+
+export function getOperationsForCurrentFile(input: {
+  operationsByModule: OperationsByModule | undefined
+  filenames: { [x: number]: ModulePath | undefined }
+  currentPath: string
+}): Operation[] {
+  const { operationsByModule, filenames, currentPath } = input
+  const moduleId = getCurrentModuleId(filenames, currentPath)
+
+  return getOperationsForModule(operationsByModule, moduleId ?? ROOT_MODULE_ID)
+}
+
+export function getCurrentModuleId(
+  filenames: { [x: number]: ModulePath | undefined },
+  currentPath: string
+): number | undefined {
+  const moduleId = Object.entries(filenames).find(([, modulePath]) => {
+    return modulePath?.type === 'Local' && modulePath.value === currentPath
+  })?.[0]
+
+  return moduleId === undefined ? undefined : Number(moduleId)
+}
+
+export function countOperations(
+  operationsByModule: OperationsByModule | undefined
+): number {
+  return Object.values(operationsByModule?.map ?? {}).reduce(
+    (count, operations) => {
+      return count + (operations?.length ?? 0)
+    },
+    0
+  )
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {

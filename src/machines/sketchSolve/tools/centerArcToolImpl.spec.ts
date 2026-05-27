@@ -12,6 +12,7 @@ import type {
   SourceDelta,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import type { DoneActorEvent } from 'xstate'
 import {
   createMockKclManager,
@@ -65,7 +66,7 @@ function createSceneGraphDelta(
     exec_outcome: {
       issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
