@@ -182,6 +182,15 @@ required-features = ["lsp-test-util"]
 name = "benchmark_kcl_samples"
 harness = false
 
+[[bench]]
+name = "memory_benchmark_criterion"
+harness = false
+
+[[bench]]
+name = "memory_profile"
+harness = false
+required-features = ["dhat-heap"]
+
 [[test]]
 name = "executor"
 path = "e2e/executor/main.rs"
