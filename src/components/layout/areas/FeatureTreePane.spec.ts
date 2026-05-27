@@ -177,7 +177,7 @@ describe('FeatureTreePane', () => {
       expect(lugNutParams).not.toHaveProperty('children')
     })
 
-    it('shows every ModuleInstance even when they point to the same module', () => {
+    it('deduplicates ModuleInstance when multiple modules import the same module', () => {
       const operationsByModule: OperationsByModule = {
         map: {
           0: [createModuleInstanceOperation(1, [0, 10, 0], 'first')],
@@ -187,8 +187,11 @@ describe('FeatureTreePane', () => {
 
       const tree = buildOperationTree(operationsByModule, 0)
 
+      // Module 1 is expanded once (from module 0's "first" reference).
+      // Module 2's "second" reference to the same module is not added
+      // as a top-level branch.
       expect(JSON.stringify(tree)).toContain('first')
-      expect(JSON.stringify(tree)).toContain('second')
+      expect(JSON.stringify(tree)).not.toContain('second')
     })
   })
 

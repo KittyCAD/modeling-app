@@ -6,7 +6,7 @@ description: Operations executed import_foreign.kcl
   "rust/kcl-lib/tests/import_foreign/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "../inputs/cube.gltf",
+      "name": "cube",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -15,6 +15,17 @@ description: Operations executed import_foreign.kcl
             "index": 0
           }
         ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "rust/kcl-lib/tests/inputs/cube.gltf": [
+    {
+      "type": "ModuleInstance",
+      "name": "cube",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     }
