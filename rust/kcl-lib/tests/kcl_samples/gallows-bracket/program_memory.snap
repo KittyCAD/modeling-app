@@ -62,7 +62,7 @@ description: Variables in memory after executing gallows-bracket.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -159,7 +159,7 @@ description: Variables in memory after executing gallows-bracket.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -191,7 +191,7 @@ description: Variables in memory after executing gallows-bracket.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -286,7 +286,7 @@ description: Variables in memory after executing gallows-bracket.kcl
         "units": null
       },
       "zAxis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0,
         "units": null
@@ -319,7 +319,7 @@ description: Variables in memory after executing gallows-bracket.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -625,7 +625,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -951,7 +951,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -1147,7 +1147,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -1267,7 +1267,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -1387,7 +1387,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -1507,7 +1507,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -1627,7 +1627,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -1747,7 +1747,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -1942,7 +1942,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 },
                 "zAxis": {
                   "x": 0.0,
-                  "y": -1.0,
+                  "y": 1.0,
                   "z": 0.0,
                   "units": null
                 }
@@ -2178,7 +2178,7 @@ description: Variables in memory after executing gallows-bracket.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
@@ -2520,7 +2520,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -2846,7 +2846,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -3172,7 +3172,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -3498,7 +3498,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -3824,7 +3824,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -4150,7 +4150,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -4476,7 +4476,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -4802,7 +4802,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -5128,7 +5128,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -5454,7 +5454,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -5780,7 +5780,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -6106,7 +6106,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -6432,7 +6432,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -6758,7 +6758,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -7084,7 +7084,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -7410,7 +7410,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -7736,7 +7736,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -8062,7 +8062,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "zAxis": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 1.0,
                 "z": 0.0,
                 "units": null
               }
@@ -8311,7 +8311,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 "units": null
               },
               "zAxis": {
-                "x": 1.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": null
@@ -8553,7 +8553,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 "units": null
               },
               "zAxis": {
-                "x": 1.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": null
@@ -8795,7 +8795,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 "units": null
               },
               "zAxis": {
-                "x": 1.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": null
@@ -9037,7 +9037,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 "units": null
               },
               "zAxis": {
-                "x": 1.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": null
@@ -9279,7 +9279,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 "units": null
               },
               "zAxis": {
-                "x": 1.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": null
@@ -9521,7 +9521,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 "units": null
               },
               "zAxis": {
-                "x": 1.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": null
@@ -9896,7 +9896,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -10222,7 +10222,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -11415,7 +11415,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -11591,7 +11591,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -11711,7 +11711,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -11831,7 +11831,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -11951,7 +11951,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -12071,7 +12071,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -12191,7 +12191,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -12386,7 +12386,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 },
                 "zAxis": {
                   "x": 0.0,
-                  "y": -1.0,
+                  "y": 1.0,
                   "z": 0.0,
                   "units": null
                 }
@@ -12622,7 +12622,7 @@ description: Variables in memory after executing gallows-bracket.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
@@ -14081,7 +14081,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -14348,7 +14348,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             "units": null
           },
           "zAxis": {
-            "x": 1.0,
+            "x": -1.0,
             "y": 0.0,
             "z": 0.0,
             "units": null
@@ -14516,7 +14516,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "units": null
                   },
                   "zAxis": {
-                    "x": 1.0,
+                    "x": -1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": null
@@ -14636,7 +14636,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "units": null
                   },
                   "zAxis": {
-                    "x": 1.0,
+                    "x": -1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": null
@@ -14756,7 +14756,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "units": null
                   },
                   "zAxis": {
-                    "x": 1.0,
+                    "x": -1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": null
@@ -14876,7 +14876,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "units": null
                   },
                   "zAxis": {
-                    "x": 1.0,
+                    "x": -1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": null
@@ -15023,7 +15023,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "units": null
                 },
                 "zAxis": {
-                  "x": 1.0,
+                  "x": -1.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": null
@@ -15203,7 +15203,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           "units": null
         },
         "zAxis": {
-          "x": 1.0,
+          "x": -1.0,
           "y": 0.0,
           "z": 0.0,
           "units": null
@@ -15527,7 +15527,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -15853,7 +15853,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -17346,7 +17346,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -17597,7 +17597,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 },
                 "zAxis": {
                   "x": 0.0,
-                  "y": -1.0,
+                  "y": 1.0,
                   "z": 0.0,
                   "units": null
                 }
@@ -17758,7 +17758,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -17878,7 +17878,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -17998,7 +17998,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -18118,7 +18118,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -18238,7 +18238,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -18358,7 +18358,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -18553,7 +18553,7 @@ description: Variables in memory after executing gallows-bracket.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
@@ -20016,7 +20016,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -20347,7 +20347,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -20673,7 +20673,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -23384,7 +23384,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -23635,7 +23635,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                 },
                 "zAxis": {
                   "x": 0.0,
-                  "y": -1.0,
+                  "y": 1.0,
                   "z": 0.0,
                   "units": null
                 }
@@ -23796,7 +23796,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -23916,7 +23916,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -24036,7 +24036,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -24156,7 +24156,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -24276,7 +24276,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -24396,7 +24396,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "zAxis": {
                     "x": 0.0,
-                    "y": -1.0,
+                    "y": 1.0,
                     "z": 0.0,
                     "units": null
                   }
@@ -24591,7 +24591,7 @@ description: Variables in memory after executing gallows-bracket.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
@@ -24912,7 +24912,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
