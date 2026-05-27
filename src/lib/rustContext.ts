@@ -17,6 +17,7 @@ import type {
   ExistingSegmentCtor,
   Number,
   SceneGraphDelta,
+  SegmentDragAnchor,
   SegmentCtor,
   SetProgramOutcome as RustSetProgramOutcome,
   SketchCtor,
@@ -528,11 +529,20 @@ export default class RustContext {
     sketch: ApiObjectId,
     segments: ExistingSegmentCtor[],
     settings: DeepPartial<Configuration>,
-    createCheckpoint = false
+    createCheckpoint = false,
+    anchorSegmentIds?: ApiObjectId[],
+    commitSolverResults = true,
+    dragAnchors: SegmentDragAnchor[] = []
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error('Preview segment edits cannot create sketch checkpoints')
+        )
+      }
+
       const result: {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
@@ -542,7 +552,10 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(segments),
         JSON.stringify(settings),
-        createCheckpoint
+        createCheckpoint,
+        JSON.stringify(anchorSegmentIds ?? null),
+        JSON.stringify(dragAnchors),
+        commitSolverResults
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -681,11 +694,18 @@ export default class RustContext {
     labelPosition: ApiPoint2d<Number>,
     settings: DeepPartial<Configuration>,
     createCheckpoint = false,
-    anchorSegmentIds: ApiObjectId[] = []
+    anchorSegmentIds: ApiObjectId[] = [],
+    commitSolverResults = true
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error('Preview label edits cannot create sketch checkpoints')
+        )
+      }
+
       const result: {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
@@ -697,7 +717,8 @@ export default class RustContext {
         JSON.stringify(labelPosition),
         JSON.stringify(settings),
         createCheckpoint,
-        JSON.stringify(anchorSegmentIds)
+        JSON.stringify(anchorSegmentIds),
+        commitSolverResults
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
