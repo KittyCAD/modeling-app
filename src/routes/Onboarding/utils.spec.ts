@@ -1,14 +1,36 @@
 import type { OnboardingStatus, OnboardingPath } from '@src/lib/onboardingPaths'
 import {
   consumeRememberedOnboardingWorkflowPanes,
+  emptyOnboardingProject,
   needsToOnboard,
+  shouldEmptyOnboardingProjectOnDismiss,
   shouldApplyRememberedOnboardingWorkflow,
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
 import type { Location } from 'react-router-dom'
-import { expect, describe, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/toast', () => ({
+  waitForToastAnimationEnd: vi.fn(
+    async (_elementId: string, cb: () => void) => {
+      cb()
+    }
+  ),
+}))
+
+vi.mock('react-hot-toast', () => ({
+  default: {
+    dismiss: vi.fn(),
+    success: vi.fn(),
+  },
+}))
 
 describe('Onboarding utility functions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    consumeRememberedOnboardingWorkflowPanes()
+  })
+
   describe('useAdjacentOnboardingSteps', () => {
     it('Desktop beginning', () => {
       const stepResults = useAdjacentOnboardingSteps('/desktop', 'desktop')
@@ -86,6 +108,63 @@ describe('Onboarding utility functions', () => {
     it('returns null when no workflow was selected', () => {
       consumeRememberedOnboardingWorkflowPanes()
       expect(consumeRememberedOnboardingWorkflowPanes()).toBeNull()
+    })
+  })
+
+  describe('onboarding project cleanup', () => {
+    it('empties the onboarding project by overwriting main.kcl and deleting the sample files', () => {
+      const systemIOActor = {
+        send: vi.fn(),
+      } as any
+
+      emptyOnboardingProject(systemIOActor)
+
+      expect(systemIOActor.send).toHaveBeenCalledWith({
+        type: 'bulk create and delete kcl files and navigate to file',
+        data: {
+          files: [
+            {
+              requestedProjectName: 'tutorial-project',
+              requestedFileName: 'main.kcl',
+              requestedCode: '',
+            },
+          ],
+          override: true,
+          requestedProjectName: 'tutorial-project',
+          requestedFileNameWithExtension: 'main.kcl',
+        },
+      })
+    })
+
+    it('only clears the project when dismissing the web onboarding tutorial', () => {
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss(
+          'dismissed',
+          'tutorial-project',
+          false
+        )
+      ).toBe(true)
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss(
+          'completed',
+          'tutorial-project',
+          false
+        )
+      ).toBe(false)
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss(
+          'dismissed',
+          'demo-project',
+          false
+        )
+      ).toBe(false)
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss(
+          'dismissed',
+          'tutorial-project',
+          true
+        )
+      ).toBe(false)
     })
   })
 

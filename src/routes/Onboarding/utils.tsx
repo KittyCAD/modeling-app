@@ -44,6 +44,9 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { useApp } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
+
+const WEB_APP_FILE_BROWSER_FEATURE_FLAG = 'web_app_file_browser'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -70,6 +73,12 @@ const preferredWorkflowPaneMap: Record<
 
 let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =
   null
+
+export function rememberOnboardingWorkflowPreference(
+  preference: OnboardingWorkflowPreference
+) {
+  rememberedOnboardingWorkflowPreference = preference
+}
 
 export function consumeRememberedOnboardingWorkflowPanes():
   | DefaultLayoutPaneID[]
@@ -132,15 +141,16 @@ export function useNextClick(newStatus: OnboardingStatus) {
 }
 
 export function useDismiss() {
-  const { settings } = useApp()
+  const { project, settings, systemIOActor } = useApp()
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
     (
-      dismissalType:
-        | Extract<OnboardingStatus, 'completed' | 'dismissed'>
-        | undefined = 'dismissed'
+      dismissalType: Extract<
+        OnboardingStatus,
+        'completed' | 'dismissed'
+      > = 'dismissed'
     ) => {
       if (!filePath) {
         return new Error('filePath is undefined')
@@ -151,9 +161,28 @@ export function useDismiss() {
         data: { level: 'user', value: dismissalType },
       })
       waitFor(settings.actor, (state) => state.matches('idle'))
-        .then(() => {
+        .then(async () => {
           if (!filePath) {
             return Promise.reject(new Error('bug: filePath is undefined'))
+          }
+
+          const shouldCheckWebAppFileBrowser =
+            !window.electron &&
+            dismissalType === 'dismissed' &&
+            project?.name === ONBOARDING_PROJECT_NAME
+          const hasWebAppFileBrowser =
+            shouldCheckWebAppFileBrowser &&
+            (await userHasFeature(WEB_APP_FILE_BROWSER_FEATURE_FLAG, false))
+
+          if (
+            shouldEmptyOnboardingProjectOnDismiss(
+              dismissalType,
+              project?.name,
+              hasWebAppFileBrowser
+            )
+          ) {
+            emptyOnboardingProject(systemIOActor)
+            return
           }
 
           void navigate(filePath)
@@ -166,7 +195,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [settings, filePath, navigate]
+    [settings, filePath, navigate, project?.name, systemIOActor]
   )
 
   return settingsCallback
@@ -369,6 +398,51 @@ export function needsToOnboard(
 }
 
 export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
+  dismissOnboardingInvite(settingsActor)
+}
+
+export function shouldEmptyOnboardingProjectOnDismiss(
+  dismissalType: Extract<OnboardingStatus, 'completed' | 'dismissed'>,
+  projectName: string | undefined,
+  hasWebAppFileBrowser: boolean
+) {
+  return (
+    !window.electron &&
+    !hasWebAppFileBrowser &&
+    dismissalType === 'dismissed' &&
+    projectName === ONBOARDING_PROJECT_NAME
+  )
+}
+
+export function emptyOnboardingProject(systemIOActor: SystemIOActor) {
+  systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+    data: {
+      files: [
+        {
+          requestedProjectName: ONBOARDING_PROJECT_NAME,
+          requestedFileName: 'main.kcl',
+          requestedCode: '',
+        },
+      ],
+      override: true,
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      requestedFileNameWithExtension: 'main.kcl',
+    },
+  })
+}
+
+export function dismissOnboardingInvite(
+  settingsActor: SettingsActorType,
+  options: {
+    workflowPreference?: OnboardingWorkflowPreference
+    showSuccessToast?: boolean
+  } = {}
+) {
+  if (options.workflowPreference) {
+    rememberOnboardingWorkflowPreference(options.workflowPreference)
+  }
+
   settingsActor.send({
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
@@ -376,12 +450,15 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
   void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
     toast.dismiss(ONBOARDING_TOAST_ID)
   })
-  toast.success(
-    'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
-    {
-      duration: 5_000,
-    }
-  )
+
+  if (options.showSuccessToast ?? true) {
+    toast.success(
+      'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
+      {
+        duration: 5_000,
+      }
+    )
+  }
 }
 
 interface WorkflowInviteOptionCardProps {
@@ -438,9 +515,8 @@ function WorkflowInviteOptionCard(props: WorkflowInviteOptionCardProps) {
 export function TutorialRequestToast(
   props: OnboardingUtilDeps & { accountUrl: string }
 ) {
-  const { settings } = useApp()
   function onSelectWorkflow(preference: OnboardingWorkflowPreference) {
-    rememberedOnboardingWorkflowPreference = preference
+    rememberOnboardingWorkflowPreference(preference)
     acceptOnboarding(props)
     toast.dismiss(ONBOARDING_TOAST_ID)
   }
@@ -504,7 +580,7 @@ export function TutorialRequestToast(
       <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[auto_1fr] sm:items-center sm:gap-5">
         <ActionButton
           Element="button"
-          onClick={() => onDismissOnboardingInvite(settings.actor)}
+          onClick={() => onDismissOnboardingInvite(props.settingsActor)}
           iconStart={{
             icon: 'close',
             className: 'text-chalkboard-10',
