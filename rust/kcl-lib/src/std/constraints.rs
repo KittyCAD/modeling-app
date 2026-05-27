@@ -159,6 +159,7 @@ fn fixed_drag_anchor_point(
             id: anchor_x_id,
             initial_value: target_x,
             ty: solver_ty,
+            node_path: None,
             meta: Vec::new(),
         }),
     });
@@ -169,6 +170,7 @@ fn fixed_drag_anchor_point(
             id: anchor_y_id,
             initial_value: target_y,
             ty: solver_ty,
+            node_path: None,
             meta: Vec::new(),
         }),
     });
