@@ -848,7 +848,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
             heartbeats: None,
-            default_backface_color: modeling_settings.backface_color.0,
+            default_backface_color: modeling_settings.backface_color.unwrap_or_default().0,
         }
     }
 }
@@ -871,7 +871,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
-            default_backface_color: modeling.backface_color.0,
+            default_backface_color: modeling.backface_color.unwrap_or_default().0,
         }
     }
 }

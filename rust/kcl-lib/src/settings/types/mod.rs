@@ -249,8 +249,8 @@ pub struct ModelingSettings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_ssao: Option<DefaultTrue>,
     /// The default color to use for surface backfaces.
-    #[serde(default)]
-    pub backface_color: BackfaceDefault,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub backface_color: Option<BackfaceDefault>,
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_scale_grid: Option<bool>,
@@ -355,7 +355,14 @@ mod tests {
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
         assert_eq!(
-            parsed.clone().settings.modeling.unwrap_or_default().backface_color.0,
+            parsed
+                .clone()
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
             default_backface_color()
         );
 
@@ -366,7 +373,13 @@ mod tests {
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
         assert_eq!(
-            parsed.settings.modeling.unwrap_or_default().backface_color.0,
+            parsed
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
             default_backface_color()
         );
     }
@@ -501,7 +514,14 @@ backface_color = "#112233"
 
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
         assert_eq!(
-            parsed.clone().settings.modeling.unwrap_or_default().backface_color.0,
+            parsed
+                .clone()
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
             "#112233"
         );
 
