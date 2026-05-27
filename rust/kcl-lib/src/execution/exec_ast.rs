@@ -137,6 +137,8 @@ fn push_fixed_origin_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -146,6 +148,8 @@ fn push_fixed_origin_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -394,6 +398,8 @@ fn push_circular_radius_constraints(
             id: circular_radius_id,
             initial_value: circular.radius_initial_value,
             ty: sketch_var_ty,
+            // Synthesized hidden radius for circular distance; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -434,6 +440,8 @@ fn push_circular_distance_constraints(
             id: target_distance_id,
             initial_value: distance_value,
             ty: sketch_var_ty,
+            // Synthesized hidden distance for point-circular tangency; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -2230,7 +2238,7 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, exec_state)
+            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
@@ -2241,6 +2249,7 @@ impl Node<SketchVar> {
                     id,
                     initial_value: 0.0,
                     ty: NumericType::default(),
+                    node_path: self.node_path.clone(),
                     meta: vec![metadata],
                 }),
             }
@@ -3790,6 +3799,8 @@ impl Node<BinaryExpression> {
                                             id: origin_x_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3799,6 +3810,8 @@ impl Node<BinaryExpression> {
                                             id: origin_y_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3941,6 +3954,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -3950,6 +3965,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4076,6 +4093,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4085,6 +4104,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4310,6 +4331,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4319,6 +4342,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4464,6 +4489,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4473,6 +4500,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4488,6 +4517,8 @@ impl Node<BinaryExpression> {
                                     id: support_radius_id,
                                     initial_value: support_radius_value,
                                     ty: sketch_var_ty,
+                                    // Synthesized hidden support radius for circular-circular distance; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4720,6 +4751,8 @@ impl Node<BinaryExpression> {
                                             id: radius_id,
                                             initial_value: radius_initial_value,
                                             ty: sketch_var_ty,
+                                            // Synthesized hidden radius for circle constraint; not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });

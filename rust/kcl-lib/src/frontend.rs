@@ -4570,23 +4570,36 @@ impl FrontendState {
         let default_length_unit = self.default_length_unit();
         let mut settled_ast = self.program.ast.clone();
         let mut committed_solver_value = false;
-        for (var_range, value) in &outcome.var_solutions {
-            let Some(current_literal) = numeric_literal_at_source_range(&settled_ast, *var_range) else {
+        for (var_range, node_path, value) in &outcome.var_solutions {
+            let Some(lookup) = numeric_literal_at_node_path(&settled_ast, node_path.as_ref(), *var_range) else {
                 return Err(commit_failure());
             };
-            if !var_solution_needs_commit(&current_literal, *value, default_length_unit) {
-                continue;
-            }
+            let new_value = match &lookup {
+                Some(current_literal) => {
+                    if !var_solution_needs_commit(current_literal, *value, default_length_unit) {
+                        continue;
+                    }
+                    preserve_var_solution_literal_style(current_literal, *value, default_length_unit)
+                }
+                None => {
+                    // Bare `var` with no initial literal to compare against;
+                    // always commit, using the module's default length unit as
+                    // an explicit suffix so the written value carries units.
+                    Number {
+                        value: number_value_in_default_length_units(*value, default_length_unit),
+                        units: default_length_unit.into(),
+                    }
+                }
+            };
             committed_solver_value = true;
-            let value = preserve_var_solution_literal_style(&current_literal, *value, default_length_unit);
             let source_ref = SourceRef::Simple {
                 range: *var_range,
-                node_path: None,
+                node_path: node_path.clone(),
             };
             mutate_ast_node_by_source_ref(
                 &mut settled_ast,
                 &source_ref,
-                AstMutateCommand::EditVarInitialValue { value },
+                AstMutateCommand::EditVarInitialValue { value: new_value },
             )
             .map_err(|_| commit_failure())?;
         }
@@ -5947,15 +5960,17 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::EditVarInitialValue { value } => {
-            if let NodeMut::NumericLiteral(numeric_literal) = node {
-                // Update the initial value.
+            // We target the SketchVar itself (matched by NodePath) rather than
+            // the inner NumericLiteral so we can also write back into vars that
+            // were declared without an initial value (e.g. bare `var`).
+            if let NodeMut::SketchVar(sketch_var) = node {
                 let Ok(literal) = to_source_number(*value) else {
                     return TraversalReturn::new_break(Err(KclError::refactor(format!(
                         "Could not convert number to AST literal: {:?}",
                         *value
                     ))));
                 };
-                *numeric_literal = ast::Node::no_src(literal);
+                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6144,6 +6159,71 @@ fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: Source
     let node = crate::walk::Node::from(ast);
     node.visit(&find).ok()?;
     find.found.into_inner()
+}
+
+struct FindSketchVarInitialByNodePath<'a> {
+    target: &'a ast::NodePath,
+    sketch_var_found: Cell<bool>,
+    initial_literal: Cell<Option<ast::NumericLiteral>>,
+}
+
+impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'b>) -> anyhow::Result<bool, Self::Error> {
+        if let crate::walk::Node::SketchVar(sketch_var) = node
+            && sketch_var.node_path.as_ref() == Some(self.target)
+        {
+            self.sketch_var_found.set(true);
+            if let Some(initial) = &sketch_var.initial {
+                self.initial_literal.set(Some(initial.inner.clone()));
+            }
+            return Ok(false);
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+/// Locate the source `var` declaration corresponding to a sketch-var solution.
+///
+/// The outer [`Option`] distinguishes "no matching target" (commit must fail)
+/// from "target found." The inner [`Option`] is the initial numeric literal of
+/// the [`SketchVar`], if any; bare `var` declarations return `Some(None)`.
+///
+/// When `node_path` is `None` (e.g. for older outcomes that predate the
+/// node-path propagation), this falls back to source-range matching, which
+/// can break under whitespace shifts elsewhere in the file.
+fn numeric_literal_at_node_path(
+    ast: &ast::Node<ast::Program>,
+    node_path: Option<&ast::NodePath>,
+    source_range: SourceRange,
+) -> Option<Option<ast::NumericLiteral>> {
+    let Some(node_path) = node_path else {
+        let message = "numeric_literal_at_node_path: missing node_path on var solution; falling back to source-range lookup, which can fail under whitespace shifts";
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::warn_1(&message.into());
+        #[cfg(not(target_arch = "wasm32"))]
+        eprintln!("WARNING: {message}");
+        return numeric_literal_at_source_range(ast, source_range).map(Some);
+    };
+    let find = FindSketchVarInitialByNodePath {
+        target: node_path,
+        sketch_var_found: Cell::new(false),
+        initial_literal: Cell::new(None),
+    };
+    let node = crate::walk::Node::from(ast);
+    node.visit(&find).ok()?;
+    if !find.sketch_var_found.get() {
+        return None;
+    }
+    Some(find.initial_literal.into_inner())
 }
 
 fn suffix_length_unit(suffix: NumericSuffix) -> Option<UnitLength> {
@@ -8392,6 +8472,296 @@ cylinder = startSketchOn(XY)
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
         assert_eq!(source_delta.text, initial_source);
+    }
+
+    /// Walks a program collecting `(literal_source_range, sketch_var_node_path)`
+    /// for every SketchVar whose initial NumericLiteral has the given value.
+    fn collect_sketch_var_literals_with_value(program: &Program, value: f64) -> Vec<(SourceRange, ast::NodePath)> {
+        use std::cell::RefCell;
+        struct Collector {
+            target: f64,
+            out: RefCell<Vec<(SourceRange, ast::NodePath)>>,
+        }
+        impl<'a> crate::walk::Visitor<'a> for &Collector {
+            type Error = crate::front::Error;
+            fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+                if let crate::walk::Node::SketchVar(sketch_var) = node
+                    && let (Some(initial), Some(node_path)) = (&sketch_var.initial, &sketch_var.node_path)
+                    && (initial.value - self.target).abs() < 1e-9
+                {
+                    self.out
+                        .borrow_mut()
+                        .push((SourceRange::from(initial.as_ref()), node_path.clone()));
+                }
+                for child in node.children().iter() {
+                    if !child.visit(*self)? {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            }
+        }
+        let collector = Collector {
+            target: value,
+            out: Default::default(),
+        };
+        let _ = crate::walk::Node::from(&program.ast).visit(&collector);
+        collector.out.into_inner()
+    }
+
+    /// Walk a program collecting `(sketch_var_source_range, sketch_var_node_path)`
+    /// for every SketchVar (including bare `var`).
+    fn collect_all_sketch_vars(program: &Program) -> Vec<(SourceRange, ast::NodePath)> {
+        use std::cell::RefCell;
+        struct Collector {
+            out: RefCell<Vec<(SourceRange, ast::NodePath)>>,
+        }
+        impl<'a> crate::walk::Visitor<'a> for &Collector {
+            type Error = crate::front::Error;
+            fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+                if let crate::walk::Node::SketchVar(sketch_var) = node
+                    && let Some(node_path) = &sketch_var.node_path
+                {
+                    self.out
+                        .borrow_mut()
+                        .push((SourceRange::from(sketch_var), node_path.clone()));
+                }
+                for child in node.children().iter() {
+                    if !child.visit(*self)? {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            }
+        }
+        let collector = Collector {
+            out: Default::default(),
+        };
+        let _ = crate::walk::Node::from(&program.ast).visit(&collector);
+        collector.out.into_inner()
+    }
+
+    fn empty_exec_outcome_with_var_solutions(
+        var_solutions: Vec<(SourceRange, Option<ast::NodePath>, Number)>,
+    ) -> ExecOutcome {
+        ExecOutcome {
+            variables: Default::default(),
+            operations: Default::default(),
+            artifact_graph: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
+            var_solutions,
+            issues: Default::default(),
+            filenames: Default::default(),
+            default_planes: Default::default(),
+        }
+    }
+
+    /// Happy path: commit a var solution to a `var N` inside a sketch block
+    /// using a correct NodePath. Confirms the node-path code path produces the
+    /// expected source mutation.
+    #[test]
+    fn test_commit_var_solution_by_node_path_updates_sketch_var() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let matches = collect_sketch_var_literals_with_value(&program, 10.0);
+        assert_eq!(matches.len(), 1, "expected exactly one `var 10mm`");
+        let (literal_range, node_path) = matches.into_iter().next().unwrap();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            literal_range,
+            Some(node_path),
+            Number {
+                value: 25.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 25mm, var 0])
+}
+",
+        );
+    }
+
+    /// Whitespace inserted earlier in the source shifts the original SketchVar
+    /// SourceRange. With NodePath propagation the commit should still target
+    /// the right `var`. We simulate this by collecting node_paths against a
+    /// "compact" source, then loading the frontend with a "padded" source
+    /// (whose byte offsets differ), and feeding the original (now stale)
+    /// source range plus the correct node_path back into the commit.
+    #[test]
+    fn test_commit_var_solution_survives_whitespace_shift_earlier_in_file() {
+        let compact_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let padded_source = "\
+// added comment\n// added comment\n\nsketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let compact_program = Program::parse(compact_source).unwrap().0.unwrap();
+        let padded_program = Program::parse(padded_source).unwrap().0.unwrap();
+
+        let compact_match = collect_sketch_var_literals_with_value(&compact_program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm` in compact source");
+        let padded_match = collect_sketch_var_literals_with_value(&padded_program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm` in padded source");
+
+        assert_ne!(
+            compact_match.0, padded_match.0,
+            "byte offsets must differ for this test to be meaningful"
+        );
+        assert_eq!(
+            compact_match.1, padded_match.1,
+            "node paths must agree across whitespace; that's the whole point of NodePath",
+        );
+
+        let mut frontend = FrontendState::new();
+        frontend.program = padded_program;
+
+        // Stale source range from the compact source + correct node_path.
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            compact_match.0,
+            Some(compact_match.1),
+            Number {
+                value: 30.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(
+            source_delta.text,
+            "\
+// added comment
+// added comment
+
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 30mm, var 0])
+}
+",
+        );
+    }
+
+    /// When multiple `var` declarations exist and the stale source range
+    /// happens to land on a *different* var, the node_path must take
+    /// precedence and the right var gets updated.
+    #[test]
+    fn test_commit_var_solution_node_path_wins_when_source_range_points_at_wrong_var() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 10mm, var 0mm], end = [var 20mm, var 0mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let var_10 = collect_sketch_var_literals_with_value(&program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm`");
+        let var_20 = collect_sketch_var_literals_with_value(&program, 20.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 20mm`");
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        // Use var 20mm's source range, but var 10mm's node_path. node_path wins.
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            var_20.0,
+            Some(var_10.1),
+            Number {
+                value: 33.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 33mm, var 0mm], end = [var 20mm, var 0mm])
+}
+",
+        );
+    }
+
+    /// Bare `var` (no initial literal) is only locatable via node_path. With
+    /// the EditVarInitialValue handler now operating on the SketchVar node, a
+    /// solver solution should fill the initial value in. The
+    /// `@settings(experimentalFeatures = allow)` is required because bare `var`
+    /// is gated as an experimental feature; without it the re-parse of the
+    /// recast source rejects bare `var` declarations.
+    #[test]
+    fn test_commit_var_solution_writes_back_into_bare_var() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+sketch(on = XY) {
+  line1 = line(start = [var, var 0mm], end = [var 10mm, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        // Pick the first bare `var`; collect_all_sketch_vars returns every
+        // SketchVar, including bare ones.
+        let bare = collect_all_sketch_vars(&program)
+            .into_iter()
+            .find(|(range, _)| {
+                // The bare `var` is exactly the 3 characters "var".
+                range.end() - range.start() == 3
+            })
+            .expect("expected at least one bare `var`");
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            bare.0,
+            Some(bare.1),
+            Number {
+                value: 7.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        // Default length unit (mm; no `@settings(defaultLengthUnit = …)`) is
+        // written as an explicit suffix so the bare var commits with units.
+        // The recast adds a blank line after the `@settings` annotation.
+        assert_eq!(
+            source_delta.text,
+            "\
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+
+sketch(on = XY) {
+  line1 = line(start = [var 7mm, var 0mm], end = [var 10mm, var 0])
+}
+",
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
