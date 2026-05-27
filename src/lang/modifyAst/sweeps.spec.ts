@@ -1,4 +1,10 @@
-import { assertParse, type PathToNode, recast, type Name } from '@src/lang/wasm'
+import {
+  assertParse,
+  getAllOperations,
+  type PathToNode,
+  recast,
+  type Name,
+} from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -1394,7 +1400,7 @@ t = sketch(on = plane001) {
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const loft = operations.find(
+      const loft = getAllOperations(operations).find(
         (op) => op.type === 'StdLibCall' && op.name === 'loft'
       )
       if (!loft || loft.type !== 'StdLibCall') throw new Error('Op not found')
@@ -2177,7 +2183,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
           ast,
           rustContextInThisFile
         )
-        const op = operations.find(
+        const op = getAllOperations(operations).find(
           (o) => o.type === 'StdLibCall' && o.name === 'helix'
         )
         if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
@@ -2210,7 +2216,7 @@ helix001 = helix(
         ast,
         rustContextInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'helix'
       )
       if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
@@ -2253,7 +2259,7 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
         ast,
         rustContextInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'revolve'
       )
       if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
@@ -2285,7 +2291,7 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
         ast,
         rustContextInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'extrude'
       )
       if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.bodyType) {

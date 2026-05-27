@@ -964,12 +964,9 @@ description: Operations executed multi-axis-robot.kcl
   ],
   "public/kcl-samples/multi-axis-robot/main.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "robot-arm-base.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "robot-arm-base.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -981,55 +978,9 @@ description: Operations executed multi-axis-robot.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "robot-arm-j2.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "robot-arm-j3.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "robot-rotating-base.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "robot-rotating-base.kcl",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -1041,10 +992,49 @@ description: Operations executed multi-axis-robot.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "ModuleInstance",
+      "name": "robot-arm-j2.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "ModuleInstance",
+      "name": "robot-arm-j3.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "globals.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "GroupBegin",
       "group": {
@@ -6086,6 +6076,20 @@ description: Operations executed multi-axis-robot.kcl
   ],
   "public/kcl-samples/multi-axis-robot/robot-arm-j2.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "globals.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -7469,6 +7473,20 @@ description: Operations executed multi-axis-robot.kcl
     }
   ],
   "public/kcl-samples/multi-axis-robot/robot-arm-j3.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "globals.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "GroupBegin",
       "group": {
@@ -11333,6 +11351,20 @@ description: Operations executed multi-axis-robot.kcl
     }
   ],
   "public/kcl-samples/multi-axis-robot/robot-rotating-base.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "globals.kcl",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "GroupBegin",
       "group": {

@@ -59,6 +59,17 @@ pub enum Operation {
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
+    #[serde(rename_all = "camelCase")]
+    ModuleInstance {
+        /// The name of the module being used.
+        name: String,
+        /// The ID of the module which can be used to determine its path.
+        module_id: ModuleId,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
+        /// The source range of the operation in the source code.
+        source_range: SourceRange,
+    },
     GroupEnd,
 }
 
@@ -67,7 +78,10 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { is_error, .. } => *is_error = is_err,
-            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd => {}
+            Self::VariableDeclaration { .. }
+            | Self::GroupBegin { .. }
+            | Self::ModuleInstance { .. }
+            | Self::GroupEnd => {}
         }
     }
 
@@ -92,6 +106,11 @@ impl Operation {
                 ..
             }
             | Operation::GroupBegin {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::ModuleInstance {
                 node_path,
                 source_range,
                 ..
@@ -121,15 +140,6 @@ pub enum Group {
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
-    },
-    /// A whole-module import use.
-    #[allow(dead_code)]
-    #[serde(rename_all = "camelCase")]
-    ModuleInstance {
-        /// The name of the module being used.
-        name: String,
-        /// The ID of the module which can be used to determine its path.
-        module_id: ModuleId,
     },
     /// A sketch block.
     #[allow(dead_code)]

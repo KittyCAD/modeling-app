@@ -1,4 +1,4 @@
-import { recast, type PlaneArtifact } from '@src/lang/wasm'
+import { getAllOperations, recast, type PlaneArtifact } from '@src/lang/wasm'
 import type {
   NonCodeSelection,
   Selections,
@@ -1175,7 +1175,7 @@ hole001 = hole::hole(
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'hole::hole'
     )
     if (!op || op.type !== 'StdLibCall' || !op.labeledArgs) {
@@ -1365,7 +1365,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'shell'
       )
       if (
@@ -1409,7 +1409,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       const lastTwoSweeps = [...artifactGraph.values()]
         .filter((a) => a.type === 'sweep')
         .slice(-2)
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'shell'
       )
       if (
@@ -1450,7 +1450,7 @@ plane002 = offsetPlane(plane001, offset = 2)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.findLast(
+      const op = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1474,7 +1474,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1500,7 +1500,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.findLast(
+      const op = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1524,7 +1524,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1553,7 +1553,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1578,7 +1578,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
           instanceInThisFile,
           kclManagerInThisFile
         )
-      const offsetPlaneOp = operations.findLast(
+      const offsetPlaneOp = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp | undefined
       if (!offsetPlaneOp?.unlabeledArg) {
