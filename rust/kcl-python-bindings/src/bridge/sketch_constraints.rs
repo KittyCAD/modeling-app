@@ -4,7 +4,7 @@ use pyo3::pymethods;
 /// Overall constraint status of a sketch.
 #[pyo3_stub_gen::derive::gen_stub_pyclass_enum]
 #[allow(clippy::enum_variant_names)] // Variant names mirror kcl_lib::ConstraintKind for 1:1 Python API mapping.
-#[pyclass(eq, eq_int)]
+#[pyclass(eq, eq_int, from_py_object)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ConstraintKind {
     FullyConstrained,
@@ -26,7 +26,7 @@ impl From<kcl_lib::ConstraintKind> for ConstraintKind {
 
 /// Per-sketch summary of constraint freedom analysis.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 pub struct SketchConstraintStatus {
     #[pyo3(get)]
@@ -55,7 +55,7 @@ impl From<kcl_lib::SketchConstraintStatus> for SketchConstraintStatus {
 
 /// Full KCL error details associated with an incomplete report.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 pub struct KclErrorInfo {
     #[pyo3(get)]
@@ -66,7 +66,7 @@ pub struct KclErrorInfo {
 
 /// Grouped report of all sketches by constraint status.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 pub struct SketchConstraintReport {
     #[pyo3(get)]

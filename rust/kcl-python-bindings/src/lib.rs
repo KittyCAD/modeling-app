@@ -22,6 +22,7 @@ use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::RawFile;
 use kittycad_modeling_cmds::{self as kcmc};
 use pyo3::Bound;
+use pyo3::Py;
 use pyo3::PyErr;
 use pyo3::PyResult;
 use pyo3::Python;
@@ -148,7 +149,7 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 // Keep the stub for this exception manual in `kcl.pyi`. `pyo3_stub_gen`
 // generates code for this `PyException` subclass that does not compile on
 // PyPy, because it references `pyo3::prepare_freethreaded_python`.
-#[pyclass(name = "KclError", extends = PyException)]
+#[pyclass(name = "KclError", extends = PyException, from_py_object)]
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
@@ -168,7 +169,7 @@ impl PyKclError {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, Copy)]
 pub struct DefaultUnits {
     length: UnitLength,
@@ -233,7 +234,7 @@ async fn new_context_state(
 
 /// Wrapper for [kcl_lib::kcl_error::CompilationIssue].
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompilationIssue {
     inner: kcl_lib::CompilationIssue,
@@ -263,7 +264,7 @@ impl CompilationIssue {
 
 /// Returned from execution functions.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 struct ExecOutcome {
     issues: Vec<CompilationIssue>,
@@ -744,7 +745,7 @@ async fn execute_code_and_bounding_box(
 /// Customize a snapshot.
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 pub struct SnapshotOptions {
     /// If none, will use isometric view.
     pub camera: Option<bridge::CameraLookAt>,
@@ -1117,7 +1118,7 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
 /// and any lints that couldn't be automatically applied.
 #[derive(Serialize, Debug, Clone)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 pub struct FixedLints {
     /// Code after suggestions have been applied.
     pub new_code: String,

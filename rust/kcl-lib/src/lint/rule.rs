@@ -37,7 +37,11 @@ where
 /// Specific discovered lint rule Violation of a particular Finding.
 #[derive(Clone, Debug, ts_rs::TS, Serialize)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
+#[cfg_attr(
+    feature = "pyo3",
+    pyo3::pyclass(from_py_object),
+    pyo3_stub_gen::derive::gen_stub_pyclass
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
@@ -188,7 +192,11 @@ impl IntoDiagnostic for &Discovered {
 /// Abstract lint problem type.
 #[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
+#[cfg_attr(
+    feature = "pyo3",
+    pyo3::pyclass(from_py_object),
+    pyo3_stub_gen::derive::gen_stub_pyclass
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Finding {
     /// Unique identifier for this particular issue.
@@ -210,7 +218,7 @@ pub struct Finding {
 /// Abstract lint problem type.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ts_rs::TS, Serialize, Hash)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(from_py_object))]
 #[serde(rename_all = "camelCase")]
 pub enum FindingFamily {
     /// KCL style guidelines, e.g. identifier casing.

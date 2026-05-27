@@ -5,7 +5,13 @@ import {
 } from '@src/components/Explorer/utils'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import { beforeAll, expect, describe, it, beforeEach, afterEach } from 'vitest'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
@@ -197,6 +203,60 @@ describe('ProjectExplorer', () => {
     expect(items.length).toBe(2)
     expect(items[0].innerText).toBe('parts')
     expect(items[1].innerText).toBe('main.kcl')
+    expect(items[1]).toHaveAttribute('aria-selected', 'true')
+  })
+  it('should select the current file when it changes after load', async () => {
+    const rootFile = createFile('main.kcl')
+    const importedMainFile = createFile('main.kcl', 'shared-project/')
+    project.children = [
+      rootFile,
+      createFolder('shared-project', [importedMainFile]),
+    ]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    const { rerender } = render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={rootFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+        overrideApplicationProjectDirectory="applicationDirectory/"
+      />
+    )
+
+    rerender(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={importedMainFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+        overrideApplicationProjectDirectory="applicationDirectory/"
+      />
+    )
+
+    await waitFor(() => {
+      const items = screen.getAllByTestId('file-tree-item')
+      const selectedRows = items.filter(
+        (item) => item.getAttribute('aria-selected') === 'true'
+      )
+      expect(selectedRows).toHaveLength(1)
+      expect(selectedRows[0].innerText).toBe('main.kcl')
+      expect(items[0].innerText).toBe('shared-project')
+      expect(selectedRows[0]).toBe(items[1])
+    })
   })
   it('should render main.kcl on initialization within 3 nested folders', () => {
     const mainFile = createFile('main.kcl', 'parts/very/cool/')

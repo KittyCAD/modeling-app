@@ -163,7 +163,7 @@ pub struct ModuleArtifactState {
     /// Map from artifact ID to object ID in the scene.
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
 }
 
 #[derive(Debug, Clone)]
@@ -1106,15 +1106,15 @@ impl SketchBlockState {
         &self,
         solve_outcome: &Solved,
         solution_ty: NumericType,
-        range: SourceRange,
-    ) -> Result<Vec<(SourceRange, Number)>, KclError> {
+        sketch_block_range: SourceRange,
+    ) -> Result<Vec<(SourceRange, Option<NodePath>, Number)>, KclError> {
         self.sketch_vars
             .iter()
             .map(|v| {
                 let Some(sketch_var) = v.as_sketch_var() else {
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         "Expected sketch variable".to_owned(),
-                        vec![range],
+                        vec![sketch_block_range],
                     )));
                 };
                 let var_index = sketch_var.id.0;
@@ -1131,14 +1131,14 @@ impl SketchBlockState {
                     units: solution_ty.try_into().map_err(|_| {
                         KclError::new_internal(KclErrorDetails::new(
                             "Failed to convert numeric type to units".to_owned(),
-                            vec![range],
+                            vec![sketch_block_range],
                         ))
                     })?,
                 };
                 let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
                     return Ok(None);
                 };
-                Ok(Some((source_range, solved_value)))
+                Ok(Some((source_range, sketch_var.node_path.clone(), solved_value)))
             })
             .filter_map(Result::transpose)
             .collect::<Result<Vec<_>, KclError>>()

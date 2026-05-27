@@ -205,6 +205,8 @@ fn fixed_origin_datum_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -215,6 +217,8 @@ fn fixed_origin_datum_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -517,6 +521,8 @@ fn extract_arc_component(
                     id: var_id,
                     initial_value: normalized_value.n,
                     ty: normalized_value.ty,
+                    // Synthesized to fix a constant; not backed by a `var` in source.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -3630,6 +3636,8 @@ fn create_hidden_point(
             id: x_id,
             initial_value: initial_position[0],
             ty: sketch_var_ty,
+            // Synthesized symmetric() support point coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3640,6 +3648,8 @@ fn create_hidden_point(
             id: y_id,
             initial_value: initial_position[1],
             ty: sketch_var_ty,
+            // Synthesized symmetric() support point coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3791,6 +3801,8 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
             id: radius_id,
             initial_value: radius_initial_value,
             ty: sketch_var_ty,
+            // Synthesized hidden radius for equalRadius(); no source `var` to map back to.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -4006,6 +4018,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     id: radius_id,
                     initial_value: radius_initial_value,
                     ty: sketch_var_ty,
+                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -4064,6 +4078,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     id: radius0_id,
                     initial_value: radius0_initial_value,
                     ty: sketch_var_ty,
+                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -4079,6 +4095,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     id: radius1_id,
                     initial_value: radius1_initial_value,
                     ty: sketch_var_ty,
+                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -4481,6 +4499,8 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
                 id: radius_id,
                 initial_value: radius_initial_value,
                 ty: sketch_var_ty,
+                // Synthesized shared radius for equalRadius() across circulars; not source-backed.
+                node_path: None,
                 meta: vec![],
             }),
         });
