@@ -495,6 +495,8 @@ pub(crate) struct Solved {
     pub(crate) priority_solved: u32,
     /// Variables involved in unsatisfied constraints (for conflict detection)
     pub(crate) variables_in_conflicts: AHashSet<ezpz::Id>,
+    /// Did the solver converge on a solution?
+    pub(crate) converged: bool,
 }
 
 impl Solved {
@@ -524,6 +526,7 @@ impl Solved {
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
             variables_in_conflicts,
+            converged: value.converged(),
         }
     }
 }
@@ -1099,6 +1102,7 @@ mod tests {
             warnings: vec![],
             priority_solved: 0,
             variables_in_conflicts: AHashSet::new(),
+            converged: true,
         };
 
         let substituted = substitute_sketch_vars(

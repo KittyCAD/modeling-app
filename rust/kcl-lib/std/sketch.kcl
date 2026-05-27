@@ -728,32 +728,43 @@ export fn ellipse(
 /// |> appearance(color = "#FFFF00")
 /// ```
 /// ``` kcl, sketchSolve
-/// // Draft extrusions, both inward and outward
+/// // Examples showing extrude with a positive/negative draft.
+/// @settings(experimentalFeatures = allow, kclVersion = 2.0)
+/// 
 /// sketch001 = sketch(on = XY) {
-///   line1 = line(start = [var -5.18mm, var 3.57mm], end = [var 2.21mm, var 3.57mm])
-///   line2 = line(start = [var 2.21mm, var 3.57mm], end = [var 2.21mm, var -0.87mm])
-///   line3 = line(start = [var 2.21mm, var -0.87mm], end = [var -5.18mm, var -0.87mm])
-///   line4 = line(start = [var -5.18mm, var -0.87mm], end = [var -5.18mm, var 3.57mm])
+///   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
+///   line2 = line(start = [var -4.52mm, var 0.96mm], end = [var -2.45mm, var 0.96mm])
 ///   coincident([line1.end, line2.start])
+///   line3 = line(start = [var -2.45mm, var 0.96mm], end = [var -3.39mm, var 2.51mm])
 ///   coincident([line2.end, line3.start])
-///   coincident([line3.end, line4.start])
-///   coincident([line4.end, line1.start])
-///   parallel([line2, line4])
-///   parallel([line3, line1])
-///   perpendicular([line1, line2])
-///   horizontal(line3)
+///   coincident([line3.end, line1.start])
+///   line4 = line(start = [var 1.62mm, var 2.61mm], end = [var 0.65mm, var 0.91mm])
+///   line5 = line(start = [var 0.65mm, var 0.91mm], end = [var 2.64mm, var 0.91mm])
+///   coincident([line4.end, line5.start])
+///   line6 = line(start = [var 2.64mm, var 0.91mm], end = [var 1.62mm, var 2.61mm])
+///   coincident([line5.end, line6.start])
+///   coincident([line6.end, line4.start])
+///   line7 = line(start = [var -1.2mm, var 2.56mm], end = [var -1.89mm, var 0.85mm])
+///   line8 = line(start = [var -1.89mm, var 0.85mm], end = [var -0.33mm, var 0.85mm])
+///   coincident([line7.end, line8.start])
+///   line9 = line(start = [var -0.33mm, var 0.85mm], end = [var -1.2mm, var 2.56mm])
+///   coincident([line8.end, line9.start])
+///   coincident([line9.end, line7.start])
 /// }
+/// 
+/// // Three triangular regions
+/// region001 = region(point = [-3.9529799mm, 1.7335272mm], sketch = sketch001)
+/// region002 = region(point = [1.1371714mm, 1.758761mm], sketch = sketch001)
+/// region003 = region(point = [-1.5426816mm, 1.7040645mm], sketch = sketch001)
 /// hidden001 = hide(sketch001)
-/// region001 = region(point = [-1.485mm, 3.5675mm], sketch = sketch001)
-/// extrude001 = extrude(region001, length = 5, draftAngle = 45)
-/// sketch002 = sketch(on = XY) {
-/// }
-/// sketch003 = sketch(on = XZ) {
-///   circle1 = circle(start = [var 3.54mm, var 3.06mm], center = [var 5.59mm, var 4.56mm])
-/// }
-/// hidden002 = hide(sketch003)
-/// region002 = region(point = [7.6379824mm, 6.0585237mm], sketch = sketch003)
-/// extrude002 = extrude(region002, length = -5, draftAngle = -45)
+/// 
+/// // Extrude the regions, with a positive draft, negative draft, and no draft at all.
+/// // Positive draft means the sketch gets _smaller_ as it gets extruded.
+/// positiveDraft = extrude(region001, length = 2, draftAngle = 30deg)
+/// // Negative draft means the sketch gets _bigger_ as it gets extruded.
+/// negativeDraft = extrude(region002, length = 2, draftAngle = -30deg)
+/// // No draft means the sketch stays the exact same size as it gets extruded.
+/// zeroDraft = extrude(region003, length = 2)
 /// ```
 /// ```kcl,legacySketch
 /// // Surface extrude of a closed profile
@@ -811,8 +822,10 @@ export fn extrude(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
-  /// Draft angle to use while extruding
-  draftAngle?: number(Angle),
+  /// Positive draft angle means the sketch gets smaller while extruding, i.e. inwards draft.
+  /// Negative draft angle means the sketch gets bigger while extruding, i.e. outwards draft.
+  /// Defaults to zero, i.e. no draft.
+  @(experimental = true) draftAngle?: number(Angle),
   /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.

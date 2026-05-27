@@ -301,6 +301,14 @@ async fn inner_extrude(
         )));
     }
 
+    if draft_angle.is_some() && twist_angle.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Zoo currently does not support adding both draft angle and twist angle to an extrude simultaneously"
+                .to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));

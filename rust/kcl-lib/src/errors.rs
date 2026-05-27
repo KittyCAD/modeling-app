@@ -14,6 +14,7 @@ use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ModuleId;
+use crate::NodePath;
 use crate::SourceRange;
 use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;
@@ -224,7 +225,7 @@ pub struct KclErrorWithOutputs {
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -242,7 +243,7 @@ impl KclErrorWithOutputs {
         artifact_graph: ArtifactGraph,
         scene_objects: Vec<Object>,
         source_range_to_object: BTreeMap<SourceRange, ObjectId>,
-        var_solutions: Vec<(SourceRange, Number)>,
+        var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
