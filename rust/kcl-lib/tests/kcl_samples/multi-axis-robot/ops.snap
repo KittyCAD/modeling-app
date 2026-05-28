@@ -1025,6 +1025,7 @@ description: Operations executed multi-axis-robot.kcl
       "type": "ModuleInstance",
       "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -6079,6 +6080,7 @@ description: Operations executed multi-axis-robot.kcl
       "type": "ModuleInstance",
       "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -7477,6 +7479,7 @@ description: Operations executed multi-axis-robot.kcl
       "type": "ModuleInstance",
       "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -11355,6 +11358,7 @@ description: Operations executed multi-axis-robot.kcl
       "type": "ModuleInstance",
       "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {

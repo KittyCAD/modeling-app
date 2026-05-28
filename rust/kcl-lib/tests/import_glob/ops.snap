@@ -39,6 +39,7 @@ description: Operations executed import_glob.kcl
       "type": "ModuleInstance",
       "name": "export_constant",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {

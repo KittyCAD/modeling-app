@@ -8,6 +8,7 @@ description: Operations executed coilover-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -7266,6 +7267,7 @@ description: Operations executed coilover-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -14238,6 +14240,7 @@ description: Operations executed coilover-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {

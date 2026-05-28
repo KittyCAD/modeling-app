@@ -8,6 +8,7 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -4797,6 +4798,7 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -7758,6 +7760,7 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -16973,6 +16976,7 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -18037,6 +18041,7 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
