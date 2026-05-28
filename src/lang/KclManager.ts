@@ -2978,6 +2978,9 @@ export class KclManager extends File {
         redoCode === undefined ? undefined : normalizeLineEndings(redoCode),
     }
   }
+  hasPendingZookeeperCodeEdit() {
+    return this.pendingZookeeperHistoryEntry?.redoCode !== undefined
+  }
   commitPendingZookeeperHistoryEntry() {
     const pendingEntry = this.pendingZookeeperHistoryEntry
     if (!pendingEntry) {

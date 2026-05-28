@@ -75,6 +75,22 @@ export function SystemIOMachineLogicListener() {
       )
     }
 
+    const isZookeeperSameFileNavigation =
+      requestedFilePathWithExtension !== null &&
+      requestedFilePathWithExtension === kclManager.path &&
+      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem &&
+      kclManager.hasPendingZookeeperCodeEdit()
+
+    if (isZookeeperSameFileNavigation) {
+      // Same-file Zookeeper edits may not trigger a routed file reload, so
+      // commit the pending editor history before the next prompt can overwrite it.
+      kclManager.engineCommandManager.rejectAllModelingCommands(
+        EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      )
+      kclManager.commitPendingZookeeperHistoryEntry()
+      return
+    }
+
     // Close current file in current project if it exists
     onFileClose(filePathWithExtension, projectDirectory)
     // Open the requested file in the requested project
