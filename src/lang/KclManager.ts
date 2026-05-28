@@ -1692,6 +1692,12 @@ export class KclManager extends File {
           const docAlreadyMatchesReplay =
             vu.state.doc.toString() === effect.value.redoCode
           if (!docAlreadyMatchesReplay) {
+            if (isHistoryReplay) {
+              this.syncZookeeperHistoryIndexFromCodeTransition(
+                vu.state.doc.toString(),
+                effect.value.redoCode
+              )
+            }
             this.updateCodeEditor(
               effect.value.redoCode,
               {
@@ -3003,6 +3009,49 @@ export class KclManager extends File {
       codeMatchesRedo &&
       pendingEntry.redoCodeWasAddedToHistory
     ) {
+      this.rememberZookeeperHistoryEntry({
+        undoCode: pendingEntry.undoCode,
+        redoCode,
+      })
+      this.markFileCodeAsSynced(redoCode)
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
+    // The Zookeeper result may already be in the editor from a programmatic
+    // update that intentionally skipped history. Record the history event
+    // without rewinding the document, because that can remap older CM history.
+    if (!codeMatchesUndo && codeMatchesRedo) {
+      this.editorView.dispatch({
+        annotations: [
+          updateOutsideEditorEvent,
+          Transaction.addToHistory.of(true),
+          isolateHistory.of('full'),
+        ],
+        effects: [
+          syntheticHistoryCommitEffect.of({
+            undoCode: pendingEntry.undoCode,
+            redoCode,
+            undoCheckpointId: null,
+            redoCheckpointId: null,
+            options: {
+              shouldExecute: true,
+              shouldResetCamera: false,
+              shouldWriteToDisk: true,
+            },
+          }),
+          requestWriteToFile.of(true),
+        ],
+      })
+      this.lastCommittedCode = redoCode
+      this.lastCommittedAdditionalSpec = undefined
+      this.lastCommittedSketchCheckpointId = null
+      if (this.engineCommandManager.connection?.connected) {
+        this.deferredExecution({
+          newCode: redoCode,
+          shouldResetCamera: false,
+          requestedUserDocumentVersion: this._userDocumentVersion,
+        })
+      }
       this.rememberZookeeperHistoryEntry({
         undoCode: pendingEntry.undoCode,
         redoCode,
