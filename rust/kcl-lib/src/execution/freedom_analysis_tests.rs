@@ -18,6 +18,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
 
     let mock_config = MockConfig {
