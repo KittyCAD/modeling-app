@@ -464,13 +464,13 @@ describe('keymap contract', () => {
     const visibleItem = createKeymapItem({
       id: 'toolbar.sketch.exit',
       command: 'zds.toolbar.sketch.exit',
-      keystrokes: ['mod+escape'],
+      keystrokes: ['shift+escape'],
       scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     })
     const hiddenAlias = createKeymapItem({
-      id: 'toolbar.sketch.exit.meta-escape',
+      id: 'toolbar.sketch.exit.alias',
       command: 'zds.toolbar.sketch.exit',
-      keystrokes: ['meta+escape'],
+      keystrokes: ['escape'],
       scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       hidden: true,
       userBindingCommand: 'zds.toolbar.sketch.exit',
@@ -481,7 +481,7 @@ describe('keymap contract', () => {
         bindings: [
           {
             command: '-zds.toolbar.sketch.exit',
-            keystrokes: ['mod+escape'],
+            keystrokes: ['shift+escape'],
             scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
           },
         ],
@@ -492,14 +492,14 @@ describe('keymap contract', () => {
       matchKeymapKeystrokes(
         tree,
         [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['mod+escape']
+        ['shift+escape']
       )
     ).toEqual({ type: 'none' })
     expect(
       matchKeymapKeystrokes(
         tree,
         [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['meta+escape']
+        ['escape']
       )
     ).toEqual({ type: 'none' })
   })

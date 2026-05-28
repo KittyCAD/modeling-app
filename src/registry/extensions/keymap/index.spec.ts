@@ -4,7 +4,6 @@ import {
   defineRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   type CommandSystemService,
   commandSystemService,
@@ -53,39 +52,28 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
-  it('uses a browser-safe Exit Sketch keybinding outside the desktop app', () => {
-    const expectedExitSketchKeystroke = isDesktop()
-      ? 'mod+escape'
-      : 'shift+escape'
-
+  it('uses Shift+Escape to exit sketch across desktop and web', () => {
     expect(
       defaultKeymap.bindings.find(
         (binding) => binding.id === 'toolbar.sketch-legacy.exit'
       )?.keystrokes
-    ).toEqual([expectedExitSketchKeystroke])
+    ).toEqual(['shift+escape'])
     expect(
       defaultKeymap.bindings.find(
         (binding) => binding.id === 'toolbar.sketch.exit'
       )?.keystrokes
-    ).toEqual([expectedExitSketchKeystroke])
+    ).toEqual(['shift+escape'])
 
     expect(
-      defaultKeymap.bindings.some(
-        (binding) =>
-          binding.id === 'toolbar.sketch-legacy.exit.meta-escape' &&
-          binding.hidden === true &&
-          binding.keystrokes[0] === 'meta+escape'
+      defaultKeymap.bindings.filter((binding) =>
+        binding.id.startsWith('toolbar.sketch-legacy.exit')
       )
-    ).toBe(isDesktop())
+    ).toHaveLength(1)
     expect(
-      defaultKeymap.bindings.some(
-        (binding) =>
-          binding.id === 'toolbar.sketch.exit.meta-escape' &&
-          binding.hidden === true &&
-          binding.userBindingCommand === 'zds.toolbar.sketch.exit' &&
-          binding.keystrokes[0] === 'meta+escape'
+      defaultKeymap.bindings.filter((binding) =>
+        binding.id.startsWith('toolbar.sketch.exit')
       )
-    ).toBe(isDesktop())
+    ).toHaveLength(1)
   })
 
   it('hides legacy sketch keybindings and links them to user-facing sketch bindings', () => {
