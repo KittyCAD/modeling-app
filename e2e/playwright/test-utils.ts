@@ -1425,7 +1425,7 @@ export async function expectKeybindingsSettingsVisible(page: Page) {
     settings.getByRole('button', { name: 'Add keybinding' })
   ).toBeVisible()
   await expect(
-    settings.getByRole('columnheader', { name: 'Action' })
+    settings.getByRole('columnheader', { name: 'Title' })
   ).toBeVisible()
   await expect(
     settings.getByRole('columnheader', { name: 'Keystrokes' })
