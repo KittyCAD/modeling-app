@@ -140,6 +140,14 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
     let mut types = HashMap::new();
     types.insert("Primitive types".to_owned(), Vec::new());
 
+    let mut module_properties: HashMap<String, Properties> = HashMap::new();
+    module_properties.insert(kcl_lib.qual_name.clone(), kcl_lib.properties.clone());
+    for d in kcl_lib.all_docs() {
+        if let DocData::Mod(m) = d {
+            module_properties.insert(m.qual_name.clone(), m.properties.clone());
+        }
+    }
+
     for d in kcl_lib.all_docs() {
         if d.hide() {
             continue;
@@ -155,6 +163,7 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         group.push((
             d.preferred_name().to_owned(),
             format!("{STDLIB_LINK_PREFIX}/{}", d.file_name()),
+            d.is_experimental(),
         ));
     }
 
@@ -162,12 +171,15 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut fns)| {
             fns.sort();
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
-                "items": fns.into_iter().map(|(n, f)| json!({
+                "experimental": experimental,
+                "items": fns.into_iter().map(|(n, f, e)| json!({
                     "name": n,
                     "file_name": f,
+                    "experimental": e,
                 })).collect::<Vec<_>>(),
             });
             (m, val)
@@ -180,12 +192,15 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut consts)| {
             consts.sort();
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
-                "items": consts.into_iter().map(|(n, f)| json!({
+                "experimental": experimental,
+                "items": consts.into_iter().map(|(n, f, e)| json!({
                     "name": n,
                     "file_name": f,
+                    "experimental": e,
                 })).collect::<Vec<_>>(),
             });
             (m, val)
@@ -203,12 +218,15 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
                 format!("{STDLIB_LINK_PREFIX}/modules/{}", m.replace("::", "-"))
             };
             tys.sort();
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": file_name,
-                "items": tys.into_iter().map(|(n, f)| json!({
+                "experimental": experimental,
+                "items": tys.into_iter().map(|(n, f, e)| json!({
                     "name": n,
                     "file_name": f,
+                    "experimental": e,
                 })).collect::<Vec<_>>(),
             });
             (m, val)
