@@ -40,19 +40,68 @@ import {
 
 type AllKeybindingsFieldsProps = object
 
+/**
+ * How a row in the keybindings table relates to app-provided keymap items and
+ * persisted user keymap TOML.
+ *
+ * - `app`: an app-provided keybinding with no matching user entry.
+ * - `override`: an app-provided keybinding shown with a matching user entry's
+ *   editable values.
+ * - `unbound`: an app-provided keybinding whose matching user entry disables
+ *   the default binding.
+ * - `user`: a user-created keybinding that does not override an app-provided
+ *   item.
+ */
 type KeybindingRowState = 'app' | 'override' | 'unbound' | 'user'
 
+/**
+ * UI projection of app-provided keymap items and persisted user keymap TOML.
+ */
 type KeybindingRow = {
   id: string
   state: KeybindingRowState
+  /**
+   * The app-provided keymap item this row represents. Undefined for standalone
+   * user-created rows.
+   */
   appItem?: KeymapItem
+  /**
+   * The persisted user binding currently backing this row, either as an
+   * override/unbind of an app item or as a standalone user-created binding.
+   */
   userBinding?: KeymapBinding
+  /**
+   * Index of `userBinding` inside the persisted TOML bindings array, used to
+   * replace or remove the correct entry when editing.
+   */
   userBindingIndex?: number
+  /**
+   * Effective command displayed by the row. App-backed rows keep the app
+   * command even when overridden so user edits continue to target that item.
+   */
   command: string
+  /**
+   * Effective title displayed by the row, preferring a user override title when
+   * present.
+   */
   title: string
+  /**
+   * Effective keystrokes displayed and edited by the row. Unbound rows expose
+   * an empty list because the user TOML disables the app binding.
+   */
   keystrokes: readonly string[]
+  /**
+   * Effective serializable command arguments displayed by the row.
+   */
   arguments?: KeymapArguments
+  /**
+   * Effective scopes displayed and edited by the row.
+   */
   scopes?: readonly string[]
+  /**
+   * Display source for the row. App-backed rows keep the original app source
+   * even when overridden; standalone user rows use the user source.
+   */
   source: string
 }
 
