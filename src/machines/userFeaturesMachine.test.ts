@@ -8,6 +8,12 @@ import {
 import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
+type TestFetchUserFeaturesInput = {
+  token: string
+}
+
+type TestFetchUserFeaturesResult = { featureIds: Set<string> } | Error
+
 describe('userFeaturesMachine', () => {
   it('loads feature ids once for a token and answers membership from context', async () => {
     const fetchFeatures = vi.fn(async () => ({
@@ -16,7 +22,10 @@ describe('userFeaturesMachine', () => {
     const actor = createActor(
       userFeaturesMachine.provide({
         actors: {
-          [UserFeaturesActor.Fetch]: fromPromise(fetchFeatures),
+          [UserFeaturesActor.Fetch]: fromPromise<
+            TestFetchUserFeaturesResult,
+            TestFetchUserFeaturesInput
+          >(fetchFeatures),
         },
       })
     ).start()
@@ -43,7 +52,10 @@ describe('userFeaturesMachine', () => {
     const actor = createActor(
       userFeaturesMachine.provide({
         actors: {
-          [UserFeaturesActor.Fetch]: fromPromise(async () => ({
+          [UserFeaturesActor.Fetch]: fromPromise<
+            TestFetchUserFeaturesResult,
+            TestFetchUserFeaturesInput
+          >(async () => ({
             featureIds: new Set(['plugins']),
           })),
         },
@@ -69,17 +81,18 @@ describe('userFeaturesMachine', () => {
     const actor = createActor(
       userFeaturesMachine.provide({
         actors: {
-          [UserFeaturesActor.Fetch]: fromPromise(
-            async ({ input }: { input: { token: string } }) => {
-              if (input.token === 'token-b') {
-                throw new Error('feature service unavailable')
-              }
-
-              return {
-                featureIds: new Set(['plugins']),
-              }
+          [UserFeaturesActor.Fetch]: fromPromise<
+            TestFetchUserFeaturesResult,
+            TestFetchUserFeaturesInput
+          >(async ({ input }) => {
+            if (input.token === 'token-b') {
+              return new Error('feature service unavailable')
             }
-          ),
+
+            return {
+              featureIds: new Set(['plugins']),
+            }
+          }),
         },
       })
     ).start()

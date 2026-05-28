@@ -33,6 +33,7 @@ type FetchUserFeaturesInput = {
 type FetchUserFeaturesOutput = {
   featureIds: Set<string>
 }
+type FetchUserFeaturesResult = FetchUserFeaturesOutput | Error
 
 export interface UserFeaturesContext {
   featureIds: Set<string>
@@ -113,13 +114,13 @@ export const userFeaturesMachine = setup({
   },
   actors: {
     [UserFeaturesActor.Fetch]: fromPromise<
-      FetchUserFeaturesOutput,
+      FetchUserFeaturesResult,
       FetchUserFeaturesInput
     >(async ({ input }) => {
       const client = createKCClient(input.token)
       const result = await kcCall(() => users.user_features_get({ client }))
       if (result instanceof Error) {
-        throw result
+        return result
       }
 
       return {
@@ -137,6 +138,8 @@ export const userFeaturesMachine = setup({
       const token = getEventToken(context, event)
       return !!token && context.loadingToken === token
     },
+    fetchReturnedError: ({ event }) =>
+      'output' in event && event.output instanceof Error,
   },
   actions: {
     startLoading: assign(({ context, event }) => {
@@ -163,7 +166,11 @@ export const userFeaturesMachine = setup({
         return {}
       }
 
-      const output = event.output as FetchUserFeaturesOutput
+      const output = event.output as FetchUserFeaturesResult
+      if (output instanceof Error) {
+        return {}
+      }
+
       return {
         featureIds: output.featureIds,
         fetchedForToken: context.loadingToken,
@@ -174,7 +181,12 @@ export const userFeaturesMachine = setup({
     }),
     storeError: assign(({ event }) => ({
       loadingToken: undefined,
-      error: 'error' in event ? event.error : undefined,
+      error:
+        'output' in event && event.output instanceof Error
+          ? event.output
+          : 'error' in event
+            ? event.error
+            : undefined,
     })),
   },
 }).createMachine({
@@ -203,10 +215,17 @@ export const userFeaturesMachine = setup({
         input: ({ context }) => ({
           token: context.loadingToken ?? '',
         }),
-        onDone: {
-          target: UserFeaturesState.Ready,
-          actions: 'storeFeatures',
-        },
+        onDone: [
+          {
+            guard: 'fetchReturnedError',
+            target: UserFeaturesState.Failed,
+            actions: 'storeError',
+          },
+          {
+            target: UserFeaturesState.Ready,
+            actions: 'storeFeatures',
+          },
+        ],
         onError: {
           target: UserFeaturesState.Failed,
           actions: 'storeError',
