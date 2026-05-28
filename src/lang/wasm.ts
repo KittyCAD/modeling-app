@@ -15,6 +15,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
@@ -76,6 +77,7 @@ export type { Name } from '@rust/kcl-lib/bindings/Name'
 export type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 export type { ObjectExpression } from '@rust/kcl-lib/bindings/ObjectExpression'
 export type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
+export type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 export type { Parameter } from '@rust/kcl-lib/bindings/Parameter'
 export type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
 export type { PipeSubstitution } from '@rust/kcl-lib/bindings/PipeSubstitution'
@@ -244,6 +246,10 @@ export interface OperationsByModule {
   map: { [moduleId: number]: Operation[] }
 }
 
+export interface ExecCallbacks {
+  onOperation(args: OperationCallbackArgs): void
+}
+
 export const ROOT_MODULE_ID = 0
 
 export type PathToNode = [string | number, string][]
@@ -272,6 +278,27 @@ export interface ExecState {
 
 export function emptyOperationsByModule(): OperationsByModule {
   return { map: {} }
+}
+
+export function applyOperationCallbackToOperationsByModule(input: {
+  operationsByModule: OperationsByModule
+  callback: OperationCallbackArgs
+}): OperationsByModule {
+  const {
+    operationsByModule,
+    callback: { moduleId, operation, index },
+  } = input
+  const nextOperations = [
+    ...(operationsByModule.map[moduleId] ?? []),
+  ] as Operation[]
+  nextOperations[index] = operation
+
+  return {
+    map: {
+      ...operationsByModule.map,
+      [moduleId]: nextOperations,
+    },
+  }
 }
 
 /**

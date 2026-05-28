@@ -39,7 +39,7 @@ description: Operations executed import_side_effect.kcl
   "rust/kcl-lib/tests/import_side_effect/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "export_side_effect.kcl",
+      "name": "export_side_effect",
       "moduleId": 0,
       "nodePath": {
         "steps": [

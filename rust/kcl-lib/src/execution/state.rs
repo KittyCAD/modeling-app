@@ -32,6 +32,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
 use crate::execution::SketchVarId;
@@ -60,6 +61,7 @@ use crate::parsing::ast::types::TagNode;
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
+    pub(super) execution_callbacks: Option<std::sync::Arc<dyn crate::execution::ExecutionCallbacks>>,
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
 }
@@ -168,6 +170,8 @@ pub struct ModuleArtifactState {
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    /// The id of this module.
+    pub module_id: ModuleId,
     /// The id generator for this module.
     pub id_generator: IdGenerator,
     pub stack: Stack,
@@ -331,6 +335,7 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global: GlobalState::new(&exec_context.settings, Default::default()),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
@@ -341,6 +346,7 @@ impl ExecState {
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
         ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
             mod_local: ModuleState::new(
                 ModulePath::Main,
@@ -356,6 +362,7 @@ impl ExecState {
         let global = GlobalState::new(&exec_context.settings, Default::default());
 
         *self = ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
             mod_local: ModuleState::new(
                 self.mod_local.path.clone(),
@@ -681,7 +688,17 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
+        let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
+        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
+            && let Some(callbacks) = &self.execution_callbacks
+        {
+            callbacks.on_operation(OperationCallbackArgs {
+                module_id: self.mod_local.module_id,
+                operation,
+                index,
+            });
+        }
     }
 
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
@@ -1063,7 +1080,9 @@ impl ModuleState {
         sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
+        let state_module_id = module_id.unwrap_or_default();
         ModuleState {
+            module_id: state_module_id,
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,

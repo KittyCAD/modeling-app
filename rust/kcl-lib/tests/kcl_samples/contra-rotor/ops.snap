@@ -6,7 +6,7 @@ description: Operations executed contra-rotor.kcl
   "public/kcl-samples/contra-rotor/contra-assembly.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "contra-shaft.kcl",
+      "name": "contraShaft",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -20,7 +20,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "contra-propeller-assembly.kcl",
+      "name": "contraPropellerAssembly",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -812,7 +812,7 @@ description: Operations executed contra-rotor.kcl
   "public/kcl-samples/contra-rotor/contra-propeller-assembly.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "contra-propeller-hub.kcl",
+      "name": "contraPropellerHub",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -826,7 +826,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "contra-propeller-blades.kcl",
+      "name": "contraPropellerBlades",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12205,7 +12205,7 @@ description: Operations executed contra-rotor.kcl
   "public/kcl-samples/contra-rotor/main.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "primary-assembly.kcl",
+      "name": "primaryAssembly",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12219,7 +12219,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "contra-assembly.kcl",
+      "name": "contraAssembly",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12233,7 +12233,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "secondary-assembly.kcl",
+      "name": "secondaryAssembly",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12247,7 +12247,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "tertiary.kcl",
+      "name": "tertiary",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12263,7 +12263,7 @@ description: Operations executed contra-rotor.kcl
   "public/kcl-samples/contra-rotor/primary-assembly.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "primary-shaft.kcl",
+      "name": "primaryShaft",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12277,7 +12277,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "primary-propeller-assembly.kcl",
+      "name": "primaryPropellerAssembly",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -12291,7 +12291,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "primary-propeller-nose-cone.kcl",
+      "name": "primaryPropellerNoseCone",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -13058,7 +13058,7 @@ description: Operations executed contra-rotor.kcl
   "public/kcl-samples/contra-rotor/primary-propeller-assembly.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "primary-propeller-hub.kcl",
+      "name": "primaryPropellerHub",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -13072,7 +13072,7 @@ description: Operations executed contra-rotor.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "primary-propeller-blades.kcl",
+      "name": "primaryPropellerBlades",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -26239,7 +26239,7 @@ description: Operations executed contra-rotor.kcl
   "public/kcl-samples/contra-rotor/secondary-assembly.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "secondary-shaft.kcl",
+      "name": "secondaryShaft",
       "moduleId": 0,
       "nodePath": {
         "steps": [
