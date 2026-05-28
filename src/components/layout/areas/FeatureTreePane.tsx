@@ -763,10 +763,12 @@ const OperationItem = ({
   }, [item, code])
 
   const variableName = useMemo(() => {
-    // Module-owned operations have a nodePath relative to their own module's
-    // AST, not the currently open file.  Looking up the variable name in the
-    // wrong AST would return a bogus result (e.g. the parent module's alias).
-    if (isModuleOwned) return undefined
+    // Module-owned ModuleInstance operations have a nodePath relative to their
+    // own module's AST, not the currently open file.  Looking up the import
+    // alias in the wrong AST would return a bogus result (e.g. the parent
+    // module's alias).  Other operation types (VariableDeclaration, etc.)
+    // derive their name from the operation data directly, so they're safe.
+    if (isModuleOwned && item.type === 'ModuleInstance') return undefined
     return getOperationVariableName(item, ast, wasmInstance)
   }, [item, ast, wasmInstance, isModuleOwned])
 
