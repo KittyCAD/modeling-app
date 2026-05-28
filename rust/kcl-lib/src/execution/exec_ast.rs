@@ -741,6 +741,7 @@ impl ExecutorContext {
                         exec_state.push_op(Operation::ModuleInstance {
                             name,
                             module_id,
+                            glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
                             node_path: NodePath::placeholder(),
                             source_range,
                         });

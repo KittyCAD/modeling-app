@@ -1531,6 +1531,10 @@ impl ExecutorContext {
                 exec_state.push_op(crate::execution::cad_op::Operation::ModuleInstance {
                     name,
                     module_id: *module_id,
+                    glob: matches!(
+                        import_stmt.selector,
+                        crate::parsing::ast::types::ImportSelector::Glob(_)
+                    ),
                     node_path: crate::NodePath::placeholder(),
                     source_range,
                 });
@@ -1604,9 +1608,7 @@ impl ExecutorContext {
                             // use a fresh artifact state instead of capturing the
                             // cloned root module's artifacts (which may contain
                             // early-pushed ModuleInstance operations).
-                            result.map(|val| {
-                                ModuleRepr::Foreign(geom.clone(), Some((val, Default::default())))
-                            })
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),

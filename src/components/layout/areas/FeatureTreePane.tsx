@@ -526,7 +526,10 @@ function OperationBranchGroup({
       key={`${parentItem.moduleId}-${shouldBeOpen}`}
       defaultOpen={shouldBeOpen}
     >
-      <div className="flex items-start gap-1">
+      <div
+        className="flex items-start gap-1"
+        data-module-branch={parentItem.moduleId}
+      >
         <Disclosure.Button
           data-testid="operation-group-caret"
           className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
@@ -596,7 +599,18 @@ function OperationTreeNodeItem({
     )
   }
 
-  return <OperationItem item={node} {...props} />
+  // A plain ModuleInstance node (not a branch) is a deduplicated reference.
+  // Clicking it should scroll to the expanded branch for that module.
+  const referenceModuleId =
+    node.type === 'ModuleInstance' ? node.moduleId : undefined
+
+  return (
+    <OperationItem
+      item={node}
+      {...props}
+      referenceModuleId={referenceModuleId}
+    />
+  )
 }
 
 type OpValueProps = {
@@ -669,7 +683,7 @@ const OperationItemWrapper = memo(
         }
         menuItems={menuItems}
       >
-        {variableName ?? name}
+        {variableName && valueDetail ? name : (variableName ?? name)}
       </RowItemWithIconMenuAndToggle>
     )
   }
@@ -714,6 +728,8 @@ interface OperationProps {
   isModuleOwned?: boolean
   /** During live execution, the module that received the latest operation. */
   liveActiveModuleId?: number | null
+  /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */
+  referenceModuleId?: number
 }
 /**
  * A button with an icon, name, and context menu
@@ -730,6 +746,7 @@ const OperationItem = ({
   engineCommandManager,
   size,
   isModuleOwned = false,
+  referenceModuleId,
 }: OperationProps) => {
   useSignals()
   const app = useApp()
@@ -1246,6 +1263,13 @@ const OperationItem = ({
       type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
+      customSuffix={
+        item.type === 'ModuleInstance' && item.glob ? (
+          <span className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+            *
+          </span>
+        ) : undefined
+      }
       Tooltip={
         isModuleOwned ? undefined : (
           <Tooltip
@@ -1265,11 +1289,33 @@ const OperationItem = ({
       }
       menuItems={menuItems}
       onClick={
-        isStaleReference || isModuleOwned
-          ? undefined
-          : () => {
-              void selectOperation()
+        referenceModuleId != null
+          ? (e) => {
+              const container = (e.target as HTMLElement).closest(
+                '[data-testid="debug-panel"]'
+              )
+              const branch = container?.querySelector(
+                `[data-module-branch="${referenceModuleId}"]`
+              ) as HTMLElement | null
+              if (branch) {
+                branch.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                // Brief highlight on the module heading row.
+                const row = branch.querySelector<HTMLElement>(
+                  '[data-testid="feature-tree-operation-item"]'
+                )
+                if (row) {
+                  row.classList.add('bg-primary/25')
+                  setTimeout(() => {
+                    row.classList.remove('bg-primary/25')
+                  }, 1500)
+                }
+              }
             }
+          : isStaleReference || isModuleOwned
+            ? undefined
+            : () => {
+                void selectOperation()
+              }
       }
       onContextMenu={
         isStaleReference || isModuleOwned
@@ -1285,7 +1331,7 @@ const OperationItem = ({
       } // no double click in "Sketch no face" mode
       isSelected={isSelected}
       errors={errors}
-      disabled={!enabled}
+      disabled={!enabled && referenceModuleId == null}
       size={size}
       visibilityToggle={
         !isStaleReference &&
