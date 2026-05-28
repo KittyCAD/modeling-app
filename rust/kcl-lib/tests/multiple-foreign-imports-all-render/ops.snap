@@ -6,7 +6,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "../inputs/cube.step",
+      "name": "cube",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -46,7 +46,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "../inputs/cube.step",
+      "name": "cube",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -60,7 +60,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "othercube.kcl",
+      "name": "othercube",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -74,7 +74,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "anothercube.kcl",
+      "name": "anothercube",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -288,7 +288,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/othercube.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "../inputs/cube.step",
+      "name": "cube",
       "moduleId": 0,
       "nodePath": {
         "steps": [
