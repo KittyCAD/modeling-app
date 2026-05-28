@@ -240,6 +240,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::transform::hide(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::hide").warn_deprecated_on_consumed_solid_args(),
         ),
+        ("transform", "delete") => (
+            |e, a| Box::pin(crate::std::transform::delete(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::transform::delete"),
+        ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::offsetPlane"),

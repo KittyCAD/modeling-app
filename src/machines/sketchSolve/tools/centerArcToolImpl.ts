@@ -345,7 +345,10 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                 },
               },
             ],
-            settings
+            settings,
+            false,
+            [],
+            false
           )
           const sendData: SketchSolveMachineEvent = {
             type: 'update sketch outcome',
@@ -947,6 +950,16 @@ export async function finalizeArcActor({
         y: { type: 'Var', value: roundOff(finalEnd[1]), units },
       },
     }
+    const finalDragAnchorSegmentIds = isArcSegment(arcObj)
+      ? Array.from(
+          new Set([
+            arcObj.kind.segment.center,
+            clickedPointIsStart
+              ? arcObj.kind.segment.end
+              : arcObj.kind.segment.start,
+          ])
+        )
+      : undefined
 
     const settings = jsAppSettings(rustContext.settingsActor)
     const result = await rustContext.editSegments(
@@ -959,7 +972,8 @@ export async function finalizeArcActor({
         },
       ],
       settings,
-      startSnapTarget == null && endSnapTarget == null
+      startSnapTarget == null && endSnapTarget == null,
+      finalDragAnchorSegmentIds
     )
 
     const editedArc = result.sceneGraphDelta.new_graph.objects[arcId]
