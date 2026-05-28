@@ -375,6 +375,115 @@ async fn inner_flatness(
     Ok(annotations)
 }
 
+pub async fn straightness(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Vec<TagIdentifier> = args.get_kw_arg(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_straightness(
+        faces,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[expect(clippy::too_many_arguments)]
+async fn inner_straightness(
+    faces: Vec<TagIdentifier>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+    let mut annotations = Vec::with_capacity(faces.len());
+    let display_units = exec_state.length_unit();
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        let meta = vec![Metadata::from(args.source_range)];
+        let annotation_id = exec_state.next_uuid();
+        let feature_control = AnnotationFeatureControl::builder()
+            .entity_id(face_id)
+            // Point to the center of the face.
+            .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+            .leader_type(AnnotationLineEnd::Dot)
+            .control_frame(
+                AnnotationMbdControlFrame::builder()
+                    .symbol(MbdSymbol::Straightness)
+                    .tolerance(tolerance.to_length_units(display_units))
+                    .build(),
+            )
+            .plane_id(frame_plane.id)
+            .offset(if let Some(offset) = &frame_position {
+                KPoint2d {
+                    x: offset[0].to_mm(),
+                    y: offset[1].to_mm(),
+                }
+            } else {
+                KPoint2d { x: 100.0, y: 100.0 }
+            })
+            .precision(precision)
+            .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+            .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
+            .leader_scale(gdt_dot_leader_scale(leader_scale.as_ref(), font_size.as_ref(), args)?)
+            .build();
+        let options = AnnotationOptions::builder().feature_control(feature_control).build();
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+                ModelingCmd::from(
+                    mcmd::NewAnnotation::builder()
+                        .options(options)
+                        .clobber(false)
+                        .annotation_type(AnnotationType::T3D)
+                        .build(),
+                ),
+            )
+            .await?;
+        add_gdt_annotation_artifact(exec_state, args, annotation_id);
+        annotations.push(GdtAnnotation {
+            id: annotation_id,
+            meta,
+        });
+    }
+    Ok(annotations)
+}
+
 pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let edges: Vec<EdgeReference> = args.get_kw_arg(
         "edges",
