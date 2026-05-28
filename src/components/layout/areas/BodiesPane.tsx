@@ -1,4 +1,5 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
+import { ContextMenuItem } from '@src/components/ContextMenu'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -17,6 +18,7 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   type HideOperation,
   getHideOpByArtifactId,
+  onDelete,
   onHide,
   onUnhide,
 } from '@src/lib/operations'
@@ -157,13 +159,29 @@ function BodyItem({
       true
     )
   }
+  const handleDelete = () => {
+    onSelect()
+    onDelete({
+      modelingActor,
+      objects: selections,
+    })
+  }
 
   return (
     <li className="px-1 py-0.5 group/visibilityToggle">
       <RowItemWithIconMenuAndToggle
         icon="body"
         onClick={onSelect}
+        onContextMenu={() => onSelect()}
         isSelected={isSelected}
+        menuItems={[
+          <ContextMenuItem
+            onClick={handleDelete}
+            data-testid="context-menu-delete"
+          >
+            Delete
+          </ContextMenuItem>,
+        ]}
         Toggle={
           <VisibilityToggle
             visible={hideOperation === undefined}

@@ -81,6 +81,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addDelete,
   addMirror3D,
   addRotate,
   addScale,
@@ -105,6 +106,7 @@ import {
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -372,6 +374,9 @@ export type ModelingCommandSchema = {
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
+  }
+  Delete: {
+    objects: Selections
   }
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -2249,6 +2254,60 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       opacity: {
         inputType: 'kcl',
         required: false,
+      },
+    },
+  },
+  Delete: {
+    description: 'Delete selected bodies from the scene.',
+    icon: 'trash',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+
+      let ast = kclManager.ast
+      if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+        const astWithExperimentalFeatures = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          await kclManager.wasmInstancePromise
+        )
+        if (err(astWithExperimentalFeatures)) {
+          return astWithExperimentalFeatures
+        }
+
+        ast = astWithExperimentalFeatures
+      }
+
+      const modRes = addDelete({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete']),
+        ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      objects: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
       },
     },
   },
