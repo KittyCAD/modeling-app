@@ -2971,6 +2971,12 @@ export class KclManager extends File {
     }
   }
   beginPendingZookeeperHistoryEntry() {
+    // A previous Zookeeper tool output may have updated the editor before the
+    // navigation/reload path finalized its history entry. Preserve it before
+    // recording the next prompt baseline.
+    if (this.pendingZookeeperHistoryEntry?.redoCode !== undefined) {
+      this.commitPendingZookeeperHistoryEntry()
+    }
     this.pendingZookeeperHistoryEntry = {
       undoCode: this.code,
       redoCode: undefined,
