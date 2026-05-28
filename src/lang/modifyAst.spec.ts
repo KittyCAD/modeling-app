@@ -783,6 +783,45 @@ loft001 = loft([sketch001.line1, sketch002.line1], bodyType = SURFACE)`
     expect(newCode).not.toContain('loft001 = loft')
   })
 
+  it('deletes a surface extrude of a sketch segment selected from the feature tree operation range', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const extrudeOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'extrude'
+    )
+    if (!extrudeOperation || extrudeOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find extrude operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        extrudeOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('path')
+    if (artifact?.type === 'path') {
+      expect(artifact.subType).toBe('sketch')
+    }
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(extrudeOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).not.toContain('extrude001 = extrude')
+  })
+
   const cases = [
     [
       'basicCase',
