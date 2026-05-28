@@ -31,7 +31,9 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
+use crate::std::ConsumedSolidArgCheck;
 use crate::std::solid_consumption::validate_value_not_consumed;
+use crate::std::solid_consumption::warn_if_value_consumed_for_deprecated_call;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -961,17 +963,34 @@ fn type_check_params_kw(
         }
     }
 
-    let check_consumed_solid_args = fn_def
+    let consumed_solid_arg_check = fn_def
         .std_props
         .as_ref()
-        .is_none_or(|props| props.check_consumed_solid_args);
-    if check_consumed_solid_args {
-        result
-            .unlabeled
-            .iter()
-            .map(|(_, arg)| arg)
-            .chain(result.labeled.values())
-            .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
+        .map_or(ConsumedSolidArgCheck::Error, |props| props.consumed_solid_arg_check);
+    match consumed_solid_arg_check {
+        ConsumedSolidArgCheck::Error => {
+            result
+                .unlabeled
+                .iter()
+                .map(|(_, arg)| arg)
+                .chain(result.labeled.values())
+                .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
+        }
+        ConsumedSolidArgCheck::WarnDeprecated => {
+            let std_fn_name = fn_def
+                .std_props
+                .as_ref()
+                .map(|props| props.name.as_str())
+                .unwrap_or("function");
+            for arg in result
+                .unlabeled
+                .iter()
+                .map(|(_, arg)| arg)
+                .chain(result.labeled.values())
+            {
+                warn_if_value_consumed_for_deprecated_call(&arg.value, exec_state, arg.source_range, std_fn_name);
+            }
+        }
     }
 
     Ok(result)

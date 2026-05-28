@@ -9,6 +9,8 @@ use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
 use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -35,8 +37,10 @@ use crate::execution::UnsolvedSegmentKind;
 use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::solver_numeric_type;
 use crate::execution::types::ArrayLen;
+use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::UnitType;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Coincident;
@@ -78,6 +82,112 @@ fn point2d_is_origin(point2d: &KclValue) -> bool {
     x.n == 0.0 && y.n == 0.0
 }
 
+fn numeric_suffix_to_type(suffix: crate::pretty::NumericSuffix, exec_state: &ExecState) -> NumericType {
+    match suffix {
+        crate::pretty::NumericSuffix::None => NumericType::Default {
+            len: exec_state.length_unit(),
+            angle: exec_state.angle_unit(),
+        },
+        crate::pretty::NumericSuffix::Count => NumericType::Known(UnitType::Count),
+        crate::pretty::NumericSuffix::Length => NumericType::Known(UnitType::GenericLength),
+        crate::pretty::NumericSuffix::Angle => NumericType::Known(UnitType::GenericAngle),
+        crate::pretty::NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+        crate::pretty::NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLength::Centimeters)),
+        crate::pretty::NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLength::Meters)),
+        crate::pretty::NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLength::Inches)),
+        crate::pretty::NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLength::Feet)),
+        crate::pretty::NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLength::Yards)),
+        crate::pretty::NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+        crate::pretty::NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+        crate::pretty::NumericSuffix::Unknown => NumericType::Unknown,
+    }
+}
+
+fn number_to_solver_distance(
+    number: Number,
+    exec_state: &mut ExecState,
+    source_range: crate::SourceRange,
+    description: &str,
+) -> Result<f64, KclError> {
+    let value = ty_f64_to_kcl_value(
+        TyF64::new(number.value, numeric_suffix_to_type(number.units, exec_state)),
+        source_range,
+    );
+    let normalized = normalize_to_solver_distance_unit(&value, source_range, exec_state, description)?;
+    let Some(n) = normalized.as_ty_f64() else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("{description} did not normalize to a number"),
+            vec![source_range],
+        )));
+    };
+    Ok(n.n)
+}
+
+fn drag_anchor_target_to_solver_units(
+    target: Point2d<Number>,
+    exec_state: &mut ExecState,
+    source_range: crate::SourceRange,
+) -> Result<[f64; 2], KclError> {
+    Ok([
+        number_to_solver_distance(target.x, exec_state, source_range, "drag anchor x")?,
+        number_to_solver_distance(target.y, exec_state, source_range, "drag anchor y")?,
+    ])
+}
+
+struct FixedDragAnchorPoint {
+    point: DatumPoint,
+    fixed_constraints: [SolverConstraint; 2],
+}
+
+fn fixed_drag_anchor_point(
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+    target: Point2d<Number>,
+) -> Result<FixedDragAnchorPoint, KclError> {
+    let [target_x, target_y] = drag_anchor_target_to_solver_units(target, exec_state, range)?;
+    let solver_ty = solver_numeric_type(exec_state);
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "drag anchors can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+
+    let anchor_x_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: anchor_x_id,
+            initial_value: target_x,
+            ty: solver_ty,
+            node_path: None,
+            meta: Vec::new(),
+        }),
+    });
+
+    let anchor_y_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: anchor_y_id,
+            initial_value: target_y,
+            ty: solver_ty,
+            node_path: None,
+            meta: Vec::new(),
+        }),
+    });
+
+    let point = DatumPoint::new_xy(
+        anchor_x_id.to_constraint_id(range)?,
+        anchor_y_id.to_constraint_id(range)?,
+    );
+    Ok(FixedDragAnchorPoint {
+        point,
+        fixed_constraints: [
+            SolverConstraint::Fixed(point.x_id, target_x),
+            SolverConstraint::Fixed(point.y_id, target_y),
+        ],
+    })
+}
+
 fn fixed_origin_datum_point(
     exec_state: &mut ExecState,
     range: crate::SourceRange,
@@ -97,6 +207,8 @@ fn fixed_origin_datum_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -107,6 +219,8 @@ fn fixed_origin_datum_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -409,6 +523,8 @@ fn extract_arc_component(
                     id: var_id,
                     initial_value: normalized_value.n,
                     ty: normalized_value.ty,
+                    // Synthesized to fix a constant; not backed by a `var` in source.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -517,11 +633,10 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         }
         optional_constraints
     };
-
     // Save the segment to be sent to the engine after solving.
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "line() can only be used inside a sketch block".to_owned(),
+            "point() can only be used inside a sketch block".to_owned(),
             vec![args.source_range],
         )));
     };
@@ -614,6 +729,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         },
         construction: construction_ctor,
     };
+    let line_var_ids = (start_x.var(), start_y.var(), end_x.var(), end_y.var());
     // Order of ID generation is important.
     let start_object_id = exec_state.next_object_id();
     let end_object_id = exec_state.next_object_id();
@@ -633,7 +749,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         node_path: args.node_path.clone(),
         meta: vec![args.source_range.into()],
     };
-    let optional_constraints = {
+    let mut optional_constraints = {
         let start_object_id =
             exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
         let end_object_id =
@@ -696,6 +812,27 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         }
         optional_constraints
     };
+    let mut required_constraints = Vec::new();
+    if let Some(target) = exec_state.drag_anchor_target(&line_object_id).cloned()
+        && let (Some(start_x), Some(start_y), Some(end_x), Some(end_y)) = line_var_ids
+    {
+        let anchor = fixed_drag_anchor_point(exec_state, args.source_range, target)?;
+        required_constraints.push(SolverConstraint::PointLineDistance(
+            anchor.point,
+            DatumLineSegment::new(
+                DatumPoint::new_xy(
+                    start_x.to_constraint_id(args.source_range)?,
+                    start_y.to_constraint_id(args.source_range)?,
+                ),
+                DatumPoint::new_xy(
+                    end_x.to_constraint_id(args.source_range)?,
+                    end_y.to_constraint_id(args.source_range)?,
+                ),
+            ),
+            0.0,
+        ));
+        optional_constraints.extend(anchor.fixed_constraints);
+    }
 
     // Save the segment to be sent to the engine after solving.
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -706,6 +843,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     };
     sketch_state.needed_by_engine.push(segment.clone());
 
+    sketch_state.solver_constraints.extend(required_constraints);
     sketch_state.solver_optional_constraints.extend(optional_constraints);
 
     let meta = segment.meta.clone();
@@ -926,7 +1064,6 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         }
         optional_constraints
     };
-
     // Build the implicit arc constraint.
     let range = args.source_range;
     let mut required_constraints = Vec::with_capacity(7);
@@ -945,6 +1082,11 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             end_y.to_constraint_id(range)?,
         ),
     }));
+    let drag_anchor = exec_state
+        .drag_anchor_target(&arc_object_id)
+        .cloned()
+        .map(|target| fixed_drag_anchor_point(exec_state, range, target))
+        .transpose()?;
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -952,6 +1094,19 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             vec![args.source_range],
         )));
     };
+    if let Some(anchor) = drag_anchor {
+        required_constraints.push(ezpz::Constraint::PointArcCoincident(
+            DatumCircularArc {
+                center: DatumPoint::new_xy(center_x.to_constraint_id(range)?, center_y.to_constraint_id(range)?),
+                start: DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
+                end: DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
+            },
+            anchor.point,
+        ));
+        sketch_state
+            .solver_optional_constraints
+            .extend(anchor.fixed_constraints);
+    }
     // Save the segment to be sent to the engine after solving.
     sketch_state.needed_by_engine.push(segment.clone());
     // Save the constraints to be used for solving.
@@ -1069,7 +1224,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         node_path: args.node_path.clone(),
         meta: vec![args.source_range.into()],
     };
-    let optional_constraints = {
+    let mut optional_constraints = {
         let start_object_id =
             exec_state.add_placeholder_scene_object(start_object_id, args.source_range, args.node_path.clone());
         let center_object_id =
@@ -1132,6 +1287,25 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         }
         optional_constraints
     };
+    let mut required_constraints = Vec::new();
+    if let Some(target) = exec_state.drag_anchor_target(&circle_object_id).cloned() {
+        let anchor = fixed_drag_anchor_point(exec_state, args.source_range, target)?;
+        let center = DatumPoint::new_xy(
+            center_x.to_constraint_id(args.source_range)?,
+            center_y.to_constraint_id(args.source_range)?,
+        );
+        required_constraints.push(SolverConstraint::LinesEqualLength(
+            DatumLineSegment::new(center, anchor.point),
+            DatumLineSegment::new(
+                center,
+                DatumPoint::new_xy(
+                    start_x.to_constraint_id(args.source_range)?,
+                    start_y.to_constraint_id(args.source_range)?,
+                ),
+            ),
+        ));
+        optional_constraints.extend(anchor.fixed_constraints);
+    }
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1142,6 +1316,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     // Save the segment to be sent to the engine after solving.
     sketch_state.needed_by_engine.push(segment.clone());
 
+    sketch_state.solver_constraints.extend(required_constraints);
     sketch_state.solver_optional_constraints.extend(optional_constraints);
 
     let meta = segment.meta.clone();
@@ -3463,6 +3638,8 @@ fn create_hidden_point(
             id: x_id,
             initial_value: initial_position[0],
             ty: sketch_var_ty,
+            // Synthesized symmetric() support point coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3473,6 +3650,8 @@ fn create_hidden_point(
             id: y_id,
             initial_value: initial_position[1],
             ty: sketch_var_ty,
+            // Synthesized symmetric() support point coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3624,6 +3803,8 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
             id: radius_id,
             initial_value: radius_initial_value,
             ty: sketch_var_ty,
+            // Synthesized hidden radius for equalRadius(); no source `var` to map back to.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -3839,6 +4020,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     id: radius_id,
                     initial_value: radius_initial_value,
                     ty: sketch_var_ty,
+                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -3897,6 +4080,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     id: radius0_id,
                     initial_value: radius0_initial_value,
                     ty: sketch_var_ty,
+                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -3912,6 +4097,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     id: radius1_id,
                     initial_value: radius1_initial_value,
                     ty: sketch_var_ty,
+                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                    node_path: None,
                     meta: vec![],
                 }),
             });
@@ -4314,6 +4501,8 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
                 id: radius_id,
                 initial_value: radius_initial_value,
                 ty: sketch_var_ty,
+                // Synthesized shared radius for equalRadius() across circulars; not source-backed.
+                node_path: None,
                 meta: vec![],
             }),
         });

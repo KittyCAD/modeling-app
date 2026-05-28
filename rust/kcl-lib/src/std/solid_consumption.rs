@@ -1,27 +1,60 @@
+use crate::CompilationIssue;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::errors::Tag;
 use crate::execution::ConsumedSolidInfo;
 use crate::execution::ConsumedSolidKey;
 use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::Solid;
+use crate::execution::annotations;
 
 pub(crate) fn validate_value_not_consumed(
     value: &KclValue,
     exec_state: &ExecState,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
+    if let Some(message) = consumed_value_error_message(value, exec_state) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            message,
+            vec![source_range],
+        )));
+    }
+
+    Ok(())
+}
+
+pub(crate) fn warn_if_value_consumed_for_deprecated_call(
+    value: &KclValue,
+    exec_state: &mut ExecState,
+    source_range: SourceRange,
+    std_fn_name: &str,
+) {
+    let Some(consumed_message) = consumed_value_error_message(value, exec_state) else {
+        return;
+    };
+
+    let function_name = std_fn_name.rsplit("::").next().unwrap_or(std_fn_name);
+    let mut issue = CompilationIssue::err(
+        source_range,
+        format!(
+            "Calling `{function_name}` with a consumed solid is deprecated and will become an error in the next KCL version. {consumed_message}"
+        ),
+    );
+    issue.tag = Tag::Deprecated;
+    exec_state.warn(issue, annotations::WARN_DEPRECATED);
+}
+
+fn consumed_value_error_message(value: &KclValue, exec_state: &ExecState) -> Option<String> {
     match value {
-        KclValue::Solid { value } => validate_solid_not_consumed(value, exec_state, source_range),
-        KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value
-            .iter()
-            .try_for_each(|v| validate_value_not_consumed(v, exec_state, source_range)),
-        KclValue::Object { value, .. } => value
-            .values()
-            .try_for_each(|v| validate_value_not_consumed(v, exec_state, source_range)),
-        _ => Ok(()),
+        KclValue::Solid { value } => consumed_solid_error_message(value, exec_state),
+        KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => {
+            value.iter().find_map(|v| consumed_value_error_message(v, exec_state))
+        }
+        KclValue::Object { value, .. } => value.values().find_map(|v| consumed_value_error_message(v, exec_state)),
+        _ => None,
     }
 }
 
@@ -40,6 +73,17 @@ fn validate_solid_not_consumed(
     exec_state: &ExecState,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
+    if let Some(message) = consumed_solid_error_message(solid, exec_state) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            message,
+            vec![source_range],
+        )));
+    }
+
+    Ok(())
+}
+
+fn consumed_solid_error_message(solid: &Solid, exec_state: &ExecState) -> Option<String> {
     let key = consumed_solid_key(solid);
     let Some(info) = exec_state.check_solid_consumed(&key) else {
         if let Some(info) = exec_state.check_solid_id_consumed(&solid.id)
@@ -52,13 +96,10 @@ fn validate_solid_not_consumed(
                 .and_then(|key| exec_state.find_var_name_for_solid_key(key));
             let message = build_stale_body_error_message(current_var.as_deref(), operation, output_var.as_deref());
 
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                message,
-                vec![source_range],
-            )));
+            return Some(message);
         }
 
-        return Ok(());
+        return None;
     };
     let operation = info.operation();
     let suggested_replacement_key = info.suggested_replacement_key();
@@ -68,10 +109,7 @@ fn validate_solid_not_consumed(
         .and_then(|key| exec_state.find_var_name_for_solid_key(key));
     let message = build_consumed_error_message(consumed_var.as_deref(), operation, output_var.as_deref());
 
-    Err(KclError::new_semantic(KclErrorDetails::new(
-        message,
-        vec![source_range],
-    )))
+    Some(message)
 }
 
 pub(super) fn record_consumed_solids(
