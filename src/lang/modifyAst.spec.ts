@@ -822,6 +822,52 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
     expect(newCode).not.toContain('extrude001 = extrude')
   })
 
+  it.each([
+    ['transform', `translate(bracket, x = 1, y = 2)`],
+    [
+      'fillet',
+      `fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])`,
+    ],
+    ['appearance', `appearance(extrude001, color = "#00ff00")`],
+    [
+      'gdt flatness',
+      `gdt::flatness(
+  faces = [capEnd001],
+  tolerance = 0.2in,
+  precision = 3,
+  framePlane = XZ,
+  framePosition = [20, 30],
+  fontSize = 24,
+)`,
+    ],
+    [
+      'gdt datum',
+      `gdt::datum(
+  face = capEnd001,
+  name = "B",
+  framePlane = YZ,
+  framePosition = [10, 5],
+  fontSize = 32,
+)`,
+    ],
+  ])(
+    'deletes an unassigned %s call expression selected from the feature tree operation range',
+    async (_name, codeBefore) => {
+      const ast = assertParse(codeBefore, instanceInThisFile)
+      const result = await deleteFromSelection(
+        ast,
+        {
+          codeRef: codeRefFromRange([0, codeBefore.length, 0], ast),
+        },
+        {},
+        new Map(),
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+      expect(recast(result, instanceInThisFile)).toBe('')
+    }
+  )
+
   const cases = [
     [
       'basicCase',
