@@ -496,11 +496,7 @@ describe('keymap contract', () => {
       )
     ).toEqual({ type: 'none' })
     expect(
-      matchKeymapKeystrokes(
-        tree,
-        [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        ['escape']
-      )
+      matchKeymapKeystrokes(tree, [MODE_SKETCH_SOLVE_KEYMAP_SCOPE], ['escape'])
     ).toEqual({ type: 'none' })
   })
 })
