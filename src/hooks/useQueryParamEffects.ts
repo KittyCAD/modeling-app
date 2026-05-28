@@ -116,6 +116,9 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
 
     void (async () => {
+      // File navigation removes the project-id param while preserving the new
+      // file route. Calling setSearchParams here can re-navigate from the
+      // original query-param route and reopen the project default file.
       await waitForIdleState({ systemIOActor: app.systemIOActor })
       if (cancelled) {
         return
@@ -171,9 +174,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
       })
 
       await waitForIdleState({ systemIOActor: app.systemIOActor })
-      if (!cancelled) {
-        clearProjectIdSearchParam()
-      }
     })().catch((error) => {
       if (cancelled) {
         return

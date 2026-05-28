@@ -299,11 +299,15 @@ impl DocData {
     }
 
     pub fn is_experimental(&self) -> bool {
+        self.properties().experimental
+    }
+
+    pub fn properties(&self) -> &Properties {
         match self {
-            DocData::Fn(f) => f.properties.experimental,
-            DocData::Const(c) => c.properties.experimental,
-            DocData::Ty(t) => t.properties.experimental,
-            DocData::Mod(d) => d.properties.experimental,
+            DocData::Fn(f) => &f.properties,
+            DocData::Const(c) => &c.properties,
+            DocData::Ty(t) => &t.properties,
+            DocData::Mod(d) => &d.properties,
         }
     }
 
