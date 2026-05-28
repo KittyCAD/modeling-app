@@ -161,6 +161,14 @@ export async function deleteFromSelection(
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
+  const selectedCallName =
+    varDec.node.init.type === 'CallExpressionKw'
+      ? varDec.node.init.callee.name.name
+      : null
+  const isSweepLikePathSelection =
+    selection.artifact?.type === 'path' &&
+    selectedCallName !== null &&
+    ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
 
   if (
     selection.artifact?.type === 'pattern' &&
@@ -192,7 +200,7 @@ export async function deleteFromSelection(
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
     (selection.artifact?.type === 'path' &&
-      selection.artifact.subType === 'region') ||
+      (selection.artifact.subType === 'region' || isSweepLikePathSelection)) ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'pattern' ||
     selection.artifact?.type === 'helix' ||
