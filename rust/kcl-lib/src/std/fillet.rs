@@ -5,7 +5,7 @@ use indexmap::IndexMap;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
-use kcmc::shared::CutType;
+use kcmc::shared::CutTypeV2;
 use kittycad_modeling_cmds as kcmc;
 use serde::Deserialize;
 use serde::Serialize;
@@ -154,17 +154,19 @@ async fn inner_fillet(
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
-                mcmd::Solid3dFilletEdge::builder()
+                mcmd::Solid3dCutEdges::builder()
                     .use_legacy(csg_algorithm.is_legacy())
                     .edge_ids(edge_ids.clone())
                     .extra_face_ids(extra_face_ids)
                     .strategy(Default::default())
                     .object_id(solid.id)
-                    .radius(LengthUnit(radius.to_mm()))
                     .tolerance(LengthUnit(
                         tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
-                    .cut_type(CutType::Fillet)
+                    .cut_type(CutTypeV2::Fillet {
+                        radius: LengthUnit(radius.to_mm()),
+                        second_length: None,
+                    })
                     .build(),
             ),
         )

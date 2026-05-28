@@ -10,7 +10,7 @@ import {
   getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph } from '@src/lang/wasm'
+import { getAllOperations, type ArtifactGraph } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -32,7 +32,7 @@ export function BodiesPane(props: AreaTypeComponentProps) {
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   const artifactGraph = execState.artifactGraph
-  const operations = execState.operations
+  const operations = getAllOperations(execState.operations)
   const bodies = getBodiesFromArtifactGraph(artifactGraph)
   const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
 

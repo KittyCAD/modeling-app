@@ -18,11 +18,14 @@ import { isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   ExecState,
+  OperationsByModule,
   PathToNode,
   Program,
   VariableMap,
 } from '@src/lang/wasm'
 import {
+  emptyOperationsByModule,
+  getOperationsForCurrentFile,
   emptyExecState,
   execStateFromRust,
   getKclVersion,
@@ -132,7 +135,6 @@ import {
 import { fsHistoryExtension } from '@src/editor/plugins/fs'
 import {
   operationsAnnotation,
-  operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
@@ -581,6 +583,11 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
+export interface PendingFeatureTreeSourceSelection {
+  path: string
+  range: [number, number, number]
+}
+
 export class File extends EventTarget {
   /** Path to file this editor is operating on */
   private pathSignal: Signal<string>
@@ -792,7 +799,9 @@ export class KclManager extends File {
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
-  lastSuccessfulOperations: Operation[] = []
+  lastSuccessfulOperations: OperationsByModule = emptyOperationsByModule()
+  pendingFeatureTreeSourceSelection: PendingFeatureTreeSourceSelection | null =
+    null
   private _logs = signal<string[]>([])
   private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])
@@ -830,7 +839,14 @@ export class KclManager extends File {
     this.redoDepth.value = localRedo + globalRedo
   })
   get operations() {
-    return this._editorView.state.field(operationsStateField)
+    return getOperationsForCurrentFile({
+      operationsByModule: this.execState.operations,
+      filenames: this.execState.filenames,
+      currentPath: this.path,
+    })
+  }
+  get operationsByModule() {
+    return this.execState.operations
   }
   /**
    * A client-side representation of the commands that have been sent,
@@ -973,7 +989,7 @@ export class KclManager extends File {
     this._switchedFiles = switchedFiles
 
     // These belonged to the previous file
-    this.lastSuccessfulOperations = []
+    this.lastSuccessfulOperations = emptyOperationsByModule()
     this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
     this._hasEditsSinceLastExecution.value = false
@@ -1074,7 +1090,13 @@ export class KclManager extends File {
     this.lastSuccessfulOperations = execState.operations
     this.lastSuccessfulCode = code
     this.markCodeAsExecuted(code)
-    this.dispatchUpdateOperations(execState.operations)
+    this.dispatchUpdateOperations(
+      getOperationsForCurrentFile({
+        operationsByModule: execState.operations,
+        filenames: execState.filenames,
+        currentPath: this.path,
+      })
+    )
     void this.updateArtifactGraph(execState.artifactGraph)
   }
 
@@ -2121,7 +2143,13 @@ export class KclManager extends File {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
-    this.dispatchUpdateOperations(execState.operations)
+    this.dispatchUpdateOperations(
+      getOperationsForCurrentFile({
+        operationsByModule: execState.operations,
+        filenames: execState.filenames,
+        currentPath: this.path,
+      })
+    )
 
     if (!isInterrupted) {
       this.sceneInfra.modelingSend({

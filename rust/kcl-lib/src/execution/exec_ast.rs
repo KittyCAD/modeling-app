@@ -137,6 +137,8 @@ fn push_fixed_origin_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -146,6 +148,8 @@ fn push_fixed_origin_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -394,6 +398,8 @@ fn push_circular_radius_constraints(
             id: circular_radius_id,
             initial_value: circular.radius_initial_value,
             ty: sketch_var_ty,
+            // Synthesized hidden radius for circular distance; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -434,6 +440,8 @@ fn push_circular_distance_constraints(
             id: target_distance_id,
             initial_value: distance_value,
             ty: sketch_var_ty,
+            // Synthesized hidden distance for point-circular tangency; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -733,6 +741,23 @@ impl ExecutorContext {
                     let module_id = self
                         .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;
+
+                    if let ModulePath::Local {
+                        value,
+                        original_import_path,
+                    } = &module_path
+                    {
+                        let name = match original_import_path {
+                            Some(value) => value.to_string_lossy(),
+                            None => value.file_name().unwrap_or_default(),
+                        };
+                        exec_state.push_op(Operation::ModuleInstance {
+                            name,
+                            module_id,
+                            node_path: NodePath::placeholder(),
+                            source_range,
+                        });
+                    }
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
@@ -1620,6 +1645,10 @@ impl Node<SketchBlock> {
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Face(_) => None,
+            };
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
@@ -1648,6 +1677,7 @@ impl Node<SketchBlock> {
                 id: artifact_id,
                 standard_plane,
                 plane_id: plane_artifact_id,
+                plane_info,
                 // Fill this in later once we create the path. We can't just add
                 // the artifact later because order relative to constraint
                 // artifacts is significant.
@@ -1795,6 +1825,12 @@ impl Node<SketchBlock> {
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                if !outcome.converged {
+                    exec_state.warn(
+                        CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                        annotations::WARN_SOLVER,
+                    );
+                }
                 (outcome, freedom)
             }
             Err(failure) => {
@@ -1802,12 +1838,11 @@ impl Node<SketchBlock> {
                     NonLinearSystemError::FaerMatrix { .. }
                     | NonLinearSystemError::Faer { .. }
                     | NonLinearSystemError::FaerSolve { .. }
-                    | NonLinearSystemError::FaerSvd(..)
-                    | NonLinearSystemError::DidNotConverge => {
+                    | NonLinearSystemError::FaerSvd(..) => {
                         // Constraint solver failed to find a solution. Build a
                         // solution that is the initial guesses.
                         exec_state.warn(
-                            CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            CompilationIssue::err(range, "Internal error in constraint solver".to_owned()),
                             annotations::WARN_SOLVER,
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
@@ -1818,6 +1853,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                converged: false,
                             },
                             None,
                         )
@@ -2207,7 +2243,7 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, exec_state)
+            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
@@ -2218,6 +2254,7 @@ impl Node<SketchVar> {
                     id,
                     initial_value: 0.0,
                     ty: NumericType::default(),
+                    node_path: self.node_path.clone(),
                     meta: vec![metadata],
                 }),
             }
@@ -3767,6 +3804,8 @@ impl Node<BinaryExpression> {
                                             id: origin_x_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3776,6 +3815,8 @@ impl Node<BinaryExpression> {
                                             id: origin_y_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3918,6 +3959,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -3927,6 +3970,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4053,6 +4098,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4062,6 +4109,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4287,6 +4336,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4296,6 +4347,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4441,6 +4494,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4450,6 +4505,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4465,6 +4522,8 @@ impl Node<BinaryExpression> {
                                     id: support_radius_id,
                                     initial_value: support_radius_value,
                                     ty: sketch_var_ty,
+                                    // Synthesized hidden support radius for circular-circular distance; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4697,6 +4756,8 @@ impl Node<BinaryExpression> {
                                             id: radius_id,
                                             initial_value: radius_initial_value,
                                             ty: sketch_var_ty,
+                                            // Synthesized hidden radius for circle constraint; not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -5182,6 +5243,8 @@ impl Node<UnaryExpression> {
                         if plane.info.x_axis.z != 0.0 {
                             plane.info.x_axis.z *= -1.0;
                         }
+                        plane.info.z_axis = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                        plane.info.z_axis.canonicalize_signed_zero();
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;

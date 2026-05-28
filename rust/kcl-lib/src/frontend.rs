@@ -15,6 +15,7 @@ use crate::ExecutorContext;
 use crate::KclError;
 use crate::KclErrorWithOutputs;
 use crate::Program;
+use crate::SegmentDragAnchor;
 use crate::collections::AhashIndexSet;
 use crate::execution::Artifact;
 use crate::execution::ArtifactGraph;
@@ -26,6 +27,7 @@ use crate::execution::cache::SketchModeState;
 use crate::execution::cache::clear_mem_cache;
 use crate::execution::cache::read_old_memory;
 use crate::execution::cache::write_old_memory;
+use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
@@ -171,6 +173,13 @@ enum EditDeleteKind {
     DeleteNonSketch,
 }
 
+/// Options that control how an edit is re-executed and written back.
+struct ExecuteAfterEditOptions {
+    segment_ids_edited: AhashIndexSet<ObjectId>,
+    edit_kind: EditDeleteKind,
+    commit_solved_initial_guesses: bool,
+}
+
 impl EditDeleteKind {
     /// Returns true if this edit is any type of deletion.
     fn is_delete(&self) -> bool {
@@ -210,6 +219,29 @@ pub enum SetProgramOutcome {
     ExecFailure { error: Box<KclErrorWithOutputs> },
 }
 
+/// Options for a sketch segment edit that participates in drag solving.
+pub struct EditSegmentsOptions {
+    /// Narrows which edited scene objects receive temporary fixed constraints.
+    ///
+    /// `None` keeps the default of anchoring every edited segment. `Some(vec![])`
+    /// disables those fixed constraints, which is useful for semantic edits such
+    /// as toggling construction state.
+    pub anchor_segment_ids: Option<Vec<ObjectId>>,
+    /// Hidden fixed cursor points that the referenced segment bodies must pass
+    /// through during solve.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// Whether solver-updated initial guesses should be written back to KCL.
+    pub commit_solved_initial_guesses: bool,
+}
+
+/// Options for a distance-constraint label edit during sketch dragging.
+pub struct EditDistanceConstraintLabelPositionOptions {
+    /// Edited scene objects to keep anchored while previewing the label edit.
+    pub anchor_segment_ids: Vec<ObjectId>,
+    /// Whether solver-updated initial guesses should be written back to KCL.
+    pub commit_solved_initial_guesses: bool,
+}
+
 #[derive(Debug, Clone)]
 pub struct FrontendState {
     program: Program,
@@ -217,6 +249,16 @@ pub struct FrontendState {
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
+    /// One-shot drag anchors for the next segment edit. These ids define which
+    /// edited points/segments become temporary fixed constraints during solve.
+    next_drag_anchor_segment_ids: Option<AhashIndexSet<ObjectId>>,
+    /// One-shot segment-body drag anchors for the next segment edit. These add
+    /// a temporary solver point on the dragged segment that follows the cursor.
+    next_segment_drag_anchors: Option<Vec<SegmentDragAnchor>>,
+    /// One-shot override for whether the next edit commits solver-updated
+    /// initial guesses back into KCL. Drag previews keep this off so only the
+    /// explicit drag edit feeds the next solve.
+    next_edit_commits_solver_solutions: Option<bool>,
     sketch_checkpoints: VecDeque<SketchCheckpoint>,
     sketch_checkpoint_id_gen: IncIdGenerator<u64>,
 }
@@ -240,6 +282,9 @@ impl FrontendState {
                 sketch_mode: Default::default(),
             },
             point_freedom_cache: HashMap::new(),
+            next_drag_anchor_segment_ids: None,
+            next_segment_drag_anchors: None,
+            next_edit_commits_solver_solutions: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
         }
@@ -282,6 +327,69 @@ impl FrontendState {
         Ok(checkpoint_id)
     }
 
+    /// Edit sketch segments with optional drag-solve overrides.
+    ///
+    /// Drag anchors add hidden fixed cursor points and constrain the referenced
+    /// segment bodies to pass through them, which lets body drags use the same
+    /// anchor model without pinning all child points. Preview callers disable
+    /// solver writeback so solved geometry can be returned without feeding every
+    /// solver value back into KCL.
+    pub async fn edit_segments_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+        options: EditSegmentsOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_anchor_ids = options.anchor_segment_ids.map(|anchor_ids| {
+            self.next_drag_anchor_segment_ids
+                .replace(anchor_ids.into_iter().collect())
+        });
+        let previous_drag_anchors = self.next_segment_drag_anchors.replace(options.drag_anchors);
+        let previous_commit_mode = self
+            .next_edit_commits_solver_solutions
+            .replace(options.commit_solved_initial_guesses);
+        let result = SketchApi::edit_segments(self, ctx, version, sketch, segments).await;
+        if let Some(previous_anchor_ids) = previous_anchor_ids {
+            self.next_drag_anchor_segment_ids = previous_anchor_ids;
+        }
+        self.next_segment_drag_anchors = previous_drag_anchors;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
+    /// Edit a distance-constraint label position with optional solver writeback.
+    ///
+    /// Drag previews set `commit_solved_initial_guesses` to false so label
+    /// placement can be previewed against solved geometry without advancing
+    /// persistent KCL state until drag completion.
+    pub async fn edit_distance_constraint_label_position_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+        options: EditDistanceConstraintLabelPositionOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_commit_mode = self
+            .next_edit_commits_solver_solutions
+            .replace(options.commit_solved_initial_guesses);
+        let result = SketchApi::edit_distance_constraint_label_position(
+            self,
+            ctx,
+            version,
+            sketch,
+            constraint_id,
+            label_position,
+            options.anchor_segment_ids,
+        )
+        .await;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
     pub async fn restore_sketch_checkpoint(
         &mut self,
         checkpoint_id: SketchCheckpointId,
@@ -298,6 +406,9 @@ impl FrontendState {
         self.program = checkpoint.program;
         self.scene_graph = checkpoint.scene_graph.clone();
         self.point_freedom_cache = checkpoint.point_freedom_cache;
+        self.next_drag_anchor_segment_ids = None;
+        self.next_segment_drag_anchors = None;
+        self.next_edit_commits_solver_solutions = None;
 
         if let Some(mock_memory) = checkpoint.mock_memory {
             write_old_memory(mock_memory).await;
@@ -711,13 +822,13 @@ impl SketchApi for FrontendState {
             sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
 
         let mut new_ast = self.program.ast.clone();
-        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
+        let mut edited_segment_ids = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
         let mut invalidates_ids = false;
 
-        // segment_ids_edited still has to be the original segments (not final_edits), otherwise the owner segments
+        // edited_segment_ids still has to be the original segments (not final_edits), otherwise the owner segments
         // are passed to `execute_after_edit` which changes the result of the solver, causing tests to fail.
         for segment in &segments {
-            segment_ids_edited.insert(segment.id);
+            edited_segment_ids.insert(segment.id);
             if let SegmentCtor::ControlPointSpline(new_ctor) = &segment.ctor
                 && let Some(existing_object) = self.scene_graph.objects.get(segment.id.0)
                 && let ObjectKind::Segment {
@@ -728,6 +839,11 @@ impl SketchApi for FrontendState {
                 invalidates_ids = true;
             }
         }
+        let drag_anchor_segment_ids = self
+            .next_drag_anchor_segment_ids
+            .take()
+            .unwrap_or_else(|| edited_segment_ids.clone());
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
 
         // Preprocess segments into a final_edits vector to handle if segments contains:
         // - edit start point of line1 (as SegmentCtor::Point)
@@ -928,9 +1044,12 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
                 &mut new_ast,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited: drag_anchor_segment_ids,
+                    edit_kind: EditDeleteKind::Edit,
+                    commit_solved_initial_guesses,
+                },
             )
             .await?;
         if invalidates_ids {
@@ -1115,9 +1234,12 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::DeleteNonSketch,
             &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::DeleteNonSketch,
+                commit_solved_initial_guesses: true,
+            },
         )
         .await
     }
@@ -1376,9 +1498,12 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::Edit,
             &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses: true,
+            },
         )
         .await
     }
@@ -1426,14 +1551,18 @@ impl SketchApi for FrontendState {
             AstMutateCommand::EditDistanceConstraintLabelPosition { label_position },
         )
         .map_err(KclErrorWithOutputs::no_outputs)?;
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
 
         self.execute_after_edit(
             ctx,
             sketch,
             sketch_block_ref,
-            anchor_segment_ids.into_iter().collect(),
-            EditDeleteKind::Edit,
             &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: anchor_segment_ids.into_iter().collect(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses,
+            },
         )
         .await
     }
@@ -1592,9 +1721,12 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
                 &mut new_ast,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    commit_solved_initial_guesses: true,
+                },
             )
             .await?;
 
@@ -1680,9 +1812,12 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
                 &mut new_ast,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    commit_solved_initial_guesses: true,
+                },
             )
             .await?;
 
@@ -3149,10 +3284,15 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         sketch_block_ref: AstNodeRef,
-        segment_ids_edited: AhashIndexSet<ObjectId>,
-        edit_kind: EditDeleteKind,
         new_ast: &mut ast::Node<ast::Program>,
+        options: ExecuteAfterEditOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let ExecuteAfterEditOptions {
+            segment_ids_edited,
+            edit_kind,
+            commit_solved_initial_guesses,
+        } = options;
+
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
@@ -3186,10 +3326,12 @@ impl FrontendState {
         };
 
         // Execute.
+        let drag_anchors = self.next_segment_drag_anchors.take().unwrap_or_default();
         let mock_config = MockConfig {
             sketch_block_id: Some(sketch),
             freedom_analysis: is_delete,
             segment_ids_edited: segment_ids_edited.clone(),
+            drag_anchors,
             ..Default::default()
         };
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
@@ -3197,29 +3339,11 @@ impl FrontendState {
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
 
-        let new_source = {
-            // Feed back sketch var solutions into the source.
-            //
-            // The interpreter is returning all var solutions from the sketch
-            // block we're editing.
-            let mut new_ast = self.program.ast.clone();
-            for (var_range, value) in &outcome.var_solutions {
-                let rounded = value.round(3);
-                let source_ref = SourceRef::Simple {
-                    range: *var_range,
-                    node_path: None,
-                };
-                mutate_ast_node_by_source_ref(
-                    &mut new_ast,
-                    &source_ref,
-                    AstMutateCommand::EditVarInitialValue { value: rounded },
-                )
-                .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
-            }
-            source_from_ast(&new_ast)
+        let src_delta = if commit_solved_initial_guesses {
+            self.commit_var_solutions_to_program(&outcome, "editing")?
+        } else {
+            SourceDelta { text: new_source }
         };
-
-        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: is_delete,
@@ -4563,14 +4687,14 @@ impl FrontendState {
             vec![constraint_id]
         };
 
-        // Only now, after all operations succeeded, update self.program
-        // This ensures state is only modified if everything succeeds
+        // Only now, after all operations succeeded, update self.program.
+        // This ensures state is only modified if everything succeeds.
         self.program = new_program;
 
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
 
-        let src_delta = SourceDelta { text: new_source };
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraint")?;
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: false,
@@ -4578,6 +4702,71 @@ impl FrontendState {
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
+    }
+
+    fn commit_var_solutions_to_program(&mut self, outcome: &ExecOutcome, operation: &str) -> ExecResult<SourceDelta> {
+        let commit_failure = || {
+            KclErrorWithOutputs::from_error_outcome(
+                KclError::refactor(format!("Could not update KCL after {operation}.")),
+                outcome.clone(),
+            )
+        };
+
+        let default_length_unit = self.default_length_unit();
+        let mut settled_ast = self.program.ast.clone();
+        let mut committed_solver_value = false;
+        for (var_range, node_path, value) in &outcome.var_solutions {
+            let Some(lookup) = numeric_literal_at_node_path(&settled_ast, node_path.as_ref(), *var_range) else {
+                return Err(commit_failure());
+            };
+            let new_value = match &lookup {
+                Some(current_literal) => {
+                    if !var_solution_needs_commit(current_literal, *value, default_length_unit) {
+                        continue;
+                    }
+                    preserve_var_solution_literal_style(current_literal, *value, default_length_unit)
+                }
+                None => {
+                    // Bare `var` with no initial literal to compare against;
+                    // always commit, using the module's default length unit as
+                    // an explicit suffix so the written value carries units.
+                    Number {
+                        value: number_value_in_default_length_units(*value, default_length_unit),
+                        units: default_length_unit.into(),
+                    }
+                }
+            };
+            committed_solver_value = true;
+            let source_ref = SourceRef::Simple {
+                range: *var_range,
+                node_path: node_path.clone(),
+            };
+            mutate_ast_node_by_source_ref(
+                &mut settled_ast,
+                &source_ref,
+                AstMutateCommand::EditVarInitialValue { value: new_value },
+            )
+            .map_err(|_| commit_failure())?;
+        }
+
+        if !committed_solver_value {
+            return Ok(SourceDelta {
+                text: self.program.original_file_contents.clone(),
+            });
+        }
+
+        let settled_source = source_from_ast(&settled_ast);
+        let (settled_program, errors) = Program::parse(&settled_source).map_err(|_| commit_failure())?;
+        if !errors.is_empty() {
+            return Err(commit_failure());
+        }
+        let Some(settled_program) = settled_program else {
+            return Err(commit_failure());
+        };
+
+        self.program = settled_program;
+
+        Ok(SourceDelta { text: settled_source })
     }
 
     // Find constraints that reference the given segments.
@@ -5916,15 +6105,17 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::EditVarInitialValue { value } => {
-            if let NodeMut::NumericLiteral(numeric_literal) = node {
-                // Update the initial value.
+            // We target the SketchVar itself (matched by NodePath) rather than
+            // the inner NumericLiteral so we can also write back into vars that
+            // were declared without an initial value (e.g. bare `var`).
+            if let NodeMut::SketchVar(sketch_var) = node {
                 let Ok(literal) = to_source_number(*value) else {
                     return TraversalReturn::new_break(Err(KclError::refactor(format!(
                         "Could not convert number to AST literal: {:?}",
                         *value
                     ))));
                 };
-                *numeric_literal = ast::Node::no_src(literal);
+                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6073,6 +6264,171 @@ fn find_sketch_block_added_item(
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
     // TODO: Don't duplicate this from lib.rs Program.
     ast.recast_top(&Default::default(), 0)
+}
+
+struct FindNumericLiteral {
+    target: SourceRange,
+    found: Cell<Option<ast::NumericLiteral>>,
+}
+
+impl<'a> crate::walk::Visitor<'a> for &FindNumericLiteral {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+        let Ok(node_range) = SourceRange::try_from(&node) else {
+            return Ok(true);
+        };
+
+        if node_range == self.target
+            && let crate::walk::Node::NumericLiteral(literal) = node
+        {
+            self.found.set(Some(literal.inner.clone()));
+            return Ok(false);
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: SourceRange) -> Option<ast::NumericLiteral> {
+    let find = FindNumericLiteral {
+        target,
+        found: Cell::new(None),
+    };
+    let node = crate::walk::Node::from(ast);
+    node.visit(&find).ok()?;
+    find.found.into_inner()
+}
+
+struct FindSketchVarInitialByNodePath<'a> {
+    target: &'a ast::NodePath,
+    sketch_var_found: Cell<bool>,
+    initial_literal: Cell<Option<ast::NumericLiteral>>,
+}
+
+impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'b>) -> anyhow::Result<bool, Self::Error> {
+        if let crate::walk::Node::SketchVar(sketch_var) = node
+            && sketch_var.node_path.as_ref() == Some(self.target)
+        {
+            self.sketch_var_found.set(true);
+            if let Some(initial) = &sketch_var.initial {
+                self.initial_literal.set(Some(initial.inner.clone()));
+            }
+            return Ok(false);
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+/// Locate the source `var` declaration corresponding to a sketch-var solution.
+///
+/// The outer [`Option`] distinguishes "no matching target" (commit must fail)
+/// from "target found." The inner [`Option`] is the initial numeric literal of
+/// the [`SketchVar`], if any; bare `var` declarations return `Some(None)`.
+///
+/// When `node_path` is `None` (e.g. for older outcomes that predate the
+/// node-path propagation), this falls back to source-range matching, which
+/// can break under whitespace shifts elsewhere in the file.
+fn numeric_literal_at_node_path(
+    ast: &ast::Node<ast::Program>,
+    node_path: Option<&ast::NodePath>,
+    source_range: SourceRange,
+) -> Option<Option<ast::NumericLiteral>> {
+    let Some(node_path) = node_path else {
+        let message = "numeric_literal_at_node_path: missing node_path on var solution; falling back to source-range lookup, which can fail under whitespace shifts";
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::warn_1(&message.into());
+        #[cfg(not(target_arch = "wasm32"))]
+        eprintln!("WARNING: {message}");
+        return numeric_literal_at_source_range(ast, source_range).map(Some);
+    };
+    let find = FindSketchVarInitialByNodePath {
+        target: node_path,
+        sketch_var_found: Cell::new(false),
+        initial_literal: Cell::new(None),
+    };
+    let node = crate::walk::Node::from(ast);
+    node.visit(&find).ok()?;
+    if !find.sketch_var_found.get() {
+        return None;
+    }
+    Some(find.initial_literal.into_inner())
+}
+
+fn suffix_length_unit(suffix: NumericSuffix) -> Option<UnitLength> {
+    match suffix {
+        NumericSuffix::Mm => Some(UnitLength::Millimeters),
+        NumericSuffix::Cm => Some(UnitLength::Centimeters),
+        NumericSuffix::M => Some(UnitLength::Meters),
+        NumericSuffix::Inch => Some(UnitLength::Inches),
+        NumericSuffix::Ft => Some(UnitLength::Feet),
+        NumericSuffix::Yd => Some(UnitLength::Yards),
+        _ => None,
+    }
+}
+
+fn number_value_in_default_length_units(number: Number, default_length_unit: UnitLength) -> f64 {
+    match suffix_length_unit(number.units) {
+        Some(unit) => adjust_length(unit, number.value, default_length_unit).0,
+        None => number.value,
+    }
+}
+
+fn literal_value_in_default_length_units(literal: &ast::NumericLiteral, default_length_unit: UnitLength) -> f64 {
+    match suffix_length_unit(literal.suffix) {
+        Some(unit) => adjust_length(unit, literal.value, default_length_unit).0,
+        None => literal.value,
+    }
+}
+
+fn var_solution_needs_commit(
+    current_literal: &ast::NumericLiteral,
+    solved_value: Number,
+    default_length_unit: UnitLength,
+) -> bool {
+    let current = literal_value_in_default_length_units(current_literal, default_length_unit);
+    let solved = number_value_in_default_length_units(solved_value, default_length_unit);
+
+    (current - solved).abs() > 1e-9
+}
+
+fn preserve_var_solution_literal_style(
+    current_literal: &ast::NumericLiteral,
+    solved_value: Number,
+    default_length_unit: UnitLength,
+) -> Number {
+    if current_literal.suffix == NumericSuffix::None {
+        return Number {
+            value: number_value_in_default_length_units(solved_value, default_length_unit),
+            units: NumericSuffix::None,
+        };
+    }
+
+    let Some(current_unit) = suffix_length_unit(current_literal.suffix) else {
+        return solved_value;
+    };
+
+    let solved_default_value = number_value_in_default_length_units(solved_value, default_length_unit);
+    Number {
+        value: adjust_length(default_length_unit, solved_default_value, current_unit).0,
+        units: current_literal.suffix,
+    }
 }
 
 pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
@@ -6584,6 +6940,36 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     fn assert_point_position_close(actual: Point2d<Number>, expected: Point2d<Number>) {
         assert!((actual.x.value - expected.x.value).abs() < 1e-6);
         assert!((actual.y.value - expected.y.value).abs() < 1e-6);
+    }
+
+    /// Build a millimeter-valued point expression for concise sketch edit test
+    /// setup.
+    fn point_expr_mm(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::Var(Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            }),
+        }
+    }
+
+    /// Build a millimeter-valued numeric point for comparing solved scene graph
+    /// positions.
+    fn point_number_mm(x: f64, y: f64) -> Point2d<Number> {
+        Point2d {
+            x: Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            },
+        }
     }
 
     fn make_line_ctor(start_x: f64, start_y: f64, end_x: f64, end_y: f64, units: NumericSuffix) -> LineCtor {
@@ -7792,9 +8178,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
+  point(at = [var 1, var 2])
   // describe the middle point
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -7837,7 +8223,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
+  point(at = [var 1, var 2])
   // describe the trailing point
 }
 "
@@ -7937,7 +8323,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   /* above first - moves to middle */
   /* above middle - stays */
-  point(at = [var 3mm, var 4mm])
+  point(at = [var 3, var 4])
   /* above last - moves to trailing meta */
 }
 "
@@ -7994,7 +8380,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line(start = [var 127mm, var 152.4mm], end = [var 3mm, var 4mm])
+  line(start = [var 5in, var 6in], end = [var 3, var 4])
 }
 "
         );
@@ -8051,7 +8437,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line(start = [var 1mm, var 2mm], end = [var 127mm, var 152.4mm])
+  line(start = [var 1, var 2], end = [var 5in, var 6in])
 }
 "
         );
@@ -8116,8 +8502,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4.14mm, var 5.32mm])
-  line2 = line(start = [var 4.14mm, var 5.32mm], end = [var 9mm, var 10mm])
+  line1 = line(start = [var 0, var 0], end = [var 4.14, var 5.32])
+  line2 = line(start = [var 4.14, var 5.32], end = [var 9, var 10])
   fixed([line1.start, [0, 0]])
   coincident([line1.end, line2.start])
   equalLength([line1, line2])
@@ -8133,6 +8519,565 @@ sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_segments_persists_solver_feedback_for_next_mock_execute() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  fixed([line1.start, [0, 0]])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_end_id = *sketch.segments.get(4).unwrap();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line2_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 9.0,
+                        units: NumericSuffix::None,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 10.0,
+                        units: NumericSuffix::None,
+                    }),
+                },
+            }),
+        }];
+        let (edited_source, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, edited_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    /// Preview segment edits should return solved geometry without persisting
+    /// solver feedback to KCL.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_preview_edit_segments_does_not_persist_solver_feedback() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  fixed([line1.start, [0, 0]])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_end_id = *sketch.segments.get(4).unwrap();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line2_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 9.0,
+                        units: NumericSuffix::None,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 10.0,
+                        units: NumericSuffix::None,
+                    }),
+                },
+            }),
+        }];
+        let (preview_source, preview_delta) = frontend
+            .edit_segments_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                segments,
+                EditSegmentsOptions {
+                    anchor_segment_ids: Some(vec![line2_end_id]),
+                    drag_anchors: Vec::new(),
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+
+        assert!(
+            !preview_delta.exec_outcome.var_solutions.is_empty(),
+            "preview solve should still solve and return geometry feedback"
+        );
+        assert!(
+            preview_source
+                .text
+                .contains("line1 = line(start = [var 1, var 2], end = [var 1, var 2])")
+        );
+        assert!(
+            preview_source
+                .text
+                .contains("line2 = line(start = [var 5, var 6], end = [var 9, var 10])")
+        );
+
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, preview_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraint_persists_solver_feedback_for_next_mock_execute() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::Fixed(Fixed {
+            points: vec![FixedPoint {
+                point: line_end_id,
+                position: Point2d {
+                    x: Number {
+                        value: 20.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    y: Number {
+                        value: 0.0,
+                        units: NumericSuffix::Mm,
+                    },
+                },
+            }],
+        });
+        let (constraint_source, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+
+        assert!(
+            constraint_source
+                .text
+                .contains("line1 = line(start = [var 0, var 0], end = [var 20, var 0])"),
+            "{}",
+            constraint_source.text
+        );
+        let (mock_source, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(mock_source.text, constraint_source.text);
+
+        mock_ctx.close().await;
+    }
+
+    #[test]
+    fn test_no_solver_feedback_preserves_original_source() {
+        let initial_source = "\
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+cylinder = startSketchOn(XY)
+    |> circle(center= [0, 0], radius= 22)
+    |> extrude(length = 14)
+";
+        let mut frontend = FrontendState::new();
+        frontend.program = Program::parse(initial_source).unwrap().0.unwrap();
+        let outcome = ExecOutcome {
+            variables: Default::default(),
+            operations: Default::default(),
+            artifact_graph: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
+            var_solutions: Default::default(),
+            issues: Default::default(),
+            filenames: Default::default(),
+            default_planes: Default::default(),
+        };
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(source_delta.text, initial_source);
+    }
+
+    /// Explicit drag anchors should limit which edited points become temporary
+    /// fixed constraints.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_segments_with_anchor_ids_limits_drag_fixed_constraints() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point2 = point(at = [var 0mm, var 0mm])
+  coincident([point1, point2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point1_id = sketch.segments[0];
+        let point2_id = sketch.segments[1];
+
+        let segments = vec![
+            ExistingSegmentCtor {
+                id: point1_id,
+                ctor: SegmentCtor::Point(PointCtor {
+                    position: point_expr_mm(10.0, 0.0),
+                }),
+            },
+            ExistingSegmentCtor {
+                id: point2_id,
+                ctor: SegmentCtor::Point(PointCtor {
+                    position: point_expr_mm(100.0, 0.0),
+                }),
+            },
+        ];
+        let (_, scene_delta) = frontend
+            .edit_segments_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                segments,
+                EditSegmentsOptions {
+                    anchor_segment_ids: Some(vec![point1_id]),
+                    drag_anchors: Vec::new(),
+                    commit_solved_initial_guesses: true,
+                },
+            )
+            .await
+            .unwrap();
+
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            point_number_mm(10.0, 0.0),
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point2_id),
+            point_number_mm(10.0, 0.0),
+        );
+
+        mock_ctx.close().await;
+    }
+
+    /// Walks a program collecting `(literal_source_range, sketch_var_node_path)`
+    /// for every SketchVar whose initial NumericLiteral has the given value.
+    fn collect_sketch_var_literals_with_value(program: &Program, value: f64) -> Vec<(SourceRange, ast::NodePath)> {
+        use std::cell::RefCell;
+        struct Collector {
+            target: f64,
+            out: RefCell<Vec<(SourceRange, ast::NodePath)>>,
+        }
+        impl<'a> crate::walk::Visitor<'a> for &Collector {
+            type Error = crate::front::Error;
+            fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+                if let crate::walk::Node::SketchVar(sketch_var) = node
+                    && let (Some(initial), Some(node_path)) = (&sketch_var.initial, &sketch_var.node_path)
+                    && (initial.value - self.target).abs() < 1e-9
+                {
+                    self.out
+                        .borrow_mut()
+                        .push((SourceRange::from(initial.as_ref()), node_path.clone()));
+                }
+                for child in node.children().iter() {
+                    if !child.visit(*self)? {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            }
+        }
+        let collector = Collector {
+            target: value,
+            out: Default::default(),
+        };
+        let _ = crate::walk::Node::from(&program.ast).visit(&collector);
+        collector.out.into_inner()
+    }
+
+    /// Walk a program collecting `(sketch_var_source_range, sketch_var_node_path)`
+    /// for every SketchVar (including bare `var`).
+    fn collect_all_sketch_vars(program: &Program) -> Vec<(SourceRange, ast::NodePath)> {
+        use std::cell::RefCell;
+        struct Collector {
+            out: RefCell<Vec<(SourceRange, ast::NodePath)>>,
+        }
+        impl<'a> crate::walk::Visitor<'a> for &Collector {
+            type Error = crate::front::Error;
+            fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+                if let crate::walk::Node::SketchVar(sketch_var) = node
+                    && let Some(node_path) = &sketch_var.node_path
+                {
+                    self.out
+                        .borrow_mut()
+                        .push((SourceRange::from(sketch_var), node_path.clone()));
+                }
+                for child in node.children().iter() {
+                    if !child.visit(*self)? {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            }
+        }
+        let collector = Collector {
+            out: Default::default(),
+        };
+        let _ = crate::walk::Node::from(&program.ast).visit(&collector);
+        collector.out.into_inner()
+    }
+
+    fn empty_exec_outcome_with_var_solutions(
+        var_solutions: Vec<(SourceRange, Option<ast::NodePath>, Number)>,
+    ) -> ExecOutcome {
+        ExecOutcome {
+            variables: Default::default(),
+            operations: Default::default(),
+            artifact_graph: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
+            var_solutions,
+            issues: Default::default(),
+            filenames: Default::default(),
+            default_planes: Default::default(),
+        }
+    }
+
+    /// Happy path: commit a var solution to a `var N` inside a sketch block
+    /// using a correct NodePath. Confirms the node-path code path produces the
+    /// expected source mutation.
+    #[test]
+    fn test_commit_var_solution_by_node_path_updates_sketch_var() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let matches = collect_sketch_var_literals_with_value(&program, 10.0);
+        assert_eq!(matches.len(), 1, "expected exactly one `var 10mm`");
+        let (literal_range, node_path) = matches.into_iter().next().unwrap();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            literal_range,
+            Some(node_path),
+            Number {
+                value: 25.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 25mm, var 0])
+}
+",
+        );
+    }
+
+    /// Whitespace inserted earlier in the source shifts the original SketchVar
+    /// SourceRange. With NodePath propagation the commit should still target
+    /// the right `var`. We simulate this by collecting node_paths against a
+    /// "compact" source, then loading the frontend with a "padded" source
+    /// (whose byte offsets differ), and feeding the original (now stale)
+    /// source range plus the correct node_path back into the commit.
+    #[test]
+    fn test_commit_var_solution_survives_whitespace_shift_earlier_in_file() {
+        let compact_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let padded_source = "\
+// added comment\n// added comment\n\nsketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10mm, var 0])
+}
+";
+        let compact_program = Program::parse(compact_source).unwrap().0.unwrap();
+        let padded_program = Program::parse(padded_source).unwrap().0.unwrap();
+
+        let compact_match = collect_sketch_var_literals_with_value(&compact_program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm` in compact source");
+        let padded_match = collect_sketch_var_literals_with_value(&padded_program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm` in padded source");
+
+        assert_ne!(
+            compact_match.0, padded_match.0,
+            "byte offsets must differ for this test to be meaningful"
+        );
+        assert_eq!(
+            compact_match.1, padded_match.1,
+            "node paths must agree across whitespace; that's the whole point of NodePath",
+        );
+
+        let mut frontend = FrontendState::new();
+        frontend.program = padded_program;
+
+        // Stale source range from the compact source + correct node_path.
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            compact_match.0,
+            Some(compact_match.1),
+            Number {
+                value: 30.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(
+            source_delta.text,
+            "\
+// added comment
+// added comment
+
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 30mm, var 0])
+}
+",
+        );
+    }
+
+    /// When multiple `var` declarations exist and the stale source range
+    /// happens to land on a *different* var, the node_path must take
+    /// precedence and the right var gets updated.
+    #[test]
+    fn test_commit_var_solution_node_path_wins_when_source_range_points_at_wrong_var() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 10mm, var 0mm], end = [var 20mm, var 0mm])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let var_10 = collect_sketch_var_literals_with_value(&program, 10.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 10mm`");
+        let var_20 = collect_sketch_var_literals_with_value(&program, 20.0)
+            .into_iter()
+            .next()
+            .expect("expected `var 20mm`");
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        // Use var 20mm's source range, but var 10mm's node_path. node_path wins.
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            var_20.0,
+            Some(var_10.1),
+            Number {
+                value: 33.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 33mm, var 0mm], end = [var 20mm, var 0mm])
+}
+",
+        );
+    }
+
+    /// Bare `var` (no initial literal) is only locatable via node_path. With
+    /// the EditVarInitialValue handler now operating on the SketchVar node, a
+    /// solver solution should fill the initial value in. The
+    /// `@settings(experimentalFeatures = allow)` is required because bare `var`
+    /// is gated as an experimental feature; without it the re-parse of the
+    /// recast source rejects bare `var` declarations.
+    #[test]
+    fn test_commit_var_solution_writes_back_into_bare_var() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+sketch(on = XY) {
+  line1 = line(start = [var, var 0mm], end = [var 10mm, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        // Pick the first bare `var`; collect_all_sketch_vars returns every
+        // SketchVar, including bare ones.
+        let bare = collect_all_sketch_vars(&program)
+            .into_iter()
+            .find(|(range, _)| {
+                // The bare `var` is exactly the 3 characters "var".
+                range.end() - range.start() == 3
+            })
+            .expect("expected at least one bare `var`");
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let outcome = empty_exec_outcome_with_var_solutions(vec![(
+            bare.0,
+            Some(bare.1),
+            Number {
+                value: 7.0,
+                units: NumericSuffix::Mm,
+            },
+        )]);
+
+        let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
+
+        // Default length unit (mm; no `@settings(defaultLengthUnit = …)`) is
+        // written as an explicit suffix so the bare var commits with units.
+        // The recast adds a blank line after the `@settings` annotation.
+        assert_eq!(
+            source_delta.text,
+            "\
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+
+sketch(on = XY) {
+  line1 = line(start = [var 7mm, var 0mm], end = [var 10mm, var 0])
+}
+",
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -8168,8 +9113,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 1, var 2])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8213,8 +9158,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 1mm, var 2mm])
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 1, var 2])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8260,7 +9205,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point(at = [var 5mm, var 6mm])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8305,9 +9250,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 4mm])
-  point(at = [var 5mm, var 6mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
 }
 "
         );
@@ -8350,7 +9295,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -8397,7 +9342,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -8445,7 +9390,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
 }
 "
         );
@@ -8492,7 +9437,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
 }
 "
         );
@@ -8539,7 +9484,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
 }
 "
         );
@@ -8650,8 +9595,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   equalLength([line1, line2])
 }
 "
@@ -8876,7 +9821,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -8922,8 +9867,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
   parallel([line1, line2])
 }
 "
@@ -8980,7 +9925,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
 }
 "
         );
@@ -9026,8 +9971,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
-  line2 = line(start = [var 5mm, var 6mm], end = [var 7mm, var 8mm])
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
 }
 "
         );
@@ -9073,7 +10018,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
   point2 = point(at = [3, 4])
   coincident([point1, point2])
 }
@@ -9132,9 +10077,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
   point2 = point(at = [var 3, var 4])
-  point3 = point(at = [var 5, var 6])
+  point3 = point(at = [var 3, var 4])
   coincident([point1, point2, point3])
 }
 "
@@ -9219,7 +10164,7 @@ sketch(on = XY) {
                 true,
                 "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 0, var 0])
   coincident([ORIGIN, point1])
 }
 ",
@@ -9228,7 +10173,7 @@ sketch(on = XY) {
                 false,
                 "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 0, var 0])
   coincident([point1, ORIGIN])
 }
 ",
@@ -9315,8 +10260,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 1, var 2], end = [var 4, var 5])
+  line2 = line(start = [var 4, var 5], end = [var 7, var 8])
   coincident([line1.end, line2.start])
 }
 "
@@ -9396,8 +10341,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-  line1 = line(start = [var 9mm, var 1mm], end = [var 10mm, var 2mm])
+  circle1 = circle(start = [var 7.02mm, var 0mm], center = [var -0.01mm, var 0.22mm])
+  line1 = line(start = [var 7mm, var 0.78mm], end = [var 10mm, var 2mm])
   coincident([line1.start, circle1])
 }
 "
@@ -9603,8 +10548,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
+  point1 = point(at = [var 1.29, var 2.29])
+  point2 = point(at = [var 2.71, var 3.71])
   distance([point1, point2]) == 2mm
 }
 "
@@ -9672,8 +10617,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
+  point1 = point(at = [var 1.29, var 2.29])
+  point2 = point(at = [var 2.71, var 3.71])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -9760,8 +10705,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 2])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -10057,7 +11002,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  arc1 = arc(start = [var -4.13mm, var -0.59mm], end = [var -3.47mm, var 3.38mm], center = [var -4.55mm, var 1.52mm])
+  arc1 = arc(start = [var -4.16mm, var -0.43mm], end = [var -3.53mm, var 3.28mm], center = [var -4.91mm, var 1.61mm])
   distance([arc1, ORIGIN]) == 3mm
 }
 "
@@ -10263,8 +11208,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
-  arc1 = arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+  circle1 = circle(start = [var 4.33, var 0], center = [var -0.34, var -0.09])
+  arc1 = arc(start = [var 15.33, var -0.01], end = [var 10.01, var 4.33], center = [var 11.34, var 0.53])
   distance([circle1, arc1]) == 3mm
 }
 "
@@ -10389,8 +11334,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  line2 = line(start = [var 0, var 0], end = [var 0, var 10])
+  line1 = line(start = [var 4.98, var -0.07], end = [var 4.98, var 0.14])
+  line2 = line(start = [var 0.02, var 4.3], end = [var 0.03, var 5.65])
   distance([line1, line2]) == 5mm
 }
 "
@@ -10532,7 +11477,7 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   radius(arc1) == 5mm
 }
 "
@@ -10608,7 +11553,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
 }
 "
@@ -10821,7 +11766,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
+  point1 = point(at = [var 2, var 3])
   fixed([point1, [2mm, 3mm]])
 }
 "
@@ -10903,8 +11848,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
+  point1 = point(at = [var 2, var 3])
+  point2 = point(at = [var 4, var 5])
   fixed([point1, [2mm, 3mm]])
   fixed([point2, [4mm, 5mm]])
 }
@@ -10970,7 +11915,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1 = line(start = [var 2, var 3], end = [var 3, var 4])
   fixed([line1.start, [2mm, 3mm]])
 }
 "
@@ -11105,7 +12050,7 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   diameter(arc1) == 10mm
 }
 "
@@ -11181,7 +12126,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
   diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
 }
 "
@@ -11363,7 +12308,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1 = line(start = [var 1, var 3], end = [var 3, var 3])
   horizontal(line1)
 }
 "
@@ -11758,7 +12703,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line1 = line(start = [var 2, var 2], end = [var 2, var 4])
   vertical(line1)
 }
 "
@@ -11811,7 +12756,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 3.1mm])
+  p0 = point(at = [var 4mm, var 3.1mm])
   pf = point(at = [4, 4])
   vertical([p0, pf])
 }
@@ -11865,7 +12810,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 3.1mm])
+  p0 = point(at = [var -2.23mm, var 4mm])
   pf = point(at = [4, 4])
   horizontal([p0, pf])
 }
@@ -11915,7 +12860,7 @@ sketch001 = sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 3.1mm])
+  p0 = point(at = [var -2.23mm, var 0mm])
   horizontal([p0, ORIGIN])
 }
 "
@@ -12197,8 +13142,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 2, var 3], end = [var 2, var 3])
+  line2 = line(start = [var 6, var 7], end = [var 6, var 7])
   perpendicular([line1, line2])
 }
 "
@@ -12255,8 +13200,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  line1 = line(start = [var 0.9, var 2.36], end = [var 3.1, var 3.64])
+  line2 = line(start = [var 5.36, var 5.9], end = [var 6.64, var 8.1])
   angle([line1, line2]) == 30deg
 }
 "
@@ -12307,8 +13252,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  line1 = line(start = [var 0.84, var 2.13], end = [var 3.82, var 3.27])
+  arc1 = arc(start = [var 4.51, var 2.03], end = [var 7.05, var 2.02], center = [var 5.78, var 2.55])
   tangent([line1, arc1])
 }
 "
@@ -12361,8 +13306,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1, var 1])
-  line1 = line(start = [var 0, var 0], end = [var 6, var 4])
+  point1 = point(at = [var 2.33, var 1.67])
+  line1 = line(start = [var -0.67, var -0.33], end = [var 5.33, var 3.67])
   midpoint(line1, point = point1)
 }
 "
@@ -12470,8 +13415,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 6, var 3])
-  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  point1 = point(at = [var 6, var 2.35])
+  arc1 = arc(start = [var 6, var 2.35], end = [var 6, var 2.35], center = [var 6, var 1.94])
   midpoint(arc1, point = point1)
 }
 "
@@ -12521,7 +13466,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 6, var 4])
+  line1 = line(start = [var -3, var -2], end = [var 3, var 2])
   midpoint(line1, point = ORIGIN)
 }
 "
@@ -12571,7 +13516,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  arc1 = arc(start = [var 0.35, var 2.24], end = [var 1.62, var -1.58], center = [var 2.34, var 0.78])
   midpoint(arc1, point = ORIGIN)
 }
 "
@@ -12625,9 +13570,9 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
-  arc2 = arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
-  line1 = line(start = [var 0, var -10], end = [var 0, var 10])
+  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.31])
+  arc2 = arc(start = [var 5.49, var 2.26], end = [var 11.58, var -3.47], center = [var 9.34, var 0.25])
+  line1 = line(start = [var -0.44, var -10], end = [var -0.37, var 10])
   symmetric([arc1, arc2], axis = line1)
 }
 "
@@ -13111,47 +14056,11 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        let edited_sketch1_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
-        // Only the first sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        assert_eq!(src_delta.text, edited_sketch1_source);
         // Exit sketch. Objects from the entire program should be present.
         //
         // - startSketchOn(XY) Plane 1
@@ -13221,10 +14130,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -13239,47 +14148,11 @@ sketch2 = sketch(on = XY) {
 }
 "
         );
+        let edited_sketch2_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
-        // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        assert_eq!(src_delta.text, edited_sketch2_source);
 
         ctx.close().await;
         mock_ctx.close().await;

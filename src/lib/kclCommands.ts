@@ -15,6 +15,7 @@ import {
   type PathToNode,
   type VariableDeclarator,
   changeDefaultUnits,
+  getAllOperations,
   isPathToNode,
   pathToNodeFromRustNodePath,
   recast,
@@ -402,17 +403,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           },
           required: true,
           options() {
-            return commandProps.kclManager.execState.operations.flatMap(
-              (op) => {
-                if (op.type !== 'VariableDeclaration') return []
-                if (op.value.type !== 'Number') return []
-                const value = pathToNodeFromRustNodePath(op.nodePath).slice(
-                  0,
-                  -1
-                )
-                return { name: op.name, value }
-              }
-            )
+            return getAllOperations(
+              commandProps.kclManager.execState.operations
+            ).flatMap((op) => {
+              if (op.type !== 'VariableDeclaration') return []
+              if (op.value.type !== 'Number') return []
+              const value = pathToNodeFromRustNodePath(op.nodePath).slice(0, -1)
+              return { name: op.name, value }
+            })
           },
         },
         value: {
