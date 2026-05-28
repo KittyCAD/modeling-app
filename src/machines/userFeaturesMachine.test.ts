@@ -1,3 +1,4 @@
+import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   UserFeaturesActor,
   UserFeaturesState,
@@ -7,6 +8,18 @@ import {
 } from '@src/machines/userFeaturesMachine'
 import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
+
+const mockState = vi.hoisted(() => ({
+  reportClientError: vi.fn(),
+}))
+
+vi.mock('@src/lib/clientErrors', async (importOriginal) => {
+  const actual = await importOriginal<typeof ClientErrorsModule>()
+  return {
+    ...actual,
+    reportClientError: mockState.reportClientError,
+  }
+})
 
 type TestFetchUserFeaturesInput = {
   token: string
@@ -111,6 +124,20 @@ describe('userFeaturesMachine', () => {
       expect(context.featureIds.size).toBe(0)
       expect(context.fetchedForToken).toBeUndefined()
       expect(userFeaturesContextHas(context, 'plugins', false)).toBe(false)
+      expect(mockState.reportClientError).toHaveBeenCalledWith({
+        code: 'user_features_fetch_error',
+        message: 'feature service unavailable',
+        error: expect.any(Error),
+        dedupeKey:
+          'UserFeaturesMachine:fetch-error:feature service unavailable',
+        extra: expect.objectContaining({
+          source: 'UserFeaturesMachine',
+          eventType: expect.stringMatching(/^xstate\.done\.actor\./),
+          featureCount: 0,
+          hasFetchedForToken: false,
+          hasLoadingToken: true,
+        }),
+      })
     } finally {
       actor.stop()
     }

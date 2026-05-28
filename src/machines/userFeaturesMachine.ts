@@ -1,6 +1,8 @@
 import { users } from '@kittycad/lib'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { isErr } from '@src/lib/trap'
+import { xstateEventError } from '@src/machines/utils'
 import type { ActorRefFrom, DoneActorEvent, ErrorActorEvent } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 
@@ -90,6 +92,15 @@ function featureIdsFromResponse(data: UserFeaturesData): Set<string> {
   return new Set(data.features.map(({ id }) => id))
 }
 
+function userFeaturesErrorContext(context: UserFeaturesContext) {
+  return {
+    featureCount: context.featureIds.size,
+    hasFetchedForToken: Boolean(context.fetchedForToken),
+    hasLoadingToken: Boolean(context.loadingToken),
+    fetchedAt: context.fetchedAt?.toISOString(),
+  }
+}
+
 export function userFeaturesContextHas(
   context: UserFeaturesContext,
   featureFlagId: string,
@@ -132,6 +143,22 @@ export const userFeaturesMachine = setup({
     fetchReturnedError: ({ event }) => 'output' in event && isErr(event.output),
   },
   actions: {
+    reportFetchError: ({ context, event }) => {
+      const error = xstateEventError(event)
+      if (!isErr(error)) return
+
+      void reportClientError({
+        code: ClientErrorCode.UserFeaturesFetchError,
+        message: error.message,
+        error,
+        dedupeKey: `UserFeaturesMachine:fetch-error:${error.message}`,
+        extra: {
+          source: 'UserFeaturesMachine',
+          eventType: event.type,
+          ...userFeaturesErrorContext(context),
+        },
+      })
+    },
     startLoading: assign(({ context, event }) => {
       const token = getEventToken(context, event)
       if (!token) {
@@ -209,7 +236,7 @@ export const userFeaturesMachine = setup({
           {
             guard: 'fetchReturnedError',
             target: UserFeaturesState.Failed,
-            actions: 'storeError',
+            actions: ['reportFetchError', 'storeError'],
           },
           {
             target: UserFeaturesState.Ready,
@@ -218,7 +245,7 @@ export const userFeaturesMachine = setup({
         ],
         onError: {
           target: UserFeaturesState.Failed,
-          actions: 'storeError',
+          actions: ['reportFetchError', 'storeError'],
         },
       },
       on: {
