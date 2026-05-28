@@ -1,7 +1,7 @@
 import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { isArray } from '@src/lib/utils'
-import type { ActorRefFrom } from 'xstate'
+import { isErr } from '@src/lib/trap'
+import type { ActorRefFrom, DoneActorEvent, ErrorActorEvent } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 
 export enum UserFeaturesState {
@@ -21,10 +21,7 @@ export enum UserFeaturesActor {
   Fetch = 'Fetch',
 }
 
-type UserFeaturesData = Extract<
-  Awaited<ReturnType<typeof users.user_features_get>>,
-  { features: unknown }
->
+type UserFeaturesData = Awaited<ReturnType<typeof users.user_features_get>>
 
 type FetchUserFeaturesInput = {
   token: string
@@ -34,19 +31,23 @@ type FetchUserFeaturesOutput = {
   featureIds: Set<string>
 }
 type FetchUserFeaturesResult = FetchUserFeaturesOutput | Error
+type FetchUserFeaturesDoneEvent = DoneActorEvent<FetchUserFeaturesResult>
+type FetchUserFeaturesErrorEvent = ErrorActorEvent<Error>
 
 export interface UserFeaturesContext {
   featureIds: Set<string>
   fetchedForToken?: string
   fetchedAt?: Date
   loadingToken?: string
-  error?: unknown
+  error?: Error
 }
 
 export type UserFeaturesEvent =
   | { type: UserFeaturesTransition.Load; token: string }
   | { type: UserFeaturesTransition.Refresh; token?: string }
   | { type: UserFeaturesTransition.Clear }
+  | FetchUserFeaturesDoneEvent
+  | FetchUserFeaturesErrorEvent
 
 export type UserFeaturesService = {
   has: (featureFlagId: string, defaultValue: boolean) => boolean
@@ -86,17 +87,7 @@ function hasEventToken(
 }
 
 function featureIdsFromResponse(data: UserFeaturesData): Set<string> {
-  const features = isArray(data.features) ? data.features : []
-  return new Set(
-    features.flatMap((feature) =>
-      feature &&
-      typeof feature === 'object' &&
-      'id' in feature &&
-      typeof feature.id === 'string'
-        ? [feature.id]
-        : []
-    )
-  )
+  return new Set(data.features.map(({ id }) => id))
 }
 
 export function userFeaturesContextHas(
@@ -119,7 +110,7 @@ export const userFeaturesMachine = setup({
     >(async ({ input }) => {
       const client = createKCClient(input.token)
       const result = await kcCall(() => users.user_features_get({ client }))
-      if (result instanceof Error) {
+      if (isErr(result)) {
         return result
       }
 
@@ -138,8 +129,7 @@ export const userFeaturesMachine = setup({
       const token = getEventToken(context, event)
       return !!token && context.loadingToken === token
     },
-    fetchReturnedError: ({ event }) =>
-      'output' in event && event.output instanceof Error,
+    fetchReturnedError: ({ event }) => 'output' in event && isErr(event.output),
   },
   actions: {
     startLoading: assign(({ context, event }) => {
@@ -166,8 +156,8 @@ export const userFeaturesMachine = setup({
         return {}
       }
 
-      const output = event.output as FetchUserFeaturesResult
-      if (output instanceof Error) {
+      const output = event.output
+      if (isErr(output)) {
         return {}
       }
 
@@ -182,7 +172,7 @@ export const userFeaturesMachine = setup({
     storeError: assign(({ event }) => ({
       loadingToken: undefined,
       error:
-        'output' in event && event.output instanceof Error
+        'output' in event && isErr(event.output)
           ? event.output
           : 'error' in event
             ? event.error
