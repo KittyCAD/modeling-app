@@ -1563,6 +1563,71 @@ fn update_consumed_csg_sweep(
     }
 }
 
+fn mark_artifact_consumed_by_id(
+    return_arr: &mut Vec<Artifact>,
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    artifact_id: ArtifactId,
+    consumed_ids: &mut FnvHashSet<ArtifactId>,
+) {
+    let already_marked_as_consumed = !consumed_ids.insert(artifact_id);
+    if already_marked_as_consumed {
+        return;
+    }
+
+    let Some(artifact) = artifacts.get(&artifact_id) else {
+        return;
+    };
+
+    match artifact {
+        Artifact::CompositeSolid(composite) => {
+            let mut new_composite = composite.clone();
+            new_composite.consumed = true;
+            return_arr.push(Artifact::CompositeSolid(new_composite));
+        }
+        Artifact::Path(path) => {
+            let mut new_path = path.clone();
+            new_path.consumed = true;
+            return_arr.push(Artifact::Path(new_path));
+
+            if let Some(sweep_id) = path.sweep_id {
+                mark_artifact_consumed_by_id(return_arr, artifacts, sweep_id, consumed_ids);
+            }
+            if let Some(composite_solid_id) = path.composite_solid_id {
+                mark_artifact_consumed_by_id(return_arr, artifacts, composite_solid_id, consumed_ids);
+            }
+        }
+        Artifact::Sweep(sweep) => {
+            let mut new_sweep = sweep.clone();
+            new_sweep.consumed = true;
+            return_arr.push(Artifact::Sweep(new_sweep));
+        }
+        Artifact::Helix(helix) => {
+            let mut new_helix = helix.clone();
+            new_helix.consumed = true;
+            return_arr.push(Artifact::Helix(new_helix));
+        }
+        _ => {}
+    }
+}
+
+fn mark_deleted_artifacts_consumed(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    object_ids: &std::collections::HashSet<Uuid>,
+) -> Vec<Artifact> {
+    let mut return_arr = Vec::new();
+    let mut consumed_ids = FnvHashSet::default();
+
+    // The order of iteration doesn't matter here, as all artifacts get marked as consumed.
+    // Also the set comes from the API crate which uses HashSet.
+    #[allow(clippy::iter_over_hash_type)]
+    for object_id in object_ids {
+        let artifact_id = ArtifactId::new(*object_id);
+        mark_artifact_consumed_by_id(&mut return_arr, artifacts, artifact_id, &mut consumed_ids);
+    }
+
+    return_arr
+}
+
 fn update_csg_input_artifacts(
     return_arr: &mut Vec<Artifact>,
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -1703,6 +1768,9 @@ fn artifacts_to_update(
                 face_id: object_id.into(),
                 code_ref,
             })]);
+        }
+        ModelingCmd::RemoveSceneObjects(remove) => {
+            return Ok(mark_deleted_artifacts_consumed(artifacts, &remove.object_ids));
         }
         ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
             let existing_plane = artifacts.get(&ArtifactId::new(*entity_id));

@@ -177,6 +177,7 @@ layout: manual
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
+  * [`delete`](/docs/kcl-std/functions/std-transform-delete) Experimental
   * [`hide`](/docs/kcl-std/functions/std-transform-hide)
   * [`mirror2d`](/docs/kcl-std/functions/std-transform-mirror2d)
   * [`mirror3d`](/docs/kcl-std/functions/std-transform-mirror3d)
