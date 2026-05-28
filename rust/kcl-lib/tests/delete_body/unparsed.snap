@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing delete_body.kcl
+---
+@settings(experimentalFeatures = allow)
+
+// Make a cylinder
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var -2mm, var 1mm], center = [var -1mm, var 0.5mm])
+}
+cylinder = extrude(region(sketch = sketch001, point = sketch001.circle1.center), length = 5)
+// Delete it
+delete(cylinder)
