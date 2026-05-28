@@ -2929,7 +2929,7 @@ export class KclManager extends File {
     if (!codeMatchesUndo) {
       this.updateCodeEditor(pendingEntry.undoCode, {
         shouldAddToHistory: false,
-        shouldClearHistory: true,
+        shouldClearHistory: !codeMatchesRedo,
         shouldExecute: false,
         shouldResetCamera: false,
         shouldWriteToDisk: false,
