@@ -6,7 +6,7 @@ description: Operations executed sketch_block_import_multiple.kcl
   "rust/kcl-lib/tests/sketch_block_import_multiple/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "rectangle1.kcl",
+      "name": "rectangle1",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -20,7 +20,7 @@ description: Operations executed sketch_block_import_multiple.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "rectangle2.kcl",
+      "name": "rectangle2",
       "moduleId": 0,
       "nodePath": {
         "steps": [

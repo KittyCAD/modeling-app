@@ -557,7 +557,10 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
               },
             },
           ],
-          settings
+          settings,
+          false,
+          [],
+          false
         )
 
         const sendData: SketchSolveMachineEvent = {

@@ -17,6 +17,7 @@ use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
 use crate::NodePath;
+use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::errors::KclError;
@@ -31,6 +32,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
 use crate::execution::SketchVarId;
@@ -59,6 +61,7 @@ use crate::parsing::ast::types::TagNode;
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
+    pub(super) execution_callbacks: Option<std::sync::Arc<dyn crate::execution::ExecutionCallbacks>>,
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
 }
@@ -83,6 +86,8 @@ pub(super) struct GlobalState {
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
 }
 
 impl GlobalState {
@@ -160,11 +165,13 @@ pub struct ModuleArtifactState {
     /// Map from artifact ID to object ID in the scene.
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
 }
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    /// The id of this module.
+    pub module_id: ModuleId,
     /// The id generator for this module.
     pub id_generator: IdGenerator,
     pub stack: Stack,
@@ -328,6 +335,7 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global: GlobalState::new(&exec_context.settings, Default::default()),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
@@ -335,8 +343,11 @@ impl ExecState {
 
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
+        global.drag_anchors = mock_config.drag_anchors.clone();
         ExecState {
-            global: GlobalState::new(&exec_context.settings, segment_ids_edited),
+            execution_callbacks: exec_context.execution_callbacks.clone(),
+            global,
             mod_local: ModuleState::new(
                 ModulePath::Main,
                 ProgramMemory::new(),
@@ -351,6 +362,7 @@ impl ExecState {
         let global = GlobalState::new(&exec_context.settings, Default::default());
 
         *self = ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
             mod_local: ModuleState::new(
                 self.mod_local.path.clone(),
@@ -569,6 +581,14 @@ impl ExecState {
         self.global.segment_ids_edited.contains(object_id)
     }
 
+    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&crate::front::Point2d<crate::front::Number>> {
+        self.global
+            .drag_anchors
+            .iter()
+            .find(|anchor| &anchor.segment_id == object_id)
+            .map(|anchor| &anchor.target)
+    }
+
     pub(super) fn is_in_sketch_block(&self) -> bool {
         self.mod_local.sketch_block.is_some()
     }
@@ -668,7 +688,17 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
+        let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
+        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
+            && let Some(callbacks) = &self.execution_callbacks
+        {
+            callbacks.on_operation(OperationCallbackArgs {
+                module_id: self.mod_local.module_id,
+                operation,
+                index,
+            });
+        }
     }
 
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
@@ -908,6 +938,7 @@ impl GlobalState {
             issues: Default::default(),
             id_to_source: Default::default(),
             segment_ids_edited,
+            drag_anchors: Vec::new(),
         };
 
         let root_id = ModuleId::default();
@@ -1049,7 +1080,9 @@ impl ModuleState {
         sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
+        let state_module_id = module_id.unwrap_or_default();
         ModuleState {
+            module_id: state_module_id,
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,
@@ -1092,15 +1125,15 @@ impl SketchBlockState {
         &self,
         solve_outcome: &Solved,
         solution_ty: NumericType,
-        range: SourceRange,
-    ) -> Result<Vec<(SourceRange, Number)>, KclError> {
+        sketch_block_range: SourceRange,
+    ) -> Result<Vec<(SourceRange, Option<NodePath>, Number)>, KclError> {
         self.sketch_vars
             .iter()
             .map(|v| {
                 let Some(sketch_var) = v.as_sketch_var() else {
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         "Expected sketch variable".to_owned(),
-                        vec![range],
+                        vec![sketch_block_range],
                     )));
                 };
                 let var_index = sketch_var.id.0;
@@ -1117,14 +1150,14 @@ impl SketchBlockState {
                     units: solution_ty.try_into().map_err(|_| {
                         KclError::new_internal(KclErrorDetails::new(
                             "Failed to convert numeric type to units".to_owned(),
-                            vec![range],
+                            vec![sketch_block_range],
                         ))
                     })?,
                 };
                 let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
                     return Ok(None);
                 };
-                Ok(Some((source_range, solved_value)))
+                Ok(Some((source_range, sketch_var.node_path.clone(), solved_value)))
             })
             .filter_map(Result::transpose)
             .collect::<Result<Vec<_>, KclError>>()

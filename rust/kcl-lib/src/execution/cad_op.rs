@@ -65,6 +65,9 @@ pub enum Operation {
         name: String,
         /// The ID of the module which can be used to determine its path.
         module_id: ModuleId,
+        /// Whether this is a glob import (`import * from "foo.kcl"`).
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        glob: bool,
         /// The node path of the operation in the source code.
         node_path: NodePath,
         /// The source range of the operation in the source code.

@@ -282,15 +282,18 @@ description: Artifact commands bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 6.35,
+        "cut_type": {
+          "fillet": {
+            "radius": 6.35,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -311,15 +314,18 @@ description: Artifact commands bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 16.125347184188833,
+        "cut_type": {
+          "fillet": {
+            "radius": 16.125347184188833,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -376,18 +382,21 @@ description: Artifact commands bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]",
           "[uuid]",
           "[uuid]",
           "[uuid]"
         ],
-        "radius": 12.7,
+        "cut_type": {
+          "fillet": {
+            "radius": 12.7,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": [
           "[uuid]",

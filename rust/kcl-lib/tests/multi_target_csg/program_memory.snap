@@ -508,7 +508,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -948,7 +948,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           },
           "zAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": null
           }
@@ -2430,7 +2430,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -2492,7 +2492,7 @@ description: Variables in memory after executing multi_target_csg.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
@@ -2545,7 +2545,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -2607,7 +2607,7 @@ description: Variables in memory after executing multi_target_csg.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
@@ -2660,7 +2660,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "zAxis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0,
         "units": null
       }
@@ -2722,7 +2722,7 @@ description: Variables in memory after executing multi_target_csg.kcl
         },
         "zAxis": {
           "x": 0.0,
-          "y": -1.0,
+          "y": 1.0,
           "z": 0.0,
           "units": null
         }
