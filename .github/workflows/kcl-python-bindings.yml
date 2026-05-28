@@ -42,7 +42,12 @@ jobs:
         with:
           working-directory: rust/kcl-python-bindings
           target: x86_64
-          args: --release --out dist --find-interpreter
+          # --strip removes debug symbols from the .so. The workspace sets
+          # `[profile.release] debug = true`, which on Linux embeds DWARF debug
+          # info directly into the .so (mac/Windows keep it in sidecar
+          # .dSYM/.pdb files that aren't packaged), pushing the wheel past
+          # PyPI's 100MB limit. Stripping keeps the published wheel small.
+          args: --release --out dist --find-interpreter --strip
           sccache: 'true'
           manylinux: auto
           before-script-linux: |
@@ -71,7 +76,7 @@ jobs:
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist --find-interpreter --strip
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v7
@@ -102,7 +107,7 @@ jobs:
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist --find-interpreter --strip
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v7
