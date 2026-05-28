@@ -11,10 +11,11 @@ import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 
 type ZdsPluginDefault = 'core' | 'off'
+type ZdsPluginActivationSettingCategory = 'modeling' | 'plugins'
 
 export type ZdsPluginActivationSetting = {
   pluginId: string
-  category: string
+  category: ZdsPluginActivationSettingCategory
   settingName: string
 }
 
@@ -22,7 +23,7 @@ export const zdsPluginActivationSettingsValueSpec =
   appendValueSpec<ZdsPluginActivationSetting>('zds-plugin-activation-settings')
 
 type ZdsPluginActivationSettingSpec = {
-  category: string
+  category: ZdsPluginActivationSettingCategory
   settingName: string
   title?: string
   description?: string

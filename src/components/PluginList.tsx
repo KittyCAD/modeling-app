@@ -5,6 +5,7 @@ import type {
 } from '@kittycad/registry'
 import { Toggle } from '@src/components/Toggle/Toggle'
 import { useApp } from '@src/lib/boot'
+import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
 import {
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
@@ -66,13 +67,15 @@ function PluginItem({
           checked={resolvedService.active.value || false}
           onChange={() => {
             const nextActive = !resolvedService.active.value
-            app.settings.actor.send({
+            const event: DynamicBooleanSetEvent = {
               type: `set.${setting.category}.${setting.settingName}`,
               data: {
                 level: 'user',
                 value: nextActive,
               },
-            } as never)
+            }
+
+            app.settings.actor.send(event)
           }}
           className="flex-none"
         />
