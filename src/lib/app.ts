@@ -274,9 +274,7 @@ export class App implements AppSubsystems {
       type: 'Set userFeatures',
       data: this.userFeatures,
     })
-    this.authFeaturesSubscription = this.auth.actor.subscribe(
-      this.syncUserFeaturesFromAuth
-    )
+    this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
@@ -533,7 +531,6 @@ export class App implements AppSubsystems {
     return this.project
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
-  private authFeaturesSubscription: Subscription | undefined = undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
     this.project?.close()
