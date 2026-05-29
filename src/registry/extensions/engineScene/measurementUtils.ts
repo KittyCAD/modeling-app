@@ -1,4 +1,10 @@
-import type { DistanceType, Point3d, UnitArea, UnitLength } from '@kittycad/lib'
+import type {
+  DistanceType,
+  Point3d,
+  UnitArea,
+  UnitLength,
+  UnitVolume,
+} from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   isDefaultPlaneSelection,
@@ -8,7 +14,7 @@ import {
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type DistanceMode = 'euclidean' | 'x' | 'y' | 'z'
-export type MeasurementSelectionKind = 'face' | 'edge' | 'other'
+export type MeasurementSelectionKind = 'face' | 'edge' | 'body' | 'other'
 
 export type MeasurementEntity = {
   id: string
@@ -36,6 +42,11 @@ const edgeArtifactTypes: ReadonlySet<Artifact['type']> = new Set([
   'primitiveEdge',
 ])
 
+const bodyArtifactTypes: ReadonlySet<Artifact['type']> = new Set([
+  'sweep',
+  'compositeSolid',
+])
+
 const areaUnitByLengthUnit: Record<UnitLength, UnitArea> = {
   mm: 'mm2',
   cm: 'cm2',
@@ -43,6 +54,15 @@ const areaUnitByLengthUnit: Record<UnitLength, UnitArea> = {
   in: 'in2',
   ft: 'ft2',
   yd: 'yd2',
+}
+
+const volumeUnitByLengthUnit: Record<UnitLength, UnitVolume> = {
+  mm: 'mm3',
+  cm: 'cm3',
+  m: 'm3',
+  in: 'in3',
+  ft: 'ft3',
+  yd: 'yd3',
 }
 
 function getMeasurementKindForArtifact(
@@ -58,6 +78,10 @@ function getMeasurementKindForArtifact(
 
   if (edgeArtifactTypes.has(artifact.type)) {
     return 'edge'
+  }
+
+  if (bodyArtifactTypes.has(artifact.type)) {
+    return 'body'
   }
 
   return 'other'
@@ -76,6 +100,10 @@ function getMeasurementKindForEntityType(
     entityType === 'segment'
   ) {
     return 'edge'
+  }
+
+  if (entityType === 'solid3d' || entityType === 'object') {
+    return 'body'
   }
 
   return 'other'
@@ -108,7 +136,7 @@ function getEntitiesForGraphSelection(
   }
 
   return dedupeMeasurementEntities([
-    ...artifact.copyIds.map((id) => ({ id, kind: 'other' as const })),
+    ...artifact.copyIds.map((id) => ({ id, kind: 'body' as const })),
     ...artifact.copyFaceIds.map((id) => ({ id, kind: 'face' as const })),
     ...artifact.copyEdgeIds.map((id) => ({ id, kind: 'edge' as const })),
   ])
@@ -166,6 +194,10 @@ export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {
 
 export function getAreaUnit(unit: UnitLength): UnitArea {
   return areaUnitByLengthUnit[unit]
+}
+
+export function getVolumeUnit(unit: UnitLength): UnitVolume {
+  return volumeUnitByLengthUnit[unit]
 }
 
 export function pointDistance(start: Point3d, end: Point3d): number {

@@ -4,6 +4,7 @@ import type {
   Point3d,
   UnitArea,
   UnitLength,
+  UnitVolume,
 } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -17,19 +18,22 @@ import {
   type MeasurementEntity,
   distanceModes,
   formatDistance,
+  formatPoint3d,
   getAreaUnit,
   getDistanceTypeForMode,
   getMeasurementEntities,
+  getVolumeUnit,
   pointDistance,
 } from './measurementUtils'
 
 type MeasurementStatus = 'idle' | 'measuring'
-type SelectionFilterMode = 'default' | 'faces' | 'edges'
+type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'bodies'
 
 type MeasurementTarget =
   | { type: 'distance'; entityIds: [string, string] }
   | { type: 'edgeLength'; entity: MeasurementEntity }
   | { type: 'surfaceArea'; entity: MeasurementEntity }
+  | { type: 'bodyDetails'; entity: MeasurementEntity }
 
 type MeasurementResult =
   | {
@@ -50,6 +54,14 @@ type MeasurementResult =
       surfaceArea: number
       entityIdsKey: string
       unit: UnitArea
+    }
+  | {
+      type: 'bodyDetails'
+      volume: number
+      volumeUnit: UnitVolume
+      centerOfMass: Point3d
+      centerOfMassUnit: UnitLength
+      entityIdsKey: string
     }
 
 const selectionFilterOptions: Array<{
@@ -74,6 +86,12 @@ const selectionFilterOptions: Array<{
     label: 'Edges',
     title: 'Select edges',
     filter: ['edge', 'curve', 'segment'],
+  },
+  {
+    value: 'bodies',
+    label: 'Bodies',
+    title: 'Select solid bodies',
+    filter: ['solid3d'],
   },
 ]
 
@@ -117,6 +135,10 @@ function getMeasurementTarget(
     return { type: 'surfaceArea', entity }
   }
 
+  if (entity.kind === 'body') {
+    return { type: 'bodyDetails', entity }
+  }
+
   return null
 }
 
@@ -134,6 +156,10 @@ function getMeasureButtonTitle(
 
   if (target?.type === 'surfaceArea') {
     return 'Measure surface area'
+  }
+
+  if (target?.type === 'bodyDetails') {
+    return 'Measure body volume and center of mass'
   }
 
   if (selectedCount === 1) {
@@ -172,6 +198,30 @@ function MeasurementValue({
       </div>
       <div className="truncate text-sm font-medium tabular-nums">
         {formatDistance(value)}
+        <span className="ml-1 text-xs font-normal text-chalkboard-70 dark:text-chalkboard-40">
+          {unit}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function MeasurementPointValue({
+  label,
+  point,
+  unit,
+}: {
+  label: string
+  point: Point3d
+  unit: UnitLength
+}) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[10px] leading-3 text-chalkboard-70 dark:text-chalkboard-40">
+        {label}
+      </div>
+      <div className="truncate text-sm font-medium tabular-nums">
+        {formatPoint3d(point)}
         <span className="ml-1 text-xs font-normal text-chalkboard-70 dark:text-chalkboard-40">
           {unit}
         </span>
@@ -227,6 +277,7 @@ export function MeasurementTool() {
     store.defaultUnit?.current ??
     DEFAULT_DEFAULT_LENGTH_UNIT
   const areaUnit = getAreaUnit(unit)
+  const volumeUnit = getVolumeUnit(unit)
 
   useEffect(() => {
     latestRequestKey.current = measurementInputKey
@@ -360,7 +411,44 @@ export function MeasurementTool() {
         }
       }
 
-      throw new Error('Measurement failed')
+      const [volumeResponse, centerOfMassResponse] = await Promise.all([
+        sendModelingCommand({
+          type: 'volume',
+          entity_ids: [targetForRequest.entity.id],
+          output_unit: volumeUnit,
+        }),
+        sendModelingCommand({
+          type: 'center_of_mass',
+          entity_ids: [targetForRequest.entity.id],
+          output_unit: unit,
+        }),
+      ])
+      const volumeData = getModelingData(volumeResponse, 'volume')
+      const centerOfMassData = getModelingData(
+        centerOfMassResponse,
+        'center_of_mass'
+      )
+
+      if (
+        typeof volumeData !== 'object' ||
+        volumeData === null ||
+        !('volume' in volumeData) ||
+        typeof volumeData.volume !== 'number' ||
+        typeof centerOfMassData !== 'object' ||
+        centerOfMassData === null ||
+        !('center_of_mass' in centerOfMassData)
+      ) {
+        throw new Error('Measurement failed')
+      }
+
+      return {
+        type: 'bodyDetails',
+        volume: volumeData.volume,
+        volumeUnit,
+        centerOfMass: centerOfMassData.center_of_mass as Point3d,
+        centerOfMassUnit: unit,
+        entityIdsKey: selectedEntityIdsKey,
+      }
     }
 
     runMeasurement()
@@ -388,6 +476,7 @@ export function MeasurementTool() {
     selectedEntityIdsKey,
     sendModelingCommand,
     unit,
+    volumeUnit,
   ])
 
   if (!state.matches('idle')) {
@@ -521,6 +610,21 @@ export function MeasurementTool() {
               label="Surface area"
               value={matchingResult.surfaceArea}
               unit={matchingResult.unit}
+            />
+          </div>
+        )}
+
+        {matchingResult?.type === 'bodyDetails' && (
+          <div className="grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80">
+            <MeasurementValue
+              label="Volume"
+              value={matchingResult.volume}
+              unit={matchingResult.volumeUnit}
+            />
+            <MeasurementPointValue
+              label="CoM"
+              point={matchingResult.centerOfMass}
+              unit={matchingResult.centerOfMassUnit}
             />
           </div>
         )}

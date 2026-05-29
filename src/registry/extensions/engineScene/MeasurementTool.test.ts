@@ -8,6 +8,7 @@ import {
   getDistanceTypeForMode,
   getMeasurementEntities,
   getMeasurementEntityIds,
+  getVolumeUnit,
   pointDistance,
 } from './measurementUtils'
 
@@ -88,8 +89,8 @@ describe('MeasurementTool helpers', () => {
       'copy-edge-1',
     ])
     expect(getMeasurementEntities(selections)).toEqual([
-      { id: 'copy-1', kind: 'other' },
-      { id: 'copy-2', kind: 'other' },
+      { id: 'copy-1', kind: 'body' },
+      { id: 'copy-2', kind: 'body' },
       { id: 'copy-face-1', kind: 'face' },
       { id: 'copy-edge-1', kind: 'edge' },
     ])
@@ -98,6 +99,16 @@ describe('MeasurementTool helpers', () => {
   it('classifies graph selections for measurement commands', () => {
     const selections: Selections = {
       graphSelections: [
+        {
+          artifact: artifact({
+            id: 'body-id',
+            type: 'sweep',
+          }),
+          codeRef: {
+            range: [0, 1, 0],
+            pathToNode: [],
+          },
+        },
         {
           artifact: artifact({
             id: 'face-id',
@@ -123,6 +134,7 @@ describe('MeasurementTool helpers', () => {
     }
 
     expect(getMeasurementEntities(selections)).toEqual([
+      { id: 'body-id', kind: 'body' },
       { id: 'face-id', kind: 'face' },
       { id: 'edge-id', kind: 'edge' },
     ])
@@ -164,7 +176,7 @@ describe('MeasurementTool helpers', () => {
     ])
   })
 
-  it('classifies non-code faces', () => {
+  it('classifies non-code faces and bodies', () => {
     const selections: Selections = {
       graphSelections: [],
       otherSelections: [
@@ -174,11 +186,18 @@ describe('MeasurementTool helpers', () => {
           primitiveIndex: 0,
           primitiveType: 'face',
         },
+        {
+          type: 'enginePrimitive',
+          entityId: 'body-id',
+          primitiveIndex: 1,
+          primitiveType: 'solid3d',
+        },
       ],
     }
 
     expect(getMeasurementEntities(selections)).toEqual([
       { id: 'face-id', kind: 'face' },
+      { id: 'body-id', kind: 'body' },
     ])
   })
 
@@ -199,6 +218,8 @@ describe('MeasurementTool helpers', () => {
   it('derives measurement units from length units', () => {
     expect(getAreaUnit('mm')).toBe('mm2')
     expect(getAreaUnit('in')).toBe('in2')
+    expect(getVolumeUnit('cm')).toBe('cm3')
+    expect(getVolumeUnit('ft')).toBe('ft3')
   })
 
   it('measures and formats 3d points', () => {
