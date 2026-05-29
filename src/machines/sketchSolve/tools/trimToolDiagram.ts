@@ -15,6 +15,10 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { createOnAreaSelectEndCallback } from '@src/machines/sketchSolve/tools/trimToolImpl'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  getTrimPreviewLineWidth,
+  TRIM_PREVIEW_LINE_COLOR_HEX,
+} from '@src/lib/freehandLineDrawing'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
 // At drag end the preview is removed – no sketch entities are created (yet).
@@ -168,8 +172,8 @@ export const machine = setup({
               const geom = new LineGeometry()
               geom.setPositions(positions)
               const mat = new LineMaterial({
-                color: 0xff8800,
-                linewidth: 2 * window.devicePixelRatio,
+                color: TRIM_PREVIEW_LINE_COLOR_HEX,
+                linewidth: getTrimPreviewLineWidth(window.devicePixelRatio),
               })
               const line = new Line2(geom, mat)
               line.name = 'trim-tool-preview'

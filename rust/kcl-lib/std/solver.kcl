@@ -501,8 +501,8 @@ export fn tangent(
 export fn midpoint(
   /// The line or circular arc whose midpoint is constrained.
   @input: Segment,
-  /// The point to place at the midpoint.
-  point: Segment,
+  /// The point to place at the midpoint. May be a sketch point or `ORIGIN`.
+  point: Segment | Point2d,
 ) {}
 
 /// Constrain two points, lines, arcs, or circles to be symmetric across an axis line.

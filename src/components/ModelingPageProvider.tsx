@@ -1,7 +1,14 @@
 import React, { use, useEffect, useMemo } from 'react'
+import { EditorSelection } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
+import {
+  type PendingFeatureTreeSourceSelection,
+  updateOutsideEditorEvent,
+} from '@src/lang/KclManager'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -13,7 +20,34 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import fsZds from '@src/lib/fs-zds'
+import { isArray } from '@src/lib/utils'
 import { useSignals } from '@preact/signals-react/runtime'
+
+function isNumberArray(value: unknown): value is number[] {
+  return isArray(value) && value.every((item) => typeof item === 'number')
+}
+
+function isPendingFeatureTreeSelection(
+  value: unknown
+): value is PendingFeatureTreeSourceSelection {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  if (!('path' in value) || typeof value.path !== 'string') {
+    return false
+  }
+
+  if (
+    !('range' in value) ||
+    !isNumberArray(value.range) ||
+    value.range.length !== 3
+  ) {
+    return false
+  }
+
+  return true
+}
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -88,6 +122,43 @@ export const ModelingPageProvider = ({
   useEffect(() => {
     markOnce('code/didLoadFile')
   }, [])
+
+  useEffect(() => {
+    const pending = kclManager.pendingFeatureTreeSourceSelection
+    if (!pending || !file?.path) {
+      return
+    }
+
+    if (!isPendingFeatureTreeSelection(pending)) {
+      kclManager.pendingFeatureTreeSourceSelection = null
+      return
+    }
+
+    if (pending.path !== file.path) {
+      return
+    }
+
+    kclManager.pendingFeatureTreeSourceSelection = null
+
+    const utf16Range = sourceRangeToUtf16(pending.range, kclManager.code)
+    kclManager.editorView.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.cursor(utf16Range[0]),
+      ]),
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(utf16Range[0], utf16Range[1]),
+          { y: 'center' }
+        ),
+      ],
+      annotations: [updateOutsideEditorEvent],
+    })
+  }, [
+    file?.path,
+    kclManager,
+    kclManager.code,
+    kclManager.pendingFeatureTreeSourceSelection,
+  ])
 
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.

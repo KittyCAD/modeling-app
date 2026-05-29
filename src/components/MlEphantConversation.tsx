@@ -1,4 +1,3 @@
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import { Popover } from '@headlessui/react'
@@ -12,12 +11,13 @@ import type {
 } from '@src/machines/mlEphantManagerMachine'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
+import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { isNonNullable } from '@src/lib/utils'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
+import { err } from '@src/lib/trap'
+import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
 
 const noop = () => {}
 
@@ -124,12 +124,11 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface MlEphantExtraInputsProps {
-  // TODO: Expand to a list with no type restriction
-  context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
   onCaptureScreenshot: () => void
+  onAnnotateScreenshot: () => void
   attachmentsDisabled?: boolean
   modeOptions?: MlCopilotModeOption[]
 }
@@ -141,10 +140,6 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   return (
     <div className="flex-1 flex min-w-0 items-end">
       <div className="flex flex-row w-fit-content items-end gap-1">
-        {/* TODO: Generalize to a MlCopilotContexts component */}
-        {props.context && (
-          <MlCopilotSelectionsContext selections={props.context} />
-        )}
         {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
           <MlCopilotModes
             onClick={props.onSetMode}
@@ -181,6 +176,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
             <span>Capture viewport screenshot</span>
           </Tooltip>
         </button>
+        <button
+          type="button"
+          data-testid="ml-ephant-zoodle-button"
+          onClick={props.onAnnotateScreenshot}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Zoodle"
+        >
+          <CustomIcon name="sketch" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Zoodle</span>
+          </Tooltip>
+        </button>
       </div>
     </div>
   )
@@ -202,24 +210,7 @@ export interface MlEphantContextsProps {
   contexts: MlEphantManagerPromptContext[]
 }
 
-const MlCopilotSelectionsContext = (props: {
-  selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-}) => {
-  const { kclManager } = useSingletons()
-  const selectionText = getSelectionTypeDisplayText(
-    kclManager.astSignal.value,
-    props.selections.data
-  )
-  return selectionText ? (
-    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
-      <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
-      {selectionText}
-    </button>
-  ) : null
-}
-
 interface MlEphantConversationInputProps {
-  contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
   onCancel: MlEphantConversationProps['onCancel']
@@ -250,6 +241,9 @@ export const MlEphantConversationInput = (
   const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [annotationImageDataUrl, setAnnotationImageDataUrl] = useState<
+    string | null
+  >(null)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -335,6 +329,14 @@ export const MlEphantConversationInput = (
     })
   }
 
+  const appendDataUrlAttachment = (dataUrl: string, fileName: string) => {
+    const file = dataUrlToFile(dataUrl, fileName)
+    if (err(file)) {
+      return
+    }
+    appendAttachments([file])
+  }
+
   const onAttachFiles = () => {
     if (props.disabled) return
     fileInputRef.current?.click()
@@ -345,19 +347,20 @@ export const MlEphantConversationInput = (
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      // Convert data URL to File without fetch (fetch of data: URLs is
-      // blocked by CSP in the browser).
-      const [header, base64] = dataUrl.split(',')
-      const mime = header.match(/:(.*?);/)?.[1] ?? 'image/png'
-      const bytes = atob(base64)
-      const buf = new Uint8Array(bytes.length)
-      for (let i = 0; i < bytes.length; i++) {
-        buf[i] = bytes.charCodeAt(i)
-      }
-      const file = new File([buf], 'viewport-screenshot.png', { type: mime })
-      appendAttachments([file])
+      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
+    }
+  }
+
+  const onAnnotateScreenshot = () => {
+    if (props.disabled) return
+    try {
+      const dataUrl = takeViewportScreenshot()
+      if (!dataUrl) return
+      setAnnotationImageDataUrl(dataUrl)
+    } catch (e) {
+      console.error('Failed to capture viewport screenshot for annotation', e)
     }
   }
 
@@ -422,10 +425,6 @@ export const MlEphantConversationInput = (
 
     appendAttachments(files)
   }
-
-  const selectionsContext:
-    | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-    | undefined = props.contexts.filter((m) => m.type === 'selections')[0]
 
   return (
     <div className="flex flex-col p-4 gap-2">
@@ -501,7 +500,6 @@ export const MlEphantConversationInput = (
         )}
         <div className="flex items-end">
           <MlEphantExtraInputs
-            context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
               userHasPickedMode.current = true
@@ -510,6 +508,7 @@ export const MlEphantConversationInput = (
             }}
             onAttachFiles={onAttachFiles}
             onCaptureScreenshot={onCaptureScreenshot}
+            onAnnotateScreenshot={onAnnotateScreenshot}
             attachmentsDisabled={props.disabled}
             modeOptions={props.modeOptions}
           />
@@ -550,8 +549,19 @@ export const MlEphantConversationInput = (
         </div>
       </div>
       <div className="text-3 text-xs">
-        Zookeeper can make mistakes. Always verify information.
+        Zookeeper can make mistakes. We send selection context to help. Always
+        verify information.
       </div>
+      {annotationImageDataUrl && (
+        <ViewportAnnotationOverlay
+          imageDataUrl={annotationImageDataUrl}
+          onCancel={() => setAnnotationImageDataUrl(null)}
+          onSend={(annotatedDataUrl) => {
+            appendDataUrlAttachment(annotatedDataUrl, 'zoodle')
+            setAnnotationImageDataUrl(null)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -714,7 +724,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <MlEphantConversationInput
-              contexts={props.contexts}
               disabled={
                 Boolean(props.blockedReason) ||
                 props.disabled ||

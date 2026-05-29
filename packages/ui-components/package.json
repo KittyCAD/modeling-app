@@ -34,19 +34,19 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.3.6",
-    "@storybook/addon-docs": "^9.1.5",
+    "@storybook/addon-docs": "^10.4.0",
     "@storybook/react-vite": "^9.1.5",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.2",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "^4.4.1",
-    "happy-dom": "^20.8.9",
+    "@vitejs/plugin-react": "^6.0.2",
+    "happy-dom": "^20.9.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "storybook": "^10.3.6",
     "typescript": "^6.0.3",
-    "vite": "^7.3.1",
-    "vitest": "^4.0.18"
+    "vite": "^8.0.13",
+    "vitest": "^4.1.6"
   }
 }

@@ -5,6 +5,21 @@ description: Operations executed car-wheel-assembly.kcl
 {
   "public/kcl-samples/car-wheel-assembly/brake-rotor.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "bellOuterFaceOffset",
       "value": {
@@ -4780,6 +4795,21 @@ description: Operations executed car-wheel-assembly.kcl
   ],
   "public/kcl-samples/car-wheel-assembly/car-tire.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -7726,6 +7756,21 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "public/kcl-samples/car-wheel-assembly/car-wheel.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "GroupBegin",
       "group": {
@@ -16928,6 +16973,21 @@ description: Operations executed car-wheel-assembly.kcl
   ],
   "public/kcl-samples/car-wheel-assembly/lug-nut.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -17978,12 +18038,10 @@ description: Operations executed car-wheel-assembly.kcl
   ],
   "public/kcl-samples/car-wheel-assembly/main.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "parameters.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -17995,15 +18053,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "brake-rotor.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "brakeRotor",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -18015,15 +18067,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "car-tire.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "carTire",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -18035,15 +18081,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "car-wheel.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "carWheel",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -18055,15 +18095,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "lug-nut.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "lugNut",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -18073,9 +18107,6 @@ description: Operations executed car-wheel-assembly.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

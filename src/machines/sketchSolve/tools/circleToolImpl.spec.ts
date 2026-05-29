@@ -163,7 +163,7 @@ describe('circleToolImpl', () => {
       const event: CreatingCircleEvent = {
         type: 'xstate.done.actor.0.Circle tool.Creating circle',
         output: {
-          kclSource: { text: 'test' } as SourceDelta,
+          kclSource: { text: 'test' },
           sceneGraphDelta,
         },
       }

@@ -1,7 +1,11 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import {
+  getSelectedSketchTarget,
+  isCursorInFunctionDefinition,
+} from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
+import { selectSketchPlane } from '@src/lib/selections'
 import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
@@ -266,24 +270,46 @@ async function enterSketch(input: unknown) {
         state.context.selectionRanges
       )
   const isSketchBlock = isSketchBlockSelected(state.context.selectionRanges)
+  const selectedSketchTarget = getSelectedSketchTarget(
+    state.context.selectionRanges
+  )
 
   if ((kclManager.editorView.hasFocus && sketchPathId) || isSketchBlock) {
     return sendModelingEvent(input, { type: 'Enter sketch' })
   }
 
-  return sendModelingEvent(input, {
+  if (!selectedSketchTarget) {
+    return sendModelingEvent(input, {
+      type: 'Enter sketch',
+      data: { forceNewSketch: true },
+    })
+  }
+
+  const result = sendModelingEvent(input, {
     type: 'Enter sketch',
-    data: { forceNewSketch: true },
+    data: {
+      forceNewSketch: true,
+      keepDefaultPlaneVisibility: true,
+    },
   })
+
+  if (result instanceof Error) {
+    return result
+  }
+
+  void selectSketchPlane(
+    selectedSketchTarget,
+    state.context.store.useSketchSolveMode?.current,
+    kclManager
+  )
+
+  return result
 }
 
 function exitSketch(input: unknown) {
   const state = getModelingState(input)
 
-  if (
-    state?.matches({ Sketch: 'SketchIdle' }) ||
-    state?.matches('Sketch no face')
-  ) {
+  if (state?.matches('Sketch') || state?.matches('Sketch no face')) {
     return sendModelingEvent(input, { type: 'Cancel' })
   }
 

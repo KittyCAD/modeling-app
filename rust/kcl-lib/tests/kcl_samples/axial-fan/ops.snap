@@ -5,6 +5,21 @@ description: Operations executed axial-fan.kcl
 {
   "public/kcl-samples/axial-fan/fan-housing.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -11980,6 +11995,21 @@ description: Operations executed axial-fan.kcl
   ],
   "public/kcl-samples/axial-fan/fan.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -15977,12 +16007,9 @@ description: Operations executed axial-fan.kcl
   ],
   "public/kcl-samples/axial-fan/main.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "fan-housing.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "fanHousing",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -15994,35 +16021,9 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "fan.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "motor.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "motor",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -16034,10 +16035,36 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "ModuleInstance",
+      "name": "fan",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "public/kcl-samples/axial-fan/motor.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "offsetPlane",

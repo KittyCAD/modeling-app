@@ -1,8 +1,6 @@
 // GD&T Basics in Zoo Design Studio
 // A simple sample project demonstrating how to use GD&T in Zoo Design Studio. This project keeps the geometry and annotations intentionally minimal so users can quickly understand what GD&T is, how it works in the app, and how to start applying it to their own designs. Future updates may add more examples while keeping the project beginner-friendly.
 
-@settings(experimentalFeatures = allow)
-
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -99.36mm, var 49.61mm], end = [var 100.64mm, var 49.61mm])
   line2 = line(start = [var 100.64mm, var 49.61mm], end = [var 100.64mm, var -50.39mm])
@@ -32,21 +30,21 @@ gdt::flatness(
   tolerance = 0.001mm,
   precision = 3,
   framePlane = XY,
-  leaderScale = 3,
+  leaderScale = 1,
   fontSize = 10mm,
 )
 gdt::datum(
   face = region001.tags.line3,
   name = "A",
   framePlane = XZ,
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::perpendicularity(
   faces = [capEnd001],
   tolerance = 0.1mm,
   datums = ["A"],
   framePlane = XZ,
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::parallelism(
   faces = [region001.tags.line2],
@@ -54,7 +52,7 @@ gdt::parallelism(
   datums = ["A"],
   framePlane = XZ,
   framePosition = [-100, 100],
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::distance(
   from = getCommonEdge(faces = [
@@ -67,11 +65,11 @@ gdt::distance(
   ]),
   tolerance = 0.1mm,
   framePlane = XZ,
-  leaderScale = 3,
+  leaderScale = 1,
 )
 gdt::annotation(
   faces = [region001.tags.line4],
   annotation = "BREAK ALL SHARP EDGES",
   framePosition = [100, -100],
-  leaderScale = 3,
+  leaderScale = 1,
 )
