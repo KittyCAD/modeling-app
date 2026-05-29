@@ -1,11 +1,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createArrayExpression,
   createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
@@ -17,6 +18,9 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
@@ -25,6 +29,11 @@ import {
   locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import {
+  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
   ArtifactGraph,
@@ -37,23 +46,14 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
-  Selections,
   Selection,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getArtifactOfTypes,
-  getCodeRefsByArtifactId,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 export function addFillet({
   ast,

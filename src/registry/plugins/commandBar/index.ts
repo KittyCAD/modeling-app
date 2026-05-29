@@ -1,9 +1,9 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { createElement } from 'react'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { createElement } from 'react'
 
 function CommandBarHeaderItem({ app }: AppHeaderItemProps) {
   return createElement(CommandBarOpenButton, { app })

@@ -1,3 +1,4 @@
+import type { UserFeature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
   BrowserContext,
@@ -9,26 +10,26 @@ import { _electron as electron } from '@playwright/test'
 
 import fs from 'node:fs'
 import path from 'path'
-import { SETTINGS_FILE_NAME, PROJECT_FOLDER } from '@src/lib/constants'
+import { PROJECT_FOLDER, SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
-import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
-import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import {
-  getUtils,
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  getUtils,
   settingsToToml,
   setup,
 } from '@e2e/playwright/test-utils'
@@ -56,8 +57,8 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '') {
-    await setup(this.context, this.page, this.testInfo)
+  async initialise(code = '', userFeatures: readonly UserFeature[] = []) {
+    await setup(this.context, this.page, this.testInfo, userFeatures)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -150,7 +151,10 @@ export class ElectronZoo {
     this.available = true
   }
 
-  async createInstanceIfMissing(testInfo: TestInfo) {
+  async createInstanceIfMissing(
+    testInfo: TestInfo,
+    userFeatures: readonly UserFeature[] = []
+  ) {
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -243,7 +247,7 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo)
+    await setup(this.context, this.page, testInfo, userFeatures)
 
     await this.cleanProjectDir()
 
@@ -376,7 +380,15 @@ const fixturesForElectron = {
 
 const fixturesForWeb = {
   page: async (
-    { page, context }: { page: Page; context: BrowserContext },
+    {
+      page,
+      context,
+      userFeatures,
+    }: {
+      page: Page
+      context: BrowserContext
+      userFeatures: readonly UserFeature[]
+    },
     use: FnUse,
     testInfo: TestInfo
   ) => {
@@ -406,7 +418,7 @@ const fixturesForWeb = {
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise()
+    await webApp.initialise('', userFeatures)
 
     await use(page)
   },

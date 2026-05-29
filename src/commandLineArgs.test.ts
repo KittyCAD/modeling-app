@@ -1,5 +1,5 @@
 import { getPathOrUrlFromArgs, parseCLIArgs } from '@src/commandLineArgs'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 const linuxDeepLinkArgv = [
   '/tmp/.mount_Zoo Movq3t0x/zoo-modeling-app',

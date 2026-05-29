@@ -6,7 +6,7 @@ description: Operations executed import_whole_transitive_import.kcl
   "rust/kcl-lib/tests/import_whole_transitive_import/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "part.kcl",
+      "name": "part",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -68,7 +68,7 @@ description: Operations executed import_whole_transitive_import.kcl
   "rust/kcl-lib/tests/import_whole_transitive_import/part.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "bolt.kcl",
+      "name": "bolt",
       "moduleId": 0,
       "nodePath": {
         "steps": [

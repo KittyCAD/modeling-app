@@ -6,8 +6,9 @@ description: Operations executed axial-fan.kcl
   "public/kcl-samples/axial-fan/fan-housing.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -11995,8 +11996,9 @@ description: Operations executed axial-fan.kcl
   "public/kcl-samples/axial-fan/fan.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -16006,7 +16008,7 @@ description: Operations executed axial-fan.kcl
   "public/kcl-samples/axial-fan/main.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "fan-housing.kcl",
+      "name": "fanHousing",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -16020,7 +16022,7 @@ description: Operations executed axial-fan.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "motor.kcl",
+      "name": "motor",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -16034,7 +16036,7 @@ description: Operations executed axial-fan.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "fan.kcl",
+      "name": "fan",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -16050,8 +16052,9 @@ description: Operations executed axial-fan.kcl
   "public/kcl-samples/axial-fan/motor.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {

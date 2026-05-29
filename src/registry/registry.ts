@@ -1,4 +1,4 @@
-import { Slot, type RegistryItem } from '@kittycad/registry'
+import { type RegistryItem, Slot } from '@kittycad/registry'
 
 type RegistryItemModule = {
   default?: RegistryItem

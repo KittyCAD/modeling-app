@@ -1,8 +1,6 @@
 // GD&T Basics in Zoo Design Studio
 // A simple sample project demonstrating how to use GD&T in Zoo Design Studio. This project keeps the geometry and annotations intentionally minimal so users can quickly understand what GD&T is, how it works in the app, and how to start applying it to their own designs. Future updates may add more examples while keeping the project beginner-friendly.
 
-@settings(experimentalFeatures = allow)
-
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -99.36mm, var 49.61mm], end = [var 100.64mm, var 49.61mm])
   line2 = line(start = [var 100.64mm, var 49.61mm], end = [var 100.64mm, var -50.39mm])

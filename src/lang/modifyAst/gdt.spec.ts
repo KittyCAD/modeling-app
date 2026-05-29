@@ -1,30 +1,30 @@
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
-import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
-  addFlatnessGdt,
-  addDatumGdt,
-  addPositionGdt,
   addAnnotationGdt,
+  addDatumGdt,
+  addDistanceGdt,
+  addFlatnessGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
-  addDistanceGdt,
+  addPositionGdt,
   addProfileGdt,
-  getUsedDatumNames,
   getNextAvailableDatumName,
+  getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'
+import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getCapFromCylinder,
 } from '@src/lib/testHelpers'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

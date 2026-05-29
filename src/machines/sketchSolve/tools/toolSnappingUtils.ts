@@ -1,8 +1,8 @@
 import { Group } from 'three'
 
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
 import {
   isLineSegment,
@@ -10,15 +10,15 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
-  allowSnapping,
-  getObjectIdForSnapTarget,
-  getSnappingCandidates,
-  type SnappingCandidate,
-} from '@src/machines/sketchSolve/snapping'
-import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
+import {
+  type SnappingCandidate,
+  allowSnapping,
+  getObjectIdForSnapTarget,
+  getSnappingCandidates,
+} from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 type ToolSelf = {

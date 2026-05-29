@@ -1,21 +1,21 @@
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
+  type FileExplorerDropData,
   type FileExplorerEntry,
   type FileExplorerRender,
   type FileExplorerRow,
   type FileExplorerRowContextMenuProps,
-  type FileExplorerDropData,
+  isExternalFileDrag,
   isRowFake,
   shouldDroppedEntryBeMoved,
-  isExternalFileDrag,
 } from '@src/components/Explorer/utils'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
 import type { Dispatch } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import fsZds from '@src/lib/fs-zds'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>

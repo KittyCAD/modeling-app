@@ -40,8 +40,8 @@ import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/int
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  applyConstraintsForSnapTarget,
   type SnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   clearToolSnappingState,

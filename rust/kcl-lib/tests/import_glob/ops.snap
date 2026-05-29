@@ -37,8 +37,9 @@ description: Operations executed import_glob.kcl
   "rust/kcl-lib/tests/import_glob/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "export_constant.kcl",
+      "name": "export_constant",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
