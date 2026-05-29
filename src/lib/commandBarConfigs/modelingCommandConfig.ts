@@ -143,6 +143,12 @@ export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
+const FRAME_PLANE_OPTIONS = [
+  { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+  { name: 'XZ Plane', value: KCL_PLANE_XZ },
+  { name: 'YZ Plane', value: KCL_PLANE_YZ },
+]
+
 // For all nodeToEdit-like arguments needed for edit flows
 const nodeToEditDescription =
   'Path to the node in the AST to edit. Never shown to the user.'
@@ -2762,11 +2768,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2836,11 +2838,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2910,11 +2908,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2987,11 +2981,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3064,11 +3054,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3142,11 +3128,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3219,11 +3201,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3296,11 +3274,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3366,11 +3340,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
