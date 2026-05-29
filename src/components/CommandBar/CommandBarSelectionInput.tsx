@@ -2,6 +2,8 @@ import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
@@ -9,13 +11,11 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { Marked } from '@ts-stack/markdown'
-import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges

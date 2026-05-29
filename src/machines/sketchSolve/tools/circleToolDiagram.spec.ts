@@ -1,21 +1,21 @@
-import { describe, it, expect } from 'vitest'
-import { createActor, waitFor, fromPromise } from 'xstate'
-import {
-  machine,
-  showingRadiusPreview,
-} from '@src/machines/sketchSolve/tools/circleToolDiagram'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  createSceneGraphDelta,
-  createPointApiObject,
+  machine,
+  showingRadiusPreview,
+} from '@src/machines/sketchSolve/tools/circleToolDiagram'
+import {
   createCircleApiObject,
-  createMockSceneInfra,
-  createMockRustContext,
   createMockKclManager,
+  createMockRustContext,
+  createMockSceneInfra,
+  createPointApiObject,
+  createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { describe, expect, it } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 function createTestMachine(mockActors?: {
   createCircle?: (

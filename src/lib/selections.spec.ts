@@ -3,24 +3,24 @@ import { describe, expect, test, vi } from 'vitest'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
-  getStableOffsetPlaneData,
   getSelectionTypeDisplayText,
+  getStableOffsetPlaneData,
   handleSelectionBatch,
   selectSketchPlane,
 } from '@src/lib/selections'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { enginelessExecutor } from '@src/lib/testHelpers'
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)

@@ -1,15 +1,14 @@
-import type RustContext from '@src/lib/rustContext'
 import type {
   SceneGraphDelta,
-  SourceDelta,
   SegmentCtor,
+  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import type { Coords2d } from '@src/lang/util'
-import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 import { addVec, dot2d, scaleVec, subVec } from '@src/lib/utils2d'
 import {
   isLineSegment,
@@ -20,6 +19,7 @@ import {
   applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
+import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>

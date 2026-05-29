@@ -2,17 +2,17 @@ import { useAppState } from '@src/AppState'
 import { useEffect } from 'react'
 import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { useSignals } from '@preact/signals-react/runtime'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,

@@ -1,7 +1,7 @@
 import env from '@src/env'
 
 import { createCreateFileUrl } from '@src/lib/links'
-import { expect, describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe(`link creation tests`, () => {
   test(`createCreateFileUrl happy path`, async () => {

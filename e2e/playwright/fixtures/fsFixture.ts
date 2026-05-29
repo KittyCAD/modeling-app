@@ -1,5 +1,5 @@
-import { type PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { type Page } from '@playwright/test'
+import { type PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 // We have to proxy fs calls to the page context.
 export const FsFixture = (page: Page): PromisifiedZooDesignStudioFS => {

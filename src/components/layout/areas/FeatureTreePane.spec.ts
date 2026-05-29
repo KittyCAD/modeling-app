@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
   getFeatureTreeValueDetail,
 } from '@src/components/layout/areas/FeatureTreePane'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
+import { type OperationsByModule, defaultNodePath } from '@src/lang/wasm'
+import { describe, expect, it } from 'vitest'
 
 describe('FeatureTreePane', () => {
   describe('buildOperationTree', () => {
