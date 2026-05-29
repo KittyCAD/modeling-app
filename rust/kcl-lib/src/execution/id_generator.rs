@@ -8,7 +8,7 @@ const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("8bda3118-75eb-58c7-a866-bef1dcb49
 /// A generator for ArtifactIds that can be stable across executions.
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct IdGenerator {
-    module_id: Option<ModuleId>,
+    pub(crate) module_id: Option<ModuleId>,
     next_id: u64,
 }
 
