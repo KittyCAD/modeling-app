@@ -1915,6 +1915,71 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Straightness',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const facesArg = operation.labeledArgs?.['faces']
+  if (!facesArg || !facesArg.sourceRange) {
+    return { reason: 'Missing or invalid faces argument' }
+  }
+
+  const graphSelections = extractFaceSelections(artifactGraph, facesArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Straightness'] = {
+    faces,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -2593,6 +2658,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Flatness',
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
+  },
+  'gdt::straightness': {
+    label: 'Straightness',
+    icon: 'gdtStraightness',
+    prepareToEdit: prepareToEditGdtStraightness,
   },
   'gdt::position': {
     label: 'Position',

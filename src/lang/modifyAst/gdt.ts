@@ -207,6 +207,149 @@ export function addFlatnessGdt({
   }
 }
 
+/**
+ * Adds straightness GD&T annotation(s) to the AST.
+ * Creates one gdt::straightness call for each selected face.
+ * Always adds annotations at the end of the AST body.
+ */
+export function addStraightnessGdt({
+  ast,
+  artifactGraph,
+  faces,
+  tolerance,
+  wasmInstance,
+  precision,
+  framePosition,
+  framePlane,
+  leaderScale,
+  fontSize,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  faces: Selections
+  tolerance: KclCommandValue
+  wasmInstance: ModuleType
+  precision?: KclCommandValue
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
+  fontSize?: KclCommandValue
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  const faceSelections = faces.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+
+  if (faceSelections.length === 0) {
+    return new Error(
+      'No valid face selections found. Please select faces (caps, walls, or edge cuts).'
+    )
+  }
+
+  const facesExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    facesExprs.push(tagResult.exprs[0])
+  }
+
+  if (facesExprs.length === 0) {
+    return new Error(
+      'No valid face expressions could be generated from selection'
+    )
+  }
+
+  const uniqueFacesExprs = deduplicateFaceExprs(facesExprs)
+
+  if (uniqueFacesExprs.length === 0) {
+    return new Error('No unique faces found after deduplication')
+  }
+
+  if ('variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
+  if (precision && 'variableName' in precision && precision.variableName) {
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
+  }
+
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit: mNodeToEdit,
+    wasmInstance,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+  })
+  if (err(styleResult)) {
+    return styleResult
+  }
+
+  let lastPathToNode: PathToNode | undefined
+
+  for (const faceExpr of uniqueFacesExprs) {
+    const facesArray = createArrayExpression([faceExpr])
+
+    const labeledArgs = [
+      createLabeledArg('faces', facesArray),
+      createLabeledArg('tolerance', valueOrVariable(tolerance)),
+    ]
+
+    if (precision !== undefined) {
+      labeledArgs.push(
+        createLabeledArg('precision', valueOrVariable(precision))
+      )
+    }
+
+    labeledArgs.push(...styleResult.labeledArgs)
+
+    const call = createCallExpressionStdLibKw(
+      'straightness',
+      null,
+      labeledArgs,
+      undefined,
+      [createIdentifier('gdt')]
+    )
+
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) {
+      return pathToNode
+    }
+
+    lastPathToNode = pathToNode
+  }
+
+  if (!lastPathToNode) {
+    return new Error('Failed to create any gdt::straightness calls')
+  }
+
+  return {
+    modifiedAst,
+    pathToNode: lastPathToNode,
+  }
+}
+
 export function addPositionGdt({
   ast,
   artifactGraph,

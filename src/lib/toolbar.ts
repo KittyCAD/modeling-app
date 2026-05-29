@@ -1292,6 +1292,27 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-straightness',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Straightness', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Straightness',
+              icon: 'gdtStraightness',
+              description:
+                'Specifies straightness tolerance - how much the line elements of a surface can deviate from perfectly straight.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-straightness'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-datum',
               onClick: () =>
                 commands.send({
