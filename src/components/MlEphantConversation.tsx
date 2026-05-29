@@ -22,7 +22,6 @@ import { useEffect, useRef, useState } from 'react'
 const noop = () => {}
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
-const ZOODLE_ATTACHMENT_FILE_NAME = 'zoodle.png'
 
 export interface QueuedMessage {
   id: string
@@ -179,7 +178,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         </button>
         <button
           type="button"
-          data-testid="ml-ephant-zoodle-button"
+          data-testid="ml-ephant-annotate-screenshot-button"
           onClick={props.onAnnotateScreenshot}
           disabled={props.attachmentsDisabled}
           className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
@@ -560,7 +559,7 @@ export const MlEphantConversationInput = (
           onSend={(annotatedDataUrl) => {
             appendDataUrlAttachment(
               annotatedDataUrl,
-              ZOODLE_ATTACHMENT_FILE_NAME
+              'annotated-viewport-screenshot.png'
             )
             setAnnotationImageDataUrl(null)
           }}

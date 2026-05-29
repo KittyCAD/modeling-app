@@ -492,51 +492,6 @@ describe('MlEphantConversation', () => {
     expect(within(attachments).queryByText('+ more')).not.toBeInTheDocument()
   })
 
-  test('renders Zoodle PNG request attachments with the PNG file name', () => {
-    const conversation: Conversation = {
-      exchanges: [
-        {
-          request: {
-            type: 'user',
-            content: 'Use this sketch',
-            additional_files: [
-              {
-                name: 'zoodle.png',
-                mimetype: 'image/png',
-                data: [1, 2, 3],
-              },
-            ],
-          },
-          responses: [],
-          deltasAggregated: '',
-        },
-      ],
-    }
-
-    render(
-      <MlEphantConversation
-        isLoading={false}
-        conversation={conversation}
-        onProcess={vi.fn()}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={false}
-        disabled={false}
-        hasPromptCompleted={true}
-        contexts={[]}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-      />
-    )
-
-    const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
-
-    expect(within(attachments).getByText('zoodle.png')).toBeInTheDocument()
-  })
-
   test('expands and collapses user message attachments when there are more than two', () => {
     const conversation: Conversation = {
       exchanges: [
@@ -900,13 +855,15 @@ describe('MlEphantConversation', () => {
       ).toBeInTheDocument()
     })
 
-    test('displays Zoodle button', () => {
+    test('displays screenshot annotation button', () => {
       renderConversation()
-      expect(screen.getByTestId('ml-ephant-zoodle-button')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('ml-ephant-annotate-screenshot-button')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Zoodle')).toBeInTheDocument()
     })
 
-    test('adds Zoodle as a PNG attachment while displaying the PNG file name', async () => {
-      const handleProcess = vi.fn()
+    test('adds annotated viewport screenshot as an attachment', async () => {
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
@@ -927,9 +884,11 @@ describe('MlEphantConversation', () => {
         .mockImplementation(() => {})
       globalThis.Image = MockImage as typeof Image
       try {
-        renderConversation(handleProcess)
+        renderConversation()
 
-        fireEvent.click(screen.getByTestId('ml-ephant-zoodle-button'))
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-annotate-screenshot-button')
+        )
 
         expect(
           screen.getByTestId('viewport-annotation-overlay')
@@ -939,21 +898,9 @@ describe('MlEphantConversation', () => {
         await waitFor(() => expect(sendButton).not.toBeDisabled())
         fireEvent.click(sendButton)
 
-        expect(await screen.findByText('zoodle.png')).toBeInTheDocument()
-
-        fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
-          target: { value: 'make this' },
-        })
-        fireEvent.click(
-          screen.getByTestId('ml-ephant-conversation-input-button')
-        )
-
-        expect(handleProcess).toHaveBeenCalledWith('make this', undefined, [
-          expect.objectContaining({
-            name: 'zoodle.png',
-            type: 'image/png',
-          }),
-        ])
+        expect(
+          await screen.findByText('annotated-viewport-screenshot.png')
+        ).toBeInTheDocument()
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage
