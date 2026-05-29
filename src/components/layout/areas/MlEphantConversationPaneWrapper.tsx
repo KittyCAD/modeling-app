@@ -1,6 +1,5 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useEffect } from 'react'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
@@ -8,7 +7,6 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
@@ -22,6 +20,8 @@ import {
   SystemIOMachineEvents,
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { useEffect } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'

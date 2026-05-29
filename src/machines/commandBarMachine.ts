@@ -11,6 +11,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { err } from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
@@ -64,6 +65,7 @@ export type CommandBarContext = CommandBarInput & {
   reviewValidationError?: string
   machineManager: MachineManager
   kclManager?: KclManager
+  userFeatures?: UserFeaturesService
 }
 
 export type CommandBarMachineEvent =
@@ -99,6 +101,7 @@ export type CommandBarMachineEvent =
       type: 'Remove commands'
       data: { commands: Command[] }
     }
+  | { type: 'Set userFeatures'; data: UserFeaturesService }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
@@ -155,6 +158,12 @@ export const commandBarMachine = setup({
     'Set kclManager': assign({
       kclManager: ({ event }) => {
         assertEvent(event, 'Set kclManager')
+        return event.data
+      },
+    }),
+    'Set userFeatures': assign({
+      userFeatures: ({ event }) => {
+        assertEvent(event, 'Set userFeatures')
         return event.data
       },
     }),
@@ -750,6 +759,9 @@ export const commandBarMachine = setup({
   on: {
     'Set kclManager': {
       actions: 'Set kclManager',
+    },
+    'Set userFeatures': {
+      actions: 'Set userFeatures',
     },
 
     Close: {

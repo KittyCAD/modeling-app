@@ -2,8 +2,8 @@ import ignore from 'ignore'
 import { describe, expect, it } from 'vitest'
 
 import {
-  isPathIgnoredByGitignore,
   type GitignoreStackEntry,
+  isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 
 function stackEntry(directory: string, patterns: string): GitignoreStackEntry {

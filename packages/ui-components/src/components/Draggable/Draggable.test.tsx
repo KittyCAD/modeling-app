@@ -1,6 +1,6 @@
+import { Draggable } from '@kittycad/ui-components'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { Draggable } from '@kittycad/ui-components'
 
 const createRect = (rect: Partial<DOMRect>): DOMRect => {
   const width = rect.width ?? 0

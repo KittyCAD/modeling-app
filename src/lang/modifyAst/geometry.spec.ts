@@ -1,21 +1,21 @@
+import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import { recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { addHelix } from '@src/lang/modifyAst/geometry'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

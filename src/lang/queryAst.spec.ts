@@ -40,19 +40,19 @@ import {
   getAllOperations,
   recast,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

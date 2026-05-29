@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import type { EventFrom } from 'xstate'
 
 import { Toggle } from '@src/components/Toggle/Toggle'
+import { useApp } from '@src/lib/boot'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
@@ -9,7 +10,6 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { useApp } from '@src/lib/boot'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,

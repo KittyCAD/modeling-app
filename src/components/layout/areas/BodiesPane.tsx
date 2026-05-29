@@ -1,4 +1,5 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
+import { useSignals } from '@preact/signals-react/runtime'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -10,7 +11,7 @@ import {
   getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
-import { getAllOperations, type ArtifactGraph } from '@src/lang/wasm'
+import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -22,7 +23,6 @@ import {
 } from '@src/lib/operations'
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { useSignals } from '@preact/signals-react/runtime'
 import toast from 'react-hot-toast'
 
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }

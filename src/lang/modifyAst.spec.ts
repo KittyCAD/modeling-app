@@ -23,9 +23,9 @@ import {
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -38,12 +38,6 @@ import {
   getArtifactFromRange,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { topLevelRange } from '@src/lang/util'
-import type { Identifier, Literal } from '@src/lang/wasm'
-import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
 import {
   addTagForSketchOnFace,
   getConstraintInfoKw,
@@ -52,12 +46,18 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { topLevelRange } from '@src/lang/util'
+import type { Identifier, Literal } from '@src/lang/wasm'
+import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
+import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, test, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, test } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!

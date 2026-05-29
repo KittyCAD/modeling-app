@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
+import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -17,23 +19,21 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileLinkParams } from '@src/lib/links'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { FileLinkParams } from '@src/lib/links'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
-import { useApp } from '@src/lib/boot'
-import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.

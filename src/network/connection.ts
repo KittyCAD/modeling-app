@@ -1,13 +1,12 @@
+import type {
+  ClientMetrics,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib/dist/types/src'
+import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
-import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
-import {
-  ConnectingType,
-  DATACHANNEL_NAME_UMC,
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-  PING_INTERVAL_MS,
-  WebSocketStatusCodes,
-} from '@src/network/utils'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -19,20 +18,21 @@ import {
   createOnSignalingStateChange,
   createOnTrack,
 } from '@src/network/peerConnection'
+import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
+import {
+  ConnectingType,
+  DATACHANNEL_NAME_UMC,
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+  PING_INTERVAL_MS,
+  WebSocketStatusCodes,
+} from '@src/network/utils'
 import {
   createOnWebSocketClose,
   createOnWebSocketError,
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/network/websocketConnection'
-import { EngineDebugger } from '@src/lib/debugger'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
-import type {
-  WebSocketRequest,
-  WebSocketResponse,
-  ClientMetrics,
-} from '@kittycad/lib/dist/types/src'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly

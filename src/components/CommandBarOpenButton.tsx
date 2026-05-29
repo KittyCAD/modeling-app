@@ -1,9 +1,9 @@
-import { memo } from 'react'
 import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
 import { CustomIcon } from '@src/components/CustomIcon'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { App } from '@src/lib/app'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { memo } from 'react'
 
 type CommandBarOpenButtonProps = {
   app: App

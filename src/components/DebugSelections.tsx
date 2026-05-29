@@ -1,26 +1,26 @@
-import { useSingletons } from '@src/lib/boot'
-import { useMemo, useState } from 'react'
-import { uuidv4 } from '@src/lib/utils'
-import { processCodeMirrorRanges } from '@src/lib/selections'
-import { use } from 'react'
 import { EditorSelection } from '@codemirror/state'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
+  ROOT_MODULE_ID,
   countOperations,
   emptyOperationsByModule,
-  ROOT_MODULE_ID,
   getOperationsForModule,
 } from '@src/lang/wasm'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import {
-  groupOperationTypeStreaks,
-  filterOperations,
-} from '@src/lib/operations'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { useSingletons } from '@src/lib/boot'
+import {
+  filterOperations,
+  groupOperationTypeStreaks,
+} from '@src/lib/operations'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { reportRejection } from '@src/lib/trap'
+import { useMemo, useState } from 'react'
+import { use } from 'react'
 
 type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
 

@@ -1,7 +1,7 @@
-import { useApp, useSingletons } from '@src/lib/boot'
-import { useEffect, useRef } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { EngineDebugger } from '@src/lib/debugger'
+import { useEffect, useRef } from 'react'
 
 export const useOnPageIdle = ({
   startCallback,

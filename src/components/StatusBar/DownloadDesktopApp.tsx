@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
+import { useEffect, useRef, useState } from 'react'
 
 export function DownloadDesktopApp() {
   /** NOTE: We're defining a custom warning element here because using the
