@@ -6,7 +6,7 @@ description: Operations executed pattern_linear_in_module.kcl
   "rust/kcl-lib/tests/pattern_linear_in_module/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "thing.kcl",
+      "name": "thing",
       "moduleId": 0,
       "nodePath": {
         "steps": [

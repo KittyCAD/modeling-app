@@ -92,6 +92,19 @@ pub struct OperationsByModule {
     pub map: IndexMap<ModuleId, Vec<Operation>>,
 }
 
+#[derive(Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OperationCallbackArgs {
+    pub module_id: ModuleId,
+    pub operation: Operation,
+    pub index: usize,
+}
+
+pub trait ExecutionCallbacks: std::fmt::Debug + Send + Sync + 'static {
+    fn on_operation(&self, _args: OperationCallbackArgs) {}
+}
+
 impl OperationsByModule {
     pub fn count(&self) -> usize {
         self.map.values().map(Vec::len).sum()
@@ -778,6 +791,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
+    pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
 }
 
 /// The executor settings.
@@ -934,6 +948,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Live,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -944,6 +959,7 @@ impl ExecutorContext {
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
+            execution_callbacks: self.execution_callbacks.clone(),
         }
     }
 
@@ -999,6 +1015,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -1010,6 +1027,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -1034,6 +1052,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         })
     }
 
@@ -1045,6 +1064,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -1411,7 +1431,7 @@ impl ExecutorContext {
                     }
                     None if clear_scene => {
                         // Pop the execution state, since we are starting fresh.
-                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        let mut exec_state = cached_state.reconstitute_exec_state(self);
                         exec_state.reset(self);
 
                         self.send_clear_scene(&mut exec_state, Default::default())
@@ -1425,7 +1445,7 @@ impl ExecutorContext {
                         (exec_state, result)
                     }
                     None => {
-                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        let mut exec_state = cached_state.reconstitute_exec_state(self);
                         exec_state.mut_stack().restore_env(cached_state.main.result_env);
 
                         let result = self
@@ -1499,11 +1519,47 @@ impl ExecutorContext {
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
 
-        let (universe, _universe_map) = if let Some((universe, universe_map)) = universe_info {
+        let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
             (universe, universe_map)
         } else {
             self.get_universe(program, exec_state).await?
         };
+
+        // Push ModuleInstance ops for the root module's direct imports before
+        // child modules execute. This lets the live feature tree show module
+        // names immediately rather than waiting for the root module body to run.
+        // Sort by source position so they appear in source-code order (the
+        // universe_map is a HashMap with non-deterministic iteration order).
+        let mut sorted_imports: Vec<_> = universe_map.iter().collect();
+        sorted_imports.sort_by_key(|(_, import_stmt)| SourceRange::from(*import_stmt));
+        for (_path, import_stmt) in sorted_imports {
+            // Look up by the raw import filename (e.g. "car-wheel.kcl") which
+            // is the key format used by Universe, NOT the resolved absolute
+            // TypedPath that UniverseMap uses as its key.
+            let filename = match &import_stmt.path {
+                ImportPath::Kcl { filename } => filename.to_string(),
+                ImportPath::Foreign { path } => path.to_string(),
+                ImportPath::Std { .. } => continue,
+            };
+            if let Some((_, module_id, module_path, _)) = universe.get(&filename)
+                && let ModulePath::Local { value, .. } = module_path
+            {
+                let name = import_stmt
+                    .module_name()
+                    .unwrap_or_else(|| value.file_name().unwrap_or_default());
+                let source_range = SourceRange::from(import_stmt);
+                exec_state.push_op(crate::execution::cad_op::Operation::ModuleInstance {
+                    name,
+                    module_id: *module_id,
+                    glob: matches!(
+                        import_stmt.selector,
+                        crate::parsing::ast::types::ImportSelector::Glob(_)
+                    ),
+                    node_path: crate::NodePath::placeholder(),
+                    source_range,
+                });
+            }
+        }
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
 
@@ -1568,9 +1624,11 @@ impl ExecutorContext {
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
-                            result.map(|val| {
-                                ModuleRepr::Foreign(geom.clone(), Some((val, exec_state.mod_local.artifacts.clone())))
-                            })
+                            // Foreign modules don't produce their own operations;
+                            // use a fresh artifact state instead of capturing the
+                            // cloned root module's artifacts (which may contain
+                            // early-pushed ModuleInstance operations).
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -1657,8 +1715,14 @@ impl ExecutorContext {
             }
         }
 
-        // Since we haven't technically started executing the root module yet,
-        // move any setup artifacts accumulated so far into the root state.
+        // The early-pushed ModuleInstance operations have already served their
+        // purpose (firing onOperation callbacks for the live feature tree).
+        // Clear them so they don't duplicate the operations the root module
+        // body will produce when it actually executes its import statements.
+        exec_state.mod_local.artifacts.operations.clear();
+
+        // Move any remaining setup artifacts (non-operation data from the
+        // prelude, etc.) into the root state.
         exec_state
             .global
             .root_module_artifacts
@@ -2068,6 +2132,7 @@ pub(crate) async fn parse_execute_with_project_dir(
             ..Default::default()
         },
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
