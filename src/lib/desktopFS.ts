@@ -1,12 +1,12 @@
-import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
-import type { FileEntry } from '@src/lib/project'
+import fsZds from '@src/lib/fs-zds'
 import {
   getEXTNoPeriod,
   getEXTWithPeriod,
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const isHidden = (fileOrDir: FileEntry) =>

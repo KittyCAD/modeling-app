@@ -6,6 +6,7 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import {
+  type ToolbarItem,
   buildToolbarConfig,
   getConstraintToolbarToggleEvent,
   getDefaultRecentToolbarItemIds,
@@ -13,7 +14,6 @@ import {
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
-  type ToolbarItem,
   promoteRecentToolbarItemId,
   recordRecentToolbarItemId,
   resolveRecentToolbarItems,

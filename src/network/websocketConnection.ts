@@ -1,3 +1,11 @@
+import type {
+  ClientMetrics,
+  RtcSessionDescription,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib/dist/types/src'
+import { EngineDebugger } from '@src/lib/debugger'
+import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
   EngineConnectionEvents,
@@ -5,14 +13,6 @@ import {
   type ManagerTearDown,
   toRTCSessionDescriptionInit,
 } from '@src/network/utils'
-import { EngineDebugger } from '@src/lib/debugger'
-import { reportRejection } from '@src/lib/trap'
-import type {
-  RtcSessionDescription,
-  WebSocketRequest,
-  WebSocketResponse,
-  ClientMetrics,
-} from '@kittycad/lib/dist/types/src'
 
 /**
  * 4 different event listeners to clean up

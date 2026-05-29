@@ -1,5 +1,5 @@
-import { expect } from 'vitest'
 import fetch from 'node-fetch'
+import { expect } from 'vitest'
 
 // Make 'expect' and 'fetch' available globally for @testing-library/jest-dom
 // @ts-ignore

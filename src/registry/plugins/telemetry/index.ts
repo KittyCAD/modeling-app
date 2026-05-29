@@ -1,8 +1,8 @@
+import { defineRegistryItem, provide } from '@kittycad/registry'
+import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { routesValueSpec } from '@src/registry/contracts/routes'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
-import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
 
 /** Contributes the telemetry modal routes for both home and file contexts. */
