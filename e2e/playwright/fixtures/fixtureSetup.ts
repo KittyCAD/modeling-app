@@ -6,6 +6,7 @@ import type {
   TestInfo,
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
+import type { UserFeature } from '@kittycad/lib'
 
 import fs from 'node:fs'
 import path from 'path'
@@ -56,8 +57,8 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '') {
-    await setup(this.context, this.page, this.testInfo)
+  async initialise(code = '', userFeatures: readonly UserFeature[] = []) {
+    await setup(this.context, this.page, this.testInfo, userFeatures)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -150,7 +151,10 @@ export class ElectronZoo {
     this.available = true
   }
 
-  async createInstanceIfMissing(testInfo: TestInfo) {
+  async createInstanceIfMissing(
+    testInfo: TestInfo,
+    userFeatures: readonly UserFeature[] = []
+  ) {
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -243,7 +247,7 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo)
+    await setup(this.context, this.page, testInfo, userFeatures)
 
     await this.cleanProjectDir()
 
@@ -376,7 +380,15 @@ const fixturesForElectron = {
 
 const fixturesForWeb = {
   page: async (
-    { page, context }: { page: Page; context: BrowserContext },
+    {
+      page,
+      context,
+      userFeatures,
+    }: {
+      page: Page
+      context: BrowserContext
+      userFeatures: readonly UserFeature[]
+    },
     use: FnUse,
     testInfo: TestInfo
   ) => {
@@ -406,7 +418,7 @@ const fixturesForWeb = {
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise()
+    await webApp.initialise('', userFeatures)
 
     await use(page)
   },
