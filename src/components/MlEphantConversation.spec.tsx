@@ -860,7 +860,7 @@ describe('MlEphantConversation', () => {
       expect(screen.getByTestId('ml-ephant-zoodle-button')).toBeInTheDocument()
     })
 
-    test('adds Zoodle viewport screenshot as an attachment', async () => {
+    test('adds Zoodle as an attachment', async () => {
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
