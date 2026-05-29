@@ -16,6 +16,10 @@ type TestCommandSchema = {
   Available: Record<string, never>
   Experimental: Record<string, never>
   ManyCommands: Record<string, never>
+  WithArguments: {
+    availableArg?: string
+    experimentalArg?: string
+  }
 }
 
 const commandBarConfig = {
@@ -37,6 +41,20 @@ const commandBarConfig = {
       description: 'Available child command',
     },
   ],
+  WithArguments: {
+    description: 'Command with arguments',
+    args: {
+      availableArg: {
+        inputType: 'string',
+        required: false,
+      },
+      experimentalArg: {
+        inputType: 'string',
+        required: false,
+        status: 'experimental',
+      },
+    },
+  },
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
@@ -105,5 +123,62 @@ describe('createMachineCommand', () => {
         displayName: 'Available child',
       }),
     ])
+  })
+
+  test('hides experimental arguments by default', () => {
+    const actor = createActor(testMachine).start()
+
+    const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
+      {
+        groupId: testMachine.id,
+        type: 'WithArguments',
+        state: actor.getSnapshot(),
+        send: vi.fn(),
+        actor,
+        commandBarConfig,
+      }
+    )
+
+    actor.stop()
+
+    expect(command).toMatchObject({
+      args: {
+        availableArg: {
+          hidden: undefined,
+        },
+        experimentalArg: {
+          hidden: true,
+        },
+      },
+    })
+  })
+
+  test('keeps experimental arguments visible when enabled', () => {
+    const actor = createActor(testMachine).start()
+
+    const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
+      {
+        groupId: testMachine.id,
+        type: 'WithArguments',
+        state: actor.getSnapshot(),
+        send: vi.fn(),
+        actor,
+        commandBarConfig,
+        showExperimentalCommands: true,
+      }
+    )
+
+    actor.stop()
+
+    expect(command).toMatchObject({
+      args: {
+        availableArg: {
+          hidden: undefined,
+        },
+        experimentalArg: {
+          hidden: undefined,
+        },
+      },
+    })
   })
 })

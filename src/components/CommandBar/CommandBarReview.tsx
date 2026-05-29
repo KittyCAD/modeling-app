@@ -24,6 +24,20 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     enableOnContentEditable: true,
   })
 
+  const visibleArgEntries = useMemo<
+    [string, CommandArgument<unknown>][]
+  >(() => {
+    if (!selectedCommand?.args) return []
+    return Object.entries(selectedCommand.args).filter(([name, arg]) => {
+      const { isHidden } = evaluateCommandBarArg(
+        name,
+        arg,
+        commandBarState.context
+      )
+      return !isHidden
+    }) as [string, CommandArgument<unknown>][]
+  }, [selectedCommand, commandBarState.context])
+
   useHotkeys(
     [
       'alt+1',
@@ -39,12 +53,9 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     ],
     (_, b) => {
       if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
-        if (!selectedCommand?.args) return
-        const argName = Object.keys(selectedCommand.args)[
-          parseInt(b.keys[0], 10) - 1
-        ]
-        const arg = selectedCommand?.args[argName]
-        if (!arg) return
+        const argEntry = visibleArgEntries[parseInt(b.keys[0], 10) - 1]
+        if (!argEntry) return
+        const [argName, arg] = argEntry
         commands.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
@@ -52,7 +63,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       }
     },
     { keyup: true, enableOnFormTags: true, enableOnContentEditable: true },
-    [argumentsToSubmit, selectedCommand]
+    [argumentsToSubmit, selectedCommand, visibleArgEntries]
   )
 
   Object.keys(argumentsToSubmit).forEach((key, _i) => {

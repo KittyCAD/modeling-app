@@ -957,6 +957,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       draftAngle: {
         inputType: 'kcl',
         required: false,
+        status: 'experimental',
       },
       twistAngle: {
         inputType: 'kcl',
