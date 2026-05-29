@@ -1301,7 +1301,7 @@ export function buildToolbarConfig(
               title: 'Straightness',
               icon: 'gdtStraightness',
               description:
-                'Specifies straightness tolerance - how much the line elements of a surface can deviate from perfectly straight.',
+                'Specifies straightness tolerance - how much a face or edge can deviate from perfectly straight.',
               links: [
                 {
                   label: 'KCL docs',

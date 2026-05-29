@@ -569,7 +569,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getCapFromCylinder(artifactGraph)
+      const objects = getCapFromCylinder(artifactGraph)
       const tolerance = await getKclCommandValue(
         '0.1mm',
         instanceInThisFile,
@@ -578,7 +578,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addStraightnessGdt({
         ast,
         artifactGraph,
-        faces,
+        objects,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -601,7 +601,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getWallsFromBox(artifactGraph, 3)
+      const objects = getWallsFromBox(artifactGraph, 3)
 
       const tolerance = await getKclCommandValue(
         '0.1mm',
@@ -611,7 +611,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addStraightnessGdt({
         ast,
         artifactGraph,
-        faces,
+        objects,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -632,13 +632,54 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add straightness annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::straightness(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add straightness annotation with all optional parameters', async () => {
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getCapFromCylinder(artifactGraph)
+      const objects = getCapFromCylinder(artifactGraph)
 
       const tolerance = await getKclCommandValue(
         '0.1mm',
@@ -669,7 +710,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addStraightnessGdt({
         ast,
         artifactGraph,
-        faces,
+        objects,
         tolerance,
         precision,
         framePosition,

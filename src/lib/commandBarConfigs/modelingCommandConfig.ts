@@ -455,7 +455,7 @@ export type ModelingCommandSchema = {
   }
   'GDT Straightness': {
     nodeToEdit?: PathToNode
-    faces: Selections
+    objects: Selections
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -2785,7 +2785,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'GDT Straightness': {
     description:
-      'Add straightness geometric dimensioning & tolerancing annotation to faces.',
+      'Add straightness geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtStraightness',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
@@ -2815,9 +2815,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      faces: {
+      objects: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

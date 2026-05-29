@@ -1929,17 +1929,27 @@ const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
+  const graphSelections: Selections['graphSelections'] = []
   const facesArg = operation.labeledArgs?.['faces']
-  if (!facesArg || !facesArg.sourceRange) {
-    return { reason: 'Missing or invalid faces argument' }
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
   }
 
-  const graphSelections = extractFaceSelections(artifactGraph, facesArg)
-  if ('error' in graphSelections) {
-    return { reason: graphSelections.error }
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
   }
 
-  const faces = { graphSelections, otherSelections: [] }
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
 
   const tolerance = await extractKclArgument(
     code,
@@ -1950,6 +1960,7 @@ const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
   if ('error' in tolerance) {
     return { reason: tolerance.error }
   }
+
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
@@ -1964,7 +1975,7 @@ const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
   const argDefaultValues: ModelingCommandSchema['GDT Straightness'] = {
-    faces,
+    objects: { graphSelections, otherSelections: [] },
     tolerance,
     precision,
     framePosition,
