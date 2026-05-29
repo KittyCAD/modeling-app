@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -12,10 +12,9 @@ import {
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { userHasFeature } from '@src/lib/settings/settingsUtils'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
@@ -2364,24 +2363,11 @@ function getSelectedSketchIconColor(
 }
 
 export const useToolbarConfig = () => {
-  const { commands } = useApp()
-  const [showSplineTool, setShowSplineTool] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-
-    void userHasFeature(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false).then(
-      (enabled) => {
-        if (!cancelled) {
-          setShowSplineTool(enabled)
-        }
-      }
-    )
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { commands, userFeatures } = useApp()
+  const showSplineTool = userFeatures.useHas(
+    SKETCH_EXPERIMENTAL_FEATURES_FLAG,
+    false
+  )
 
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () => buildToolbarConfig(commands, { showSplineTool }),

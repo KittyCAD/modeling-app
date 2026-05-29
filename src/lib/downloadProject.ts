@@ -1,5 +1,5 @@
-import JSZip from 'jszip'
 import { projects } from '@kittycad/lib'
+import JSZip from 'jszip'
 
 import env from '@src/env'
 import {
@@ -11,9 +11,9 @@ import {
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { webSafePathSplit } from '@src/lib/paths'
 import { sanitizeProjectName } from '@src/lib/projectName'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
-import { err, isErr } from '@src/lib/trap'
 
 const DEFAULT_IMPORTED_PROJECT_NAME = 'shared-project'
 const PROJECT_DOWNLOAD_FORMAT = 'zip'

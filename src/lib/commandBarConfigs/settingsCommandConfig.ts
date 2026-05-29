@@ -14,12 +14,12 @@ import type {
   SettingsLevel,
   SettingsPaths,
 } from '@src/lib/settings/settingsTypes'
+import {
+  formatSettingsLabel,
+  hiddenOnPlatform,
+} from '@src/lib/settings/settingsUtils'
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
-import {
-  hiddenOnPlatform,
-  formatSettingsLabel,
-} from '@src/lib/settings/settingsUtils'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>

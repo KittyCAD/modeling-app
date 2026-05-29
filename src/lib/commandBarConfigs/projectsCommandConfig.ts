@@ -2,10 +2,10 @@ import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteW
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
 export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string

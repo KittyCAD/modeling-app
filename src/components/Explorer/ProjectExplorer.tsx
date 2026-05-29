@@ -17,6 +17,7 @@ import type {
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
@@ -32,12 +33,11 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { useApp, useSingletons } from '@src/lib/boot'
 import type { MaybePressOrBlur } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },

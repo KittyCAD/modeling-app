@@ -3,6 +3,7 @@ import {
   type FileExplorerEntry,
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
@@ -12,8 +13,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react'
-import { beforeAll, expect, describe, it, beforeEach, afterEach } from 'vitest'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({

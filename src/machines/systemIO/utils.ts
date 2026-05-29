@@ -1,26 +1,26 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
+  type GitignoreStackEntry,
   appendGitignoreForDirectory,
   createInitialGitignoreStack,
   isPathIgnoredByGitignore,
-  type GitignoreStackEntry,
 } from '@src/lib/gitignore'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { isErr } from '@src/lib/trap'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import fsZds from '@src/lib/fs-zds'
-import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
-import { isErr } from '@src/lib/trap'
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 

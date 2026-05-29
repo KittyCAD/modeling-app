@@ -2,11 +2,11 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
-import { CustomIcon } from '@src/components/CustomIcon'
-import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
-import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { useMemo } from 'react'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()

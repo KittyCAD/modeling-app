@@ -1,3 +1,7 @@
+import {
+  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
+} from '@src/lib/layout/configs/default'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type {
   Layout,
@@ -10,10 +14,6 @@ import {
   closeAllPanes,
   setOpenPanes,
 } from '@src/lib/layout/utils'
-import {
-  DefaultLayoutPaneID,
-  DefaultLayoutToolbarID,
-} from '@src/lib/layout/configs/default'
 import { expect } from 'vitest'
 import { it } from 'vitest'
 import { describe } from 'vitest'

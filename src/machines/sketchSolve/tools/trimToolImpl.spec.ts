@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { Coords2d } from '@src/lang/util'
 import { assertParse } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { createOnAreaSelectEndCallback } from '@src/machines/sketchSolve/tools/trimToolImpl'
-import type { Coords2d } from '@src/lang/util'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!

@@ -69,6 +69,7 @@ function disposeApp(app: App) {
   app.commands.actor.stop()
   app.auth.actor.stop()
   app.billing.actor.stop()
+  app.userFeatures.actor.stop()
 }
 
 describe('project system', () => {

@@ -1,8 +1,8 @@
 import { join } from 'path'
+import path from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import * as fsp from 'fs/promises'
-import path from 'path'
 
 import {
   TEST_SETTINGS_CORRUPTED,
@@ -17,8 +17,8 @@ import {
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
+import type { Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {

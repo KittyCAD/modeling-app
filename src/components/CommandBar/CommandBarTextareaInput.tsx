@@ -2,8 +2,8 @@ import type { RefObject } from 'react'
 import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import type { CommandArgument } from '@src/lib/commandTypes'
 import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
 
 function CommandBarTextareaInput({
   arg,

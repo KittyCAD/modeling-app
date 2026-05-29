@@ -4,11 +4,11 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AnyStateMachine, StateFrom } from 'xstate'
 
+import { useApp } from '@src/lib/boot'
 import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context

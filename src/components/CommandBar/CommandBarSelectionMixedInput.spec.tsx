@@ -1,11 +1,11 @@
 import { render, waitFor } from '@testing-library/react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
-import type { CommandArgument } from '@src/lib/commandTypes'
-import { App } from '@src/lib/app'
-import { KclManager } from '@src/lang/KclManager'
 import { signal } from '@preact/signals-core'
+import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
+import { KclManager } from '@src/lang/KclManager'
+import { App } from '@src/lib/app'
+import type { CommandArgument } from '@src/lib/commandTypes'
 
 vi.mock(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 vi.mock('@src/lang/wasmUtils', async () => {
