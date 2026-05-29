@@ -1,4 +1,4 @@
-import { users, type UserFeature, type UserFeatureList } from '@kittycad/lib'
+import { type UserFeature, type UserFeatureList, users } from '@kittycad/lib'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { isErr } from '@src/lib/trap'

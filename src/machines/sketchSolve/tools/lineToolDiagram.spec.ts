@@ -1,9 +1,3 @@
-import { describe, it, expect, vi } from 'vitest'
-import { createActor, waitFor, fromPromise } from 'xstate'
-import {
-  machine,
-  confirmingDimensions,
-} from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import type {
   ApiObject,
   SceneGraphDelta,
@@ -11,13 +5,19 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
-  createSceneGraphDelta,
-  createPointApiObject,
+  confirmingDimensions,
+  machine,
+} from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import {
   createLineApiObject,
-  createMockSceneInfra,
-  createMockRustContext,
   createMockKclManager,
+  createMockRustContext,
+  createMockSceneInfra,
+  createPointApiObject,
+  createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { describe, expect, it, vi } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 // Helper to create test machine with mocked actors
 // Note: The async actors MUST be mocked as they call real Rust/WASM code and make network requests

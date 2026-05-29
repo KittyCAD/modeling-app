@@ -2,13 +2,13 @@
 import { lezer } from '@lezer/generator/rollup'
 import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
+import { createLogger } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { createLogger } from 'vite'
 import { configDefaults, defineConfig } from 'vitest/config'
 import { indexHtmlCsp } from './vite.base.config'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 const publicAssetWarning =
   'Assets in public directory cannot be imported from JavaScript'

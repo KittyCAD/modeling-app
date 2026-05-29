@@ -1,13 +1,13 @@
 import {
+  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
+} from '@src/lib/layout/configs/default'
+import {
+  ActionType,
+  AreaType,
   type Layout,
   LayoutType,
-  AreaType,
-  ActionType,
 } from '@src/lib/layout/types'
-import {
-  DefaultLayoutToolbarID,
-  DefaultLayoutPaneID,
-} from '@src/lib/layout/configs/default'
 
 /**
  * This predefined layout is meant for users to

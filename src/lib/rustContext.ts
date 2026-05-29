@@ -1,11 +1,8 @@
 import toast from 'react-hot-toast'
 
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type {
   ApiConstraint,
   ApiFile,
@@ -16,15 +13,18 @@ import type {
   ApiVersion,
   ExistingSegmentCtor,
   Number,
-  SceneGraphDelta,
-  SegmentDragAnchor,
-  SegmentCtor,
   SetProgramOutcome as RustSetProgramOutcome,
+  SceneGraphDelta,
+  SegmentCtor,
+  SegmentDragAnchor,
   SketchCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { encode as msgpackEncode } from '@msgpack/msgpack'
 
 import type { WebSocketResponse } from '@kittycad/lib'
 
@@ -38,13 +38,13 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { Signal as LegacySignal } from '@src/lib/signal'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import { Signal as LegacySignal } from '@src/lib/signal'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null

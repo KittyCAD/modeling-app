@@ -1,10 +1,10 @@
 import type { Extension, Range } from '@codemirror/state'
-import { StateEffect, StateField, Annotation } from '@codemirror/state'
+import { Annotation, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
 
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 
 const artifactAnnotationsAnnotation = Annotation.define<boolean>()
 /** Transaction annotation to identify artifact annotation updates */

@@ -28,20 +28,20 @@ import {
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { Coords2d } from '@src/lang/util'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
-import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
+import type { Coords2d } from '@src/lang/util'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import { baseUnitToMm, getAngle, getLength } from '@src/lib/utils'
+import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
 
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

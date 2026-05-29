@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ClientErrorReport } from '@kittycad/lib'
-import type { FileMeta } from '@src/lib/types'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+import type { FileMeta } from '@src/lib/types'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   type Conversation,

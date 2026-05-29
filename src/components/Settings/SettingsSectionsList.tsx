@@ -1,9 +1,9 @@
+import { useApp } from '@src/lib/boot'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import {
   formatSettingsLabel,
   shouldHideSetting,
 } from '@src/lib/settings/settingsUtils'
-import { useApp } from '@src/lib/boot'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel
