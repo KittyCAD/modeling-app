@@ -143,11 +143,11 @@ export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
-const FRAME_PLANE_OPTIONS = [
-  { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-  { name: 'XZ Plane', value: KCL_PLANE_XZ },
-  { name: 'YZ Plane', value: KCL_PLANE_YZ },
-]
+const FRAME_PLANE_OPTIONS = Object.freeze([
+  Object.freeze({ name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true }),
+  Object.freeze({ name: 'XZ Plane', value: KCL_PLANE_XZ }),
+  Object.freeze({ name: 'YZ Plane', value: KCL_PLANE_YZ }),
+] as const)
 
 // For all nodeToEdit-like arguments needed for edit flows
 const nodeToEditDescription =
