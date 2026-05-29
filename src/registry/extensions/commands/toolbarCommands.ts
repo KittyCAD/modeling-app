@@ -5,7 +5,7 @@ import {
 } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/featureFlags'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selections'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {

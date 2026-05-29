@@ -1,1 +1,0 @@
-export const EXPERIMENTAL_POINT_AND_CLICK_FLAG = 'sketch_experimental_features'

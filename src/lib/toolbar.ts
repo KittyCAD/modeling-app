@@ -5,12 +5,12 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
 import {
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
   SKETCH_DEFAULT_PLANE_XY,
   SKETCH_DEFAULT_PLANE_XZ,
   SKETCH_DEFAULT_PLANE_YZ,
   SKETCH_SELECTION_RGB_STR,
 } from '@src/lib/constants'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/featureFlags'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'

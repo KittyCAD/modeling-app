@@ -5,13 +5,13 @@ import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/featureFlags'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { useSignals } from '@preact/signals-react/runtime'
 
