@@ -2530,7 +2530,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.1.1"
+version = "0.2.159"
 dependencies = [
  "logos",
  "proptest",
