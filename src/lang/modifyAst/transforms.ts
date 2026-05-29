@@ -453,6 +453,8 @@ export function addAppearance({
   }
 }
 
+type ObjectTransformName = 'hide' | 'delete'
+
 function addObjectTransform({
   ast,
   artifactGraph,
@@ -465,7 +467,7 @@ function addObjectTransform({
   artifactGraph: ArtifactGraph
   objects: Selections
   wasmInstance: ModuleType
-  name: string
+  name: ObjectTransformName
   variableIfNewDecl?: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
