@@ -1,12 +1,12 @@
-import { err } from '@src/lib/trap'
+import fs from 'node:fs'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import fs from 'node:fs'
+import { err } from '@src/lib/trap'
 
 import type { Program } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 function code2ast(code: string, instance: ModuleType): { ast: Program } {
   const ast = assertParse(code, instance)

@@ -69,6 +69,7 @@ import {
   isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
+import type { Coords2d } from '@src/lang/util'
 import type {
   CallExpressionKw,
   Expr,
@@ -92,9 +93,8 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
-import type { Coords2d } from '@src/lang/util'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')

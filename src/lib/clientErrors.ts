@@ -1,4 +1,4 @@
-import { users, type ClientErrorReport } from '@kittycad/lib'
+import { type ClientErrorReport, users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 type ReportClientErrorParams = {
@@ -10,6 +10,14 @@ type ReportClientErrorParams = {
   dedupeKey?: string
   route?: string
   client?: string
+}
+
+export enum ClientErrorCode {
+  UserFeaturesFetchError = 'user_features_fetch_error',
+  ZookeeperActorError = 'zookeeper_actor_error',
+  ZookeeperSetupError = 'zookeeper_setup_error',
+  ZookeeperWebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
+  ZookeeperWebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
 }
 
 const reportedClientErrors = new Set<string>()

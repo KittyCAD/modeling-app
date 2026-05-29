@@ -6,7 +6,6 @@ import {
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
 import { selectSketchPlane } from '@src/lib/selections'
-import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineEvent,
@@ -151,6 +150,10 @@ function getKclManager(input: unknown): KclManager | undefined {
   return getCommandBarContext(input)?.kclManager
 }
 
+function getUserFeatures(input: unknown): CommandBarContext['userFeatures'] {
+  return getCommandBarContext(input)?.userFeatures
+}
+
 function getModelingState(input: unknown): ModelingState | undefined {
   return getKclManager(input)?.modelingState ?? undefined
 }
@@ -212,8 +215,8 @@ function createSketchSolveToolCommand({
   })
 }
 
-async function toggleSplineTool(input: unknown) {
-  if (!(await userHasFeature(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false))) {
+function toggleSplineTool(input: unknown) {
+  if (!getUserFeatures(input)?.has(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false)) {
     return
   }
 

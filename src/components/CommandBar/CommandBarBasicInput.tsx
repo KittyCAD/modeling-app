@@ -2,10 +2,10 @@ import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>

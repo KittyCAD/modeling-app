@@ -14,15 +14,15 @@ import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
-  classifyConstraintSelection,
   type ConstraintToolName,
   type ConstraintToolSelectionMatch,
+  classifyConstraintSelection,
   getConstraintToolConfig,
   getConstraintToolSelectionMatches,
   selectionMatcherMatchesKind,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 
 type HorizontalVerticalPayload =
   | Extract<ApiConstraint, { type: 'Horizontal' }>

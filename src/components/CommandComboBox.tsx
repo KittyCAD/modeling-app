@@ -3,9 +3,9 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { useApp } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
-import { useApp } from '@src/lib/boot'
 import { getActorNextEvents } from '@src/lib/utils'
 
 function CommandComboBox({

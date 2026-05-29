@@ -1,15 +1,15 @@
-import type {
-  ActionLibrary,
-  AreaLibrary,
-  LayoutContribution,
-  LayoutService,
-} from '@src/lib/layout/types'
 import {
   defineContract,
   defineService,
   defineValueSpec,
   mergeObjectsValueSpec,
 } from '@kittycad/registry'
+import type {
+  ActionLibrary,
+  AreaLibrary,
+  LayoutContribution,
+  LayoutService,
+} from '@src/lib/layout/types'
 
 export const layoutContract = defineContract({
   layoutService: defineService<LayoutService>('layout.service'),

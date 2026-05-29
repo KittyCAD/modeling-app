@@ -1,9 +1,9 @@
+import { defineContract, defineValueSpec } from '@kittycad/registry'
 import {
   type ExtensionSettingsContribution,
-  mergeExtensionSettings,
   type ResolvedExtensionSettings,
+  mergeExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
-import { defineContract, defineValueSpec } from '@kittycad/registry'
 
 /**
  * App-owned settings extension point.

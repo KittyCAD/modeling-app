@@ -1,5 +1,5 @@
 import type { Extension, Range } from '@codemirror/state'
-import { StateEffect, StateField, Annotation } from '@codemirror/state'
+import { Annotation, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 

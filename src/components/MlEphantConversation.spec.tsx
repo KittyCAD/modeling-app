@@ -6,7 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
-import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
@@ -39,16 +39,16 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
   }
 })
 
+import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
+import type * as ScreenshotModule from '@src/lib/screenshot'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
-import type * as ScreenshotModule from '@src/lib/screenshot'
 
 const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   {
@@ -855,14 +855,12 @@ describe('MlEphantConversation', () => {
       ).toBeInTheDocument()
     })
 
-    test('displays screenshot annotation button', () => {
+    test('displays Zoodle button', () => {
       renderConversation()
-      expect(
-        screen.getByTestId('ml-ephant-annotate-screenshot-button')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('ml-ephant-zoodle-button')).toBeInTheDocument()
     })
 
-    test('adds annotated viewport screenshot as an attachment', async () => {
+    test('adds Zoodle as an attachment', async () => {
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
@@ -885,9 +883,7 @@ describe('MlEphantConversation', () => {
       try {
         renderConversation()
 
-        fireEvent.click(
-          screen.getByTestId('ml-ephant-annotate-screenshot-button')
-        )
+        fireEvent.click(screen.getByTestId('ml-ephant-zoodle-button'))
 
         expect(
           screen.getByTestId('viewport-annotation-overlay')
@@ -897,9 +893,7 @@ describe('MlEphantConversation', () => {
         await waitFor(() => expect(sendButton).not.toBeDisabled())
         fireEvent.click(sendButton)
 
-        expect(
-          await screen.findByText('annotated-viewport-screenshot.png')
-        ).toBeInTheDocument()
+        expect(await screen.findByText('zoodle')).toBeInTheDocument()
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage

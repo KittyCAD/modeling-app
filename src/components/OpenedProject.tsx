@@ -53,7 +53,6 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { filterEngineSceneStatusBarItems } from '@src/registry/extensions/engineScene/statusBar'
 import {
   TutorialRequestToast,
   needsToOnboard,
@@ -172,12 +171,9 @@ export function OpenedProject() {
     registry.signal(statusBarGlobalItemsValueSpec).value,
     ['file']
   )
-  const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(
-    filterStatusBarItemsForScopes(
-      registry.signal(statusBarLocalItemsValueSpec).value,
-      ['file']
-    ),
-    settingsValues
+  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarLocalItemsValueSpec).value,
+    ['file']
   )
   const authToken = auth.useToken()
   const onboardingStatus =

@@ -1,6 +1,6 @@
-import { renderHook } from '@testing-library/react'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import { expect, vi, describe, test } from 'vitest'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnWindowOnlineOffline', () => {
   describe('on mounted', () => {
