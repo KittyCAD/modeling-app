@@ -1,5 +1,4 @@
 import type {
-  EntityType,
   ModelingCmd,
   Point3d,
   UnitArea,
@@ -27,7 +26,6 @@ import {
 } from './measurementUtils'
 
 type MeasurementStatus = 'idle' | 'measuring'
-type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'bodies'
 
 type MeasurementTarget =
   | { type: 'distance'; entityIds: [string, string] }
@@ -63,37 +61,6 @@ type MeasurementResult =
       centerOfMassUnit: UnitLength
       entityIdsKey: string
     }
-
-const selectionFilterOptions: Array<{
-  value: SelectionFilterMode
-  label: string
-  title: string
-  filter?: EntityType[]
-}> = [
-  {
-    value: 'default',
-    label: 'All',
-    title: 'Default selection filter',
-  },
-  {
-    value: 'faces',
-    label: 'Faces',
-    title: 'Select faces',
-    filter: ['face', 'object'],
-  },
-  {
-    value: 'edges',
-    label: 'Edges',
-    title: 'Select edges',
-    filter: ['edge', 'curve', 'segment'],
-  },
-  {
-    value: 'bodies',
-    label: 'Bodies',
-    title: 'Select solid bodies',
-    filter: ['solid3d'],
-  },
-]
 
 function getResponseErrorMessage(response: unknown): string {
   if (response instanceof Error) {
@@ -244,11 +211,8 @@ function resultMatchesSelection(
 
 export function MeasurementTool() {
   const { state } = useModelingContext()
-  const { engineCommandManager, kclManager, store, wasmInstance } =
-    state.context
+  const { engineCommandManager, kclManager, store } = state.context
   const [distanceMode, setDistanceMode] = useState<DistanceMode>('euclidean')
-  const [selectionFilterMode, setSelectionFilterMode] =
-    useState<SelectionFilterMode>('default')
   const [status, setStatus] = useState<MeasurementStatus>('idle')
   const [result, setResult] = useState<MeasurementResult | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -294,23 +258,6 @@ export function MeasurementTool() {
         cmd,
       }),
     [engineCommandManager]
-  )
-
-  const handleSelectionFilterChange = useCallback(
-    (mode: SelectionFilterMode) => {
-      const option = selectionFilterOptions.find(({ value }) => value === mode)
-      if (!option) {
-        return
-      }
-
-      setSelectionFilterMode(mode)
-      if (option.filter) {
-        kclManager.setSelectionFilter(option.filter, wasmInstance)
-      } else {
-        kclManager.setSelectionFilterToDefault(wasmInstance)
-      }
-    },
-    [kclManager, wasmInstance]
   )
 
   const measureSelection = useCallback(() => {
@@ -493,31 +440,7 @@ export function MeasurementTool() {
   const distanceModeDisabled = selectedEntityIds.length !== 2
 
   return (
-    <div className="absolute bottom-2 left-2 z-10 flex max-w-[calc(100%-1rem)] flex-col items-start gap-2 pointer-events-auto">
-      <div className="flex min-w-56 max-w-80 flex-col gap-1.5 rounded border border-chalkboard-20 bg-chalkboard-10/85 p-2 text-chalkboard-100 shadow-lg backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/85 dark:text-chalkboard-10">
-        <div className="grid grid-cols-4 rounded border border-chalkboard-20 bg-chalkboard-10 p-0 dark:border-chalkboard-80 dark:bg-chalkboard-90">
-          {selectionFilterOptions.map((option) => {
-            const isActive = selectionFilterMode === option.value
-            return (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={isActive}
-                title={option.title}
-                onClick={() => handleSelectionFilterChange(option.value)}
-                className={`m-0 h-7 border-0 border-r border-solid border-chalkboard-20 px-2 text-xs last:border-r-0 dark:border-chalkboard-80 ${
-                  isActive
-                    ? 'bg-primary text-chalkboard-10'
-                    : 'bg-transparent text-chalkboard-90 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
-                }`}
-              >
-                {option.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
+    <div className="absolute bottom-2 left-2 z-10 flex max-w-[calc(100%-1rem)] items-end gap-2 pointer-events-auto">
       <div className="flex min-w-56 max-w-80 flex-col gap-2 rounded border border-chalkboard-20 bg-chalkboard-10/85 p-2 text-chalkboard-100 shadow-lg backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/85 dark:text-chalkboard-10">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-1.5">
