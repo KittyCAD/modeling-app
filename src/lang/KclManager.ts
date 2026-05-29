@@ -83,8 +83,12 @@ import {
   undoDepth,
 } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
-import type { Diagnostic } from '@codemirror/lint'
-import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import type { Action, Diagnostic } from '@codemirror/lint'
+import {
+  closeLintPanel,
+  forEachDiagnostic,
+  setDiagnosticsEffect,
+} from '@codemirror/lint'
 import {
   Annotation,
   ChangeSet,
@@ -98,7 +102,12 @@ import {
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { EditorView, drawSelection, keymap } from '@codemirror/view'
+import {
+  closeHoverTooltips,
+  EditorView,
+  drawSelection,
+  keymap,
+} from '@codemirror/view'
 import {
   setSelectionFilter,
   setSelectionFilterToDefault,
@@ -584,6 +593,35 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
+export const DIAGNOSTIC_CLOSE_ACTION_MARK_CLASS = 'cm-diagnosticClose'
+
+const closeDiagnosticTooltipAction: Action = {
+  name: 'Close',
+  markClass: DIAGNOSTIC_CLOSE_ACTION_MARK_CLASS,
+  apply: (view) => {
+    view.dispatch({ effects: closeHoverTooltips })
+    closeLintPanel(view)
+  },
+}
+
+function addCloseDiagnosticTooltipAction(
+  diagnostics: Diagnostic[]
+): Diagnostic[] {
+  return diagnostics.map((diagnostic) => {
+    if (
+      diagnostic.actions?.some(
+        (action) => action.markClass === DIAGNOSTIC_CLOSE_ACTION_MARK_CLASS
+      )
+    ) {
+      return diagnostic
+    }
+
+    return {
+      ...diagnostic,
+      actions: [...(diagnostic.actions ?? []), closeDiagnosticTooltipAction],
+    }
+  })
+}
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
@@ -2768,7 +2806,9 @@ export class KclManager extends File {
     )
 
     this._editorView.dispatch({
-      effects: [setDiagnosticsEffect.of(diagnostics)],
+      effects: [
+        setDiagnosticsEffect.of(addCloseDiagnosticTooltipAction(diagnostics)),
+      ],
       annotations: [
         setDiagnosticsEvent,
         updateOutsideEditorEvent,
