@@ -492,7 +492,7 @@ describe('MlEphantConversation', () => {
     expect(within(attachments).queryByText('+ more')).not.toBeInTheDocument()
   })
 
-  test('renders Zoodle PNG request attachments with the Zoodle label', () => {
+  test('renders Zoodle PNG request attachments with the PNG file name', () => {
     const conversation: Conversation = {
       exchanges: [
         {
@@ -534,10 +534,7 @@ describe('MlEphantConversation', () => {
 
     const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
 
-    expect(within(attachments).getByText('zoodle')).toBeInTheDocument()
-    expect(
-      within(attachments).queryByText('zoodle.png')
-    ).not.toBeInTheDocument()
+    expect(within(attachments).getByText('zoodle.png')).toBeInTheDocument()
   })
 
   test('expands and collapses user message attachments when there are more than two', () => {
@@ -908,7 +905,7 @@ describe('MlEphantConversation', () => {
       expect(screen.getByTestId('ml-ephant-zoodle-button')).toBeInTheDocument()
     })
 
-    test('adds Zoodle as a PNG attachment while displaying the Zoodle label', async () => {
+    test('adds Zoodle as a PNG attachment while displaying the PNG file name', async () => {
       const handleProcess = vi.fn()
       const OriginalImage = globalThis.Image
       class MockImage {
@@ -942,7 +939,7 @@ describe('MlEphantConversation', () => {
         await waitFor(() => expect(sendButton).not.toBeDisabled())
         fireEvent.click(sendButton)
 
-        expect(await screen.findByText('zoodle')).toBeInTheDocument()
+        expect(await screen.findByText('zoodle.png')).toBeInTheDocument()
 
         fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
           target: { value: 'make this' },

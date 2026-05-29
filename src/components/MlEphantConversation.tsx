@@ -6,10 +6,6 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
-import {
-  ZOODLE_ATTACHMENT_FILE_NAME,
-  getAttachmentDisplayName,
-} from '@src/lib/mlEphantAttachments'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -26,6 +22,7 @@ import { useEffect, useRef, useState } from 'react'
 const noop = () => {}
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
+const ZOODLE_ATTACHMENT_FILE_NAME = 'zoodle.png'
 
 export interface QueuedMessage {
   id: string
@@ -482,27 +479,24 @@ export const MlEphantConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map((file, index) => {
-              const displayName = getAttachmentDisplayName(file.name)
-              return (
-                <div
-                  key={`${file.name}-${file.lastModified}-${file.size}`}
-                  className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
-                  title={displayName}
+            {attachments.map((file, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${file.size}`}
+                className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                title={file.name}
+              >
+                <CustomIcon name="file" className="w-4 h-4" />
+                <span className="max-w-[160px] truncate">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => onRemoveAttachment(index)}
+                  className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
+                  aria-label={`Remove ${file.name}`}
                 >
-                  <CustomIcon name="file" className="w-4 h-4" />
-                  <span className="max-w-[160px] truncate">{displayName}</span>
-                  <button
-                    type="button"
-                    onClick={() => onRemoveAttachment(index)}
-                    className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
-                    aria-label={`Remove ${displayName}`}
-                  >
-                    <CustomIcon name="close" className="w-4 h-4" />
-                  </button>
-                </div>
-              )
-            })}
+                  <CustomIcon name="close" className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
           </div>
         )}
         <div className="flex items-end">
