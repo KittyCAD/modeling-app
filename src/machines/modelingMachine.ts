@@ -2060,16 +2060,21 @@ export const modelingMachine = setup({
           })
 
           // This turns the selection into blue, needed when selecting with ctrl+A
-          const { updateSceneObjectColors } = handleSelectionBatch({
-            selections: setSelections.selection,
-            artifactGraph: kclManager.artifactGraph,
-            code: kclManager.code,
-            ast: kclManager.ast,
-            systemDeps: {
-              engineCommandManager,
-              sceneEntitiesManager: kclManager.sceneEntitiesManager,
-              wasmInstance,
-            },
+          const { engineEvents, updateSceneObjectColors } =
+            handleSelectionBatch({
+              selections: setSelections.selection,
+              artifactGraph: kclManager.artifactGraph,
+              code: kclManager.code,
+              ast: kclManager.ast,
+              systemDeps: {
+                engineCommandManager,
+                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                wasmInstance,
+              },
+            })
+
+          engineEvents.forEach((event) => {
+            engineCommandManager.sendSceneCommand(event).catch(reportRejection)
           })
           updateSceneObjectColors()
 
