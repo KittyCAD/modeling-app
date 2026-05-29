@@ -7,6 +7,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 import {
+  createCustomLogger,
   indexHtmlCsp,
   isIgnoredWatchPath,
   pluginExposeRenderer,
@@ -19,6 +20,7 @@ export default defineConfig((env) => {
   const name = forgeConfigSelf?.name ?? 'main_window'
 
   return {
+    customLogger: createCustomLogger(),
     root,
     mode,
     base: './',

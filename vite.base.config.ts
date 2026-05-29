@@ -1,8 +1,26 @@
 import { builtinModules } from 'node:module'
 import type { AddressInfo } from 'node:net'
-import type { ConfigEnv, Plugin, UserConfig } from 'vite'
+import {
+  createLogger,
+  type ConfigEnv,
+  type Plugin,
+  type UserConfig,
+} from 'vite'
 
 import pkg from './package.json'
+
+const publicAssetWarning =
+  'Assets in public directory cannot be imported from JavaScript'
+
+export function createCustomLogger() {
+  const logger = createLogger()
+  const originalWarn = logger.warn.bind(logger)
+  logger.warn = (msg, opts) => {
+    if (msg.includes(publicAssetWarning)) return
+    originalWarn(msg, opts)
+  }
+  return logger
+}
 
 export const builtins = [
   'electron',
