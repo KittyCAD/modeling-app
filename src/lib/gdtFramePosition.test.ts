@@ -1,3 +1,4 @@
+import type { Artifact, Expr } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -14,7 +15,6 @@ import {
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Artifact, Expr } from '@src/lang/wasm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const formatNumberLiteral = vi.fn().mockReturnValue('1.2cm')

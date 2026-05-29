@@ -1,5 +1,5 @@
-import { PATHS } from '@src/lib/paths'
 import { useApp } from '@src/lib/boot'
+import { PATHS } from '@src/lib/paths'
 
 export function useAbsoluteFilePath() {
   const app = useApp()

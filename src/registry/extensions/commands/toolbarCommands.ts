@@ -5,8 +5,8 @@ import {
 } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selections'
-import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineEvent,
@@ -20,7 +20,6 @@ import {
 import type { StateFrom } from 'xstate'
 
 const TOOLBAR_COMMAND_GROUP_ID = 'toolbar'
-const SKETCH_EXPERIMENTAL_FEATURES_FLAG = 'sketch_experimental_features'
 const SKETCH_TOOL_NONE: SketchTool = 'none'
 
 export const TOOLBAR_COMMAND_IDS = {
@@ -95,6 +94,7 @@ type SketchSolveToolCommand = {
   description: string
   icon?: Command['icon']
   tool: EquipTool
+  experimental?: boolean
 }
 
 type SketchSolveActionCommand = {
@@ -151,6 +151,17 @@ function getKclManager(input: unknown): KclManager | undefined {
   return getCommandBarContext(input)?.kclManager
 }
 
+function getUserFeatures(input: unknown): CommandBarContext['userFeatures'] {
+  return getCommandBarContext(input)?.userFeatures
+}
+
+function hasSketchExperimentalFeatures(input: unknown): boolean {
+  return (
+    getUserFeatures(input)?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ??
+    false
+  )
+}
+
 function getModelingState(input: unknown): ModelingState | undefined {
   return getKclManager(input)?.modelingState ?? undefined
 }
@@ -202,22 +213,21 @@ function createSketchSolveToolCommand({
   description,
   icon,
   tool,
+  experimental = false,
 }: SketchSolveToolCommand): Command {
   return createToolbarCommand({
     id,
     displayName,
     description,
     icon,
-    onSubmit: (input) => toggleSketchSolveTool(input, tool),
+    onSubmit: (input) => {
+      if (experimental && !hasSketchExperimentalFeatures(input)) {
+        return
+      }
+
+      return toggleSketchSolveTool(input, tool)
+    },
   })
-}
-
-async function toggleSplineTool(input: unknown) {
-  if (!(await userHasFeature(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false))) {
-    return
-  }
-
-  return toggleSketchSolveTool(input, 'splineTool')
 }
 
 function toggleSketchSolveTool(input: unknown, tool: EquipTool) {
@@ -434,12 +444,13 @@ export const toolbarCommands: readonly Command[] = [
     icon: 'oneDot',
     tool: 'pointTool',
   }),
-  createToolbarCommand({
+  createSketchSolveToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.spline,
     displayName: 'Spline',
     description: 'Draw a control-point spline.',
     icon: 'spline',
-    onSubmit: toggleSplineTool,
+    tool: 'splineTool',
+    experimental: true,
   }),
   createSketchSolveToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.circleCenter,

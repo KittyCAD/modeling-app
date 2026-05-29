@@ -1,7 +1,7 @@
 import type { Abortable } from 'events'
 import type { ObjectEncodingOptions, OpenMode } from 'fs'
-import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import fsZds from '@src/lib/fs-zds'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 import electronfs from '@src/lib/fs-zds/electronfs'
 import opfs from '@src/lib/fs-zds/opfs'

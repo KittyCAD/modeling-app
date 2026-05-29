@@ -29,6 +29,7 @@ interface CreateMachineCommandProps<
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
   forceDisable?: boolean
+  showExperimentalCommands?: boolean
 }
 
 // Creates a command with subcommands, ready for use in the CommandBar component,
@@ -45,6 +46,7 @@ export function createMachineCommand<
   commandBarConfig,
   onCancel,
   forceDisable = false,
+  showExperimentalCommands = false,
 }: CreateMachineCommandProps<T, S>):
   | Command<T, typeof type, S[typeof type]>
   | Command<T, typeof type, S[typeof type]>[]
@@ -73,6 +75,7 @@ export function createMachineCommand<
           commandBarConfig: recursiveCommandBarConfig,
           onCancel,
           forceDisable,
+          showExperimentalCommands,
         })
       })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
@@ -89,6 +92,7 @@ export function createMachineCommand<
     const { status } = commandConfig
     if (status === 'inactive') return null
     if (status === 'development' && !IS_STAGING_OR_DEBUG) return null
+    if (status === 'experimental' && !showExperimentalCommands) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined

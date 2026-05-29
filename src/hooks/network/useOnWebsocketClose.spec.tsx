@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { expect, vi, describe, test } from 'vitest'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnWebsocketClose', () => {
   describe('on mounted', () => {

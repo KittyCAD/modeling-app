@@ -1,6 +1,6 @@
-import type { PropsWithChildren, ReactNode } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { isDesktop } from '@src/lib/isDesktop'
+import type { PropsWithChildren, ReactNode } from 'react'
 
 /**
  * Local authoring surface for the MlEphant welcome message.

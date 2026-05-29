@@ -29,8 +29,8 @@ import {
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type { PathToNodeMap } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -62,13 +62,6 @@ import {
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
-import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
-import { err, trap } from '@src/lib/trap'
-import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type {
-  ExtrudeFacePlane,
-  EngineRegionSelection,
-} from '@src/machines/modelingSharedTypes'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
   type getConstraintInfoKw as GetConstraintInfoKwFn,
@@ -77,7 +70,14 @@ import {
   type removeSingleConstraint as RemoveSingleConstraintFn,
   type transformAstSketchLines as TransformAstSketchLinesFn,
 } from '@src/lang/std/sketchcombos'
+import { type Coords2d, isLiteralArrayOrStatic } from '@src/lang/util'
+import { err, trap } from '@src/lib/trap'
+import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type {
+  EngineRegionSelection,
+  ExtrudeFacePlane,
+} from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
   node: Node<Program>,
