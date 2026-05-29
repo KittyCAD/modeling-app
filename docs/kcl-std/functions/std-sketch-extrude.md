@@ -14,6 +14,7 @@ extrude(
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   symmetric?: bool,
   bidirectionalLength?: number(Length),
+  direction?: Axis3d,
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
   draftAngle?: number(Angle),

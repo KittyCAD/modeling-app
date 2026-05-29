@@ -90,6 +90,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
+    let direction: Option<[TyF64; 3]> = args.get_kw_arg_opt("direction", &RuntimeType::point3d(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let draft_angle: Option<TyF64> = args.get_kw_arg_opt("draftAngle", &RuntimeType::degrees(), exec_state)?;
@@ -116,6 +117,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         length,
         to,
         symmetric,
+        direction,
         bidirectional_length,
         tag_start,
         tag_end,
@@ -277,6 +279,7 @@ async fn inner_extrude(
     length: Option<TyF64>,
     to: Option<Point3dAxis3dOrGeometryReference>,
     symmetric: Option<bool>,
+    direction: Option<[TyF64; 3]>,
     bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
@@ -304,6 +307,14 @@ async fn inner_extrude(
     if draft_angle.is_some() && twist_angle.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Zoo currently does not support adding both draft angle and twist angle to an extrude simultaneously"
+                .to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    if direction.is_some() && twist_angle.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Zoo currently does not support adding both direction and twist angle to an extrude simultaneously"
                 .to_owned(),
             vec![args.source_range],
         )));
@@ -389,6 +400,13 @@ async fn inner_extrude(
                     .extrude_method(extrude_method)
                     .body_type(body_type)
                     .maybe_merge_coplanar_faces(hide_seams)
+                    .maybe_direction(direction.clone().map(|d| {
+                        KPoint3d {
+                            x: d[0].to_mm(),
+                            y: d[1].to_mm(),
+                            z: d[2].to_mm(),
+                        }
+                    }))
                     .build(),
             ),
             (None, None, None, None, Some(to)) => match to {
