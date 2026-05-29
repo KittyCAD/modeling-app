@@ -6,6 +6,10 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import {
+  ZOODLE_ATTACHMENT_FILE_NAME,
+  getAttachmentDisplayName,
+} from '@src/lib/mlEphantAttachments'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -178,15 +182,15 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         </button>
         <button
           type="button"
-          data-testid="ml-ephant-annotate-screenshot-button"
+          data-testid="ml-ephant-zoodle-button"
           onClick={props.onAnnotateScreenshot}
           disabled={props.attachmentsDisabled}
           className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
-          aria-label="Annotate viewport screenshot"
+          aria-label="Zoodle"
         >
           <CustomIcon name="sketch" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
-            <span>Annotate viewport screenshot</span>
+            <span>Zoodle</span>
           </Tooltip>
         </button>
       </div>
@@ -478,24 +482,27 @@ export const MlEphantConversationInput = (
         ></textarea>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {attachments.map((file, index) => (
-              <div
-                key={`${file.name}-${file.lastModified}-${file.size}`}
-                className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
-                title={file.name}
-              >
-                <CustomIcon name="file" className="w-4 h-4" />
-                <span className="max-w-[160px] truncate">{file.name}</span>
-                <button
-                  type="button"
-                  onClick={() => onRemoveAttachment(index)}
-                  className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
-                  aria-label={`Remove ${file.name}`}
+            {attachments.map((file, index) => {
+              const displayName = getAttachmentDisplayName(file.name)
+              return (
+                <div
+                  key={`${file.name}-${file.lastModified}-${file.size}`}
+                  className="flex items-center gap-1 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                  title={displayName}
                 >
-                  <CustomIcon name="close" className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+                  <CustomIcon name="file" className="w-4 h-4" />
+                  <span className="max-w-[160px] truncate">{displayName}</span>
+                  <button
+                    type="button"
+                    onClick={() => onRemoveAttachment(index)}
+                    className="ml-1 text-chalkboard-70 hover:text-chalkboard-100 dark:hover:text-chalkboard-20"
+                    aria-label={`Remove ${displayName}`}
+                  >
+                    <CustomIcon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+              )
+            })}
           </div>
         )}
         <div className="flex items-end">
@@ -559,7 +566,7 @@ export const MlEphantConversationInput = (
           onSend={(annotatedDataUrl) => {
             appendDataUrlAttachment(
               annotatedDataUrl,
-              'annotated-viewport-screenshot.png'
+              ZOODLE_ATTACHMENT_FILE_NAME
             )
             setAnnotationImageDataUrl(null)
           }}

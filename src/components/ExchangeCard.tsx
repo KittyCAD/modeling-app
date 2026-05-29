@@ -4,6 +4,7 @@ import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
+import { getAttachmentDisplayName } from '@src/lib/mlEphantAttachments'
 import {
   type Exchange,
   isMlCopilotUserRequest,
@@ -289,7 +290,9 @@ export const RequestCard = (props: RequestCardProps) => {
                 className="flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs"
               >
                 <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
-                <span className="min-w-0 truncate">{file.name}</span>
+                <span className="min-w-0 truncate">
+                  {getAttachmentDisplayName(file.name)}
+                </span>
               </div>
             ))}
             {hasHiddenAttachments && (
