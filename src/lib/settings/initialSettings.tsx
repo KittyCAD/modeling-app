@@ -493,7 +493,7 @@ function createCoreSettings() {
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
-        defaultValue: true, // checking the feature flag happens in `settingsUtils.ts`
+        defaultValue: true,
         description:
           'Default to the solver-based sketch mode for all new projects.',
         validate: (v) => typeof v === 'boolean',

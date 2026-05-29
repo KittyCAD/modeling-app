@@ -17,10 +17,10 @@ import {
 } from '@src/components/CustomIcon'
 
 import { isArray } from '@src/lib/utils'
-import { reportClientError } from '@src/lib/clientErrors'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isErr } from '@src/lib/trap'
 
-import { S, transitions } from '@src/machines/utils'
+import { S, transitions, xstateEventError } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
 
 import { Socket } from '@src/lib/socket'
@@ -320,16 +320,6 @@ function logZookeeperDisconnect(message: string, metadata?: unknown) {
   console.warn(ZOOKEEPER_DISCONNECT_LOG_PREFIX, message, metadata)
 }
 
-function xstateEventError(event: unknown): unknown {
-  if (typeof event !== 'object' || event === null) return undefined
-
-  if ('output' in event) return event.output
-  if ('data' in event) return event.data
-  if ('error' in event) return event.error
-
-  return undefined
-}
-
 type ZookeeperErrorContext = Pick<
   MlEphantManagerContext,
   | 'conversationId'
@@ -340,13 +330,6 @@ type ZookeeperErrorContext = Pick<
 > & {
   exchangeCount: Conversation['exchanges']['length'] | undefined
   readyState: ReturnType<typeof getWebSocketReadyStateLabel>
-}
-
-enum ZookeeperClientErrorCode {
-  ActorError = 'zookeeper_actor_error',
-  SetupError = 'zookeeper_setup_error',
-  WebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
-  WebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
 }
 
 function zookeeperErrorContext(
@@ -364,7 +347,7 @@ function zookeeperErrorContext(
 }
 
 function reportZookeeperClientError(args: {
-  code: ZookeeperClientErrorCode
+  code: ClientErrorCode
   error: Error
   dedupeKey?: string
   extra?: Record<string, unknown>
@@ -595,7 +578,7 @@ export const mlEphantManagerMachine = setup({
       if (!isErr(error)) return
 
       reportZookeeperClientError({
-        code: ZookeeperClientErrorCode.ActorError,
+        code: ClientErrorCode.ZookeeperActorError,
         error,
         dedupeKey: `MlEphantManagerMachine:actor-error:${event.type}:${error.message}`,
         extra: {
@@ -611,7 +594,7 @@ export const mlEphantManagerMachine = setup({
       if (!isErr(event.error)) return
 
       reportZookeeperClientError({
-        code: ZookeeperClientErrorCode.SetupError,
+        code: ClientErrorCode.ZookeeperSetupError,
         error: event.error,
         dedupeKey: `MlEphantManagerMachine:setup-error:${event.error.message}`,
         extra: {
@@ -787,7 +770,7 @@ export const mlEphantManagerMachine = setup({
                 if (!isErr(msgpackError)) return
 
                 reportZookeeperClientError({
-                  code: ZookeeperClientErrorCode.WebsocketBinaryDecodeError,
+                  code: ClientErrorCode.ZookeeperWebsocketBinaryDecodeError,
                   error: msgpackError,
                   dedupeKey: `MlEphantManagerMachine:binary-decode:${String(conversationId)}:${msgpackError.message}`,
                   extra: {
@@ -807,7 +790,7 @@ export const mlEphantManagerMachine = setup({
                 if (!isErr(e)) return
 
                 reportZookeeperClientError({
-                  code: ZookeeperClientErrorCode.WebsocketJsonParseError,
+                  code: ClientErrorCode.ZookeeperWebsocketJsonParseError,
                   error: e,
                   dedupeKey: `MlEphantManagerMachine:json-parse:${String(conversationId)}:${e.message}`,
                   extra: {
