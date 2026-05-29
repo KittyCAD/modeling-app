@@ -1,9 +1,9 @@
-import { Auth } from '@src/Auth'
 import { AppStateProvider } from '@src/AppState'
+import { Auth } from '@src/Auth'
 import LspProvider from '@src/components/LspProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
-import { SystemIOMachineLogicListener } from '@src/components/SystemIOMachineLogicListener'
 import { RouteProvider } from '@src/components/RouteProvider'
+import { SystemIOMachineLogicListener } from '@src/components/SystemIOMachineLogicListener'
 import { Outlet } from 'react-router-dom'
 
 // Root component will live for the entire applications runtime

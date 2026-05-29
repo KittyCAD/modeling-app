@@ -4,15 +4,16 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { describe, expect, it } from 'vitest'
 
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 import {
+  type InvisibleConstraintObject,
   findInvisibleConstraintClusterIds,
   findInvisibleConstraintsForSegment,
   findSegmentsForInvisibleConstraint,
-  getInvisibleConstraintSegmentHoverColor,
   getInvisibleConstraintAnchor,
-  isInvisibleConstraintSegmentSecondaryHovered,
+  getInvisibleConstraintSegmentHoverColor,
   isInvisibleConstraintObject,
-  type InvisibleConstraintObject,
+  isInvisibleConstraintSegmentSecondaryHovered,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import {
   createArcApiObject,
@@ -20,7 +21,6 @@ import {
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 function createObjectsArray(objects: ApiObject[]) {
   const array: ApiObject[] = []

@@ -7,10 +7,9 @@ import {
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
-import { appendValueSpec, firstWinsValueSpec } from './valueSpec'
 import {
-  createSlotToggleController,
   createPlugin,
+  createSlotToggleController,
   defineRegistryItem,
   defineRegistryItemFactory,
   pluginsValueSpec,
@@ -20,6 +19,7 @@ import {
 import { Registry } from './registry'
 import { defineService } from './service'
 import { Slot } from './types'
+import { appendValueSpec, firstWinsValueSpec } from './valueSpec'
 
 describe('services', () => {
   it('resolves singleton services and exposes readonly Preact signal fields', () => {

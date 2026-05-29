@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { buildOperationTree } from '@src/lib/featureTreeOperationTree'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
+import { type OperationsByModule, defaultNodePath } from '@src/lang/wasm'
+import { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+import { describe, expect, it } from 'vitest'
 
 function createModuleInstanceOperation(
   moduleId: number,

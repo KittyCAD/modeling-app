@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   ConnectingTypeGroup,
@@ -13,6 +12,7 @@ import type {
   EngineConnectionState,
   IErrorType,
 } from '@src/network/utils'
+import { useEffect, useState } from 'react'
 
 export enum NetworkHealthState {
   Ok,

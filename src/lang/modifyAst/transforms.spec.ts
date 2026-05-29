@@ -1,8 +1,4 @@
-import { assertParse, recast } from '@src/lang/wasm'
-import type { Artifact, PathToNode, VariableDeclaration } from '@src/lang/wasm'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
-import { getNodeFromPath } from '@src/lang/queryAst'
 import {
   addAppearance,
   addClone,
@@ -11,7 +7,10 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
-import { err } from '@src/lib/trap'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { assertParse, recast } from '@src/lang/wasm'
+import type { Artifact, PathToNode, VariableDeclaration } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
@@ -20,14 +19,15 @@ import {
   getKclCommandValue,
   runNewAstAndCheckForSweep,
 } from '@src/lib/testHelpers'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type RustContext from '@src/lib/rustContext'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   NonCodeSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

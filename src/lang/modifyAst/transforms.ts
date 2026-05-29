@@ -12,6 +12,8 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -24,12 +26,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
-import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function addTranslate({
   ast,

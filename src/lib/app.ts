@@ -77,6 +77,7 @@ import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import {
   appRegistryServicesSlot,
   coreRegistryItems,
@@ -562,15 +563,24 @@ export class App implements AppSubsystems {
    * extension-owned settings state.
    */
   syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    const pluginSettings = snapshot.context.plugins as
-      | Record<string, { current: boolean }>
-      | undefined
-    if (!pluginSettings) {
-      return
-    }
+    const pluginActivationSettings = new Map(
+      this.registry
+        .get(zdsPluginActivationSettingsValueSpec)
+        .map((setting) => [setting.pluginId, setting])
+    )
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
-      const desiredActive = pluginSettings[plugin.id]?.current
+      const activationSetting = pluginActivationSettings.get(plugin.id)
+      if (!activationSetting) {
+        continue
+      }
+
+      const desiredActive = (
+        snapshot.context as unknown as Record<
+          string,
+          Record<string, { current: unknown } | undefined> | undefined
+        >
+      )[activationSetting.category]?.[activationSetting.settingName]?.current
       if (typeof desiredActive !== 'boolean') {
         continue
       }

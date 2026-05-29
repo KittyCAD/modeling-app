@@ -1,30 +1,30 @@
-import type {
-  Direction,
-  Layout,
-  LayoutMatcher,
-  LayoutMigration,
-  LayoutMigrationMap,
-  LayoutTransformation,
-  LayoutWithMetadata,
-  LayoutContribution,
-  LayoutContributionPlacement,
-  LayoutContributionResult,
-  Orientation,
-  PaneChild,
-  Side,
-} from '@src/lib/layout/types'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
-import type React from 'react'
-import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
+import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
   isDefaultLayoutPaneID,
 } from '@src/lib/layout/configs/default'
-import { isErr } from '@src/lib/trap'
 import { parseLayoutInner } from '@src/lib/layout/parse'
-import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import type {
+  Direction,
+  Layout,
+  LayoutContribution,
+  LayoutContributionPlacement,
+  LayoutContributionResult,
+  LayoutMatcher,
+  LayoutMigration,
+  LayoutMigrationMap,
+  LayoutTransformation,
+  LayoutWithMetadata,
+  Orientation,
+  PaneChild,
+  Side,
+} from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { isErr } from '@src/lib/trap'
+import { capitaliseFC, throttle } from '@src/lib/utils'
+import type React from 'react'
 
 /** Most recent layout system version */
 export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'

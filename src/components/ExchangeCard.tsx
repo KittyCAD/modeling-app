@@ -1,22 +1,22 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
+import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
-  useEffect,
-  useState,
-  type ReactNode,
   type ComponentProps,
+  type ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from 'react'
-import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string

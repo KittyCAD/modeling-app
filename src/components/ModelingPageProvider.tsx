@@ -1,27 +1,27 @@
-import React, { use, useEffect, useMemo } from 'react'
 import { EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
+import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { sourceRangeToUtf16 } from '@src/lang/errors'
+import { useMenuListener } from '@src/hooks/useMenu'
 import {
   type PendingFeatureTreeSourceSelection,
   updateOutsideEditorEvent,
 } from '@src/lang/KclManager'
-import { useMenuListener } from '@src/hooks/useMenu'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { modelingMenuCallbackMostActions } from '@src/menu/register'
-import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
-import fsZds from '@src/lib/fs-zds'
 import { isArray } from '@src/lib/utils'
-import { useSignals } from '@preact/signals-react/runtime'
+import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 function isNumberArray(value: unknown): value is number[] {
   return isArray(value) && value.every((item) => typeof item === 'number')

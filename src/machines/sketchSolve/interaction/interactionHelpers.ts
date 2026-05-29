@@ -1,22 +1,22 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
-import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import { getAngleDiff, isArray } from '@src/lib/utils'
+import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import {
-  getControlPointSplinePoints,
   getArcPoints,
+  getControlPointSplinePoints,
   getLinePoints,
-  isConstraint,
   isArcLikeSegment,
+  isConstraint,
   isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
   sampleControlPointSplinePoints,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { isInvisibleConstraintObject } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { Group, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 
