@@ -14,18 +14,17 @@ const rect = ({
   top: number
   width: number
   height: number
-}): DOMRect =>
-  ({
-    left,
-    top,
-    right: left + width,
-    bottom: top + height,
-    width,
-    height,
-    x: left,
-    y: top,
-    toJSON: () => ({}),
-  }) as DOMRect
+}): DOMRect => ({
+  left,
+  top,
+  right: left + width,
+  bottom: top + height,
+  width,
+  height,
+  x: left,
+  y: top,
+  toJSON: () => ({}),
+})
 
 const setWindowSize = (width: number, height: number) => {
   Object.defineProperty(window, 'innerWidth', {
