@@ -3,8 +3,12 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 import {
   formatDistance,
+  formatPoint3d,
+  getAreaUnit,
   getDistanceTypeForMode,
+  getMeasurementEntities,
   getMeasurementEntityIds,
+  pointDistance,
 } from './measurementUtils'
 
 describe('MeasurementTool helpers', () => {
@@ -83,6 +87,45 @@ describe('MeasurementTool helpers', () => {
       'copy-face-1',
       'copy-edge-1',
     ])
+    expect(getMeasurementEntities(selections)).toEqual([
+      { id: 'copy-1', kind: 'other' },
+      { id: 'copy-2', kind: 'other' },
+      { id: 'copy-face-1', kind: 'face' },
+      { id: 'copy-edge-1', kind: 'edge' },
+    ])
+  })
+
+  it('classifies graph selections for measurement commands', () => {
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: artifact({
+            id: 'face-id',
+            type: 'wall',
+          }),
+          codeRef: {
+            range: [1, 2, 0],
+            pathToNode: [],
+          },
+        },
+        {
+          artifact: artifact({
+            id: 'edge-id',
+            type: 'segment',
+          }),
+          codeRef: {
+            range: [2, 3, 0],
+            pathToNode: [],
+          },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections)).toEqual([
+      { id: 'face-id', kind: 'face' },
+      { id: 'edge-id', kind: 'edge' },
+    ])
   })
 
   it('includes selectable non-code scene entities', () => {
@@ -114,6 +157,29 @@ describe('MeasurementTool helpers', () => {
       'region-id',
       'plane-id',
     ])
+    expect(getMeasurementEntities(selections)).toEqual([
+      { id: 'primitive-id', kind: 'edge' },
+      { id: 'region-id', kind: 'other' },
+      { id: 'plane-id', kind: 'other' },
+    ])
+  })
+
+  it('classifies non-code faces', () => {
+    const selections: Selections = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'face-id',
+          primitiveIndex: 0,
+          primitiveType: 'face',
+        },
+      ],
+    }
+
+    expect(getMeasurementEntities(selections)).toEqual([
+      { id: 'face-id', kind: 'face' },
+    ])
   })
 
   it('builds distance type payloads for the engine command', () => {
@@ -128,5 +194,17 @@ describe('MeasurementTool helpers', () => {
     expect(formatDistance(12.34567)).toBe('12.3457')
     expect(formatDistance(0.00000012)).toBe('1.200e-7')
     expect(formatDistance(Number.NaN)).toBe('-')
+  })
+
+  it('derives measurement units from length units', () => {
+    expect(getAreaUnit('mm')).toBe('mm2')
+    expect(getAreaUnit('in')).toBe('in2')
+  })
+
+  it('measures and formats 3d points', () => {
+    expect(pointDistance({ x: 0, y: 0, z: 0 }, { x: 2, y: 3, z: 6 })).toBe(7)
+    expect(formatPoint3d({ x: 1.23456, y: 0.00000012, z: Number.NaN })).toBe(
+      '1.2346, 1.200e-7, -'
+    )
   })
 })

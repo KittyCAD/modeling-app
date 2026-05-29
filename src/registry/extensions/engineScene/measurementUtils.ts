@@ -1,4 +1,5 @@
-import type { DistanceType } from '@kittycad/lib'
+import type { DistanceType, Point3d, UnitArea, UnitLength } from '@kittycad/lib'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
@@ -7,6 +8,12 @@ import {
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type DistanceMode = 'euclidean' | 'x' | 'y' | 'z'
+export type MeasurementSelectionKind = 'face' | 'edge' | 'other'
+
+export type MeasurementEntity = {
+  id: string
+  kind: MeasurementSelectionKind
+}
 
 export const distanceModes: Array<{ value: DistanceMode; label: string }> = [
   { value: 'euclidean', label: '3D' },
@@ -15,9 +22,75 @@ export const distanceModes: Array<{ value: DistanceMode; label: string }> = [
   { value: 'z', label: 'Z' },
 ]
 
-function getEntityIdsForGraphSelection(selection: Selection): string[] {
+const faceArtifactTypes: ReadonlySet<Artifact['type']> = new Set([
+  'wall',
+  'cap',
+  'edgeCut',
+  'primitiveFace',
+])
+
+const edgeArtifactTypes: ReadonlySet<Artifact['type']> = new Set([
+  'segment',
+  'sweepEdge',
+  'edgeCutEdge',
+  'primitiveEdge',
+])
+
+const areaUnitByLengthUnit: Record<UnitLength, UnitArea> = {
+  mm: 'mm2',
+  cm: 'cm2',
+  m: 'm2',
+  in: 'in2',
+  ft: 'ft2',
+  yd: 'yd2',
+}
+
+function getMeasurementKindForArtifact(
+  artifact: Artifact | undefined
+): MeasurementSelectionKind {
+  if (!artifact) {
+    return 'other'
+  }
+
+  if (faceArtifactTypes.has(artifact.type)) {
+    return 'face'
+  }
+
+  if (edgeArtifactTypes.has(artifact.type)) {
+    return 'edge'
+  }
+
+  return 'other'
+}
+
+function getMeasurementKindForEntityType(
+  entityType: string
+): MeasurementSelectionKind {
+  if (entityType === 'face') {
+    return 'face'
+  }
+
+  if (
+    entityType === 'edge' ||
+    entityType === 'curve' ||
+    entityType === 'segment'
+  ) {
+    return 'edge'
+  }
+
+  return 'other'
+}
+
+function getEntitiesForGraphSelection(
+  selection: Selection
+): MeasurementEntity[] {
   if (selection.engineEntityId) {
-    return [selection.engineEntityId]
+    return [
+      {
+        id: selection.engineEntityId,
+        kind: getMeasurementKindForArtifact(selection.artifact),
+      },
+    ]
   }
 
   const artifact = selection.artifact
@@ -26,36 +99,62 @@ function getEntityIdsForGraphSelection(selection: Selection): string[] {
   }
 
   if (artifact.type !== 'pattern') {
-    return [artifact.id]
+    return [
+      {
+        id: artifact.id,
+        kind: getMeasurementKindForArtifact(artifact),
+      },
+    ]
   }
 
-  return [
-    ...new Set([
-      ...artifact.copyIds,
-      ...artifact.copyFaceIds,
-      ...artifact.copyEdgeIds,
-    ]),
-  ]
+  return dedupeMeasurementEntities([
+    ...artifact.copyIds.map((id) => ({ id, kind: 'other' as const })),
+    ...artifact.copyFaceIds.map((id) => ({ id, kind: 'face' as const })),
+    ...artifact.copyEdgeIds.map((id) => ({ id, kind: 'edge' as const })),
+  ])
+}
+
+function dedupeMeasurementEntities(
+  entities: MeasurementEntity[]
+): MeasurementEntity[] {
+  const measurementEntities = new Map<string, MeasurementEntity>()
+  for (const entity of entities) {
+    if (!measurementEntities.has(entity.id)) {
+      measurementEntities.set(entity.id, entity)
+    }
+  }
+  return [...measurementEntities.values()]
+}
+
+export function getMeasurementEntities(
+  selectionRanges: Selections
+): MeasurementEntity[] {
+  return dedupeMeasurementEntities([
+    ...selectionRanges.graphSelections.flatMap(getEntitiesForGraphSelection),
+    ...selectionRanges.otherSelections.flatMap(
+      (selection): MeasurementEntity[] => {
+        if (isEnginePrimitiveSelection(selection)) {
+          return [
+            {
+              id: selection.entityId,
+              kind: getMeasurementKindForEntityType(selection.primitiveType),
+            },
+          ]
+        }
+        if (isEngineRegionSelection(selection)) {
+          return [{ id: selection.id, kind: 'other' }]
+        }
+        if (isDefaultPlaneSelection(selection)) {
+          return [{ id: selection.id, kind: 'other' }]
+        }
+        return []
+      }
+    ),
+  ])
 }
 
 export function getMeasurementEntityIds(selectionRanges: Selections): string[] {
-  return [
-    ...new Set([
-      ...selectionRanges.graphSelections.flatMap(getEntityIdsForGraphSelection),
-      ...selectionRanges.otherSelections.flatMap((selection) => {
-        if (isEnginePrimitiveSelection(selection)) {
-          return [selection.entityId]
-        }
-        if (isEngineRegionSelection(selection)) {
-          return [selection.id]
-        }
-        if (isDefaultPlaneSelection(selection)) {
-          return [selection.id]
-        }
-        return []
-      }),
-    ]),
-  ]
+  return getMeasurementEntities(selectionRanges).map((entity) => entity.id)
 }
 
 export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {
@@ -63,6 +162,14 @@ export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {
     return { type: 'euclidean' }
   }
   return { type: 'on_axis', axis: mode }
+}
+
+export function getAreaUnit(unit: UnitLength): UnitArea {
+  return areaUnitByLengthUnit[unit]
+}
+
+export function pointDistance(start: Point3d, end: Point3d): number {
+  return Math.hypot(end.x - start.x, end.y - start.y, end.z - start.z)
 }
 
 export function formatDistance(value: number): string {
@@ -81,4 +188,8 @@ export function formatDistance(value: number): string {
   return value.toLocaleString(undefined, {
     maximumFractionDigits: 4,
   })
+}
+
+export function formatPoint3d(point: Point3d): string {
+  return `${formatDistance(point.x)}, ${formatDistance(point.y)}, ${formatDistance(point.z)}`
 }

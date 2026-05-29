@@ -1,3 +1,10 @@
+import type {
+  EntityType,
+  ModelingCmd,
+  Point3d,
+  UnitArea,
+  UnitLength,
+} from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
@@ -7,20 +14,68 @@ import { uuidv4 } from '@src/lib/utils'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   type DistanceMode,
+  type MeasurementEntity,
   distanceModes,
   formatDistance,
+  getAreaUnit,
   getDistanceTypeForMode,
-  getMeasurementEntityIds,
+  getMeasurementEntities,
+  pointDistance,
 } from './measurementUtils'
 
 type MeasurementStatus = 'idle' | 'measuring'
+type SelectionFilterMode = 'default' | 'faces' | 'edges'
 
-type MeasurementResult = {
-  min: number
-  max: number
-  entityIdsKey: string
-  mode: DistanceMode
-}
+type MeasurementTarget =
+  | { type: 'distance'; entityIds: [string, string] }
+  | { type: 'edgeLength'; entity: MeasurementEntity }
+  | { type: 'surfaceArea'; entity: MeasurementEntity }
+
+type MeasurementResult =
+  | {
+      type: 'distance'
+      min: number
+      max: number
+      entityIdsKey: string
+      mode: DistanceMode
+    }
+  | {
+      type: 'edgeLength'
+      length: number
+      entityIdsKey: string
+      unit: UnitLength
+    }
+  | {
+      type: 'surfaceArea'
+      surfaceArea: number
+      entityIdsKey: string
+      unit: UnitArea
+    }
+
+const selectionFilterOptions: Array<{
+  value: SelectionFilterMode
+  label: string
+  title: string
+  filter?: EntityType[]
+}> = [
+  {
+    value: 'default',
+    label: 'All',
+    title: 'Default selection filter',
+  },
+  {
+    value: 'faces',
+    label: 'Faces',
+    title: 'Select faces',
+    filter: ['face', 'object'],
+  },
+  {
+    value: 'edges',
+    label: 'Edges',
+    title: 'Select edges',
+    filter: ['edge', 'curve', 'segment'],
+  },
+]
 
 function getResponseErrorMessage(response: unknown): string {
   if (response instanceof Error) {
@@ -37,6 +92,68 @@ function getResponseErrorMessage(response: unknown): string {
   }
 
   return 'Measurement failed'
+}
+
+function getMeasurementTarget(
+  selectedEntities: MeasurementEntity[]
+): MeasurementTarget | null {
+  if (selectedEntities.length === 2) {
+    return {
+      type: 'distance',
+      entityIds: [selectedEntities[0].id, selectedEntities[1].id],
+    }
+  }
+
+  if (selectedEntities.length !== 1) {
+    return null
+  }
+
+  const [entity] = selectedEntities
+  if (entity.kind === 'edge') {
+    return { type: 'edgeLength', entity }
+  }
+
+  if (entity.kind === 'face') {
+    return { type: 'surfaceArea', entity }
+  }
+
+  return null
+}
+
+function getMeasureButtonTitle(
+  target: MeasurementTarget | null,
+  selectedCount: number
+): string {
+  if (target?.type === 'distance') {
+    return 'Measure distance'
+  }
+
+  if (target?.type === 'edgeLength') {
+    return 'Measure straight-line edge length'
+  }
+
+  if (target?.type === 'surfaceArea') {
+    return 'Measure surface area'
+  }
+
+  if (selectedCount === 1) {
+    return 'Selected entity cannot be measured'
+  }
+
+  return 'Select one measurable entity or two entities'
+}
+
+function getModelingData(response: unknown, expectedType: string): unknown {
+  if (!isModelingResponse(response)) {
+    throw new Error(getResponseErrorMessage(response))
+  }
+
+  const modelingResponse = response.resp.data.modeling_response
+  if (modelingResponse.type !== expectedType || !('data' in modelingResponse)) {
+    throw new Error('Measurement failed')
+  }
+
+  return modelingResponse.data
 }
 
 function MeasurementValue({
@@ -63,26 +180,53 @@ function MeasurementValue({
   )
 }
 
+function resultMatchesSelection(
+  result: MeasurementResult,
+  entityIdsKey: string,
+  distanceMode: DistanceMode
+): boolean {
+  if (result.entityIdsKey !== entityIdsKey) {
+    return false
+  }
+
+  return result.type !== 'distance' || result.mode === distanceMode
+}
+
 export function MeasurementTool() {
   const { state } = useModelingContext()
-  const { engineCommandManager, kclManager, store } = state.context
+  const { engineCommandManager, kclManager, store, wasmInstance } =
+    state.context
   const [distanceMode, setDistanceMode] = useState<DistanceMode>('euclidean')
+  const [selectionFilterMode, setSelectionFilterMode] =
+    useState<SelectionFilterMode>('default')
   const [status, setStatus] = useState<MeasurementStatus>('idle')
   const [result, setResult] = useState<MeasurementResult | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const latestRequestKey = useRef<string | null>(null)
 
-  const selectedEntityIds = useMemo(
-    () => getMeasurementEntityIds(state.context.selectionRanges),
+  const selectedEntities = useMemo(
+    () => getMeasurementEntities(state.context.selectionRanges),
     [state.context.selectionRanges]
   )
-  const selectedEntityIdsKey = selectedEntityIds.join(':')
-  const measurementInputKey = `${selectedEntityIdsKey}:${distanceMode}`
-  const canMeasure = selectedEntityIds.length === 2
+  const selectedEntityIds = selectedEntities.map((entity) => entity.id)
+  const selectedEntityIdsKey = selectedEntities
+    .map((entity) => `${entity.kind}:${entity.id}`)
+    .join(':')
+  const measurementTarget = useMemo(
+    () => getMeasurementTarget(selectedEntities),
+    [selectedEntities]
+  )
+  const measurementTargetKey =
+    measurementTarget?.type === 'distance'
+      ? distanceMode
+      : (measurementTarget?.type ?? 'none')
+  const measurementInputKey = `${selectedEntityIdsKey}:${measurementTargetKey}`
+  const canMeasure = measurementTarget !== null
   const unit =
     kclManager.fileSettings.defaultLengthUnit ??
     store.defaultUnit?.current ??
     DEFAULT_DEFAULT_LENGTH_UNIT
+  const areaUnit = getAreaUnit(unit)
 
   useEffect(() => {
     latestRequestKey.current = measurementInputKey
@@ -91,50 +235,139 @@ export function MeasurementTool() {
     setErrorMessage(null)
   }, [measurementInputKey])
 
-  const measureDistance = useCallback(() => {
-    if (!canMeasure) {
+  const sendModelingCommand = useCallback(
+    (cmd: ModelingCmd) =>
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd,
+      }),
+    [engineCommandManager]
+  )
+
+  const handleSelectionFilterChange = useCallback(
+    (mode: SelectionFilterMode) => {
+      const option = selectionFilterOptions.find(({ value }) => value === mode)
+      if (!option) {
+        return
+      }
+
+      setSelectionFilterMode(mode)
+      if (option.filter) {
+        kclManager.setSelectionFilter(option.filter, wasmInstance)
+      } else {
+        kclManager.setSelectionFilterToDefault(wasmInstance)
+      }
+    },
+    [kclManager, wasmInstance]
+  )
+
+  const measureSelection = useCallback(() => {
+    const target = measurementTarget
+    if (!target) {
       return
     }
+    const targetForRequest: MeasurementTarget = target
 
-    const [entityId1, entityId2] = selectedEntityIds
-    const requestKey = `${selectedEntityIdsKey}:${distanceMode}:${uuidv4()}`
+    const requestKey = `${measurementInputKey}:${uuidv4()}`
     latestRequestKey.current = requestKey
     setStatus('measuring')
     setErrorMessage(null)
 
-    engineCommandManager
-      .sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'entity_get_distance',
-          entity_id1: entityId1,
-          entity_id2: entityId2,
-          distance_type: getDistanceTypeForMode(distanceMode),
-        },
-      })
-      .then((response) => {
-        if (latestRequestKey.current !== requestKey) {
-          return
+    async function runMeasurement(): Promise<MeasurementResult> {
+      if (targetForRequest.type === 'distance') {
+        const [entityId1, entityId2] = targetForRequest.entityIds
+        const data = getModelingData(
+          await sendModelingCommand({
+            type: 'entity_get_distance',
+            entity_id1: entityId1,
+            entity_id2: entityId2,
+            distance_type: getDistanceTypeForMode(distanceMode),
+          }),
+          'entity_get_distance'
+        )
+
+        if (
+          typeof data !== 'object' ||
+          data === null ||
+          !('min_distance' in data) ||
+          !('max_distance' in data) ||
+          typeof data.min_distance !== 'number' ||
+          typeof data.max_distance !== 'number'
+        ) {
+          throw new Error('Measurement failed')
         }
 
-        if (!isModelingResponse(response)) {
-          setErrorMessage(getResponseErrorMessage(response))
-          return
-        }
-
-        const modelingResponse = response.resp.data.modeling_response
-        if (modelingResponse.type !== 'entity_get_distance') {
-          setErrorMessage('Measurement failed')
-          return
-        }
-
-        setResult({
-          min: modelingResponse.data.min_distance,
-          max: modelingResponse.data.max_distance,
+        return {
+          type: 'distance',
+          min: data.min_distance,
+          max: data.max_distance,
           entityIdsKey: selectedEntityIdsKey,
           mode: distanceMode,
-        })
+        }
+      }
+
+      if (targetForRequest.type === 'edgeLength') {
+        const data = getModelingData(
+          await sendModelingCommand({
+            type: 'curve_get_end_points',
+            curve_id: targetForRequest.entity.id,
+          }),
+          'curve_get_end_points'
+        )
+
+        if (
+          typeof data !== 'object' ||
+          data === null ||
+          !('start' in data) ||
+          !('end' in data)
+        ) {
+          throw new Error('Measurement failed')
+        }
+
+        return {
+          type: 'edgeLength',
+          length: pointDistance(data.start as Point3d, data.end as Point3d),
+          entityIdsKey: selectedEntityIdsKey,
+          unit,
+        }
+      }
+
+      if (targetForRequest.type === 'surfaceArea') {
+        const data = getModelingData(
+          await sendModelingCommand({
+            type: 'surface_area',
+            entity_ids: [targetForRequest.entity.id],
+            output_unit: areaUnit,
+          }),
+          'surface_area'
+        )
+
+        if (
+          typeof data !== 'object' ||
+          data === null ||
+          !('surface_area' in data) ||
+          typeof data.surface_area !== 'number'
+        ) {
+          throw new Error('Measurement failed')
+        }
+
+        return {
+          type: 'surfaceArea',
+          surfaceArea: data.surface_area,
+          entityIdsKey: selectedEntityIdsKey,
+          unit: areaUnit,
+        }
+      }
+
+      throw new Error('Measurement failed')
+    }
+
+    runMeasurement()
+      .then((measurementResult) => {
+        if (latestRequestKey.current === requestKey) {
+          setResult(measurementResult)
+        }
       })
       .catch((error) => {
         if (latestRequestKey.current === requestKey) {
@@ -148,25 +381,54 @@ export function MeasurementTool() {
         }
       })
   }, [
-    canMeasure,
+    areaUnit,
     distanceMode,
-    engineCommandManager,
-    selectedEntityIds,
+    measurementInputKey,
+    measurementTarget,
     selectedEntityIdsKey,
+    sendModelingCommand,
+    unit,
   ])
 
   if (!state.matches('idle')) {
     return null
   }
 
-  const hasRange =
-    result &&
-    result.entityIdsKey === selectedEntityIdsKey &&
-    result.mode === distanceMode &&
-    Math.abs(result.max - result.min) > 1e-9
+  const matchingResult =
+    result && resultMatchesSelection(result, selectedEntityIdsKey, distanceMode)
+      ? result
+      : null
+  const hasDistanceRange =
+    matchingResult?.type === 'distance' &&
+    Math.abs(matchingResult.max - matchingResult.min) > 1e-9
+  const distanceModeDisabled = selectedEntityIds.length !== 2
 
   return (
-    <div className="absolute bottom-2 left-2 z-10 flex max-w-[calc(100%-1rem)] items-end gap-2 pointer-events-auto">
+    <div className="absolute bottom-2 left-2 z-10 flex max-w-[calc(100%-1rem)] flex-col items-start gap-2 pointer-events-auto">
+      <div className="flex min-w-56 max-w-80 flex-col gap-1.5 rounded border border-chalkboard-20 bg-chalkboard-10/85 p-2 text-chalkboard-100 shadow-lg backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/85 dark:text-chalkboard-10">
+        <div className="grid grid-cols-4 rounded border border-chalkboard-20 bg-chalkboard-10 p-0 dark:border-chalkboard-80 dark:bg-chalkboard-90">
+          {selectionFilterOptions.map((option) => {
+            const isActive = selectionFilterMode === option.value
+            return (
+              <button
+                key={option.value}
+                type="button"
+                aria-pressed={isActive}
+                title={option.title}
+                onClick={() => handleSelectionFilterChange(option.value)}
+                className={`m-0 h-7 border-0 border-r border-solid border-chalkboard-20 px-2 text-xs last:border-r-0 dark:border-chalkboard-80 ${
+                  isActive
+                    ? 'bg-primary text-chalkboard-10'
+                    : 'bg-transparent text-chalkboard-90 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
+                }`}
+              >
+                {option.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       <div className="flex min-w-56 max-w-80 flex-col gap-2 rounded border border-chalkboard-20 bg-chalkboard-10/85 p-2 text-chalkboard-100 shadow-lg backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/85 dark:text-chalkboard-10">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-1.5">
@@ -176,8 +438,11 @@ export function MeasurementTool() {
             />
             <span className="truncate text-xs font-medium">Measure</span>
           </div>
-          <span className="rounded bg-chalkboard-20 px-1.5 py-0.5 text-[10px] leading-3 tabular-nums text-chalkboard-70 dark:bg-chalkboard-90 dark:text-chalkboard-30">
-            {selectedEntityIds.length} / 2
+          <span
+            title="Selected entities"
+            className="rounded bg-chalkboard-20 px-1.5 py-0.5 text-[10px] leading-3 tabular-nums text-chalkboard-70 dark:bg-chalkboard-90 dark:text-chalkboard-30"
+          >
+            {selectedEntityIds.length}
           </span>
         </div>
 
@@ -190,16 +455,17 @@ export function MeasurementTool() {
                 key={mode.value}
                 type="button"
                 aria-pressed={isActive}
+                disabled={distanceModeDisabled}
                 title={
                   mode.value === 'euclidean'
                     ? 'Euclidean distance'
                     : `${mode.label} axis distance`
                 }
                 onClick={() => setDistanceMode(mode.value)}
-                className={`m-0 h-7 border-0 border-r border-solid border-chalkboard-20 px-2 text-xs last:border-r-0 dark:border-chalkboard-80 ${
+                className={`m-0 h-7 border-0 border-r border-solid border-chalkboard-20 px-2 text-xs last:border-r-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-chalkboard-80 ${
                   isActive
                     ? 'bg-primary text-chalkboard-10'
-                    : 'bg-transparent text-chalkboard-90 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
+                    : 'bg-transparent text-chalkboard-90 hover:bg-chalkboard-20 disabled:hover:bg-transparent dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
                 }`}
               >
                 {mode.label}
@@ -211,32 +477,53 @@ export function MeasurementTool() {
         <button
           type="button"
           disabled={!canMeasure || status === 'measuring'}
-          title={
-            canMeasure
-              ? 'Measure distance'
-              : 'Select two scene entities to measure'
-          }
-          onClick={measureDistance}
+          title={getMeasureButtonTitle(
+            measurementTarget,
+            selectedEntityIds.length
+          )}
+          onClick={measureSelection}
           className="m-0 flex h-8 items-center justify-center gap-1.5 rounded border border-primary bg-primary px-2 text-xs font-medium text-chalkboard-10 disabled:cursor-not-allowed disabled:border-chalkboard-30 disabled:bg-chalkboard-20 disabled:text-chalkboard-60 dark:disabled:border-chalkboard-80 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50"
         >
           <CustomIcon name="dimension" className="h-4 w-4" />
           {status === 'measuring' ? 'Measuring' : 'Measure'}
         </button>
 
-        {result &&
-          result.entityIdsKey === selectedEntityIdsKey &&
-          result.mode === distanceMode && (
-            <div className="grid grid-cols-2 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80">
+        {matchingResult?.type === 'distance' && (
+          <div className="grid grid-cols-2 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80">
+            <MeasurementValue
+              label={hasDistanceRange ? 'Min' : 'Distance'}
+              value={matchingResult.min}
+              unit={unit}
+            />
+            {hasDistanceRange && (
               <MeasurementValue
-                label={hasRange ? 'Min' : 'Distance'}
-                value={result.min}
+                label="Max"
+                value={matchingResult.max}
                 unit={unit}
               />
-              {hasRange && (
-                <MeasurementValue label="Max" value={result.max} unit={unit} />
-              )}
-            </div>
-          )}
+            )}
+          </div>
+        )}
+
+        {matchingResult?.type === 'edgeLength' && (
+          <div className="grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80">
+            <MeasurementValue
+              label="Straight length"
+              value={matchingResult.length}
+              unit={matchingResult.unit}
+            />
+          </div>
+        )}
+
+        {matchingResult?.type === 'surfaceArea' && (
+          <div className="grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80">
+            <MeasurementValue
+              label="Surface area"
+              value={matchingResult.surfaceArea}
+              unit={matchingResult.unit}
+            />
+          </div>
+        )}
 
         {errorMessage && (
           <div className="truncate border-t border-chalkboard-20 pt-2 text-xs text-destroy-80 dark:border-chalkboard-80">
