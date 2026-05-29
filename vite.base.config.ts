@@ -1,10 +1,10 @@
 import { builtinModules } from 'node:module'
 import type { AddressInfo } from 'node:net'
 import {
-  createLogger,
   type ConfigEnv,
   type Plugin,
   type UserConfig,
+  createLogger,
 } from 'vite'
 
 import pkg from './package.json'

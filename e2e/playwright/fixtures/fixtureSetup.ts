@@ -9,26 +9,26 @@ import { _electron as electron } from '@playwright/test'
 
 import fs from 'node:fs'
 import path from 'path'
-import { SETTINGS_FILE_NAME, PROJECT_FOLDER } from '@src/lib/constants'
+import { PROJECT_FOLDER, SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
-import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
-import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import {
-  getUtils,
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  getUtils,
   settingsToToml,
   setup,
 } from '@e2e/playwright/test-utils'

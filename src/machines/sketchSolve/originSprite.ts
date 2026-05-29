@@ -3,7 +3,7 @@ import { SRGBColorSpace, Sprite, SpriteMaterial, TextureLoader } from 'three'
 
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 
 export const SKETCH_SOLVE_ORIGIN_SPRITE = 'sketch-solve-origin-sprite'

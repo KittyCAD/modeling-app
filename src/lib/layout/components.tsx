@@ -1,70 +1,70 @@
-import isEqual from 'react-fast-compare'
-import type { ArtifactGraph } from '@src/lang/wasm'
-import { LayoutType } from '@src/lib/layout/types'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type {
-  SplitLayout as SplitLayoutType,
-  PaneLayout as PaneLayoutType,
-  Closeable,
-  Direction,
-  Layout,
-  PaneChild,
-  Action,
-  Side,
-  AreaTypeDefinition,
-  ActionTypeDefinition,
-  AreaLibrary,
-  ActionLibrary,
-} from '@src/lib/layout/types'
-import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { Switch } from '@headlessui/react'
-import {
-  createContext,
-  Fragment,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  memo,
-} from 'react'
-import {
-  getOppositeSide,
-  getOppositionDirection,
-  logicalSideToTooltipPosition,
-  sideToSplitDirection,
-  sideToReactCss,
-  sideToTailwindLayoutDirection,
-  sideToTailwindTabDirection,
-  findAndUpdateSplitSizes,
-  findAndReplaceLayoutChildNode,
-  shouldEnableResizeHandle,
-  orientationToReactCss,
-  sideToOrientation,
-  orientationToDirection,
-  togglePaneLayoutNode,
-  shouldDisableFlex,
-  defaultLayout,
-  isCollapsedPaneLayout,
-} from '@src/lib/layout/utils'
-import type {
-  IUpdateNodeSizes,
-  IReplaceLayoutChildNode,
-  ITogglePane,
-} from '@src/lib/layout/utils'
-import Tooltip from '@src/components/Tooltip'
 import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
-import { isArray } from '@src/lib/utils'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { LayoutType } from '@src/lib/layout/types'
+import type {
+  Action,
+  ActionLibrary,
+  ActionTypeDefinition,
+  AreaLibrary,
+  AreaTypeDefinition,
+  Closeable,
+  Direction,
+  Layout,
+  PaneChild,
+  PaneLayout as PaneLayoutType,
+  Side,
+  SplitLayout as SplitLayoutType,
+} from '@src/lib/layout/types'
+import {
+  defaultLayout,
+  findAndReplaceLayoutChildNode,
+  findAndUpdateSplitSizes,
+  getOppositeSide,
+  getOppositionDirection,
+  isCollapsedPaneLayout,
+  logicalSideToTooltipPosition,
+  orientationToDirection,
+  orientationToReactCss,
+  shouldDisableFlex,
+  shouldEnableResizeHandle,
+  sideToOrientation,
+  sideToReactCss,
+  sideToSplitDirection,
+  sideToTailwindLayoutDirection,
+  sideToTailwindTabDirection,
+  togglePaneLayoutNode,
+} from '@src/lib/layout/utils'
+import type {
+  IReplaceLayoutChildNode,
+  ITogglePane,
+  IUpdateNodeSizes,
+} from '@src/lib/layout/utils'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { isArray } from '@src/lib/utils'
+import {
+  Fragment,
+  createContext,
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import isEqual from 'react-fast-compare'
+import { useHotkeys } from 'react-hotkeys-hook'
+import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {

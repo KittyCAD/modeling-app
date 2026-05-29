@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 import type { FileMeta } from '@src/lib/types'

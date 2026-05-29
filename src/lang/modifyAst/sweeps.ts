@@ -9,22 +9,27 @@ import {
   createName,
   createTagDeclarator,
 } from '@src/lang/create'
+import { toUtf16 } from '@src/lang/errors'
 import {
+  createPoint2dExpression,
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
-  createPoint2dExpression,
 } from '@src/lang/modifyAst'
+import {
+  getFacesExprsFromSelection,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { addHide } from '@src/lang/modifyAst/transforms'
-import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
@@ -40,23 +45,18 @@ import type {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
-  type KclPreludeExtrudeMethod,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_SOLID,
   KCL_PRELUDE_BODY_TYPE_SURFACE,
+  type KclPreludeBodyType,
+  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
+import { isEngineRegionSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getFacesExprsFromSelection,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { toUtf16 } from '@src/lang/errors'
-import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,

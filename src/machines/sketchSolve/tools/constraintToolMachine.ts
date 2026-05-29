@@ -12,36 +12,36 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray, isRecord } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   findClosestApiObjects,
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
-import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
-  getConstraintToolPreparedApply,
-  resolveConstraintToolSelectionAction,
-  normalizeConstraintToolSelection,
-  resolveConstraintToolClickAction,
   type ConstraintToolPreparedApply,
   type ConstraintToolSelectionAction,
+  getConstraintToolPreparedApply,
+  normalizeConstraintToolSelection,
+  resolveConstraintToolClickAction,
+  resolveConstraintToolSelectionAction,
 } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import { type ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
+  type SelectionBoxVisualState,
   findContainedSegments,
   findIntersectingSegments,
   isIntersectionSelectionMode,
   project3DToScreen,
   removeSelectionBox,
-  type SelectionBoxVisualState,
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import { Group, Vector2 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'

@@ -1,9 +1,9 @@
-// The Origin Private File System. Used for browser environments.
-import type { IZooDesignStudioFS, IStat } from '@src/lib/fs-zds/interface'
+import path from 'path'
 import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+// The Origin Private File System. Used for browser environments.
+import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
-import path from 'path'
 
 // Holds onto directory metadata that is not stored by the File System API.
 const META_FILE = '._meta'
