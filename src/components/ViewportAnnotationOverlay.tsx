@@ -1,10 +1,8 @@
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import {
-  getTrimPreviewLineWidth,
-  TRIM_PREVIEW_LINE_COLOR,
-} from '@src/lib/freehandLineDrawing'
+import { TRIM_PREVIEW_LINE_COLOR } from '@src/lib/constants'
+import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
 
 type ViewportAnnotationRect = {
   left: number
