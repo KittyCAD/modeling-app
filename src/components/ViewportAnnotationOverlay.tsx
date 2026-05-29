@@ -5,35 +5,7 @@ import {
   getTrimPreviewLineWidth,
   TRIM_PREVIEW_LINE_COLOR,
 } from '@src/lib/freehandLineDrawing'
-
-type ViewportAnnotationRect = {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-const getViewportAnnotationRect = (): ViewportAnnotationRect => {
-  const viewport = document.querySelector('[data-engine]')
-  if (viewport instanceof HTMLElement) {
-    const rect = viewport.getBoundingClientRect()
-    if (rect.width > 0 && rect.height > 0) {
-      return {
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height,
-      }
-    }
-  }
-
-  return {
-    left: 0,
-    top: 0,
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }
-}
+import { getVisibleViewportRect } from '@src/lib/viewportElement'
 
 const loadImage = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
@@ -84,7 +56,7 @@ export const ViewportAnnotationOverlay = (
 ) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lastPoint = useRef<{ x: number; y: number } | null>(null)
-  const [viewportRect, setViewportRect] = useState(getViewportAnnotationRect)
+  const [viewportRect, setViewportRect] = useState(getVisibleViewportRect)
   const [imageSize, setImageSize] = useState<{
     width: number
     height: number
@@ -121,8 +93,7 @@ export const ViewportAnnotationOverlay = (
   }, [props.imageDataUrl])
 
   useEffect(() => {
-    const updateViewportRect = () =>
-      setViewportRect(getViewportAnnotationRect())
+    const updateViewportRect = () => setViewportRect(getVisibleViewportRect())
     const viewport = document.querySelector('[data-engine]')
     const resizeObserver =
       typeof ResizeObserver === 'undefined'
