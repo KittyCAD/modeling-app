@@ -1,12 +1,14 @@
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
+  USER_FEATURES_POLL_INTERVAL_MS,
+  USER_FEATURES_RETRY_INTERVAL_MS,
   UserFeaturesActor,
   UserFeaturesState,
   UserFeaturesTransition,
   userFeaturesContextHas,
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 const mockState = vi.hoisted(() => ({
@@ -28,6 +30,10 @@ type TestFetchUserFeaturesInput = {
 type TestFetchUserFeaturesResult = { featureIds: Set<string> } | Error
 
 describe('userFeaturesMachine', () => {
+  beforeEach(() => {
+    mockState.reportClientError.mockClear()
+  })
+
   it('loads feature ids once for a token and answers membership from context', async () => {
     const fetchFeatures = vi.fn(async () => ({
       featureIds: new Set(['plugins', 'sketch_experimental_features']),
@@ -52,7 +58,7 @@ describe('userFeaturesMachine', () => {
 
       const context = actor.getSnapshot().context
       expect(fetchFeatures).toHaveBeenCalledTimes(1)
-      expect(context.fetchedForToken).toBe('token-a')
+      expect(context.token).toBe('token-a')
       expect(userFeaturesContextHas(context, 'plugins', false)).toBe(true)
       expect(userFeaturesContextHas(context, 'missing', false)).toBe(false)
       expect(userFeaturesContextHas(context, 'missing', true)).toBe(true)
@@ -84,7 +90,7 @@ describe('userFeaturesMachine', () => {
       const snapshot = actor.getSnapshot()
       expect(snapshot.matches(UserFeaturesState.Idle)).toBe(true)
       expect(snapshot.context.featureIds.size).toBe(0)
-      expect(snapshot.context.fetchedForToken).toBeUndefined()
+      expect(snapshot.context.token).toBeUndefined()
     } finally {
       actor.stop()
     }
@@ -122,7 +128,7 @@ describe('userFeaturesMachine', () => {
 
       const context = actor.getSnapshot().context
       expect(context.featureIds.size).toBe(0)
-      expect(context.fetchedForToken).toBeUndefined()
+      expect(context.token).toBe('token-b')
       expect(userFeaturesContextHas(context, 'plugins', false)).toBe(false)
       expect(mockState.reportClientError).toHaveBeenCalledWith({
         code: 'user_features_fetch_error',
@@ -134,12 +140,117 @@ describe('userFeaturesMachine', () => {
           source: 'UserFeaturesMachine',
           eventType: expect.stringMatching(/^xstate\.done\.actor\./),
           featureCount: 0,
-          hasFetchedForToken: false,
-          hasLoadingToken: true,
+          hasToken: true,
         }),
       })
     } finally {
       actor.stop()
+    }
+  })
+
+  it('polls feature ids after a successful load', async () => {
+    vi.useFakeTimers()
+    const fetchFeatures = vi
+      .fn()
+      .mockResolvedValueOnce({ featureIds: new Set(['plugins']) })
+      .mockResolvedValueOnce({
+        featureIds: new Set(['plugins', 'sketch_experimental_features']),
+      })
+    const actor = createActor(
+      userFeaturesMachine.provide({
+        actors: {
+          [UserFeaturesActor.Fetch]: fromPromise<
+            TestFetchUserFeaturesResult,
+            TestFetchUserFeaturesInput
+          >(fetchFeatures),
+        },
+      })
+    ).start()
+
+    try {
+      actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
+      await waitFor(actor, (state) => state.matches(UserFeaturesState.Ready))
+
+      expect(fetchFeatures).toHaveBeenCalledTimes(1)
+      expect(
+        userFeaturesContextHas(
+          actor.getSnapshot().context,
+          'sketch_experimental_features',
+          false
+        )
+      ).toBe(false)
+
+      await vi.advanceTimersByTimeAsync(USER_FEATURES_POLL_INTERVAL_MS)
+      await waitFor(
+        actor,
+        (state) =>
+          state.matches(UserFeaturesState.Ready) &&
+          fetchFeatures.mock.calls.length === 2
+      )
+
+      expect(fetchFeatures).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          input: { token: 'token-a' },
+        })
+      )
+      expect(
+        userFeaturesContextHas(
+          actor.getSnapshot().context,
+          'sketch_experimental_features',
+          false
+        )
+      ).toBe(true)
+    } finally {
+      actor.stop()
+      vi.useRealTimers()
+    }
+  })
+
+  it('retries a failed initial load with the current token', async () => {
+    vi.useFakeTimers()
+    const fetchFeatures = vi
+      .fn()
+      .mockResolvedValueOnce(new Error('feature service unavailable'))
+      .mockResolvedValueOnce({ featureIds: new Set(['plugins']) })
+    const actor = createActor(
+      userFeaturesMachine.provide({
+        actors: {
+          [UserFeaturesActor.Fetch]: fromPromise<
+            TestFetchUserFeaturesResult,
+            TestFetchUserFeaturesInput
+          >(fetchFeatures),
+        },
+      })
+    ).start()
+
+    try {
+      actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
+      await waitFor(actor, (state) => state.matches(UserFeaturesState.Failed))
+
+      expect(fetchFeatures).toHaveBeenCalledTimes(1)
+      expect(actor.getSnapshot().context.token).toBe('token-a')
+
+      await vi.advanceTimersByTimeAsync(USER_FEATURES_RETRY_INTERVAL_MS)
+      await waitFor(
+        actor,
+        (state) =>
+          state.matches(UserFeaturesState.Ready) &&
+          fetchFeatures.mock.calls.length === 2
+      )
+
+      expect(fetchFeatures).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          input: { token: 'token-a' },
+        })
+      )
+      expect(
+        userFeaturesContextHas(actor.getSnapshot().context, 'plugins', false)
+      ).toBe(true)
+    } finally {
+      actor.stop()
+      vi.useRealTimers()
     }
   })
 })

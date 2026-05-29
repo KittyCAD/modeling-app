@@ -4,7 +4,10 @@ import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { isErr } from '@src/lib/trap'
 import { xstateEventError } from '@src/machines/utils'
 import type { ActorRefFrom, DoneActorEvent, ErrorActorEvent } from 'xstate'
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, fromPromise, raise, setup } from 'xstate'
+
+export const USER_FEATURES_POLL_INTERVAL_MS = 5 * 60 * 1000
+export const USER_FEATURES_RETRY_INTERVAL_MS = 60 * 1000
 
 export enum UserFeaturesState {
   Idle = 'idle',
@@ -38,15 +41,14 @@ type FetchUserFeaturesErrorEvent = ErrorActorEvent<Error>
 
 export interface UserFeaturesContext {
   featureIds: Set<string>
-  fetchedForToken?: string
+  token?: string
   fetchedAt?: Date
-  loadingToken?: string
   error?: Error
 }
 
 export type UserFeaturesEvent =
   | { type: UserFeaturesTransition.Load; token: string }
-  | { type: UserFeaturesTransition.Refresh; token?: string }
+  | { type: UserFeaturesTransition.Refresh }
   | { type: UserFeaturesTransition.Clear }
   | FetchUserFeaturesDoneEvent
   | FetchUserFeaturesErrorEvent
@@ -58,9 +60,8 @@ export type UserFeaturesService = {
 function createDefaultContext(): UserFeaturesContext {
   return {
     featureIds: new Set<string>(),
-    fetchedForToken: undefined,
+    token: undefined,
     fetchedAt: undefined,
-    loadingToken: undefined,
     error: undefined,
   }
 }
@@ -74,7 +75,7 @@ function getEventToken(
   }
 
   if (event.type === UserFeaturesTransition.Refresh) {
-    return event.token ?? context.fetchedForToken ?? context.loadingToken
+    return context.token
   }
 
   return undefined
@@ -95,8 +96,7 @@ function featureIdsFromResponse(data: UserFeaturesData): Set<string> {
 function userFeaturesErrorContext(context: UserFeaturesContext) {
   return {
     featureCount: context.featureIds.size,
-    hasFetchedForToken: Boolean(context.fetchedForToken),
-    hasLoadingToken: Boolean(context.loadingToken),
+    hasToken: Boolean(context.token),
     fetchedAt: context.fetchedAt?.toISOString(),
   }
 }
@@ -134,11 +134,11 @@ export const userFeaturesMachine = setup({
     hasToken: ({ context, event }) => hasEventToken(context, event),
     alreadyLoadedForToken: ({ context, event }) => {
       const token = getEventToken(context, event)
-      return !!token && context.fetchedForToken === token
+      return !!token && context.token === token
     },
     alreadyLoadingForToken: ({ context, event }) => {
       const token = getEventToken(context, event)
-      return !!token && context.loadingToken === token
+      return !!token && context.token === token
     },
     fetchReturnedError: ({ event }) => 'output' in event && isErr(event.output),
   },
@@ -166,13 +166,12 @@ export const userFeaturesMachine = setup({
       }
 
       return {
+        token,
         error: undefined,
-        loadingToken: token,
-        ...(context.fetchedForToken === token
+        ...(context.token === token
           ? {}
           : {
               featureIds: new Set<string>(),
-              fetchedForToken: undefined,
               fetchedAt: undefined,
             }),
       }
@@ -190,14 +189,11 @@ export const userFeaturesMachine = setup({
 
       return {
         featureIds: output.featureIds,
-        fetchedForToken: context.loadingToken,
         fetchedAt: new Date(),
-        loadingToken: undefined,
         error: undefined,
       }
     }),
     storeError: assign(({ event }) => ({
-      loadingToken: undefined,
       error:
         'output' in event && isErr(event.output)
           ? event.output
@@ -230,7 +226,7 @@ export const userFeaturesMachine = setup({
       invoke: {
         src: UserFeaturesActor.Fetch,
         input: ({ context }) => ({
-          token: context.loadingToken ?? '',
+          token: context.token ?? '',
         }),
         onDone: [
           {
@@ -280,23 +276,28 @@ export const userFeaturesMachine = setup({
           actions: 'startLoading',
         },
       },
+      after: {
+        [USER_FEATURES_POLL_INTERVAL_MS]: {
+          actions: raise({ type: UserFeaturesTransition.Refresh }),
+        },
+      },
     },
     [UserFeaturesState.Failed]: {
       on: {
-        [UserFeaturesTransition.Load]: [
-          {
-            guard: 'alreadyLoadingForToken',
-          },
-          {
-            guard: 'hasToken',
-            target: UserFeaturesState.Loading,
-            actions: 'startLoading',
-          },
-        ],
+        [UserFeaturesTransition.Load]: {
+          guard: 'hasToken',
+          target: UserFeaturesState.Loading,
+          actions: 'startLoading',
+        },
         [UserFeaturesTransition.Refresh]: {
           guard: 'hasToken',
           target: UserFeaturesState.Loading,
           actions: 'startLoading',
+        },
+      },
+      after: {
+        [USER_FEATURES_RETRY_INTERVAL_MS]: {
+          actions: raise({ type: UserFeaturesTransition.Refresh }),
         },
       },
     },
