@@ -9,6 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { updateEnvironment } from '@src/env'
 import env from '@src/env'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
@@ -273,6 +274,7 @@ const SignIn = () => {
                         </p>
                         <div className="flex flex-col gap-2 sm:flex-row">
                           <input
+                            {...noAutofillInputProps}
                             readOnly
                             aria-label="Sign-in URL"
                             value={verificationUri}

@@ -6,6 +6,7 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -15,7 +16,7 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import { type Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -450,9 +451,7 @@ export const MlEphantConversationInput = (
           className="hidden"
         />
         <textarea
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
+          {...noAutofillInputProps}
           data-testid="ml-ephant-conversation-input"
           onChange={(e) => setValue(e.target.value)}
           value={value}

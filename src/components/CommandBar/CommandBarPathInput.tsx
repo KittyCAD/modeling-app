@@ -2,6 +2,7 @@ import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
@@ -91,7 +92,7 @@ function CommandBarPathInput({
   }, [])
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         data-testid="cmd-bar-arg-name"
         className="flex items-center mx-4 my-4 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
@@ -100,6 +101,7 @@ function CommandBarPathInput({
           {arg.displayName || arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           type="text"
           data-testid="cmd-bar-arg-value"
           id="arg-form"
