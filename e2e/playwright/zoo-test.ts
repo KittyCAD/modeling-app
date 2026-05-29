@@ -1,5 +1,5 @@
-import { test as playwrightTestFn } from '@playwright/test'
 import type { UserFeature } from '@kittycad/lib'
+import { test as playwrightTestFn } from '@playwright/test'
 
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {

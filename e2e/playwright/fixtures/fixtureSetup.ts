@@ -1,3 +1,4 @@
+import type { UserFeature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
   BrowserContext,
@@ -6,7 +7,6 @@ import type {
   TestInfo,
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
-import type { UserFeature } from '@kittycad/lib'
 
 import fs from 'node:fs'
 import path from 'path'
