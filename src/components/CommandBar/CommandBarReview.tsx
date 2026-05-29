@@ -35,7 +35,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
         commandBarState.context
       )
       return !isHidden
-    }) as [string, CommandArgument<unknown>][]
+    })
   }, [selectedCommand, commandBarState.context])
 
   useHotkeys(
