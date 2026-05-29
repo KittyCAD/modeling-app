@@ -557,10 +557,7 @@ export const MlEphantConversationInput = (
           imageDataUrl={annotationImageDataUrl}
           onCancel={() => setAnnotationImageDataUrl(null)}
           onSend={(annotatedDataUrl) => {
-            appendDataUrlAttachment(
-              annotatedDataUrl,
-              'zoodle-viewport-screenshot.png'
-            )
+            appendDataUrlAttachment(annotatedDataUrl, 'zoodle')
             setAnnotationImageDataUrl(null)
           }}
         />

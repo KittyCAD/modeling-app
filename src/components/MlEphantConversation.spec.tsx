@@ -893,9 +893,7 @@ describe('MlEphantConversation', () => {
         await waitFor(() => expect(sendButton).not.toBeDisabled())
         fireEvent.click(sendButton)
 
-        expect(
-          await screen.findByText('zoodle-viewport-screenshot.png')
-        ).toBeInTheDocument()
+        expect(await screen.findByText('zoodle')).toBeInTheDocument()
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage
