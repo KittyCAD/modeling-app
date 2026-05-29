@@ -19,6 +19,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { SelectionFilterControls } from '@src/registry/extensions/engineScene/SelectionFilterControls'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -80,8 +81,9 @@ function ModelingArea() {
           </button>
         </div>
       )}
-      <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+      <div className="absolute bottom-2 right-2 flex flex-row-reverse items-end gap-2 pointer-events-none">
         <Gizmo />
+        <SelectionFilterControls />
       </div>
     </div>
   )
@@ -162,7 +164,7 @@ export const useDefaultAreaLibrary = () => {
             // Only compute runtime errors! Compilation errors are not tracked here.
             const errors = kclErrorsByFilename(kclManager.errorsSignal.value)
             const value = errors.size > 0 ? 'x' : ''
-            const onClick: MouseEventHandler = (e) => {
+            const onClick: MouseEventHandler = useCallback((e) => {
               e.preventDefault()
               // TODO: When we have generic file open
               // If badge is pressed
@@ -170,8 +172,8 @@ export const useDefaultAreaLibrary = () => {
               // Then scroll to error
               // Do you automatically open the project files
               // kclManager.scrollToFirstErrorDiagnosticIfExists()
-            }
-            return useMemo(() => ({ value, onClick, title }), [value, title])
+            }, [])
+            return useMemo(() => ({ value, onClick, title }), [value, onClick])
           },
         },
         variables: {
