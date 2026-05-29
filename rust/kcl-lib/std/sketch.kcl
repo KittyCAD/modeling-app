@@ -727,6 +727,45 @@ export fn ellipse(
 /// extrude(endSweep, length = 2, method = NEW)
 /// |> appearance(color = "#FFFF00")
 /// ```
+/// ``` kcl, sketchSolve
+/// // Examples showing extrude with a positive/negative draft.
+/// @settings(experimentalFeatures = allow, kclVersion = 2.0)
+/// 
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
+///   line2 = line(start = [var -4.52mm, var 0.96mm], end = [var -2.45mm, var 0.96mm])
+///   coincident([line1.end, line2.start])
+///   line3 = line(start = [var -2.45mm, var 0.96mm], end = [var -3.39mm, var 2.51mm])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.start])
+///   line4 = line(start = [var 1.62mm, var 2.61mm], end = [var 0.65mm, var 0.91mm])
+///   line5 = line(start = [var 0.65mm, var 0.91mm], end = [var 2.64mm, var 0.91mm])
+///   coincident([line4.end, line5.start])
+///   line6 = line(start = [var 2.64mm, var 0.91mm], end = [var 1.62mm, var 2.61mm])
+///   coincident([line5.end, line6.start])
+///   coincident([line6.end, line4.start])
+///   line7 = line(start = [var -1.2mm, var 2.56mm], end = [var -1.89mm, var 0.85mm])
+///   line8 = line(start = [var -1.89mm, var 0.85mm], end = [var -0.33mm, var 0.85mm])
+///   coincident([line7.end, line8.start])
+///   line9 = line(start = [var -0.33mm, var 0.85mm], end = [var -1.2mm, var 2.56mm])
+///   coincident([line8.end, line9.start])
+///   coincident([line9.end, line7.start])
+/// }
+/// 
+/// // Three triangular regions
+/// region001 = region(point = [-3.9529799mm, 1.7335272mm], sketch = sketch001)
+/// region002 = region(point = [1.1371714mm, 1.758761mm], sketch = sketch001)
+/// region003 = region(point = [-1.5426816mm, 1.7040645mm], sketch = sketch001)
+/// hidden001 = hide(sketch001)
+/// 
+/// // Extrude the regions, with a positive draft, negative draft, and no draft at all.
+/// // Positive draft means the sketch gets _smaller_ as it gets extruded.
+/// positiveDraft = extrude(region001, length = 2, draftAngle = 30deg)
+/// // Negative draft means the sketch gets _bigger_ as it gets extruded.
+/// negativeDraft = extrude(region002, length = 2, draftAngle = -30deg)
+/// // No draft means the sketch stays the exact same size as it gets extruded.
+/// zeroDraft = extrude(region003, length = 2)
+/// ```
 /// ```kcl,legacySketch
 /// // Surface extrude of a closed profile
 /// closedProfile = startSketchOn(XY)
@@ -783,6 +822,10 @@ export fn extrude(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
+  /// Positive draft angle means the sketch gets smaller while extruding, i.e. inwards draft.
+  /// Negative draft angle means the sketch gets bigger while extruding, i.e. outwards draft.
+  /// Defaults to zero, i.e. 
+  @(experimental = true) draftAngle?: number(Angle),
   /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.

@@ -205,6 +205,7 @@ async function editArcWithThreePoints({
   kclManager,
   sketchId,
   settings,
+  commitSolverResults = true,
 }: {
   arcId: number
   startPoint: Coords2d
@@ -214,6 +215,7 @@ async function editArcWithThreePoints({
   kclManager: KclManager
   sketchId: number
   settings: Awaited<ReturnType<typeof jsAppSettings>>
+  commitSolverResults?: boolean
 }): Promise<
   | {
       kclSource: SourceDelta
@@ -265,7 +267,10 @@ async function editArcWithThreePoints({
         },
       },
     ],
-    settings
+    settings,
+    false,
+    commitSolverResults ? undefined : [],
+    commitSolverResults
   )
 }
 
@@ -422,6 +427,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           kclManager: context.kclManager,
           sketchId: context.sketchId,
           settings: cachedSettings,
+          commitSolverResults: false,
         })
         if ('error' in result) return
 

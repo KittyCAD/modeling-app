@@ -898,7 +898,8 @@ export const sketchSolveMachine = setup({
                 context.sketchId,
                 segmentsToEdit,
                 jsAppSettings(context.kclManager.systemDeps.settings),
-                true
+                true,
+                []
               )
               .catch((err) => {
                 console.error('failed to toggle construction geometry', err)

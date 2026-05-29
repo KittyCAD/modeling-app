@@ -108,7 +108,7 @@ description: Operations executed import_whole_simple.kcl
   "rust/kcl-lib/tests/import_whole_simple/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "exported_mod.kcl",
+      "name": "foo",
       "moduleId": 0,
       "nodePath": {
         "steps": [

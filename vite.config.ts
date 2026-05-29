@@ -1,6 +1,5 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
-import MillionLint from '@million/lint'
 import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
 import version from 'vite-plugin-package-version'
@@ -21,8 +20,6 @@ logger.warn = (msg, opts) => {
 }
 
 export default defineConfig(({ command, mode }) => {
-  const runMillion = process.env.RUN_MILLION
-
   return {
     customLogger: logger,
     define: {
@@ -112,7 +109,6 @@ export default defineConfig(({ command, mode }) => {
         // The function to generate import names of top-level await promise in each chunk module
         promiseImportName: (i) => `__tla_${i}`,
       }),
-      runMillion && MillionLint.vite(),
     ],
     worker: {
       plugins: () => [viteTsconfigPaths()],

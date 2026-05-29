@@ -6,8 +6,9 @@ description: Operations executed coilover-assembly.kcl
   "public/kcl-samples/coilover-assembly/coilover-bottom.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -7264,8 +7265,9 @@ description: Operations executed coilover-assembly.kcl
   "public/kcl-samples/coilover-assembly/coilover-top.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -13175,7 +13177,7 @@ description: Operations executed coilover-assembly.kcl
   "public/kcl-samples/coilover-assembly/main.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "coilover-bottom.kcl",
+      "name": "coiloverBottom",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -13189,7 +13191,7 @@ description: Operations executed coilover-assembly.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "spring.kcl",
+      "name": "coiloverSpring",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -13203,7 +13205,7 @@ description: Operations executed coilover-assembly.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "coilover-top.kcl",
+      "name": "coiloverTop",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -14236,8 +14238,9 @@ description: Operations executed coilover-assembly.kcl
   "public/kcl-samples/coilover-assembly/spring.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "parameters.kcl",
+      "name": "parameters",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
