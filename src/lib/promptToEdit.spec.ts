@@ -56,4 +56,38 @@ describe('constructMultiFileIterationRequestWithPromptHelpers', () => {
       prompt: 'This is the active file',
     })
   })
+
+  it('uses current editor contents for the currently open file payload', async () => {
+    const projectFiles: FileMeta[] = [
+      {
+        type: 'kcl',
+        relPath: 'main.kcl',
+        absPath: '/projects/zoo-project/main.kcl',
+        fileContents: 'boxWidth = 100\n',
+        execStateFileNamesIndex: 0,
+      },
+    ]
+
+    const request = constructMultiFileIterationRequestWithPromptHelpers({
+      prompt: 'what changed?',
+      selections: null,
+      projectFiles,
+      applicationProjectDirectory: '/projects',
+      artifactGraph: {} as ArtifactGraph,
+      projectName: 'zoo-project',
+      currentFile: {
+        entry: {
+          path: '/projects/zoo-project/main.kcl',
+          name: 'main.kcl',
+          children: null,
+        },
+        content: 'boxWidth = 1000\n',
+      },
+      kclVersion: '1.0.0',
+    })
+
+    await expect(request.files[0].data.text()).resolves.toBe(
+      'boxWidth = 1000\n'
+    )
+  })
 })

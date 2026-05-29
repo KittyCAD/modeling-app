@@ -214,6 +214,17 @@ type DirectSketchHistoryMarker = {
   entryId: number
 }
 
+type PendingZookeeperHistoryEntry = {
+  undoCode: string
+  redoCode?: string
+  redoCodeWasAddedToHistory?: boolean
+}
+
+type ZookeeperCodeHistoryEntry = {
+  undoCode: string
+  redoCode: string
+}
+
 type MinimalDocumentChange = {
   from: number
   to: number
@@ -739,6 +750,11 @@ export class KclManager extends File {
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
+  private pendingZookeeperHistoryEntry: PendingZookeeperHistoryEntry | null =
+    null
+  private zookeeperHistoryEntries: ZookeeperCodeHistoryEntry[] = []
+  private zookeeperHistoryIndex = 0
+  private isRehydratingZookeeperHistory = false
   get code(): string {
     return this.editorView.state.doc.toString()
   }
@@ -843,6 +859,16 @@ export class KclManager extends File {
   undoDepth = signal(0)
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
+    const isHistoryReplay = vu.transactions.some(
+      (tr) => tr.isUserEvent('undo') || tr.isUserEvent('redo')
+    )
+    if (vu.docChanged && isHistoryReplay) {
+      this.syncZookeeperHistoryIndexFromCodeTransition(
+        vu.startState.doc.toString(),
+        vu.state.doc.toString()
+      )
+    }
+
     const localUndo = undoDepth(vu.state)
     const localRedo = redoDepth(vu.state)
     const globalUndo = undoDepth(this._globalHistoryView.state)
@@ -889,6 +915,9 @@ export class KclManager extends File {
    * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.
    */
   #onWatchEvent = (_eventType: string, path: string) => {
+    if (this.mlEphantManagerMachineBulkManipulatingFileSystem) {
+      return
+    }
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
     if (
@@ -1663,6 +1692,12 @@ export class KclManager extends File {
           const docAlreadyMatchesReplay =
             vu.state.doc.toString() === effect.value.redoCode
           if (!docAlreadyMatchesReplay) {
+            if (isHistoryReplay) {
+              this.syncZookeeperHistoryIndexFromCodeTransition(
+                vu.state.doc.toString(),
+                effect.value.redoCode
+              )
+            }
             this.updateCodeEditor(
               effect.value.redoCode,
               {
@@ -1831,16 +1866,37 @@ export class KclManager extends File {
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
+    const isZookeeperReload =
+      providedEditor.mlEphantManagerMachineBulkManipulatingFileSystem
+    providedEditor.updateCodeEditor(
+      initialCode,
+      {
+        shouldExecute:
+          providedEditor.engineCommandManager.connection?.connected,
+        // This way undo and redo are not super weird when opening new files.
+        // Zookeeper reloads are different: the pending Zookeeper history commit
+        // needs the existing manual editor history to remain below its own entry.
+        shouldClearHistory: !isZookeeperReload,
+        shouldAddToHistory: isZookeeperReload,
+        shouldResetCamera: true,
+        // We explicitly do not write to the file here since we are loading from
+        // the file system and not the editor. Zookeeper reloads are the exception
+        // because undo/redo of that history entry must keep disk in sync.
+        shouldWriteToDisk: isZookeeperReload,
+      },
+      isZookeeperReload
+        ? {
+            annotations: [isolateHistory.of('full')],
+          }
+        : undefined
+    )
+    if (isZookeeperReload && providedEditor.pendingZookeeperHistoryEntry) {
+      providedEditor.pendingZookeeperHistoryEntry.redoCodeWasAddedToHistory = true
+    }
     providedEditor.markFileCodeAsSynced(diskCode)
+    if (providedEditor.mlEphantManagerMachineBulkManipulatingFileSystem) {
+      providedEditor.commitPendingZookeeperHistoryEntry()
+    }
     providedEditor.watch()
     return providedEditor
   }
@@ -1873,7 +1929,10 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
+    this._globalHistoryView = new HistoryView([
+      fsHistoryExtension(),
+      this.syntheticHistoryCommitExtension,
+    ])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
@@ -2830,6 +2889,216 @@ export class KclManager extends File {
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
     this._globalHistoryView.dispatch(spec)
   }
+  private rememberZookeeperHistoryEntry(
+    entry: ZookeeperCodeHistoryEntry
+  ): void {
+    this.zookeeperHistoryEntries = this.zookeeperHistoryEntries.slice(
+      0,
+      this.zookeeperHistoryIndex
+    )
+    this.zookeeperHistoryEntries.push(entry)
+    this.zookeeperHistoryIndex = this.zookeeperHistoryEntries.length
+  }
+  private syncZookeeperHistoryIndexFromCodeTransition(
+    beforeCode: string,
+    afterCode: string
+  ): void {
+    const undoEntry =
+      this.zookeeperHistoryEntries[this.zookeeperHistoryIndex - 1]
+    if (
+      undoEntry &&
+      isCodeTheSame(beforeCode, undoEntry.redoCode) &&
+      isCodeTheSame(afterCode, undoEntry.undoCode)
+    ) {
+      this.zookeeperHistoryIndex -= 1
+      return
+    }
+
+    const redoEntry = this.zookeeperHistoryEntries[this.zookeeperHistoryIndex]
+    if (
+      redoEntry &&
+      isCodeTheSame(beforeCode, redoEntry.undoCode) &&
+      isCodeTheSame(afterCode, redoEntry.redoCode)
+    ) {
+      this.zookeeperHistoryIndex += 1
+    }
+  }
+  // Zookeeper writes are committed as native editor history. If a reload clears
+  // CodeMirror's local stack afterward, rebuild the applied Zookeeper entries
+  // so manual edits can still interleave with them chronologically.
+  private rehydrateZookeeperHistoryAfterLocalClear(): void {
+    if (this.isRehydratingZookeeperHistory) return
+
+    const appliedEntries = this.zookeeperHistoryEntries.slice(
+      0,
+      this.zookeeperHistoryIndex
+    )
+    const latestEntry = appliedEntries[appliedEntries.length - 1]
+    if (!latestEntry || !isCodeTheSame(this.code, latestEntry.redoCode)) {
+      return
+    }
+
+    this.isRehydratingZookeeperHistory = true
+    try {
+      this.updateCodeEditor(appliedEntries[0].undoCode, {
+        shouldAddToHistory: false,
+        shouldClearHistory: false,
+        shouldExecute: false,
+        shouldResetCamera: false,
+        shouldWriteToDisk: false,
+      })
+
+      for (const entry of appliedEntries) {
+        if (!isCodeTheSame(this.code, entry.undoCode)) {
+          break
+        }
+        this.updateCodeEditor(
+          entry.redoCode,
+          {
+            shouldAddToHistory: true,
+            shouldClearHistory: false,
+            shouldExecute: false,
+            shouldResetCamera: false,
+            shouldWriteToDisk: false,
+          },
+          {
+            annotations: [isolateHistory.of('full')],
+          }
+        )
+      }
+    } finally {
+      this.isRehydratingZookeeperHistory = false
+    }
+  }
+  beginPendingZookeeperHistoryEntry() {
+    // A previous Zookeeper tool output may have updated the editor before the
+    // navigation/reload path finalized its history entry. Preserve it before
+    // recording the next prompt baseline.
+    if (this.pendingZookeeperHistoryEntry?.redoCode !== undefined) {
+      this.commitPendingZookeeperHistoryEntry()
+    }
+    this.pendingZookeeperHistoryEntry = {
+      undoCode: this.code,
+      redoCode: undefined,
+    }
+  }
+  markPendingZookeeperHistoryEntry(redoCode?: string) {
+    const pendingEntry = this.pendingZookeeperHistoryEntry
+    this.pendingZookeeperHistoryEntry = {
+      undoCode: pendingEntry?.undoCode ?? this.code,
+      redoCode:
+        redoCode === undefined ? undefined : normalizeLineEndings(redoCode),
+    }
+  }
+  hasPendingZookeeperCodeEdit() {
+    return this.pendingZookeeperHistoryEntry?.redoCode !== undefined
+  }
+  commitPendingZookeeperHistoryEntry() {
+    const pendingEntry = this.pendingZookeeperHistoryEntry
+    if (!pendingEntry) {
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
+    this.pendingZookeeperHistoryEntry = null
+
+    const redoCode = pendingEntry.redoCode ?? this.code
+    if (isCodeTheSame(pendingEntry.undoCode, redoCode)) {
+      this.markFileCodeAsSynced(redoCode)
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
+
+    const codeMatchesUndo = isCodeTheSame(this.code, pendingEntry.undoCode)
+    const codeMatchesRedo = isCodeTheSame(this.code, redoCode)
+    if (
+      !codeMatchesUndo &&
+      codeMatchesRedo &&
+      pendingEntry.redoCodeWasAddedToHistory
+    ) {
+      this.rememberZookeeperHistoryEntry({
+        undoCode: pendingEntry.undoCode,
+        redoCode,
+      })
+      this.markFileCodeAsSynced(redoCode)
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
+    // The Zookeeper result may already be in the editor from a programmatic
+    // update that intentionally skipped history. Record the history event
+    // without rewinding the document, because that can remap older CM history.
+    if (!codeMatchesUndo && codeMatchesRedo) {
+      this.editorView.dispatch({
+        annotations: [
+          updateOutsideEditorEvent,
+          Transaction.addToHistory.of(true),
+          isolateHistory.of('full'),
+        ],
+        effects: [
+          syntheticHistoryCommitEffect.of({
+            undoCode: pendingEntry.undoCode,
+            redoCode,
+            undoCheckpointId: null,
+            redoCheckpointId: null,
+            options: {
+              shouldExecute: true,
+              shouldResetCamera: false,
+              shouldWriteToDisk: true,
+            },
+          }),
+          requestWriteToFile.of(true),
+        ],
+      })
+      this.lastCommittedCode = redoCode
+      this.lastCommittedAdditionalSpec = undefined
+      this.lastCommittedSketchCheckpointId = null
+      if (this.engineCommandManager.connection?.connected) {
+        this.deferredExecution({
+          newCode: redoCode,
+          shouldResetCamera: false,
+          requestedUserDocumentVersion: this._userDocumentVersion,
+        })
+      }
+      this.rememberZookeeperHistoryEntry({
+        undoCode: pendingEntry.undoCode,
+        redoCode,
+      })
+      this.markFileCodeAsSynced(redoCode)
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
+    if (!codeMatchesUndo) {
+      this.updateCodeEditor(pendingEntry.undoCode, {
+        shouldAddToHistory: false,
+        shouldClearHistory: !codeMatchesRedo,
+        shouldExecute: false,
+        shouldResetCamera: false,
+        shouldWriteToDisk: false,
+      })
+    }
+
+    this.updateCodeEditor(
+      redoCode,
+      {
+        shouldAddToHistory: true,
+        shouldClearHistory: false,
+        shouldExecute: true,
+        shouldResetCamera: false,
+        shouldWriteToDisk: true,
+      },
+      {
+        annotations: [isolateHistory.of('full')],
+      }
+    )
+    this.rememberZookeeperHistoryEntry({
+      undoCode: pendingEntry.undoCode,
+      redoCode,
+    })
+    this.markFileCodeAsSynced(redoCode)
+    this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+  }
+  addZookeeperHistoryEntry() {
+    this.commitPendingZookeeperHistoryEntry()
+  }
   undo() {
     this._globalHistoryView.undo(this._editorView)
   }
@@ -2852,8 +3121,12 @@ export class KclManager extends File {
         ]),
       ],
     })
+    this.rehydrateZookeeperHistoryAfterLocalClear()
   }
   clearGlobalHistory() {
+    this.pendingZookeeperHistoryEntry = null
+    this.zookeeperHistoryEntries = []
+    this.zookeeperHistoryIndex = 0
     this._globalHistoryView.dispatch(
       {
         effects: [this._globalHistoryView.historyCompartment.reconfigure([])],

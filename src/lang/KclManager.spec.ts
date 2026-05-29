@@ -275,6 +275,227 @@ describe('KclManager diagnostics', () => {
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 
+  it('adds zookeeper code updates to local undo and redo history', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+    expect(kclManager.redoDepth.value).toBe(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+    expect(kclManager.redoDepth.value).toBeGreaterThan(0)
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+    expect(kclManager.redoDepth.value).toBe(0)
+  })
+
+  it('adds zookeeper undo history when the editor already has the zookeeper code', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.updateCodeEditor('zookeeper edit', {
+      shouldAddToHistory: false,
+      shouldClearHistory: false,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.commitPendingZookeeperHistoryEntry()
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('adds zookeeper undo history after a file reload clears local history', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.updateCodeEditor('zookeeper edit', {
+      shouldAddToHistory: false,
+      shouldClearHistory: true,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+
+    expect(kclManager.undoDepth.value).toBe(0)
+
+    kclManager.commitPendingZookeeperHistoryEntry()
+
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('commits zookeeper undo history after the routed file reload clears local history', async () => {
+    const path = '/tmp/kcl-manager-zookeeper-reload.kcl'
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('persist me')
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+
+    await KclManager.fromFile(
+      new File(path, 99),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+    expect(kclManager.mlEphantManagerMachineBulkManipulatingFileSystem).toBe(
+      false
+    )
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('keeps mixed manual and zookeeper history before a routed zookeeper file reload', async () => {
+    const path = '/tmp/kcl-manager-zookeeper-manual-reload.kcl'
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('persist me')
+    kclManager.markPendingZookeeperHistoryEntry('first zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('manual edit two', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.beginPendingZookeeperHistoryEntry()
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+
+    await KclManager.fromFile(
+      new File(path, 99),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('manual edit two')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('first zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('preserves the zookeeper prompt-start baseline if the editor updates before tool output is handled', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.beginPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('zookeeper edit', {
+      shouldAddToHistory: false,
+      shouldClearHistory: true,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('keeps zookeeper undo available if local editor history is cleared after the commit', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.clearLocalHistory()
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('keeps manual edits and zookeeper edits in chronological undo and redo order', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('manual edit', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+
+    expect(kclManager.code).toBe('manual edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('manual edit')
+  })
+
+  it('keeps chronological redo order when local history is cleared before a manual edit', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.clearLocalHistory()
+    kclManager.updateCodeEditor('manual edit', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+
+    expect(kclManager.code).toBe('manual edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('manual edit')
+  })
+
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi

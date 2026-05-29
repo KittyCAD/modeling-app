@@ -69,6 +69,15 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 }: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
+  const activeFile = activeFileRelativeToProject({
+    currentFileEntry: currentFile.entry,
+    applicationProjectDirectory,
+  })
+  const currentFilePath = currentFile.entry?.path.replaceAll('\\', '/')
+  const currentFilePathWithoutLeadingSlash = currentFilePath?.replace(
+    /^\/+/,
+    ''
+  )
 
   projectFiles.forEach((file) => {
     let data: Blob
@@ -76,18 +85,23 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
       data = file.data
     } else {
       // file.type === 'kcl'
-      kclFilesMap[file.execStateFileNamesIndex] = file
-      data = new Blob([file.fileContents], { type: 'text/kcl' })
+      const isCurrentFile =
+        file.relPath === activeFile ||
+        file.absPath.replaceAll('\\', '/') === currentFilePath ||
+        file.relPath === currentFilePathWithoutLeadingSlash
+      const fileContents = isCurrentFile
+        ? currentFile.content
+        : file.fileContents
+      kclFilesMap[file.execStateFileNamesIndex] = {
+        ...file,
+        fileContents,
+      }
+      data = new Blob([fileContents], { type: 'text/kcl' })
     }
     files.push({
       name: file.relPath,
       data,
     })
-  })
-
-  const activeFile = activeFileRelativeToProject({
-    currentFileEntry: currentFile.entry,
-    applicationProjectDirectory,
   })
 
   // Way to patch in supplying the currently-opened file without updating the API.

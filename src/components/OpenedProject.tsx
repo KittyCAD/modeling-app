@@ -132,7 +132,9 @@ export function OpenedProject() {
       return
     }
     const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    // KclManager.fromFile commits the pending Zookeeper history entry after
+    // the routed file reload clears local editor history. Committing here is
+    // too early because the reload can wipe the undo stack afterward.
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(
@@ -167,6 +169,8 @@ export function OpenedProject() {
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
+  const authToken = auth.useToken()
+
   const machineApiEnabled = settingsValues.app.machineApi.current
   const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
     registry.signal(statusBarGlobalItemsValueSpec).value,
@@ -179,7 +183,6 @@ export function OpenedProject() {
     ),
     settingsValues
   )
-  const authToken = auth.useToken()
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default

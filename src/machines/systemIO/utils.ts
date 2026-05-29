@@ -1,8 +1,9 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
-import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { FILE_EXT, PROJECT_FOLDER, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   appendGitignoreForDirectory,
   createInitialGitignoreStack,
@@ -14,13 +15,12 @@ import type { Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import { isErr } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import fsZds from '@src/lib/fs-zds'
-import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
-import { isErr } from '@src/lib/trap'
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
@@ -279,9 +279,9 @@ export const determineProjectFilePathFromPrompt = (
 
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
+  selectedFilePath?: string
   fileNames: ExecState['filenames']
   projectContext?: Project
-  selectedFilePath?: string
   warnIfProjectExceeds64Mb?: boolean
   skipUnreadableFiles?: boolean
 }) => {
@@ -306,9 +306,47 @@ export const collectProjectFiles = async (args: {
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
+    const normalizeSelectedPath = (path: string) =>
+      path.replaceAll('\\', '/').replace(/^\/+/, '')
+    const selectedFilePath = args.selectedFilePath?.replaceAll('\\', '/')
+    const selectedFilePathWithoutLeadingSlash =
+      selectedFilePath === undefined
+        ? undefined
+        : normalizeSelectedPath(selectedFilePath)
+    const selectedFileRelativePath =
+      selectedFilePath === undefined
+        ? undefined
+        : normalizeSelectedPath(
+            fsZds.relative(basePath, selectedFilePath) ?? selectedFilePath
+          )
     const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
       const fileNameWithExtension =
         fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+      const absoluteFilePath = absolutePathToFileNameWithExtension.replaceAll(
+        '\\',
+        '/'
+      )
+      const relativeFilePath = normalizeSelectedPath(fileNameWithExtension)
+      const isSelectedFile =
+        selectedFilePath !== undefined &&
+        (absoluteFilePath === selectedFilePath ||
+          relativeFilePath === selectedFilePathWithoutLeadingSlash ||
+          relativeFilePath === selectedFileRelativePath)
+
+      if (isSelectedFile) {
+        uploadSize += new TextEncoder().encode(args.selectedFileContents).length
+        filePromises.push(
+          Promise.resolve<FileMeta>({
+            type: 'kcl',
+            absPath: absolutePathToFileNameWithExtension,
+            relPath: fileNameWithExtension,
+            fileContents: args.selectedFileContents,
+            execStateFileNamesIndex:
+              execStateNameToIndexMap[absolutePathToFileNameWithExtension],
+          })
+        )
+        return
+      }
 
       filePromises.push(
         Promise.resolve()
@@ -362,6 +400,14 @@ export const collectProjectFiles = async (args: {
         ).replace(/\\/g, '/')
         const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
         const isDirectory = Boolean(stat.mode & fsZdsConstants.S_IFDIR)
+
+        // In browser-backed projects, opening a standalone file from the
+        // documents root can make the app's project storage folder appear
+        // beside the active file. That folder is not part of the current
+        // Zookeeper project and causes false manual-edit diffs.
+        if (path === basePath && entry === PROJECT_FOLDER) {
+          continue
+        }
 
         if (
           isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)

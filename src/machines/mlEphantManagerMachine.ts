@@ -452,6 +452,32 @@ async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
   }
 }
 
+async function projectFilesToByteArrays(
+  projectFiles: FileMeta[]
+): Promise<Record<string, number[]>> {
+  const files: KittyCadLibFile[] = projectFiles.map((file) => {
+    if (file.type === 'other') {
+      return {
+        name: file.relPath,
+        data: file.data,
+      }
+    }
+
+    return {
+      name: file.relPath,
+      data: new Blob([file.fileContents], { type: 'text/kcl' }),
+    }
+  })
+
+  const filesAsByteArrays: Record<string, number[]> = {}
+  for (const file of files) {
+    filesAsByteArrays[file.name] = Array.from(
+      new Uint8Array(await file.data.arrayBuffer())
+    )
+  }
+  return filesAsByteArrays
+}
+
 export const MlEphantConversationToMarkdown = (
   conversation?: Conversation
 ): string => {
@@ -1101,28 +1127,9 @@ export const mlEphantManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-      const files: KittyCadLibFile[] = []
-
-      event.projectFiles.forEach((file) => {
-        let data: Blob
-        if (file.type === 'other') {
-          data = file.data
-        } else {
-          // file.type === 'kcl'
-          data = new Blob([file.fileContents], { type: 'text/kcl' })
-        }
-        files.push({
-          name: file.relPath,
-          data,
-        })
-      })
-
-      for (let file of files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const filesAsByteArrays = await projectFilesToByteArrays(
+        event.projectFiles
+      )
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',

@@ -1,4 +1,7 @@
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import fs from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import {
   collectProjectFiles,
@@ -15,6 +18,93 @@ beforeAll(async () => {
 })
 
 describe('System IO Utils', () => {
+  it('uses selected editor contents over stale disk contents when collecting project files', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'zds-zk-files-'))
+    const projectPath = path.join(root, 'demo-project')
+    const mainPath = path.join(projectPath, 'main.kcl')
+    const helperPath = path.join(projectPath, 'helper.kcl')
+
+    try {
+      await fs.mkdir(projectPath)
+      await fs.writeFile(mainPath, 'disk width = 500')
+      await fs.writeFile(helperPath, 'helper = 1')
+
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: 'editor width = 80',
+        selectedFilePath: mainPath,
+        fileNames: {},
+        projectContext: {
+          metadata: null,
+          kcl_file_count: 2,
+          directory_count: 0,
+          default_file: mainPath,
+          path: projectPath,
+          name: 'demo-project',
+          children: [
+            { name: 'main.kcl', path: mainPath, children: null },
+            { name: 'helper.kcl', path: helperPath, children: null },
+          ],
+          readWriteAccess: true,
+        },
+      })
+
+      const mainFile = projectFiles.find(
+        (file) => file.type === 'kcl' && file.relPath === 'main.kcl'
+      )
+      const helperFile = projectFiles.find(
+        (file) => file.type === 'kcl' && file.relPath === 'helper.kcl'
+      )
+
+      expect(mainFile).toMatchObject({
+        type: 'kcl',
+        fileContents: 'editor width = 80',
+      })
+      expect(helperFile).toMatchObject({
+        type: 'kcl',
+        fileContents: 'helper = 1',
+      })
+    } finally {
+      await fs.rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('matches selected editor contents by project-relative path', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'zds-zk-files-'))
+    const projectPath = path.join(root, 'demo-project')
+    const mainPath = path.join(projectPath, 'main.kcl')
+
+    try {
+      await fs.mkdir(projectPath)
+      await fs.writeFile(mainPath, 'disk length = 100')
+
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: 'editor length = 120',
+        selectedFilePath: 'main.kcl',
+        fileNames: {},
+        projectContext: {
+          metadata: null,
+          kcl_file_count: 1,
+          directory_count: 0,
+          default_file: mainPath,
+          path: projectPath,
+          name: 'demo-project',
+          children: [{ name: 'main.kcl', path: mainPath, children: null }],
+          readWriteAccess: true,
+        },
+      })
+
+      expect(projectFiles).toContainEqual(
+        expect.objectContaining({
+          type: 'kcl',
+          relPath: 'main.kcl',
+          fileContents: 'editor length = 120',
+        })
+      )
+    } finally {
+      await fs.rm(root, { recursive: true, force: true })
+    }
+  })
+
   it('Properly reconstructs paths from Zookeeper new file requests', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',

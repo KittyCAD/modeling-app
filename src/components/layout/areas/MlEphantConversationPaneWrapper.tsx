@@ -81,6 +81,19 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       const payload = prepareMlEphantNewFileRequest(requestProps)
 
       if (payload) {
+        const normalizeProjectRelativePath = (path: string) =>
+          path.replaceAll('\\', '/').replace(/^\/+/, '')
+        const currentProjectRelativePath = normalizeProjectRelativePath(
+          payload.requestedFileNameWithExtension
+        )
+        const currentFileOutput = payload.files.find(
+          (file) =>
+            normalizeProjectRelativePath(file.requestedFileName) ===
+            currentProjectRelativePath
+        )
+        kclManager.markPendingZookeeperHistoryEntry(
+          currentFileOutput?.requestedCode
+        )
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,

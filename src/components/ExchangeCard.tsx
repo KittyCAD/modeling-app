@@ -1,22 +1,22 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
+import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
-  useEffect,
-  useState,
-  type ReactNode,
   type ComponentProps,
+  type ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from 'react'
-import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -42,11 +42,19 @@ const getEndOfStreamResponse = (
       'end_of_stream' in response
   )
 
-const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
-  responses?.some(
-    (response) =>
-      'end_of_stream' in response || 'error' in response || 'info' in response
-  ) ?? false
+const MANUAL_EDIT_INFO_TEXT =
+  'Manual edits detected since the last Zookeeper state.'
+
+const isManualEditInfo = (response: MlCopilotServerMessage) =>
+  'info' in response && response.info.text.startsWith(MANUAL_EDIT_INFO_TEXT)
+
+const isTerminalResponse = (response: MlCopilotServerMessage) =>
+  'end_of_stream' in response ||
+  'error' in response ||
+  ('info' in response && !isManualEditInfo(response))
+
+export const hasTerminalResponse = (responses?: MlCopilotServerMessage[]) =>
+  responses?.some(isTerminalResponse) ?? false
 
 export interface IButtonCopyProps {
   content: string
@@ -95,7 +103,7 @@ export const ResponseCardToolBar = (props: {
   onClickClearChat: () => void
   isLastResponse: boolean
 }) => {
-  const isEndOfStream = isExchangeComplete(props.responses)
+  const isEndOfStream = hasTerminalResponse(props.responses)
 
   let contentForClipboard: string | undefined = ''
 
@@ -134,9 +142,10 @@ export const ExchangeCardStatus = (props: {
     />
   )
 
-  // Error and info also signals the end of a stream, because we'll never
-  // see an end_of_stream from them.
-  const isEndOfStream = isExchangeComplete(props.responses)
+  // Error and terminal info also signal the end of a stream, because we'll
+  // never see an end_of_stream from them. Non-terminal info, like manual edit
+  // detection, should keep reasoning open until the final Zookeeper response.
+  const isEndOfStream = hasTerminalResponse(props.responses)
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -411,7 +420,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream = isExchangeComplete(props.responses)
+  const isEndOfStream = hasTerminalResponse(props.responses)
 
   useEffect(() => {
     const id = setInterval(() => {
