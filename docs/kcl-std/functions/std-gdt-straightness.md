@@ -5,8 +5,6 @@ excerpt: "GD&T annotation specifying how straight the line elements of faces mus
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 GD&T annotation specifying how straight the line elements of faces must be.
 
 ```kcl
@@ -47,7 +45,7 @@ given `tolerance`.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0, experimentalFeatures = warn)
+@settings(kclVersion = 2.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -73,7 +71,7 @@ gdt::straightness(faces = [top], tolerance = 0.05mm)
 ![Rendered example of gdt::straightness 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-straightness0.png)
 
 ```kcl
-@settings(kclVersion = 2.0, experimentalFeatures = warn)
+@settings(kclVersion = 2.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])

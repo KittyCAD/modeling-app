@@ -171,7 +171,7 @@ export fn flatness(
 /// given `tolerance`.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0, experimentalFeatures = warn)
+/// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -193,7 +193,7 @@ export fn flatness(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0, experimentalFeatures = warn)
+/// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -213,7 +213,7 @@ export fn flatness(
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
 /// gdt::straightness(faces = [top], tolerance = 0.02mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, feature_tree = true, experimental = true)
+@(impl = std_rust, feature_tree = true)
 export fn straightness(
   /// The faces to be annotated.
   @(includeInSnippet = true)
