@@ -1,4 +1,4 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { UserFeature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -25,6 +25,8 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * */
 export const FILE_EXT = '.kcl'
 export const DEFAULT_KCL_VERSION = '2.0'
+export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
+  'sketch_experimental_features'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
