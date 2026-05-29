@@ -1,3 +1,4 @@
+import type { UserFeature } from '@kittycad/lib'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   USER_FEATURES_POLL_INTERVAL_MS,
@@ -27,7 +28,7 @@ type TestFetchUserFeaturesInput = {
   token: string
 }
 
-type TestFetchUserFeaturesResult = { featureIds: Set<string> } | Error
+type TestFetchUserFeaturesResult = { featureIds: Set<UserFeature> } | Error
 
 describe('userFeaturesMachine', () => {
   beforeEach(() => {
@@ -36,7 +37,10 @@ describe('userFeaturesMachine', () => {
 
   it('loads feature ids once for a token and answers membership from context', async () => {
     const fetchFeatures = vi.fn(async () => ({
-      featureIds: new Set(['plugins', 'sketch_experimental_features']),
+      featureIds: new Set<UserFeature>([
+        'plugins',
+        'sketch_experimental_features',
+      ]),
     }))
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -60,8 +64,8 @@ describe('userFeaturesMachine', () => {
       expect(fetchFeatures).toHaveBeenCalledTimes(1)
       expect(context.token).toBe('token-a')
       expect(userFeaturesContextHas(context, 'plugins', false)).toBe(true)
-      expect(userFeaturesContextHas(context, 'missing', false)).toBe(false)
-      expect(userFeaturesContextHas(context, 'missing', true)).toBe(true)
+      expect(userFeaturesContextHas(context, 'aquarium', false)).toBe(false)
+      expect(userFeaturesContextHas(context, 'aquarium', true)).toBe(true)
     } finally {
       actor.stop()
     }
@@ -75,7 +79,7 @@ describe('userFeaturesMachine', () => {
             TestFetchUserFeaturesResult,
             TestFetchUserFeaturesInput
           >(async () => ({
-            featureIds: new Set(['plugins']),
+            featureIds: new Set<UserFeature>(['plugins']),
           })),
         },
       })
@@ -109,7 +113,7 @@ describe('userFeaturesMachine', () => {
             }
 
             return {
-              featureIds: new Set(['plugins']),
+              featureIds: new Set<UserFeature>(['plugins']),
             }
           }),
         },
@@ -152,9 +156,12 @@ describe('userFeaturesMachine', () => {
     vi.useFakeTimers()
     const fetchFeatures = vi
       .fn()
-      .mockResolvedValueOnce({ featureIds: new Set(['plugins']) })
+      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>(['plugins']) })
       .mockResolvedValueOnce({
-        featureIds: new Set(['plugins', 'sketch_experimental_features']),
+        featureIds: new Set<UserFeature>([
+          'plugins',
+          'sketch_experimental_features',
+        ]),
       })
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -212,7 +219,7 @@ describe('userFeaturesMachine', () => {
     const fetchFeatures = vi
       .fn()
       .mockResolvedValueOnce(new Error('feature service unavailable'))
-      .mockResolvedValueOnce({ featureIds: new Set(['plugins']) })
+      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>(['plugins']) })
     const actor = createActor(
       userFeaturesMachine.provide({
         actors: {

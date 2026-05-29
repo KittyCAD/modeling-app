@@ -1,4 +1,4 @@
-import type { UserResponse } from '@kittycad/lib/dist/types/src'
+import type { UserFeature, UserResponse } from '@kittycad/lib'
 import {
   Registry,
   type RegistryItem,
@@ -157,7 +157,7 @@ export type AppUserFeaturesSystem = UserFeaturesService & {
   actor: UserFeaturesActorRef
   send: UserFeaturesActorRef['send']
   useContext: () => UserFeaturesContext
-  useHas: (featureFlagId: string, defaultValue: boolean) => boolean
+  useHas: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
 }
 
 export type AppLayoutSystem = {
