@@ -6,12 +6,18 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_INSTANCES, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_INSTANCES,
+  KCL_DEFAULT_LENGTH,
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+} from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
+  test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
+
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,

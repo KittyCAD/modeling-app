@@ -1,6 +1,6 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { OutputFormat3d } from '@kittycad/lib'
+import type { OutputFormat3d, UserFeature } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
@@ -941,7 +941,8 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testInfo?: TestInfo
+  testInfo?: TestInfo,
+  userFeatures: readonly UserFeature[] = []
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -949,6 +950,17 @@ export async function setup(
     !isArray(TEST_SETTINGS.project)
       ? TEST_SETTINGS.project
       : undefined
+
+  await context.unroute('**/user/features')
+  await context.route('**/user/features', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        features: userFeatures.map((id) => ({ id })),
+      }),
+    })
+  })
 
   await page.addInitScript(
     async ({
