@@ -3,6 +3,8 @@ import { use } from 'react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   createCallExpressionStdLibKw,
@@ -15,6 +17,7 @@ import { getVariableExprsFromSelection } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getPatternArtifactForCopyId,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph, Expr } from '@src/lang/wasm'
@@ -26,6 +29,7 @@ import { uuidv4 } from '@src/lib/utils'
 import type {
   EnginePrimitiveSelection,
   Selection,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
@@ -33,6 +37,8 @@ type SelectionReference = {
   id: string
   label: string
   code: string
+  graphSelection?: Selection
+  enginePrimitiveSelection?: EnginePrimitiveSelection
 }
 
 type SelectionReferenceState =
@@ -45,7 +51,16 @@ type PrimitiveInfo = {
   parentEntityId?: string
   primitiveIndex: number
   primitiveType: 'face' | 'edge'
+  graphSelection?: Selection
+  enginePrimitiveSelection?: EnginePrimitiveSelection
 }
+
+const BODY_REFERENCE_ARTIFACT_TYPES: Artifact['type'][] = [
+  'sweep',
+  'compositeSolid',
+  'pattern',
+  'helix',
+]
 
 async function getParentEntityIdForEntity(
   entityId: string,
@@ -129,12 +144,31 @@ function getPrimitiveInfoFromSelection(
   }
 }
 
-function isFaceOrEdgeArtifact(artifact: Artifact | undefined): boolean {
+function isBodyReferenceArtifact(
+  artifact: Artifact | undefined
+): artifact is Extract<
+  Artifact,
+  { type: 'sweep' | 'compositeSolid' | 'pattern' | 'helix' }
+> {
+  return (
+    artifact?.type === 'sweep' ||
+    artifact?.type === 'compositeSolid' ||
+    artifact?.type === 'pattern' ||
+    artifact?.type === 'helix'
+  )
+}
+
+function isSegmentReferenceArtifact(
+  artifact: Artifact | undefined
+): artifact is Extract<Artifact, { type: 'segment' }> {
+  return artifact?.type === 'segment'
+}
+
+function isPrimitiveReferenceArtifact(artifact: Artifact | undefined): boolean {
   return (
     artifact?.type === 'wall' ||
     artifact?.type === 'cap' ||
     artifact?.type === 'primitiveFace' ||
-    artifact?.type === 'segment' ||
     artifact?.type === 'sweepEdge' ||
     artifact?.type === 'primitiveEdge' ||
     artifact?.type === 'edgeCut'
@@ -164,18 +198,19 @@ function getBodySelectionFromPrimitiveParentEntityId(
   parentEntityId: string,
   artifactGraph: ArtifactGraph
 ): Selection | null {
-  const parentArtifact = artifactGraph.get(parentEntityId)
+  const parentArtifact =
+    artifactGraph.get(parentEntityId) ??
+    getPatternArtifactForCopyId(parentEntityId, artifactGraph)
   if (!parentArtifact) {
     return null
   }
 
-  if (
-    parentArtifact.type === 'sweep' ||
-    parentArtifact.type === 'compositeSolid'
-  ) {
+  if (isBodyReferenceArtifact(parentArtifact)) {
     return {
       artifact: parentArtifact,
       codeRef: parentArtifact.codeRef,
+      engineEntityId:
+        parentArtifact.id === parentEntityId ? undefined : parentEntityId,
     }
   }
 
@@ -249,7 +284,10 @@ function createPrimitiveReferenceCode({
     kclManager.ast,
     wasmInstance,
     undefined,
-    { artifactTypeFilter: ['sweep', 'compositeSolid'] }
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
+    }
   )
   if (err(bodyVariables) || bodyVariables.exprs.length === 0) {
     return null
@@ -272,7 +310,51 @@ function createPrimitiveReferenceCode({
   return recastExpr(call, wasmInstance)
 }
 
-async function getSelectionDebugReferences({
+function createExpressionReferences({
+  label,
+  selection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+  options,
+}: {
+  label: string
+  selection: Selection
+  artifactGraph: ArtifactGraph
+  kclManager: ReturnType<typeof useSingletons>['kclManager']
+  wasmInstance: Parameters<typeof recast>[1]
+  options?: Parameters<typeof getVariableExprsFromSelection>[5]
+}): SelectionReference[] {
+  const variableExprs = getVariableExprsFromSelection(
+    { graphSelections: [selection], otherSelections: [] },
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance,
+    undefined,
+    options
+  )
+  if (err(variableExprs)) {
+    return []
+  }
+
+  return variableExprs.exprs.flatMap((expr) => {
+    const code = recastExpr(expr, wasmInstance)
+    if (!code) {
+      return []
+    }
+
+    return [
+      {
+        id: `${label}:${selection.artifact?.id || selection.engineEntityId || code}:${code}`,
+        label,
+        code,
+        graphSelection: selection,
+      },
+    ]
+  })
+}
+
+async function getSelectionReferences({
   graphSelections,
   enginePrimitives,
   artifactGraph,
@@ -287,10 +369,41 @@ async function getSelectionDebugReferences({
   kclManager: ReturnType<typeof useSingletons>['kclManager']
   wasmInstance: Parameters<typeof recast>[1]
 }): Promise<SelectionReference[]> {
+  const references: SelectionReference[] = []
   const primitiveInfos: PrimitiveInfo[] = []
 
   for (const selection of graphSelections) {
-    if (!isFaceOrEdgeArtifact(selection.artifact)) {
+    if (isBodyReferenceArtifact(selection.artifact)) {
+      references.push(
+        ...createExpressionReferences({
+          label: 'Body',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+          options: {
+            lastChildLookup: true,
+            artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
+          },
+        })
+      )
+      continue
+    }
+
+    if (isSegmentReferenceArtifact(selection.artifact)) {
+      references.push(
+        ...createExpressionReferences({
+          label: 'Segment',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+        })
+      )
+      continue
+    }
+
+    if (!isPrimitiveReferenceArtifact(selection.artifact)) {
       continue
     }
 
@@ -304,14 +417,17 @@ async function getSelectionDebugReferences({
       engineCommandManager
     )
     if (primitiveInfo) {
-      primitiveInfos.push(primitiveInfo)
+      primitiveInfos.push({ ...primitiveInfo, graphSelection: selection })
     }
   }
 
   for (const selection of enginePrimitives) {
     const primitiveInfo = getPrimitiveInfoFromSelection(selection)
     if (primitiveInfo) {
-      primitiveInfos.push(primitiveInfo)
+      primitiveInfos.push({
+        ...primitiveInfo,
+        enginePrimitiveSelection: selection,
+      })
     }
   }
 
@@ -324,28 +440,38 @@ async function getSelectionDebugReferences({
     ).values(),
   ]
 
-  return dedupedPrimitiveInfos.flatMap((primitiveInfo) => {
-    const code = createPrimitiveReferenceCode({
-      primitiveInfo,
-      artifactGraph,
-      kclManager,
-      wasmInstance,
-    })
-    if (!code) {
-      return []
-    }
+  references.push(
+    ...dedupedPrimitiveInfos.flatMap((primitiveInfo) => {
+      const code = createPrimitiveReferenceCode({
+        primitiveInfo,
+        artifactGraph,
+        kclManager,
+        wasmInstance,
+      })
+      if (!code) {
+        return []
+      }
 
-    return [
-      {
-        id: `${primitiveInfo.primitiveType}:${primitiveInfo.entityId}`,
-        label:
-          primitiveInfo.primitiveType === 'face'
-            ? `Face ${primitiveInfo.primitiveIndex}`
-            : `Edge ${primitiveInfo.primitiveIndex}`,
-        code,
-      },
-    ]
-  })
+      return [
+        {
+          id: `${primitiveInfo.primitiveType}:${primitiveInfo.entityId}`,
+          label: primitiveInfo.primitiveType === 'face' ? 'Face' : 'Edge',
+          code,
+          graphSelection: primitiveInfo.graphSelection,
+          enginePrimitiveSelection: primitiveInfo.enginePrimitiveSelection,
+        },
+      ]
+    })
+  )
+
+  return [
+    ...new Map(
+      references.map((reference) => [
+        `${reference.label}:${reference.code}`,
+        reference,
+      ])
+    ).values(),
+  ]
 }
 
 function getEnginePrimitiveSelections(
@@ -371,9 +497,67 @@ async function copyCode(code: string) {
   }
 }
 
+function isSameCodeRange(left: Selection, right: Selection) {
+  return (
+    left.codeRef.range[0] === right.codeRef.range[0] &&
+    left.codeRef.range[1] === right.codeRef.range[1]
+  )
+}
+
+function isSameGraphSelection(left: Selection, right: Selection) {
+  if (left.artifact?.id && right.artifact?.id) {
+    return left.artifact.id === right.artifact.id
+  }
+
+  if (left.engineEntityId && right.engineEntityId) {
+    return left.engineEntityId === right.engineEntityId
+  }
+
+  return isSameCodeRange(left, right)
+}
+
+function isSameEnginePrimitiveSelection(
+  left: EnginePrimitiveSelection,
+  right: EnginePrimitiveSelection
+) {
+  return left.entityId === right.entityId
+}
+
+function removeReferenceFromSelections(
+  selections: Selections,
+  reference: SelectionReference
+): Selections {
+  const graphSelectionToRemove = reference.graphSelection
+  const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
+
+  return {
+    graphSelections: graphSelectionToRemove
+      ? selections.graphSelections.filter(
+          (selection) =>
+            !isSameGraphSelection(selection, graphSelectionToRemove)
+        )
+      : selections.graphSelections,
+    otherSelections: enginePrimitiveSelectionToRemove
+      ? selections.otherSelections.filter(
+          (selection) =>
+            !(
+              typeof selection === 'object' &&
+              selection !== null &&
+              'type' in selection &&
+              selection.type === 'enginePrimitive' &&
+              isSameEnginePrimitiveSelection(
+                selection,
+                enginePrimitiveSelectionToRemove
+              )
+            )
+        )
+      : selections.otherSelections,
+  }
+}
+
 export function SelectionReferencesPopover() {
   const { kclManager } = useSingletons()
-  const { context } = useModelingContext()
+  const { context, send } = useModelingContext()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const selectionRanges = context.selectionRanges
   const [state, setState] = useState<SelectionReferenceState>({
@@ -385,7 +569,7 @@ export function SelectionReferencesPopover() {
     let cancelled = false
     setState({ status: 'loading', references: [] })
 
-    getSelectionDebugReferences({
+    getSelectionReferences({
       graphSelections: selectionRanges.graphSelections,
       enginePrimitives: getEnginePrimitiveSelections(selectionRanges),
       artifactGraph: kclManager.artifactGraph,
@@ -437,27 +621,65 @@ export function SelectionReferencesPopover() {
   if (state.references.length === 0) {
     return (
       <div className="p-2 text-xs text-chalkboard-70 dark:text-chalkboard-30">
-        No face or edge references for the current selection.
+        No selection references for the current selection.
       </div>
     )
   }
 
+  const removeReference = (reference: SelectionReference) => {
+    send({
+      type: 'Set selection',
+      data: {
+        selectionType: 'completeSelection',
+        selection: removeReferenceFromSelections(selectionRanges, reference),
+      },
+    })
+  }
+
   return (
-    <div className="flex flex-col gap-1 p-2">
+    <div className="flex flex-col gap-1 p-1 divide-y divide-chalkboard-30 dark:divide-chalkboard-80">
       {state.references.map((reference) => (
-        <button
+        <div
           key={reference.id}
-          type="button"
-          className="grid grid-cols-[5rem,minmax(0,1fr)] gap-2 rounded-sm border border-transparent px-2 py-1 text-left text-xs hover:border-primary/50 hover:bg-primary/10 focus:border-primary focus:bg-primary/10 focus:outline-none"
-          onClick={() => copyCode(reference.code).catch(reportRejection)}
+          className="grid grid-cols-[minmax(0,1fr),auto,auto] items-center gap-2 rounded-sm px-2 py-1 text-xs"
         >
-          <span className="text-chalkboard-70 dark:text-chalkboard-40">
+          <span className="truncate text-chalkboard-80 dark:text-chalkboard-30">
             {reference.label}
           </span>
-          <code className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-chalkboard-100 dark:text-chalkboard-10">
-            {reference.code}
-          </code>
-        </button>
+          <button
+            type="button"
+            className="relative rounded-sm p-0.5 text-2 border-none dark:border-none hover:bg-2 focus:bg-2"
+            aria-label={`Copy ${reference.label} KCL reference`}
+            onClick={() => {
+              copyCode(reference.code).catch(reportRejection)
+            }}
+          >
+            <CustomIcon name="clipboard" className="h-4 w-4" />
+            <Tooltip
+              position="left"
+              contentClassName="max-w-72 text-xs text-left"
+            >
+              <div className="mb-1">Copy KCL reference</div>
+              <code className="block whitespace-normal break-all font-mono">
+                {reference.code}
+              </code>
+            </Tooltip>
+          </button>
+          <button
+            type="button"
+            className="relative p-0.5 rounded-sm text-2 hover:bg-destroy-80 focus:bg-destroy-80 !border-none"
+            aria-label={`Remove ${reference.label} from selection`}
+            onClick={() => removeReference(reference)}
+          >
+            <CustomIcon name="close" className="h-4 w-4" />
+            <Tooltip
+              position="left"
+              contentClassName="max-w-64 text-xs text-left"
+            >
+              Remove this item from the selection.
+            </Tooltip>
+          </button>
+        </div>
       ))}
     </div>
   )
