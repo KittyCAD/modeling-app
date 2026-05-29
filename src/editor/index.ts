@@ -45,6 +45,7 @@ import { executionEffectsExtension } from '@src/editor/plugins/execution'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
 import { writeEffectsExtension } from '@src/editor/plugins/write'
 import { blurOnEscape } from '@src/editor/plugins/blurOnEsc'
+import { diagnosticTooltipCloseButton } from '@src/editor/plugins/diagnosticTooltipCloseButton'
 import { createHistoryExtension } from '@src/editor/historyConfig'
 
 export const lineWrappingCompartment = new Compartment()
@@ -101,6 +102,7 @@ export function baseEditorExtensions() {
     themeCompartment.of(Prec.highest([])),
     rectangularSelection(),
     dropCursor(),
+    diagnosticTooltipCloseButton(),
     blurOnEscape,
     interact({
       rules: [

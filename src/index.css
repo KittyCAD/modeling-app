@@ -619,43 +619,6 @@ code,
   @apply bg-primary;
 }
 
-.body-bg .cm-tooltip-lint .cm-diagnostic {
-  position: relative;
-  padding-right: 1.75rem;
-}
-
-.body-bg .cm-tooltip-lint .cm-diagnosticAction.cm-diagnosticClose {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1rem;
-  height: 1rem;
-  min-width: 1rem;
-  margin: 0;
-  padding: 0;
-  border-color: transparent;
-  background: transparent;
-  color: inherit;
-  font-size: 0;
-  line-height: 1;
-}
-
-.body-bg .cm-tooltip-lint .cm-diagnosticAction.cm-diagnosticClose::before {
-  content: "x";
-  font-size: 0.75rem;
-  line-height: 1;
-}
-
-.body-bg .cm-tooltip-lint .cm-diagnosticAction.cm-diagnosticClose:hover,
-.body-bg
-  .cm-tooltip-lint
-  .cm-diagnosticAction.cm-diagnosticClose:focus-visible {
-  @apply bg-chalkboard-20 dark:bg-chalkboard-80;
-}
-
 .animate-shimmer {
   animation-delay: .5s;
   animation-duration: 1s;
