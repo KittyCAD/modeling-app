@@ -1,7 +1,5 @@
-import {
-  TRIM_PREVIEW_LINE_COLOR,
-  getTrimPreviewLineWidth,
-} from '@src/lib/freehandLineDrawing'
+import { TRIM_PREVIEW_LINE_COLOR } from '@src/lib/constants'
+import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
 import { getVisibleViewportRect } from '@src/lib/viewportElement'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
