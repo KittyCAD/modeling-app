@@ -329,6 +329,7 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
+  status?: Extract<CommandStatus, 'experimental'>
   required:
     | boolean
     | ((

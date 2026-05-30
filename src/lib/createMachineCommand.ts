@@ -192,6 +192,7 @@ export function buildCommandArgument<
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
+    status: arg.status,
     required: arg.required,
     prepopulate: arg.prepopulate,
     hidden,

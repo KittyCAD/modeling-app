@@ -4,6 +4,7 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { useMemo } from 'react'
@@ -156,6 +157,17 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                     key={argName}
                     className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
                   >
+                    {arg.status === 'experimental' && (
+                      <span className="inline-flex items-center">
+                        <CustomIcon name="beaker" className="w-3.5 h-3.5" />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
                     <span className="capitalize">
                       {arg.displayName || argName}
                     </span>

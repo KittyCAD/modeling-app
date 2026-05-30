@@ -148,6 +148,7 @@ describe('createMachineCommand', () => {
         },
         experimentalArg: {
           hidden: true,
+          status: 'experimental',
         },
       },
     })
@@ -177,6 +178,7 @@ describe('createMachineCommand', () => {
         },
         experimentalArg: {
           hidden: undefined,
+          status: 'experimental',
         },
       },
     })
