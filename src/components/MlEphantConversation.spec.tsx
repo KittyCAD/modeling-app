@@ -860,6 +860,7 @@ describe('MlEphantConversation', () => {
       expect(
         screen.getByTestId('ml-ephant-annotate-screenshot-button')
       ).toBeInTheDocument()
+      expect(screen.getByText('Zoodle')).toBeInTheDocument()
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
