@@ -1,10 +1,10 @@
-import { createEmptyAst } from '@src/editor/plugins/ast'
-import { File, KclManager } from '@src/lang/KclManager'
 import type { Diagnostic } from '@codemirror/lint'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { createEmptyAst } from '@src/editor/plugins/ast'
+import { File, KclManager } from '@src/lang/KclManager'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {

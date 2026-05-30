@@ -1,11 +1,11 @@
+import {
+  TRIM_PREVIEW_LINE_COLOR,
+  getTrimPreviewLineWidth,
+} from '@src/lib/freehandLineDrawing'
+import { getVisibleViewportRect } from '@src/lib/viewportElement'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import {
-  getTrimPreviewLineWidth,
-  TRIM_PREVIEW_LINE_COLOR,
-} from '@src/lib/freehandLineDrawing'
-import { getVisibleViewportRect } from '@src/lib/viewportElement'
 
 const loadImage = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {

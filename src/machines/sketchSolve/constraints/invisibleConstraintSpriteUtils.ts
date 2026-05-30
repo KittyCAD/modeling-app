@@ -7,25 +7,25 @@ import { getAngleDiff } from '@src/lib/utils'
 import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 import {
   axisConstraintIncludesOrigin,
-  getAxisConstraintLineId,
   coincidentContainsSegment,
-  getAxisConstraintPointIds,
-  getCoincidentSegmentIds,
-  getCoincidentCluster,
   getArcPoints,
+  getAxisConstraintLineId,
+  getAxisConstraintPointIds,
+  getCoincidentCluster,
+  getCoincidentSegmentIds,
   getLinePoints,
-  isConstraintSegmentId,
   isArcLikeSegment,
   isArcSegment,
   isConstraint,
+  isConstraintSegmentId,
   isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 export type InvisibleConstraint = Extract<
   ApiConstraint,

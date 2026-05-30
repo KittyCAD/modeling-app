@@ -2,12 +2,12 @@ import { Dialog } from '@headlessui/react'
 import type { MouseEvent, RefObject } from 'react'
 import {
   Fragment,
+  memo,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  memo,
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'

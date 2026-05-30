@@ -1,12 +1,12 @@
 import { Popover, Transition } from '@headlessui/react'
+import type { ProjectCategoryResponse } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
 } from '@src/lib/share'
-import type { ProjectCategoryResponse } from '@kittycad/lib'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogProps = {

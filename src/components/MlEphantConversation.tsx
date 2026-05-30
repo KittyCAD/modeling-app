@@ -1,23 +1,23 @@
-import Loading from '@src/components/Loading'
-import { type Selections } from '@src/machines/modelingSharedTypes'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import Loading from '@src/components/Loading'
+import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
+import Tooltip from '@src/components/Tooltip'
+import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { err } from '@src/lib/trap'
+import { isNonNullable } from '@src/lib/utils'
 import type {
   Conversation,
   Exchange,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
+import { type Selections } from '@src/machines/modelingSharedTypes'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import Tooltip from '@src/components/Tooltip'
-import { isExternalFileDrag } from '@src/components/Explorer/utils'
-import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
-import { isNonNullable } from '@src/lib/utils'
-import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
-import { err } from '@src/lib/trap'
-import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
 
 const noop = () => {}
 
@@ -182,11 +182,11 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           onClick={props.onAnnotateScreenshot}
           disabled={props.attachmentsDisabled}
           className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
-          aria-label="Annotate viewport screenshot"
+          aria-label="Zoodle"
         >
           <CustomIcon name="sketch" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
-            <span>Annotate viewport screenshot</span>
+            <span>Zoodle</span>
           </Tooltip>
         </button>
       </div>

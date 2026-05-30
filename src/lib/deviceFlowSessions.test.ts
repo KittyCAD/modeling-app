@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import {
-  DeviceFlowSessionStore,
   type DeviceFlowSession,
+  DeviceFlowSessionStore,
 } from '@src/lib/deviceFlowSessions'
 
 type TestHandle = {

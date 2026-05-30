@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   getVisibleElementRect,
   getVisibleViewportRect,
 } from '@src/lib/viewportElement'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const rect = ({
   left,

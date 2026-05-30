@@ -5,12 +5,12 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type RustContext from '@src/lib/rustContext'
+import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
-  getConstraintToolPreparedApply,
   type ConstraintToolPreparedApply,
+  getConstraintToolPreparedApply,
 } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 
 type ConstraintMutationResult = Awaited<
   ReturnType<RustContext['addConstraint']>

@@ -1,11 +1,6 @@
 import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it, vi } from 'vitest'
 import {
-  appendValueSpec,
-  firstWinsValueSpec,
-  mergeObjectsValueSpec,
-} from './valueSpec'
-import {
   defineContract,
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -15,6 +10,11 @@ import {
 import { Registry } from './registry'
 import { defineService } from './service'
 import { type RegistryItem, Slot } from './types'
+import {
+  appendValueSpec,
+  firstWinsValueSpec,
+  mergeObjectsValueSpec,
+} from './valueSpec'
 
 describe('Registry', () => {
   it('resolves static and reactive value-spec contributions', () => {
