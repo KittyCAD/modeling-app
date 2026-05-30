@@ -182,11 +182,11 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           onClick={props.onAnnotateScreenshot}
           disabled={props.attachmentsDisabled}
           className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
-          aria-label="Annotate viewport screenshot"
+          aria-label="Zoodle"
         >
           <CustomIcon name="sketch" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
-            <span>Annotate viewport screenshot</span>
+            <span>Zoodle</span>
           </Tooltip>
         </button>
       </div>
