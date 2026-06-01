@@ -154,9 +154,8 @@
 //! it just like a self-contained object (though see the docs on `restore_env` and `squash_env` if
 //! you use that method). You shouldn't need to use `ProgramMemory` for much, other
 //! than creating new `Stack`s which is always safe (doesn't mutate `ProgramMemory`). After interpreting
-//! std, you'll need to call `set_std` and for this you must have a unique reference to `ProgramMemory`,
-//! but if you don't we'll just panic, not cause a safety issue. `get_from` and `find_all_in_env`
-//! take an owner parameter and follow the thread-safety invariants below.
+//! std, you'll need to call `set_std`. `get_from` and `find_all_in_env` take an owner parameter
+//! and follow the thread-safety invariants below.
 //!
 //! The rest of this section describes the implementation and thread-safety invariants, you should
 //! only need to understand it if you're modifying this file (or want to call a few, rarely used
@@ -209,6 +208,7 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::pin::Pin;
 use std::sync::Arc;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
@@ -387,7 +387,7 @@ pub(crate) struct ProgramMemory {
     // to help guarantee that.
     environments: UnsafeCell<EnvironmentsBlocks>,
     /// Memory for the std prelude.
-    std: Option<EnvironmentRef>,
+    std: OnceLock<EnvironmentRef>,
     /// Statistics about the memory, should not be used for anything other than meta-info.
     pub(crate) stats: MemoryStats,
     next_stack_id: AtomicUsize,
@@ -396,6 +396,14 @@ pub(crate) struct ProgramMemory {
 }
 
 unsafe impl Sync for ProgramMemory {}
+
+fn once_lock_copy(value: Option<EnvironmentRef>) -> OnceLock<EnvironmentRef> {
+    let lock = OnceLock::new();
+    if let Some(value) = value {
+        let _ = lock.set(value);
+    }
+    lock
+}
 
 #[derive(Debug, Clone)]
 pub(crate) struct Stack {
@@ -435,6 +443,7 @@ impl fmt::Display for Stack {
 
 impl ProgramMemory {
     #[allow(clippy::new_without_default)]
+    #[allow(dead_code)]
     pub fn new() -> Arc<Self> {
         Self::new_with_backend(super::MemoryBackendKind::Legacy)
     }
@@ -448,7 +457,7 @@ impl ProgramMemory {
     fn new_legacy() -> Arc<Self> {
         Arc::new(Self {
             environments: UnsafeCell::new(EnvironmentsBlocks::new()),
-            std: None,
+            std: OnceLock::new(),
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(1),
             epoch: AtomicUsize::new(1),
@@ -467,7 +476,7 @@ impl ProgramMemory {
     fn deep_clone(&self) -> Self {
         self.with_envs(|envs| Self {
             environments: UnsafeCell::new(envs.deep_clone()),
-            std: self.std,
+            std: once_lock_copy(self.std.get().copied()),
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(self.next_stack_id.load(Ordering::Relaxed)),
             epoch: AtomicUsize::new(self.epoch.load(Ordering::Relaxed)),
@@ -488,15 +497,19 @@ impl ProgramMemory {
     }
 
     /// Set the env var used for the standard library prelude.
-    ///
-    /// Precondition: `self` must be uniquely owned.
     pub fn set_std(self: &mut Arc<Self>, std: EnvironmentRef) {
-        Arc::get_mut(self).unwrap().std = Some(std);
+        if self.std.set(std).is_err() {
+            debug_assert_eq!(
+                self.std.get().copied(),
+                Some(std),
+                "standard library prelude should not be reinitialized to a different env"
+            );
+        }
     }
 
     /// Whether this memory still needs to be initialised with its standard library prelude.
     pub fn requires_std(&self) -> bool {
-        self.std.is_none()
+        self.std.get().is_none()
     }
 
     /// Get a value from a specific environment of the memory at a specific point in time.
@@ -662,7 +675,13 @@ impl Stack {
     /// Suitable for executing a separate module.
     /// Precondition: include_prelude -> !self.memory.requires_std()
     pub fn push_new_root_env(&mut self, include_prelude: bool) {
-        let parent = include_prelude.then(|| self.memory.std.unwrap());
+        let parent = include_prelude.then(|| {
+            *self
+                .memory
+                .std
+                .get()
+                .expect("standard library prelude should be initialized before root env creation")
+        });
         let env_ref = self.memory.new_env(parent, true, self.id);
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
