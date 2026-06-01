@@ -647,6 +647,106 @@ fn surface_blend_creates_blend_sweep_artifact() {
 }
 
 #[test]
+fn solid3d_multi_join_links_consumed_sweep_path_to_composite() {
+    let path_id = ArtifactId::new(Uuid::new_v4());
+    let sweep_id = ArtifactId::new(Uuid::new_v4());
+    let plane_id = ArtifactId::new(Uuid::new_v4());
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        path_id,
+        Artifact::Path(Path {
+            id: path_id,
+            sub_type: PathSubType::Region,
+            plane_id,
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: code_ref.clone(),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        sweep_id,
+        Artifact::Sweep(Sweep {
+            id: sweep_id,
+            sub_type: SweepSubType::Revolve,
+            path_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::Solid3dMultiJoin::builder()
+            .object_ids(vec![Uuid::from(sweep_id)])
+            .tolerance(kittycad_modeling_cmds::length_unit::LengthUnit(0.01))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    let composite_id = ArtifactId::new(cmd_id);
+    let joined = updated.iter().find_map(|artifact| match artifact {
+        Artifact::CompositeSolid(composite) => Some(composite),
+        _ => None,
+    });
+    let consumed_sweep = updated.iter().find_map(|artifact| match artifact {
+        Artifact::Sweep(sweep) => Some(sweep),
+        _ => None,
+    });
+    let linked_path = updated.iter().find_map(|artifact| match artifact {
+        Artifact::Path(path) => Some(path),
+        _ => None,
+    });
+
+    let joined = joined.expect("expected joinSurfaces composite artifact");
+    assert_eq!(joined.id, composite_id);
+    assert_eq!(joined.solid_ids, vec![sweep_id]);
+    assert!(!joined.consumed);
+
+    let consumed_sweep = consumed_sweep.expect("expected consumed input sweep");
+    assert_eq!(consumed_sweep.id, sweep_id);
+    assert!(consumed_sweep.consumed);
+
+    let linked_path = linked_path.expect("expected input path update");
+    assert_eq!(linked_path.id, path_id);
+    assert_eq!(linked_path.composite_solid_id, Some(composite_id));
+}
+
+#[test]
 fn create_region_creates_region_path_sub_type() {
     let origin_path_id = ArtifactId::new(Uuid::new_v4());
     let origin_plane_id = ArtifactId::new(Uuid::new_v4());
