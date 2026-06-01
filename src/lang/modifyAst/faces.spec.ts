@@ -1,3 +1,4 @@
+import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -13,7 +14,13 @@ import {
 } from '@src/lang/modifyAst/faces'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { type PlaneArtifact, getAllOperations, recast } from '@src/lang/wasm'
+import {
+  type Artifact,
+  type CodeRef,
+  type PlaneArtifact,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { bracket } from '@src/lib/exampleKcl'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
