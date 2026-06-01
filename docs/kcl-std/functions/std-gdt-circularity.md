@@ -61,7 +61,7 @@ cylinderSketch = sketch(on = XY) {
 cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
 hide(cylinderSketch)
 cylinder = extrude(cylinderRegion, length = 10mm)
-gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm)
+gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
 
 ```
 
@@ -79,7 +79,7 @@ cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cyli
 gdt::circularity(
   faces = [cylinder.sketch.tags.perimeter],
   tolerance = 0.02mm,
-  framePosition = [12mm, 8mm],
+  framePosition = [-12mm, 8mm],
   framePlane = XZ,
 )
 
@@ -100,7 +100,7 @@ topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
 gdt::circularity(
   edges = [topEdge],
   tolerance = 0.05mm,
-  framePosition = [12mm, 8mm],
+  framePosition = [-12mm, 8mm],
   framePlane = XZ,
 )
 

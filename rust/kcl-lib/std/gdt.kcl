@@ -292,7 +292,7 @@ export fn straightness(
 /// cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
 /// hide(cylinderSketch)
 /// cylinder = extrude(cylinderRegion, length = 10mm)
-/// gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm)
+/// gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
@@ -303,7 +303,7 @@ export fn straightness(
 /// }
 ///
 /// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
-/// gdt::circularity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// gdt::circularity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
@@ -315,7 +315,7 @@ export fn straightness(
 ///
 /// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
 /// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
-/// gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn circularity(
