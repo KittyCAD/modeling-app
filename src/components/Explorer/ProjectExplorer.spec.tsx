@@ -3,9 +3,11 @@ import {
   type FileExplorerEntry,
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { app } from '@src/lib/boot'
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   cleanup,
   fireEvent,
@@ -13,7 +15,15 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react'
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -56,14 +66,32 @@ const PROJECT_TEMPLATE: Project = {
   readWriteAccess: true,
 }
 let project: Project = PROJECT_TEMPLATE
+const tempProjectPaths: string[] = []
+
+async function createTempProjectPath() {
+  const tempProjectPath = fsZds.join(
+    process.cwd(),
+    'tmp',
+    `project-explorer-drop-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  )
+  tempProjectPaths.push(tempProjectPath)
+  await fsZds.mkdir(tempProjectPath, { recursive: true })
+  return tempProjectPath
+}
 
 describe('ProjectExplorer', () => {
   beforeEach(() => {
     // reset the project before each test
     project = JSON.parse(JSON.stringify(PROJECT_TEMPLATE))
   })
-  afterEach(() => {
+  afterEach(async () => {
     cleanup()
+    for (const tempProjectPath of tempProjectPaths.splice(0)) {
+      await fsZds
+        .rm(tempProjectPath, { recursive: true, force: true })
+        .catch(() => {})
+    }
+    vi.restoreAllMocks()
   })
   it('should render no rows', () => {
     render(
@@ -659,5 +687,65 @@ describe('ProjectExplorer', () => {
     expect(items[0].innerText).toBe('parts')
     expect(items[1].innerText).toBe('very')
     expect(items[2].innerText).toBe('cool')
+  })
+  it('should import dropped external files into the project root', async () => {
+    const tempProjectPath = await createTempProjectPath()
+    const projectFile = createFile('main.kcl')
+    project = {
+      ...PROJECT_TEMPLATE,
+      path: tempProjectPath,
+      default_file: fsZds.join(tempProjectPath, 'main.kcl'),
+      children: [],
+    }
+    projectFile.path = fsZds.join(tempProjectPath, projectFile.name)
+    const sendSpy = vi
+      .spyOn(app.systemIOActor, 'send')
+      .mockImplementation(() => {})
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={projectFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    const droppedFile = new File(['dropped contents'], 'bracket.step', {
+      type: 'application/step',
+    })
+    const dataTransfer = {
+      types: ['Files'],
+      items: [
+        {
+          kind: 'file',
+          getAsFile: () => droppedFile,
+        },
+      ],
+      dropEffect: 'none',
+    }
+    const container = screen.getByTestId('file-pane-scroll-container')
+
+    fireEvent.dragEnter(container, { dataTransfer })
+    fireEvent.drop(container, { dataTransfer })
+
+    await waitFor(async () => {
+      const importedFile = await fsZds.readFile(
+        fsZds.join(tempProjectPath, 'bracket.step'),
+        { encoding: 'utf-8' }
+      )
+      expect(importedFile).toBe('dropped contents')
+    })
+
+    expect(sendSpy).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
   })
 })
