@@ -1273,6 +1273,26 @@ export function buildToolbarConfig(
                 },
               ],
             },
+            {
+              id: 'delete',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Delete', groupId: 'modeling' },
+                }),
+              status: 'experimental',
+              title: 'Delete',
+              icon: 'trash',
+              description: 'Delete selected bodies from the scene.',
+              links: [
+                {
+                  label: 'API docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-transform-delete'
+                  ),
+                },
+              ],
+            },
           ],
         },
         {
