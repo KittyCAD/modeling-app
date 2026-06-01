@@ -30,6 +30,7 @@ import {
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   CHILD_TOOL_DONE_EVENT,
+  ORIGIN_TARGET,
   type SketchSolveContext,
   type SketchSolveMachineEvent,
   type SolveActionArgs,
@@ -44,7 +45,6 @@ import {
   getObjectSelectionIds,
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
-  ORIGIN_TARGET,
   refreshSelectionStyling,
   refreshSketchSolveScale,
   sendToActorIfActive,
@@ -53,18 +53,18 @@ import {
   tearDownSketchSolve,
   updateHoveredId,
   updateSelectedCodeHighlight,
-  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
+  updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import {
-  constraintToolNames,
   type ConstraintToolName,
+  constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5

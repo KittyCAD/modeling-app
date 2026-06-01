@@ -1,6 +1,6 @@
+import { Draggable } from '@kittycad/ui-components'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useRef } from 'react'
-import { Draggable } from '@kittycad/ui-components'
 
 const containerStyle = {
   width: '100%',

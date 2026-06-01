@@ -1,9 +1,9 @@
-import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
+import { useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 

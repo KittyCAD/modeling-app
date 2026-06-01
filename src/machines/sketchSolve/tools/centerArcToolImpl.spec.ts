@@ -1,4 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import type {
+  ApiObject,
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import {
   createArcActor,
   finalizeArcActor,
@@ -7,17 +12,12 @@ import {
   sendResultToParent,
   storeCreatedArcResult,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
-import type {
-  SceneGraphDelta,
-  SourceDelta,
-  ApiObject,
-} from '@rust/kcl-lib/bindings/FrontendApi'
-import { emptyOperationsByModule } from '@src/lang/wasm'
-import type { DoneActorEvent } from 'xstate'
 import {
   createMockKclManager,
   createMockRustContext,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { describe, expect, it, vi } from 'vitest'
+import type { DoneActorEvent } from 'xstate'
 
 type FinalizingArcEvent = {
   type: 'xstate.done.actor.0.Center arc tool.Finalizing arc'

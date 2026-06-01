@@ -1,16 +1,16 @@
 import { Popover } from '@headlessui/react'
 
-import { useApp } from '@src/lib/boot'
-import Tooltip from '@src/components/Tooltip'
-import type { BillingContext } from '@src/machines/billingMachine'
 import {
   BillingDialog,
   BillingRemaining,
   BillingRemainingMode,
 } from '@kittycad/react-shared'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
+import { useApp } from '@src/lib/boot'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import type { BillingContext } from '@src/machines/billingMachine'
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
   return (

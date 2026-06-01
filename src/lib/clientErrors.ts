@@ -1,4 +1,4 @@
-import { users, type ClientErrorReport } from '@kittycad/lib'
+import { type ClientErrorReport, users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 type ReportClientErrorParams = {

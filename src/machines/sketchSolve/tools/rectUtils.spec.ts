@@ -5,12 +5,12 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { describe, expect, it, vi } from 'vitest'
 
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import {
   createDraftRectangle,
   getAngledRectangleCorners,
   updateDraftRectangleAligned,
 } from '@src/machines/sketchSolve/tools/rectUtils'
-import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import {
   createLineApiObject,
   createMockKclManager,

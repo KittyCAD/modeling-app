@@ -1,11 +1,8 @@
-import type { ForwardedRef } from 'react'
-import { forwardRef, useMemo } from 'react'
-import toast from 'react-hot-toast'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment } from 'react/jsx-runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
@@ -21,12 +18,15 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useMemo } from 'react'
+import toast from 'react-hot-toast'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel

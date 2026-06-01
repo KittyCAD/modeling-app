@@ -18,19 +18,19 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
-  resetSketchSolvePointHandleCount,
   type SegmentRenderState,
+  resetSketchSolvePointHandleCount,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
 import {
-  getObjectSelectionIds,
-  isObjectSelectionId,
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
+  getObjectSelectionIds,
+  isObjectSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
-import { StateEffect, Transaction, EditorSelection } from '@codemirror/state'
+import { EditorSelection, StateEffect, Transaction } from '@codemirror/state'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
@@ -46,16 +46,16 @@ import {
   CONSTRAINT_TYPE,
   isCircleSegment,
   isConstraint,
-  isControlPointSplineSegment,
   isConstruction as isConstructionSegment,
+  isControlPointSplineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
   getInvisibleConstraintSegmentHoverColor,
-  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
+  isInvisibleConstraintSegmentSecondaryHovered,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
@@ -67,6 +67,7 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveErrors'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { machine as circleTool } from '@src/machines/sketchSolve/tools/circleToolDiagram'
+import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
@@ -75,7 +76,6 @@ import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineToo
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
-import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
