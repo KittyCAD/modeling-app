@@ -1,6 +1,7 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import type { KclManager } from '@src/lang/KclManager'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
@@ -34,6 +35,7 @@ function CoordinateInput({
         {label}
       </span>
       <input
+        {...noAutofillInputProps}
         ref={inputRef}
         data-testid={testId}
         type="text"
@@ -279,6 +281,7 @@ function CommandBarVector3DInput({
 
   return (
     <form
+      {...noAutofillFormProps}
       id="arg-form"
       className="mb-2"
       onSubmit={handleSubmit}
