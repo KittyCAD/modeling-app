@@ -1,6 +1,11 @@
+import { Popover } from '@headlessui/react'
 import type { EntityType } from '@kittycad/lib'
+import { useSignals } from '@preact/signals-react/runtime'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useCallback, useState } from 'react'
+import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
+import { useCallback } from 'react'
 
 type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'bodies'
 
@@ -35,11 +40,35 @@ const selectionFilterOptions: Array<{
   },
 ]
 
+function getOptionFilter(option: {
+  filter?: EntityType[]
+}): EntityType[] {
+  return option.filter ?? defaultSelectionFilter
+}
+
+function filtersMatch(left: EntityType[], right: EntityType[]): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  const leftValues = new Set(left)
+  return right.every((value) => leftValues.has(value))
+}
+
+function getActiveSelectionFilterOption(filter: EntityType[]) {
+  return selectionFilterOptions.find((option) =>
+    filtersMatch(filter, getOptionFilter(option))
+  )
+}
+
 export function SelectionFilterControls() {
+  useSignals()
   const { state } = useModelingContext()
   const { kclManager, wasmInstance } = state.context
-  const [selectionFilterMode, setSelectionFilterMode] =
-    useState<SelectionFilterMode>('default')
+  const activeOption = getActiveSelectionFilterOption(
+    kclManager.selectionFilter.value
+  )
+  const activeLabel = activeOption?.label ?? 'Custom'
 
   const handleSelectionFilterChange = useCallback(
     (mode: SelectionFilterMode) => {
@@ -48,7 +77,6 @@ export function SelectionFilterControls() {
         return
       }
 
-      setSelectionFilterMode(mode)
       if (option.filter) {
         kclManager.setSelectionFilter(option.filter, wasmInstance)
       } else {
@@ -58,27 +86,49 @@ export function SelectionFilterControls() {
     [kclManager, wasmInstance]
   )
 
-  if (!state.matches('idle')) {
-    return null
-  }
-
   return (
-    <fieldset className="pointer-events-auto m-0 rounded-lg border b-4 p-0 text-1 flex">
-      <legend className="text-xs px-1 text-3">Selection filter</legend>
-      {selectionFilterOptions.map((option) => {
-        return (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={selectionFilterMode === option.value}
-            title={option.title}
-            onClick={() => handleSelectionFilterChange(option.value)}
-            className="aria-pressed:bg-3 bg-transparent border-none text-xs py-0.5 px-2 rounded-none first-of-type:rounded-l last-of-type:rounded-r hover:bg-2 focus:bg-2"
+    <Popover className="relative">
+      {({ close }) => (
+        <>
+          <Popover.Button
+            className={`${defaultStatusBarItemClassNames} gap-1`}
+            data-testid="selection-filter-status"
+            title="Selection filter"
           >
-            {option.label}
-          </button>
-        )
-      })}
-    </fieldset>
+            <span>{activeLabel}</span>
+            <CustomIcon
+              name="caretDown"
+              className="h-3 w-3 ui-open:rotate-180"
+            />
+          </Popover.Button>
+          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border border-chalkboard-30 bg-chalkboard-10 p-1 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90">
+            <div className="flex flex-col">
+              {selectionFilterOptions.map((option) => {
+                const isActive = option.value === activeOption?.value
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={isActive}
+                    title={option.title}
+                    onClick={() => {
+                      handleSelectionFilterChange(option.value)
+                      close()
+                    }}
+                    className={`m-0 rounded border-none px-2 py-1 text-left text-xs ${
+                      isActive
+                        ? 'bg-primary text-chalkboard-10'
+                        : 'bg-transparent text-chalkboard-90 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
+          </Popover.Panel>
+        </>
+      )}
+    </Popover>
   )
 }

@@ -39,6 +39,9 @@ describe('engineScene extension', () => {
       .find((plugin) => plugin.id === 'execution-indicator')
 
     expect(executionIndicatorPlugin).toBeDefined()
+    if (!executionIndicatorPlugin) {
+      throw new Error('Expected execution indicator plugin')
+    }
     expect(
       registry
         .get(settingsValueSpec)
@@ -47,7 +50,7 @@ describe('engineScene extension', () => {
     expect(
       registry.get(settingsValueSpec).plugins?.['execution-indicator']
     ).toBeUndefined()
-    expect(registry.get(executionIndicatorPlugin!.service).active.value).toBe(
+    expect(registry.get(executionIndicatorPlugin.service).active.value).toBe(
       false
     )
   })
@@ -69,10 +72,15 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection', 'units', 'experimental-features'])
+    ).toEqual([
+      'selection-filter',
+      'selection',
+      'units',
+      'experimental-features',
+    ])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
-    ).toEqual([['file'], ['file'], ['file']])
+    ).toEqual([['file'], ['file'], ['file'], ['file']])
   })
 
   it('hides the experimental features item when file settings deny it', () => {
@@ -96,12 +104,17 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection', 'units'])
+    ).toEqual(['selection-filter', 'selection', 'units'])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection', 'units', 'experimental-features'])
+    ).toEqual([
+      'selection-filter',
+      'selection',
+      'units',
+      'experimental-features',
+    ])
   })
 })

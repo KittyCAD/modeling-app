@@ -10,6 +10,7 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
+import { SelectionFilterControls } from './SelectionFilterControls'
 import executionIndicator from './executionIndicator'
 
 const UnitsMenu = lazy(async () => {
@@ -60,6 +61,18 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         : null
     )
   )
+  const selectionFilterStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'selection-filter',
+            component: SelectionFilterControls,
+            order: 9,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
   const experimentalFeaturesStatusBarItem = computed(() =>
     nullableStatusBarItem(
       executionService.value?.showExperimentalFeaturesStatusBarItem.value
@@ -89,6 +102,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
+        provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
         provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
         provide(

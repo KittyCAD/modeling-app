@@ -19,7 +19,6 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
-import { SelectionFilterControls } from '@src/registry/extensions/engineScene/SelectionFilterControls'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -81,9 +80,8 @@ function ModelingArea() {
           </button>
         </div>
       )}
-      <div className="absolute bottom-2 right-2 flex flex-row-reverse items-end gap-2 pointer-events-none">
+      <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
         <Gizmo />
-        <SelectionFilterControls />
       </div>
     </div>
   )
