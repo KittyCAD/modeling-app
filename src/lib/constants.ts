@@ -1,4 +1,4 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { UserFeature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -25,6 +25,9 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * */
 export const FILE_EXT = '.kcl'
 export const DEFAULT_KCL_VERSION = '2.0'
+export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
+export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
+  'sketch_experimental_features'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -64,8 +67,8 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
 
-/** The default KCL tolerance expression */
-export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+/** The default KCL tolerance magnitude. Command configs add the active file unit. */
+export const KCL_DEFAULT_TOLERANCE = '0.1'
 
 /** The default KCL datum reference expression */
 export const KCL_DEFAULT_DATUM_REFS = `["A"]`
@@ -94,10 +97,17 @@ export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
+export const TRIM_PREVIEW_LINE_COLOR = '#ff8800'
+export const TRIM_PREVIEW_LINE_COLOR_HEX = 0xff8800
+export const TRIM_PREVIEW_LINE_WIDTH_PX = 2
+
 /** The sketch mode revamp selection rgb values */
 export const SKETCH_SELECTION_RGB = [255, 183, 39]
 /** The sketch mode revamp selection rgb values as a string */
 export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
+export const SKETCH_DEFAULT_PLANE_XY = '#ef4444'
+export const SKETCH_DEFAULT_PLANE_XZ = '#3b82f6'
+export const SKETCH_DEFAULT_PLANE_YZ = '#22c55e'
 
 /**
  * Converts an RGB array [r, g, b] to a single integer color value (0xRRGGBB format).

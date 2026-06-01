@@ -1,8 +1,24 @@
-import { recast, type PlaneArtifact } from '@src/lang/wasm'
-import type {
-  NonCodeSelection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import {
+  addDeleteFace,
+  addHole,
+  addOffsetPlane,
+  addShell,
+  retrieveFaceSelectionsFromOpArgs,
+  retrieveHoleBodyArgs,
+  retrieveHoleBottomArgs,
+  retrieveHoleTypeArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
+} from '@src/lang/modifyAst/faces'
+import type { StdLibCallOp } from '@src/lang/queryAst'
+import { getEdgeCutMeta } from '@src/lang/queryAst'
+import { type PlaneArtifact, getAllOperations, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { bracket } from '@src/lib/exampleKcl'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
@@ -11,30 +27,14 @@ import {
   getWalls,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  addHole,
-  addOffsetPlane,
-  addShell,
-  addDeleteFace,
-  retrieveFaceSelectionsFromOpArgs,
-  retrieveHoleBodyArgs,
-  retrieveHoleBottomArgs,
-  retrieveHoleTypeArgs,
-  retrieveNonDefaultPlaneSelectionFromOpArg,
-} from '@src/lang/modifyAst/faces'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { StdLibCallOp } from '@src/lang/queryAst'
-import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type {
+  NonCodeSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import { bracket } from '@src/lib/exampleKcl'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -700,6 +700,70 @@ extrude001 = extrude(region001, length = 5)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a deleteFace call on an extruded sketch-solve arc segment surface', async () => {
+      const code = `sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4.32mm])
+  coincident([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  arc1 = arc(start = [var 1.87mm, var 7.34mm], end = [var 0mm, var 4.32mm], center = [var 3.36mm, var 4.32mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  line2 = line(start = [var 1.87mm, var 7.34mm], end = [var 6.51mm, var 8.2mm])
+  coincident([line2.start, arc1.start])
+  tangent([line2, arc1])
+}
+extrude001 = extrude(
+  [
+    sketch001.line1,
+    sketch001.arc1,
+    sketch001.line2
+  ],
+  length = 5,
+  bodyType = SURFACE,
+)`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const arcWall = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'wall') {
+          return false
+        }
+
+        const sweep = artifactGraph.get(artifact.sweepId)
+        if (!sweep || sweep.type !== 'sweep') {
+          return false
+        }
+
+        const path = artifactGraph.get(sweep.pathId)
+        return (
+          path?.type === 'path' && path.segIds.indexOf(artifact.segId) === 1
+        )
+      })
+      if (!arcWall) {
+        throw new Error('Could not find expected arc wall selection')
+      }
+
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: createSelectionFromArtifacts([arcWall], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `surface001 = deleteFace(extrude001, faces = extrude001.sketch.tags.arc1)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a deleteFace call on the bracket', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
@@ -1111,7 +1175,7 @@ hole001 = hole::hole(
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'hole::hole'
     )
     if (!op || op.type !== 'StdLibCall' || !op.labeledArgs) {
@@ -1301,7 +1365,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'shell'
       )
       if (
@@ -1345,7 +1409,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       const lastTwoSweeps = [...artifactGraph.values()]
         .filter((a) => a.type === 'sweep')
         .slice(-2)
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'shell'
       )
       if (
@@ -1386,7 +1450,7 @@ plane002 = offsetPlane(plane001, offset = 2)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.findLast(
+      const op = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1410,7 +1474,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1436,7 +1500,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.findLast(
+      const op = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1460,7 +1524,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1489,7 +1553,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp
       const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
@@ -1514,7 +1578,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
           instanceInThisFile,
           kclManagerInThisFile
         )
-      const offsetPlaneOp = operations.findLast(
+      const offsetPlaneOp = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
       ) as StdLibCallOp | undefined
       if (!offsetPlaneOp?.unlabeledArg) {

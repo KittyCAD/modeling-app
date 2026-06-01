@@ -401,6 +401,25 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // draftAngle argument from a string to a KCL expression
+  let draftAngle: KclCommandValue | undefined
+  if (
+    'draftAngle' in operation.labeledArgs &&
+    operation.labeledArgs.draftAngle
+  ) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.draftAngle.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve draftAngle argument" }
+    }
+
+    draftAngle = result
+  }
+
   // twistAngle argument from a string to a KCL expression
   let twistAngle: KclCommandValue | undefined
   if (
@@ -493,6 +512,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     bidirectionalLength,
     tagStart,
     tagEnd,
+    draftAngle,
     twistAngle,
     twistAngleStep,
     twistCenter,
@@ -1109,7 +1129,9 @@ const prepareToEditSketchSolve: PrepareToEditCallback = async ({
   operation,
   artifact,
 }) => {
-  if (operation.type !== 'SketchSolve') {
+  if (
+    !(operation.type === 'GroupBegin' && operation.group.type === 'SketchBlock')
+  ) {
     return { reason: 'Wrong operation type' }
   }
 
@@ -1913,6 +1935,82 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Straightness',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Straightness'] = {
+    objects: { graphSelections, otherSelections: [] },
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -2592,6 +2690,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
   },
+  'gdt::straightness': {
+    label: 'Straightness',
+    icon: 'gdtStraightness',
+    prepareToEdit: prepareToEditGdtStraightness,
+  },
   'gdt::position': {
     label: 'Position',
     icon: 'gdtPosition',
@@ -2722,6 +2825,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   mirror2d: {
     label: 'Mirror 2D',
     icon: 'mirror',
+  },
+  mirror3d: {
+    label: 'Mirror',
+    icon: 'mirror3d',
   },
   region: {
     label: 'Region',
@@ -2938,14 +3045,14 @@ export function getOperationLabel(op: Operation): string {
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
-      } else if (op.group.type === 'ModuleInstance') {
-        return op.group.name
+      } else if (op.group.type === 'SketchBlock') {
+        return 'Sketch'
       } else {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
       }
-    case 'SketchSolve':
-      return 'Solve Sketch'
+    case 'ModuleInstance':
+      return op.name
     case 'GroupEnd':
       return 'Group end'
     default:
@@ -2956,34 +3063,14 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
-export function getSketchBlockOperationKey(op: Operation): string | null {
-  if (!('nodePath' in op)) {
-    return null
-  }
-  // TODO: This probably misses the sketch block if it's empty.
-  const sketchBlockIndex = op.nodePath.steps.findIndex(
-    (step) => step.type === 'SketchBlockBody'
-  )
-  if (sketchBlockIndex >= 0) {
-    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
-  }
+type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>
 
-  if (op.type === 'SketchSolve') {
-    return JSON.stringify(op.nodePath.steps)
-  }
-
-  return null
-}
-
-export function isSketchBlockOperationGroup(items: Operation[]): boolean {
-  if (items.length === 0) {
-    return false
-  }
-  const firstKey = getSketchBlockOperationKey(items[0])
-  if (!firstKey) {
-    return false
-  }
-  return items.every((item) => getSketchBlockOperationKey(item) === firstKey)
+function getGroupBeginSignature(operation: GroupBeginOperation): string {
+  return JSON.stringify({
+    group: operation.group,
+    nodePath: operation.nodePath,
+    sourceRange: operation.sourceRange,
+  })
 }
 
 /**
@@ -3038,49 +3125,86 @@ export function groupOperationTypeStreaks(
 }
 
 /**
- * Given a list that may already contain grouped operation streaks, group
- * contiguous operations that belong to the same sketch block.
+ * Given a filtered operation list and the original operation stream, replace
+ * top-level GroupBegin operations with their full nested operation groups.
+ *
+ * This is generic over group type and allows callers to opt in to grouping any
+ * subset of GroupBegin operations.
  */
-export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
-  const result: NestedOpList = []
-  let currentSketchKey: string | null = null
-  let currentSketchOps: Operation[] = []
+export function groupNestedOperations(
+  opList: NestedOpList,
+  allOperations: Operation[],
+  shouldGroup: (groupBegin: GroupBeginOperation) => boolean
+): NestedOpList {
+  const groupOperationsByKey = new Map<string, Operation[]>()
+  const keyByGroupBegin = new Map<GroupBeginOperation, string>()
+  const seenSignatureCounts = new Map<string, number>()
+  const stack: {
+    begin: GroupBeginOperation
+    key: string
+    items: Operation[]
+  }[] = []
 
-  const flushSketchOps = () => {
-    if (currentSketchOps.length === 0) {
-      return
+  for (const operation of allOperations) {
+    if (operation.type === 'GroupBegin') {
+      const signature = getGroupBeginSignature(operation)
+      const ordinal = seenSignatureCounts.get(signature) ?? 0
+      seenSignatureCounts.set(signature, ordinal + 1)
+      const key = `${signature}#${ordinal}`
+      keyByGroupBegin.set(operation, key)
+      stack.push({ begin: operation, key, items: [operation] })
+      continue
     }
-    result.push([...currentSketchOps])
-    currentSketchOps = []
-    currentSketchKey = null
+
+    if (operation.type === 'GroupEnd') {
+      const current = stack.pop()
+      if (!current) {
+        console.assert(
+          false,
+          'Unbalanced GroupBegin and GroupEnd; too many ends while grouping'
+        )
+        continue
+      }
+
+      current.items.push(operation)
+      groupOperationsByKey.set(current.key, current.items)
+
+      if (stack.length > 0) {
+        stack[stack.length - 1].items.push(...current.items)
+      }
+      continue
+    }
+
+    if (stack.length > 0) {
+      stack[stack.length - 1].items.push(operation)
+    }
   }
 
+  const result: NestedOpList = []
+  const requestedSignatureCounts = new Map<string, number>()
   for (const item of opList) {
     if (isArray(item)) {
-      flushSketchOps()
       result.push(item)
       continue
     }
 
-    const sketchKey = getSketchBlockOperationKey(item)
-    if (!sketchKey) {
-      flushSketchOps()
+    if (item.type !== 'GroupBegin' || !shouldGroup(item)) {
       result.push(item)
       continue
     }
 
-    if (currentSketchKey === null || currentSketchKey === sketchKey) {
-      currentSketchKey = sketchKey
-      currentSketchOps.push(item)
-      continue
+    let key = keyByGroupBegin.get(item)
+    if (!key) {
+      const signature = getGroupBeginSignature(item)
+      const ordinal = requestedSignatureCounts.get(signature) ?? 0
+      requestedSignatureCounts.set(signature, ordinal + 1)
+      key = `${signature}#${ordinal}`
     }
-
-    flushSketchOps()
-    currentSketchKey = sketchKey
-    currentSketchOps.push(item)
+    result.push(
+      key !== undefined ? (groupOperationsByKey.get(key) ?? item) : item
+    )
   }
 
-  flushSketchOps()
   return result
 }
 
@@ -3108,15 +3232,15 @@ export function getOperationIcon(op: Operation): CustomIconName {
     case 'VariableDeclaration':
       return 'make-variable'
     case 'GroupBegin':
-      if (op.group.type === 'ModuleInstance') {
-        return 'import' // TODO: Use insert icon.
-      }
       if (op.group.type === 'FunctionCall') {
         return 'function'
       }
+      if (op.group.type === 'SketchBlock') {
+        return 'sketch'
+      }
       return 'make-variable'
-    case 'SketchSolve':
-      return 'sketch'
+    case 'ModuleInstance':
+      return 'import' // TODO: Use insert icon.
     case 'GroupEnd':
       return 'questionMark'
     default:
@@ -3171,9 +3295,9 @@ export function getOperationVariableName(
 
   if (
     op.type !== 'StdLibCall' &&
-    op.type !== 'SketchSolve' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
-    !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
+    op.type !== 'ModuleInstance'
   ) {
     return undefined
   }
@@ -3186,7 +3310,7 @@ export function getOperationVariableName(
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
   // If this is a module instance, the variable name is the import alias.
-  if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
+  if (op.type === 'ModuleInstance') {
     const statement = getNodeFromPath<ImportStatement>(
       program,
       pathToNode,
@@ -3341,15 +3465,19 @@ export async function enterEditFlow({
   }
 
   // Begin StdLibCall processing
-  if (operation.type !== 'StdLibCall' && operation.type !== 'SketchSolve') {
+  let stdLibInfo: StdLibCallInfo | undefined
+  if (operation.type === 'StdLibCall') {
+    stdLibInfo = stdLibMap[operation.name]
+  } else if (
+    operation.type === 'GroupBegin' &&
+    operation.group.type === 'SketchBlock'
+  ) {
+    stdLibInfo = stdLibMap.sketchSolve
+  } else {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
-  const stdLibInfo =
-    operation.type === 'SketchSolve'
-      ? stdLibMap.sketchSolve
-      : stdLibMap[operation.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {

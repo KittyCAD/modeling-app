@@ -6,12 +6,18 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_INSTANCES, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  KCL_DEFAULT_INSTANCES,
+  KCL_DEFAULT_LENGTH,
+} from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
+  test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
+
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,
@@ -26,7 +32,7 @@ test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
       localStorage.setItem('persistCode', initialCode)
     }, bracket)
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('bracketBody', 0)).dblclick()
@@ -132,7 +138,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       }, code)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Add extrude with tags', async () => {
@@ -460,7 +466,7 @@ openSketch = startSketchOn(XY)
     )
 
     await test.step(`Double-click on the closed sketch`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.closePane()
       await moveToCircle()
       await page.waitForTimeout(1000)
@@ -562,7 +568,7 @@ openSketch = startSketchOn(XY)
       }, `sketch001 = startSketchOn(XY)`)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Select and deselect a single sketch segment', async () => {
@@ -640,7 +646,7 @@ openSketch = startSketchOn(XY)
   }) => {
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
@@ -734,7 +740,7 @@ extrude001 = extrude(profile001, length = 100)`
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
@@ -779,7 +785,7 @@ extrude001 = extrude(profile001, length = 100)`
         commandName: 'Helix',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -906,7 +912,7 @@ sketch002 = startSketchOn(plane001)
     }, initialCode)
     await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
     const editedLoftDeclaration =
@@ -944,7 +950,7 @@ sketch002 = startSketchOn(plane001)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(loftDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -983,7 +989,7 @@ sketch002 = startSketchOn(plane001)
         commandName: 'Loft',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(editedLoftDeclaration)
     })
 
@@ -992,7 +998,7 @@ sketch002 = startSketchOn(plane001)
       const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(editedLoftDeclaration)
     })
   })
@@ -1026,7 +1032,7 @@ profile001 = ${circleCode}`
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Add sweep through the command bar flow`, async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -1150,7 +1156,7 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     // Test 1: Command bar flow with preselected edges
@@ -1281,7 +1287,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
     await test.step('Edit fillet', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -1353,14 +1359,14 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     // Test
     await test.step('Delete fillet via feature tree selection', async () => {
       await test.step('Open Feature Tree Pane', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Delete piped fillet via feature tree selection', async () => {
@@ -1381,7 +1387,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await scene.settled(cmdBar)
+          await scene.settled()
         })
         await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
           await editor.expectEditor.not.toContain(firstPipedFilletDeclaration)
@@ -1403,7 +1409,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await scene.settled(cmdBar)
+          await scene.settled()
         })
         await test.step('Verify standalone assigned fillet is deleted but other two fillets are not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
@@ -1424,7 +1430,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await scene.settled(cmdBar)
+          await scene.settled()
         })
         await test.step('Verify standalone unassigned fillet is deleted but other fillet is not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
@@ -1455,7 +1461,7 @@ extrude001 = extrude(sketch001, length = 30)`
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // One dumb hardcoded screen pixel value
     // Any idea here how to select a cap without clicking in the scene?
@@ -1505,7 +1511,7 @@ extrude001 = extrude(sketch001, length = 30)`
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -1538,7 +1544,7 @@ extrude001 = extrude(sketch001, length = 30)`
         commandName: 'Shell',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(editedShellDeclaration)
@@ -1554,7 +1560,7 @@ extrude001 = extrude(sketch001, length = 30)`
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(shellDeclaration)
     })
   })
@@ -1577,7 +1583,7 @@ extrude001 = extrude(sketch001, length = 30)`
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -1608,7 +1614,7 @@ extrude001 = extrude(sketch001, length = 30)`
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(deleteDeclaration)
     })
 
@@ -1620,7 +1626,7 @@ extrude001 = extrude(sketch001, length = 30)`
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(deleteDeclaration)
     })
   })
@@ -1651,7 +1657,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     }, initialCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step('Add revolve feature via point-and-click', async () => {
       // select line of code
@@ -1796,7 +1802,7 @@ box = extrude(profile, length = 30)`
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Select an edge first (before opening translate)', async () => {
@@ -1866,7 +1872,7 @@ box = extrude(profile, length = 30)`
           commandName: 'Translate',
         })
         await cmdBar.submit()
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
     })
 
@@ -1904,7 +1910,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
       }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start Flip Surface and select extrude001 in the feature tree', async () => {
@@ -1947,7 +1953,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
         commandName: 'Flip Surface',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Verify code was added', async () => {
@@ -1962,7 +1968,7 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(flipSurfaceDeclaration)
     })
   })
@@ -1995,7 +2001,7 @@ ${secondSurface}`
       }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start Join and select two surfaces', async () => {
@@ -2027,7 +2033,7 @@ ${secondSurface}`
     })
 
     await test.step('Verify code was added', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(joinDeclaration)
     })
 
@@ -2039,7 +2045,7 @@ ${secondSurface}`
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(joinDeclaration)
     })
   })
@@ -2063,7 +2069,7 @@ extrude001 = extrude(profile001, length = 1)`
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Go through the Set Appearance flow`, async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
@@ -2107,7 +2113,7 @@ extrude001 = extrude(profile001, length = 1)`
         stage: 'review',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(declaration)
       await editor.expectState({
         diagnostics: [],
@@ -2139,7 +2145,7 @@ extrude001 = extrude(profile001, length = 1)`
         commandName: 'Appearance',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain(editedDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -2153,7 +2159,7 @@ extrude001 = extrude(profile001, length = 1)`
       const op = await toolbar.getFeatureTreeOperation('Appearance', 0)
       await op.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(declaration)
       await editor.expectEditor.not.toContain(editedDeclaration)
     })
@@ -2178,7 +2184,7 @@ solid001 = extrude(sketch001, length = 5)`
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Add Pattern Circular 3D to the scene', async () => {
@@ -2395,7 +2401,7 @@ solid001 = extrude(sketch001, length = 5)`
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain('patternCircular3d(')
         await editor.expectEditor.toContain('instances = 8')
         await editor.expectEditor.toContain('axis = Y')
@@ -2643,7 +2649,7 @@ solid001 = extrude(sketch001, length = 5)`
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain('patternCircular3d(')
         await editor.expectEditor.toContain('instances = 12')
         await editor.expectEditor.toContain('axis = Z')
@@ -2663,7 +2669,7 @@ solid001 = extrude(sketch001, length = 5)`
       // Delete the pattern operation
       await patternOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('patternCircular3d(')
     })
   })
@@ -2687,7 +2693,7 @@ solid001 = extrude(sketch001, length = 5)`
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       // await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
@@ -2839,7 +2845,7 @@ solid001 = extrude(sketch001, length = 5)`
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain('patternLinear3d(')
         await editor.expectEditor.toContain('instances = 6')
         await editor.expectEditor.toContain('distance = 8')
@@ -2985,7 +2991,7 @@ solid001 = extrude(sketch001, length = 5)`
 
       await test.step('Submit and verify edited parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain('patternLinear3d(')
         await editor.expectEditor.toContain('instances = 4')
         await editor.expectEditor.toContain('distance = 12')
@@ -3005,7 +3011,7 @@ solid001 = extrude(sketch001, length = 5)`
       await patternOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
 
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.not.toContain('patternLinear3d(')
@@ -3032,7 +3038,7 @@ extrude001 = extrude(sketch001, length = 30)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -3080,15 +3086,15 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'tolerance',
-            currentArgValue: '0.1mm',
+            currentArgValue: '0.1in',
             headerArguments: {
               Faces: '1 face',
               Tolerance: '',
             },
             highlightedHeaderArg: 'tolerance',
           })
-          // Set tolerance to 0.1mm
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1mm')
+          // Set tolerance to 0.1in
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1in')
         })
 
         await test.step('Review basic parameters', async () => {
@@ -3098,7 +3104,7 @@ extrude001 = extrude(sketch001, length = 30)
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
             },
           })
         })
@@ -3114,7 +3120,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgValue: '3',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '',
             },
             highlightedHeaderArg: 'precision',
@@ -3128,7 +3134,7 @@ extrude001 = extrude(sketch001, length = 30)
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
             },
           })
@@ -3144,7 +3150,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgValue: '[0, 0]',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '',
             },
@@ -3160,7 +3166,7 @@ extrude001 = extrude(sketch001, length = 30)
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
             },
@@ -3176,7 +3182,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgValue: '',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: '',
@@ -3191,7 +3197,7 @@ extrude001 = extrude(sketch001, length = 30)
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3208,7 +3214,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgValue: '10mm',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3225,7 +3231,7 @@ extrude001 = extrude(sketch001, length = 30)
             commandName: 'GDT Flatness',
             headerArguments: {
               Faces: '1 face',
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3237,11 +3243,11 @@ extrude001 = extrude(sketch001, length = 30)
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
-        await editor.expectEditor.toContain('tolerance = 0.1mm')
+        await editor.expectEditor.toContain('tolerance = 0.1in')
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
         await editor.expectEditor.toContain('framePlane = XY')
@@ -3262,9 +3268,9 @@ extrude001 = extrude(sketch001, length = 30)
           stage: 'arguments',
           commandName: 'GDT Flatness',
           currentArgKey: 'tolerance',
-          currentArgValue: '0.1mm',
+          currentArgValue: '0.1in',
           headerArguments: {
-            Tolerance: '0.1mm',
+            Tolerance: '0.1in',
             Precision: '5',
             FramePosition: '[10, 10]',
             FramePlane: 'XY',
@@ -3280,9 +3286,9 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'tolerance',
-            currentArgValue: '0.1mm',
+            currentArgValue: '0.1in',
             headerArguments: {
-              Tolerance: '0.1mm',
+              Tolerance: '0.1in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3290,15 +3296,15 @@ extrude001 = extrude(sketch001, length = 30)
             },
             highlightedHeaderArg: 'tolerance',
           })
-          // Update tolerance from 0.1mm to 0.2mm
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2mm')
+          // Update tolerance from 0.1in to 0.2in
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2in')
           await cmdBar.progressCmdBar()
           // Review changes to tolerance
           await cmdBar.expectState({
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3315,7 +3321,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'precision',
             currentArgValue: '5',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3331,7 +3337,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3348,7 +3354,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePosition',
             currentArgValue: '[10, 10]',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
@@ -3365,7 +3371,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
@@ -3382,7 +3388,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'framePlane',
             currentArgValue: '',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
@@ -3397,7 +3403,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
@@ -3414,7 +3420,7 @@ extrude001 = extrude(sketch001, length = 30)
             currentArgKey: 'fontSize',
             currentArgValue: '12mm',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
@@ -3430,7 +3436,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'review',
             commandName: 'GDT Flatness',
             headerArguments: {
-              Tolerance: '0.2mm',
+              Tolerance: '0.2in',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
@@ -3442,10 +3448,10 @@ extrude001 = extrude(sketch001, length = 30)
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
-        await editor.expectEditor.toContain('tolerance = 0.2mm')
+        await editor.expectEditor.toContain('tolerance = 0.2in')
         await editor.expectEditor.toContain('precision = 3')
         await editor.expectEditor.toContain('framePosition = [20, 30]')
         await editor.expectEditor.toContain('framePlane = XZ')
@@ -3459,7 +3465,7 @@ extrude001 = extrude(sketch001, length = 30)
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('gdt::flatness(')
     })
   })
@@ -3484,7 +3490,7 @@ extrude001 = extrude(sketch001, length = 30)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -3657,7 +3663,7 @@ extrude001 = extrude(sketch001, length = 30)
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
@@ -3804,7 +3810,7 @@ extrude001 = extrude(sketch001, length = 30)
 
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
         await editor.expectEditor.toContain('name = "B"')
@@ -3820,7 +3826,7 @@ extrude001 = extrude(sketch001, length = 30)
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('gdt::datum(')
     })
   })
@@ -3848,7 +3854,7 @@ extrude001 = extrude(profile001, length = 10)`
       }, initialCode)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Close panes to ensure toolbar buttons are visible
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -3990,7 +3996,7 @@ extrude001 = extrude(profile001, length = 10)`
     })
 
     await test.step('Expect hole call added to the editor', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn(XZ)
@@ -4136,7 +4142,7 @@ hole001 = hole::hole(
     })
 
     await test.step('Expect hole call updated in the editor', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
         `hole001 = hole::hole(

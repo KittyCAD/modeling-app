@@ -1,29 +1,32 @@
+import { useApp } from '@src/lib/boot'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import {
   formatSettingsLabel,
   shouldHideSetting,
 } from '@src/lib/settings/settingsUtils'
-import { useApp } from '@src/lib/boot'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel
   scrollRef: React.RefObject<HTMLDivElement | null>
+  showPlugins: boolean
 }
 
 export function SettingsSectionsList({
   searchParamTab,
   scrollRef,
+  showPlugins,
 }: SettingsSectionsListProps) {
   const { settings } = useApp()
   const context = settings.useSettings()
 
-  const visibleCategories = Object.entries(context).filter(
-    ([_, categorySettings]) =>
+  const visibleCategories = Object.entries(context)
+    .filter(([category]) => showPlugins || category !== 'plugins')
+    .filter(([_, categorySettings]) =>
       // Filter out categories that don't have any non-hidden settings
       Object.values(categorySettings).some(
         (setting) => !shouldHideSetting(setting, searchParamTab)
       )
-  )
+    )
 
   return (
     <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">

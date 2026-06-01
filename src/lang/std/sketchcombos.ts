@@ -81,7 +81,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import {
   allLabels,
@@ -91,6 +90,7 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -2162,7 +2162,7 @@ export function transformAstSketchLines({
             }
     const fnName = fnNameToToolTipFromSegment(
       seg,
-      transformTo || (call.node.callee.name.name as ToolTip)
+      transformTo || call.node.callee.name.name
     )
     if (err(fnName)) return fnName
     const replacedSketchLine = replaceSketchLine({

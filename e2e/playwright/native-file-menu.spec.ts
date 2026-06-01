@@ -1,5 +1,5 @@
-import type { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   openSettingsExpectLocator,
@@ -50,7 +50,7 @@ test.describe(
 
       const projectName = 'native-menu-window-one'
       await homePage.goToModelingScene(projectName)
-      await scene.settled(cmdBar)
+      await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
 
@@ -254,7 +254,7 @@ test.describe(
         return
       }
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
 

@@ -52,8 +52,8 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
-  deg2Rad,
   isParallel as areVectorsParallel,
+  deg2Rad,
   subVec,
 } from '@src/lib/utils2d'
 
@@ -849,7 +849,7 @@ export function hasSketchPipeBeenExtruded(
 /** File must contain at least one sketch that has not been extruded already */
 export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
   const theMap: any = {}
-  traverse(ast as any, {
+  traverse(ast, {
     enter(node) {
       if (
         node.type === 'VariableDeclarator' &&
@@ -916,7 +916,7 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
 
 export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
   const theMap: any = {}
-  traverse(ast as any, {
+  traverse(ast, {
     enter(node) {
       if (
         node.type === 'VariableDeclarator' &&
@@ -1584,7 +1584,7 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
-  return { graphSelections, otherSelections: [] } as Selections
+  return { graphSelections, otherSelections: [] }
 }
 
 export function findOperationArtifact(
@@ -2128,6 +2128,110 @@ export function getSketchSegmentName(
     )
   ) {
     return directSegmentVarDec.node.declaration.id.name
+  }
+
+  return null
+}
+
+export function getSketchSegmentNameFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  segmentArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  options: { fallbackToFirstSegment?: boolean } = {}
+): string | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput) {
+    return null
+  }
+
+  let selectedSegment: Extract<Artifact, { type: 'segment' }> | null = null
+  if (segmentArtifact.type === 'segment') {
+    selectedSegment = segmentArtifact
+  } else if (segmentArtifact.type === 'sweepEdge') {
+    const segment = getArtifactOfTypes(
+      { key: segmentArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(segment) && segment.type === 'segment') {
+      selectedSegment = segment
+    }
+  } else if (segmentArtifact.type === 'wall') {
+    const segment = getArtifactOfTypes(
+      { key: segmentArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(segment) && segment.type === 'segment') {
+      selectedSegment = segment
+    }
+  }
+
+  if (
+    sweepInput.type === 'MemberExpression' &&
+    sweepInput.property.type === 'Name'
+  ) {
+    return sweepInput.property.name.name
+  }
+
+  if (sweepInput.type !== 'ArrayExpression') {
+    return null
+  }
+
+  if (selectedSegment) {
+    const pathArtifact = getArtifactOfTypes(
+      { key: sourceSurfaceArtifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (!err(pathArtifact) && pathArtifact.type === 'path') {
+      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
+        (segmentId) =>
+          segmentId === selectedSegment.originalSegId ||
+          segmentId === selectedSegment.id
+      )
+
+      if (matchingSegmentIndex !== -1) {
+        const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
+        if (
+          matchingSegmentExpr?.type === 'MemberExpression' &&
+          matchingSegmentExpr.property.type === 'Name'
+        ) {
+          return matchingSegmentExpr.property.name.name
+        }
+      }
+    }
+  }
+
+  if (options.fallbackToFirstSegment === false) {
+    return null
+  }
+
+  const firstSweepSegment = sweepInput.elements.find(
+    (element) =>
+      element.type === 'MemberExpression' && element.property.type === 'Name'
+  )
+  if (
+    firstSweepSegment?.type === 'MemberExpression' &&
+    firstSweepSegment.property.type === 'Name'
+  ) {
+    return firstSweepSegment.property.name.name
   }
 
   return null

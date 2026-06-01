@@ -1,3 +1,4 @@
+import type { Artifact, Expr } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -14,7 +15,6 @@ import {
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Artifact, Expr } from '@src/lang/wasm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const formatNumberLiteral = vi.fn().mockReturnValue('1.2cm')
@@ -215,7 +215,8 @@ describe('GD&T frame defaults', () => {
     ])
   })
 
-  it('fills omitted framePosition and fontSize from the selected bounding box', async () => {
+  it('fills omitted framePosition from the selected bounding box and fontSize from the model bounding box', async () => {
+    formatNumberLiteral.mockReturnValue('5.25cm')
     const sendSceneCommand = vi
       .fn()
       .mockResolvedValueOnce({
@@ -245,6 +246,21 @@ describe('GD&T frame defaults', () => {
           },
         },
       })
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'bounding_box',
+              data: {
+                center: { x: 0, y: 0, z: 0 },
+                dimensions: { x: 100, y: 50, z: 0 },
+              },
+            },
+          },
+        },
+      })
 
     const data = {
       name: 'A',
@@ -268,7 +284,8 @@ describe('GD&T frame defaults', () => {
       wasmInstance,
     })
 
-    expect(sendSceneCommand).toHaveBeenCalledWith(
+    expect(sendSceneCommand).toHaveBeenNthCalledWith(
+      2,
       expect.objectContaining({
         cmd: expect.objectContaining({
           type: 'bounding_box',
@@ -277,14 +294,79 @@ describe('GD&T frame defaults', () => {
         }),
       })
     )
+    expect(sendSceneCommand).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'bounding_box',
+          entity_ids: [],
+          output_unit: 'cm',
+        }),
+      })
+    )
     expect(result.framePosition?.valueText).toBe('[6, 6]')
-    expect(result.fontSize?.valueText).toBe('1.2cm')
+    expect(result.fontSize?.valueText).toBe('5.25cm')
     expect(result.fontSize?.valueAst).toMatchObject({
       type: 'Literal',
-      raw: '1.2cm',
+      raw: '5.25cm',
     })
-    expect(formatNumberLiteral).toHaveBeenCalledWith(1.2, '"Cm"', 4)
-    expect(GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO).toBe(0.2)
+    expect(formatNumberLiteral).toHaveBeenCalledWith(5.25, '"Cm"', 4)
+    expect(GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO).toBe(0.07)
+  })
+
+  it('uses only the model bounding box when only fontSize is omitted', async () => {
+    formatNumberLiteral.mockReturnValue('7mm')
+    const sendSceneCommand = vi.fn().mockResolvedValueOnce({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'bounding_box',
+            data: {
+              center: { x: 0, y: 0, z: 0 },
+              dimensions: { x: 80, y: 120, z: 100 },
+            },
+          },
+        },
+      },
+    })
+
+    const data = {
+      name: 'A',
+      framePosition: testFramePosition(),
+      framePlane: 'XZ',
+      faces: {
+        graphSelections: [
+          {
+            codeRef: { range: [0, 1, 0], pathToNode: [] },
+            artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
+          },
+        ],
+        otherSelections: [],
+      },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      wasmInstance,
+    })
+
+    expect(sendSceneCommand).toHaveBeenCalledOnce()
+    expect(sendSceneCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'bounding_box',
+          entity_ids: [],
+          output_unit: 'mm',
+        }),
+      })
+    )
+    expect(result.fontSize?.valueText).toBe('7mm')
+    expect(formatNumberLiteral).toHaveBeenCalledWith(7, '"Mm"', 4)
   })
 
   it('signs omitted framePosition from the selected face normal', async () => {

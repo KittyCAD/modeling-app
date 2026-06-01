@@ -22,6 +22,7 @@ use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
+use crate::execution::Group;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
 use crate::execution::Metadata;
@@ -68,6 +69,7 @@ use crate::execution::state::SketchBlockState;
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::LineCtor;
 use crate::front::Object;
 use crate::front::ObjectId;
 use crate::front::ObjectKind;
@@ -135,6 +137,8 @@ fn push_fixed_origin_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -144,6 +148,8 @@ fn push_fixed_origin_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -392,6 +398,8 @@ fn push_circular_radius_constraints(
             id: circular_radius_id,
             initial_value: circular.radius_initial_value,
             ty: sketch_var_ty,
+            // Synthesized hidden radius for circular distance; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -432,6 +440,8 @@ fn push_circular_distance_constraints(
             id: target_distance_id,
             initial_value: distance_value,
             ty: sketch_var_ty,
+            // Synthesized hidden distance for point-circular tangency; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -731,6 +741,19 @@ impl ExecutorContext {
                     let module_id = self
                         .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;
+
+                    if let ModulePath::Local { value, .. } = &module_path {
+                        let name = import_stmt
+                            .module_name()
+                            .unwrap_or_else(|| value.file_name().unwrap_or_default());
+                        exec_state.push_op(Operation::ModuleInstance {
+                            name,
+                            module_id,
+                            glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
+                            node_path: NodePath::placeholder(),
+                            source_range,
+                        });
+                    }
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
@@ -1618,6 +1641,10 @@ impl Node<SketchBlock> {
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Face(_) => None,
+            };
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
@@ -1646,6 +1673,7 @@ impl Node<SketchBlock> {
                 id: artifact_id,
                 standard_plane,
                 plane_id: plane_artifact_id,
+                plane_info,
                 // Fill this in later once we create the path. We can't just add
                 // the artifact later because order relative to constraint
                 // artifacts is significant.
@@ -1653,6 +1681,12 @@ impl Node<SketchBlock> {
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
+
+            exec_state.push_op(Operation::GroupBegin {
+                group: Group::SketchBlock { sketch_id },
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
             artifact_id
         };
 
@@ -1787,6 +1821,12 @@ impl Node<SketchBlock> {
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                if !outcome.converged {
+                    exec_state.warn(
+                        CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                        annotations::WARN_SOLVER,
+                    );
+                }
                 (outcome, freedom)
             }
             Err(failure) => {
@@ -1794,12 +1834,11 @@ impl Node<SketchBlock> {
                     NonLinearSystemError::FaerMatrix { .. }
                     | NonLinearSystemError::Faer { .. }
                     | NonLinearSystemError::FaerSolve { .. }
-                    | NonLinearSystemError::FaerSvd(..)
-                    | NonLinearSystemError::DidNotConverge => {
+                    | NonLinearSystemError::FaerSvd(..) => {
                         // Constraint solver failed to find a solution. Build a
                         // solution that is the initial guesses.
                         exec_state.warn(
-                            CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            CompilationIssue::err(range, "Internal error in constraint solver".to_owned()),
                             annotations::WARN_SOLVER,
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
@@ -1810,6 +1849,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                converged: false,
                             },
                             None,
                         )
@@ -1943,12 +1983,8 @@ impl Node<SketchBlock> {
             .constraints
             .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
 
-        // Push sketch solve operation
-        exec_state.push_op(Operation::SketchSolve {
-            sketch_id,
-            node_path: NodePath::placeholder(),
-            source_range: range,
-        });
+        // Close the sketch block operation group.
+        exec_state.push_op(Operation::GroupEnd);
 
         // Warn if the sketch has conflicting constraints. Skip this when
         // freedom analysis didn't run (e.g., during dragging), because the
@@ -2203,7 +2239,7 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, exec_state)
+            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
@@ -2214,6 +2250,7 @@ impl Node<SketchVar> {
                     id,
                     initial_value: 0.0,
                     ty: NumericType::default(),
+                    node_path: self.node_path.clone(),
                     meta: vec![metadata],
                 }),
             }
@@ -2561,6 +2598,13 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -2663,6 +2707,13 @@ impl Node<MemberExpression> {
                             }),
                         }
                         .continue_()),
+                        SegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
                     },
                 },
                 "end" => match &segment.repr {
@@ -2730,6 +2781,13 @@ impl Node<MemberExpression> {
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
                                 vec![self.into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
                             ),
                             None,
                         )),
@@ -2808,6 +2866,13 @@ impl Node<MemberExpression> {
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
                                 vec![self.into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::ControlPointSpline { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
                             ),
                             None,
                         )),
@@ -2936,6 +3001,208 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                "controls" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: controls
+                                .iter()
+                                .zip(control_object_ids.iter())
+                                .zip(ctor.points.iter())
+                                .map(|((position, object_id), ctor_point)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Unsolved {
+                                            segment: Box::new(UnsolvedSegment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: UnsolvedSegmentKind::Point {
+                                                    position: position.clone(),
+                                                    ctor: Box::new(PointCtor {
+                                                        position: ctor_point.clone(),
+                                                    }),
+                                                },
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            control_freedoms,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: controls
+                                .iter()
+                                .zip(control_object_ids.iter())
+                                .zip(control_freedoms.iter())
+                                .zip(ctor.points.iter())
+                                .map(|(((position, object_id), freedom), ctor_point)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Solved {
+                                            segment: Box::new(Segment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: SegmentKind::Point {
+                                                    position: position.clone(),
+                                                    ctor: Box::new(PointCtor {
+                                                        position: ctor_point.clone(),
+                                                    }),
+                                                    freedom: *freedom,
+                                                },
+                                                surface: segment.surface.clone(),
+                                                sketch_id: segment.sketch_id,
+                                                sketch: segment.sketch.clone(),
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                "edges" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            control_polygon_edge_object_ids,
+                            construction,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: control_polygon_edge_object_ids
+                                .iter()
+                                .enumerate()
+                                .map(|(index, object_id)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Unsolved {
+                                            segment: Box::new(UnsolvedSegment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: UnsolvedSegmentKind::Line {
+                                                    start: controls[index].clone(),
+                                                    end: controls[index + 1].clone(),
+                                                    ctor: Box::new(LineCtor {
+                                                        start: ctor.points[index].clone(),
+                                                        end: ctor.points[index + 1].clone(),
+                                                        construction: Some(*construction),
+                                                    }),
+                                                    start_object_id: control_object_ids[index],
+                                                    end_object_id: control_object_ids[index + 1],
+                                                    construction: *construction,
+                                                },
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
+                        }
+                        .continue_()),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::ControlPointSpline {
+                            controls,
+                            ctor,
+                            control_object_ids,
+                            control_polygon_edge_object_ids,
+                            control_freedoms,
+                            construction,
+                            ..
+                        } => Ok(KclValue::HomArray {
+                            value: control_polygon_edge_object_ids
+                                .iter()
+                                .enumerate()
+                                .map(|(index, object_id)| KclValue::Segment {
+                                    value: Box::new(AbstractSegment {
+                                        repr: SegmentRepr::Solved {
+                                            segment: Box::new(Segment {
+                                                id: segment.id,
+                                                object_id: *object_id,
+                                                kind: SegmentKind::Line {
+                                                    start: controls[index].clone(),
+                                                    end: controls[index + 1].clone(),
+                                                    ctor: Box::new(LineCtor {
+                                                        start: ctor.points[index].clone(),
+                                                        end: ctor.points[index + 1].clone(),
+                                                        construction: Some(*construction),
+                                                    }),
+                                                    start_object_id: control_object_ids[index],
+                                                    end_object_id: control_object_ids[index + 1],
+                                                    start_freedom: control_freedoms[index],
+                                                    end_freedom: control_freedoms[index + 1],
+                                                    construction: *construction,
+                                                },
+                                                surface: segment.surface.clone(),
+                                                sketch_id: segment.sketch_id,
+                                                sketch: segment.sketch.clone(),
+                                                tag: segment.tag.clone(),
+                                                node_path: segment.node_path.clone(),
+                                                meta: segment.meta.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    }),
+                                })
+                                .collect(),
+                            ty: RuntimeType::segment(),
                         }
                         .continue_()),
                         _ => Err(KclError::new_undefined_value(
@@ -3533,6 +3800,8 @@ impl Node<BinaryExpression> {
                                             id: origin_x_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3542,6 +3811,8 @@ impl Node<BinaryExpression> {
                                             id: origin_y_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3684,6 +3955,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -3693,6 +3966,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -3819,6 +4094,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -3828,6 +4105,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4053,6 +4332,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4062,6 +4343,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4207,6 +4490,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4216,6 +4501,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4231,6 +4518,8 @@ impl Node<BinaryExpression> {
                                     id: support_radius_id,
                                     initial_value: support_radius_value,
                                     ty: sketch_var_ty,
+                                    // Synthesized hidden support radius for circular-circular distance; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4463,6 +4752,8 @@ impl Node<BinaryExpression> {
                                             id: radius_id,
                                             initial_value: radius_initial_value,
                                             ty: sketch_var_ty,
+                                            // Synthesized hidden radius for circle constraint; not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -4948,6 +5239,8 @@ impl Node<UnaryExpression> {
                         if plane.info.x_axis.z != 0.0 {
                             plane.info.x_axis.z *= -1.0;
                         }
+                        plane.info.z_axis = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                        plane.info.z_axis.canonicalize_signed_zero();
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;
@@ -5666,6 +5959,7 @@ d = b + c
                 ..Default::default()
             },
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 

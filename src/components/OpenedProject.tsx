@@ -44,10 +44,7 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
-import {
-  MlEphantManagerReactContext,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
@@ -55,7 +52,6 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { filterEngineSceneStatusBarItems } from '@src/registry/extensions/engineScene/statusBar'
 import {
   TutorialRequestToast,
   needsToOnboard,
@@ -85,8 +81,6 @@ export function OpenedProject() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
-
   const location = useLocation()
   const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
@@ -168,14 +162,6 @@ export function OpenedProject() {
     )
   }, [onProjectOpen, projectName, projectPath, project])
 
-  useEffect(() => {
-    // Clear conversation
-    mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projectName, projectPath])
-
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
@@ -184,12 +170,9 @@ export function OpenedProject() {
     registry.signal(statusBarGlobalItemsValueSpec).value,
     ['file']
   )
-  const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(
-    filterStatusBarItemsForScopes(
-      registry.signal(statusBarLocalItemsValueSpec).value,
-      ['file']
-    ),
-    settingsValues
+  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarLocalItemsValueSpec).value,
+    ['file']
   )
   const authToken = auth.useToken()
   const onboardingStatus =

@@ -36,12 +36,10 @@ description: Operations executed import_glob.kcl
   ],
   "rust/kcl-lib/tests/import_glob/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "export_constant.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "export_constant",
+      "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -51,9 +49,6 @@ description: Operations executed import_glob.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

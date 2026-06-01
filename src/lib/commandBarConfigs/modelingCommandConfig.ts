@@ -15,50 +15,50 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
-  KCL_DEFAULT_CONSTANT_PREFIXES,
-  KCL_DEFAULT_DEGREE,
-  KCL_DEFAULT_INSTANCES,
-  KCL_DEFAULT_LENGTH,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  KCL_DEFAULT_TRANSFORM,
-  KCL_DEFAULT_ORIGIN,
-  KCL_DEFAULT_ORIGIN_2D,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  KCL_DEFAULT_DATUM_REFS,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_FONT_SIZE,
+  KCL_DEFAULT_INSTANCES,
+  KCL_DEFAULT_LEADER_SCALE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_ORIGIN,
+  KCL_DEFAULT_ORIGIN_2D,
+  KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_TRANSFORM,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
-  KCL_DEFAULT_TOLERANCE,
-  KCL_DEFAULT_DATUM_REFS,
-  KCL_DEFAULT_PRECISION,
-  KCL_DEFAULT_FONT_SIZE,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
+  type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  KCL_DEFAULT_SCALE,
-  KCL_DEFAULT_LEADER_SCALE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { err } from '@src/lib/trap'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 
-import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
-import {
-  addExtrude,
-  addLoft,
-  addRevolve,
-  addSweep,
-  type SweepRelativeTo,
-} from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import {
+  addIntersect,
+  addSplit,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import {
   addDeleteFace,
   addHole,
@@ -66,44 +66,46 @@ import {
   addShell,
 } from '@src/lang/modifyAst/faces'
 import {
-  addIntersect,
-  addSplit,
-  addSubtract,
-  addUnion,
-} from '@src/lang/modifyAst/boolean'
-import { addHelix } from '@src/lang/modifyAst/geometry'
+  addAnnotationGdt,
+  addDatumGdt,
+  addDistanceGdt,
+  addFlatnessGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addPositionGdt,
+  addProfileGdt,
+  addStraightnessGdt,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
   addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
-import {
-  addAppearance,
-  addClone,
-  addRotate,
-  addScale,
-  addTranslate,
-} from '@src/lang/modifyAst/transforms'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import {
-  addFlatnessGdt,
-  addDatumGdt,
-  addPositionGdt,
-  addAnnotationGdt,
-  addParallelismGdt,
-  addPerpendicularityGdt,
-  addDistanceGdt,
-  addProfileGdt,
-  getNextAvailableDatumName,
-} from '@src/lang/modifyAst/gdt'
+  type SweepRelativeTo,
+  addExtrude,
+  addLoft,
+  addRevolve,
+  addSweep,
+} from '@src/lang/modifyAst/sweeps'
+import {
+  addAppearance,
+  addClone,
+  addMirror3D,
+  addRotate,
+  addScale,
+  addTranslate,
+} from '@src/lang/modifyAst/transforms'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -140,6 +142,12 @@ export const EXTRUSION_RESULTS = [
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+
+const FRAME_PLANE_OPTIONS = Object.freeze([
+  Object.freeze({ name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true }),
+  Object.freeze({ name: 'XZ Plane', value: KCL_PLANE_XZ }),
+  Object.freeze({ name: 'YZ Plane', value: KCL_PLANE_YZ }),
+] as const)
 
 // For all nodeToEdit-like arguments needed for edit flows
 const nodeToEditDescription =
@@ -197,6 +205,7 @@ export type ModelingCommandSchema = {
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
+    draftAngle?: KclCommandValue
     twistAngle?: KclCommandValue
     twistAngleStep?: KclCommandValue
     twistCenter?: KclCommandValue
@@ -413,6 +422,10 @@ export type ModelingCommandSchema = {
     objects: Selections
     variableName: string
   }
+  'Mirror 3D': {
+    bodies: Selections
+    across: Selections
+  }
   'Pattern Circular 3D': {
     nodeToEdit?: PathToNode
     solids: Selections
@@ -434,6 +447,16 @@ export type ModelingCommandSchema = {
   'GDT Flatness': {
     nodeToEdit?: PathToNode
     faces: Selections
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Straightness': {
+    nodeToEdit?: PathToNode
+    objects: Selections
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -589,6 +612,26 @@ const summarizeDatumKclValue = (value?: KclCommandValue) =>
           : value.valueCalculated
       )
     : ''
+
+export const getDefaultGdtTolerance = (
+  _commandBarContext: unknown,
+  modelingContext?: ModelingMachineContext
+) => {
+  const defaultLengthUnit =
+    modelingContext?.kclManager.fileSettings.defaultLengthUnit ||
+    DEFAULT_DEFAULT_LENGTH_UNIT
+  return `${KCL_DEFAULT_TOLERANCE}${defaultLengthUnit}`
+}
+
+const summarizeGdtToleranceKclValue = (value?: KclCommandValue) =>
+  value?.valueText ?? ''
+
+const gdtToleranceProps = {
+  inputType: 'kcl',
+  defaultValue: getDefaultGdtTolerance,
+  valueSummary: summarizeGdtToleranceKclValue,
+  required: true,
+} satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
 
 const datumsProps = {
   inputType: 'kcl',
@@ -927,6 +970,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      draftAngle: {
+        inputType: 'kcl',
+        required: false,
+        status: 'experimental',
       },
       twistAngle: {
         inputType: 'kcl',
@@ -2476,6 +2524,64 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Mirror 3D': {
+    description: 'Mirror solids across a plane or edge.',
+    icon: 'mirror3d',
+    displayName: 'Mirror',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addMirror3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) {
+        return modRes
+      }
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return execRes
+      }
+    },
+    args: {
+      bodies: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      across: {
+        inputType: 'selection',
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'edgeCutEdge',
+        ],
+        clearSelectionFirst: true,
+        multiple: false,
+        required: true,
+      },
+    },
+  },
   'Pattern Circular 3D': {
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
@@ -2653,9 +2759,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2670,11 +2774,77 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Straightness': {
+    description:
+      'Add straightness geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtStraightness',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addStraightnessGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Straightness']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tolerance: {
+        ...gdtToleranceProps,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2744,11 +2914,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2806,9 +2972,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2823,11 +2987,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2885,9 +3045,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2902,11 +3060,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -2965,9 +3119,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -2982,11 +3134,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3044,9 +3192,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3061,11 +3207,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3123,9 +3265,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...datumsProps,
       },
       tolerance: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
-        required: true,
+        ...gdtToleranceProps,
       },
       precision: {
         inputType: 'kcl',
@@ -3140,11 +3280,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {
@@ -3210,11 +3346,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       framePlane: {
         inputType: 'options',
         defaultValue: KCL_PLANE_XY,
-        options: [
-          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
-          { name: 'XZ Plane', value: KCL_PLANE_XZ },
-          { name: 'YZ Plane', value: KCL_PLANE_YZ },
-        ],
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       leaderScale: {

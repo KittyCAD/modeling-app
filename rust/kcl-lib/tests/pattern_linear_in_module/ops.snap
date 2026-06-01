@@ -5,12 +5,9 @@ description: Operations executed pattern_linear_in_module.kcl
 {
   "rust/kcl-lib/tests/pattern_linear_in_module/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "thing.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "thing",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed pattern_linear_in_module.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",

@@ -1,30 +1,17 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
-import MillionLint from '@million/lint'
 import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { createLogger } from 'vite'
 import { configDefaults, defineConfig } from 'vitest/config'
-import { indexHtmlCsp } from './vite.base.config'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-
-const publicAssetWarning =
-  'Assets in public directory cannot be imported from JavaScript'
-const logger = createLogger()
-const originalWarn = logger.warn.bind(logger)
-logger.warn = (msg, opts) => {
-  if (msg.includes(publicAssetWarning)) return
-  originalWarn(msg, opts)
-}
+import { createCustomLogger, indexHtmlCsp } from './vite.base.config'
 
 export default defineConfig(({ command, mode }) => {
-  const runMillion = process.env.RUN_MILLION
-
   return {
-    customLogger: logger,
+    customLogger: createCustomLogger(),
     define: {
       'import.meta.env.VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV),
     },
@@ -112,7 +99,6 @@ export default defineConfig(({ command, mode }) => {
         // The function to generate import names of top-level await promise in each chunk module
         promiseImportName: (i) => `__tla_${i}`,
       }),
-      runMillion && MillionLint.vite(),
     ],
     worker: {
       plugins: () => [viteTsconfigPaths()],

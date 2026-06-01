@@ -1,9 +1,9 @@
 import toast from 'react-hot-toast'
 
+import type { KclManager } from '@src/lang/KclManager'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
 
 let initialized = false
 

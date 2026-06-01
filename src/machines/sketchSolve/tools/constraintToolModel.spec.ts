@@ -74,7 +74,7 @@ describe('constraintToolModel', () => {
     ])
   })
 
-  it('recognizes midpoint selections in either point-line order', () => {
+  it('recognizes midpoint selections in point/origin and line/arc order', () => {
     const point = createPointApiObject({ id: 1 })
     const lineStart = createPointApiObject({ id: 2 })
     const lineEnd = createPointApiObject({ id: 3 })
@@ -113,6 +113,38 @@ describe('constraintToolModel', () => {
     )
     expect(arcPoint.status).toBe('complete')
     expect(arcPoint.bestMatch?.mode.id).toBe('arc-point')
+
+    const originLine = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 10],
+      objects
+    )
+    expect(originLine.status).toBe('complete')
+    expect(originLine.bestMatch?.mode.id).toBe('origin-line')
+
+    const lineOrigin = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [10, ORIGIN_TARGET],
+      objects
+    )
+    expect(lineOrigin.status).toBe('complete')
+    expect(lineOrigin.bestMatch?.mode.id).toBe('line-origin')
+
+    const originArc = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 11],
+      objects
+    )
+    expect(originArc.status).toBe('complete')
+    expect(originArc.bestMatch?.mode.id).toBe('origin-arc')
+
+    const arcOrigin = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [11, ORIGIN_TARGET],
+      objects
+    )
+    expect(arcOrigin.status).toBe('complete')
+    expect(arcOrigin.bestMatch?.mode.id).toBe('arc-origin')
   })
 
   it('classifies sketch solve selections into reusable kinds', () => {

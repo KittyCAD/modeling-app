@@ -68,7 +68,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
     await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
     await expect
       .poll(async () => {
-        await page.keyboard.press('Meta+Escape', { delay: 500 })
+        await page.keyboard.press('Shift+Escape', { delay: 500 })
         return page.getByRole('button', { name: 'Exit Sketch' }).isVisible()
       })
       .toBe(false)
@@ -97,7 +97,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -156,7 +156,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -269,7 +269,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -381,7 +381,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1200, height: 800 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [20, 20])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -502,7 +502,7 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.editSketch(0)
 
         const [line1, line3] = await Promise.all([
@@ -604,7 +604,7 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -694,7 +694,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await editor.scrollToText('line(end = [74.36, 130.4])', true)
         await page.getByText('line(end = [74.36, 130.4])').click()
@@ -775,7 +775,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -870,7 +870,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -951,7 +951,7 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.editSketch(0)
 
         const [convertedAxisClick] = scene.makeMouseHelpers(
@@ -1029,7 +1029,7 @@ test.describe('Electron constraint tests', () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     async function clickOnFirstSegmentLabel() {

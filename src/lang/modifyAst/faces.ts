@@ -34,7 +34,6 @@ import {
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import {
-  formatNumberValue,
   type Artifact,
   type ArtifactGraph,
   type CallExpressionKw,
@@ -43,6 +42,7 @@ import {
   type Program,
   type VariableDeclaration,
   type VariableMap,
+  formatNumberValue,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -782,100 +782,20 @@ export function addOffsetPlane({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  let planeExpr: Expr | undefined
-  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
-  if (
-    enginePrimitives.length > 0 ||
-    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
-  ) {
-    const result = buildSolidsAndFacesExprs(
-      plane,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      mNodeToEdit,
-      {
-        // Keeping lookup aligned with deleteFace so we map selected parent solids directly.
-        lastChildLookup: false,
-        artifactTypeFilter: ['sweep', 'compositeSolid'],
-      }
-    )
-    if (err(result)) {
-      return result
-    }
-
-    let { solidsExprs, facesExprs } = result
-    modifiedAst = result.modifiedAst
-
-    if (enginePrimitives.length > 0) {
-      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
-        enginePrimitives,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-        pathToNode: mNodeToEdit,
-      })
-      if (err(result)) return result
-      solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
-      facesExprs.push(...result.faceExprs)
-    }
-
-    const solidsExpr = createVariableExpressionsArray(solidsExprs)
-    const facesExpr = createVariableExpressionsArray(facesExprs)
-    if (!facesExpr) {
-      return new Error("Couldn't retrieve face from selection")
-    }
-
-    const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
-      createLabeledArg('face', facesExpr),
-    ])
-    const planeVariableName = findUniqueName(
-      modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
-    )
-    planeExpr = createLocalName(planeVariableName)
-    insertVariableAndOffsetPathToNode(
-      {
-        valueAst: planeOfExpr,
-        valueText: '',
-        valueCalculated: '',
-        variableName: planeVariableName,
-        variableDeclarationAst: createVariableDeclaration(
-          planeVariableName,
-          planeOfExpr
-        ),
-        variableIdentifierAst: planeExpr,
-        insertIndex:
-          mNodeToEdit && typeof mNodeToEdit[1]?.[0] === 'number'
-            ? mNodeToEdit[1][0]
-            : modifiedAst.body.length,
-      },
-      modifiedAst,
-      mNodeToEdit
-    )
-  } else {
-    planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
-    if (!planeExpr) {
-      const planeVars = getVariableExprsFromSelection(
-        plane,
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        mNodeToEdit
-      )
-      if (!err(planeVars) && planeVars.exprs.length === 1) {
-        const [planeVar] = planeVars.exprs
-        if (planeVar.type !== 'PipeSubstitution') {
-          planeExpr = planeVar
-        }
-      }
-    }
-    if (!planeExpr) {
-      return new Error('No plane found in the selection')
-    }
+  const planeResult = getPlaneExprFromSelection({
+    ast: modifiedAst,
+    artifactGraph,
+    variables,
+    plane,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(planeResult)) {
+    return planeResult
   }
+  modifiedAst = planeResult.modifiedAst
 
-  const call = createCallExpressionStdLibKw('offsetPlane', planeExpr, [
+  const call = createCallExpressionStdLibKw('offsetPlane', planeResult.expr, [
     createLabeledArg('offset', valueOrVariable(offset)),
   ])
 
@@ -902,6 +822,142 @@ export function addOffsetPlane({
     modifiedAst,
     pathToNode,
   }
+}
+
+export function getPlaneExprFromSelection({
+  ast,
+  artifactGraph,
+  variables,
+  plane,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  variables: VariableMap
+  plane: Selections
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; expr: Expr } {
+  let modifiedAst = ast
+  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
+  const hasFaceSelection = plane.graphSelections.some((sel) =>
+    isFaceArtifact(sel.artifact)
+  )
+
+  // Face selections become a named planeOf(...) first. That keeps mirror3d and
+  // offsetPlane on the same representation and preserves edit paths when we
+  // insert faceId(...) variables before the edited node.
+  if (enginePrimitives.length > 0 || hasFaceSelection) {
+    const result = buildSolidsAndFacesExprs(
+      plane,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit,
+      {
+        // Keep lookup aligned with deleteFace so selected parent solids map directly.
+        lastChildLookup: false,
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+      }
+    )
+    if (err(result)) {
+      return result
+    }
+
+    let { solidsExprs, facesExprs } = result
+    modifiedAst = result.modifiedAst
+
+    if (enginePrimitives.length > 0) {
+      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+        enginePrimitives,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+        pathToNode: nodeToEdit,
+      })
+      if (err(result)) {
+        return result
+      }
+      solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
+      facesExprs.push(...result.faceExprs)
+    }
+
+    const solidsExpr = createVariableExpressionsArray(solidsExprs)
+    const facesExpr = createVariableExpressionsArray(facesExprs)
+    if (!facesExpr) {
+      return new Error("Couldn't retrieve face from selection")
+    }
+
+    const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
+      createLabeledArg('face', facesExpr),
+    ])
+    const planeVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
+    )
+    const variableIdentifierAst = createLocalName(planeVariableName)
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: planeOfExpr,
+        valueText: '',
+        valueCalculated: '',
+        variableName: planeVariableName,
+        variableDeclarationAst: createVariableDeclaration(
+          planeVariableName,
+          planeOfExpr
+        ),
+        variableIdentifierAst,
+        insertIndex:
+          nodeToEdit && typeof nodeToEdit[1]?.[0] === 'number'
+            ? nodeToEdit[1][0]
+            : modifiedAst.body.length,
+      },
+      modifiedAst,
+      nodeToEdit
+    )
+
+    return {
+      modifiedAst,
+      expr: variableIdentifierAst,
+    }
+  }
+
+  const defaultPlane = plane.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return {
+      modifiedAst,
+      expr: createLocalName(defaultPlane.name.toUpperCase()),
+    }
+  }
+
+  let planeExpr: Expr | undefined = getSelectedPlaneAsNode(
+    plane,
+    variables,
+    wasmInstance
+  )
+  if (!planeExpr) {
+    const planeVars = getVariableExprsFromSelection(
+      plane,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (!err(planeVars) && planeVars.exprs.length === 1) {
+      const [planeVar] = planeVars.exprs
+      if (planeVar.type !== 'PipeSubstitution') {
+        planeExpr = planeVar
+      }
+    }
+  }
+  if (!planeExpr) {
+    return new Error('No plane found in the selection')
+  }
+
+  return { modifiedAst, expr: planeExpr }
 }
 
 // Utilities
