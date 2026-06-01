@@ -817,7 +817,7 @@ export fn extrude(
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will extrude in this direction instead of the sketch plane normal
-  direction?: Point3d | Edge | TaggedEdge,
+  direction?: Point3d | Edge | TaggedEdge | Segment,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
   bidirectionalLength?: number(Length),
   /// A named tag for the face at the start of the extrusion, i.e. the original sketch.

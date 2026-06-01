@@ -96,6 +96,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             RuntimeType::point3d(),
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::tagged_edge(),
+            RuntimeType::segment(),
         ]), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
