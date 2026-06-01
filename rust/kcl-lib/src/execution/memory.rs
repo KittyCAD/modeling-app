@@ -6,7 +6,6 @@
 mod legacy;
 
 use std::env;
-use std::ffi::OsString;
 use std::fmt;
 use std::sync::Arc;
 
@@ -28,32 +27,25 @@ pub(crate) enum MemoryBackendKind {
 }
 
 impl MemoryBackendKind {
-    // Wired into production construction once ExecState construction is fallible.
-    #[allow(dead_code)]
-    pub(crate) fn from_env() -> Result<Self, KclError> {
+    pub(crate) fn from_env() -> Self {
         match env::var(KCL_MEMORY_IMPL_ENV_VAR) {
             Ok(value) => Self::parse(&value),
-            Err(env::VarError::NotPresent) => Ok(Self::Legacy),
-            Err(env::VarError::NotUnicode(value)) => Err(Self::invalid_unicode(value)),
+            Err(env::VarError::NotPresent) => Self::Legacy,
+            Err(env::VarError::NotUnicode(value)) => {
+                panic!(
+                    "{KCL_MEMORY_IMPL_ENV_VAR} must be valid unicode; got `{}`.",
+                    value.to_string_lossy()
+                )
+            }
         }
     }
 
-    fn parse(value: &str) -> Result<Self, KclError> {
+    fn parse(value: &str) -> Self {
         if value.trim().is_empty() || value.eq_ignore_ascii_case("legacy") {
-            return Ok(Self::Legacy);
+            return Self::Legacy;
         }
 
-        Err(KclError::internal(format!(
-            "Unsupported {KCL_MEMORY_IMPL_ENV_VAR} value `{value}`. Expected `legacy`."
-        )))
-    }
-
-    #[allow(dead_code)]
-    fn invalid_unicode(value: OsString) -> KclError {
-        KclError::internal(format!(
-            "{KCL_MEMORY_IMPL_ENV_VAR} must be valid unicode; got `{}`.",
-            value.to_string_lossy()
-        ))
+        panic!("Unsupported {KCL_MEMORY_IMPL_ENV_VAR} value `{value}`. Expected `legacy`.")
     }
 }
 
@@ -99,7 +91,7 @@ impl fmt::Display for Stack {
 impl ProgramMemory {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Arc<Self> {
-        Self::new_with_backend(MemoryBackendKind::Legacy)
+        Self::new_with_backend(MemoryBackendKind::from_env())
     }
 
     pub(crate) fn new_with_backend(backend: MemoryBackendKind) -> Arc<Self> {
@@ -330,19 +322,19 @@ mod tests {
 
     #[test]
     fn parses_legacy_backend_name() {
-        assert_eq!(MemoryBackendKind::parse("legacy").unwrap(), MemoryBackendKind::Legacy);
-        assert_eq!(MemoryBackendKind::parse("LeGaCy").unwrap(), MemoryBackendKind::Legacy);
+        assert_eq!(MemoryBackendKind::parse("legacy"), MemoryBackendKind::Legacy);
+        assert_eq!(MemoryBackendKind::parse("LeGaCy"), MemoryBackendKind::Legacy);
     }
 
     #[test]
     fn empty_backend_name_uses_legacy() {
-        assert_eq!(MemoryBackendKind::parse("").unwrap(), MemoryBackendKind::Legacy);
-        assert_eq!(MemoryBackendKind::parse("   ").unwrap(), MemoryBackendKind::Legacy);
+        assert_eq!(MemoryBackendKind::parse(""), MemoryBackendKind::Legacy);
+        assert_eq!(MemoryBackendKind::parse("   "), MemoryBackendKind::Legacy);
     }
 
     #[test]
-    fn unsupported_backend_name_returns_error() {
-        let error = MemoryBackendKind::parse("arena").unwrap_err();
-        assert!(error.to_string().contains("Unsupported KCL_MEMORY_IMPL value `arena`"));
+    #[should_panic(expected = "Unsupported KCL_MEMORY_IMPL value `arena`. Expected `legacy`.")]
+    fn unsupported_backend_name_panics() {
+        MemoryBackendKind::parse("arena");
     }
 }
