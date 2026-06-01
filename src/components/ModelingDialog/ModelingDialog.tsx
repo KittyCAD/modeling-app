@@ -430,9 +430,9 @@ function getOptions(
     return []
   }
   if (typeof arg.options === 'function') {
-    return arg.options(context, machineContext)
+    return [...arg.options(context, machineContext)]
   }
-  return arg.options
+  return [...arg.options]
 }
 
 function selectionSummary(

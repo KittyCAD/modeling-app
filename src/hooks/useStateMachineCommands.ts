@@ -54,6 +54,10 @@ export default function useStateMachineCommands<
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
+  const useModelingDialogFeature = userFeatures.useHas(
+    'modeling_dialogs',
+    false
+  )
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
@@ -70,9 +74,7 @@ export default function useStateMachineCommands<
     isExecuting ||
     !isStreamReady ||
     disableForUnrenderedChanges
-  const useModelingDialog =
-    machineId === 'modeling' &&
-    settingsValues.commandBar.modelingDialogs.current === true
+  const useModelingDialog = machineId === 'modeling' && useModelingDialogFeature
 
   useEffect(() => {
     const newCommands = Object.keys(commandBarConfig || {})
@@ -113,5 +115,10 @@ export default function useStateMachineCommands<
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [shouldDisableEngineCommands, showExperimentalCommands, commandBarConfig, useModelingDialog])
+  }, [
+    shouldDisableEngineCommands,
+    showExperimentalCommands,
+    commandBarConfig,
+    useModelingDialog,
+  ])
 }

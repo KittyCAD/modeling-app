@@ -11,10 +11,10 @@ import type {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { MachineManager } from '@src/lib/MachineManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   CommandBarContext,
   commandBarMachine,

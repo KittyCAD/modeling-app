@@ -511,10 +511,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'commandBar', field: 'includeSettings' },
       'include_settings'
     ),
-    defineBooleanAppOnlyField(
-      { category: 'commandBar', field: 'modelingDialogs' },
-      'modeling_dialogs'
-    ),
   ]),
   defineAppOnlySection('text_editor', [
     defineBooleanAppOnlyField(
