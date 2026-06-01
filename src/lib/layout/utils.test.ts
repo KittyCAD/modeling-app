@@ -12,6 +12,7 @@ import {
   applyLayoutContribution,
   applyLayoutMigrationMap,
   closeAllPanes,
+  setBodiesPaneLayoutEnabled,
   setOpenPanes,
 } from '@src/lib/layout/utils'
 import { expect } from 'vitest'
@@ -303,6 +304,34 @@ describe('Layout utils', () => {
       expect(result).toStrictEqual({ applied: true, reason: 'applied' })
       expect(layout).toHaveProperty('actions[0].id', 'plugin-action')
       expect(layout).toHaveProperty('actions[1].id', 'existing-action')
+    })
+  })
+
+  describe('feature-gated layouts', () => {
+    it('adds and removes the bodies list split around the feature tree pane', () => {
+      const layout: Layout = {
+        id: DefaultLayoutPaneID.FeatureTree,
+        label: 'Feature Tree',
+        type: LayoutType.Simple,
+        areaType: AreaType.FeatureTree,
+      }
+
+      const enabled = setBodiesPaneLayoutEnabled(layout, true)
+      expect(enabled).toHaveProperty('type', LayoutType.Splits)
+      expect(enabled).toHaveProperty(
+        'children[0].areaType',
+        AreaType.FeatureTree
+      )
+      expect(enabled).toHaveProperty('children[1].areaType', AreaType.Bodies)
+
+      const disabled = setBodiesPaneLayoutEnabled(enabled, false)
+      expect(disabled).toStrictEqual({
+        id: DefaultLayoutPaneID.FeatureTree,
+        label: 'Feature Tree',
+        type: LayoutType.Simple,
+        icon: 'model',
+        areaType: AreaType.FeatureTree,
+      })
     })
   })
 

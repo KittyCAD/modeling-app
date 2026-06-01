@@ -11,6 +11,7 @@ import {
   shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
@@ -193,16 +194,15 @@ function RenameForm({
   }
   const formattedPlaceHolder = isRowFake(row) ? '' : row.name
   return (
-    <form onKeyUp={handleRenameSubmit}>
+    <form {...noAutofillFormProps} onKeyUp={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          {...noAutofillInputProps}
           data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
-          autoCapitalize="off"
-          autoCorrect="off"
           placeholder={formattedPlaceHolder}
           className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}

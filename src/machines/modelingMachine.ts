@@ -130,6 +130,7 @@ import {
   addPerpendicularityGdt,
   addPositionGdt,
   addProfileGdt,
+  addStraightnessGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
@@ -587,6 +588,10 @@ export type ModelingMachineEvent =
       }
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
+  | {
+      type: 'GDT Straightness'
+      data: ModelingCommandSchema['GDT Straightness']
+    }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
   | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
@@ -5270,6 +5275,53 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtStraightnessAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Straightness'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addStraightnessGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     gdtDatumAstMod: fromPromise(
       async ({
         input,
@@ -6321,6 +6373,10 @@ export const modelingMachine = setup({
 
         'GDT Flatness': {
           target: 'Applying GDT Flatness',
+        },
+
+        'GDT Straightness': {
+          target: 'Applying GDT Straightness',
         },
 
         'GDT Datum': {
@@ -8401,6 +8457,26 @@ export const modelingMachine = setup({
         id: 'gdtFlatnessAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Flatness') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Straightness': {
+      invoke: {
+        src: 'gdtStraightnessAstMod',
+        id: 'gdtStraightnessAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Straightness') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

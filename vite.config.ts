@@ -2,26 +2,16 @@
 import { lezer } from '@lezer/generator/rollup'
 import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
-import { createLogger } from 'vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
-import { indexHtmlCsp } from './vite.base.config'
-
-const publicAssetWarning =
-  'Assets in public directory cannot be imported from JavaScript'
-const logger = createLogger()
-const originalWarn = logger.warn.bind(logger)
-logger.warn = (msg, opts) => {
-  if (msg.includes(publicAssetWarning)) return
-  originalWarn(msg, opts)
-}
+import { createCustomLogger, indexHtmlCsp } from './vite.base.config'
 
 export default defineConfig(({ command, mode }) => {
   return {
-    customLogger: logger,
+    customLogger: createCustomLogger(),
     define: {
       'import.meta.env.VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV),
     },
