@@ -1,12 +1,13 @@
 import { Popover, Transition } from '@headlessui/react'
+import type { ProjectCategoryResponse } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
 } from '@src/lib/share'
-import type { ProjectCategoryResponse } from '@kittycad/lib'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogProps = {
@@ -171,6 +172,7 @@ export function PublishDialog({
         </div>
 
         <form
+          {...noAutofillFormProps}
           className="flex flex-col gap-4 px-4 py-4"
           onSubmit={(event) => {
             event.preventDefault()
@@ -186,6 +188,7 @@ export function PublishDialog({
                 Title*
               </label>
               <input
+                {...noAutofillInputProps}
                 id="publish-project-title"
                 type="text"
                 required
@@ -217,6 +220,7 @@ export function PublishDialog({
                 Description*
               </label>
               <textarea
+                {...noAutofillInputProps}
                 id="publish-project-description"
                 required
                 rows={4}

@@ -1,5 +1,5 @@
-import type { Locator, Page } from '@playwright/test'
 import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
+import type { Locator, Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import {

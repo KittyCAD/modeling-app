@@ -11,3 +11,13 @@ export function transitions<T>(list: T[]): Record<string, { target: T }> {
     {}
   )
 }
+
+export function xstateEventError(event: unknown): unknown {
+  if (typeof event !== 'object' || event === null) return undefined
+
+  if ('output' in event) return event.output
+  if ('data' in event) return event.data
+  if ('error' in event) return event.error
+
+  return undefined
+}

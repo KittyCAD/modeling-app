@@ -22,7 +22,6 @@ This file applies to TypeScript and React development under `src/`. It complemen
 ## Review-friendly edits
 
 - Keep diffs small and intentional. Do not reformat or refactor unrelated code while making a targeted change.
-- Do not reorder imports just to satisfy a personal or automated preference. Add new imports near the existing related imports and preserve the file's current ordering unless the task explicitly asks for import cleanup.
 - Do not run `npm run organize-imports` unless the task is specifically about organizing imports.
 - Preserve deliberate test import ordering. Some tests call `vi.mock(...)` before importing the component under test because the mocked modules have import-time side effects.
 - Prefer local, boring fixes over new abstractions. Add helpers only when they remove real duplication or match an existing local pattern.

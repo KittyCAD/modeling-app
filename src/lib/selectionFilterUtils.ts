@@ -4,13 +4,13 @@
  */
 
 import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { KclManager } from '@src/lang/KclManager'
 import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
-import type { KclManager } from '@src/lang/KclManager'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const defaultSelectionFilter: EntityType[] = [
   'face',

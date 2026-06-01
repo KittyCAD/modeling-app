@@ -9,8 +9,8 @@ import {
   openPane,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
-import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
 
 type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 

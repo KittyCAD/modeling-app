@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
 import { createLiteral } from '@src/lang/create'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 

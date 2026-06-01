@@ -1,16 +1,16 @@
+import nodeFsSync from 'fs'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
-import nodeFsSync from 'fs'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
+  closeOnboardingModalIfPresent,
   createProject,
   executorInputPath,
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
-  closeOnboardingModalIfPresent,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'

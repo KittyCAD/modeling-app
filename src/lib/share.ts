@@ -11,8 +11,8 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
-import { getProjectTomlContents } from '@src/lib/projectToml'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 

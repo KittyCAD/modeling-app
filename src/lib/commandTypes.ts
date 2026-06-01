@@ -183,15 +183,17 @@ export type CommandArgumentConfig<
   | {
       inputType: 'options'
       options:
-        | CommandArgumentOption<OutputType>[]
+        | ReadonlyArray<CommandArgumentOption<OutputType>>
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
               machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
-          ) => CommandArgumentOption<OutputType>[])
-      optionsFromContext?: (context: C) => CommandArgumentOption<OutputType>[]
+          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+      optionsFromContext?: (
+        context: C
+      ) => ReadonlyArray<CommandArgumentOption<OutputType>>
       defaultValue?:
         | OutputType
         | ((
@@ -374,13 +376,13 @@ export type CommandArgument<
   | {
       inputType: Extract<CommandInputType, 'options'>
       options:
-        | CommandArgumentOption<OutputType>[]
+        | ReadonlyArray<CommandArgumentOption<OutputType>>
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: ContextFrom<T>
-          ) => CommandArgumentOption<OutputType>[])
+          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
       defaultValue?:
         | OutputType
         | ((
@@ -546,8 +548,8 @@ export type CommandArgumentWithName<
 }
 
 export type CommandArgumentOption<A> = {
-  name: string
-  isCurrent?: boolean
-  disabled?: boolean
-  value: A
+  readonly name: string
+  readonly isCurrent?: boolean
+  readonly disabled?: boolean
+  readonly value: A
 }

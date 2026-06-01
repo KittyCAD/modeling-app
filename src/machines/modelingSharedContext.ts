@@ -1,15 +1,15 @@
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
 import { emptyOperationsByModule } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type RustContext from '@src/lib/rustContext'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
   new_graph: {

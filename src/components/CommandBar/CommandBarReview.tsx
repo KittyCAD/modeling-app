@@ -2,11 +2,12 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
-import { CustomIcon } from '@src/components/CustomIcon'
-import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
-import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { useMemo } from 'react'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -38,10 +39,10 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       'alt+0',
     ],
     (_, b) => {
-      if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
+      if (b.keys && !Number.isNaN(Number.parseInt(b.keys[0], 10))) {
         if (!selectedCommand?.args) return
         const argName = Object.keys(selectedCommand.args)[
-          parseInt(b.keys[0], 10) - 1
+          Number.parseInt(b.keys[0], 10) - 1
         ]
         const arg = selectedCommand?.args[argName]
         if (!arg) return
@@ -158,6 +159,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
         </>
       )}
       <form
+        {...noAutofillFormProps}
         id="review-form"
         className="absolute opacity-0 inset-0 pointer-events-none"
         onSubmit={submitCommand}
@@ -170,6 +172,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
           return (
             <input
+              {...noAutofillInputProps}
               id={key}
               name={key}
               key={key}

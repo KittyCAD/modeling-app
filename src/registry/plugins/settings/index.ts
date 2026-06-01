@@ -1,7 +1,7 @@
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 
 const settingsStatusBarItem = defineRegistryItem({
   provides: [

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
 import {
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
   SKETCH_DEFAULT_PLANE_XY,
   SKETCH_DEFAULT_PLANE_XZ,
   SKETCH_DEFAULT_PLANE_YZ,
@@ -12,10 +13,9 @@ import {
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { userHasFeature } from '@src/lib/settings/settingsUtils'
+import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
@@ -31,8 +31,6 @@ import {
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
-
-const SKETCH_EXPERIMENTAL_FEATURES_FLAG = 'sketch_experimental_features'
 
 export type ToolbarModeName =
   | 'modeling'
@@ -127,6 +125,64 @@ export type ToolbarItem = {
   disabledReason?:
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
+}
+
+type ToolbarConfig = Record<ToolbarModeName, ToolbarMode>
+
+function filterExperimentalToolbarConfig(
+  toolbarConfig: ToolbarConfig,
+  showExperimentalFeatures: boolean
+): ToolbarConfig {
+  if (showExperimentalFeatures) {
+    return toolbarConfig
+  }
+
+  return {
+    onlyCancel: filterExperimentalToolbarMode(toolbarConfig.onlyCancel),
+    modeling: filterExperimentalToolbarMode(toolbarConfig.modeling),
+    sketching: filterExperimentalToolbarMode(toolbarConfig.sketching),
+    sketchSolve: filterExperimentalToolbarMode(toolbarConfig.sketchSolve),
+  }
+}
+
+function filterExperimentalToolbarMode(toolbarMode: ToolbarMode): ToolbarMode {
+  return {
+    ...toolbarMode,
+    items: toolbarMode.items.flatMap(filterExperimentalToolbarItem),
+  }
+}
+
+function filterExperimentalToolbarItem(
+  item: ToolbarMode['items'][number]
+): ToolbarMode['items'] {
+  if (item === 'break') {
+    return [item]
+  }
+
+  if ('array' in item) {
+    const array = item.array.filter(
+      (dropdownItem) => dropdownItem.status !== 'experimental'
+    )
+
+    if (array.length === 0) {
+      return []
+    }
+
+    const visibleItemIds = new Set(array.map(({ id }) => id))
+    const defaultVisibleItemIds = item.defaultVisibleItemIds?.filter((id) =>
+      visibleItemIds.has(id)
+    )
+
+    return [
+      {
+        ...item,
+        array,
+        ...(defaultVisibleItemIds ? { defaultVisibleItemIds } : {}),
+      },
+    ]
+  }
+
+  return item.status === 'experimental' ? [] : [item]
 }
 
 export type ToolbarItemResolved = Omit<
@@ -461,11 +517,11 @@ type ToolbarCommands = Pick<ReturnType<typeof useApp>['commands'], 'send'>
 export function buildToolbarConfig(
   commands: ToolbarCommands,
   {
-    showSplineTool = false,
+    showExperimentalFeatures = false,
   }: {
-    showSplineTool?: boolean
+    showExperimentalFeatures?: boolean
   } = {}
-): Record<ToolbarModeName, ToolbarMode> {
+): ToolbarConfig {
   const splineToolbarItem: ToolbarItem = {
     id: 'spline',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.spline,
@@ -488,7 +544,7 @@ export function buildToolbarConfig(
       state.context.sketchSolveToolName === 'splineTool',
   }
 
-  return {
+  const toolbarConfig: ToolbarConfig = {
     onlyCancel: {
       check: (state) => !state.matches('Sketch no face'),
       items: [
@@ -1338,6 +1394,27 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-straightness',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Straightness', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Straightness',
+              icon: 'gdtStraightness',
+              description:
+                'Specifies straightness tolerance - how much a face or edge can deviate from perfectly straight.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-straightness'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-datum',
               commandBarTarget: { groupId: 'modeling', name: 'GDT Datum' },
               onClick: () =>
@@ -2115,7 +2192,7 @@ export function buildToolbarConfig(
             state.matches('sketchSolveMode') &&
             state.context.sketchSolveToolName === 'pointTool',
         },
-        ...(showSplineTool ? [splineToolbarItem] : []),
+        splineToolbarItem,
         {
           id: 'circle-center',
           command: TOOLBAR_COMMAND_IDS.sketchSolve.circleCenter,
@@ -2216,7 +2293,7 @@ export function buildToolbarConfig(
                   data: { tool: 'trimTool' },
                 }),
           icon: 'trimTool',
-          status: 'experimental',
+          status: 'available',
           title: 'Trim',
           description:
             'Draw a trimming line through parts of segments to be removed.',
@@ -2368,6 +2445,11 @@ export function buildToolbarConfig(
       ],
     },
   }
+
+  return filterExperimentalToolbarConfig(
+    toolbarConfig,
+    showExperimentalFeatures
+  )
 }
 
 function getSelectedSketchTarget(selectionRanges: Selections): {
@@ -2430,28 +2512,15 @@ function getSelectedSketchIconColor(
 }
 
 export const useToolbarConfig = () => {
-  const { commands } = useApp()
-  const [showSplineTool, setShowSplineTool] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-
-    void userHasFeature(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false).then(
-      (enabled) => {
-        if (!cancelled) {
-          setShowSplineTool(enabled)
-        }
-      }
-    )
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { commands, userFeatures } = useApp()
+  const showExperimentalFeatures = userFeatures.useHas(
+    EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+    false
+  )
 
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () => buildToolbarConfig(commands, { showSplineTool }),
-    [commands, showSplineTool]
+    () => buildToolbarConfig(commands, { showExperimentalFeatures }),
+    [commands, showExperimentalFeatures]
   )
 }
 

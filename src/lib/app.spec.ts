@@ -69,6 +69,7 @@ function disposeApp(app: App) {
   app.commands.actor.stop()
   app.auth.actor.stop()
   app.billing.actor.stop()
+  app.userFeatures.actor.stop()
 }
 
 describe('project system', () => {
@@ -184,6 +185,52 @@ describe('project system', () => {
 
       expect(app.settings.get().plugins.telemetry.current).toBe(true)
       expect(app.registry.get(telemetryPlugin!.service).active.value).toBe(true)
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('syncs a declared plugin activation setting after reload', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const executionIndicatorPlugin = app.registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === 'execution-indicator')
+      expect(executionIndicatorPlugin).toBeDefined()
+
+      app.settings.actor.send({ type: 'reload.settings' } as never)
+
+      await waitForSettingsIdle(app)
+
+      const modelingSettings = app.settings.get().modeling as Record<
+        string,
+        { current: unknown }
+      >
+      expect(modelingSettings.executionIndicator.current).toBe(false)
+      expect(app.settings.get().plugins['execution-indicator']).toBeUndefined()
+      expect(
+        app.registry.get(executionIndicatorPlugin!.service).active.value
+      ).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.modeling.executionIndicator',
+        data: {
+          level: 'user',
+          value: true,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+
+      expect(
+        app.registry.get(executionIndicatorPlugin!.service).active.value
+      ).toBe(true)
     } finally {
       disposeApp(app)
     }
