@@ -709,17 +709,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
       //
-      // Replace the signal value for the currently-opened executing editor if its
-      // parent directory was renamed
-      if (
-        input.app.project?.executingPathSignal.value?.value.includes(oldPath)
-      ) {
-        const v = input.app.project.executingPathSignal.value.value
-        input.app.project.executingPathSignal.value.value = v.replace(
-          oldPath,
-          newPath
-        )
-      }
+      // Keep project editor bookkeeping aligned if an opened editor's parent
+      // directory was renamed.
+      input.app.project?.renameFolderPath(oldPath, newPath)
 
       return {
         message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
@@ -776,14 +768,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
       //
-      // Replace the signal value for the currently-opened executing editor if
-      // it was renamed.
-      if (
-        input.app.project?.executingPathSignal.value &&
-        input.app.project.executingPathSignal.value.value === oldPath
-      ) {
-        input.app.project.executingPathSignal.value.value = newPath
-      }
+      // Keep project editor bookkeeping aligned if an opened editor was renamed.
+      input.app.project?.renameFilePath(oldPath, newPath)
 
       return {
         message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,

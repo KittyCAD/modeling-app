@@ -452,6 +452,73 @@ describe('KclManager diagnostics', () => {
     expect(modelingSendSpy).not.toHaveBeenCalled()
   })
 
+  it('keeps direct newline edits when an older sketch execution finishes', async () => {
+    vi.useFakeTimers()
+
+    const initialCode = `sketch001 = sketch(on = XY) {
+  line(end = [1, 0])
+}`
+    const { kclManager } = createKclManagerTestHarness(initialCode)
+    const sceneGraphDelta = createEmptySceneGraphDelta()
+    const deferredSetProgram =
+      createDeferred<
+        Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>
+      >()
+    const modelingSendSpy = vi.fn((event: unknown) => {
+      if (
+        typeof event === 'object' &&
+        event !== null &&
+        'type' in event &&
+        event.type === 'update sketch outcome' &&
+        'data' in event
+      ) {
+        const data = event.data as { sourceDelta: SourceDelta }
+        kclManager.updateCodeEditor(data.sourceDelta.text, {
+          shouldExecute: false,
+          shouldWriteToDisk: false,
+          shouldResetCamera: false,
+          shouldAddToHistory: false,
+        })
+      }
+    })
+    enableSketchSolveEditorExecution(kclManager)
+    kclManager.modelingSend = modelingSendSpy
+
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+    vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockReturnValue(
+      deferredSetProgram.promise
+    )
+
+    kclManager.editorView.dispatch({
+      changes: {
+        from: initialCode.indexOf('\n}'),
+        insert: '\n  point([0, 0])',
+      },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await flushPromises()
+
+    const codeBeforeEnter = kclManager.code
+    kclManager.editorView.dispatch({
+      changes: { from: kclManager.code.indexOf('\n}'), insert: '\n' },
+    })
+
+    expect(kclManager.code).not.toBe(codeBeforeEnter)
+    expect(kclManager.code).toContain('point([0, 0])\n\n}')
+
+    deferredSetProgram.resolve({
+      type: 'Success',
+      sceneGraph: sceneGraphDelta.new_graph,
+      execOutcome: sceneGraphDelta.exec_outcome,
+      checkpointId: 55,
+    })
+    await flushPromises()
+
+    expect(modelingSendSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toContain('point([0, 0])\n\n}')
+  })
+
   it('debounces repeated programmatic updates so only the latest buffer is written', async () => {
     vi.useFakeTimers()
 

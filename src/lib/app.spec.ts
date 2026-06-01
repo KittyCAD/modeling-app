@@ -72,6 +72,15 @@ function disposeApp(app: App) {
   app.userFeatures.actor.stop()
 }
 
+function getMockProjectMainPath() {
+  const path = mockProject.children?.[0]?.path
+  if (!path) {
+    throw new Error('mockProject main path missing')
+  }
+
+  return path
+}
+
 describe('project system', () => {
   it('syncs plugin settings into plugin activation and only persists overrides', async () => {
     const app = App.fromProvided({
@@ -259,6 +268,62 @@ describe('project system', () => {
       app.closeProject()
 
       expect(app.project).toBeUndefined()
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('keeps an already-opened editor executable when reopening it', async () => {
+    File.ioImplementations.read = () => Promise.resolve('')
+    File.ioImplementations.write = () => Promise.resolve()
+
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      const project = await app.openProject(mockProject)
+      const path = getMockProjectMainPath()
+      const editor = await project.openEditor(path, undefined, undefined, false)
+
+      expect(project.executingEditor.value).toBeNull()
+
+      const reopenedEditor = await project.openEditor(path)
+
+      expect(reopenedEditor).toBe(editor)
+      expect(project.executingPath).toBe(path)
+      expect(project.executingEditor.value).toBe(editor)
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('keeps executing editor bookkeeping aligned on close and rename', async () => {
+    File.ioImplementations.read = () => Promise.resolve('')
+    File.ioImplementations.write = () => Promise.resolve()
+
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      const project = await app.openProject(mockProject)
+      const oldPath = getMockProjectMainPath()
+      const newPath = '/some-dir/test/renamed.kcl'
+      const editor = await project.openEditor(oldPath)
+
+      expect(project.executingEditor.value).toBe(editor)
+
+      project.renameFilePath(oldPath, newPath)
+
+      expect(project.executingPath).toBe(newPath)
+      expect(project.executingEditor.value).toBe(editor)
+      expect(editor.path).toBe(newPath)
+
+      project.closeEditor(newPath)
+
+      expect(project.executingPath).toBeNull()
+      expect(project.executingEditor.value).toBeNull()
     } finally {
       disposeApp(app)
     }

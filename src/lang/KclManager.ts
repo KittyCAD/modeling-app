@@ -318,11 +318,10 @@ export class ZDSProject {
   /** Editors are referenced via Signal in case the file name itself is changed. */
   public editors = new Map<Signal<string>, KclManager>()
   #executingPath = signal<Signal<string> | null>(null)
-  public executingEditor = computed(() =>
-    this.#executingPath.value
-      ? this.editors.get(this.#executingPath.value)
-      : null
-  )
+  public executingEditor = computed(() => {
+    const executingPath = this.#executingPath.value?.value
+    return executingPath ? (this.findEditor(executingPath)?.[1] ?? null) : null
+  })
   /** The currently-executing file's info as a FileEntry */
   executingFileEntry = computed<FileEntry>(() => ({
     name: getStringAfterLastSeparator(this.#executingPath.value?.value ?? ''),
@@ -368,6 +367,7 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -385,6 +385,74 @@ export class ZDSProject {
       .entries()
       .toArray()
       .find(([p]) => p.value === path)
+  }
+
+  private replacePathPrefix(
+    path: string,
+    oldPrefix: string,
+    newPrefix: string
+  ) {
+    if (path === oldPrefix) {
+      return newPrefix
+    }
+
+    const separators = [...new Set([fsZds.sep, '/', '\\'].filter(Boolean))]
+    if (
+      !separators.some((separator) => path.startsWith(oldPrefix + separator))
+    ) {
+      return null
+    }
+
+    return newPrefix + path.slice(oldPrefix.length)
+  }
+
+  renameFilePath(oldPath: string, newPath: string) {
+    let didRename = false
+    for (const file of this.files) {
+      if (file.path === oldPath) {
+        file.path = newPath
+        didRename = true
+      }
+    }
+
+    const foundEditor = this.findEditor(oldPath)
+    if (foundEditor) {
+      const [pathSignal, editor] = foundEditor
+      if (editor.path !== newPath) {
+        editor.path = newPath
+      }
+      pathSignal.value = newPath
+      didRename = true
+    }
+
+    return didRename
+  }
+
+  renameFolderPath(oldPath: string, newPath: string) {
+    for (const file of this.files) {
+      const nextPath = this.replacePathPrefix(file.path, oldPath, newPath)
+      if (!nextPath) {
+        continue
+      }
+
+      file.path = nextPath
+    }
+
+    for (const [pathSignal, editor] of this.editors.entries()) {
+      const nextPath = this.replacePathPrefix(
+        pathSignal.value,
+        oldPath,
+        newPath
+      )
+      if (!nextPath) {
+        continue
+      }
+
+      if (editor.path !== nextPath) {
+        editor.path = nextPath
+      }
+      pathSignal.value = nextPath
+    }
   }
 
   // Saving some keystrokes
@@ -405,7 +473,11 @@ export class ZDSProject {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
     if (found) {
-      console.warn(`Attempted to overwrite editor with path "${path}"`)
+      if (isExecuting) {
+        this.executingPath = path
+      } else {
+        console.warn(`Attempted to overwrite editor with path "${path}"`)
+      }
       return found
     }
 
@@ -483,8 +555,14 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
+    const wasExecuting =
+      this.#executingPath.value === foundPathSignal[0] ||
+      this.#executingPath.value?.value === path
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
+    if (wasExecuting) {
+      this.executingPath = null
+    }
   }
 
   closeAllEditors() {
@@ -492,6 +570,7 @@ export class ZDSProject {
       editor.close()
     }
     this.editors.clear()
+    this.executingPath = null
   }
 
   /** Handle updates from the disk representation of the project */
