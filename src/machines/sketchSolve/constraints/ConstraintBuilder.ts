@@ -8,8 +8,8 @@ import { ConstraintResources } from '@src/machines/sketchSolve/constraints/Const
 import { CONSTRAINT_COLOR } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { DistanceConstraintBuilder } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
 import {
-  InvisibleConstraintSpriteBuilder,
   type InvisibleConstraintDisplayState,
+  InvisibleConstraintSpriteBuilder,
 } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import { RadiusConstraintBuilder } from '@src/machines/sketchSolve/constraints/RadiusConstraintBuilder'
 import {

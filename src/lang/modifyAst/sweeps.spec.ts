@@ -1,32 +1,8 @@
-import {
-  assertParse,
-  getAllOperations,
-  type PathToNode,
-  recast,
-  type Name,
-} from '@src/lang/wasm'
-import {
-  createSelectionFromArtifacts,
-  createSelectionFromPathArtifact,
-  enginelessExecutor,
-  getAstAndArtifactGraph,
-  getAstAndSketchSelections,
-  getCapFromCylinder,
-  getWalls,
-  getKclCommandValue,
-  runNewAstAndCheckForSweep,
-  runNewAstAndCountSweeps,
-} from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  buildTheWorldAndConnectToEngine,
-  buildTheWorldAndNoEngineConnection,
-} from '@src/unitTestUtils'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
   addLoft,
@@ -35,11 +11,35 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
-import { getAxisExpression } from '@src/lang/modifyAst/geometry'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
+import {
+  type Name,
+  type PathToNode,
+  assertParse,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
+import {
+  createSelectionFromArtifacts,
+  createSelectionFromPathArtifact,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+  getAstAndSketchSelections,
+  getCapFromCylinder,
+  getKclCommandValue,
+  getWalls,
+  runNewAstAndCheckForSweep,
+  runNewAstAndCountSweeps,
+} from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import {
+  buildTheWorldAndConnectToEngine,
+  buildTheWorldAndNoEngineConnection,
+} from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -452,6 +452,38 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
   bidirectionalLength = 20,
   twistAngle = 30,
 )`)
+    })
+
+    it('should add an extrude call with draft angle', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const draftAngle = await getKclCommandValue(
+        '45deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        draftAngle,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)`
+      )
     })
 
     it('should edit an extrude call from symmetric true to false and new length', async () => {

@@ -1,19 +1,19 @@
-import { describe, it, expect, vi } from 'vitest'
-import {
-  createCircleActor,
-  sendResultToParent,
-} from '@src/machines/sketchSolve/tools/circleToolImpl'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  createSceneGraphDelta,
-  createPointApiObject,
+  createCircleActor,
+  sendResultToParent,
+} from '@src/machines/sketchSolve/tools/circleToolImpl'
+import {
   createCircleApiObject,
-  createMockRustContext,
   createMockKclManager,
+  createMockRustContext,
+  createPointApiObject,
+  createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { describe, expect, it, vi } from 'vitest'
 import type { DoneActorEvent } from 'xstate'
 
 type CreatingCircleEvent = {

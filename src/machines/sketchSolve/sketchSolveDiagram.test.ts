@@ -1,20 +1,20 @@
-import { describe, expect, it } from 'vitest'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import {
+  buildAngleConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
+  buildEqualLengthConstraintInput,
+  buildFixedConstraintInput,
+  buildSymmetricConstraintInput,
+  buildSymmetricConstraintInputWithExplicitAxis,
+  buildTangentConstraintInput,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   createArcApiObject,
   createCircleApiObject,
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import {
-  buildAngleConstraintInput,
-  buildEqualLengthConstraintInput,
-  buildCircularSizeDimensionConstraintInput,
-  buildFixedConstraintInput,
-  buildSymmetricConstraintInput,
-  buildSymmetricConstraintInputWithExplicitAxis,
-  buildTangentConstraintInput,
-} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { describe, expect, it } from 'vitest'
 
 function createObjectsArray(objects: ApiObject[]) {
   const array: ApiObject[] = []

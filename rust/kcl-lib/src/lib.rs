@@ -97,6 +97,7 @@ pub use errors::CompilationIssue;
 pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
 pub use errors::ExecError;
+pub use errors::IsRetryable;
 pub use errors::KclError;
 pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
@@ -105,11 +106,14 @@ pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
+pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
+pub use execution::OperationCallbackArgs;
 pub use execution::Point2d;
+pub use execution::SegmentDragAnchor;
 pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
@@ -193,6 +197,8 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditDistanceConstraintLabelPositionOptions,
+        EditSegmentsOptions,
         FrontendState,
         SetProgramOutcome,
         api::{

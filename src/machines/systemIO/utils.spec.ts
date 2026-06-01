@@ -1,4 +1,4 @@
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import {
   collectProjectFiles,

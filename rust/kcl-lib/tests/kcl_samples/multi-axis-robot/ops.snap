@@ -965,7 +965,7 @@ description: Operations executed multi-axis-robot.kcl
   "public/kcl-samples/multi-axis-robot/main.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "robot-arm-base.kcl",
+      "name": "robotArmBase",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -979,7 +979,7 @@ description: Operations executed multi-axis-robot.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "robot-rotating-base.kcl",
+      "name": "rotatingBase",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -993,7 +993,7 @@ description: Operations executed multi-axis-robot.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "robot-arm-j2.kcl",
+      "name": "j2RobotArm",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -1007,7 +1007,7 @@ description: Operations executed multi-axis-robot.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "robot-arm-j3.kcl",
+      "name": "j3RobotArm",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -1023,8 +1023,9 @@ description: Operations executed multi-axis-robot.kcl
   "public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "globals.kcl",
+      "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -6077,8 +6078,9 @@ description: Operations executed multi-axis-robot.kcl
   "public/kcl-samples/multi-axis-robot/robot-arm-j2.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "globals.kcl",
+      "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -7475,8 +7477,9 @@ description: Operations executed multi-axis-robot.kcl
   "public/kcl-samples/multi-axis-robot/robot-arm-j3.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "globals.kcl",
+      "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -11353,8 +11356,9 @@ description: Operations executed multi-axis-robot.kcl
   "public/kcl-samples/multi-axis-robot/robot-rotating-base.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "globals.kcl",
+      "name": "globals",
       "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {

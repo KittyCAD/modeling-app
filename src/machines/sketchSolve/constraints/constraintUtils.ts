@@ -1,21 +1,21 @@
 import type {
   ApiConstraint,
-  FixedPoint,
   ApiObject,
   Coincident,
+  FixedPoint,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isArray, roundOff } from '@src/lib/utils'
-import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
-import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { SnapshotFrom, StateFrom } from 'xstate'
-import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import type { Object3D, SpriteMaterial, Texture } from 'three'
-import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
+import { isArray, roundOff } from '@src/lib/utils'
+import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
+import type { Object3D, SpriteMaterial, Texture } from 'three'
+import { Sprite, Vector3 } from 'three'
+import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 

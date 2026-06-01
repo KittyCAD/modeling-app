@@ -1,6 +1,7 @@
 import {
   Registry,
   defineRegistryItem,
+  pluginsValueSpec,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -10,7 +11,6 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 import engineSceneExtension from '.'
-import { ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID } from './constants'
 
 function createExecutingEditorService(
   isExecuting = signal(false),
@@ -30,19 +30,29 @@ function createExecutingEditorService(
 }
 
 describe('engineScene extension', () => {
-  it('contributes the executing spinner setting disabled by default', () => {
+  it('bundles the execution indicator plugin off by default', () => {
     const registry = new Registry()
     registry.configure([engineSceneExtension])
 
-    const setting = registry
-      .get(settingsValueSpec)
-      .modeling.showExecutingSpinner.createSetting()
+    const executionIndicatorPlugin = registry
+      .get(pluginsValueSpec)
+      .find((plugin) => plugin.id === 'execution-indicator')
 
-    expect(setting.default).toBe(false)
+    expect(executionIndicatorPlugin).toBeDefined()
+    expect(
+      registry
+        .get(settingsValueSpec)
+        .modeling.executionIndicator.createSetting().default
+    ).toBe(false)
+    expect(
+      registry.get(settingsValueSpec).plugins?.['execution-indicator']
+    ).toBeUndefined()
+    expect(registry.get(executionIndicatorPlugin!.service).active.value).toBe(
+      false
+    )
   })
 
   it('contributes ordered engine scene local status bar items', () => {
-    const isExecuting = signal(false)
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -50,7 +60,7 @@ describe('engineScene extension', () => {
         providesServices: [
           provideService(
             executingEditorService,
-            createExecutingEditorService(isExecuting)
+            createExecutingEditorService()
           ),
         ],
       }),
@@ -63,23 +73,6 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
     ).toEqual([['file'], ['file'], ['file']])
-
-    isExecuting.value = true
-
-    expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual([
-      ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID,
-      'selection',
-      'units',
-      'experimental-features',
-    ])
-
-    isExecuting.value = false
-
-    expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection', 'units', 'experimental-features'])
   })
 
   it('hides the experimental features item when file settings deny it', () => {

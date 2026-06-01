@@ -1,21 +1,24 @@
-import Loading from '@src/components/Loading'
-import { type Selections } from '@src/machines/modelingSharedTypes'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import Loading from '@src/components/Loading'
+import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
+import Tooltip from '@src/components/Tooltip'
+import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { err } from '@src/lib/trap'
+import { isNonNullable } from '@src/lib/utils'
 import type {
   Conversation,
   Exchange,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import Tooltip from '@src/components/Tooltip'
-import { isExternalFileDrag } from '@src/components/Explorer/utils'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
-import { isNonNullable } from '@src/lib/utils'
-import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 
 const noop = () => {}
 
@@ -126,6 +129,7 @@ export interface MlEphantExtraInputsProps {
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
   onCaptureScreenshot: () => void
+  onAnnotateScreenshot: () => void
   attachmentsDisabled?: boolean
   modeOptions?: MlCopilotModeOption[]
 }
@@ -171,6 +175,19 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           <CustomIcon name="camera" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
             <span>Capture viewport screenshot</span>
+          </Tooltip>
+        </button>
+        <button
+          type="button"
+          data-testid="ml-ephant-annotate-screenshot-button"
+          onClick={props.onAnnotateScreenshot}
+          disabled={props.attachmentsDisabled}
+          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          aria-label="Zoodle"
+        >
+          <CustomIcon name="sketch" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Zoodle</span>
           </Tooltip>
         </button>
       </div>
@@ -225,6 +242,9 @@ export const MlEphantConversationInput = (
   const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [annotationImageDataUrl, setAnnotationImageDataUrl] = useState<
+    string | null
+  >(null)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -310,6 +330,14 @@ export const MlEphantConversationInput = (
     })
   }
 
+  const appendDataUrlAttachment = (dataUrl: string, fileName: string) => {
+    const file = dataUrlToFile(dataUrl, fileName)
+    if (err(file)) {
+      return
+    }
+    appendAttachments([file])
+  }
+
   const onAttachFiles = () => {
     if (props.disabled) return
     fileInputRef.current?.click()
@@ -320,19 +348,20 @@ export const MlEphantConversationInput = (
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      // Convert data URL to File without fetch (fetch of data: URLs is
-      // blocked by CSP in the browser).
-      const [header, base64] = dataUrl.split(',')
-      const mime = header.match(/:(.*?);/)?.[1] ?? 'image/png'
-      const bytes = atob(base64)
-      const buf = new Uint8Array(bytes.length)
-      for (let i = 0; i < bytes.length; i++) {
-        buf[i] = bytes.charCodeAt(i)
-      }
-      const file = new File([buf], 'viewport-screenshot.png', { type: mime })
-      appendAttachments([file])
+      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
+    }
+  }
+
+  const onAnnotateScreenshot = () => {
+    if (props.disabled) return
+    try {
+      const dataUrl = takeViewportScreenshot()
+      if (!dataUrl) return
+      setAnnotationImageDataUrl(dataUrl)
+    } catch (e) {
+      console.error('Failed to capture viewport screenshot for annotation', e)
     }
   }
 
@@ -422,9 +451,7 @@ export const MlEphantConversationInput = (
           className="hidden"
         />
         <textarea
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
+          {...noAutofillInputProps}
           data-testid="ml-ephant-conversation-input"
           onChange={(e) => setValue(e.target.value)}
           value={value}
@@ -480,6 +507,7 @@ export const MlEphantConversationInput = (
             }}
             onAttachFiles={onAttachFiles}
             onCaptureScreenshot={onCaptureScreenshot}
+            onAnnotateScreenshot={onAnnotateScreenshot}
             attachmentsDisabled={props.disabled}
             modeOptions={props.modeOptions}
           />
@@ -523,6 +551,19 @@ export const MlEphantConversationInput = (
         Zookeeper can make mistakes. We send selection context to help. Always
         verify information.
       </div>
+      {annotationImageDataUrl && (
+        <ViewportAnnotationOverlay
+          imageDataUrl={annotationImageDataUrl}
+          onCancel={() => setAnnotationImageDataUrl(null)}
+          onSend={(annotatedDataUrl) => {
+            appendDataUrlAttachment(
+              annotatedDataUrl,
+              'annotated-viewport-screenshot.png'
+            )
+            setAnnotationImageDataUrl(null)
+          }}
+        />
+      )}
     </div>
   )
 }

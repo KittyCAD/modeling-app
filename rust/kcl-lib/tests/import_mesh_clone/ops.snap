@@ -6,7 +6,7 @@ description: Operations executed import_mesh_clone.kcl
   "rust/kcl-lib/tests/import_mesh_clone/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "../inputs/cube.obj",
+      "name": "yellow",
       "moduleId": 0,
       "nodePath": {
         "steps": [

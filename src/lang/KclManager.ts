@@ -17,18 +17,21 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
+  ExecCallbacks,
   ExecState,
+  OperationCallbackArgs,
   OperationsByModule,
   PathToNode,
   Program,
   VariableMap,
 } from '@src/lang/wasm'
 import {
-  emptyOperationsByModule,
-  getOperationsForCurrentFile,
+  applyOperationCallbackToOperationsByModule,
   emptyExecState,
+  emptyOperationsByModule,
   execStateFromRust,
   getKclVersion,
+  getOperationsForCurrentFile,
   getSketchCheckpointLimit,
   parse,
   recast,
@@ -40,6 +43,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
+import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import fsZds from '@src/lib/fs-zds'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
@@ -87,8 +91,8 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
-  Prec,
   type Extension,
+  Prec,
   StateEffect,
   Transaction,
   type TransactionSpec,
@@ -163,12 +167,12 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapService,
 } from '@src/registry/contracts/keymap'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 
 interface ExecuteArgs {
@@ -796,12 +800,21 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  private _liveOperationsByModule = signal<OperationsByModule>(
+    emptyOperationsByModule()
+  )
+  private _showLiveOperationsByModule = signal(false)
+  /** The module that received the most recent live operation callback. */
+  private _liveActiveModuleId = signal<number | null>(null)
+  /** Operation key (from getOperationKey) of the most recent live operation. */
+  private _liveLatestOperationKey = signal<string | null>(null)
+  private activeLiveOperationExecutionId: number | null = null
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: OperationsByModule = emptyOperationsByModule()
-  pendingFeatureTreeSourceSelection: PendingFeatureTreeSourceSelection | null =
-    null
+  private _pendingFeatureTreeSourceSelection =
+    signal<PendingFeatureTreeSourceSelection | null>(null)
   private _logs = signal<string[]>([])
   private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])
@@ -846,7 +859,15 @@ export class KclManager extends File {
     })
   }
   get operationsByModule() {
-    return this.execState.operations
+    return this._showLiveOperationsByModule.value
+      ? this._liveOperationsByModule.value
+      : this.execState.operations
+  }
+  get liveActiveModuleId() {
+    return this._liveActiveModuleId.value
+  }
+  get liveLatestOperationKey() {
+    return this._liveLatestOperationKey.value
   }
   /**
    * A client-side representation of the commands that have been sent,
@@ -990,6 +1011,7 @@ export class KclManager extends File {
 
     // These belonged to the previous file
     this.lastSuccessfulOperations = emptyOperationsByModule()
+    this.endLiveOperationUpdates()
     this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
     this._hasEditsSinceLastExecution.value = false
@@ -1018,11 +1040,64 @@ export class KclManager extends File {
     this.variables = execState.variables
   }
 
+  private beginLiveOperationUpdates(executionId: number) {
+    this.activeLiveOperationExecutionId = executionId
+    this._liveOperationsByModule.value = emptyOperationsByModule()
+    this._liveActiveModuleId.value = null
+    this._liveLatestOperationKey.value = null
+    this._showLiveOperationsByModule.value = true
+    this.dispatchUpdateOperations([])
+  }
+
+  private endLiveOperationUpdates() {
+    this.activeLiveOperationExecutionId = null
+    this._showLiveOperationsByModule.value = false
+    this._liveActiveModuleId.value = null
+    this._liveLatestOperationKey.value = null
+    this._liveOperationsByModule.value = emptyOperationsByModule()
+  }
+
+  private createExecutionCallbacks(executionId: number): ExecCallbacks {
+    return {
+      onOperation: (callback: OperationCallbackArgs) => {
+        if (
+          this.activeLiveOperationExecutionId !== executionId ||
+          this._cancelTokens.get(executionId)
+        ) {
+          return
+        }
+
+        this._liveActiveModuleId.value = callback.moduleId
+        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
+
+        const operationsByModule = applyOperationCallbackToOperationsByModule({
+          operationsByModule: this._liveOperationsByModule.value,
+          callback,
+        })
+        this._liveOperationsByModule.value = operationsByModule
+        this.dispatchUpdateOperations(
+          getOperationsForCurrentFile({
+            operationsByModule,
+            filenames: this.execState.filenames,
+            currentPath: this.path,
+          })
+        )
+      },
+    }
+  }
+
   get execState() {
     return this._execState.value
   }
   get execStateSignal() {
     return this._execState
+  }
+  get pendingFeatureTreeSourceSelection() {
+    return this._pendingFeatureTreeSourceSelection.value
+  }
+  set pendingFeatureTreeSourceSelection(pendingFeatureTreeSourceSelection: PendingFeatureTreeSourceSelection | null) {
+    this._pendingFeatureTreeSourceSelection.value =
+      pendingFeatureTreeSourceSelection
   }
 
   // Get the kcl version from the wasm module
@@ -2062,13 +2137,17 @@ export class KclManager extends File {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
+    this.errors = []
+    this.logs = []
     this.setSketchSolveDiagnostics([])
+    this.beginLiveOperationUpdates(currentExecutionId)
 
     const codeThatExecuted = this.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.path,
       rustContext: this.rustContext,
+      callbacks: this.createExecutionCallbacks(currentExecutionId),
     })
 
     const livePathsToWatch = Object.values(execState.filenames)
@@ -2105,6 +2184,7 @@ export class KclManager extends File {
 
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
+      this.endLiveOperationUpdates()
       this._cancelTokens.delete(currentExecutionId)
       return
     }
@@ -2140,6 +2220,7 @@ export class KclManager extends File {
       this.lastSuccessfulOperations = execState.operations
       this.lastSuccessfulCode = codeThatExecuted
     }
+    this.endLiveOperationUpdates()
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
@@ -2184,6 +2265,7 @@ export class KclManager extends File {
    * to properly restore the TS application state.
    */
   executeAstCleanUp() {
+    this.endLiveOperationUpdates()
     this.isExecuting = false
     this.executeIsStale = null
     this.engineCommandManager.addCommandLog({

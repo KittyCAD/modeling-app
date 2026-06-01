@@ -829,3 +829,53 @@ export fn hide(
   /// The object or objects to hide.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
 ): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] {}
+
+/// Deletes something from the scene. Once it's deleted, you can't use it anymore.
+/// This means deleting something twice is an error, as is hiding something after you delete it.
+/// ```kcl,sketchSolve
+/// // Basic example, showing deleting something.
+/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+///
+/// // Make a cylinder
+/// sketch001 = sketch(on = XY) {
+///   circle1 = circle(start = [var -2mm, var 1mm], center = [var -1mm, var 0.5mm])
+/// }
+/// cylinder = extrude(region(sketch = sketch001, point = sketch001.circle1.center), length = 5)
+/// // Delete it
+/// delete(cylinder)
+/// ```
+/// ```kcl,legacySketch
+/// // Example showing how to delete bodies after splitting them.
+/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+///
+/// // Make a cylinder.
+/// sketch001 = startSketchOn(XY)
+/// profile001 = circle(
+///   sketch001,
+///   center = [0, 0],
+///   radius = 4.09,
+///   tag = $seg01,
+/// )
+/// cylinder = extrude(profile001, length = 5)
+/// 
+/// // Make a wedge that splits the cylinder down the middle.
+/// sketch002 = startSketchOn(XY)
+/// profile002 = startProfile(sketch002, at = [0, -4.75])
+///   |> angledLine(angle = 0deg, length = 2, tag = $a)
+///   |> angledLine(angle = segAng(a) + 90deg, length = 9.5)
+///   |> angledLine(angle = segAng(a), length = -segLen(a))
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// wedge = extrude(profile002, length = 15, symmetric = true)
+/// 
+/// // Split the cylinder down the wedge.
+/// result = split([cylinder], tools = [wedge])
+/// 
+/// // Delete the left and right split parts.
+/// delete([result[2], result[0]])
+/// ```
+@(impl = std_rust, feature_tree = true, experimental = true)
+export fn delete(
+  /// The object or objects to delete.
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
+) {}

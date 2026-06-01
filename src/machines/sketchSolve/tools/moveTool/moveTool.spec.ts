@@ -1,31 +1,32 @@
-import { describe, it, expect, vi } from 'vitest'
-import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
-import {
-  createOnDragStartCallback,
-  createOnDragCallback,
-  createOnClickCallback,
-  setUpOnDragAndSelectionClickCallbacks,
-  createOnDragEndCallback,
-} from '@src/machines/sketchSolve/tools/moveTool/moveTool'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import type { Themes } from '@src/lib/theme'
 import type {
   ApiConstraint,
   ApiObject,
+  ExistingSegmentCtor,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { emptyOperationsByModule } from '@src/lang/wasm'
-import { isArray } from '@src/lib/utils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import { emptyOperationsByModule } from '@src/lang/wasm'
+import type { Themes } from '@src/lib/theme'
+import { isArray } from '@src/lib/utils'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
   updateSelectedIds,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  createOnClickCallback,
+  createOnDragCallback,
+  createOnDragEndCallback,
+  createOnDragStartCallback,
+  setUpOnDragAndSelectionClickCallbacks,
+} from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
+import { describe, expect, it, vi } from 'vitest'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -953,6 +954,16 @@ describe('createOnDragCallback', () => {
         intersects: [],
       })
 
+      const lineBodyDragAnchors = [
+        {
+          segmentId: 3,
+          target: {
+            x: { value: 2, units: 'Mm' },
+            y: { value: 3, units: 'Mm' },
+          },
+        },
+      ]
+
       expect(editSegments).toHaveBeenCalledWith(
         0,
         2,
@@ -972,7 +983,9 @@ describe('createOnDragCallback', () => {
             },
           },
         ],
-        {}
+        {},
+        [],
+        lineBodyDragAnchors
       )
       expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
         0,
@@ -983,7 +996,7 @@ describe('createOnDragCallback', () => {
           y: { value: 7, units: 'Mm' },
         },
         {},
-        [3]
+        []
       )
       expect(onNewSketchOutcome).toHaveBeenCalledWith({
         kclSource: { text: 'label updated' },
@@ -995,7 +1008,7 @@ describe('createOnDragCallback', () => {
   )
 
   it.each(['Radius', 'Diameter'] as const)(
-    'should move explicit %s constraint labels with dragged arcs without rotating labels',
+    'should leave explicit %s constraint labels stable with dragged arcs',
     async (constraintType) => {
       const setIsSolveInProgress = vi.fn()
       const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
@@ -1086,19 +1099,9 @@ describe('createOnDragCallback', () => {
         intersects: [],
       })
 
-      expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
-        0,
-        2,
-        8,
-        {
-          x: { value: 7, units: 'Mm' },
-          y: { value: 7, units: 'Mm' },
-        },
-        {},
-        [3]
-      )
+      expect(editDistanceConstraintLabelPosition).not.toHaveBeenCalled()
       expect(onNewSketchOutcome).toHaveBeenCalledWith({
-        kclSource: { text: 'label updated' },
+        kclSource: { text: 'segments updated' },
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
@@ -1475,10 +1478,15 @@ describe('createOnDragCallback', () => {
 
     expect(rustContext.restoreSketchCheckpoint).toHaveBeenCalledWith(99)
     expect(rustContext.editSegments).toHaveBeenCalledTimes(3)
+    expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(false)
+    expect(rustContext.editSegments.mock.calls[0]?.[6]).toBe(false)
+    expect(rustContext.editSegments.mock.calls[1]?.[4]).toBe(false)
+    expect(rustContext.editSegments.mock.calls[1]?.[6]).toBe(false)
     expect(rustContext.editSegments.mock.calls[2]?.[2]).toEqual(
       rustContext.editSegments.mock.calls[0]?.[2]
     )
     expect(rustContext.editSegments.mock.calls[2]?.[4]).toBe(true)
+    expect(rustContext.editSegments.mock.calls[2]?.[6]).toBe(true)
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
@@ -2472,6 +2480,84 @@ describe('createOnDragCallback', () => {
     ])
   })
 
+  it('should anchor a dragged line body with a segment drag anchor instead of fixed endpoints', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
+    const start = createPointApiObject({ id: 1, x: 0, y: 0, owner: 5 })
+    const end = createPointApiObject({ id: 2, x: 10, y: 0, owner: 5 })
+    const line = createLineApiObject({ id: 5, start: 1, end: 2 })
+    const sceneGraphDelta = createSceneGraphDelta([start, end, line])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [5],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...createDragSnappingDeps(),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(4, 1),
+        threeD: new Vector3(4, 1, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalled()
+    const editCall = editSegments.mock.calls[0] as unknown as
+      | [
+          number,
+          number,
+          ExistingSegmentCtor[],
+          unknown,
+          number[] | undefined,
+          Array<{
+            segmentId: number
+            target: {
+              x: { value: number; units: string }
+              y: { value: number; units: string }
+            }
+          }>,
+        ]
+      | undefined
+    expect(editCall?.[4]).toEqual([])
+    expect(editCall?.[5]).toEqual([
+      {
+        segmentId: 5,
+        target: {
+          x: { value: 4, units: 'Mm' },
+          y: { value: 1, units: 'Mm' },
+        },
+      },
+    ])
+  })
+
   it('should prevent race conditions and only update drag point after successful edit resolves', async () => {
     // Simulate state that persists across calls
     let isSolveInProgress = false
@@ -3108,6 +3194,7 @@ describe('createOnDragCallback', () => {
 
     // Should send event to update the sketch outcome
     // This triggers the state machine to update the scene graph and code
+    expect((editSegments as any).mock.calls[0]?.[4]).toEqual([5])
     expect(onNewSketchOutcome).toHaveBeenCalledWith({
       ...result,
       writeToDisk: false,
@@ -3879,7 +3966,8 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
       },
       expect.any(Object),
       false,
-      undefined
+      undefined,
+      false
     )
   })
 })

@@ -9,9 +9,10 @@ import {
   addToInputHelper,
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { useSingletons } from '@src/lib/boot'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type ModalResolve = {
   value: string
@@ -129,6 +130,7 @@ export const SetAngleLengthModal = ({
                     {sign > 0 ? '+' : '-'}
                   </button>
                   <input
+                    {...noAutofillInputProps}
                     ref={inputRef}
                     type="text"
                     name="val"

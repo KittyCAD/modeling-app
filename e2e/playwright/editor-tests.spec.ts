@@ -2,13 +2,13 @@ import { join } from 'path'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
 
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   TEST_COLORS,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 

@@ -6,6 +6,7 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import {
+  type ToolbarItem,
   buildToolbarConfig,
   getConstraintToolbarToggleEvent,
   getDefaultRecentToolbarItemIds,
@@ -13,7 +14,6 @@ import {
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
-  type ToolbarItem,
   promoteRecentToolbarItemId,
   recordRecentToolbarItemId,
   resolveRecentToolbarItems,
@@ -55,6 +55,24 @@ function findModelingToolbarItem(id: string): ToolbarItem {
   }
 
   return item
+}
+
+function getToolbarItems(
+  toolbarConfig: ReturnType<typeof buildToolbarConfig>
+): ToolbarItem[] {
+  return Object.values(toolbarConfig).flatMap((mode) =>
+    mode.items.flatMap((item) => {
+      if (item === 'break') {
+        return []
+      }
+
+      if ('array' in item) {
+        return item.array
+      }
+
+      return [item]
+    })
+  )
 }
 
 describe('toolbar state helpers', () => {
@@ -162,6 +180,44 @@ describe('toolbar state helpers', () => {
       perpendicularConstraintTool: 'perpendicular',
       fixedConstraintTool: 'fix',
     })
+  })
+
+  test('hides experimental toolbar items unless sketch experimental features are enabled', () => {
+    const defaultToolbarConfig = buildToolbarConfig({
+      send: () => {},
+    })
+
+    expect(
+      getToolbarItems(defaultToolbarConfig).filter(
+        (item) => item.status === 'experimental'
+      )
+    ).toEqual([])
+    expect(
+      getToolbarItems(defaultToolbarConfig).map((item) => item.id)
+    ).toContain('trim')
+
+    const experimentalToolbarConfig = buildToolbarConfig(
+      {
+        send: () => {},
+      },
+      { showExperimentalFeatures: true }
+    )
+
+    expect(
+      getToolbarItems(experimentalToolbarConfig)
+        .filter((item) => item.status === 'experimental')
+        .map((item) => item.id)
+    ).toEqual(
+      expect.arrayContaining([
+        'spline',
+        'blend-surface',
+        'delete-face',
+        'gear-helical',
+        'gear-spur',
+        'gear-herringbone',
+        'gear-ring',
+      ])
+    )
   })
 
   test('starts sketch solve on an already-selected plane', () => {
@@ -344,7 +400,7 @@ describe('toolbar state helpers', () => {
       {
         send: () => {},
       },
-      { showSplineTool: true }
+      { showExperimentalFeatures: true }
     )
     const defaultKeymapCommands = new Set(
       defaultKeymap.bindings.map((binding) => binding.command)

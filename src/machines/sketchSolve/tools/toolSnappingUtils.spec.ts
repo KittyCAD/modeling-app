@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  getBestSnappingCandidate,
-  sendHoveredSnappingCandidate,
-} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 import { getObjectIdForSnapTarget } from '@src/machines/sketchSolve/snapping'
 import {
   createLineApiObject,
@@ -12,6 +8,10 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import {
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 function createSketchApiObject({ id }: { id: number }): ApiObject {
   return {
