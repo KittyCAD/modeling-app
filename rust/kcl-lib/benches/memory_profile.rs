@@ -9,6 +9,7 @@ use kcl_lib::ExecutorContext;
 use kcl_lib::MockConfig;
 use kcl_lib::Program;
 
+#[path = "memory_workloads/mod.rs"]
 mod memory_workloads;
 
 fn parse_args() -> (Option<String>, usize) {
