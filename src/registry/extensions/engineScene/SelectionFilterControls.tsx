@@ -89,7 +89,7 @@ export function SelectionFilterControls() {
 
   return (
     <Popover className="relative">
-      {({ close }) => (
+      {(popover) => (
         <>
           <Popover.Button
             className={`${defaultStatusBarItemClassNames} gap-1`}
@@ -117,7 +117,7 @@ export function SelectionFilterControls() {
                     title={option.title}
                     onClick={() => {
                       handleSelectionFilterChange(option.value)
-                      close()
+                      popover.close()
                     }}
                     className={`m-0 rounded border-none px-2 py-1 text-left text-xs ${
                       isActive
