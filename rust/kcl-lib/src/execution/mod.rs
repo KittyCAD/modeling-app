@@ -1791,7 +1791,7 @@ impl ExecutorContext {
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
-            exec_state.stack().memory.stats
+            exec_state.stack().memory.stats()
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
