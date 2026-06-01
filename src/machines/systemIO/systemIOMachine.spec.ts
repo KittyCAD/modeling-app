@@ -18,6 +18,19 @@ import { createActor, fromPromise, waitFor } from 'xstate'
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
 
+function mockProject(name: string): Project {
+  return {
+    metadata: null,
+    kcl_file_count: 0,
+    directory_count: 0,
+    default_file: `/${name}/main.kcl`,
+    path: `/${name}`,
+    name,
+    children: [],
+    readWriteAccess: true,
+  }
+}
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -131,6 +144,49 @@ describe('systemIOMachine - XState', () => {
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
             )
           )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should update folders incrementally while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          const folders = [mockProject('bravo'), mockProject('alpha')]
+          actor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: { folders },
+          })
+
+          await waitFor(
+            actor,
+            (state) => state.context.folders?.length === folders.length
+          )
+
+          expect(actor.getSnapshot().context.folders).toStrictEqual(folders)
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.readingFolders,
+          })
         } finally {
           actor.stop()
         }

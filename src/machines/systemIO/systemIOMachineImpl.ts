@@ -293,19 +293,35 @@ const sharedBulkDeleteWorkflow = async ({
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
-      async ({ input: context }: { input: SystemIOContext }) => {
-        const projects = []
+      async ({ input: context, signal }) => {
+        const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
+        const projects: Project[] = []
         const projectDirectoryPath = context.projectDirectoryPath
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
+        const sendFoldersProgress = (folders: Project[]) => {
+          if (signal.aborted) {
+            return
+          }
+          context.app.systemIOActor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: { folders },
+          })
+        }
+
         await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await fsZds.readdir(projectDirectoryPath)
+        const entries = (await fsZds.readdir(projectDirectoryPath)).toSorted(
+          (a, b) => a.localeCompare(b)
+        )
         const { value: canReadWriteProjectDirectory } =
           await canReadWriteDirectory(projectDirectoryPath)
 
-        for (let entry of entries) {
+        for (const entry of entries) {
+          if (signal.aborted) {
+            return projects
+          }
           // Skip directories that start with a dot
           if (entry.startsWith('.')) {
             continue
@@ -330,7 +346,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             continue
           }
           projects.push(project)
+          if (projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0) {
+            sendFoldersProgress([...projects])
+          }
         }
+        sendFoldersProgress(projects)
         return projects
       }
     ),

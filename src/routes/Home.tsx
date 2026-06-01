@@ -1,3 +1,4 @@
+import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
@@ -35,6 +36,7 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { opfsCloudSyncStatus } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -145,6 +147,37 @@ const Home = () => {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settingsValues.app?.projectDirectory?.current])
+
+  useEffect(() => {
+    let disposed = false
+    let lastHandledSyncedAt: string | undefined
+
+    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
+      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
+        return
+      }
+
+      lastHandledSyncedAt = syncedAt
+      void waitFor(systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+        .then(() => {
+          if (disposed || lastHandledSyncedAt !== syncedAt) {
+            return
+          }
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        })
+        .catch(reportRejection)
+    })
+
+    return () => {
+      disposed = true
+      disposeCloudSyncRefreshEffect()
+    }
+  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -569,35 +602,50 @@ function ProjectGrid({
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
   const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ||
-      projects === undefined ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
-                <ProjectCard
-                  key={project.name}
-                  project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject(systemIOActor)}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {sortedSearchResults.map((project) => (
+                  <ProjectCard
+                    key={project.name}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject(systemIOActor)}
+                  />
+                ))}
+              </ul>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           ) : (
-            <p
-              data-testid="projects-none"
-              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-            >
-              No projects found
-              {projects !== undefined && projects.length === 0
-                ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
-            </p>
+            <>
+              <p
+                data-testid="projects-none"
+                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+              >
+                No projects found
+                {projects !== undefined && projects.length === 0
+                  ? ', ready to make your first one?'
+                  : ` with the search term "${query}"`}
+              </p>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
