@@ -1,30 +1,31 @@
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
-import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
-  addFlatnessGdt,
-  addDatumGdt,
-  addPositionGdt,
   addAnnotationGdt,
+  addDatumGdt,
+  addDistanceGdt,
+  addFlatnessGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
-  addDistanceGdt,
+  addPositionGdt,
   addProfileGdt,
-  getUsedDatumNames,
+  addStraightnessGdt,
   getNextAvailableDatumName,
+  getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'
+import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getCapFromCylinder,
 } from '@src/lib/testHelpers'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -557,6 +558,180 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the fillet was tagged properly
       expect(newCode).toContain('tag = $seg02')
 
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addStraightnessGdt', () => {
+    it('should add a basic straightness annotation to a single face (cap)', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getCapFromCylinder(artifactGraph)
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain(
+        'gdt::straightness(faces = [capEnd001], tolerance = 0.1mm)'
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness annotations to multiple faces', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getWallsFromBox(artifactGraph, 3)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tag = $seg01')
+      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $seg03')
+      const gdtCalls = newCode.match(/gdt::straightness/g)
+      expect(gdtCalls).toHaveLength(3)
+      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::straightness(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness annotation with all optional parameters', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getCapFromCylinder(artifactGraph)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const precision = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePosition = await getKclCommandValue(
+        '[10, 20]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePlane = 'XY'
+      const fontSize = await getKclCommandValue(
+        '10mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const leaderScale = await getKclCommandValue(
+        '1.2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        precision,
+        framePosition,
+        framePlane,
+        leaderScale,
+        fontSize,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+      expect(newCode).toContain('precision = 3')
+      expect(newCode).toContain('framePosition = [10, 20]')
+      expect(newCode).toContain('framePlane = XY')
+      expect(newCode).toContain('fontSize = 10mm')
+      expect(newCode).toContain('leaderScale = 1.2')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })

@@ -5,13 +5,13 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useApp } from '@src/lib/boot'
 import {
-  hiddenOnPlatform,
   formatSettingsLabel,
+  hiddenOnPlatform,
 } from '@src/lib/settings/settingsUtils'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'

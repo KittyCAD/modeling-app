@@ -21,7 +21,7 @@ anyhow = { version = "1" }
 async-trait = "0.1.89"
 clap = { version = "4.6.1", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
-dashmap = { version = "6.1.0" }
+dashmap = { version = "6.2.1" }
 http = "1"
 indexmap = "2.13.1"
 ezpz = "0.2.26"
@@ -29,7 +29,7 @@ kittycad = { version = "0.4.13", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.201", features = [
+kittycad-modeling-cmds = { version = "0.2.202", features = [
   "ts-rs",
   "websocket",
 ] }

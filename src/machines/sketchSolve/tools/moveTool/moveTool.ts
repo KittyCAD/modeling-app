@@ -1,12 +1,12 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
+  Number as ApiNumber,
   ApiObject,
   ApiPoint2d,
   ExistingSegmentCtor,
-  Number as ApiNumber,
   SceneGraphDelta,
-  SegmentDragAnchor,
   SegmentCtor,
+  SegmentDragAnchor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -28,12 +28,12 @@ import {
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
-  isControlPointSplineSegment,
-  isConstraint,
-  isOwnedLineSegment,
   isArcLikeSegment,
+  isConstraint,
+  isControlPointSplineSegment,
   isDiameterConstraint,
   isDistanceConstraint,
+  isOwnedLineSegment,
   isPointSegment,
   isRadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -61,13 +61,12 @@ import {
 import {
   type SnappingCandidate,
   allowSnapping,
+  getCoincidentSegmentsForSnapTarget,
   getConstraintsForSnapTarget,
   getObjectIdForSnapTarget,
-  getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
   type SelectionBoxVisualState,
   findContainedSegments,
@@ -77,6 +76,7 @@ import {
   removeSelectionBox,
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { Group, type Object3D, Vector2, Vector3 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 

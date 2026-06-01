@@ -4,18 +4,18 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { useApp } from '@src/lib/boot'
 import type {
   CommandArgument,
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useApp } from '@src/lib/boot'
 import { roundOffWithUnits } from '@src/lib/utils'
-import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 function CommandBarHeaderFooter({
   children,

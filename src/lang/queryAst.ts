@@ -52,8 +52,8 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
-  deg2Rad,
   isParallel as areVectorsParallel,
+  deg2Rad,
   subVec,
 } from '@src/lib/utils2d'
 

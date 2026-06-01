@@ -22,8 +22,8 @@ import type {
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  applyConstraintsForSnapTarget,
   type SnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {

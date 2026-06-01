@@ -34,7 +34,6 @@ import {
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import {
-  formatNumberValue,
   type Artifact,
   type ArtifactGraph,
   type CallExpressionKw,
@@ -43,6 +42,7 @@ import {
   type Program,
   type VariableDeclaration,
   type VariableMap,
+  formatNumberValue,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'

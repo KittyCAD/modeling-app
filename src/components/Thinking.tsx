@@ -1,11 +1,11 @@
 import ms from 'ms'
 
-import type { MlCopilotServerMessage, MlCopilotFile } from '@kittycad/lib'
+import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 interface IRowCollapse {
   fn: () => void
