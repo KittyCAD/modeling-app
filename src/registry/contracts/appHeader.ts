@@ -1,6 +1,6 @@
-import type { ComponentType } from 'react'
-import type { App } from '@src/lib/app'
 import { defineContract, defineValueSpec } from '@kittycad/registry'
+import type { App } from '@src/lib/app'
+import type { ComponentType } from 'react'
 
 export interface AppHeaderItemProps {
   className: string

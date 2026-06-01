@@ -1,12 +1,13 @@
-import { vi } from 'vitest'
 import type {
-  SceneGraphDelta,
   ApiObject,
+  SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { emptyOperationsByModule } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { Themes } from '@src/lib/theme'
+import { vi } from 'vitest'
 
 /**
  * Helper to create a minimal valid SceneGraphDelta for testing
@@ -43,7 +44,7 @@ export function createSceneGraphDelta(
     exec_outcome: {
       issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,

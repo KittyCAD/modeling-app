@@ -5,6 +5,21 @@ description: Operations executed coilover-assembly.kcl
 {
   "public/kcl-samples/coilover-assembly/coilover-bottom.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -7249,6 +7264,21 @@ description: Operations executed coilover-assembly.kcl
   ],
   "public/kcl-samples/coilover-assembly/coilover-top.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -13146,12 +13176,9 @@ description: Operations executed coilover-assembly.kcl
   ],
   "public/kcl-samples/coilover-assembly/main.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "coilover-bottom.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "coiloverBottom",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -13163,35 +13190,9 @@ description: Operations executed coilover-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "coilover-top.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "spring.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "coiloverSpring",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -13203,7 +13204,18 @@ description: Operations executed coilover-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "ModuleInstance",
+      "name": "coiloverTop",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "public/kcl-samples/coilover-assembly/parameters.kcl": [
@@ -14224,6 +14236,21 @@ description: Operations executed coilover-assembly.kcl
     }
   ],
   "public/kcl-samples/coilover-assembly/spring.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "helix",

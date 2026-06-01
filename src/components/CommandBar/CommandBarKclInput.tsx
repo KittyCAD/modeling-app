@@ -33,6 +33,11 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
+import {
+  noAutofillFormProps,
+  noAutofillInputProps,
+  setNoAutofillAttributes,
+} from '@src/lib/autofill'
 import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
@@ -256,6 +261,9 @@ function CommandBarKclInput({
 
   useEffect(() => {
     if (editorRef.current) {
+      setNoAutofillAttributes(editorRef.current)
+      setNoAutofillAttributes(miniEditor.dom)
+      setNoAutofillAttributes(miniEditor.contentDOM)
       miniEditor.dispatch({
         changes: {
           from: 0,
@@ -334,6 +342,7 @@ function CommandBarKclInput({
 
   return (
     <form
+      {...noAutofillFormProps}
       id="arg-form"
       className="mb-2"
       onSubmit={handleSubmit}
@@ -398,16 +407,13 @@ function CommandBarKclInput({
           {createNewVariable && (
             <>
               <input
+                {...noAutofillInputProps}
                 type="text"
                 id="variable-name"
                 name="variable-name"
                 className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
                 placeholder="Variable name"
                 value={newVariableName}
-                autoCapitalize="off"
-                autoCorrect="off"
-                autoComplete="off"
-                spellCheck="false"
                 autoFocus
                 onChange={(e) => setNewVariableName(e.target.value)}
                 onKeyDown={(e) => {

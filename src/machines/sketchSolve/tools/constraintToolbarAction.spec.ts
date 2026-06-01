@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import {
   createArcApiObject,
   createCircleApiObject,
@@ -7,7 +7,7 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('constraintToolbarAction', () => {
   it('applies immediately for an already-valid selection and does not equip the tool', async () => {

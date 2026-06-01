@@ -2,8 +2,8 @@ import type { Texture } from 'three'
 import { SRGBColorSpace, Sprite, SpriteMaterial, TextureLoader } from 'three'
 
 import {
-  constraintIconPaths,
   type ConstraintIconName,
+  constraintIconPaths,
 } from '@src/components/constraintIconPaths'
 import { SKETCH_SELECTION_RGB } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'

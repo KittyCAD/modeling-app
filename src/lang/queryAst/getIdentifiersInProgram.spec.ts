@@ -1,7 +1,7 @@
 import { getIdentifiersInProgram } from '@src/lang/queryAst/getIdentifiersInProgram'
 import { assertParse } from '@src/lang/wasm'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 function identifier(name: string, start: number, end: number) {
   return {

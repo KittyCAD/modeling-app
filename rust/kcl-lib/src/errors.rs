@@ -14,12 +14,13 @@ use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ModuleId;
+use crate::NodePath;
 use crate::SourceRange;
 use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
-use crate::execution::Operation;
+use crate::execution::OperationsByModule;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -214,7 +215,7 @@ pub struct KclErrorWithOutputs {
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
     pub variables: IndexMap<String, KclValue>,
-    pub operations: Vec<Operation>,
+    pub operations: OperationsByModule,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
     // reason.
     pub _artifact_commands: Vec<ArtifactCommand>,
@@ -224,7 +225,7 @@ pub struct KclErrorWithOutputs {
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -237,12 +238,12 @@ impl KclErrorWithOutputs {
         error: KclError,
         non_fatal: Vec<CompilationIssue>,
         variables: IndexMap<String, KclValue>,
-        operations: Vec<Operation>,
+        operations: OperationsByModule,
         artifact_commands: Vec<ArtifactCommand>,
         artifact_graph: ArtifactGraph,
         scene_objects: Vec<Object>,
         source_range_to_object: BTreeMap<SourceRange, ObjectId>,
-        var_solutions: Vec<(SourceRange, Number)>,
+        var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,

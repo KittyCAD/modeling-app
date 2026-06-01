@@ -17,6 +17,7 @@ import type {
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
@@ -32,12 +33,11 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { useApp, useSingletons } from '@src/lib/boot'
 import type { MaybePressOrBlur } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -69,6 +69,15 @@ const getDropTargetPath = (
   }
   // If dropping on a file, use its parent directory
   return getParentAbsolutePath(target.path)
+}
+
+const rowPathMatchesTreeParent = (
+  row: FileExplorerEntry,
+  project: Project
+): boolean => {
+  const [, ...relativeParentParts] = desktopSafePathSplit(row.parentPath)
+  const expectedParentPath = joinOSPaths(project.path, ...relativeParentParts)
+  return getParentAbsolutePath(row.path) === expectedParentPath
 }
 
 const readAllDirectoryEntriesRecursively = async (
@@ -446,6 +455,24 @@ export const ProjectExplorer = ({
       // insert fake row if one is present
     }
 
+    const openedRowsForRender = { ...openedRows }
+    const currentFileRow = file?.path
+      ? flattenedData.find(
+          (child) =>
+            child.path === file.path && rowPathMatchesTreeParent(child, project)
+        )
+      : undefined
+    let openedRowsChanged = false
+    if (currentFileRow) {
+      const pathIterator = desktopSafePathSplit(currentFileRow.parentPath)
+      while (pathIterator.length > 0) {
+        const key = desktopSafePathJoin(pathIterator)
+        openedRowsChanged = openedRowsChanged || !openedRowsForRender[key]
+        openedRowsForRender[key] = true
+        pathIterator.pop()
+      }
+    }
+
     const requestedRows: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
@@ -458,14 +485,15 @@ export const ProjectExplorer = ({
         const pathIterator = desktopSafePathSplit(child.parentPath)
         while (pathIterator.length > 0) {
           const key = desktopSafePathJoin(pathIterator)
-          const isOpened = openedRows[key] || project.name === key
+          const isOpened = openedRowsForRender[key] || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened
           pathIterator.pop()
         }
 
-        const isOpen = openedRows[child.key]
+        const isOpen = openedRowsForRender[child.key]
         const render =
-          (openedRows[child.parentPath] || project.name === child.parentPath) &&
+          (openedRowsForRender[child.parentPath] ||
+            project.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
@@ -903,11 +931,22 @@ export const ProjectExplorer = ({
       return row.render && skipPlaceHolder
     })
 
+    const currentFileRowIndex = requestedRowsToRender.findIndex(
+      (row) => row.path === file?.path
+    )
+    if (currentFileRowIndex >= 0) {
+      setSelectedRowWrapper(requestedRowsToRender[currentFileRowIndex])
+      setActiveIndex(currentFileRowIndex)
+    }
+    if (openedRowsChanged) {
+      setOpenedRows(openedRowsForRender)
+      openedRowsRef.current = openedRowsForRender
+    }
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
     previousProject.current = project
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [project, openedRows, fakeRow, activeIndex, errors])
+  }, [project, openedRows, fakeRow, activeIndex, errors, file?.path])
 
   // Handle clicks and keyboard presses within the global DOM level
   useEffect(() => {

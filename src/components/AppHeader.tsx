@@ -1,12 +1,12 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
-import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { FileEntry, Project } from '@src/lib/project'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import type { ReactNode } from 'react'
 import styles from './AppHeader.module.css'
-import type { FileEntry, Project } from '@src/lib/project'
-import { useSignals } from '@preact/signals-react/runtime'
-import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   project?: Project

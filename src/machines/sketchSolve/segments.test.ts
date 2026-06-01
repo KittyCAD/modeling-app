@@ -1,16 +1,16 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  DARK_CONSTRAINED_COLOR,
-  deriveSegmentFreedom,
-  getSegmentColor,
-  getPointSegmentScale,
-  getSegmentLineWidth,
-  LIGHT_CONSTRAINED_COLOR,
-} from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'
+import {
+  DARK_CONSTRAINED_COLOR,
+  LIGHT_CONSTRAINED_COLOR,
+  deriveSegmentFreedom,
+  getPointSegmentScale,
+  getSegmentColor,
+  getSegmentLineWidth,
+} from '@src/machines/sketchSolve/segmentsUtils'
 
 // Helper to create a point object
 function createPointObject(id: number, freedom: Freedom): ApiObject {

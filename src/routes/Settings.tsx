@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pluginsValueSpec } from '@kittycad/registry'
@@ -14,7 +14,6 @@ import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import { keymapService } from '@src/registry/contracts/keymap'
 
 const PLUGINS_FEATURE_FLAG = 'plugins'
@@ -35,7 +34,7 @@ export const Settings = () => {
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [showPluginsTab, setShowPluginsTab] = useState(false)
+  const showPluginsTab = app.userFeatures.useHas(PLUGINS_FEATURE_FLAG, false)
   const close = () => {
     // This makes sure input texts are saved before closing the dialog (eg. default project name).
     if (document.activeElement instanceof HTMLInputElement) {
@@ -56,20 +55,6 @@ export const Settings = () => {
       : requestedSettingsTab
 
   const scrollRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    let cancelled = false
-
-    void userHasFeature(PLUGINS_FEATURE_FLAG, false).then((enabled) => {
-      if (!cancelled) {
-        setShowPluginsTab(enabled)
-      }
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   useEffect(() => {
     if (!keymap) {
