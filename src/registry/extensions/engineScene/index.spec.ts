@@ -73,8 +73,8 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
-      'selection-filter',
       'selection',
+      'selection-filter',
       'units',
       'experimental-features',
     ])
@@ -104,15 +104,15 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection-filter', 'selection', 'units'])
+    ).toEqual(['selection', 'selection-filter', 'units'])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
-      'selection-filter',
       'selection',
+      'selection-filter',
       'units',
       'experimental-features',
     ])
