@@ -436,6 +436,16 @@ impl fmt::Display for Stack {
 impl ProgramMemory {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Arc<Self> {
+        Self::new_with_backend(super::MemoryBackendKind::Legacy)
+    }
+
+    pub(crate) fn new_with_backend(backend: super::MemoryBackendKind) -> Arc<Self> {
+        match backend {
+            super::MemoryBackendKind::Legacy => Self::new_legacy(),
+        }
+    }
+
+    fn new_legacy() -> Arc<Self> {
         Arc::new(Self {
             environments: UnsafeCell::new(EnvironmentsBlocks::new()),
             std: None,
