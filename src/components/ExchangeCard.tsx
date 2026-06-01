@@ -34,6 +34,9 @@ type MlCopilotServerMessageEndOfStream = Extract<
   { end_of_stream: unknown }
 >
 
+const MANUAL_EDIT_INFO_TEXT =
+  'Manual edits detected since the last Zookeeper state.'
+
 const getEndOfStreamResponse = (
   responses?: MlCopilotServerMessage[]
 ): MlCopilotServerMessageEndOfStream | undefined =>
@@ -42,10 +45,15 @@ const getEndOfStreamResponse = (
       'end_of_stream' in response
   )
 
+const isManualEditInfoResponse = (response: MlCopilotServerMessage): boolean =>
+  'info' in response && response.info.text.startsWith(MANUAL_EDIT_INFO_TEXT)
+
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
     (response) =>
-      'end_of_stream' in response || 'error' in response || 'info' in response
+      'end_of_stream' in response ||
+      'error' in response ||
+      ('info' in response && !isManualEditInfoResponse(response))
   ) ?? false
 
 export interface IButtonCopyProps {
@@ -337,7 +345,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const items = props.items.map(
+  const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       // This is INTENTIONALLY left here for documentation.
       // We aggregate `delta` responses into `Exchange.responseAggregated`
@@ -349,14 +357,16 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       if ('info' in response) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
-      if ('error' in response) {
-        return <MaybeError key={index} maybeError={response} />
-      }
       return null
     }
   )
 
-  const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
+  const infoItemsFilteredNulls = infoItems.filter(
+    (x: ReactNode | null) => x !== null
+  )
+
+  const maybeError = props.items.filter((r) => 'error' in r)[0]
+  const isComplete = isExchangeComplete(props.items)
 
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
@@ -368,22 +378,38 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   }, [props.deltasAggregated])
 
   const children = [
-    itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+    maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
     deltasAggregatedMarkdown,
   ].filter((x: ReactNode) => x !== null)
 
-  return hasVisibleChildren(children) || props.isLastResponse ? (
+  const shouldShowResponseBubble =
+    hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
+
+  return infoItemsFilteredNulls.length > 0 || shouldShowResponseBubble ? (
     <>
-      <ChatBubble
-        side={'left'}
-        wfull={true}
-        userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
-        dataTestId="ml-response-chat-bubble"
-        placeholderTestId="ml-response-chat-bubble-thinking"
-        className="py-4"
-      >
-        {children}
-      </ChatBubble>
+      {infoItemsFilteredNulls.length > 0 && (
+        <ChatBubble
+          side={'left'}
+          wfull={true}
+          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+          dataTestId="ml-response-info-chat-bubble"
+          className="py-4"
+        >
+          {infoItemsFilteredNulls}
+        </ChatBubble>
+      )}
+      {shouldShowResponseBubble && (
+        <ChatBubble
+          side={'left'}
+          wfull={true}
+          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+          dataTestId="ml-response-chat-bubble"
+          placeholderTestId="ml-response-chat-bubble-thinking"
+          className="py-4"
+        >
+          {children}
+        </ChatBubble>
+      )}
       <ResponseCardToolBar
         responses={props.items}
         isLastResponse={props.isLastResponse}
@@ -412,9 +438,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }, [props.responses.length])
 
   const isEndOfStream = isExchangeComplete(props.responses)
-  const hasFinalResponse = props.responses.some(
-    (response) => 'end_of_stream' in response || 'error' in response
-  )
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -436,10 +459,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }
 
   useEffect(() => {
-    if (hasFinalResponse) {
+    if (isEndOfStream) {
       setShowFullReasoning(false)
     }
-  }, [hasFinalResponse])
+  }, [isEndOfStream])
 
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
