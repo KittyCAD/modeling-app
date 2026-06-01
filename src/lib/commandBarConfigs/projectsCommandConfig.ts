@@ -16,10 +16,16 @@ export type ProjectsCommandSchema = {
   }
 }
 
+function defaultEnableProjectDirectoryCommands() {
+  return typeof window !== 'undefined' && Boolean(window.electron)
+}
+
 export function createProjectCommands({
   systemIOActor,
+  enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  enableProjectDirectoryCommands?: boolean
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -295,8 +301,7 @@ export function createProjectCommands({
     },
   }
 
-  /** No disk-writing commands are available in the browser */
-  const projectCommands = window.electron
+  const projectCommands = enableProjectDirectoryCommands
     ? [
         openProjectCommand,
         createProjectCommand,
