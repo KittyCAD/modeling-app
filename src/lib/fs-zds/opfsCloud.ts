@@ -1,0 +1,1638 @@
+import { signal } from '@preact/signals-core'
+import env from '@src/env'
+import {
+  PROJECT_ENTRYPOINT,
+  PROJECT_FOLDER,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
+import { sanitizeProjectName } from '@src/lib/projectName'
+import JSZip from 'jszip'
+
+type Revision = string
+
+type ProjectManifestEntry = {
+  byteSize: number
+  sha256: string
+}
+
+export type ProjectManifest = {
+  files: Record<string, ProjectManifestEntry>
+}
+
+export type ProjectArchiveFile = {
+  relativePath: string
+  data: Uint8Array
+}
+
+type ProjectMetadata = {
+  schemaVersion: 1
+  localProjectPath: string
+  projectName: string
+  remoteProjectId?: string
+  remoteRevision?: Revision
+  baseManifest?: ProjectManifest
+  tombstone?: boolean
+  conflict?: {
+    remoteRevision?: Revision
+    conflictProjectPath: string
+    createdAt: string
+  }
+  lastFailure?: {
+    message: string
+    at: string
+  }
+  lastSyncedAt?: string
+}
+
+type OutboxEntry = {
+  id?: number
+  projectPath: string
+  kind: 'upsert' | 'delete'
+  targetPath: string
+  sourcePath?: string
+  createdAt: string
+}
+
+type RemoteProjectSummary = {
+  id: string
+  title?: string
+  updated_at?: string
+  revision?: Revision | number
+  [key: string]: unknown
+}
+
+type RemoteProject = RemoteProjectSummary
+
+type ProjectUploadBody = {
+  title: string
+  description: string
+  category_ids: string[]
+  entrypoint_path: string
+  project_toml_path: string
+  expected_revision?: Revision
+}
+
+type OPFSCloudConfig = {
+  enabled: boolean
+  token?: string
+  baseUrl?: string
+  environmentName?: string
+}
+
+export type OPFSCloudSyncState =
+  | 'disabled'
+  | 'idle'
+  | 'syncing'
+  | 'failed'
+  | 'conflict'
+
+export type OPFSCloudSyncStatus = {
+  enabled: boolean
+  state: OPFSCloudSyncState
+  pendingCount: number
+  activeProjectPath?: string
+  lastFailure?: string
+  lastFailureAt?: string
+  lastSyncedAt?: string
+}
+
+export type OPFSCloudOptions = OPFSOptions
+
+const DB_NAME = 'zds-opfs-cloud-sync'
+const DB_VERSION = 1
+const PROJECTS_STORE = 'projects'
+const OUTBOX_STORE = 'outbox'
+const INTERNAL_OPFS_META_FILE = '._meta'
+const SYNC_DEBOUNCE_MS = 2500
+const SYNC_RETRY_MS = 30_000
+const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
+
+const localFs = opfs.impl
+
+let config: OPFSCloudConfig = {
+  enabled: false,
+}
+let syncTimer: ReturnType<typeof setTimeout> | undefined
+let syncInProgress = false
+let lastRemoteIndexSyncAt = 0
+let initialLocalScanComplete = false
+
+export const opfsCloudSyncStatus = signal<OPFSCloudSyncStatus>({
+  enabled: false,
+  state: 'disabled',
+  pendingCount: 0,
+})
+
+class CloudApiError extends Error {
+  status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
+function updateStatus(next: Partial<OPFSCloudSyncStatus>) {
+  opfsCloudSyncStatus.value = {
+    ...opfsCloudSyncStatus.value,
+    ...next,
+  }
+}
+
+function nowIso() {
+  return new Date().toISOString()
+}
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
+}
+
+function normalizePathForSync(targetPath: string) {
+  const normalized = targetPath.replaceAll('\\', '/')
+  if (normalized === '/') {
+    return normalized
+  }
+  return normalized.replace(/\/+$/g, '')
+}
+
+function normalizeRelativePath(relativePath: string) {
+  return relativePath
+    .replaceAll('\\', '/')
+    .replace(/^\/+/g, '')
+    .replace(/^(?:\.\/)+/g, '')
+}
+
+export function getOpfsCloudProjectRoot(
+  targetPath: string
+): string | undefined {
+  const normalized = normalizePathForSync(targetPath)
+  const parts = normalized.split('/').filter(Boolean)
+  const projectDirectoryIndex = parts.lastIndexOf(PROJECT_FOLDER)
+  if (
+    projectDirectoryIndex === -1 ||
+    parts.length <= projectDirectoryIndex + 1
+  ) {
+    return undefined
+  }
+
+  return `/${parts.slice(0, projectDirectoryIndex + 2).join('/')}`
+}
+
+function isOpfsCloudProjectDirectoryPath(targetPath: string) {
+  const normalized = normalizePathForSync(targetPath)
+  return normalized.endsWith(`/${PROJECT_FOLDER}`)
+}
+
+function getDefaultProjectDirectoryPath() {
+  return localFs.join(`${localFs.sep}documents`, PROJECT_FOLDER)
+}
+
+function projectNameFromPath(projectPath: string) {
+  return localFs.basename(normalizePathForSync(projectPath))
+}
+
+function isInternalOpfsPath(targetPath: string) {
+  return normalizePathForSync(targetPath)
+    .split('/')
+    .includes(INTERNAL_OPFS_META_FILE)
+}
+
+function isProjectRootPath(targetPath: string, projectRoot: string) {
+  return normalizePathForSync(targetPath) === normalizePathForSync(projectRoot)
+}
+
+function isConfiguredForCloud() {
+  return config.enabled === true
+}
+
+function getBaseUrl() {
+  return (config.baseUrl || env().VITE_ZOO_API_BASE_URL || '').replace(
+    /\/+$/g,
+    ''
+  )
+}
+
+function getEnvironmentName() {
+  if (config.environmentName) {
+    return config.environmentName
+  }
+
+  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
+  if (baseDomain) {
+    return baseDomain
+  }
+
+  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
+  if (apiBaseUrl) {
+    return new URL(apiBaseUrl).hostname.replace(/^api\./, '')
+  }
+
+  return undefined
+}
+
+function getRevision(project: RemoteProject | undefined): Revision | undefined {
+  if (!project) {
+    return undefined
+  }
+  const revision = project.revision ?? project.updated_at
+  if (revision === undefined || revision === null) {
+    return undefined
+  }
+  return String(revision)
+}
+
+async function cloudFetch(
+  targetPath: string,
+  init: RequestInit = {}
+): Promise<Response> {
+  const baseUrl = getBaseUrl()
+  if (!baseUrl) {
+    throw new Error('Cloud sync is missing an API base URL.')
+  }
+
+  const headers = new Headers(init.headers)
+  if (config.token) {
+    headers.set('Authorization', `Bearer ${config.token}`)
+  }
+
+  const response = await fetch(`${baseUrl}${targetPath}`, {
+    ...init,
+    headers,
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    let message = response.statusText || `HTTP ${response.status}`
+    try {
+      const body = await response.json()
+      if (body?.message) {
+        message = body.message
+      }
+    } catch {
+      const text = await response.text().catch(() => '')
+      if (text) {
+        message = text
+      }
+    }
+
+    throw new CloudApiError(response.status, message)
+  }
+
+  return response
+}
+
+async function cloudJson<T>(
+  targetPath: string,
+  init: RequestInit = {}
+): Promise<T> {
+  const response = await cloudFetch(targetPath, init)
+  return response.json() as Promise<T>
+}
+
+function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
+  if (!revision) {
+    return pathname
+  }
+  const url = new URL(pathname, 'https://zds.local')
+  url.searchParams.set('expected_revision', revision)
+  return `${url.pathname}${url.search}`
+}
+
+async function listRemoteProjects() {
+  return cloudJson<RemoteProjectSummary[]>('/user/projects')
+}
+
+async function getRemoteProject(projectId: string) {
+  return cloudJson<RemoteProject>(`/user/projects/${projectId}`)
+}
+
+async function deleteRemoteProject(projectId: string) {
+  await cloudFetch(`/user/projects/${projectId}`, {
+    method: 'DELETE',
+  })
+}
+
+async function downloadRemoteProjectArchive(projectId: string) {
+  const response = await cloudFetch(
+    `/user/projects/${projectId}/download?format=zip`
+  )
+  return response.arrayBuffer()
+}
+
+async function createRemoteProject(
+  projectPath: string,
+  files: ProjectArchiveFile[]
+) {
+  return cloudJson<RemoteProject>('/user/projects', {
+    method: 'POST',
+    body: buildProjectFormData(projectPath, files),
+  })
+}
+
+async function updateRemoteProject({
+  projectPath,
+  projectId,
+  files,
+  expectedRevision,
+}: {
+  projectPath: string
+  projectId: string
+  files: ProjectArchiveFile[]
+  expectedRevision?: Revision
+}) {
+  return cloudJson<RemoteProject>(
+    appendExpectedRevisionParam(
+      `/user/projects/${projectId}`,
+      expectedRevision
+    ),
+    {
+      method: 'PUT',
+      body: buildProjectFormData(projectPath, files, expectedRevision),
+    }
+  )
+}
+
+function buildProjectFormData(
+  projectPath: string,
+  files: ProjectArchiveFile[],
+  expectedRevision?: Revision
+) {
+  const uploadPayload = prepareProjectFilesForCloudUpload(
+    projectPath,
+    files,
+    expectedRevision
+  )
+
+  const formData = new FormData()
+  formData.append(
+    'body',
+    new Blob([JSON.stringify(uploadPayload.body)], {
+      type: 'application/json',
+    }),
+    'body'
+  )
+
+  for (const file of uploadPayload.files) {
+    formData.append(
+      file.relativePath,
+      new Blob([toArrayBuffer(file.data)], {
+        type: getMimeType(file.relativePath),
+      }),
+      file.relativePath
+    )
+  }
+
+  return formData
+}
+
+export function prepareProjectFilesForCloudUpload(
+  projectPath: string,
+  files: ProjectArchiveFile[],
+  expectedRevision?: Revision
+) {
+  const normalizedFiles = normalizeProjectArchiveFiles(files)
+  const entrypointPath = getUploadEntrypointPath(normalizedFiles)
+  const projectTomlPath = ensureProjectTomlUploadFile(
+    normalizedFiles,
+    entrypointPath
+  )
+  const body: ProjectUploadBody = {
+    title: projectNameFromPath(projectPath) || 'project',
+    description: '',
+    category_ids: [],
+    entrypoint_path: entrypointPath,
+    project_toml_path: projectTomlPath,
+  }
+  if (expectedRevision) {
+    body.expected_revision = expectedRevision
+  }
+
+  return {
+    body,
+    files: normalizedFiles,
+  }
+}
+
+function normalizeProjectArchiveFiles(files: ProjectArchiveFile[]) {
+  return files.map((file) => ({
+    ...file,
+    relativePath: normalizeRelativePath(file.relativePath),
+  }))
+}
+
+function ensureProjectTomlUploadFile(
+  files: ProjectArchiveFile[],
+  entrypointPath: string
+) {
+  const projectTomlFile = files.find(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (projectTomlFile) {
+    return projectTomlFile.relativePath
+  }
+
+  files.push({
+    relativePath: PROJECT_SETTINGS_FILE_NAME,
+    data: new TextEncoder().encode(
+      `default_file = ${JSON.stringify(entrypointPath)}\n`
+    ),
+  })
+  return PROJECT_SETTINGS_FILE_NAME
+}
+
+function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
+  const filePaths = new Set(files.map((file) => file.relativePath))
+  const projectTomlDefaultFile = getProjectTomlDefaultFile(files)
+  if (projectTomlDefaultFile && filePaths.has(projectTomlDefaultFile)) {
+    return projectTomlDefaultFile
+  }
+  if (filePaths.has(PROJECT_ENTRYPOINT)) {
+    return PROJECT_ENTRYPOINT
+  }
+
+  const fallbackKclFile = files
+    .map((file) => file.relativePath)
+    .filter(
+      (relativePath) => localFs.extname(relativePath).toLowerCase() === '.kcl'
+    )
+    .toSorted((a, b) => a.localeCompare(b))[0]
+  if (fallbackKclFile) {
+    return fallbackKclFile
+  }
+
+  throw new Error('Cloud sync needs at least one KCL file to upload a project.')
+}
+
+function getProjectTomlDefaultFile(files: ProjectArchiveFile[]) {
+  const projectTomlFile = files.find(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (!projectTomlFile) {
+    return undefined
+  }
+
+  const projectToml = new TextDecoder().decode(projectTomlFile.data)
+  const defaultFile = projectToml.match(
+    /^\s*default_file\s*=\s*["']([^"']+)["']/m
+  )?.[1]
+  return defaultFile ? normalizeRelativePath(defaultFile) : undefined
+}
+
+function getMimeType(fileName: string) {
+  const extension = localFs.extname(fileName).toLowerCase()
+  if (extension === '.kcl' || extension === '.toml') {
+    return 'text/plain'
+  }
+  if (extension === '.png') {
+    return 'image/png'
+  }
+  if (extension === '.jpg' || extension === '.jpeg') {
+    return 'image/jpeg'
+  }
+  if (extension === '.webp') {
+    return 'image/webp'
+  }
+  return 'application/octet-stream'
+}
+
+function openSyncDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined') {
+      reject(new Error('IndexedDB is unavailable for cloud sync metadata.'))
+      return
+    }
+
+    const request = indexedDB.open(DB_NAME, DB_VERSION)
+    request.onupgradeneeded = () => {
+      const db = request.result
+      if (!db.objectStoreNames.contains(PROJECTS_STORE)) {
+        db.createObjectStore(PROJECTS_STORE, { keyPath: 'localProjectPath' })
+      }
+      if (!db.objectStoreNames.contains(OUTBOX_STORE)) {
+        db.createObjectStore(OUTBOX_STORE, {
+          keyPath: 'id',
+          autoIncrement: true,
+        })
+      }
+    }
+    request.onerror = () => reject(request.error)
+    request.onsuccess = () => resolve(request.result)
+  })
+}
+
+async function withStore<T>(
+  storeName: string,
+  mode: IDBTransactionMode,
+  callback: (store: IDBObjectStore) => IDBRequest<T> | T
+): Promise<T> {
+  const db = await openSyncDb()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, mode)
+    const store = transaction.objectStore(storeName)
+    let callbackResult: IDBRequest<T> | T
+
+    transaction.oncomplete = () => {
+      db.close()
+    }
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
+
+    try {
+      callbackResult = callback(store)
+    } catch (error) {
+      transaction.abort()
+      reject(error)
+      return
+    }
+
+    if (
+      callbackResult &&
+      typeof callbackResult === 'object' &&
+      'onsuccess' in callbackResult
+    ) {
+      callbackResult.onsuccess = () => resolve(callbackResult.result)
+      callbackResult.onerror = () => reject(callbackResult.error)
+      return
+    }
+
+    transaction.oncomplete = () => {
+      db.close()
+      resolve(callbackResult as T)
+    }
+  })
+}
+
+async function getProjectMetadata(projectPath: string) {
+  return withStore<ProjectMetadata | undefined>(
+    PROJECTS_STORE,
+    'readonly',
+    (store) => store.get(normalizePathForSync(projectPath))
+  )
+}
+
+async function putProjectMetadata(metadata: ProjectMetadata) {
+  await withStore<IDBValidKey>(PROJECTS_STORE, 'readwrite', (store) =>
+    store.put({
+      ...metadata,
+      localProjectPath: normalizePathForSync(metadata.localProjectPath),
+    })
+  )
+}
+
+async function deleteProjectMetadata(projectPath: string) {
+  await withStore<undefined>(PROJECTS_STORE, 'readwrite', (store) =>
+    store.delete(normalizePathForSync(projectPath))
+  )
+}
+
+async function getAllProjectMetadata() {
+  return withStore<ProjectMetadata[]>(PROJECTS_STORE, 'readonly', (store) =>
+    store.getAll()
+  )
+}
+
+async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
+  await withStore<IDBValidKey>(OUTBOX_STORE, 'readwrite', (store) =>
+    store.add(entry)
+  )
+  await refreshPendingCount()
+}
+
+async function getAllOutboxEntries() {
+  return withStore<OutboxEntry[]>(OUTBOX_STORE, 'readonly', (store) =>
+    store.getAll()
+  )
+}
+
+async function clearOutboxEntriesForProject(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const db = await openSyncDb()
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(OUTBOX_STORE, 'readwrite')
+    const store = transaction.objectStore(OUTBOX_STORE)
+    const request = store.openCursor()
+
+    request.onsuccess = () => {
+      const cursor = request.result
+      if (!cursor) {
+        return
+      }
+      const entry = cursor.value as OutboxEntry
+      if (normalizePathForSync(entry.projectPath) === normalizedProjectPath) {
+        cursor.delete()
+      }
+      cursor.continue()
+    }
+    request.onerror = () => reject(request.error)
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+    transaction.oncomplete = () => {
+      db.close()
+      resolve()
+    }
+  })
+  await refreshPendingCount()
+}
+
+async function refreshPendingCount() {
+  try {
+    const entries = await getAllOutboxEntries()
+    updateStatus({ pendingCount: entries.length })
+  } catch {
+    updateStatus({ pendingCount: 0 })
+  }
+}
+
+function emptyManifest(): ProjectManifest {
+  return { files: {} }
+}
+
+export function projectManifestsEqual(
+  a: ProjectManifest | undefined,
+  b: ProjectManifest | undefined
+) {
+  if (!a || !b) {
+    return false
+  }
+  const aEntries = Object.entries(a.files).sort(([left], [right]) =>
+    left.localeCompare(right)
+  )
+  const bEntries = Object.entries(b.files).sort(([left], [right]) =>
+    left.localeCompare(right)
+  )
+  if (aEntries.length !== bEntries.length) {
+    return false
+  }
+
+  return aEntries.every(([aPath, aEntry], index) => {
+    const [bPath, bEntry] = bEntries[index]
+    return (
+      aPath === bPath &&
+      aEntry.byteSize === bEntry.byteSize &&
+      aEntry.sha256 === bEntry.sha256
+    )
+  })
+}
+
+async function projectManifestFromFiles(files: ProjectArchiveFile[]) {
+  const manifest = emptyManifest()
+  for (const file of files) {
+    manifest.files[normalizeRelativePath(file.relativePath)] = {
+      byteSize: file.data.byteLength,
+      sha256: await sha256Hex(file.data),
+    }
+  }
+  return manifest
+}
+
+async function sha256Hex(data: Uint8Array) {
+  if (globalThis.crypto?.subtle) {
+    const hashBuffer = await globalThis.crypto.subtle.digest(
+      'SHA-256',
+      toArrayBuffer(data)
+    )
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('')
+  }
+
+  let hash = 2166136261
+  for (const byte of data) {
+    hash ^= byte
+    hash = Math.imul(hash, 16777619)
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0')
+}
+
+function toArrayBuffer(data: Uint8Array) {
+  return data.buffer.slice(
+    data.byteOffset,
+    data.byteOffset + data.byteLength
+  ) as ArrayBuffer
+}
+
+async function exists(targetPath: string) {
+  try {
+    await localFs.stat(targetPath)
+    return true
+  } catch (error) {
+    if (error === 'ENOENT') {
+      return false
+    }
+    throw error
+  }
+}
+
+function statIsDirectory(stat: IStat) {
+  return Boolean(stat.mode & 0o040000)
+}
+
+async function collectLocalProjectFiles(projectRoot: string) {
+  const files: ProjectArchiveFile[] = []
+
+  const walk = async (currentPath: string) => {
+    const entries = await localFs.readdir(currentPath)
+    for (const entry of entries) {
+      if (entry === INTERNAL_OPFS_META_FILE) {
+        continue
+      }
+
+      const absolutePath = localFs.join(currentPath, entry)
+      const stat = await localFs.stat(absolutePath)
+      if (statIsDirectory(stat)) {
+        await walk(absolutePath)
+        continue
+      }
+
+      const data = await localFs.readFile(absolutePath)
+      files.push({
+        relativePath: normalizeRelativePath(
+          localFs.relative(projectRoot, absolutePath)
+        ),
+        data: Uint8Array.from(data),
+      })
+    }
+  }
+
+  await walk(projectRoot)
+  return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))
+}
+
+async function parseProjectArchive(archive: ArrayBuffer) {
+  try {
+    return await parseZipProjectArchive(archive)
+  } catch (zipError) {
+    const jsonProject = parseJsonProjectArchive(archive)
+    if (jsonProject) {
+      return jsonProject
+    }
+    throw zipError
+  }
+}
+
+async function parseZipProjectArchive(archive: ArrayBuffer) {
+  const zip = await JSZip.loadAsync(archive)
+  const zipEntries = Object.values(zip.files).filter(
+    (entry) => !entry.dir && !entry.name.startsWith('__MACOSX/')
+  )
+  const rootDirectory = getCommonArchiveRoot(
+    zipEntries.map((entry) => entry.name)
+  )
+
+  return Promise.all(
+    zipEntries.map(async (entry) => ({
+      relativePath: normalizeRelativePath(
+        stripArchiveRoot(entry.name, rootDirectory)
+      ),
+      data: Uint8Array.from(await entry.async('uint8array')),
+    }))
+  )
+}
+
+function parseJsonProjectArchive(archive: ArrayBuffer) {
+  try {
+    const decoded = new TextDecoder().decode(new Uint8Array(archive))
+    const parsed = JSON.parse(decoded)
+    if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.files)) {
+      return undefined
+    }
+
+    const files: ProjectArchiveFile[] = []
+    for (const file of parsed.files) {
+      if (!file || typeof file !== 'object') {
+        continue
+      }
+      const relativePath =
+        typeof file.relativePath === 'string'
+          ? file.relativePath
+          : typeof file.requestedFileName === 'string'
+            ? file.requestedFileName
+            : undefined
+      if (!relativePath) {
+        continue
+      }
+
+      if (typeof file.contents === 'string') {
+        files.push({
+          relativePath: normalizeRelativePath(relativePath),
+          data: new TextEncoder().encode(file.contents),
+        })
+      }
+    }
+    return files
+  } catch {
+    return undefined
+  }
+}
+
+function getCommonArchiveRoot(fileNames: string[]) {
+  if (fileNames.length === 0) {
+    return ''
+  }
+  const splitPaths = fileNames.map((name) => name.split('/').filter(Boolean))
+  const firstPath = splitPaths[0]
+  if (firstPath.length <= 1) {
+    return ''
+  }
+
+  const firstSegment = firstPath[0]
+  if (splitPaths.every((parts) => parts[0] === firstSegment)) {
+    return firstSegment
+  }
+  return ''
+}
+
+function stripArchiveRoot(fileName: string, rootDirectory: string) {
+  if (!rootDirectory) {
+    return fileName
+  }
+  return fileName.startsWith(`${rootDirectory}/`)
+    ? fileName.slice(rootDirectory.length + 1)
+    : fileName
+}
+
+async function replaceLocalProjectWithFiles(
+  projectPath: string,
+  files: ProjectArchiveFile[]
+) {
+  if (await exists(projectPath)) {
+    await localFs.rm(projectPath, { recursive: true })
+  }
+
+  await localFs.mkdir(projectPath, { recursive: true })
+  for (const file of files) {
+    if (!file.relativePath) {
+      continue
+    }
+    const targetPath = localFs.join(projectPath, file.relativePath)
+    await localFs.mkdir(localFs.dirname(targetPath), { recursive: true })
+    await localFs.writeFile(
+      targetPath,
+      new Uint8Array(toArrayBuffer(file.data))
+    )
+  }
+}
+
+async function uniqueProjectPath(
+  projectDirectory: string,
+  projectName: string
+) {
+  let candidate = localFs.join(projectDirectory, projectName)
+  if (!(await exists(candidate))) {
+    return candidate
+  }
+
+  let index = 2
+  while (await exists(candidate)) {
+    candidate = localFs.join(projectDirectory, `${projectName} ${index}`)
+    index += 1
+  }
+  return candidate
+}
+
+async function readProjectTomlCloudProjectId(projectPath: string) {
+  const environmentName = getEnvironmentName()
+  const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  if (!(await exists(projectTomlPath))) {
+    return undefined
+  }
+
+  const projectToml = await localFs.readFile(projectTomlPath, {
+    encoding: 'utf-8',
+  })
+  const projectIdPattern = /project_id\s*=\s*"([^"]+)"/
+
+  if (environmentName) {
+    const escapedEnvironmentName = environmentName.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      '\\$&'
+    )
+    const sectionPattern = new RegExp(
+      `\\[cloud\\."${escapedEnvironmentName}"\\]([\\s\\S]*?)(?=\\n\\[|$)`
+    )
+    const sectionMatch = sectionPattern.exec(projectToml)
+    const projectIdMatch = sectionMatch
+      ? projectIdPattern.exec(sectionMatch[1])
+      : undefined
+    if (projectIdMatch?.[1]) {
+      return projectIdMatch[1]
+    }
+  }
+
+  return projectIdPattern.exec(projectToml)?.[1]
+}
+
+function metadataForProject(projectPath: string): ProjectMetadata {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  return {
+    schemaVersion: 1,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+  }
+}
+
+async function getOrCreateProjectMetadata(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const existing = await getProjectMetadata(normalizedProjectPath)
+  if (existing) {
+    return existing
+  }
+
+  return metadataForProject(normalizedProjectPath)
+}
+
+async function bindRemoteProjectIdFromToml(metadata: ProjectMetadata) {
+  if (metadata.remoteProjectId) {
+    return metadata
+  }
+
+  const projectId = await readProjectTomlCloudProjectId(
+    metadata.localProjectPath
+  ).catch(() => undefined)
+  if (!projectId) {
+    return metadata
+  }
+
+  const next = {
+    ...metadata,
+    remoteProjectId: projectId,
+  }
+  await putProjectMetadata(next)
+  return next
+}
+
+async function markProjectFailure(
+  metadata: ProjectMetadata,
+  error: unknown
+): Promise<void> {
+  const message = errorMessage(error)
+  const next = {
+    ...metadata,
+    lastFailure: {
+      message,
+      at: nowIso(),
+    },
+  }
+  await putProjectMetadata(next)
+  updateStatus({
+    state: 'failed',
+    lastFailure: message,
+    lastFailureAt: next.lastFailure.at,
+  })
+}
+
+function markCloudMetadataFailure(error: unknown) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  initialLocalScanComplete = false
+  updateStatus({
+    enabled: true,
+    state: 'failed',
+    lastFailure: errorMessage(error),
+    lastFailureAt: nowIso(),
+  })
+  scheduleSync(SYNC_RETRY_MS)
+}
+
+async function markProjectSynced(
+  metadata: ProjectMetadata,
+  baseManifest: ProjectManifest,
+  remoteRevision?: Revision
+) {
+  const syncedAt = nowIso()
+  await putProjectMetadata({
+    ...metadata,
+    baseManifest,
+    remoteRevision: remoteRevision ?? metadata.remoteRevision,
+    tombstone: false,
+    conflict: undefined,
+    lastFailure: undefined,
+    lastSyncedAt: syncedAt,
+  })
+  updateStatus({
+    state: 'idle',
+    activeProjectPath: undefined,
+    lastSyncedAt: syncedAt,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+  })
+}
+
+async function markProjectConflict(
+  metadata: ProjectMetadata,
+  remoteRevision: Revision | undefined,
+  remoteFiles: ProjectArchiveFile[]
+) {
+  const parentDirectory = localFs.dirname(metadata.localProjectPath)
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)
+  const conflictName = `${metadata.projectName} (cloud conflict ${stamp})`
+  const conflictProjectPath = await uniqueProjectPath(
+    parentDirectory,
+    conflictName
+  )
+
+  await replaceLocalProjectWithFiles(conflictProjectPath, remoteFiles)
+
+  await putProjectMetadata({
+    ...metadata,
+    conflict: {
+      remoteRevision,
+      conflictProjectPath,
+      createdAt: nowIso(),
+    },
+    lastFailure: {
+      message: 'Cloud sync conflict: local and remote both changed.',
+      at: nowIso(),
+    },
+  })
+  updateStatus({
+    state: 'conflict',
+    activeProjectPath: metadata.localProjectPath,
+    lastFailure: 'Cloud sync conflict: local and remote both changed.',
+    lastFailureAt: nowIso(),
+  })
+}
+
+function latestOutboxKind(entries: OutboxEntry[]) {
+  return entries.toSorted((a, b) => (a.id ?? 0) - (b.id ?? 0)).at(-1)?.kind
+}
+
+async function syncDeletedProject(metadata: ProjectMetadata) {
+  if (metadata.remoteProjectId) {
+    try {
+      await deleteRemoteProject(metadata.remoteProjectId)
+    } catch (error) {
+      if (!(error instanceof CloudApiError && error.status === 404)) {
+        throw error
+      }
+    }
+  }
+
+  await clearOutboxEntriesForProject(metadata.localProjectPath)
+  await deleteProjectMetadata(metadata.localProjectPath)
+}
+
+async function syncProject(projectPath: string, entries: OutboxEntry[]) {
+  let metadata = await getOrCreateProjectMetadata(projectPath)
+  updateStatus({
+    state: 'syncing',
+    activeProjectPath: metadata.localProjectPath,
+  })
+
+  try {
+    const latestKind = latestOutboxKind(entries)
+    if (latestKind === 'delete' || metadata.tombstone) {
+      await syncDeletedProject(metadata)
+      return
+    }
+
+    if (!(await exists(metadata.localProjectPath))) {
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      return
+    }
+
+    metadata = await bindRemoteProjectIdFromToml(metadata)
+    const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
+    const localManifest = await projectManifestFromFiles(localFiles)
+
+    if (!metadata.remoteProjectId) {
+      const created = await createRemoteProject(
+        metadata.localProjectPath,
+        localFiles
+      )
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(
+        {
+          ...metadata,
+          remoteProjectId: created.id,
+        },
+        localManifest,
+        getRevision(created)
+      )
+      return
+    }
+
+    const remoteProject = await getRemoteProject(metadata.remoteProjectId)
+    const remoteRevision = getRevision(remoteProject)
+    const remoteChanged =
+      Boolean(metadata.remoteRevision && remoteRevision) &&
+      metadata.remoteRevision !== remoteRevision
+    const localChanged = metadata.baseManifest
+      ? !projectManifestsEqual(localManifest, metadata.baseManifest)
+      : true
+
+    if (!localChanged && !remoteChanged) {
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(metadata, localManifest, remoteRevision)
+      return
+    }
+
+    if (localChanged && !remoteChanged && metadata.remoteRevision) {
+      const updated = await updateRemoteProject({
+        projectPath: metadata.localProjectPath,
+        projectId: metadata.remoteProjectId,
+        files: localFiles,
+        expectedRevision: metadata.remoteRevision,
+      })
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(metadata, localManifest, getRevision(updated))
+      return
+    }
+
+    const remoteArchive = await downloadRemoteProjectArchive(
+      metadata.remoteProjectId
+    )
+    const remoteFiles = await parseProjectArchive(remoteArchive)
+    const remoteManifest = await projectManifestFromFiles(remoteFiles)
+
+    if (
+      !metadata.baseManifest &&
+      projectManifestsEqual(localManifest, remoteManifest)
+    ) {
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(metadata, localManifest, remoteRevision)
+      return
+    }
+
+    const localClean = Boolean(
+      metadata.baseManifest &&
+        projectManifestsEqual(localManifest, metadata.baseManifest)
+    )
+    if (localClean) {
+      await replaceLocalProjectWithFiles(metadata.localProjectPath, remoteFiles)
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(metadata, remoteManifest, remoteRevision)
+      return
+    }
+
+    if (projectManifestsEqual(localManifest, remoteManifest)) {
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(metadata, localManifest, remoteRevision)
+      return
+    }
+
+    await markProjectConflict(metadata, remoteRevision, remoteFiles)
+  } catch (error) {
+    await markProjectFailure(metadata, error)
+    throw error
+  }
+}
+
+async function syncRemoteIndex() {
+  const now = Date.now()
+  if (now - lastRemoteIndexSyncAt < REMOTE_INDEX_INTERVAL_MS) {
+    return
+  }
+
+  const projectDirectory = getDefaultProjectDirectoryPath()
+  await localFs.mkdir(projectDirectory, { recursive: true })
+
+  const remoteProjects = await listRemoteProjects()
+  lastRemoteIndexSyncAt = now
+  const metadata = await getAllProjectMetadata()
+  const tombstonedRemoteProjectIds = new Set(
+    metadata
+      .filter((entry) => entry.tombstone && entry.remoteProjectId)
+      .map((entry) => entry.remoteProjectId)
+  )
+
+  for (const remoteProject of remoteProjects) {
+    if (!remoteProject.id || tombstonedRemoteProjectIds.has(remoteProject.id)) {
+      continue
+    }
+
+    const knownLocalMetadata = metadata.find(
+      (entry) => entry.remoteProjectId === remoteProject.id
+    )
+    if (knownLocalMetadata) {
+      const remoteRevision = getRevision(remoteProject)
+      if (
+        remoteRevision &&
+        knownLocalMetadata.remoteRevision &&
+        remoteRevision !== knownLocalMetadata.remoteRevision
+      ) {
+        await syncProject(knownLocalMetadata.localProjectPath, [])
+      }
+      continue
+    }
+
+    const projectName = sanitizeProjectName(
+      remoteProject.title || 'cloud-project',
+      'cloud-project'
+    )
+    const candidatePath = localFs.join(projectDirectory, projectName)
+    if (await exists(candidatePath)) {
+      const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
+        candidatePath
+      ).catch(() => undefined)
+      if (candidateRemoteProjectId === remoteProject.id) {
+        const nextMetadata = {
+          ...(await getOrCreateProjectMetadata(candidatePath)),
+          remoteProjectId: remoteProject.id,
+        }
+        await putProjectMetadata(nextMetadata)
+        await syncProject(candidatePath, [])
+        continue
+      }
+    }
+
+    const archive = await downloadRemoteProjectArchive(remoteProject.id)
+    const files = await parseProjectArchive(archive)
+    const projectPath = await uniqueProjectPath(projectDirectory, projectName)
+    await replaceLocalProjectWithFiles(projectPath, files)
+    await markProjectSynced(
+      {
+        ...metadataForProject(projectPath),
+        remoteProjectId: remoteProject.id,
+      },
+      await projectManifestFromFiles(files),
+      getRevision(remoteProject)
+    )
+  }
+}
+
+async function enqueueExistingLocalProjectsForInitialSync() {
+  if (initialLocalScanComplete) {
+    return
+  }
+
+  const projectDirectory = getDefaultProjectDirectoryPath()
+  if (!(await exists(projectDirectory))) {
+    initialLocalScanComplete = true
+    return
+  }
+
+  const entries = await localFs.readdir(projectDirectory)
+  for (const entry of entries) {
+    if (entry.startsWith('.')) {
+      continue
+    }
+    const projectPath = localFs.join(projectDirectory, entry)
+    const stat = await localFs.stat(projectPath)
+    if (!statIsDirectory(stat)) {
+      continue
+    }
+
+    const metadata = await getProjectMetadata(projectPath)
+    if (metadata?.baseManifest && !metadata.tombstone) {
+      continue
+    }
+
+    await registerProjectMutation(projectPath, 'upsert', projectPath)
+  }
+
+  initialLocalScanComplete = true
+}
+
+async function runCloudSync() {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+  if (syncInProgress) {
+    scheduleSync(SYNC_DEBOUNCE_MS)
+    return
+  }
+
+  syncInProgress = true
+  updateStatus({ enabled: true, state: 'syncing' })
+  let remoteIndexFailed = false
+  let remoteIndexFailureMessage: string | undefined
+
+  try {
+    await enqueueExistingLocalProjectsForInitialSync()
+    await syncRemoteIndex().catch((error) => {
+      remoteIndexFailed = true
+      remoteIndexFailureMessage = errorMessage(error)
+      updateStatus({
+        state: 'failed',
+        lastFailure: remoteIndexFailureMessage,
+        lastFailureAt: nowIso(),
+      })
+    })
+
+    const entries = await getAllOutboxEntries()
+    const projectPaths = Array.from(
+      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
+    )
+
+    for (const projectPath of projectPaths) {
+      const projectEntries = entries.filter(
+        (entry) => normalizePathForSync(entry.projectPath) === projectPath
+      )
+      await syncProject(projectPath, projectEntries)
+    }
+
+    await refreshPendingCount()
+    if (opfsCloudSyncStatus.value.state !== 'conflict' && remoteIndexFailed) {
+      updateStatus({
+        state: 'failed',
+        activeProjectPath: undefined,
+        lastFailure: remoteIndexFailureMessage,
+        lastFailureAt: nowIso(),
+      })
+    } else if (opfsCloudSyncStatus.value.state !== 'conflict') {
+      updateStatus({ state: 'idle', activeProjectPath: undefined })
+    }
+    if (
+      opfsCloudSyncStatus.value.pendingCount > 0 &&
+      opfsCloudSyncStatus.value.state !== 'conflict'
+    ) {
+      scheduleSync(SYNC_DEBOUNCE_MS)
+    }
+  } catch (error) {
+    updateStatus({
+      state: 'failed',
+      lastFailure: errorMessage(error),
+      lastFailureAt: nowIso(),
+      activeProjectPath: undefined,
+    })
+    scheduleSync(SYNC_RETRY_MS)
+  } finally {
+    syncInProgress = false
+    if (
+      opfsCloudSyncStatus.value.pendingCount > 0 &&
+      opfsCloudSyncStatus.value.state !== 'conflict'
+    ) {
+      scheduleSync(SYNC_DEBOUNCE_MS)
+    }
+  }
+}
+
+function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+  if (syncTimer) {
+    clearTimeout(syncTimer)
+  }
+
+  syncTimer = setTimeout(() => {
+    syncTimer = undefined
+    void runCloudSync()
+  }, delay)
+}
+
+async function registerProjectMutation(
+  projectPath: string,
+  kind: OutboxEntry['kind'],
+  targetPath: string,
+  sourcePath?: string
+) {
+  if (!isConfiguredForCloud() || isInternalOpfsPath(targetPath)) {
+    return
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
+  metadata = await bindRemoteProjectIdFromToml(metadata)
+
+  if (kind === 'delete') {
+    metadata = {
+      ...metadata,
+      tombstone: true,
+    }
+    await putProjectMetadata(metadata)
+  } else if (!metadata.tombstone) {
+    await putProjectMetadata(metadata)
+  }
+
+  await appendOutboxEntry({
+    projectPath: normalizedProjectPath,
+    kind,
+    targetPath: normalizePathForSync(targetPath),
+    sourcePath: sourcePath ? normalizePathForSync(sourcePath) : undefined,
+    createdAt: nowIso(),
+  })
+  scheduleSync()
+}
+
+async function registerProjectRename(sourcePath: string, targetPath: string) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const sourceProjectRoot = getOpfsCloudProjectRoot(sourcePath)
+  const targetProjectRoot = getOpfsCloudProjectRoot(targetPath)
+  if (!targetProjectRoot) {
+    return
+  }
+
+  if (
+    sourceProjectRoot &&
+    isProjectRootPath(sourcePath, sourceProjectRoot) &&
+    isProjectRootPath(targetPath, targetProjectRoot)
+  ) {
+    const sourceMetadata = await getProjectMetadata(sourceProjectRoot)
+    if (sourceMetadata) {
+      await clearOutboxEntriesForProject(sourceProjectRoot)
+      await deleteProjectMetadata(sourceProjectRoot)
+      await putProjectMetadata({
+        ...sourceMetadata,
+        localProjectPath: normalizePathForSync(targetProjectRoot),
+        projectName: projectNameFromPath(targetProjectRoot),
+        tombstone: false,
+      })
+    }
+  }
+
+  await registerProjectMutation(
+    targetProjectRoot,
+    'upsert',
+    targetPath,
+    sourcePath
+  )
+}
+
+async function afterWriteLikeMutation(targetPath: string) {
+  const projectRoot = getOpfsCloudProjectRoot(targetPath)
+  if (!projectRoot) {
+    if (isOpfsCloudProjectDirectoryPath(targetPath)) {
+      scheduleSync()
+    }
+    return
+  }
+
+  await registerProjectMutation(projectRoot, 'upsert', targetPath)
+}
+
+async function afterRemoveMutation(targetPath: string) {
+  const projectRoot = getOpfsCloudProjectRoot(targetPath)
+  if (!projectRoot) {
+    return
+  }
+
+  await registerProjectMutation(
+    projectRoot,
+    isProjectRootPath(targetPath, projectRoot) ? 'delete' : 'upsert',
+    targetPath
+  )
+}
+
+export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
+  const previousConfig = config
+  config = {
+    ...config,
+    ...nextConfig,
+  }
+  const cloudIdentityChanged =
+    previousConfig.token !== config.token ||
+    previousConfig.baseUrl !== config.baseUrl ||
+    previousConfig.environmentName !== config.environmentName
+  if (cloudIdentityChanged) {
+    lastRemoteIndexSyncAt = 0
+    initialLocalScanComplete = false
+  }
+
+  if (!config.enabled) {
+    if (syncTimer) {
+      clearTimeout(syncTimer)
+      syncTimer = undefined
+    }
+    initialLocalScanComplete = false
+    lastRemoteIndexSyncAt = 0
+    updateStatus({
+      enabled: false,
+      state: 'disabled',
+      activeProjectPath: undefined,
+    })
+    return
+  }
+
+  updateStatus({
+    enabled: true,
+    state: 'idle',
+  })
+  void refreshPendingCount()
+  scheduleSync(0)
+}
+
+export function retryOpfsCloudSync() {
+  scheduleSync(0)
+}
+
+type ReadFileOptions = undefined | 'utf8' | { encoding: 'utf-8' }
+
+const readFile = (async (targetPath: string, options?: ReadFileOptions) => {
+  const result = await localFs.readFile(targetPath, options)
+  if (isConfiguredForCloud()) {
+    const projectRoot = getOpfsCloudProjectRoot(targetPath)
+    if (projectRoot || isOpfsCloudProjectDirectoryPath(targetPath)) {
+      scheduleSync()
+    }
+  }
+  return result
+}) as IZooDesignStudioFS['readFile']
+
+const readdir: IZooDesignStudioFS['readdir'] = async (targetPath, options) => {
+  const result = await localFs.readdir(targetPath, options)
+  if (isConfiguredForCloud()) {
+    const projectRoot = getOpfsCloudProjectRoot(targetPath)
+    if (projectRoot || isOpfsCloudProjectDirectoryPath(targetPath)) {
+      scheduleSync()
+    }
+  }
+  return result
+}
+
+const stat: IZooDesignStudioFS['stat'] = async (targetPath, options) => {
+  const result = await localFs.stat(targetPath, options)
+  if (isConfiguredForCloud()) {
+    const projectRoot = getOpfsCloudProjectRoot(targetPath)
+    if (projectRoot || isOpfsCloudProjectDirectoryPath(targetPath)) {
+      scheduleSync()
+    }
+  }
+  return result
+}
+
+const writeFile: IZooDesignStudioFS['writeFile'] = async (
+  targetPath,
+  data,
+  options
+) => {
+  const result = await localFs.writeFile(targetPath, data, options)
+  await afterWriteLikeMutation(targetPath).catch(markCloudMetadataFailure)
+  return result
+}
+
+const mkdir: IZooDesignStudioFS['mkdir'] = async (targetPath, options) => {
+  const result = await localFs.mkdir(targetPath, options)
+  await afterWriteLikeMutation(targetPath).catch(markCloudMetadataFailure)
+  return result
+}
+
+const cp: IZooDesignStudioFS['cp'] = async (
+  sourcePath,
+  targetPath,
+  options
+) => {
+  const result = await localFs.cp(sourcePath, targetPath, options)
+  await afterWriteLikeMutation(targetPath).catch(markCloudMetadataFailure)
+  return result
+}
+
+const rm: IZooDesignStudioFS['rm'] = async (targetPath, options) => {
+  const result = await localFs.rm(targetPath, options)
+  await afterRemoveMutation(targetPath).catch(markCloudMetadataFailure)
+  return result
+}
+
+const rename: IZooDesignStudioFS['rename'] = async (
+  sourcePath,
+  targetPath,
+  options
+) => {
+  const result = await localFs.rename(sourcePath, targetPath, options)
+  await registerProjectRename(sourcePath, targetPath).catch(
+    markCloudMetadataFailure
+  )
+  return result
+}
+
+const impl: IZooDesignStudioFS = {
+  resolve: localFs.resolve.bind(localFs),
+  join: localFs.join.bind(localFs),
+  relative: localFs.relative.bind(localFs),
+  extname: localFs.extname.bind(localFs),
+  sep: localFs.sep,
+  basename: localFs.basename.bind(localFs),
+  dirname: localFs.dirname.bind(localFs),
+  getPath: localFs.getPath,
+  access: localFs.access,
+  cp,
+  readFile,
+  rename,
+  writeFile,
+  readdir,
+  stat,
+  mkdir,
+  rm,
+  detach: async () => {
+    if (syncTimer) {
+      clearTimeout(syncTimer)
+      syncTimer = undefined
+    }
+    syncInProgress = false
+    await localFs.detach()
+  },
+  attach: async () => {
+    await localFs.attach()
+    if (isConfiguredForCloud()) {
+      scheduleSync(0)
+    }
+  },
+}
+
+export default {
+  impl,
+}
