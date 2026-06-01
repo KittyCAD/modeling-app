@@ -4,7 +4,10 @@ import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
+import {
+  getCloudProjectFolderRenameName,
+  systemIOMachineImpl,
+} from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
@@ -50,6 +53,32 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
+  describe('cloud-backed project folder names', () => {
+    it('uses a title-derived folder name when it is available', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [mockProject('Some demo 2')],
+        })
+      ).toBe('Some demo')
+    })
+
+    it('adds numeric suffixes when title-derived folder names already exist', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [
+            mockProject('Some demo'),
+            mockProject('Some demo-2'),
+            mockProject('Some demo 2'),
+          ],
+        })
+      ).toBe('Some demo-3')
+    })
+  })
+
   describe('desktop', () => {
     describe('when initialized', () => {
       it('should contain the default context values', () => {

@@ -29,6 +29,7 @@ import {
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { sanitizeProjectName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -293,6 +294,35 @@ const sharedBulkDeleteWorkflow = async ({
   return totalDeleted
 }
 
+export function getCloudProjectFolderRenameName({
+  title,
+  currentName,
+  folders,
+}: {
+  title: string
+  currentName: string
+  folders: Project[]
+}) {
+  const baseName = sanitizeProjectName(title, currentName)
+  const existingNames = new Set(
+    folders
+      .filter((folder) => folder.name !== currentName)
+      .map((folder) => folder.name.toLowerCase())
+  )
+  if (!existingNames.has(baseName.toLowerCase())) {
+    return baseName
+  }
+
+  let index = 2
+  let candidate = `${baseName}-${index}`
+  while (existingNames.has(candidate.toLowerCase())) {
+    index += 1
+    candidate = `${baseName}-${index}`
+  }
+
+  return candidate
+}
+
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -408,15 +438,33 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           ? getProjectDisplayName(project)
           : projectName
         if (project?.cloudProjectId) {
+          const currentProjectPath = fsZds.join(
+            input.context.projectDirectoryPath,
+            projectName
+          )
           await writeProjectTitleToProjectToml(
-            fsZds.join(input.context.projectDirectoryPath, projectName),
+            currentProjectPath,
             requestedProjectName
           )
+
+          const newProjectName = getCloudProjectFolderRenameName({
+            title: requestedProjectName,
+            currentName: projectName,
+            folders,
+          })
+          let renamedProjectName = projectName
+          if (newProjectName !== projectName) {
+            await renameProjectDirectory(currentProjectPath, newProjectName)
+              .then(() => {
+                renamedProjectName = newProjectName
+              })
+              .catch(() => undefined)
+          }
 
           return {
             message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
             oldName: projectName,
-            newName: projectName,
+            newName: renamedProjectName,
             redirect: input.redirect,
           }
         }
