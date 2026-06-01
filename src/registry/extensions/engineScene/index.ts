@@ -67,7 +67,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         ? {
             id: 'selection-filter',
             component: SelectionFilterControls,
-            order: 9,
+            order: 11,
             scopes: ['file'],
           }
         : null

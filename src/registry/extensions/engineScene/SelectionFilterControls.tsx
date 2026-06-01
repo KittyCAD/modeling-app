@@ -3,6 +3,7 @@ import type { EntityType } from '@kittycad/lib'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 import { useCallback } from 'react'
@@ -95,6 +96,9 @@ export function SelectionFilterControls() {
             data-testid="selection-filter-status"
             title="Selection filter"
           >
+            <Tooltip hoverOnly={true} position="top">
+              Selection filter
+            </Tooltip>
             <span>{activeLabel}</span>
             <CustomIcon
               name="caretDown"
