@@ -674,7 +674,10 @@ impl ExecutorContext {
             .map_err(|err| (err, None, None))?;
 
         if preserve_mem.normal() {
-            exec_state.mut_stack().push_new_root_env(!no_prelude);
+            exec_state
+                .mut_stack()
+                .push_new_root_env(!no_prelude)
+                .map_err(|err| (err, None, None))?;
         }
 
         let result = self
@@ -684,7 +687,8 @@ impl ExecutorContext {
         let env_ref = match preserve_mem {
             PreserveMem::Always => exec_state.mut_stack().pop_and_preserve_env(),
             PreserveMem::Normal => exec_state.mut_stack().pop_env(),
-        };
+        }
+        .map_err(|err| (err, None, None))?;
         let module_artifacts = match preserve_mem {
             PreserveMem::Always => std::mem::take(&mut exec_state.mod_local.artifacts),
             PreserveMem::Normal => {
@@ -762,13 +766,12 @@ impl ExecutorContext {
                             for import_item in items {
                                 // Extract the item from the module.
                                 let mem = &exec_state.stack().memory;
-                                let mut value = mem
-                                    .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
-                                    .cloned();
+                                let mut value =
+                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
                                 let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
                                 let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
+                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
                                     return Err(KclError::new_undefined_value(
@@ -865,14 +868,13 @@ impl ExecutorContext {
                                 let item = exec_state
                                     .stack()
                                     .memory
-                                    .get_from(name, env_ref, source_range, 0)
+                                    .get_from_owned(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         internal_err(
                                             format!("{name} is not defined in module (but was exported?)"),
                                             source_range,
                                         )
-                                    })?
-                                    .clone();
+                                    })?;
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
@@ -1462,7 +1464,7 @@ impl ExecutorContext {
                         let dummy = EnvironmentRef::dummy();
                         (dummy, Some(dummy))
                     } else {
-                        (exec_state.mut_stack().snapshot(), None)
+                        (exec_state.mut_stack().snapshot()?, None)
                     };
                     (
                         KclValue::Function {
@@ -1692,7 +1694,7 @@ impl Node<SketchBlock> {
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
-            self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
+            self.prep_mem(exec_state.mut_stack().snapshot()?, exec_state)?;
 
             // Track that we're executing a sketch block.
             let initial_sketch_block_state = {
@@ -1714,15 +1716,17 @@ impl Node<SketchBlock> {
             // the returned sketch object.
             let (result, block_variables) = match self.load_sketch2_into_current_scope(exec_state, ctx, range).await {
                 Ok(()) => {
-                    let parent = exec_state.mut_stack().snapshot();
-                    exec_state.mut_stack().push_new_env_for_call(parent);
+                    let parent = exec_state.mut_stack().snapshot()?;
+                    exec_state.mut_stack().push_new_env_for_call(parent)?;
                     let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
-                    let block_variables = exec_state
-                        .stack()
-                        .find_all_in_current_env()
-                        .map(|(name, value)| (name.clone(), value.clone()))
-                        .collect::<IndexMap<_, _>>();
-                    exec_state.mut_stack().pop_env();
+                    let (result, block_variables) = match exec_state.stack().find_all_in_current_env() {
+                        Ok(block_variables) => (result, block_variables.into_iter().collect::<IndexMap<_, _>>()),
+                        Err(err) => (Err(err), IndexMap::new()),
+                    };
+                    let result = match exec_state.mut_stack().pop_env() {
+                        Ok(_) => result,
+                        Err(err) => Err(err),
+                    };
                     (result, block_variables)
                 }
                 Err(err) => (Err(err), IndexMap::new()),
@@ -1733,7 +1737,10 @@ impl Node<SketchBlock> {
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
             // Pop the scope used for sketch2 aliases.
-            exec_state.mut_stack().pop_env();
+            let result = match exec_state.mut_stack().pop_env() {
+                Ok(_) => result,
+                Err(err) => Err(err),
+            };
 
             (result, block_variables, sketch_block_state)
         };
@@ -2135,7 +2142,7 @@ impl Node<SketchBlock> {
             let sketch_id = exec_state.next_object_id();
             exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
 
             let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
                 let message =
@@ -2181,8 +2188,7 @@ impl Node<SketchBlock> {
             let value = exec_state
                 .stack()
                 .memory
-                .get_from(&name, env_ref, source_range, 0)?
-                .clone();
+                .get_from_owned(&name, env_ref, source_range, 0)?;
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
@@ -2224,8 +2230,8 @@ impl Node<SketchBlock> {
 }
 
 impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
-        exec_state.mut_stack().push_new_env_for_call(parent);
+    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
+        exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
 
@@ -2313,7 +2319,7 @@ impl BinaryPart {
     ) -> Result<KclValueControlFlow, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned().map(KclValue::continue_),
+            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.map(KclValue::continue_),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
@@ -2329,22 +2335,18 @@ impl BinaryPart {
 }
 
 impl Node<Name> {
-    pub(super) async fn get_result<'a>(
+    pub(super) async fn get_result(
         &self,
-        exec_state: &'a mut ExecState,
+        exec_state: &mut ExecState,
         ctx: &ExecutorContext,
-    ) -> Result<&'a KclValue, KclError> {
+    ) -> Result<KclValue, KclError> {
         let being_declared = exec_state.mod_local.being_declared.clone();
         self.get_result_inner(exec_state, ctx)
             .await
             .map_err(|e| var_in_own_ref_err(e, &being_declared))
     }
 
-    async fn get_result_inner<'a>(
-        &self,
-        exec_state: &'a mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<&'a KclValue, KclError> {
+    async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.abs_path {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
@@ -2355,9 +2357,8 @@ impl Node<Name> {
         let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
 
         if self.path.is_empty() {
-            let item_value = exec_state.stack().get(&self.name.name, self.into());
-            if item_value.is_ok() {
-                return item_value;
+            if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
+                return Ok(item_value);
             }
             return exec_state.stack().get(&mod_name, self.into());
         }
@@ -2376,25 +2377,28 @@ impl Node<Name> {
                     exec_state
                         .stack()
                         .memory
-                        .get_from(&p.name, env, p.as_source_range(), 0)?
+                        .get_from_owned(&p.name, env, p.as_source_range(), 0)?
                 }
                 None => exec_state
                     .stack()
                     .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
             };
 
-            let KclValue::Module { value: module_id, .. } = value else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Identifier in path must refer to a module, found {}",
-                        value.human_friendly_type()
-                    ),
-                    p.as_source_ranges(),
-                )));
+            let module_id = match value {
+                KclValue::Module { value, .. } => value,
+                value => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Identifier in path must refer to a module, found {}",
+                            value.human_friendly_type()
+                        ),
+                        p.as_source_ranges(),
+                    )));
+                }
             };
 
             mem_spec = Some(
-                ctx.exec_module_for_items(*module_id, exec_state, p.as_source_range())
+                ctx.exec_module_for_items(module_id, exec_state, p.as_source_range())
                     .await?,
             );
         }
@@ -2405,7 +2409,7 @@ impl Node<Name> {
         let item_value = exec_state
             .stack()
             .memory
-            .get_from(&self.name.name, env, self.name.as_source_range(), 0);
+            .get_from_owned(&self.name.name, env, self.name.as_source_range(), 0);
 
         // Item is defined and exported.
         if item_exported && item_value.is_ok() {
@@ -2416,7 +2420,7 @@ impl Node<Name> {
         let mod_value = exec_state
             .stack()
             .memory
-            .get_from(&mod_name, env, self.name.as_source_range(), 0);
+            .get_from_owned(&mod_name, env, self.name.as_source_range(), 0);
 
         // Module is defined and exported.
         if mod_exported && mod_value.is_ok() {
@@ -5751,18 +5755,18 @@ arr1 = [42]: [number(cm)]
         let mem = result.exec_state.stack();
         assert!(matches!(
             mem.memory
-                .get_from("p", result.mem_env, SourceRange::default(), 0)
+                .get_from_owned("p", result.mem_env, SourceRange::default(), 0)
                 .unwrap(),
             KclValue::Plane { .. }
         ));
         let arr1 = mem
             .memory
-            .get_from("arr1", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("arr1", result.mem_env, SourceRange::default(), 0)
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
             assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
             assert_eq!(
-                *ty,
+                ty,
                 RuntimeType::known_length(kittycad_modeling_cmds::units::UnitLength::Centimeters)
             );
             // Compare, ignoring meta.
@@ -5854,7 +5858,7 @@ p2 = -p
         let mem = result.exec_state.stack();
         match mem
             .memory
-            .get_from("p2", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("p2", result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
             KclValue::Plane { value } => {
@@ -6124,7 +6128,7 @@ good = a[0]
         let mem = result.exec_state.stack();
         let num = mem
             .memory
-            .get_from("good", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("good", result.mem_env, SourceRange::default(), 0)
             .unwrap()
             .as_ty_f64()
             .unwrap();
@@ -6154,7 +6158,7 @@ y = x: number(Length)"#;
         let mem = result.exec_state.stack();
         let num = mem
             .memory
-            .get_from("y", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("y", result.mem_env, SourceRange::default(), 0)
             .unwrap()
             .as_ty_f64()
             .unwrap();
@@ -6304,7 +6308,7 @@ s = sketch(on = XY) {
         let mem = result.exec_state.stack();
         let sketch_value = mem
             .memory
-            .get_from("s", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("s", result.mem_env, SourceRange::default(), 0)
             .unwrap();
 
         let KclValue::Object { value, .. } = sketch_value else {

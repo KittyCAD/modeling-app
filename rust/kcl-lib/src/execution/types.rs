@@ -285,7 +285,7 @@ impl RuntimeType {
                     TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
                     TypeDef::Alias(ty) => ty.clone(),
                 };
-                if *experimental && !suppress_warnings {
+                if experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
                 }
                 result
@@ -2568,12 +2568,12 @@ mod test {
         let mem = result.exec_state.stack();
         match mem
             .memory
-            .get_from(name, result.mem_env, SourceRange::default(), 0)
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
             KclValue::Number { value, ty, .. } => {
                 assert_eq!(value.round(), expected);
-                assert_eq!(*ty, expected_ty);
+                assert_eq!(ty, expected_ty);
             }
             _ => unreachable!(),
         }
