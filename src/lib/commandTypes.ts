@@ -48,6 +48,21 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+type CommandArgumentRequired<C> =
+  | boolean
+  | ((
+      commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+      machineContext?: C
+    ) => boolean)
+type CommandArgumentStatusAndRequired<C> =
+  | {
+      status?: Extract<CommandStatus, 'experimental'>
+      required: false
+    }
+  | {
+      status?: undefined
+      required: CommandArgumentRequired<C>
+    }
 export type CommandSelectionType =
   | Artifact['type']
   | 'pathRegion'
@@ -140,12 +155,7 @@ export type CommandArgumentConfig<
   displayName?: string
   description?: string
   status?: Extract<CommandStatus, 'experimental'>
-  required:
-    | boolean
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: C
-      ) => boolean)
+  required: CommandArgumentRequired<C>
   /** If `true`, arg is used as passed-through data, never for user input */
   hidden?:
     | boolean
@@ -321,7 +331,8 @@ export type CommandArgumentConfig<
         machineContext?: C
       }) => Promise<boolean | string>
     }
-)
+) &
+  CommandArgumentStatusAndRequired<C>
 
 export type CommandArgument<
   OutputType,

@@ -189,11 +189,15 @@ export function buildCommandArgument<
     arg.status === 'experimental' && !showExperimentalCommands
       ? true
       : arg.hidden
+  const required =
+    arg.status === 'experimental' && !showExperimentalCommands
+      ? false
+      : arg.required
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
     status: arg.status,
-    required: arg.required,
+    required,
     prepopulate: arg.prepopulate,
     hidden,
     skip: arg.skip,
