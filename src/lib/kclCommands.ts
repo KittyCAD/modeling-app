@@ -43,7 +43,7 @@ interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
   // special props for a single command
   specialPropsForInsertCommand: {
-    providedOptions: CommandArgumentOption<string>[]
+    providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
   kclManager: KclManager
   systemIOActor: SystemIOActor

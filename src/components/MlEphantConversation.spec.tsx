@@ -855,12 +855,15 @@ describe('MlEphantConversation', () => {
       ).toBeInTheDocument()
     })
 
-    test('displays Zoodle button', () => {
+    test('displays screenshot annotation button', () => {
       renderConversation()
-      expect(screen.getByTestId('ml-ephant-zoodle-button')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('ml-ephant-annotate-screenshot-button')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Zoodle')).toBeInTheDocument()
     })
 
-    test('adds Zoodle as an attachment', async () => {
+    test('adds annotated viewport screenshot as an attachment', async () => {
       const OriginalImage = globalThis.Image
       class MockImage {
         onload: (() => void) | null = null
@@ -883,7 +886,9 @@ describe('MlEphantConversation', () => {
       try {
         renderConversation()
 
-        fireEvent.click(screen.getByTestId('ml-ephant-zoodle-button'))
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-annotate-screenshot-button')
+        )
 
         expect(
           screen.getByTestId('viewport-annotation-overlay')
@@ -893,7 +898,9 @@ describe('MlEphantConversation', () => {
         await waitFor(() => expect(sendButton).not.toBeDisabled())
         fireEvent.click(sendButton)
 
-        expect(await screen.findByText('zoodle')).toBeInTheDocument()
+        expect(
+          await screen.findByText('annotated-viewport-screenshot.png')
+        ).toBeInTheDocument()
       } finally {
         drawImageSpy.mockRestore()
         globalThis.Image = OriginalImage

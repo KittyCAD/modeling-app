@@ -25,6 +25,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * */
 export const FILE_EXT = '.kcl'
 export const DEFAULT_KCL_VERSION = '2.0'
+export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
   'sketch_experimental_features'
 /** Default file to open when a project is opened */
@@ -95,6 +96,10 @@ export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
+
+export const TRIM_PREVIEW_LINE_COLOR = '#ff8800'
+export const TRIM_PREVIEW_LINE_COLOR_HEX = 0xff8800
+export const TRIM_PREVIEW_LINE_WIDTH_PX = 2
 
 /** The sketch mode revamp selection rgb values */
 export const SKETCH_SELECTION_RGB = [255, 183, 39]
