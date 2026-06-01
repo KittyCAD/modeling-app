@@ -10,7 +10,10 @@ export function useProjectSearch(projects: Project[] | undefined) {
   const [searchResults, setSearchResults] = useState(projects)
 
   const fuse = new Fuse(projects ?? [], {
-    keys: [{ name: 'name', weight: 0.7 }],
+    keys: [
+      { name: 'title', weight: 0.8 },
+      { name: 'name', weight: 0.2 },
+    ],
     includeScore: true,
   })
 

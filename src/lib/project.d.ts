@@ -51,6 +51,15 @@ export type Project = {
   kcl_file_count: number
   directory_count: number
   /**
+   * Human-facing project title from project.toml.
+   * Cloud-backed projects can share titles even when their local paths differ.
+   */
+  title?: string
+  /**
+   * Cloud project id when this local project is bound to a remote project.
+   */
+  cloudProjectId?: string
+  /**
    * Absolute path most likely to main.kcl within the project
    */
   default_file: string

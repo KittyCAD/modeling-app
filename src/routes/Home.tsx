@@ -42,6 +42,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
@@ -675,12 +676,16 @@ function handleRenameProject(
       new FormData(e.target as HTMLFormElement)
     )
 
-    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+    if (
+      !project.cloudProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName.startsWith('.')
+    ) {
       toast.error('Project names cannot start with a period.')
       return
     }
 
-    if (newProjectName !== project.name) {
+    if (newProjectName !== getProjectDisplayName(project)) {
       systemIOActor.send({
         type: SystemIOMachineEvents.renameProject,
         data: {

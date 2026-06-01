@@ -1,5 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 
 const DESC = ':desc'
 
@@ -27,12 +28,11 @@ export function getNextSearchParams(currentSort: string, newSort: string) {
 
 export function getSortFunction(sortBy: string) {
   const sortByName = (a: Project, b: Project) => {
-    if (a.name && b.name) {
-      return sortBy.includes('desc')
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    }
-    return 0
+    const aName = getProjectDisplayName(a)
+    const bName = getProjectDisplayName(b)
+    return sortBy.includes('desc')
+      ? aName.localeCompare(bName)
+      : bName.localeCompare(aName)
   }
 
   const sortByModified = (a: Project, b: Project) => {

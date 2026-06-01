@@ -10,6 +10,7 @@ import {
   readAppSettingsFile,
   renameProjectDirectory,
   statIsDirectory,
+  writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -20,12 +21,14 @@ import {
 } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { getOpfsCloudProjectMetadataIndex } from '@src/lib/fs-zds/opfsCloud'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -317,6 +320,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         )
         const { value: canReadWriteProjectDirectory } =
           await canReadWriteDirectory(projectDirectoryPath)
+        const cloudProjectMetadataByPath =
+          await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
 
         for (const entry of entries) {
           if (signal.aborted) {
@@ -338,6 +343,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             projectPath,
             await context.wasmInstancePromise
           )
+          project.cloudProjectId ??= cloudProjectMetadataByPath.get(
+            projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+          )?.remoteProjectId
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
@@ -395,6 +403,24 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
         const requestedProjectName = input.requestedProjectName
         const projectName = input.projectName
+        const project = folders.find((p) => p.name === projectName)
+        const existingDisplayName = project
+          ? getProjectDisplayName(project)
+          : projectName
+        if (project?.cloudProjectId) {
+          await writeProjectTitleToProjectToml(
+            fsZds.join(input.context.projectDirectoryPath, projectName),
+            requestedProjectName
+          )
+
+          return {
+            message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
+            oldName: projectName,
+            newName: projectName,
+            redirect: input.redirect,
+          }
+        }
+
         let newProjectName: string = requestedProjectName
         if (doesProjectNameNeedInterpolated(requestedProjectName)) {
           const nextIndex = getNextProjectIndex(requestedProjectName, folders)
@@ -417,7 +443,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         )
 
         return {
-          message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
+          message: `Successfully renamed "${existingDisplayName}" to "${newProjectName}"`,
           oldName: projectName,
           newName: newProjectName,
           redirect: input.redirect,

@@ -4,6 +4,7 @@ import { forwardRef } from 'react'
 import { ActionButton } from '@src/components/ActionButton'
 import Tooltip from '@src/components/Tooltip'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 
 interface ProjectCardRenameFormProps extends HTMLProps<HTMLFormElement> {
   project: Project
@@ -27,7 +28,7 @@ export const ProjectCardRenameForm = forwardRef(
           required
           autoCorrect="off"
           autoCapitalize="off"
-          defaultValue={project.name}
+          defaultValue={getProjectDisplayName(project)}
           ref={ref}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

@@ -8,6 +8,10 @@ import {
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
 import { sanitizeProjectName } from '@src/lib/projectName'
+import {
+  getProjectTitleFromProjectTomlContents,
+  setProjectTitleInProjectTomlContents,
+} from '@src/lib/projectTomlMetadata'
 import JSZip from 'jszip'
 
 type Revision = string
@@ -26,7 +30,7 @@ export type ProjectArchiveFile = {
   data: Uint8Array
 }
 
-type ProjectMetadata = {
+export type ProjectMetadata = {
   schemaVersion: 1
   localProjectPath: string
   projectName: string
@@ -398,8 +402,10 @@ export function prepareProjectFilesForCloudUpload(
     normalizedFiles,
     entrypointPath
   )
+  const projectTitle =
+    getProjectTomlTitle(normalizedFiles) || projectNameFromPath(projectPath)
   const body: ProjectUploadBody = {
-    title: projectNameFromPath(projectPath) || 'project',
+    title: projectTitle || 'project',
     description: '',
     category_ids: [],
     entrypoint_path: entrypointPath,
@@ -440,6 +446,74 @@ function ensureProjectTomlUploadFile(
     ),
   })
   return PROJECT_SETTINGS_FILE_NAME
+}
+
+function getProjectTomlTitle(files: ProjectArchiveFile[]) {
+  const projectTomlFile = files.find(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (!projectTomlFile) {
+    return undefined
+  }
+
+  return getProjectTitleFromProjectTomlContents(
+    new TextDecoder().decode(projectTomlFile.data)
+  )
+}
+
+function withProjectTitleInArchiveFiles(
+  files: ProjectArchiveFile[],
+  title?: string
+) {
+  if (!title?.trim()) {
+    return files
+  }
+
+  const nextFiles = [...files]
+  const projectTomlFileIndex = nextFiles.findIndex(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  const existingProjectToml =
+    projectTomlFileIndex === -1
+      ? ''
+      : new TextDecoder().decode(nextFiles[projectTomlFileIndex].data)
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    existingProjectToml,
+    title
+  )
+  const nextProjectTomlFile = {
+    relativePath: PROJECT_SETTINGS_FILE_NAME,
+    data: new TextEncoder().encode(nextProjectToml),
+  }
+
+  if (projectTomlFileIndex === -1) {
+    nextFiles.push(nextProjectTomlFile)
+  } else {
+    nextFiles[projectTomlFileIndex] = nextProjectTomlFile
+  }
+
+  return nextFiles
+}
+
+async function writeLocalProjectTitle(projectPath: string, title: string) {
+  const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  let existingProjectToml = ''
+  if (await exists(projectTomlPath)) {
+    existingProjectToml = await localFs.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+  }
+  if (getProjectTitleFromProjectTomlContents(existingProjectToml) === title) {
+    return false
+  }
+
+  await localFs.writeFile(
+    projectTomlPath,
+    new TextEncoder().encode(
+      setProjectTitleInProjectTomlContents(existingProjectToml, title)
+    )
+  )
+  return true
 }
 
 function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
@@ -575,6 +649,19 @@ async function getProjectMetadata(projectPath: string) {
     PROJECTS_STORE,
     'readonly',
     (store) => store.get(normalizePathForSync(projectPath))
+  )
+}
+
+export async function getOpfsCloudProjectMetadata(projectPath: string) {
+  return getProjectMetadata(normalizePathForSync(projectPath))
+}
+
+export async function getOpfsCloudProjectMetadataIndex() {
+  return new Map(
+    (await getAllProjectMetadata()).map((metadata) => [
+      normalizePathForSync(metadata.localProjectPath),
+      metadata,
+    ])
   )
 }
 
@@ -1028,10 +1115,58 @@ async function markProjectSynced(
   })
 }
 
+async function hydrateCleanLocalProjectTitle(
+  metadata: ProjectMetadata,
+  remoteTitle?: string
+) {
+  if (!remoteTitle?.trim() || !(await exists(metadata.localProjectPath))) {
+    return metadata
+  }
+
+  const projectTomlPath = localFs.join(
+    metadata.localProjectPath,
+    PROJECT_SETTINGS_FILE_NAME
+  )
+  const existingProjectToml = (await exists(projectTomlPath))
+    ? await localFs.readFile(projectTomlPath, { encoding: 'utf-8' })
+    : ''
+  if (
+    getProjectTitleFromProjectTomlContents(existingProjectToml) === remoteTitle
+  ) {
+    return metadata
+  }
+
+  const beforeFiles = await collectLocalProjectFiles(metadata.localProjectPath)
+  const beforeManifest = await projectManifestFromFiles(beforeFiles)
+  const localClean =
+    !metadata.baseManifest ||
+    projectManifestsEqual(beforeManifest, metadata.baseManifest)
+  if (!localClean) {
+    return metadata
+  }
+
+  const titleChanged = await writeLocalProjectTitle(
+    metadata.localProjectPath,
+    remoteTitle
+  )
+  if (!titleChanged) {
+    return metadata
+  }
+
+  const afterFiles = await collectLocalProjectFiles(metadata.localProjectPath)
+  const nextMetadata = {
+    ...metadata,
+    baseManifest: await projectManifestFromFiles(afterFiles),
+  }
+  await putProjectMetadata(nextMetadata)
+  return nextMetadata
+}
+
 async function markProjectConflict(
   metadata: ProjectMetadata,
   remoteRevision: Revision | undefined,
-  remoteFiles: ProjectArchiveFile[]
+  remoteFiles: ProjectArchiveFile[],
+  remoteTitle?: string
 ) {
   const parentDirectory = localFs.dirname(metadata.localProjectPath)
   const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)
@@ -1041,7 +1176,10 @@ async function markProjectConflict(
     conflictName
   )
 
-  await replaceLocalProjectWithFiles(conflictProjectPath, remoteFiles)
+  await replaceLocalProjectWithFiles(
+    conflictProjectPath,
+    withProjectTitleInArchiveFiles(remoteFiles, remoteTitle)
+  )
 
   await putProjectMetadata({
     ...metadata,
@@ -1152,7 +1290,10 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     const remoteArchive = await downloadRemoteProjectArchive(
       metadata.remoteProjectId
     )
-    const remoteFiles = await parseProjectArchive(remoteArchive)
+    const remoteFiles = withProjectTitleInArchiveFiles(
+      await parseProjectArchive(remoteArchive),
+      remoteProject.title
+    )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
 
     if (
@@ -1181,7 +1322,12 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       return
     }
 
-    await markProjectConflict(metadata, remoteRevision, remoteFiles)
+    await markProjectConflict(
+      metadata,
+      remoteRevision,
+      remoteFiles,
+      remoteProject.title
+    )
   } catch (error) {
     await markProjectFailure(metadata, error)
     throw error
@@ -1215,13 +1361,17 @@ async function syncRemoteIndex() {
       (entry) => entry.remoteProjectId === remoteProject.id
     )
     if (knownLocalMetadata) {
+      const nextLocalMetadata = await hydrateCleanLocalProjectTitle(
+        knownLocalMetadata,
+        remoteProject.title
+      )
       const remoteRevision = getRevision(remoteProject)
       if (
         remoteRevision &&
-        knownLocalMetadata.remoteRevision &&
-        remoteRevision !== knownLocalMetadata.remoteRevision
+        nextLocalMetadata.remoteRevision &&
+        remoteRevision !== nextLocalMetadata.remoteRevision
       ) {
-        await syncProject(knownLocalMetadata.localProjectPath, [])
+        await syncProject(nextLocalMetadata.localProjectPath, [])
       }
       continue
     }
@@ -1247,7 +1397,10 @@ async function syncRemoteIndex() {
     }
 
     const archive = await downloadRemoteProjectArchive(remoteProject.id)
-    const files = await parseProjectArchive(archive)
+    const files = withProjectTitleInArchiveFiles(
+      await parseProjectArchive(archive),
+      remoteProject.title
+    )
     const projectPath = await uniqueProjectPath(projectDirectory, projectName)
     await replaceLocalProjectWithFiles(projectPath, files)
     await markProjectSynced(

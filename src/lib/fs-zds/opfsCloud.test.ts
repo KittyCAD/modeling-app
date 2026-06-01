@@ -72,12 +72,12 @@ describe('opfsCloud sync helpers', () => {
       projectFile('nested/part.kcl'),
       projectFile(
         PROJECT_SETTINGS_FILE_NAME,
-        'default_file = "nested/part.kcl"\n'
+        'default_file = "nested/part.kcl"\n\n[settings.meta]\ntitle = "Bracket"\n'
       ),
     ])
 
     expect(payload.body).toMatchObject({
-      title: 'bracket',
+      title: 'Bracket',
       entrypoint_path: 'nested/part.kcl',
       project_toml_path: PROJECT_SETTINGS_FILE_NAME,
     })
