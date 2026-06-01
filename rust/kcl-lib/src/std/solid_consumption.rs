@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 use crate::CompilationIssue;
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -60,7 +62,7 @@ fn consumed_value_error_message(value: &KclValue, exec_state: &ExecState) -> Res
             Ok(None)
         }
         KclValue::Object { value, .. } => {
-            for value in value.values() {
+            for (_, value) in value.iter().sorted_by(|(left, _), (right, _)| left.cmp(right)) {
                 if let Some(message) = consumed_value_error_message(value, exec_state)? {
                     return Ok(Some(message));
                 }

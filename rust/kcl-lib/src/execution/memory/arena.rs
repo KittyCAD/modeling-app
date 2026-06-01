@@ -827,7 +827,8 @@ impl Environment {
         Ok(self
             .bindings
             .iter()
-            .filter_map(|(key, (_, value))| f(value).then(|| (key.clone(), value.clone())))
+            .filter(|&(_, (_, value))| f(value))
+            .map(|(key, (_, value))| (key.clone(), value.clone()))
             .collect())
     }
 

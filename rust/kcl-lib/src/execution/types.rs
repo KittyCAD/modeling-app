@@ -282,8 +282,8 @@ impl RuntimeType {
                 value, experimental, ..
             } => {
                 let result = match value {
-                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
-                    TypeDef::Alias(ty) => ty.clone(),
+                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
+                    TypeDef::Alias(ty) => ty,
                 };
                 if experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);

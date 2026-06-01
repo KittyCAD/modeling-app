@@ -2258,7 +2258,7 @@ mod tests {
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
-        memory.memory.get_from_unchecked(name, env).unwrap().to_owned()
+        memory.memory.get_from_unchecked(name, env).unwrap()
     }
 
     async fn execute_variables_with_backend(
