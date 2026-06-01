@@ -17,6 +17,7 @@ use kcmc::websocket::ModelingCmdReq;
 use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::shared::Angle;
 use kittycad_modeling_cmds::shared::BodyType;
+use kittycad_modeling_cmds::shared::DirectionType;
 use kittycad_modeling_cmds::shared::ExtrudeMethod;
 use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -53,6 +54,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
+use crate::std::axis_or_reference::Point3dOrEdgeReference;
 use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
@@ -90,7 +92,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
-    let direction: Option<[TyF64; 3]> = args.get_kw_arg_opt("direction", &RuntimeType::point3d(), exec_state)?;
+    let direction= args.get_kw_arg_opt("direction", &RuntimeType::Union(vec![
+            RuntimeType::point3d(),
+            RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::tagged_edge(),
+        ]), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let draft_angle: Option<TyF64> = args.get_kw_arg_opt("draftAngle", &RuntimeType::degrees(), exec_state)?;
@@ -279,7 +285,7 @@ async fn inner_extrude(
     length: Option<TyF64>,
     to: Option<Point3dAxis3dOrGeometryReference>,
     symmetric: Option<bool>,
-    direction: Option<[TyF64; 3]>,
+    direction: Option<Point3dOrEdgeReference>,
     bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
@@ -365,8 +371,8 @@ async fn inner_extrude(
     for extrudable in &extrudables {
         let extrude_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
-        let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
-            (Some(angle), angle_step, center, Some(length), None) => {
+        let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to, &direction) {
+            (Some(angle), angle_step, center, Some(length), None, None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
                 let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
                 let angle_step_size = Angle::from_degrees(
@@ -387,7 +393,9 @@ async fn inner_extrude(
                         .build(),
                 )
             }
-            (None, None, None, Some(length), None) => ModelingCmd::from(
+            (None, None, None, Some(length), None, None) => 
+            {
+                ModelingCmd::from(
                 mcmd::Extrude::builder()
                     .target(sketch_or_face_id.into())
                     .distance(LengthUnit(length.to_mm()))
@@ -400,16 +408,36 @@ async fn inner_extrude(
                     .extrude_method(extrude_method)
                     .body_type(body_type)
                     .maybe_merge_coplanar_faces(hide_seams)
-                    .maybe_direction(direction.clone().map(|d| {
-                        KPoint3d {
-                            x: d[0].to_mm(),
-                            y: d[1].to_mm(),
-                            z: d[2].to_mm(),
-                        }
-                    }))
                     .build(),
-            ),
-            (None, None, None, None, Some(to)) => match to {
+            )},
+            (None, None, None, Some(length), None, Some(dir)) => 
+            {
+                let direction3d = match dir {
+                    Point3dOrEdgeReference::Point(p) => DirectionType::Axis {direction: KPoint3d { x: p[0].n, y: p[1].n, z: p[2].n }},
+                    Point3dOrEdgeReference::Edge(edge) => {
+                        match edge {
+                            crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
+                            crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge { id: tag.get_cur_info().unwrap().id }, // TODO gserena catch an error here
+                        }
+                    },
+                };
+                ModelingCmd::from(
+                mcmd::Extrude::builder()
+                    .target(sketch_or_face_id.into())
+                    .distance(LengthUnit(length.to_mm()))
+                    .opposite(opposite.clone())
+                    .maybe_draft_angle(
+                        draft_angle
+                            .clone()
+                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                    )
+                    .extrude_method(extrude_method)
+                    .body_type(body_type)
+                    .maybe_merge_coplanar_faces(hide_seams)
+                    .direction(direction3d)
+                    .build(),
+            )},
+            (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
                         .target(sketch_or_face_id.into())
@@ -539,25 +567,25 @@ async fn inner_extrude(
                     )
                 }
             },
-            (Some(_), _, _, None, None) => {
+            (Some(_), _, _, None, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "The `length` parameter must be provided when using twist angle for extrusion.".to_owned(),
                     vec![args.source_range],
                 )));
             }
-            (_, _, _, None, None) => {
+            (_, _, _, None, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "Either `length` or `to` parameter must be provided for extrusion.".to_owned(),
                     vec![args.source_range],
                 )));
             }
-            (_, _, _, Some(_), Some(_)) => {
+            (_, _, _, Some(_), Some(_), None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "You cannot give both `length` and `to` params, you have to choose one or the other".to_owned(),
                     vec![args.source_range],
                 )));
             }
-            (_, _, _, _, _) => {
+            (_, _, _, _, _, _,) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "Invalid combination of parameters for extrusion.".to_owned(),
                     vec![args.source_range],
