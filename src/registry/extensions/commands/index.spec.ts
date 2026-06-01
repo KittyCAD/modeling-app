@@ -19,6 +19,28 @@ import { describe, expect, it, vi } from 'vitest'
 import { commandsExtension } from '.'
 import { TOOLBAR_COMMAND_IDS, toolbarCommands } from './toolbarCommands'
 
+function createCommandBarContext({
+  kclManager,
+  userFeatures,
+}: {
+  kclManager: KclManager
+  userFeatures?: NonNullable<CommandBarContext['userFeatures']>
+}): CommandBarContext {
+  const context: CommandBarContext = {
+    commands: [],
+    wasmInstancePromise: Promise.resolve({} as ModuleType),
+    machineManager: new MachineManager(),
+    argumentsToSubmit: {},
+    kclManager,
+  }
+
+  if (userFeatures) {
+    context.userFeatures = userFeatures
+  }
+
+  return context
+}
+
 describe('commands extension', () => {
   it('syncs registry command contributions into the command system service', () => {
     const commandsSlot = new Slot()
@@ -91,6 +113,63 @@ describe('commands extension', () => {
     ).toBe(true)
     expect(sentEvents).toEqual([
       { type: 'equip tool', data: { tool: 'lineTool' } },
+    ])
+  })
+
+  it('does not run experimental toolbar commands without the user feature flag', () => {
+    const sentEvents: unknown[] = []
+    const kclManager = {
+      modelingState: {
+        matches: (state: unknown) => state === 'sketchSolveMode',
+        context: { sketchSolveToolName: null },
+      },
+      sendModelingEvent: (event: unknown) => {
+        sentEvents.push(event)
+        return true
+      },
+    } as unknown as KclManager
+
+    const command = toolbarCommands.find(
+      (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.spline
+    )
+
+    expect(command).toBeDefined()
+    expect(
+      command?.onSubmit({
+        context: createCommandBarContext({ kclManager }),
+      })
+    ).toBeUndefined()
+    expect(sentEvents).toEqual([])
+  })
+
+  it('runs experimental toolbar commands with the user feature flag', () => {
+    const sentEvents: unknown[] = []
+    const kclManager = {
+      modelingState: {
+        matches: (state: unknown) => state === 'sketchSolveMode',
+        context: { sketchSolveToolName: null },
+      },
+      sendModelingEvent: (event: unknown) => {
+        sentEvents.push(event)
+        return true
+      },
+    } as unknown as KclManager
+    const userFeatures = {
+      has: vi.fn(() => true),
+    } satisfies NonNullable<CommandBarContext['userFeatures']>
+
+    const command = toolbarCommands.find(
+      (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.spline
+    )
+
+    expect(command).toBeDefined()
+    expect(
+      command?.onSubmit({
+        context: createCommandBarContext({ kclManager, userFeatures }),
+      })
+    ).toBe(true)
+    expect(sentEvents).toEqual([
+      { type: 'equip tool', data: { tool: 'splineTool' } },
     ])
   })
 

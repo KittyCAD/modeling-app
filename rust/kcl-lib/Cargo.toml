@@ -80,7 +80,7 @@ libm = "0.2.16"
 measurements = "0.11.1"
 miette = { workspace = true }
 mime_guess = "2.0.5"
-nalgebra-glm = "0.20.0"
+nalgebra-glm = "0.21.0"
 num-traits = "0.2"
 parse-display = "0.11.0"
 pyo3 = { workspace = true, optional = true }
