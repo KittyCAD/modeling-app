@@ -1171,7 +1171,8 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dOrEdgeReference {
         let case1 = <[TyF64; 3]>::from_kcl_val;
         let case2 = super::fillet::EdgeReference::from_kcl_val;
         let case3 = Segment::from_kcl_val;
-        case1(arg).map(Self::Point)
+        case1(arg)
+            .map(Self::Point)
             .or_else(|| case2(arg).map(Self::Edge))
             .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }

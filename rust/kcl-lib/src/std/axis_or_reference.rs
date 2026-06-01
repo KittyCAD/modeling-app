@@ -137,7 +137,7 @@ impl Axis3dOrEdgeReference {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Point3dOrEdgeReference {
     /// 3D point and origin.
-    Point ([TyF64; 3]),
+    Point([TyF64; 3]),
     /// Tagged edge.
     Edge(EdgeReference),
 }
@@ -147,7 +147,11 @@ impl Point3dOrEdgeReference {
     pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
         match &segment.kind {
             SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
-            SegmentKind::Point { position, .. } => Ok(Self::Point([position[0].clone(), position[1].clone(), TyF64::count(0.0)])),
+            SegmentKind::Point { position, .. } => Ok(Self::Point([
+                position[0].clone(),
+                position[1].clone(),
+                TyF64::count(0.0),
+            ])),
             SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
                 source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
                 backtrace: Default::default(),

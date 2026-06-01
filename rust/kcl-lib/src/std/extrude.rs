@@ -92,12 +92,16 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
-    let direction= args.get_kw_arg_opt("direction", &RuntimeType::Union(vec![
+    let direction = args.get_kw_arg_opt(
+        "direction",
+        &RuntimeType::Union(vec![
             RuntimeType::point3d(),
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::tagged_edge(),
             RuntimeType::segment(),
-        ]), exec_state)?;
+        ]),
+        exec_state,
+    )?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let draft_angle: Option<TyF64> = args.get_kw_arg_opt("draftAngle", &RuntimeType::degrees(), exec_state)?;
@@ -372,7 +376,14 @@ async fn inner_extrude(
     for extrudable in &extrudables {
         let extrude_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
-        let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to, &direction) {
+        let cmd = match (
+            &twist_angle,
+            &twist_angle_step,
+            &twist_center,
+            length.clone(),
+            &to,
+            &direction,
+        ) {
             (Some(angle), angle_step, center, Some(length), None, None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
                 let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
@@ -394,9 +405,7 @@ async fn inner_extrude(
                         .build(),
                 )
             }
-            (None, None, None, Some(length), None, None) => 
-            {
-                ModelingCmd::from(
+            (None, None, None, Some(length), None, None) => ModelingCmd::from(
                 mcmd::Extrude::builder()
                     .target(sketch_or_face_id.into())
                     .distance(LengthUnit(length.to_mm()))
@@ -410,34 +419,42 @@ async fn inner_extrude(
                     .body_type(body_type)
                     .maybe_merge_coplanar_faces(hide_seams)
                     .build(),
-            )},
-            (None, None, None, Some(length), None, Some(dir)) => 
-            {
+            ),
+            (None, None, None, Some(length), None, Some(dir)) => {
                 let direction3d = match dir {
-                    Point3dOrEdgeReference::Point(p) => DirectionType::Axis {direction: KPoint3d { x: p[0].n, y: p[1].n, z: p[2].n }},
+                    Point3dOrEdgeReference::Point(p) => DirectionType::Axis {
+                        direction: KPoint3d {
+                            x: p[0].n,
+                            y: p[1].n,
+                            z: p[2].n,
+                        },
+                    },
                     Point3dOrEdgeReference::Edge(edge) => {
                         match edge {
                             crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
-                            crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge { id: tag.get_cur_info().unwrap().id }, // TODO gserena catch an error here
+                            crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge {
+                                id: tag.get_cur_info().unwrap().id,
+                            }, // TODO gserena catch an error here
                         }
-                    },
+                    }
                 };
                 ModelingCmd::from(
-                mcmd::Extrude::builder()
-                    .target(sketch_or_face_id.into())
-                    .distance(LengthUnit(length.to_mm()))
-                    .opposite(opposite.clone())
-                    .maybe_draft_angle(
-                        draft_angle
-                            .clone()
-                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
-                    )
-                    .extrude_method(extrude_method)
-                    .body_type(body_type)
-                    .maybe_merge_coplanar_faces(hide_seams)
-                    .direction(direction3d)
-                    .build(),
-            )},
+                    mcmd::Extrude::builder()
+                        .target(sketch_or_face_id.into())
+                        .distance(LengthUnit(length.to_mm()))
+                        .opposite(opposite.clone())
+                        .maybe_draft_angle(
+                            draft_angle
+                                .clone()
+                                .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                        )
+                        .extrude_method(extrude_method)
+                        .body_type(body_type)
+                        .maybe_merge_coplanar_faces(hide_seams)
+                        .direction(direction3d)
+                        .build(),
+                )
+            }
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
@@ -586,7 +603,7 @@ async fn inner_extrude(
                     vec![args.source_range],
                 )));
             }
-            (_, _, _, _, _, _,) => {
+            (_, _, _, _, _, _) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "Invalid combination of parameters for extrusion.".to_owned(),
                     vec![args.source_range],
