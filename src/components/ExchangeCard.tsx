@@ -412,8 +412,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }, [props.responses.length])
 
   const isEndOfStream = isExchangeComplete(props.responses)
-  // Info notices can arrive before more reasoning, so they should not collapse
-  // the expanded streaming pane.
   const hasFinalResponse = props.responses.some(
     (response) => 'end_of_stream' in response || 'error' in response
   )
