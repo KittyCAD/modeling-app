@@ -3,6 +3,7 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  OPFS_CLOUD_FEATURE_FLAG,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
@@ -22,17 +23,116 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  UserFeaturesState,
+  UserFeaturesTransition,
+  userFeaturesContextHas,
+} from '@src/machines/userFeaturesMachine'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+const WEB_HOME_FEATURE_GATE_TIMEOUT_MS = 5000
+
+type SubscribableActor<TSnapshot> = {
+  getSnapshot: () => TSnapshot
+  subscribe: (listener: (snapshot: TSnapshot) => void) => {
+    unsubscribe: () => void
+  }
+}
+
+function waitForActorSnapshot<TSnapshot>(
+  actor: SubscribableActor<TSnapshot>,
+  predicate: (snapshot: TSnapshot) => boolean,
+  timeoutMs: number
+): Promise<TSnapshot> {
+  const currentSnapshot = actor.getSnapshot()
+  if (predicate(currentSnapshot)) {
+    return Promise.resolve(currentSnapshot)
+  }
+
+  return new Promise((resolve) => {
+    let subscription: { unsubscribe: () => void } | undefined
+    const timeoutRef: {
+      current?: number
+    } = {}
+    let settled = false
+    const finish = (snapshot: TSnapshot) => {
+      if (settled) {
+        return
+      }
+      settled = true
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current)
+      }
+      subscription?.unsubscribe()
+      resolve(snapshot)
+    }
+    timeoutRef.current = window.setTimeout(() => {
+      finish(actor.getSnapshot())
+    }, timeoutMs)
+
+    subscription = actor.subscribe((snapshot) => {
+      if (predicate(snapshot)) {
+        finish(snapshot)
+      }
+    })
+    if (settled) {
+      subscription.unsubscribe()
+    }
+  })
+}
+
+async function waitForWebHomeFeatureGate(app: App) {
+  if (app.auth.actor.getSnapshot().matches('checkIfLoggedIn')) {
+    await waitForActorSnapshot(
+      app.auth.actor,
+      (snapshot) => !snapshot.matches('checkIfLoggedIn'),
+      WEB_HOME_FEATURE_GATE_TIMEOUT_MS
+    )
+  }
+
+  const authSnapshot = app.auth.actor.getSnapshot()
+  if (!authSnapshot.matches('loggedIn')) {
+    return
+  }
+
+  if (app.userFeatures.actor.getSnapshot().matches(UserFeaturesState.Idle)) {
+    app.userFeatures.send({
+      type: UserFeaturesTransition.Load,
+      token: authSnapshot.context.token,
+    })
+  }
+
+  if (
+    app.userFeatures.actor.getSnapshot().matches(UserFeaturesState.Idle) ||
+    app.userFeatures.actor.getSnapshot().matches(UserFeaturesState.Loading)
+  ) {
+    await waitForActorSnapshot(
+      app.userFeatures.actor,
+      (snapshot) =>
+        snapshot.matches(UserFeaturesState.Ready) ||
+        snapshot.matches(UserFeaturesState.Failed),
+      WEB_HOME_FEATURE_GATE_TIMEOUT_MS
+    )
+  }
+}
+
+async function webHomeRouteEnabled(app: App) {
+  await waitForWebHomeFeatureGate(app)
+  return userFeaturesContextHas(
+    app.userFeatures.actor.getSnapshot().context,
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
+  )
+}
 
 /**
  * The base loader is used to reroute `/` root path requests,
  * to the home route on desktop, and to a constrained single project view on web.
  *
- * Once we get cloud storage or another solution we'll introduce the home, multi-project view on web.
+ * The OPFS cloud feature flag enables the home, multi-project view on web.
  */
 export const baseLoader =
   ({
@@ -55,6 +155,10 @@ export const baseLoader =
     // Let another part of the system handle the "open with web/desktop"...
     if (url.searchParams.has('ask-open-desktop')) {
       return
+    }
+
+    if (await webHomeRouteEnabled(app)) {
+      return redirect(PATHS.HOME + routerSearch)
     }
 
     // Web, make a default project and redirect to it.
@@ -86,8 +190,7 @@ export const baseLoader =
         wasmInstance
       )
 
-      const fileURLPath =
-        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
+      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(requestedProjectName)}`
       return redirect(fileURLPath + routerSearch)
     }
   }
@@ -119,7 +222,7 @@ export const fileLoader =
 
     const wasmInstance = await kclManager.wasmInstancePromise
 
-    let settings = await loadAndValidateSettings(
+    const settings = await loadAndValidateSettings(
       wasmInstance,
       heuristicProjectFilePath
     )
@@ -253,9 +356,9 @@ export const homeLoader =
   }: {
     app: App
   }): LoaderFunction =>
-  async ({ request }): Promise<HomeLoaderData | Response> => {
-    // If on web, bump out to root, which will redirect to a project.
-    if (!window.electron) {
+  async (): Promise<HomeLoaderData | Response> => {
+    // If on unflagged web, bump out to root, which will redirect to a project.
+    if (!window.electron && !(await webHomeRouteEnabled(app))) {
       return redirect(PATHS.INDEX)
     }
 
