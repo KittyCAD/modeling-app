@@ -232,7 +232,7 @@ export const ViewportAnnotationOverlay = (
           lastPoint.current = null
         }}
       />
-      <div className="absolute top-2 left-2 flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 bg-chalkboard-10/95 dark:bg-chalkboard-90/95 p-1 shadow-sm">
+      <div className="absolute top-2 left-1/2 flex max-w-[calc(100%-1rem)] -translate-x-1/2 items-center gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10/95 p-1 shadow-sm dark:border-chalkboard-70 dark:bg-chalkboard-90/95">
         <button
           type="button"
           className="m-0 h-7 px-2 rounded-sm border-none bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
