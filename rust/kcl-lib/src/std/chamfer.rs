@@ -4,9 +4,10 @@ use anyhow::Result;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
 use kcmc::shared::CutStrategy;
 use kcmc::shared::CutTypeV2;
-use kittycad_modeling_cmds::shared::Angle;
+use kcmc::shared::EdgeCutVersion;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
@@ -38,7 +39,14 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
-    // TODO: custom profiles not ready yet
+    let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let edge_cut_number = edge_cut_number.unwrap_or(0);
+    let edge_cut_version: EdgeCutVersion = edge_cut_number.try_into().map_err(|()| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("{} is not a version of the Zoo edge cut algorithm", edge_cut_number),
+            vec![args.source_range],
+        ))
+    })?;
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -53,6 +61,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         None,
         tag,
         csg_algorithm,
+        edge_cut_version,
         exec_state,
         args,
     )
@@ -70,6 +79,7 @@ async fn inner_chamfer(
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -146,8 +156,10 @@ async fn inner_chamfer(
                             .extra_face_ids(vec![])
                             .strategy(strategy)
                             .object_id(solid.id)
-                            .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                            // We can let the user set this in the future.
+                            .tolerance(LengthUnit(DEFAULT_TOLERANCE))
                             .cut_type(cut_type)
+                            .version(edge_cut_version)
                             .build(),
                     ),
                 )
