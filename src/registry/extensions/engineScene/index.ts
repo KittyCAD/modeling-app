@@ -10,8 +10,16 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
-import { SelectionFilterControls } from './SelectionFilterControls'
 import executionIndicator from './executionIndicator'
+
+// Registry extension entrypoints are imported eagerly while App is still
+// initializing. SelectionFilterControls pulls in useModelingContext, which
+// reaches boot.ts through ModelingMachineProvider/useMenu; importing it here
+// eagerly creates an App <-> boot cycle where App is still undefined.
+const SelectionFilterControls = lazy(async () => {
+  const { SelectionFilterControls } = await import('./SelectionFilterControls')
+  return { default: SelectionFilterControls }
+})
 
 const UnitsMenu = lazy(async () => {
   const { UnitsMenu } = await import('@src/components/UnitsMenu')
@@ -33,6 +41,13 @@ const EngineSceneExperimentalFeaturesMenu = () =>
     Suspense,
     { fallback: null },
     createElement(ExperimentalFeaturesMenu)
+  )
+
+const EngineSceneSelectionFilterControls = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionFilterControls)
   )
 
 /**
@@ -66,7 +81,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       executionService.value
         ? {
             id: 'selection-filter',
-            component: SelectionFilterControls,
+            component: EngineSceneSelectionFilterControls,
             order: 11,
             scopes: ['file'],
           }
