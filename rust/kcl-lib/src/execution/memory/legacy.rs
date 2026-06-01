@@ -216,9 +216,9 @@ use std::sync::atomic::Ordering;
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use serde::Deserialize;
-use serde::Serialize;
 
+use super::EnvironmentRef;
+use super::MemoryStats;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -445,13 +445,7 @@ impl ProgramMemory {
     #[allow(clippy::new_without_default)]
     #[allow(dead_code)]
     pub fn new() -> Arc<Self> {
-        Self::new_with_backend(super::MemoryBackendKind::Legacy)
-    }
-
-    pub(crate) fn new_with_backend(backend: super::MemoryBackendKind) -> Arc<Self> {
-        match backend {
-            super::MemoryBackendKind::Legacy => Self::new_legacy(),
-        }
+        Self::new_legacy()
     }
 
     fn new_legacy() -> Arc<Self> {
@@ -1010,60 +1004,6 @@ impl PartialEq for Stack {
         vars.iter()
             .all(|k| self.get(k, SourceRange::default()).unwrap() == other.get(k, SourceRange::default()).unwrap())
     }
-}
-
-/// An index pointing to an environment at a point in time.
-///
-/// The first field indexes an environment, the second field is an epoch. An epoch of 0 is indicates
-/// a dummy, error, or placeholder env ref, an epoch of `usize::MAX` represents the current most
-/// recent epoch.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS)]
-pub struct EnvironmentRef(usize, usize);
-
-impl EnvironmentRef {
-    pub fn dummy() -> Self {
-        Self(usize::MAX, 0)
-    }
-
-    fn is_regular(&self) -> bool {
-        self.0 < usize::MAX && self.1 > 0
-    }
-
-    fn index(&self) -> usize {
-        self.0
-    }
-
-    fn skip_env(&self) -> bool {
-        self.0 == usize::MAX
-    }
-
-    /// Replace only the env index if it matches `old`.
-    pub fn replace_env(&mut self, old: Self, new: Self) {
-        if self.0 == old.0 {
-            self.0 = new.0;
-        }
-    }
-
-    /// Replace if it matches `old`.
-    pub fn replace_env_and_epoch(&mut self, old: Self, new: Self) {
-        if self.0 == old.0 && self.1 == old.1 {
-            self.0 = new.0;
-            self.1 = new.1;
-        }
-    }
-}
-
-// TODO keep per-stack stats to avoid so many atomic updates
-#[derive(Debug, Default)]
-pub(crate) struct MemoryStats {
-    // Total number of environments created.
-    env_count: AtomicUsize,
-    // Total number of epochs.
-    epoch_count: AtomicUsize,
-    // Total number of values inserted or updated.
-    mutation_count: AtomicUsize,
-    // The number of iterations waiting for a spin lock.
-    lock_waits: AtomicUsize,
 }
 
 // Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutation
