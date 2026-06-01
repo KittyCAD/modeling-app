@@ -234,6 +234,7 @@ fn substitute_sketch_var(
         KclValue::Type { .. } => Ok(value),
         KclValue::KclNone { .. } => Ok(value),
         KclValue::BoundedEdge { .. } => Ok(value),
+        KclValue::Assembly { .. } => Ok(value),
     }
 }
 

@@ -548,6 +548,7 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
         KclValue::Module { .. } => false,
         KclValue::Type { .. } => false,
         KclValue::KclNone { .. } => false,
+        KclValue::Assembly { .. } => false,
     }
 }
 

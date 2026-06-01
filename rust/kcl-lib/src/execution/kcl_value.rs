@@ -11,6 +11,7 @@ use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::execution::AbstractSegment;
+use crate::execution::Assembly;
 use crate::execution::BoundedEdge;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
@@ -156,6 +157,9 @@ pub enum KclValue {
         value: KclNone,
         #[serde(skip)]
         meta: Vec<Metadata>,
+    },
+    Assembly {
+        value: Box<Assembly>,
     },
 }
 
@@ -339,6 +343,12 @@ impl From<Vec<Solid>> for KclValue {
     }
 }
 
+impl From<Assembly> for KclValue {
+    fn from(eg: Assembly) -> Self {
+        KclValue::Assembly { value: Box::new(eg) }
+    }
+}
+
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
@@ -366,6 +376,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
             KclValue::BoundedEdge { meta, .. } => to_vec_sr(&meta),
+            KclValue::Assembly { value, .. } => to_vec_sr(&value.meta),
         }
     }
 }
@@ -401,6 +412,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
             KclValue::Type { meta, .. } => to_vec_sr(meta),
             KclValue::BoundedEdge { meta, .. } => to_vec_sr(meta),
+            KclValue::Assembly { value, .. } => to_vec_sr(&value.meta),
         }
     }
 }
@@ -439,6 +451,7 @@ impl KclValue {
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
             KclValue::BoundedEdge { meta, .. } => meta.clone(),
+            KclValue::Assembly { value, .. } => value.meta.clone(),
         }
     }
 
@@ -476,6 +489,7 @@ impl KclValue {
             | KclValue::Module { .. }
             | KclValue::Type { .. }
             | KclValue::BoundedEdge { .. }
+            | KclValue::Assembly { .. } // TODO: probably do?
             | KclValue::KclNone { .. } => false,
         }
     }
@@ -538,6 +552,7 @@ impl KclValue {
                     result
                 }
             }
+            KclValue::Assembly { .. } => "an assembly".to_owned(),
         }
     }
 
@@ -859,6 +874,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_assembly(&self) -> Option<&Assembly> {
+        match self {
+            KclValue::Assembly { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn as_sketch(&self) -> Option<&Sketch> {
         match self {
             KclValue::Sketch { value, .. } => Some(value),
@@ -1006,6 +1028,7 @@ impl KclValue {
             | KclValue::Segment { .. }
             | KclValue::KclNone { .. }
             | KclValue::BoundedEdge { .. }
+            | KclValue::Assembly { .. } //TODO:
             | KclValue::Type { .. } => None,
         }
     }

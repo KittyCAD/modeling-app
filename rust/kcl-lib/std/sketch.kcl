@@ -3278,3 +3278,15 @@ export fn region(
   /// The sketch that the region is from. This is required when point is a `Point2d`.
   sketch?: any,
 ): Sketch {}
+
+///TODO don't know about feature tree
+@(impl = std_rust, feature_tree = false)
+export fn createAssembly(): Assembly {}
+
+///TODO temp
+@(impl = std_rust, feature_tree = false)
+export fn addToAssembly(
+  @assembly: Assembly,
+  /// Add this body to the assembly
+  solid: Solid | Assembly,
+): Assembly {}

@@ -384,7 +384,7 @@ export fn mirror3d(
 @(impl = std_rust, feature_tree = true)
 export fn translate(
   /// The solid, sketch, or set of solids or sketches to move.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry | Assembly,
   /// The amount to move the solid or sketch along the x axis.
   @(includeInSnippet = true)
   x?: number(Length) = 0,
@@ -398,7 +398,7 @@ export fn translate(
   global?: bool = false,  
   /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
   xyz?: [number(Length); 3]
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry | Assembly {}
 
 /// Rotate a solid or a sketch.
 ///
@@ -627,7 +627,7 @@ export fn translate(
 @(impl = std_rust, feature_tree = true)
 export fn rotate(
   /// The solid, sketch, or set of solids or sketches to rotate.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry | Assembly,
   /// The roll angle. Must be between -360deg and 360deg.
   @(includeInSnippet = true)
   roll?: number(Angle),
@@ -643,7 +643,7 @@ export fn rotate(
   angle?: number(Angle),
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
   global?: bool = false,  
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry | Assembly {}
 
 /// Scale a solid or a sketch.
 ///
@@ -750,7 +750,7 @@ export fn rotate(
 @(impl = std_rust, feature_tree = true)
 export fn scale(
   /// The solid, sketch, or set of solids or sketches to scale.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry | Assembly,
   /// The scale factor for the x axis.
   @(includeInSnippet = true)
   x?: number(Count) = 1,
@@ -766,7 +766,7 @@ export fn scale(
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry | Assembly {}
 
 /// Hide solids, sketches, helices, or imported objects.
 ///
@@ -827,8 +827,8 @@ export fn scale(
 @(impl = std_rust, feature_tree = true)
 export fn hide(
   /// The object or objects to hide.
-  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
-): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] {}
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] | Assembly,
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] | Assembly {}
 
 /// Deletes something from the scene. Once it's deleted, you can't use it anymore.
 /// This means deleting something twice is an error, as is hiding something after you delete it.
@@ -877,5 +877,5 @@ export fn hide(
 @(impl = std_rust, feature_tree = true, experimental = true)
 export fn delete(
   /// The object or objects to delete.
-  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] | Assembly,
 ) {}

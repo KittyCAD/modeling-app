@@ -397,3 +397,6 @@ export type ft = number(ft)
 export type yd = number(yd)
 export type rad = number(rad)
 export type deg = number(deg)
+
+@(impl = std_rust)
+export type Assembly

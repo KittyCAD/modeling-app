@@ -295,6 +295,7 @@ pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
+    Assembly(Box<Assembly>),
 }
 
 impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
@@ -331,6 +332,7 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
+            SolidOrSketchOrImportedGeometry::Assembly(a) => crate::execution::KclValue::Assembly { value: a.clone() },
         }
     }
 }
@@ -345,6 +347,7 @@ impl SolidOrSketchOrImportedGeometry {
             }
             SolidOrSketchOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             SolidOrSketchOrImportedGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            SolidOrSketchOrImportedGeometry::Assembly(a) => Ok(vec![a.id]),
         }
     }
 }
@@ -2483,4 +2486,15 @@ impl SketchConstraintKind {
             SketchConstraintKind::VerticalDistance { .. } => "verticalDistance",
         }
     }
+}
+
+//TODO: Is an assemlby a geometry?
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct Assembly {
+    pub id: Uuid,
+    /// Metadata.
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
 }

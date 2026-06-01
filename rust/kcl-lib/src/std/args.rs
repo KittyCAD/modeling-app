@@ -1017,6 +1017,12 @@ impl<'a> FromKclValue<'a> for crate::execution::Solid {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::execution::Assembly {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        arg.as_assembly().cloned()
+    }
+}
+
 impl<'a> FromKclValue<'a> for crate::execution::GdtAnnotation {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::GdtAnnotation { value } = arg else {
@@ -1048,6 +1054,7 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
                 }
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            KclValue::Assembly { value } => Some(Self::Assembly(value.clone())),
             _ => None,
         }
     }

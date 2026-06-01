@@ -212,6 +212,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))
     }
 
+    pub fn assembly() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Assembly)
+    }
+
     pub fn from_parsed(
         value: Type,
         exec_state: &mut ExecState,
@@ -485,6 +489,7 @@ pub enum PrimitiveType {
     Axis3d,
     ImportedGeometry,
     Function,
+    Assembly,
 }
 
 impl PrimitiveType {
@@ -513,6 +518,7 @@ impl PrimitiveType {
             PrimitiveType::TagDecl => "tag declarators".to_owned(),
             PrimitiveType::TaggedEdge => "tagged edges".to_owned(),
             PrimitiveType::TaggedFace => "tagged faces".to_owned(),
+            PrimitiveType::Assembly => "assembly".to_owned(),
         }
     }
 
@@ -555,6 +561,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function => write!(f, "fn"),
+            PrimitiveType::Assembly => write!(f, "Assembly"),
         }
     }
 }
@@ -1568,6 +1575,10 @@ impl KclValue {
                 KclValue::TagDeclarator { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Assembly => match self {
+                KclValue::Assembly { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
         }
     }
 
@@ -1778,6 +1789,7 @@ impl KclValue {
             KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
             KclValue::Module { .. } | KclValue::Type { .. } => None,
             KclValue::BoundedEdge { .. } => Some(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
+            KclValue::Assembly { .. } => Some(RuntimeType::Primitive(PrimitiveType::Assembly)),
         }
     }
 

@@ -38,6 +38,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             RuntimeType::sketches(),
             RuntimeType::solids(),
             RuntimeType::imported(),
+            RuntimeType::assembly(),
         ]),
         exec_state,
     )?;
@@ -149,6 +150,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
             RuntimeType::sketches(),
             RuntimeType::solids(),
             RuntimeType::imported(),
+            RuntimeType::assembly(),
         ]),
         exec_state,
     )?;
@@ -253,6 +255,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             RuntimeType::sketches(),
             RuntimeType::solids(),
             RuntimeType::imported(),
+            RuntimeType::assembly(),
         ]),
         exec_state,
     )?;
@@ -474,6 +477,7 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             RuntimeType::helices(),
             RuntimeType::imported(),
             RuntimeType::gdts(),
+            RuntimeType::assembly(),
         ]),
         exec_state,
     )?;
@@ -515,6 +519,7 @@ pub async fn delete(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             RuntimeType::helices(),
             RuntimeType::imported(),
             RuntimeType::gdts(),
+            RuntimeType::assembly(),
         ]),
         exec_state,
     )?;

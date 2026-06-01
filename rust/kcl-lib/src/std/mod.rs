@@ -3,6 +3,7 @@
 pub mod appearance;
 pub mod args;
 pub mod array;
+pub mod assembly;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
@@ -672,6 +673,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::join(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::joinSurfaces"),
         ),
+        ("sketch", "createAssembly") => (
+            |e, a| Box::pin(crate::std::assembly::create_assembly(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::assembly::createAssembly"),
+        ),
+        ("sketch", "addToAssembly") => (
+            |e, a| Box::pin(crate::std::assembly::add_to_assembly(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::assembly::addToAssembly"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }
@@ -699,6 +708,7 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
             PrimitiveType::BoundedEdge,
             StdFnProps::default("std::types::BoundedEdge"),
         ),
+        ("types", "Assembly") => (PrimitiveType::Assembly, StdFnProps::default("std::types::Assembly")),
         _ => unreachable!(),
     }
 }
