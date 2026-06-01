@@ -401,6 +401,25 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // draftAngle argument from a string to a KCL expression
+  let draftAngle: KclCommandValue | undefined
+  if (
+    'draftAngle' in operation.labeledArgs &&
+    operation.labeledArgs.draftAngle
+  ) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.draftAngle.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve draftAngle argument" }
+    }
+
+    draftAngle = result
+  }
+
   // twistAngle argument from a string to a KCL expression
   let twistAngle: KclCommandValue | undefined
   if (
@@ -493,6 +512,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     bidirectionalLength,
     tagStart,
     tagEnd,
+    draftAngle,
     twistAngle,
     twistAngleStep,
     twistCenter,
