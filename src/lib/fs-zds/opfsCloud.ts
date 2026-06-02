@@ -104,6 +104,13 @@ export type OPFSCloudSyncStatus = {
 
 export type OPFSCloudOptions = OPFSOptions
 
+export type OpfsCloudLocalProject = {
+  projectPath: string
+  projectName: string
+  remoteProjectId: string
+  remoteRevision?: Revision
+}
+
 const DB_NAME = 'zds-opfs-cloud-sync'
 const DB_VERSION = 1
 const PROJECTS_STORE = 'projects'
@@ -985,6 +992,153 @@ async function uniqueProjectPath(
   return candidate
 }
 
+function localProjectFromMetadata(
+  metadata: ProjectMetadata
+): OpfsCloudLocalProject | undefined {
+  if (!metadata.remoteProjectId) {
+    return undefined
+  }
+
+  return {
+    projectPath: metadata.localProjectPath,
+    projectName: metadata.projectName,
+    remoteProjectId: metadata.remoteProjectId,
+    remoteRevision: metadata.remoteRevision,
+  }
+}
+
+async function findLocalProjectPathByRemoteProjectId(
+  projectDirectory: string,
+  remoteProjectId: string,
+  preferredProjectName?: string
+) {
+  const candidateNames = new Set<string>()
+  if (preferredProjectName) {
+    candidateNames.add(preferredProjectName)
+  }
+
+  const entries = await localFs.readdir(projectDirectory).catch((error) => {
+    if (error === 'ENOENT') {
+      return []
+    }
+    throw error
+  })
+  for (const entry of entries) {
+    candidateNames.add(entry)
+  }
+
+  for (const entry of candidateNames) {
+    if (entry.startsWith('.')) {
+      continue
+    }
+    const candidatePath = localFs.join(projectDirectory, entry)
+    if (!(await exists(candidatePath))) {
+      continue
+    }
+    const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
+      candidatePath
+    ).catch(() => undefined)
+    if (candidateRemoteProjectId === remoteProjectId) {
+      return candidatePath
+    }
+  }
+
+  return undefined
+}
+
+async function cloneRemoteProjectToLocal(
+  remoteProject: RemoteProject,
+  preferredProjectPath?: string
+): Promise<OpfsCloudLocalProject> {
+  const projectDirectory = getDefaultProjectDirectoryPath()
+  await localFs.mkdir(projectDirectory, { recursive: true })
+  const projectName = sanitizeProjectName(
+    remoteProject.title || 'cloud-project',
+    'cloud-project'
+  )
+  const projectPath =
+    preferredProjectPath && !(await exists(preferredProjectPath))
+      ? preferredProjectPath
+      : await uniqueProjectPath(projectDirectory, projectName)
+  const archive = await downloadRemoteProjectArchive(remoteProject.id)
+  const files = withProjectTitleInArchiveFiles(
+    await parseProjectArchive(archive),
+    remoteProject.title
+  )
+  const nextMetadata = {
+    ...metadataForProject(projectPath),
+    remoteProjectId: remoteProject.id,
+  }
+
+  await replaceLocalProjectWithFiles(projectPath, files)
+  await markProjectSynced(
+    nextMetadata,
+    await projectManifestFromFiles(files),
+    getRevision(remoteProject)
+  )
+
+  return {
+    projectPath,
+    projectName: projectNameFromPath(projectPath),
+    remoteProjectId: remoteProject.id,
+    remoteRevision: getRevision(remoteProject),
+  }
+}
+
+export async function ensureOpfsCloudProjectLocallySynced(
+  remoteProjectId: string
+): Promise<OpfsCloudLocalProject | undefined> {
+  if (!isConfiguredForCloud()) {
+    return undefined
+  }
+
+  const projectId = remoteProjectId.trim()
+  if (!projectId) {
+    return undefined
+  }
+
+  const metadata = await getAllProjectMetadata()
+  const knownLocalMetadata = metadata.find(
+    (entry) => entry.remoteProjectId === projectId && !entry.tombstone
+  )
+  if (
+    knownLocalMetadata &&
+    (await exists(knownLocalMetadata.localProjectPath))
+  ) {
+    scheduleSync(0)
+    return localProjectFromMetadata(knownLocalMetadata)
+  }
+
+  const remoteProject = await getRemoteProject(projectId)
+  const projectName = sanitizeProjectName(
+    remoteProject.title || 'cloud-project',
+    'cloud-project'
+  )
+  const projectDirectory = getDefaultProjectDirectoryPath()
+  await localFs.mkdir(projectDirectory, { recursive: true })
+
+  const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
+    projectDirectory,
+    projectId,
+    projectName
+  )
+  if (existingProjectPath) {
+    const nextMetadata = {
+      ...(await getOrCreateProjectMetadata(existingProjectPath)),
+      remoteProjectId: projectId,
+      tombstone: false,
+    }
+    await putProjectMetadata(nextMetadata)
+    scheduleSync(0)
+    return localProjectFromMetadata(nextMetadata)
+  }
+
+  return cloneRemoteProjectToLocal(
+    remoteProject,
+    knownLocalMetadata?.localProjectPath
+  )
+}
+
 async function readProjectTomlCloudProjectId(projectPath: string) {
   const environmentName = getEnvironmentName()
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
@@ -1380,37 +1534,22 @@ async function syncRemoteIndex() {
       remoteProject.title || 'cloud-project',
       'cloud-project'
     )
-    const candidatePath = localFs.join(projectDirectory, projectName)
-    if (await exists(candidatePath)) {
-      const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
-        candidatePath
-      ).catch(() => undefined)
-      if (candidateRemoteProjectId === remoteProject.id) {
-        const nextMetadata = {
-          ...(await getOrCreateProjectMetadata(candidatePath)),
-          remoteProjectId: remoteProject.id,
-        }
-        await putProjectMetadata(nextMetadata)
-        await syncProject(candidatePath, [])
-        continue
+    const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
+      projectDirectory,
+      remoteProject.id,
+      projectName
+    )
+    if (existingProjectPath) {
+      const nextMetadata = {
+        ...(await getOrCreateProjectMetadata(existingProjectPath)),
+        remoteProjectId: remoteProject.id,
       }
+      await putProjectMetadata(nextMetadata)
+      await syncProject(existingProjectPath, [])
+      continue
     }
 
-    const archive = await downloadRemoteProjectArchive(remoteProject.id)
-    const files = withProjectTitleInArchiveFiles(
-      await parseProjectArchive(archive),
-      remoteProject.title
-    )
-    const projectPath = await uniqueProjectPath(projectDirectory, projectName)
-    await replaceLocalProjectWithFiles(projectPath, files)
-    await markProjectSynced(
-      {
-        ...metadataForProject(projectPath),
-        remoteProjectId: remoteProject.id,
-      },
-      await projectManifestFromFiles(files),
-      getRevision(remoteProject)
-    )
+    await cloneRemoteProjectToLocal(remoteProject)
   }
 }
 
