@@ -2166,3 +2166,14 @@ async fn kcl_test_gear_with_units() {
 
     let (_, _, _files) = execute_and_export_step(code, None).await.unwrap();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_deleting_twice_is_an_error() {
+    let code = kcl_input!("double_delete");
+    let result = execute_and_snapshot(code, None).await;
+
+    let _error_msg = match result.err() {
+        Some(ExecError::Kcl(error)) => error.error.message().to_owned(),
+        _ => panic!(),
+    };
+}

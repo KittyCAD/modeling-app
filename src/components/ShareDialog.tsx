@@ -1,6 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { Fragment, useEffect, useState } from 'react'
 
 export interface ShareDialogSubmitArgs {
@@ -101,6 +102,7 @@ export function ShareDialog({
         </div>
 
         <form
+          {...noAutofillFormProps}
           className="flex flex-col gap-4 px-4 py-4"
           onSubmit={(event) => {
             event.preventDefault()
@@ -180,15 +182,12 @@ export function ShareDialog({
                 Password
               </label>
               <input
+                {...noAutofillInputProps}
                 id="share-link-password"
                 type="text"
                 value={password}
                 disabled={!allowPassword}
                 onChange={(event) => setPassword(event.target.value)}
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck="false"
                 placeholder="Set a password"
                 className={`mt-2 w-full rounded border border-chalkboard-20/80 bg-chalkboard-10/90 px-2.5 py-2 text-sm text-chalkboard-100 placeholder:text-chalkboard-60 focus:outline-none focus-visible:outline-appForeground dark:border-chalkboard-80/70 dark:bg-chalkboard-90/80 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-40 ${
                   allowPassword ? '' : 'cursor-not-allowed'

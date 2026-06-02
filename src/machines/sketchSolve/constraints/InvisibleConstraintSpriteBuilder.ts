@@ -4,22 +4,22 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getResolvedTheme } from '@src/lib/theme'
 import { clamp, isArray } from '@src/lib/utils'
-import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import {
   CONSTRAINT_BADGE_SIZE_PX,
+  type ConstraintBadgeState,
   createConstraintBadgeSprite,
   getConstraintBadgeTexture,
-  type ConstraintBadgeState,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
+import { CONSTRAINT_TYPE } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  findInvisibleConstraintClusterIds,
   type ConstraintHoverPopup,
+  type InvisibleConstraintObject,
+  findInvisibleConstraintClusterIds,
   findInvisibleConstraintsForSegment,
   getInvisibleConstraintAnchor,
   isInvisibleConstraintObject,
-  type InvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 
 export type InvisibleConstraintDisplayState = {
   showNonVisualConstraints: boolean
@@ -67,7 +67,7 @@ export class InvisibleConstraintSpriteBuilder {
     hoveredId: number | null,
     displayState: InvisibleConstraintDisplayState
   ) {
-    if (!isInvisibleConstraintObject(obj)) {
+    if (!isInvisibleConstraintObject(obj, objects)) {
       group.visible = false
       return
     }

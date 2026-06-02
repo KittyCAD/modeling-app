@@ -1,16 +1,16 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { OutputFormat3d } from '@kittycad/lib'
+import type { OutputFormat3d, UserFeature } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
 import {
+  COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
+  SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
-  COOKIE_NAME_PREFIX,
-  SIDEBAR_BUTTON_SUFFIX,
 } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -175,12 +175,10 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    // kclManager is available on the window object.
-    //@ts-ignore this is in an entirely different context that tsc can't see.
+    const { kclManager } = window.app.singletons
     kclManager.editorView.dispatch({
       selection: {
-        //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: kclManager.editorView.docView.length,
+        anchor: kclManager.editorView.state.doc.length,
       },
       scrollIntoView: true,
     })
@@ -943,7 +941,8 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testInfo?: TestInfo
+  testInfo?: TestInfo,
+  userFeatures: readonly UserFeature[] = []
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -951,6 +950,17 @@ export async function setup(
     !isArray(TEST_SETTINGS.project)
       ? TEST_SETTINGS.project
       : undefined
+
+  await context.unroute('**/user/features')
+  await context.route('**/user/features', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        features: userFeatures.map((id) => ({ id })),
+      }),
+    })
+  })
 
   await page.addInitScript(
     async ({
@@ -1232,164 +1242,6 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
-}
-
-export async function clickElectronNativeMenuById(
-  tronApp: ElectronZoo,
-  menuId: string
-) {
-  await clickElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
-}
-
-export async function clickElectronNativeMenuByIdForPage(
-  tronApp: ElectronZoo,
-  page: Page,
-  menuId: string
-) {
-  const clickWasTriggered = await triggerElectronNativeMenuByIdForPage(
-    tronApp,
-    page,
-    menuId
-  )
-  expect(clickWasTriggered).toBe(true)
-}
-
-async function triggerElectronNativeMenuByIdForPage(
-  tronApp: ElectronZoo,
-  page: Page,
-  menuId: string
-) {
-  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
-
-  return tronApp.electron.evaluate(
-    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
-      type NativeMenuItemForTest = {
-        accelerator?: unknown
-        click?: (...args: unknown[]) => void
-        label?: unknown
-      }
-      type NativeMenuForTest = {
-        getMenuItemById: (
-          targetMenuId: string
-        ) => NativeMenuItemForTest | null | undefined
-      }
-      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-        return typeof value === 'object' && value !== null
-      }
-      function isNativeMenu(value: unknown): value is NativeMenuForTest {
-        return isObject(value) && typeof value.getMenuItemById === 'function'
-      }
-      function getWindowMenuFromTestProperties() {
-        const testProperties = Reflect.get(app, 'testProperty')
-        if (!isObject(testProperties)) return null
-
-        const nativeWindowMenus = testProperties.nativeWindowMenus
-        if (!(nativeWindowMenus instanceof Map)) return null
-
-        return nativeWindowMenus.get(browserWindowId)
-      }
-
-      const window = BrowserWindow.fromId(browserWindowId)
-      if (!window) return false
-
-      const menu =
-        process.platform === 'darwin'
-          ? Menu.getApplicationMenu()
-          : getWindowMenuFromTestProperties()
-      if (!isNativeMenu(menu)) return false
-
-      const menuItem = menu.getMenuItemById(menuId)
-      if (typeof menuItem?.click !== 'function') return false
-
-      menuItem.click(menuItem, window, {})
-      return true
-    },
-    { browserWindowId, menuId }
-  )
-}
-
-async function getElectronBrowserWindowId(tronApp: ElectronZoo, page: Page) {
-  const browserWindow = await tronApp.electron.browserWindow(page)
-  try {
-    return await browserWindow.evaluate((window) => window.id)
-  } finally {
-    await browserWindow.dispose()
-  }
-}
-
-export async function findElectronNativeMenuById(
-  tronApp: ElectronZoo,
-  menuId: string
-) {
-  await findElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
-}
-
-export async function findElectronNativeMenuByIdForPage(
-  tronApp: ElectronZoo,
-  page: Page,
-  menuId: string
-) {
-  const found = Boolean(
-    await getElectronNativeMenuItemByIdForPage(tronApp, page, menuId)
-  )
-  expect(found).toBe(true)
-}
-
-export async function getElectronNativeMenuItemByIdForPage(
-  tronApp: ElectronZoo,
-  page: Page,
-  menuId: string
-) {
-  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
-  return tronApp.electron.evaluate(
-    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
-      type NativeMenuItemForTest = {
-        accelerator?: unknown
-        label?: unknown
-      }
-      type NativeMenuForTest = {
-        getMenuItemById: (
-          targetMenuId: string
-        ) => NativeMenuItemForTest | null | undefined
-      }
-      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-        return typeof value === 'object' && value !== null
-      }
-      function isNativeMenu(value: unknown): value is NativeMenuForTest {
-        return isObject(value) && typeof value.getMenuItemById === 'function'
-      }
-      function getWindowMenuFromTestProperties() {
-        const testProperties = Reflect.get(app, 'testProperty')
-        if (!isObject(testProperties)) return null
-
-        const nativeWindowMenus = testProperties.nativeWindowMenus
-        if (!(nativeWindowMenus instanceof Map)) return null
-
-        return nativeWindowMenus.get(browserWindowId)
-      }
-
-      const window = BrowserWindow.fromId(browserWindowId)
-      if (!window) return null
-
-      const menu =
-        process.platform === 'darwin'
-          ? Menu.getApplicationMenu()
-          : getWindowMenuFromTestProperties()
-      if (!isNativeMenu(menu)) return null
-
-      const menuItem = menu.getMenuItemById(menuId)
-      if (!menuItem) return null
-
-      return {
-        accelerator:
-          typeof menuItem.accelerator === 'string'
-            ? menuItem.accelerator
-            : undefined,
-        label: typeof menuItem.label === 'string' ? menuItem.label : '',
-      }
-    },
-    { browserWindowId, menuId }
-  )
 }
 
 export async function openSettingsExpectText(page: Page, text: string) {

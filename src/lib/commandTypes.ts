@@ -13,12 +13,12 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { MachineManager } from '@src/lib/MachineManager'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -48,6 +48,21 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+type CommandArgumentRequired<C> =
+  | boolean
+  | ((
+      commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+      machineContext?: C
+    ) => boolean)
+type CommandArgumentStatusAndRequired<C> =
+  | {
+      status?: Extract<CommandStatus, 'experimental'>
+      required: false
+    }
+  | {
+      status?: undefined
+      required: CommandArgumentRequired<C>
+    }
 export type CommandSelectionType =
   | Artifact['type']
   | 'pathRegion'
@@ -87,6 +102,7 @@ export type Command<
   CommandSchema extends
     StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
+  id?: string
   name: CommandName
   groupId: T['id']
   needsReview: boolean
@@ -138,12 +154,8 @@ export type CommandArgumentConfig<
 > = {
   displayName?: string
   description?: string
-  required:
-    | boolean
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: C
-      ) => boolean)
+  status?: Extract<CommandStatus, 'experimental'>
+  required: CommandArgumentRequired<C>
   /** If `true`, arg is used as passed-through data, never for user input */
   hidden?:
     | boolean
@@ -162,15 +174,17 @@ export type CommandArgumentConfig<
   | {
       inputType: 'options'
       options:
-        | CommandArgumentOption<OutputType>[]
+        | ReadonlyArray<CommandArgumentOption<OutputType>>
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
               machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
-          ) => CommandArgumentOption<OutputType>[])
-      optionsFromContext?: (context: C) => CommandArgumentOption<OutputType>[]
+          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+      optionsFromContext?: (
+        context: C
+      ) => ReadonlyArray<CommandArgumentOption<OutputType>>
       defaultValue?:
         | OutputType
         | ((
@@ -319,7 +333,8 @@ export type CommandArgumentConfig<
         machineContext?: C
       }) => Promise<boolean | string>
     }
-)
+) &
+  CommandArgumentStatusAndRequired<C>
 
 export type CommandArgument<
   OutputType,
@@ -327,6 +342,7 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
+  status?: Extract<CommandStatus, 'experimental'>
   required:
     | boolean
     | ((
@@ -352,13 +368,13 @@ export type CommandArgument<
   | {
       inputType: Extract<CommandInputType, 'options'>
       options:
-        | CommandArgumentOption<OutputType>[]
+        | ReadonlyArray<CommandArgumentOption<OutputType>>
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: ContextFrom<T>
-          ) => CommandArgumentOption<OutputType>[])
+          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
       defaultValue?:
         | OutputType
         | ((
@@ -524,8 +540,8 @@ export type CommandArgumentWithName<
 }
 
 export type CommandArgumentOption<A> = {
-  name: string
-  isCurrent?: boolean
-  disabled?: boolean
-  value: A
+  readonly name: string
+  readonly isCurrent?: boolean
+  readonly disabled?: boolean
+  readonly value: A
 }

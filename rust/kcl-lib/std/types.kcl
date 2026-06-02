@@ -386,7 +386,7 @@ export type Axis2d
 export type Axis3d
 
 /// A GD&T annotation created by one of the [`gdt` functions](/docs/kcl-std/modules/std-gdt).
-@(impl = std_rust, experimental = true)
+@(impl = std_rust)
 export type GdtAnnotation
 
 export type mm = number(mm)

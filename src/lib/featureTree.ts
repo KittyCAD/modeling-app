@@ -1,30 +1,30 @@
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { KclManager } from '@src/lang/KclManager'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
-import type RustContext from '@src/lib/rustContext'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
 import {
-  deletionErrorMessage,
   deleteSelectionPromise,
+  deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { findOperationArtifact } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { err } from '@src/lib/trap'
-import { type CommandBarActorType } from '@src/machines/commandBarMachine'
-import {
-  type EnterEditFlowProps,
-  enterEditFlow,
-  getHideOpByArtifactId,
-  type HideOperation,
-} from '@src/lib/operations'
 import {
   codeRefFromRange,
-  getArtifactsMatchingPathToNode,
   getArtifactFromRange,
+  getArtifactsMatchingPathToNode,
 } from '@src/lang/std/artifactGraph'
-import type { ActorRefFrom } from 'xstate'
+import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import {
+  type EnterEditFlowProps,
+  type HideOperation,
+  enterEditFlow,
+  getHideOpByArtifactId,
+} from '@src/lib/operations'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import { type CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import { sourceRangeToUtf16 } from '@src/lang/errors'
+import type { ActorRefFrom } from 'xstate'
 
 export interface FeatureTreeVisibilityState {
   canToggleVisibility: boolean
@@ -51,7 +51,7 @@ export function resolveFeatureTreeVisibility(input: {
     }
   }
 
-  if (item.type === 'SketchSolve') {
+  if (item.type === 'GroupBegin' && item.group.type === 'SketchBlock') {
     const artifact = getArtifactFromRange(item.sourceRange, artifactGraph)
     if (artifact?.type !== 'sketchBlock') {
       return { canToggleVisibility: false }

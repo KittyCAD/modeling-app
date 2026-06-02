@@ -1,11 +1,8 @@
 import { join } from 'path'
+import path from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
-import path from 'path'
-
-import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import {
   TEST_SETTINGS_CORRUPTED,
@@ -20,8 +17,8 @@ import {
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
+import type { Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
@@ -57,9 +54,7 @@ test.describe(
 
         // Override beforeEach test setup
         // with corrupted settings
-        await tronApp.cleanProjectDir(
-          TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
-        )
+        await tronApp.cleanProjectDir(TEST_SETTINGS_CORRUPTED)
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -110,7 +105,7 @@ test.describe(
         })
 
         // Go to the hotkey for Command Palette.
-        const commandPalette = page.getByText('Toggle Command Palette')
+        const commandPalette = page.getByText('Open Command Palette')
         await commandPalette.scrollIntoViewIfNeeded()
 
         // The heading is above it and should be in view now.
@@ -634,7 +629,7 @@ test.describe(
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-        await scene.settled(cmdBar)
+        await scene.settled()
         await page.waitForTimeout(1000)
 
         // Selectors and constants
@@ -802,13 +797,13 @@ test.describe(
         )
         await expect(toastMessage).toBeVisible()
         await expect(toastMessage).not.toBeVisible()
-        await scene.settled(cmdBar)
+        await scene.settled()
       }
 
       await test.step('Load modeling view', async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Set backface color to blue', async () => {
@@ -887,7 +882,7 @@ fn cube`
             localStorage.setItem('persistCode', initialCode)
           }, initialCode)
           await homePage.goToModelingScene()
-          await scene.settled(cmdBar)
+          await scene.settled()
           await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
         })
 
@@ -898,7 +893,7 @@ fn cube`
         })
 
         await test.step('Check that they are enabled', async () => {
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.expectEditor.toContain(
             `@settings(experimentalFeatures = allow)
 ${initialCode}`,
@@ -913,7 +908,7 @@ ${initialCode}`,
         })
 
         await test.step('Check that they are disabled', async () => {
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.expectEditor.toContain(
             `@settings(experimentalFeatures = deny)
 ${initialCode}`,

@@ -26,6 +26,9 @@ use crate::parsing::ast::types::VariableKind;
 
 mod tokeniser;
 
+#[cfg(all(test, feature = "new-scanner"))]
+mod compat_tests;
+
 pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
 pub(crate) use tokeniser::RESERVED_WORDS;
 

@@ -1,10 +1,10 @@
-import { createEmptyAst } from '@src/editor/plugins/ast'
-import { File, KclManager } from '@src/lang/KclManager'
 import type { Diagnostic } from '@codemirror/lint'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { createEmptyAst } from '@src/editor/plugins/ast'
+import { File, KclManager } from '@src/lang/KclManager'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -356,7 +356,7 @@ describe('KclManager diagnostics', () => {
       sceneGraph: sceneGraphDelta.new_graph,
       execOutcome: sceneGraphDelta.exec_outcome,
       checkpointId,
-    } as Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>)
+    })
 
     kclManager.editorView.dispatch({
       changes: { from: 4, to: 4, insert: ' fresh' },
@@ -445,7 +445,7 @@ describe('KclManager diagnostics', () => {
       sceneGraph: sceneGraphDelta.new_graph,
       execOutcome: sceneGraphDelta.exec_outcome,
       checkpointId: 55,
-    } as Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>)
+    })
     await flushPromises()
 
     expect(kclManager.code).toBe('base stale newer')
@@ -503,6 +503,34 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('external edit')
   })
 
+  it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
+    const { kclManager } = createKclManagerTestHarness('')
+    const path = '/tmp/kcl-manager-watch-open-test.kcl'
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockResolvedValue('opened code')
+    const watchSpy = vi
+      .spyOn(File.ioImplementations, 'watch')
+      .mockImplementation(() => {})
+
+    const opened = await KclManager.fromFile(
+      new File(path, 101),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(opened).toBe(kclManager)
+    expect(kclManager.watching).toBe(true)
+    expect(watchSpy).toHaveBeenCalledWith(
+      path,
+      expect.any(String),
+      expect.any(Function)
+    )
+
+    readSpy.mockRestore()
+    watchSpy.mockRestore()
+  })
+
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
     const { kclManager } = createKclManagerTestHarness('local base')
     const deferredRead = createDeferred<string>()
@@ -542,11 +570,7 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager, 'writeToFile')
       .mockResolvedValue(undefined)
 
-    await kclManager.updateEditorWithAstAndWriteToFile(
-      createEmptyAst() as unknown as Parameters<
-        typeof kclManager.updateEditorWithAstAndWriteToFile
-      >[0]
-    )
+    await kclManager.updateEditorWithAstAndWriteToFile(createEmptyAst())
 
     expect(kclManager.code).toBe('preserve me')
     expect(writeToFileSpy).not.toHaveBeenCalled()

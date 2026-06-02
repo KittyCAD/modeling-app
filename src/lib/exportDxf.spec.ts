@@ -1,10 +1,10 @@
-import { beforeAll, describe, it, expect, vi, beforeEach } from 'vitest'
-import { exportSketchToDxf } from '@src/lib/exportDxf'
-import type { StdLibCallOp } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
 import type { WebSocketResponse } from '@kittycad/lib'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { exportSketchToDxf } from '@src/lib/exportDxf'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { err } from '@src/lib/trap'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { mockElectron } = vi.hoisted(() => {
   // Mock window.electron for desktop environment tests

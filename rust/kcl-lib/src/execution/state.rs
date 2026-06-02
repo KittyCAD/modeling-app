@@ -1,4 +1,3 @@
-#[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -17,27 +16,24 @@ use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
-#[cfg(feature = "artifact-graph")]
 use crate::NodePath;
+use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
 use crate::exec::DefaultPlanes;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactCommand;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactGraph;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
-#[cfg(feature = "artifact-graph")]
+use crate::execution::OperationCallbackArgs;
+use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
 use crate::execution::SketchVarId;
 use crate::execution::UnsolvedSegment;
@@ -46,10 +42,8 @@ use crate::execution::cad_op::Operation;
 use crate::execution::id_generator::IdGenerator;
 use crate::execution::memory::ProgramMemory;
 use crate::execution::memory::Stack;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::sketch_solve::Solved;
 use crate::execution::types::NumericType;
-#[cfg(feature = "artifact-graph")]
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -67,6 +61,7 @@ use crate::parsing::ast::types::TagNode;
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
+    pub(super) execution_callbacks: Option<std::sync::Arc<dyn crate::execution::ExecutionCallbacks>>,
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
 }
@@ -90,8 +85,31 @@ pub(super) struct GlobalState {
     /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
-    #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
+}
+
+impl GlobalState {
+    pub(crate) fn operations_by_module(&self) -> OperationsByModule {
+        let mut operations = OperationsByModule::default();
+        operations.insert(ModuleId::default(), self.root_module_artifacts.operations.clone());
+
+        for (module_id, module_info) in &self.module_infos {
+            match &module_info.repr {
+                ModuleRepr::Root => {}
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    operations.insert(*module_id, outcome.artifacts.operations.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, artifacts))) => {
+                    operations.insert(*module_id, artifacts.operations.clone());
+                }
+                ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+
+        operations
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -111,7 +129,6 @@ pub(crate) enum ConstraintState {
     Tangency(TangencyMode),
 }
 
-#[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
     /// Internal map of UUIDs to exec artifacts.  This needs to persist across
@@ -121,12 +138,7 @@ pub(super) struct ArtifactState {
     pub graph: ArtifactGraph,
 }
 
-#[cfg(not(feature = "artifact-graph"))]
-#[derive(Debug, Clone, Default)]
-pub(super) struct ArtifactState {}
-
 /// Artifact state for a single module.
-#[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
     /// Internal map of UUIDs to exec artifacts.
@@ -153,18 +165,13 @@ pub struct ModuleArtifactState {
     /// Map from artifact ID to object ID in the scene.
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
-    pub var_solutions: Vec<(SourceRange, Number)>,
-}
-
-#[cfg(not(feature = "artifact-graph"))]
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub struct ModuleArtifactState {
-    /// [`ObjectId`] generator.
-    pub object_id_generator: IncIdGenerator<usize>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
 }
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    /// The id of this module.
+    pub module_id: ModuleId,
     /// The id generator for this module.
     pub id_generator: IdGenerator,
     pub stack: Stack,
@@ -318,7 +325,6 @@ impl std::fmt::Display for ConsumedSolidOperation {
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
     pub sketch_id: Option<ObjectId>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<ezpz::Constraint>,
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
@@ -329,18 +335,19 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global: GlobalState::new(&exec_context.settings, Default::default()),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
     }
 
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
-        #[cfg(feature = "artifact-graph")]
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
-        #[cfg(not(feature = "artifact-graph"))]
-        let segment_ids_edited = Default::default();
+        let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
+        global.drag_anchors = mock_config.drag_anchors.clone();
         ExecState {
-            global: GlobalState::new(&exec_context.settings, segment_ids_edited),
+            execution_callbacks: exec_context.execution_callbacks.clone(),
+            global,
             mod_local: ModuleState::new(
                 ModulePath::Main,
                 ProgramMemory::new(),
@@ -355,6 +362,7 @@ impl ExecState {
         let global = GlobalState::new(&exec_context.settings, Default::default());
 
         *self = ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
             mod_local: ModuleState::new(
                 self.mod_local.path.clone(),
@@ -427,22 +435,17 @@ impl ExecState {
         ExecOutcome {
             variables: self.mod_local.variables(main_ref),
             filenames: self.global.filenames(),
-            #[cfg(feature = "artifact-graph")]
-            operations: self.global.root_module_artifacts.operations,
-            #[cfg(feature = "artifact-graph")]
+            operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects: self.global.root_module_artifacts.scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
 
-    #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+    #[cfg(feature = "snapshot-engine-responses")]
     pub(crate) fn take_root_module_responses(
         &mut self,
     ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
@@ -520,7 +523,6 @@ impl ExecState {
         map.insert(key, state);
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
         debug_assert!(
@@ -541,7 +543,6 @@ impl ExecState {
 
     /// Add a placeholder scene object. This is useful when we need to reserve
     /// an ID before we have all the information to create the full object.
-    #[cfg(feature = "artifact-graph")]
     pub fn add_placeholder_scene_object(
         &mut self,
         id: ObjectId,
@@ -558,7 +559,6 @@ impl ExecState {
     }
 
     /// Update a scene object. This is useful to replace a placeholder.
-    #[cfg(feature = "artifact-graph")]
     pub fn set_scene_object(&mut self, object: Object) {
         let id = object.id;
         let artifact_id = object.artifact_id;
@@ -569,7 +569,6 @@ impl ExecState {
             .insert(artifact_id, id);
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub fn scene_object_id_by_artifact_id(&self, artifact_id: ArtifactId) -> Option<ObjectId> {
         self.mod_local
             .artifacts
@@ -578,9 +577,16 @@ impl ExecState {
             .cloned()
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub fn segment_ids_edited_contains(&self, object_id: &ObjectId) -> bool {
         self.global.segment_ids_edited.contains(object_id)
+    }
+
+    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&crate::front::Point2d<crate::front::Number>> {
+        self.global
+            .drag_anchors
+            .iter()
+            .find(|anchor| &anchor.segment_id == object_id)
+            .map(|anchor| &anchor.target)
     }
 
     pub(super) fn is_in_sketch_block(&self) -> bool {
@@ -599,7 +605,6 @@ impl ExecState {
         self.mod_local.id_generator.next_uuid()
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub fn next_artifact_id(&mut self) -> ArtifactId {
         self.mod_local.id_generator.next_artifact_id()
     }
@@ -673,29 +678,31 @@ impl ExecState {
             .find_var_name_in_all_envs(|value| contains_solid_key(value, target_key))
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
-        #[cfg(feature = "artifact-graph")]
+        let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);
-        #[cfg(not(feature = "artifact-graph"))]
-        drop(op);
+        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
+            && let Some(callbacks) = &self.execution_callbacks
+        {
+            callbacks.on_operation(OperationCallbackArgs {
+                module_id: self.mod_local.module_id,
+                operation,
+                index,
+            });
+        }
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
         self.mod_local.artifacts.unprocessed_commands.push(command);
-        #[cfg(not(feature = "artifact-graph"))]
-        drop(command);
     }
 
     pub(super) fn next_module_id(&self) -> ModuleId {
@@ -745,12 +752,12 @@ impl ExecState {
         self.global.module_infos.get(&id)
     }
 
-    #[cfg(all(test, feature = "artifact-graph"))]
+    #[cfg(test)]
     pub(crate) fn modules(&self) -> &ModuleInfoMap {
         &self.global.module_infos
     }
 
-    #[cfg(all(test, feature = "artifact-graph"))]
+    #[cfg(test)]
     pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
         &self.global.root_module_artifacts
     }
@@ -810,17 +817,11 @@ impl ExecState {
             main_ref
                 .map(|main_ref| self.mod_local.variables(main_ref))
                 .unwrap_or_default(),
-            #[cfg(feature = "artifact-graph")]
-            self.global.root_module_artifacts.operations.clone(),
-            #[cfg(feature = "artifact-graph")]
+            self.global.operations_by_module(),
             Default::default(),
-            #[cfg(feature = "artifact-graph")]
             self.global.artifacts.graph.clone(),
-            #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.scene_objects.clone(),
-            #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.source_range_to_object.clone(),
-            #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.var_solutions.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
@@ -828,7 +829,6 @@ impl ExecState {
         )
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn build_program_lookup(
         &self,
         current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
@@ -836,7 +836,6 @@ impl ExecState {
         ProgramLookup::new(current, self.global.module_infos.clone())
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) async fn build_artifact_graph(
         &mut self,
         engine: &Arc<Box<dyn EngineManager>>,
@@ -900,15 +899,6 @@ impl ExecState {
         Ok(())
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub(crate) async fn build_artifact_graph(
-        &mut self,
-        _engine: &Arc<Box<dyn EngineManager>>,
-        _program: NodeRef<'_, crate::parsing::ast::types::Program>,
-    ) -> Result<(), KclError> {
-        Ok(())
-    }
-
     pub(crate) fn kcl_version(&self) -> KclVersion {
         self.mod_local.settings.kcl_version.parse().unwrap_or_default()
     }
@@ -939,8 +929,6 @@ impl FromStr for KclVersion {
 
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
-        #[cfg(not(feature = "artifact-graph"))]
-        drop(segment_ids_edited);
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -949,8 +937,8 @@ impl GlobalState {
             mod_loader: Default::default(),
             issues: Default::default(),
             id_to_source: Default::default(),
-            #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
+            drag_anchors: Vec::new(),
         };
 
         let root_id = ModuleId::default();
@@ -986,32 +974,24 @@ impl GlobalState {
 }
 
 impl ArtifactState {
-    #[cfg(feature = "artifact-graph")]
     pub fn cached_body_items(&self) -> usize {
         self.graph.item_count
     }
 
     pub(crate) fn clear(&mut self) {
-        #[cfg(feature = "artifact-graph")]
-        {
-            self.artifacts.clear();
-            self.graph.clear();
-        }
+        self.artifacts.clear();
+        self.graph.clear();
     }
 }
 
 impl ModuleArtifactState {
     pub(crate) fn clear(&mut self) {
-        #[cfg(feature = "artifact-graph")]
-        {
-            self.artifacts.clear();
-            self.unprocessed_commands.clear();
-            self.commands.clear();
-            self.operations.clear();
-        }
+        self.artifacts.clear();
+        self.unprocessed_commands.clear();
+        self.commands.clear();
+        self.operations.clear();
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
         self.scene_objects = scene_objects.to_vec();
         self.object_id_generator = IncIdGenerator::new(self.scene_objects.len());
@@ -1045,11 +1025,7 @@ impl ModuleArtifactState {
         }
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
-
     /// When self is a cached state, extend it with new state.
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
         self.artifacts.extend(other.artifacts);
         self.unprocessed_commands.extend(other.unprocessed_commands);
@@ -1068,7 +1044,6 @@ impl ModuleArtifactState {
     // Move unprocessed artifact commands so that we don't try to process them
     // again next time due to execution caching.  Returns a clone of the
     // commands that were moved.
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn process_commands(&mut self) -> Vec<ArtifactCommand> {
         let unprocessed = std::mem::take(&mut self.unprocessed_commands);
         let new_module_commands = unprocessed.clone();
@@ -1076,42 +1051,24 @@ impl ModuleArtifactState {
         new_module_commands
     }
 
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub(crate) fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
-        #[cfg(feature = "artifact-graph")]
-        {
-            debug_assert!(
-                id.0 < self.scene_objects.len(),
-                "Requested object ID {} but only have {} objects",
-                id.0,
-                self.scene_objects.len()
-            );
-            self.scene_objects.get(id.0)
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = id;
-            None
-        }
+        debug_assert!(
+            id.0 < self.scene_objects.len(),
+            "Requested object ID {} but only have {} objects",
+            id.0,
+            self.scene_objects.len()
+        );
+        self.scene_objects.get(id.0)
     }
 
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub(crate) fn scene_object_by_id_mut(&mut self, id: ObjectId) -> Option<&mut Object> {
-        #[cfg(feature = "artifact-graph")]
-        {
-            debug_assert!(
-                id.0 < self.scene_objects.len(),
-                "Requested object ID {} but only have {} objects",
-                id.0,
-                self.scene_objects.len()
-            );
-            self.scene_objects.get_mut(id.0)
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = id;
-            None
-        }
+        debug_assert!(
+            id.0 < self.scene_objects.len(),
+            "Requested object ID {} but only have {} objects",
+            id.0,
+            self.scene_objects.len()
+        );
+        self.scene_objects.get_mut(id.0)
     }
 }
 
@@ -1123,7 +1080,9 @@ impl ModuleState {
         sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
+        let state_module_id = module_id.unwrap_or_default();
         ModuleState {
+            module_id: state_module_id,
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,
@@ -1162,20 +1121,19 @@ impl SketchBlockState {
 
     /// Given a solve outcome, return the solutions for the sketch variables and
     /// enough information to update them in the source.
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn var_solutions(
         &self,
         solve_outcome: &Solved,
         solution_ty: NumericType,
-        range: SourceRange,
-    ) -> Result<Vec<(SourceRange, Number)>, KclError> {
+        sketch_block_range: SourceRange,
+    ) -> Result<Vec<(SourceRange, Option<NodePath>, Number)>, KclError> {
         self.sketch_vars
             .iter()
             .map(|v| {
                 let Some(sketch_var) = v.as_sketch_var() else {
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         "Expected sketch variable".to_owned(),
-                        vec![range],
+                        vec![sketch_block_range],
                     )));
                 };
                 let var_index = sketch_var.id.0;
@@ -1192,14 +1150,14 @@ impl SketchBlockState {
                     units: solution_ty.try_into().map_err(|_| {
                         KclError::new_internal(KclErrorDetails::new(
                             "Failed to convert numeric type to units".to_owned(),
-                            vec![range],
+                            vec![sketch_block_range],
                         ))
                     })?,
                 };
                 let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
                     return Ok(None);
                 };
-                Ok(Some((source_range, solved_value)))
+                Ok(Some((source_range, sketch_var.node_path.clone(), solved_value)))
             })
             .filter_map(Result::transpose)
             .collect::<Result<Vec<_>, KclError>>()
@@ -1285,7 +1243,7 @@ impl MetaSettings {
     }
 }
 
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 mod tests {
     use uuid::Uuid;
 
