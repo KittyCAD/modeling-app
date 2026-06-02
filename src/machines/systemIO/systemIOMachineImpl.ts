@@ -9,7 +9,6 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  statIsDirectory,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
 import {
@@ -103,6 +102,20 @@ export function shouldSendProjectFolderReadProgress(
   folders: SystemIOContext['folders']
 ) {
   return !folders?.length
+}
+
+type ProjectDirectoryEntry = {
+  name: string
+  path: string
+  modified: number
+}
+
+export function sortProjectDirectoryEntriesByModifiedDesc(
+  entries: ProjectDirectoryEntry[]
+) {
+  return entries.toSorted(
+    (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
+  )
 }
 
 const prepareBulkProjectWrite = async ({
@@ -401,36 +414,41 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
         await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = (await fsZds.readdir(projectDirectoryPath)).toSorted(
-          (a, b) => a.localeCompare(b)
-        )
+        const entries: ProjectDirectoryEntry[] = []
+        for (const entry of await fsZds.readdir(projectDirectoryPath)) {
+          if (entry.startsWith('.')) {
+            continue
+          }
+
+          const projectPath = fsZds.join(projectDirectoryPath, entry)
+          const stat = await fsZds.stat(projectPath)
+          if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
+            continue
+          }
+
+          entries.push({
+            name: entry,
+            path: projectPath,
+            modified: stat.mtimeMs,
+          })
+        }
         const { value: canReadWriteProjectDirectory } =
           await canReadWriteDirectory(projectDirectoryPath)
         const cloudProjectMetadataByPath =
           await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
 
-        for (const entry of entries) {
+        for (const entry of sortProjectDirectoryEntriesByModifiedDesc(
+          entries
+        )) {
           if (signal.aborted) {
             return projects
           }
-          // Skip directories that start with a dot
-          if (entry.startsWith('.')) {
-            continue
-          }
-          const projectPath = fsZds.join(projectDirectoryPath, entry)
-
-          // if it's not a directory ignore.
-          // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await statIsDirectory(projectPath)
-          if (!isDirectory) {
-            continue
-          }
           const project: Project = await getProjectInfo(
-            projectPath,
+            entry.path,
             await context.wasmInstancePromise
           )
           project.cloudProjectId ??= cloudProjectMetadataByPath.get(
-            projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+            entry.path.replaceAll('\\', '/').replace(/\/+$/g, '')
           )?.remoteProjectId
           if (
             project.kcl_file_count === 0 &&

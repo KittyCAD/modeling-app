@@ -7,6 +7,7 @@ import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   getCloudProjectFolderRenameName,
   shouldSendProjectFolderReadProgress,
+  sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -85,6 +86,16 @@ describe('systemIOMachine - XState', () => {
       expect(
         shouldSendProjectFolderReadProgress([mockProject('local-project')])
       ).toBe(false)
+    })
+
+    it('orders folder read progress by newest project directory first', () => {
+      expect(
+        sortProjectDirectoryEntriesByModifiedDesc([
+          { name: 'alpha', path: '/projects/alpha', modified: 10 },
+          { name: 'charlie', path: '/projects/charlie', modified: 30 },
+          { name: 'bravo', path: '/projects/bravo', modified: 30 },
+        ]).map((entry) => entry.name)
+      ).toEqual(['bravo', 'charlie', 'alpha'])
     })
   })
 
