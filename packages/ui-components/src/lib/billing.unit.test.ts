@@ -1,13 +1,13 @@
 import {
+  Client,
   type CustomerBalance,
   type PaymentMethod,
   type UserOrgInfo,
   type ZooProductSubscriptions,
-  Client,
 } from '@kittycad/lib'
+import { BillingError, getBillingInfo } from '@kittycad/ui-components'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { BillingError, getBillingInfo } from '@kittycad/ui-components'
 import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
 
 const client = new Client({ token: 'does-not-matter' })

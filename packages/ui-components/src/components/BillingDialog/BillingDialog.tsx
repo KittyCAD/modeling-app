@@ -75,8 +75,7 @@ export function BillingDialog(props: BillingDialogProps) {
             </div>
             <div className="kc-billing-dialog__overdue">
               To continue using Zoo's services, you must clear an unpaid total
-              of{' '}
-              <span className="kc-billing-weight-bold">${totalDue}</span>.
+              of <span className="kc-billing-weight-bold">${totalDue}</span>.
             </div>
           </div>
           <a

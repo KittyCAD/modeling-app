@@ -134,9 +134,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
       data-testid="billing-remaining"
       className={classNames(
         'kc-billing-remaining',
-        isFlex
-          ? 'kc-billing-remaining--stretch'
-          : 'kc-billing-remaining--fixed'
+        isFlex ? 'kc-billing-remaining--stretch' : 'kc-billing-remaining--fixed'
       )}
     >
       <div className="kc-billing-remaining__row">
@@ -151,9 +149,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
                 <BillingBalance amount={props.balance} />
               </div>
             ) : (
-              showSpinner && (
-                <Spinner className="kc-billing-spinner--inline" />
-              )
+              showSpinner && <Spinner className="kc-billing-spinner--inline" />
             ))}
           {props.balance !== Number.POSITIVE_INFINITY && (
             <div className="kc-billing-remaining__meter">
