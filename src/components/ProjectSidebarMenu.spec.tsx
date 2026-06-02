@@ -1,14 +1,20 @@
 import { render, screen } from '@testing-library/react'
+import type { ContextType } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
+import { AppContext } from '@src/lib/boot'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 
 vi.mock('@src/hooks/useAbsoluteFilePath', () => ({
   useAbsoluteFilePath: () => undefined,
 }))
 
-import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+import ProjectSidebarMenu, {
+  canNavigateHome,
+} from '@src/components/ProjectSidebarMenu'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -45,7 +51,33 @@ const nestedFile = {
   children: null,
 } satisfies FileEntry
 
+function appContextWithFeatures(enabledFeatureIds: ReadonlySet<string>) {
+  return {
+    singletons: {
+      kclManager: {
+        switchedFiles: false,
+      },
+    },
+    userFeatures: {
+      useHas: (featureFlagId: string, defaultValue: boolean) =>
+        enabledFeatureIds.has(featureFlagId) ? true : defaultValue,
+    },
+  } as unknown as ContextType<typeof AppContext>
+}
+
 describe('ProjectSidebarMenu tests', () => {
+  test('enables home navigation for desktop or cloud-backed web', () => {
+    expect(
+      canNavigateHome({ isDesktopApp: true, hasOpfsCloudFeature: false })
+    ).toBe(true)
+    expect(
+      canNavigateHome({ isDesktopApp: false, hasOpfsCloudFeature: true })
+    ).toBe(true)
+    expect(
+      canNavigateHome({ isDesktopApp: false, hasOpfsCloudFeature: false })
+    ).toBe(false)
+  })
+
   test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
@@ -56,6 +88,23 @@ describe('ProjectSidebarMenu tests', () => {
     expect(screen.getByTestId('project-name')).toHaveTextContent(
       projectWellFormed.name
     )
+  })
+
+  test('Links the logo to Home on web when OPFS cloud is enabled', () => {
+    render(
+      <AppContext.Provider
+        value={appContextWithFeatures(new Set([OPFS_CLOUD_FEATURE_FLAG]))}
+      >
+        <BrowserRouter>
+          <ProjectSidebarMenu project={projectWellFormed} />
+        </BrowserRouter>
+      </AppContext.Provider>
+    )
+
+    const logoLink = screen.getByTestId('app-logo').closest('a')
+
+    expect(logoLink).toHaveAttribute('href', PATHS.HOME)
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Go home')
   })
 
   test('Shows the full project-relative file path in the breadcrumb', () => {
