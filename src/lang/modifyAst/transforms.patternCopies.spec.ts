@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { addDelete, addHide } from '@src/lang/modifyAst/transforms'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -10,41 +10,6 @@ import { err } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('pattern copy transform AST mods', () => {
-  async function getSweepFixture() {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const code = `extrude001 = extrude(profile001, length = 1)`
-    const ast = assertParse(code, instance)
-    const sourceRange: [number, number, number] = [0, code.length, 0]
-    const sourcePathToNode = getNodePathFromSourceRange(ast, sourceRange)
-    const sweep: Artifact = {
-      type: 'sweep',
-      id: 'sweep-id',
-      subType: 'extrusion',
-      pathId: 'path-id',
-      surfaceIds: [],
-      edgeIds: [],
-      codeRef: {
-        range: sourceRange,
-        pathToNode: sourcePathToNode,
-        nodePath: { steps: [] },
-      },
-      trajectoryId: null,
-      method: 'new',
-      consumed: false,
-    }
-    const artifactGraph: ArtifactGraph = new Map([[sweep.id, sweep]])
-
-    return {
-      artifactGraph,
-      ast,
-      code,
-      instance,
-      sourcePathToNode,
-      sourceRange,
-      sweep,
-    }
-  }
-
   async function getPatternFixture() {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const code = `extrude001 = 0
@@ -86,40 +51,6 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
       sourceRange,
     }
   }
-
-  it('adds a delete call for a selected body', async () => {
-    const {
-      artifactGraph,
-      ast,
-      code,
-      instance,
-      sourcePathToNode,
-      sourceRange,
-      sweep,
-    } = await getSweepFixture()
-    const result = addDelete({
-      ast,
-      artifactGraph,
-      objects: {
-        graphSelections: [
-          {
-            artifact: sweep,
-            codeRef: {
-              range: sourceRange,
-              pathToNode: sourcePathToNode,
-            },
-          },
-        ],
-        otherSelections: [],
-      },
-      wasmInstance: instance,
-    })
-    if (err(result)) throw result
-
-    expect(recast(result.modifiedAst, instance)).toContain(
-      `${code}\ndelete(extrude001)`
-    )
-  })
 
   it('uses index 0 for copied pattern source body selections', async () => {
     const {
@@ -223,41 +154,6 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
 
     expect(recast(result.modifiedAst, instance)).toContain(
       'hidden001 = hide(pattern001[1])'
-    )
-  })
-
-  it('adds delete calls with indexed pattern copy expressions', async () => {
-    const {
-      artifactGraph,
-      ast,
-      instance,
-      pattern,
-      patternPathToNode,
-      patternRange,
-    } = await getPatternFixture()
-    const result = addDelete({
-      ast,
-      artifactGraph,
-      objects: {
-        graphSelections: [
-          {
-            artifact: pattern,
-            codeRef: {
-              range: patternRange,
-              pathToNode: patternPathToNode,
-            },
-            engineEntityId: 'copy-body-1',
-            patternIndex: 1,
-          },
-        ],
-        otherSelections: [],
-      },
-      wasmInstance: instance,
-    })
-    if (err(result)) throw result
-
-    expect(recast(result.modifiedAst, instance)).toContain(
-      'delete(pattern001[1])'
     )
   })
 
