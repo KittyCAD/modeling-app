@@ -122,6 +122,8 @@ const MAX_NESTING_DEPTH: u16 = 512;
 /// space.
 const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
 const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
+const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
+    "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
@@ -3269,11 +3271,7 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
         let _ = opt(whitespace).parse_next(i);
         if let Ok(eq) = equals(i) {
             return Err(ErrMode::Cut(
-                CompilationIssue::fatal(
-                    eq.as_source_range(),
-                    "The = operator doesn't work in sketch blocks, because there's no variable assignment. Did you mean == instead?",
-                )
-                .into(),
+                CompilationIssue::fatal(eq.as_source_range(), ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK).into(),
             ));
         }
         i.reset(&checkpoint);
@@ -6568,10 +6566,7 @@ bar = 1
             .as_ref()
             .expect("Found an error, but there was no cause. Add a cause.");
         assert_eq!(cause.source_range.start(), expected_src_start);
-        assert_eq!(
-            cause.message,
-            "The = operator doesn't work in sketch blocks, because there's no variable assignment. Did you mean == instead?"
-        );
+        assert_eq!(cause.message, ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK,);
     }
 
     #[test]
