@@ -69,7 +69,11 @@ const ProjectSidebarMenu = ({
         )}
       </div>
       {enableMenu ? (
-        <ProjectMenuPopover project={project} file={file} />
+        <ProjectMenuPopover
+          project={project}
+          file={file}
+          homeNavigationEnabled={homeNavigationEnabled}
+        />
       ) : (
         <span
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
@@ -129,19 +133,13 @@ function AppLogoLink({
 function ProjectMenuPopover({
   project,
   file,
+  homeNavigationEnabled,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  homeNavigationEnabled: boolean
 }) {
-  const { machineManager, commands, settings, userFeatures } = useApp()
-  const hasOpfsCloudFeature = userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
-  const homeNavigationEnabled = canNavigateHome({
-    isDesktopApp: isDesktop(),
-    hasOpfsCloudFeature,
-  })
+  const { machineManager, commands, settings } = useApp()
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()

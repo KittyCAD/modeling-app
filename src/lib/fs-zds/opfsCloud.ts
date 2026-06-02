@@ -9,6 +9,7 @@ import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import {
+  getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
@@ -199,14 +200,11 @@ function isOpfsCloudProjectDirectoryPath(targetPath: string) {
   return normalized.endsWith(`/${PROJECT_FOLDER}`)
 }
 
-function getDefaultProjectDirectoryPath() {
-  return localFs.join(`${localFs.sep}documents`, PROJECT_FOLDER)
-}
-
 function getConfiguredProjectDirectoryPath() {
-  return config.projectDirectoryPath?.trim()
-    ? normalizePathForSync(config.projectDirectoryPath)
-    : getDefaultProjectDirectoryPath()
+  return normalizePathForSync(
+    config.projectDirectoryPath?.trim() ||
+      localFs.join(`${localFs.sep}documents`, PROJECT_FOLDER)
+  )
 }
 
 function projectNameFromPath(projectPath: string) {
@@ -221,6 +219,15 @@ function isProjectPathInDirectory(
     localFs.dirname(normalizePathForSync(projectPath)) ===
     normalizePathForSync(projectDirectory)
   )
+}
+
+function projectPathInDirectory(
+  metadata: ProjectMetadata,
+  projectDirectory: string
+) {
+  return isProjectPathInDirectory(metadata.localProjectPath, projectDirectory)
+    ? metadata.localProjectPath
+    : undefined
 }
 
 function isInternalOpfsPath(targetPath: string) {
@@ -495,30 +502,9 @@ function withProjectTitleInArchiveFiles(
     return files
   }
 
-  const nextFiles = [...files]
-  const projectTomlFileIndex = nextFiles.findIndex(
-    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  return withProjectTomlArchiveFile(files, (contents) =>
+    setProjectTitleInProjectTomlContents(contents, title)
   )
-  const existingProjectToml =
-    projectTomlFileIndex === -1
-      ? ''
-      : new TextDecoder().decode(nextFiles[projectTomlFileIndex].data)
-  const nextProjectToml = setProjectTitleInProjectTomlContents(
-    existingProjectToml,
-    title
-  )
-  const nextProjectTomlFile = {
-    relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new TextEncoder().encode(nextProjectToml),
-  }
-
-  if (projectTomlFileIndex === -1) {
-    nextFiles.push(nextProjectTomlFile)
-  } else {
-    nextFiles[projectTomlFileIndex] = nextProjectTomlFile
-  }
-
-  return nextFiles
 }
 
 function withProjectCloudProjectIdInArchiveFiles(
@@ -530,6 +516,15 @@ function withProjectCloudProjectIdInArchiveFiles(
     return files
   }
 
+  return withProjectTomlArchiveFile(files, (contents) =>
+    setCloudProjectIdInProjectTomlContents(contents, environmentName, projectId)
+  )
+}
+
+function withProjectTomlArchiveFile(
+  files: ProjectArchiveFile[],
+  update: (contents: string) => string
+) {
   const nextFiles = [...files]
   const projectTomlFileIndex = nextFiles.findIndex(
     (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
@@ -538,14 +533,9 @@ function withProjectCloudProjectIdInArchiveFiles(
     projectTomlFileIndex === -1
       ? ''
       : new TextDecoder().decode(nextFiles[projectTomlFileIndex].data)
-  const nextProjectToml = setCloudProjectIdInProjectTomlContents(
-    existingProjectToml,
-    environmentName,
-    projectId
-  )
   const nextProjectTomlFile = {
     relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new TextEncoder().encode(nextProjectToml),
+    data: new TextEncoder().encode(update(existingProjectToml)),
   }
 
   if (projectTomlFileIndex === -1) {
@@ -569,24 +559,11 @@ function withRemoteProjectMetadataInArchiveFiles(
 }
 
 async function writeLocalProjectTitle(projectPath: string, title: string) {
-  const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-  let existingProjectToml = ''
-  if (await exists(projectTomlPath)) {
-    existingProjectToml = await localFs.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
-  }
-  if (getProjectTitleFromProjectTomlContents(existingProjectToml) === title) {
-    return false
-  }
-
-  await localFs.writeFile(
-    projectTomlPath,
-    new TextEncoder().encode(
-      setProjectTitleInProjectTomlContents(existingProjectToml, title)
-    )
+  return updateLocalProjectToml(projectPath, (projectToml) =>
+    getProjectTitleFromProjectTomlContents(projectToml) === title
+      ? projectToml
+      : setProjectTitleInProjectTomlContents(projectToml, title)
   )
-  return true
 }
 
 async function writeLocalProjectCloudProjectId(
@@ -598,27 +575,38 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
+  return updateLocalProjectToml(projectPath, (projectToml) =>
+    getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
+    projectId
+      ? projectToml
+      : setCloudProjectIdInProjectTomlContents(
+          projectToml,
+          environmentName,
+          projectId
+        )
+  )
+}
+
+async function updateLocalProjectToml(
+  projectPath: string,
+  update: (contents: string) => string
+) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-  let existingProjectToml = ''
+  let projectToml = ''
   if (await exists(projectTomlPath)) {
-    existingProjectToml = await localFs.readFile(projectTomlPath, {
+    projectToml = await localFs.readFile(projectTomlPath, {
       encoding: 'utf-8',
     })
   }
-  const existingProjectId = await readProjectTomlCloudProjectId(projectPath)
-  if (existingProjectId === projectId) {
+
+  const nextProjectToml = update(projectToml)
+  if (nextProjectToml === projectToml) {
     return false
   }
 
   await localFs.writeFile(
     projectTomlPath,
-    new TextEncoder().encode(
-      setCloudProjectIdInProjectTomlContents(
-        existingProjectToml,
-        environmentName,
-        projectId
-      )
-    )
+    new TextEncoder().encode(nextProjectToml)
   )
   return true
 }
@@ -845,10 +833,6 @@ async function refreshPendingCount() {
   }
 }
 
-function emptyManifest(): ProjectManifest {
-  return { files: {} }
-}
-
 export function projectManifestsEqual(
   a: ProjectManifest | undefined,
   b: ProjectManifest | undefined
@@ -877,7 +861,7 @@ export function projectManifestsEqual(
 }
 
 async function projectManifestFromFiles(files: ProjectArchiveFile[]) {
-  const manifest = emptyManifest()
+  const manifest: ProjectManifest = { files: {} }
   for (const file of files) {
     manifest.files[normalizeRelativePath(file.relativePath)] = {
       byteSize: file.data.byteLength,
@@ -1203,13 +1187,13 @@ export async function ensureOpfsCloudProjectLocallySynced(
     (entry) => entry.remoteProjectId === projectId && !entry.tombstone
   )
   const projectDirectory = getConfiguredProjectDirectoryPath()
+  const knownLocalProjectPath = knownLocalMetadata
+    ? projectPathInDirectory(knownLocalMetadata, projectDirectory)
+    : undefined
   if (
     knownLocalMetadata &&
-    isProjectPathInDirectory(
-      knownLocalMetadata.localProjectPath,
-      projectDirectory
-    ) &&
-    (await exists(knownLocalMetadata.localProjectPath))
+    knownLocalProjectPath &&
+    (await exists(knownLocalProjectPath))
   ) {
     scheduleSync(0)
     return localProjectFromMetadata(knownLocalMetadata)
@@ -1244,13 +1228,7 @@ export async function ensureOpfsCloudProjectLocallySynced(
   return cloneRemoteProjectToLocal(
     remoteProject,
     projectDirectory,
-    knownLocalMetadata &&
-      isProjectPathInDirectory(
-        knownLocalMetadata.localProjectPath,
-        projectDirectory
-      )
-      ? knownLocalMetadata.localProjectPath
-      : undefined
+    knownLocalProjectPath
   )
 }
 
@@ -1649,22 +1627,18 @@ async function syncRemoteIndex() {
       (entry) => entry.remoteProjectId === remoteProject.id
     )
     if (knownLocalMetadata) {
+      const knownLocalProjectPath = projectPathInDirectory(
+        knownLocalMetadata,
+        projectDirectory
+      )
       const knownLocalPathIsCurrent =
-        isProjectPathInDirectory(
-          knownLocalMetadata.localProjectPath,
-          projectDirectory
-        ) && (await exists(knownLocalMetadata.localProjectPath))
+        knownLocalProjectPath && (await exists(knownLocalProjectPath))
       if (!knownLocalPathIsCurrent) {
         await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
         await cloneRemoteProjectToLocal(
           remoteProject,
           projectDirectory,
-          isProjectPathInDirectory(
-            knownLocalMetadata.localProjectPath,
-            projectDirectory
-          )
-            ? knownLocalMetadata.localProjectPath
-            : undefined
+          knownLocalProjectPath
         )
         continue
       }

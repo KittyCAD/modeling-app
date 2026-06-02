@@ -46,41 +46,24 @@ function waitForActorSnapshot<TSnapshot>(
   actor: SubscribableActor<TSnapshot>,
   predicate: (snapshot: TSnapshot) => boolean,
   timeoutMs: number
-): Promise<TSnapshot> {
-  const currentSnapshot = actor.getSnapshot()
-  if (predicate(currentSnapshot)) {
-    return Promise.resolve(currentSnapshot)
+) {
+  if (predicate(actor.getSnapshot())) {
+    return Promise.resolve()
   }
 
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     let subscription: { unsubscribe: () => void } | undefined
-    const timeoutRef: {
-      current?: number
-    } = {}
-    let settled = false
-    const finish = (snapshot: TSnapshot) => {
-      if (settled) {
-        return
-      }
-      settled = true
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current)
-      }
+    const finish = () => {
+      window.clearTimeout(timeout)
       subscription?.unsubscribe()
-      resolve(snapshot)
+      resolve()
     }
-    timeoutRef.current = window.setTimeout(() => {
-      finish(actor.getSnapshot())
-    }, timeoutMs)
-
+    const timeout = window.setTimeout(finish, timeoutMs)
     subscription = actor.subscribe((snapshot) => {
       if (predicate(snapshot)) {
-        finish(snapshot)
+        finish()
       }
     })
-    if (settled) {
-      subscription.unsubscribe()
-    }
   })
 }
 
