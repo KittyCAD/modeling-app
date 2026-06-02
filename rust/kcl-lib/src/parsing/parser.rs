@@ -3264,6 +3264,20 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
+    if ParseContext::is_in_sketch_block() {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+        if let Ok(eq) = equals(i) {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(
+                    eq.as_source_range(),
+                    "The = operator doesn't work in sketch blocks, because there's no variable assignment. Did you mean == instead?",
+                )
+                .into(),
+            ));
+        }
+        i.reset(&checkpoint);
+    }
     let start = val.start();
     let end = val.end();
     let module_id = val.module_id();
@@ -6534,6 +6548,30 @@ bar = 1
             .expect("Found an error, but there was no cause. Add a cause.");
         assert_eq!(cause.message, "Missing comma between arguments, try adding a comma in",);
         assert_eq!(cause.source_range.start() - 1, expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_operation_undefined_in_sketch_block() {
+        let program_source = "sketch(on = XY) {
+  line001 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1mm])
+  distance([line001.start, line001.end]) = 5mm
+}";
+        let expected_src_start = program_source.find("= 5mm").unwrap();
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program
+            .parse(tokens.as_slice())
+            .expect_err("Program succeeded, but it should have failed");
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.source_range.start(), expected_src_start);
+        assert_eq!(
+            cause.message,
+            "The = operator doesn't work in sketch blocks, because there's no variable assignment. Did you mean == instead?"
+        );
     }
 
     #[test]
