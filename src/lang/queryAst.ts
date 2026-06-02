@@ -1423,7 +1423,8 @@ function getSweepOutputExprFromSelection(
   const siblingSweeps = [...artifactGraph.values()].filter(
     (candidate): candidate is Artifact & { type: 'sweep' } =>
       candidate.type === 'sweep' &&
-      sourceRangesEqual(candidate.codeRef.range, artifact.codeRef.range)
+      sourceRangeContains(candidate.codeRef.range, artifact.codeRef.range) &&
+      sourceRangeContains(artifact.codeRef.range, candidate.codeRef.range)
   )
   if (siblingSweeps.length <= 1) {
     return null
@@ -1507,10 +1508,6 @@ function outputExprKey(expr: Expr): string {
   }
 
   return JSON.stringify(expr)
-}
-
-function sourceRangesEqual(a: SourceRange, b: SourceRange): boolean {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
 }
 
 function hasLaterMatchingArtifact(
