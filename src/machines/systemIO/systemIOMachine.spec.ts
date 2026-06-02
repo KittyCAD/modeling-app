@@ -177,6 +177,47 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('should accept project creation while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.createProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: 'local-first-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.creatingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
       it('should update folders incrementally while reading folders', async () => {
         const actor = createActor(
           systemIOMachine.provide({
@@ -339,6 +380,51 @@ describe('systemIOMachine - XState', () => {
             state.matches(
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
             )
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project creation while checking read/write access', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+              [SystemIOMachineActors.createProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: 'public/kcl-samples',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: 'local-first-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.creatingProject)
           )
         } finally {
           actor.stop()
