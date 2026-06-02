@@ -48,6 +48,210 @@ async function projectTitles(page: Page) {
 }
 
 test(
+  'streams remote-only projects into empty OPFS and persists successful clones',
+  { tag: ['@web'] },
+  async ({ context, page }, testInfo) => {
+    const remoteProjects: CloudProject[] = [
+      {
+        id: 'remote-empty-one',
+        title: 'Remote empty one',
+        revision: 'remote-empty-one-rev-1',
+        files: {
+          'main.kcl': 'remoteEmptyOne = 1\n',
+          'project.toml': projectToml('Remote empty one'),
+        },
+      },
+      {
+        id: 'remote-empty-broken',
+        title: 'Remote empty broken',
+        revision: 'remote-empty-broken-rev-1',
+        files: {
+          'main.kcl': 'broken = 1\n',
+          'project.toml': projectToml('Remote empty broken'),
+        },
+      },
+      {
+        id: 'remote-empty-two',
+        title: 'Remote empty two',
+        revision: 'remote-empty-two-rev-1',
+        files: {
+          'main.kcl': 'remoteEmptyTwo = 1\n',
+          'project.toml': projectToml('Remote empty two'),
+        },
+      },
+      {
+        id: 'remote-empty-three',
+        title: 'Remote empty three',
+        revision: 'remote-empty-three-rev-1',
+        files: {
+          'main.kcl': 'remoteEmptyThree = 1\n',
+          'project.toml': projectToml('Remote empty three'),
+        },
+      },
+    ]
+    const remoteArchives = new Map<string, Buffer>(
+      await Promise.all(
+        remoteProjects.map(
+          async (project) =>
+            [project.id, await zipProject(project.files)] as const
+        )
+      )
+    )
+
+    let releaseRemoteList = false
+    const remoteListWaiters: Array<() => void> = []
+    const waitForRemoteListRelease = () =>
+      releaseRemoteList
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => remoteListWaiters.push(resolve))
+    const releaseCloudProjects = () => {
+      releaseRemoteList = true
+      for (const resolve of remoteListWaiters.splice(0)) {
+        resolve()
+      }
+    }
+    const holdCloudProjects = () => {
+      releaseRemoteList = false
+    }
+
+    const apiCalls = {
+      remoteListResponses: 0,
+    }
+
+    await context.route('**/user/projects**', async (route) => {
+      const request = route.request()
+      const url = new URL(request.url())
+      const pathname = url.pathname
+      const projectId = pathname.match(/\/user\/projects\/([^/]+)/)?.[1]
+
+      if (pathname === '/user/projects' && request.method() === 'GET') {
+        await waitForRemoteListRelease()
+        apiCalls.remoteListResponses += 1
+        await route
+          .fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(
+              remoteProjects.map(({ id, title, revision }) => ({
+                id,
+                title,
+                revision,
+              }))
+            ),
+          })
+          .catch(() => undefined)
+        return
+      }
+
+      if (
+        projectId === 'remote-empty-broken' &&
+        pathname.endsWith('/download')
+      ) {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'broken archive' }),
+        })
+        return
+      }
+
+      if (projectId && pathname.endsWith('/download')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/zip',
+          body: remoteArchives.get(projectId),
+        })
+        return
+      }
+
+      const remoteProject = remoteProjects.find(
+        (project) => project.id === projectId
+      )
+      if (remoteProject && request.method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: remoteProject.id,
+            title: remoteProject.title,
+            revision: remoteProject.revision,
+          }),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'not found' }),
+      })
+    })
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expect(page.getByTestId('projects-none')).toBeVisible()
+
+    releaseCloudProjects()
+
+    await expect
+      .poll(() => projectTitles(page), { timeout: 20_000 })
+      .toEqual(
+        expect.arrayContaining([
+          'Remote empty one',
+          'Remote empty two',
+          'Remote empty three',
+        ])
+      )
+
+    const localFiles = await page.evaluate(
+      async ({ projectDirectory }) => {
+        const readText = (path: string) =>
+          window.fsZds.readFile(path, { encoding: 'utf-8' })
+        return {
+          remoteOne: await readText(
+            `${projectDirectory}/Remote empty one/main.kcl`
+          ),
+          remoteOneToml: await readText(
+            `${projectDirectory}/Remote empty one/project.toml`
+          ),
+          remoteTwo: await readText(
+            `${projectDirectory}/Remote empty two/main.kcl`
+          ),
+          remoteThree: await readText(
+            `${projectDirectory}/Remote empty three/main.kcl`
+          ),
+        }
+      },
+      { projectDirectory: PROJECT_DIR }
+    )
+
+    expect(localFiles.remoteOne).toContain('remoteEmptyOne = 1')
+    expect(localFiles.remoteOneToml).toContain(
+      'project_id = "remote-empty-one"'
+    )
+    expect(localFiles.remoteTwo).toContain('remoteEmptyTwo = 1')
+    expect(localFiles.remoteThree).toContain('remoteEmptyThree = 1')
+
+    const remoteListResponsesAfterHydration = apiCalls.remoteListResponses
+    holdCloudProjects()
+
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expect
+      .poll(() => projectTitles(page))
+      .toEqual(
+        expect.arrayContaining([
+          'Remote empty one',
+          'Remote empty two',
+          'Remote empty three',
+        ])
+      )
+    expect(apiCalls.remoteListResponses).toBe(remoteListResponsesAfterHydration)
+  }
+)
+
+test(
   'hydrates cloud projects into OPFS without replacing the local-first home list',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {

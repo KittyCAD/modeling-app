@@ -1355,6 +1355,11 @@ async function markProjectSynced(
   })
   if (syncInProgress) {
     pendingStatusSyncedAt = syncedAt
+    updateStatus({
+      lastSyncedAt: syncedAt,
+      lastFailure: undefined,
+      lastFailureAt: undefined,
+    })
     return
   }
 
@@ -1610,75 +1615,126 @@ async function syncRemoteIndex() {
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const remoteProjects = await listRemoteProjects()
-  lastRemoteIndexSyncAt = now
-  const metadata = await getAllProjectMetadata()
+  let metadata = await getAllProjectMetadata()
   const tombstonedRemoteProjectIds = new Set(
     metadata
       .filter((entry) => entry.tombstone && entry.remoteProjectId)
       .map((entry) => entry.remoteProjectId)
   )
+  const failures: unknown[] = []
+
+  const upsertMetadata = (nextMetadata: ProjectMetadata) => {
+    metadata = [
+      ...metadata.filter(
+        (entry) =>
+          normalizePathForSync(entry.localProjectPath) !==
+          normalizePathForSync(nextMetadata.localProjectPath)
+      ),
+      nextMetadata,
+    ]
+  }
 
   for (const remoteProject of remoteProjects) {
     if (!remoteProject.id || tombstonedRemoteProjectIds.has(remoteProject.id)) {
       continue
     }
 
-    const knownLocalMetadata = metadata.find(
-      (entry) => entry.remoteProjectId === remoteProject.id
-    )
-    if (knownLocalMetadata) {
-      const knownLocalProjectPath = projectPathInDirectory(
-        knownLocalMetadata,
-        projectDirectory
+    try {
+      const knownLocalMetadata = metadata.find(
+        (entry) => entry.remoteProjectId === remoteProject.id
       )
-      const knownLocalPathIsCurrent =
-        knownLocalProjectPath && (await exists(knownLocalProjectPath))
-      if (!knownLocalPathIsCurrent) {
-        await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
-        await cloneRemoteProjectToLocal(
-          remoteProject,
-          projectDirectory,
-          knownLocalProjectPath
+      if (knownLocalMetadata) {
+        const knownLocalProjectPath = projectPathInDirectory(
+          knownLocalMetadata,
+          projectDirectory
         )
+        const knownLocalPathIsCurrent =
+          knownLocalProjectPath && (await exists(knownLocalProjectPath))
+        if (!knownLocalPathIsCurrent) {
+          await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
+          metadata = metadata.filter((entry) => entry !== knownLocalMetadata)
+          const clonedProject = await cloneRemoteProjectToLocal(
+            remoteProject,
+            projectDirectory,
+            knownLocalProjectPath
+          )
+          const clonedMetadata = await getProjectMetadata(
+            clonedProject.projectPath
+          )
+          if (clonedMetadata) {
+            upsertMetadata(clonedMetadata)
+          }
+          continue
+        }
+
+        const nextLocalMetadata = await hydrateCleanLocalProjectTitle(
+          knownLocalMetadata,
+          remoteProject.title
+        )
+        upsertMetadata(nextLocalMetadata)
+        const remoteRevision = getRevision(remoteProject)
+        if (
+          remoteRevision &&
+          nextLocalMetadata.remoteRevision &&
+          remoteRevision !== nextLocalMetadata.remoteRevision
+        ) {
+          await syncProject(nextLocalMetadata.localProjectPath, [])
+          const syncedMetadata = await getProjectMetadata(
+            nextLocalMetadata.localProjectPath
+          )
+          if (syncedMetadata) {
+            upsertMetadata(syncedMetadata)
+          }
+        }
         continue
       }
 
-      const nextLocalMetadata = await hydrateCleanLocalProjectTitle(
-        knownLocalMetadata,
-        remoteProject.title
+      const projectName = sanitizeProjectName(
+        remoteProject.title || 'cloud-project',
+        'cloud-project'
       )
-      const remoteRevision = getRevision(remoteProject)
-      if (
-        remoteRevision &&
-        nextLocalMetadata.remoteRevision &&
-        remoteRevision !== nextLocalMetadata.remoteRevision
-      ) {
-        await syncProject(nextLocalMetadata.localProjectPath, [])
+      const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
+        projectDirectory,
+        remoteProject.id,
+        projectName
+      )
+      if (existingProjectPath) {
+        const nextMetadata = {
+          ...(await getOrCreateProjectMetadata(existingProjectPath)),
+          remoteProjectId: remoteProject.id,
+        }
+        await putProjectMetadata(nextMetadata)
+        upsertMetadata(nextMetadata)
+        await syncProject(existingProjectPath, [])
+        const syncedMetadata = await getProjectMetadata(existingProjectPath)
+        if (syncedMetadata) {
+          upsertMetadata(syncedMetadata)
+        }
+        continue
       }
-      continue
-    }
 
-    const projectName = sanitizeProjectName(
-      remoteProject.title || 'cloud-project',
-      'cloud-project'
-    )
-    const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
-      projectDirectory,
-      remoteProject.id,
-      projectName
-    )
-    if (existingProjectPath) {
-      const nextMetadata = {
-        ...(await getOrCreateProjectMetadata(existingProjectPath)),
-        remoteProjectId: remoteProject.id,
+      const clonedProject = await cloneRemoteProjectToLocal(
+        remoteProject,
+        projectDirectory
+      )
+      const clonedMetadata = await getProjectMetadata(clonedProject.projectPath)
+      if (clonedMetadata) {
+        upsertMetadata(clonedMetadata)
       }
-      await putProjectMetadata(nextMetadata)
-      await syncProject(existingProjectPath, [])
-      continue
+    } catch (error) {
+      failures.push(error)
     }
-
-    await cloneRemoteProjectToLocal(remoteProject, projectDirectory)
   }
+
+  if (failures.length > 0) {
+    throw new Error(
+      `Cloud sync failed for ${failures.length} remote project${
+        failures.length === 1 ? '' : 's'
+      }: ${errorMessage(failures.at(-1))}`
+    )
+  }
+
+  lastRemoteIndexSyncAt = Date.now()
 }
 
 async function enqueueExistingLocalProjectsForInitialSync() {
@@ -1763,6 +1819,7 @@ async function runCloudSync() {
         lastFailureAt: nowIso(),
         ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
       })
+      scheduleSync(SYNC_RETRY_MS)
     } else if (opfsCloudSyncStatus.value.state !== 'conflict') {
       updateStatus({
         state: 'idle',
