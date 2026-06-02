@@ -4271,11 +4271,31 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+        let ast = input.kclManager.ast
+        if (
+          input.data.draftAngle &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
+
         const astResult = addExtrude({
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
           ...input.data,
         })
         if (err(astResult)) {

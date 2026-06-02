@@ -7,6 +7,7 @@ import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 
 import {
+  createCustomLogger,
   indexHtmlCsp,
   isIgnoredWatchPath,
   pluginExposeRenderer,
@@ -19,6 +20,7 @@ export default defineConfig((env) => {
   const name = forgeConfigSelf?.name ?? 'main_window'
 
   return {
+    customLogger: createCustomLogger(),
     root,
     mode,
     base: './',

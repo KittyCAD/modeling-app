@@ -1,37 +1,9 @@
 import { TRIM_PREVIEW_LINE_COLOR } from '@src/lib/constants'
 import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
+import { getVisibleViewportRect } from '@src/lib/viewportElement'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-
-type ViewportAnnotationRect = {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-const getViewportAnnotationRect = (): ViewportAnnotationRect => {
-  const viewport = document.querySelector('[data-engine]')
-  if (viewport instanceof HTMLElement) {
-    const rect = viewport.getBoundingClientRect()
-    if (rect.width > 0 && rect.height > 0) {
-      return {
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height,
-      }
-    }
-  }
-
-  return {
-    left: 0,
-    top: 0,
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }
-}
 
 const loadImage = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
@@ -82,7 +54,7 @@ export const ViewportAnnotationOverlay = (
 ) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lastPoint = useRef<{ x: number; y: number } | null>(null)
-  const [viewportRect, setViewportRect] = useState(getViewportAnnotationRect)
+  const [viewportRect, setViewportRect] = useState(getVisibleViewportRect)
   const [imageSize, setImageSize] = useState<{
     width: number
     height: number
@@ -119,8 +91,7 @@ export const ViewportAnnotationOverlay = (
   }, [props.imageDataUrl])
 
   useEffect(() => {
-    const updateViewportRect = () =>
-      setViewportRect(getViewportAnnotationRect())
+    const updateViewportRect = () => setViewportRect(getVisibleViewportRect())
     const viewport = document.querySelector('[data-engine]')
     const resizeObserver =
       typeof ResizeObserver === 'undefined'
@@ -261,7 +232,7 @@ export const ViewportAnnotationOverlay = (
           lastPoint.current = null
         }}
       />
-      <div className="absolute top-2 left-2 flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 bg-chalkboard-10/95 dark:bg-chalkboard-90/95 p-1 shadow-sm">
+      <div className="absolute top-2 left-1/2 flex max-w-[calc(100%-1rem)] -translate-x-1/2 items-center gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10/95 p-1 shadow-sm dark:border-chalkboard-70 dark:bg-chalkboard-90/95">
         <button
           type="button"
           className="m-0 h-7 px-2 rounded-sm border-none bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"

@@ -25,6 +25,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * */
 export const FILE_EXT = '.kcl'
 export const DEFAULT_KCL_VERSION = '2.0'
+export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
   'sketch_experimental_features'
 /** Default file to open when a project is opened */
