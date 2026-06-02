@@ -138,6 +138,34 @@ export function setProjectTitleInProjectTomlContents(
   return lines.join('\n')
 }
 
+export function setCloudProjectIdInProjectTomlContents(
+  contents: string,
+  environmentName: string,
+  projectId: string
+) {
+  const lines = contents.replaceAll('\r\n', '\n').split('\n')
+  const nextProjectIdLine = `project_id = ${getTomlString(projectId)}`
+  const section = getSectionRange(lines, (sectionName) => {
+    return cloudEnvironmentFromSectionName(sectionName) === environmentName
+  })
+  if (!section) {
+    const nextContents = contents.trimEnd()
+    return `${nextContents ? `${nextContents}\n\n` : ''}[cloud.${getTomlString(
+      environmentName
+    )}]\n${nextProjectIdLine}\n`
+  }
+
+  for (let index = section.startIndex; index < section.endIndex; index += 1) {
+    if (/^\s*project_id\s*=/.test(lines[index])) {
+      lines[index] = nextProjectIdLine
+      return lines.join('\n')
+    }
+  }
+
+  lines.splice(section.startIndex, 0, nextProjectIdLine)
+  return lines.join('\n')
+}
+
 export function getCloudProjectIdFromProjectTomlContents(
   contents: string,
   environmentName?: string

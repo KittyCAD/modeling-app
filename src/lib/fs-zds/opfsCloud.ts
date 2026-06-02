@@ -10,6 +10,7 @@ import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import {
   getProjectTitleFromProjectTomlContents,
+  setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import JSZip from 'jszip'
@@ -129,6 +130,7 @@ let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
+let pendingStatusSyncedAt: string | undefined
 
 export const opfsCloudSyncStatus = signal<OPFSCloudSyncStatus>({
   enabled: false,
@@ -502,6 +504,53 @@ function withProjectTitleInArchiveFiles(
   return nextFiles
 }
 
+function withProjectCloudProjectIdInArchiveFiles(
+  files: ProjectArchiveFile[],
+  projectId: string
+) {
+  const environmentName = getEnvironmentName()
+  if (!environmentName) {
+    return files
+  }
+
+  const nextFiles = [...files]
+  const projectTomlFileIndex = nextFiles.findIndex(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  const existingProjectToml =
+    projectTomlFileIndex === -1
+      ? ''
+      : new TextDecoder().decode(nextFiles[projectTomlFileIndex].data)
+  const nextProjectToml = setCloudProjectIdInProjectTomlContents(
+    existingProjectToml,
+    environmentName,
+    projectId
+  )
+  const nextProjectTomlFile = {
+    relativePath: PROJECT_SETTINGS_FILE_NAME,
+    data: new TextEncoder().encode(nextProjectToml),
+  }
+
+  if (projectTomlFileIndex === -1) {
+    nextFiles.push(nextProjectTomlFile)
+  } else {
+    nextFiles[projectTomlFileIndex] = nextProjectTomlFile
+  }
+
+  return nextFiles
+}
+
+function withRemoteProjectMetadataInArchiveFiles(
+  files: ProjectArchiveFile[],
+  title: string | undefined,
+  projectId: string
+) {
+  return withProjectCloudProjectIdInArchiveFiles(
+    withProjectTitleInArchiveFiles(files, title),
+    projectId
+  )
+}
+
 async function writeLocalProjectTitle(projectPath: string, title: string) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let existingProjectToml = ''
@@ -518,6 +567,40 @@ async function writeLocalProjectTitle(projectPath: string, title: string) {
     projectTomlPath,
     new TextEncoder().encode(
       setProjectTitleInProjectTomlContents(existingProjectToml, title)
+    )
+  )
+  return true
+}
+
+async function writeLocalProjectCloudProjectId(
+  projectPath: string,
+  projectId: string
+) {
+  const environmentName = getEnvironmentName()
+  if (!environmentName) {
+    return false
+  }
+
+  const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  let existingProjectToml = ''
+  if (await exists(projectTomlPath)) {
+    existingProjectToml = await localFs.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+  }
+  const existingProjectId = await readProjectTomlCloudProjectId(projectPath)
+  if (existingProjectId === projectId) {
+    return false
+  }
+
+  await localFs.writeFile(
+    projectTomlPath,
+    new TextEncoder().encode(
+      setCloudProjectIdInProjectTomlContents(
+        existingProjectToml,
+        environmentName,
+        projectId
+      )
     )
   )
   return true
@@ -1061,9 +1144,10 @@ async function cloneRemoteProjectToLocal(
       ? preferredProjectPath
       : await uniqueProjectPath(projectDirectory, projectName)
   const archive = await downloadRemoteProjectArchive(remoteProject.id)
-  const files = withProjectTitleInArchiveFiles(
+  const files = withRemoteProjectMetadataInArchiveFiles(
     await parseProjectArchive(archive),
-    remoteProject.title
+    remoteProject.title,
+    remoteProject.id
   )
   const nextMetadata = {
     ...metadataForProject(projectPath),
@@ -1260,6 +1344,11 @@ async function markProjectSynced(
     lastFailure: undefined,
     lastSyncedAt: syncedAt,
   })
+  if (syncInProgress) {
+    pendingStatusSyncedAt = syncedAt
+    return
+  }
+
   updateStatus({
     state: 'idle',
     activeProjectPath: undefined,
@@ -1394,6 +1483,12 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     }
 
     metadata = await bindRemoteProjectIdFromToml(metadata)
+    if (metadata.remoteProjectId) {
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        metadata.remoteProjectId
+      )
+    }
     const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
     const localManifest = await projectManifestFromFiles(localFiles)
 
@@ -1402,13 +1497,20 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         metadata.localProjectPath,
         localFiles
       )
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        created.id
+      )
+      const nextLocalFiles = await collectLocalProjectFiles(
+        metadata.localProjectPath
+      )
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         {
           ...metadata,
           remoteProjectId: created.id,
         },
-        localManifest,
+        await projectManifestFromFiles(nextLocalFiles),
         getRevision(created)
       )
       return
@@ -1444,9 +1546,10 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     const remoteArchive = await downloadRemoteProjectArchive(
       metadata.remoteProjectId
     )
-    const remoteFiles = withProjectTitleInArchiveFiles(
+    const remoteFiles = withRemoteProjectMetadataInArchiveFiles(
       await parseProjectArchive(remoteArchive),
-      remoteProject.title
+      remoteProject.title,
+      metadata.remoteProjectId
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
 
@@ -1596,6 +1699,7 @@ async function runCloudSync() {
   }
 
   syncInProgress = true
+  pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true, state: 'syncing' })
   let remoteIndexFailed = false
   let remoteIndexFailureMessage: string | undefined
@@ -1625,15 +1729,27 @@ async function runCloudSync() {
     }
 
     await refreshPendingCount()
+    const syncedAt = pendingStatusSyncedAt
     if (opfsCloudSyncStatus.value.state !== 'conflict' && remoteIndexFailed) {
       updateStatus({
         state: 'failed',
         activeProjectPath: undefined,
         lastFailure: remoteIndexFailureMessage,
         lastFailureAt: nowIso(),
+        ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
       })
     } else if (opfsCloudSyncStatus.value.state !== 'conflict') {
-      updateStatus({ state: 'idle', activeProjectPath: undefined })
+      updateStatus({
+        state: 'idle',
+        activeProjectPath: undefined,
+        ...(syncedAt
+          ? {
+              lastSyncedAt: syncedAt,
+              lastFailure: undefined,
+              lastFailureAt: undefined,
+            }
+          : {}),
+      })
     }
     if (
       opfsCloudSyncStatus.value.pendingCount > 0 &&
@@ -1642,15 +1758,18 @@ async function runCloudSync() {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
   } catch (error) {
+    const syncedAt = pendingStatusSyncedAt
     updateStatus({
       state: 'failed',
       lastFailure: errorMessage(error),
       lastFailureAt: nowIso(),
       activeProjectPath: undefined,
+      ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
     })
     scheduleSync(SYNC_RETRY_MS)
   } finally {
     syncInProgress = false
+    pendingStatusSyncedAt = undefined
     if (
       opfsCloudSyncStatus.value.pendingCount > 0 &&
       opfsCloudSyncStatus.value.state !== 'conflict'

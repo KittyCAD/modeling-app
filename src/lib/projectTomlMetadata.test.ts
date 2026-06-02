@@ -1,6 +1,7 @@
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { describe, expect, it } from 'vitest'
@@ -43,5 +44,32 @@ describe('projectTomlMetadata', () => {
       'project-456'
     )
     expect(getCloudProjectIdFromProjectTomlContents(toml)).toBe('project-123')
+  })
+
+  it('writes cloud project ids without dropping project settings', () => {
+    const toml = setCloudProjectIdInProjectTomlContents(
+      'default_file = "main.kcl"\n\n[settings.meta]\ntitle = "Some demo"\n',
+      'zoo.dev',
+      'project-123'
+    )
+
+    expect(getProjectTitleFromProjectTomlContents(toml)).toBe('Some demo')
+    expect(getCloudProjectIdFromProjectTomlContents(toml, 'zoo.dev')).toBe(
+      'project-123'
+    )
+    expect(toml).toContain('default_file = "main.kcl"')
+  })
+
+  it('updates existing cloud project ids for an environment', () => {
+    const toml = setCloudProjectIdInProjectTomlContents(
+      '[cloud."zoo.dev"]\nproject_id = "old-project"\n',
+      'zoo.dev',
+      'new-project'
+    )
+
+    expect(getCloudProjectIdFromProjectTomlContents(toml, 'zoo.dev')).toBe(
+      'new-project'
+    )
+    expect(toml).not.toContain('old-project')
   })
 })
