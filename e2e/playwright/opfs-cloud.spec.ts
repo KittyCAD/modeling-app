@@ -13,6 +13,7 @@ type CloudProject = {
   id: string
   title: string
   revision: string
+  updatedAt?: string
   files: ProjectFiles
 }
 
@@ -47,6 +48,15 @@ async function projectTitles(page: Page) {
   )
 }
 
+function cloudProjectResponse(project: CloudProject) {
+  return {
+    id: project.id,
+    title: project.title,
+    revision: project.revision,
+    ...(project.updatedAt ? { updated_at: project.updatedAt } : {}),
+  }
+}
+
 test(
   'streams remote-only projects into empty OPFS and persists successful clones',
   { tag: ['@web'] },
@@ -56,6 +66,7 @@ test(
         id: 'remote-empty-one',
         title: 'Remote empty one',
         revision: 'remote-empty-one-rev-1',
+        updatedAt: '2026-06-02T20:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyOne = 1\n',
           'project.toml': projectToml('Remote empty one'),
@@ -65,6 +76,7 @@ test(
         id: 'remote-empty-broken',
         title: 'Remote empty broken',
         revision: 'remote-empty-broken-rev-1',
+        updatedAt: '2026-06-02T19:00:00.000Z',
         files: {
           'main.kcl': 'broken = 1\n',
           'project.toml': projectToml('Remote empty broken'),
@@ -74,6 +86,7 @@ test(
         id: 'remote-empty-two',
         title: 'Remote empty two',
         revision: 'remote-empty-two-rev-1',
+        updatedAt: '2026-06-02T18:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyTwo = 1\n',
           'project.toml': projectToml('Remote empty two'),
@@ -83,6 +96,7 @@ test(
         id: 'remote-empty-three',
         title: 'Remote empty three',
         revision: 'remote-empty-three-rev-1',
+        updatedAt: '2026-06-02T17:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyThree = 1\n',
           'project.toml': projectToml('Remote empty three'),
@@ -132,11 +146,7 @@ test(
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify(
-              remoteProjects.map(({ id, title, revision }) => ({
-                id,
-                title,
-                revision,
-              }))
+              remoteProjects.map((project) => cloudProjectResponse(project))
             ),
           })
           .catch(() => undefined)
@@ -171,11 +181,7 @@ test(
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({
-            id: remoteProject.id,
-            title: remoteProject.title,
-            revision: remoteProject.revision,
-          }),
+          body: JSON.stringify(cloudProjectResponse(remoteProject)),
         })
         return
       }
@@ -203,6 +209,9 @@ test(
           'Remote empty three',
         ])
       )
+    await expect
+      .poll(async () => (await projectTitles(page))[0])
+      .toBe('Remote empty one')
 
     const localFiles = await page.evaluate(
       async ({ projectDirectory }) => {
@@ -247,6 +256,9 @@ test(
           'Remote empty three',
         ])
       )
+    await expect
+      .poll(async () => (await projectTitles(page))[0])
+      .toBe('Remote empty one')
     expect(apiCalls.remoteListResponses).toBe(remoteListResponsesAfterHydration)
   }
 )
@@ -330,16 +342,8 @@ test(
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify([
-              {
-                id: remoteOnlyProject.id,
-                title: remoteOnlyProject.title,
-                revision: remoteOnlyProject.revision,
-              },
-              {
-                id: cleanSyncedProject.id,
-                title: cleanSyncedProject.title,
-                revision: cleanSyncedProject.revision,
-              },
+              cloudProjectResponse(remoteOnlyProject),
+              cloudProjectResponse(cleanSyncedProject),
             ]),
           })
           .catch(() => undefined)
@@ -392,11 +396,7 @@ test(
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({
-            id: remoteProject.id,
-            title: remoteProject.title,
-            revision: remoteProject.revision,
-          }),
+          body: JSON.stringify(cloudProjectResponse(remoteProject)),
         })
         return
       }

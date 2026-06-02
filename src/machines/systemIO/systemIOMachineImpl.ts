@@ -20,7 +20,10 @@ import {
 } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import { getOpfsCloudProjectMetadataIndex } from '@src/lib/fs-zds/opfsCloud'
+import {
+  getOpfsCloudProjectMetadataIndex,
+  getOpfsCloudProjectModifiedTime,
+} from '@src/lib/fs-zds/opfsCloud'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
@@ -116,6 +119,10 @@ export function sortProjectDirectoryEntriesByModifiedDesc(
   return entries.toSorted(
     (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
   )
+}
+
+function normalizeProjectPathForCloudMetadata(projectPath: string) {
+  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
 const prepareBulkProjectWrite = async ({
@@ -413,6 +420,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
+        const cloudProjectMetadataByPath =
+          await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries: ProjectDirectoryEntry[] = []
         for (const entry of await fsZds.readdir(projectDirectoryPath)) {
@@ -429,13 +438,17 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           entries.push({
             name: entry,
             path: projectPath,
-            modified: stat.mtimeMs,
+            modified:
+              getOpfsCloudProjectModifiedTime(
+                cloudProjectMetadataByPath.get(
+                  normalizeProjectPathForCloudMetadata(projectPath)
+                ),
+                stat.mtimeMs
+              ) ?? stat.mtimeMs,
           })
         }
         const { value: canReadWriteProjectDirectory } =
           await canReadWriteDirectory(projectDirectoryPath)
-        const cloudProjectMetadataByPath =
-          await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
 
         for (const entry of sortProjectDirectoryEntriesByModifiedDesc(
           entries
@@ -447,9 +460,16 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             entry.path,
             await context.wasmInstancePromise
           )
-          project.cloudProjectId ??= cloudProjectMetadataByPath.get(
-            entry.path.replaceAll('\\', '/').replace(/\/+$/g, '')
-          )?.remoteProjectId
+          const cloudMetadata = cloudProjectMetadataByPath.get(
+            normalizeProjectPathForCloudMetadata(entry.path)
+          )
+          project.cloudProjectId ??= cloudMetadata?.remoteProjectId
+          if (project.metadata) {
+            project.metadata.modified = getOpfsCloudProjectModifiedTime(
+              cloudMetadata,
+              project.metadata.modified
+            )
+          }
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&

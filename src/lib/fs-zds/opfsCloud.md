@@ -74,6 +74,7 @@ Cloud sync state is stored outside React state so it can survive page reloads an
 
 - `ProjectMetadata.remoteProjectId` binds a local project directory to a cloud project.
 - `ProjectMetadata.remoteRevision` stores the last cloud-acknowledged remote revision for the local base.
+- `ProjectMetadata.remoteUpdatedAt` stores the cloud project's last updated timestamp for Home sorting while the local cache is clean.
 - `ProjectMetadata.baseManifest` stores the last cloud-acknowledged local file manifest.
 - `ProjectMetadata.tombstone` records an explicit local project delete.
 - `ProjectMetadata.conflict` records a blocked sync and the local path of the remote conflict copy.
@@ -85,6 +86,8 @@ Cloud sync state is stored outside React state so it can survive page reloads an
 The backing treats `remoteRevision` plus `baseManifest` as the sync base. The base is updated only after a successful cloud create, guarded cloud update, clean remote pull, or equality check.
 
 Local dirtiness is detected by comparing the current OPFS manifest with `baseManifest`. Remote dirtiness is detected by comparing the cloud project revision with `remoteRevision`. The cloud API's `revision` field is preferred; `updated_at` is only a fallback for older responses.
+
+The OPFS directory modified time represents local cache writes. For cloud-backed projects, Home uses `remoteUpdatedAt` as the modified sort key only when the durable outbox has no pending local changes for that project. Pending local writes keep using the OPFS directory modified time so local edits sort immediately.
 
 Remote updates use optimistic concurrency by sending `expected_revision`. The upload is only valid if the server is still at the revision recorded in `ProjectMetadata.remoteRevision`. If the server revision changed, the API must reject the update so this backing does not overwrite newer remote data.
 

@@ -2,6 +2,7 @@ import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   type ProjectArchiveFile,
   type ProjectManifest,
+  getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
@@ -105,5 +106,26 @@ describe('opfsCloud sync helpers', () => {
         )?.data
       )
     ).toBe('default_file = "main.kcl"\n')
+  })
+
+  it('uses remote updated_at for clean cloud projects and local mtime for pending edits', () => {
+    const metadata = {
+      schemaVersion: 1,
+      localProjectPath: '/projects/bracket',
+      projectName: 'bracket',
+      remoteProjectId: 'project-123',
+      remoteUpdatedAt: '2026-06-02T15:00:00.000Z',
+      hasPendingChanges: false,
+    } as const
+
+    expect(getOpfsCloudProjectModifiedTime(metadata, 100)).toBe(
+      Date.parse(metadata.remoteUpdatedAt)
+    )
+    expect(
+      getOpfsCloudProjectModifiedTime(
+        { ...metadata, hasPendingChanges: true },
+        100
+      )
+    ).toBe(100)
   })
 })

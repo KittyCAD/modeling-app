@@ -38,6 +38,7 @@ export type ProjectMetadata = {
   projectName: string
   remoteProjectId?: string
   remoteRevision?: Revision
+  remoteUpdatedAt?: string
   baseManifest?: ProjectManifest
   tombstone?: boolean
   conflict?: {
@@ -112,6 +113,10 @@ export type OpfsCloudLocalProject = {
   projectName: string
   remoteProjectId: string
   remoteRevision?: Revision
+}
+
+export type OpfsCloudProjectMetadataIndexEntry = ProjectMetadata & {
+  hasPendingChanges: boolean
 }
 
 const DB_NAME = 'zds-opfs-cloud-sync'
@@ -278,6 +283,40 @@ function getRevision(project: RemoteProject | undefined): Revision | undefined {
     return undefined
   }
   return String(revision)
+}
+
+function getRemoteUpdatedAt(project: RemoteProject | undefined) {
+  if (!project?.updated_at || Number.isNaN(Date.parse(project.updated_at))) {
+    return undefined
+  }
+
+  return project.updated_at
+}
+
+function remoteSyncMetadata(
+  project: RemoteProject | undefined,
+  options: { useNowAsUpdatedAtFallback?: boolean } = {}
+) {
+  return {
+    revision: getRevision(project),
+    updatedAt:
+      getRemoteUpdatedAt(project) ||
+      (options.useNowAsUpdatedAtFallback ? nowIso() : undefined),
+  }
+}
+
+export function getOpfsCloudProjectModifiedTime(
+  metadata: OpfsCloudProjectMetadataIndexEntry | undefined,
+  localModified: number | null | undefined
+) {
+  const remoteUpdatedAt = metadata?.remoteUpdatedAt
+    ? Date.parse(metadata.remoteUpdatedAt)
+    : Number.NaN
+  if (!metadata?.hasPendingChanges && !Number.isNaN(remoteUpdatedAt)) {
+    return remoteUpdatedAt
+  }
+
+  return localModified ?? null
 }
 
 async function cloudFetch(
@@ -752,10 +791,24 @@ export async function getOpfsCloudProjectMetadata(projectPath: string) {
 }
 
 export async function getOpfsCloudProjectMetadataIndex() {
+  const [metadata, outboxEntries] = await Promise.all([
+    getAllProjectMetadata(),
+    getAllOutboxEntries(),
+  ])
+  const pendingProjectPaths = new Set(
+    outboxEntries.map((entry) => normalizePathForSync(entry.projectPath))
+  )
+
   return new Map(
-    (await getAllProjectMetadata()).map((metadata) => [
-      normalizePathForSync(metadata.localProjectPath),
-      metadata,
+    metadata.map((entry) => [
+      normalizePathForSync(entry.localProjectPath),
+      {
+        ...entry,
+        hasPendingChanges:
+          pendingProjectPaths.has(
+            normalizePathForSync(entry.localProjectPath)
+          ) || Boolean(entry.tombstone),
+      },
     ])
   )
 }
@@ -1159,7 +1212,7 @@ async function cloneRemoteProjectToLocal(
   await markProjectSynced(
     nextMetadata,
     await projectManifestFromFiles(files),
-    getRevision(remoteProject)
+    remoteSyncMetadata(remoteProject)
   )
 
   return {
@@ -1341,13 +1394,17 @@ function markCloudMetadataFailure(error: unknown) {
 async function markProjectSynced(
   metadata: ProjectMetadata,
   baseManifest: ProjectManifest,
-  remoteRevision?: Revision
+  remote?: {
+    revision?: Revision
+    updatedAt?: string
+  }
 ) {
   const syncedAt = nowIso()
   await putProjectMetadata({
     ...metadata,
     baseManifest,
-    remoteRevision: remoteRevision ?? metadata.remoteRevision,
+    remoteRevision: remote?.revision ?? metadata.remoteRevision,
+    remoteUpdatedAt: remote?.updatedAt ?? metadata.remoteUpdatedAt,
     tombstone: false,
     conflict: undefined,
     lastFailure: undefined,
@@ -1525,7 +1582,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
           remoteProjectId: created.id,
         },
         await projectManifestFromFiles(nextLocalFiles),
-        getRevision(created)
+        remoteSyncMetadata(created, { useNowAsUpdatedAtFallback: true })
       )
       return
     }
@@ -1541,7 +1598,11 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
 
     if (!localChanged && !remoteChanged) {
       await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await markProjectSynced(metadata, localManifest, remoteRevision)
+      await markProjectSynced(
+        metadata,
+        localManifest,
+        remoteSyncMetadata(remoteProject)
+      )
       return
     }
 
@@ -1553,7 +1614,11 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         expectedRevision: metadata.remoteRevision,
       })
       await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await markProjectSynced(metadata, localManifest, getRevision(updated))
+      await markProjectSynced(
+        metadata,
+        localManifest,
+        remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
+      )
       return
     }
 
@@ -1572,7 +1637,11 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       projectManifestsEqual(localManifest, remoteManifest)
     ) {
       await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await markProjectSynced(metadata, localManifest, remoteRevision)
+      await markProjectSynced(
+        metadata,
+        localManifest,
+        remoteSyncMetadata(remoteProject)
+      )
       return
     }
 
@@ -1583,13 +1652,21 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     if (localClean) {
       await replaceLocalProjectWithFiles(metadata.localProjectPath, remoteFiles)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await markProjectSynced(metadata, remoteManifest, remoteRevision)
+      await markProjectSynced(
+        metadata,
+        remoteManifest,
+        remoteSyncMetadata(remoteProject)
+      )
       return
     }
 
     if (projectManifestsEqual(localManifest, remoteManifest)) {
       await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await markProjectSynced(metadata, localManifest, remoteRevision)
+      await markProjectSynced(
+        metadata,
+        localManifest,
+        remoteSyncMetadata(remoteProject)
+      )
       return
     }
 
@@ -1671,7 +1748,6 @@ async function syncRemoteIndex() {
           knownLocalMetadata,
           remoteProject.title
         )
-        upsertMetadata(nextLocalMetadata)
         const remoteRevision = getRevision(remoteProject)
         if (
           remoteRevision &&
@@ -1685,6 +1761,18 @@ async function syncRemoteIndex() {
           if (syncedMetadata) {
             upsertMetadata(syncedMetadata)
           }
+        } else {
+          const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
+          const indexedMetadata = remoteUpdatedAt
+            ? {
+                ...nextLocalMetadata,
+                remoteUpdatedAt,
+              }
+            : nextLocalMetadata
+          if (indexedMetadata !== nextLocalMetadata) {
+            await putProjectMetadata(indexedMetadata)
+          }
+          upsertMetadata(indexedMetadata)
         }
         continue
       }
@@ -1702,6 +1790,7 @@ async function syncRemoteIndex() {
         const nextMetadata = {
           ...(await getOrCreateProjectMetadata(existingProjectPath)),
           remoteProjectId: remoteProject.id,
+          remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
         }
         await putProjectMetadata(nextMetadata)
         upsertMetadata(nextMetadata)
