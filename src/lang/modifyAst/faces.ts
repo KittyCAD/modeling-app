@@ -165,7 +165,7 @@ export function addDeleteFace({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      artifactTypeFilter: ['sweep', 'compositeSolid'],
+      artifactTypeFilter: ['sweep', 'compositeSolid', 'edgeCut'],
     }
   )
   if (err(result)) {
@@ -970,6 +970,12 @@ function getSolidSelectionsFromFaceSelections(
     graphSelections: faces.graphSelections.flatMap((face) => {
       if (!face.artifact) {
         return []
+      }
+      if (face.artifact.type === 'edgeCut') {
+        return {
+          artifact: face.artifact,
+          codeRef: face.artifact.codeRef,
+        }
       }
       const sweep = getSweepFromSuspectedSweepSurface(
         face.artifact.id,

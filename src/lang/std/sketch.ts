@@ -3915,9 +3915,23 @@ export function addTagForSketchOnFace(
   }
   if (expressionName === 'chamfer' || expressionName === 'fillet') {
     if (edgeCutMeta === null) {
-      return new Error(
-        'Cannot add tag to edge cut because no edge cut was provided'
+      const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
+        tagInfo.node,
+        tagInfo.pathToNode,
+        wasmInstance,
+        ['CallExpressionKw']
       )
+      if (err(callExpr)) return callExpr
+      const inputTags = findKwArg('tags', callExpr.node)
+      if (
+        inputTags?.type === 'ArrayExpression' &&
+        inputTags.elements.length > 1
+      ) {
+        return new Error(
+          'Cannot add tag to edge cut because no edge cut was provided'
+        )
+      }
+      return addTagKw()(tagInfo)
     }
     return addTagToEdgeCut(tagInfo, edgeCutMeta, wasmInstance)
   }
