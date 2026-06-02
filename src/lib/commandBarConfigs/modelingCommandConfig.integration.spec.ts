@@ -1,9 +1,14 @@
+import { STD_LIB_COMMANDS } from '@rust/kcl-lib/bindings/StdLibCommands'
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
 import {
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  type StdLibCommandDriftConfig,
+  modelingCommandStdLibDriftConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
@@ -68,6 +73,45 @@ describe('GDT tolerance defaults', () => {
           valueText: '0.1in',
         } as KclCommandValue)
       ).toBe('0.1in')
+    }
+  })
+})
+
+const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
+
+describe('modeling command stdlib drift', () => {
+  it('keeps command-bar args aligned with KCL stdlib signatures', () => {
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    ) as [string, StdLibCommandDriftConfig][]) {
+      const commandConfig =
+        modelingMachineCommandConfig[
+          commandName as keyof typeof modelingMachineCommandConfig
+        ]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const stdLibCommand = STD_LIB_COMMANDS[driftConfig.stdLibName]
+      expect(
+        stdLibCommand,
+        `${commandName} references missing stdlib function ${driftConfig.stdLibName}`
+      ).toBeDefined()
+
+      const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+      const expectedArgs = uniqueSorted([
+        ...stdLibCommand.args
+          .filter((arg) => arg.deprecatedSince === null)
+          .filter((arg) => !omittedStdLibArgs.has(arg.name))
+          .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name),
+        ...(driftConfig.uiOnlyArgs ?? []),
+      ])
+      const actualArgs = uniqueSorted(Object.keys(commandConfig.args ?? {}))
+
+      expect(
+        actualArgs,
+        `${commandName} command args drifted from ${driftConfig.stdLibName}. Add a command arg, or document the intentional difference in modelingCommandStdLibDriftConfig.`
+      ).toEqual(expectedArgs)
     }
   })
 })

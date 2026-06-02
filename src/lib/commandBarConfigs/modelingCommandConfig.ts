@@ -4,6 +4,10 @@ import type {
   OutputFormat3d,
   UnitLength,
 } from '@kittycad/lib'
+import type {
+  STD_LIB_COMMANDS,
+  StdLibCommandName,
+} from '@rust/kcl-lib/bindings/StdLibCommands'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -183,6 +187,190 @@ const hasEngineConnection = (
   )
 }
 
+type StdLibCommandArg<Name extends StdLibCommandName> =
+  (typeof STD_LIB_COMMANDS)[Name]['args'][number]
+type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
+  Arg['ty'] extends 'bool'
+    ? boolean
+    : Arg['ty'] extends 'string' | 'TagDecl'
+      ? string
+      : Arg['ty'] extends
+            | `number${string}`
+            | 'Point2d'
+            | 'Point3d'
+            | `[number${string}; ${string}]`
+            | `[string; ${string}]`
+        ? KclCommandValue
+        : Selections
+type StdLibCommandArgs<Name extends StdLibCommandName> = {
+  [Arg in StdLibCommandArg<Name> as Arg['required'] extends true
+    ? Arg['name']
+    : never]: StdLibCommandArgValue<Arg>
+} & {
+  [Arg in StdLibCommandArg<Name> as Arg['required'] extends false
+    ? Arg['name']
+    : never]?: StdLibCommandArgValue<Arg>
+}
+type Override<Base, Overrides> = Omit<Base, keyof Overrides> & Overrides
+type WithNodeToEdit<Base> = Base & { nodeToEdit?: PathToNode }
+
+type ExtrudeCommandArgs = WithNodeToEdit<
+  Override<
+    StdLibCommandArgs<'extrude'>,
+    {
+      method?: KclPreludeExtrudeMethod
+      bodyType?: KclPreludeBodyType
+    }
+  >
+>
+type SweepCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'sweep'>, 'tolerance' | 'version'>,
+    {
+      relativeTo?: SweepRelativeTo
+      bodyType?: KclPreludeBodyType
+    }
+  >
+>
+type LoftCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'loft'>, 'tolerance'>,
+    {
+      bodyType?: KclPreludeBodyType
+    }
+  >
+>
+type RevolveCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'revolve'>, 'axis' | 'tolerance'>,
+    {
+      axisOrEdge: 'Axis' | 'Edge'
+      axis: string | undefined
+      edge: Selections | undefined
+      angle: KclCommandValue
+      bodyType?: KclPreludeBodyType
+    }
+  >
+>
+type ShellCommandArgs = WithNodeToEdit<
+  Omit<StdLibCommandArgs<'shell'>, 'solids'>
+>
+type HoleCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'hole::hole'>, 'solid'>,
+    {
+      face: Selections
+      cutAt: KclCommandValue
+      holeBody: HoleBody
+      blindDepth?: KclCommandValue
+      blindDiameter?: KclCommandValue
+      holeType: HoleType
+      counterboreDepth?: KclCommandValue
+      counterboreDiameter?: KclCommandValue
+      countersinkAngle?: KclCommandValue
+      countersinkDiameter?: KclCommandValue
+      countersinkHeadClearance?: KclCommandValue
+      holeBottom: HoleBottom
+      drillPointAngle?: KclCommandValue
+    }
+  >
+>
+type FilletCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'tolerance'>,
+    {
+      selection: Selections
+      radius: KclCommandValue
+      tag?: string
+    }
+  >
+>
+type ChamferCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags'>,
+    {
+      selection: Selections
+      length: KclCommandValue
+      secondLength?: KclCommandValue
+      angle?: KclCommandValue
+      tag?: string
+    }
+  >
+>
+type HelixCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'helix'>, 'axis'>,
+    {
+      mode: HelixModes
+      axis?: string
+      edge?: Selections
+    }
+  >
+>
+type GearCommandArgs<Name extends StdLibCommandName> = WithNodeToEdit<
+  StdLibCommandArgs<Name>
+>
+type AppearanceCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'appearance'>, 'solids'>,
+    {
+      objects: Selections
+      color: string
+    }
+  >
+>
+type CloneCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'clone'>, 'geometries'>,
+    {
+      objects: Selections
+      variableName: string
+    }
+  >
+>
+type PatternCircular3DCommandArgs = WithNodeToEdit<
+  Override<
+    StdLibCommandArgs<'patternCircular3d'>,
+    {
+      axis: string
+      center: KclCommandValue
+    }
+  >
+>
+type PatternLinear3DCommandArgs = WithNodeToEdit<
+  Override<StdLibCommandArgs<'patternLinear3d'>, { axis: string }>
+>
+type GdtFrameArgs = {
+  framePlane?: string
+}
+type GdtObjectsArgs<Base> = Override<
+  Omit<Base, 'faces' | 'edges'>,
+  { objects: Selections } & GdtFrameArgs
+>
+type GdtDatumCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'gdt::datum'>, 'face'>,
+    { faces: Selections } & GdtFrameArgs
+  >
+>
+type GdtDistanceCommandArgs = WithNodeToEdit<
+  Override<
+    Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
+    { objects: Selections } & GdtFrameArgs
+  >
+>
+type BooleanCommandArgs<Name extends StdLibCommandName> = Omit<
+  StdLibCommandArgs<Name>,
+  'tolerance' | 'legacyMethod'
+>
+type BooleanSplitCommandArgs = WithNodeToEdit<
+  Omit<StdLibCommandArgs<'split'>, 'legacyMethod'>
+>
+type DeleteFaceCommandArgs = Override<
+  Omit<StdLibCommandArgs<'deleteFace'>, 'body' | 'faceIndices'>,
+  { faces: Selections }
+>
+
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
@@ -194,174 +382,20 @@ export type ModelingCommandSchema = {
   Make: {
     machine: components['schemas']['MachineInfoResponse']
   }
-  Extrude: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    sketches: Selections
-    length?: KclCommandValue
-    to?: Selections
-    symmetric?: boolean
-    bidirectionalLength?: KclCommandValue
-    tagStart?: string
-    tagEnd?: string
-    draftAngle?: KclCommandValue
-    twistAngle?: KclCommandValue
-    twistAngleStep?: KclCommandValue
-    twistCenter?: KclCommandValue
-    // TODO: figure out if we should expose `tolerance` or not
-    // @pierremtb: I don't even think it should be in KCL
-    method?: KclPreludeExtrudeMethod
-    hideSeams?: boolean
-    bodyType?: KclPreludeBodyType
-  }
-  Sweep: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    sketches: Selections
-    path: Selections
-    sectional?: boolean
-    // TODO: figure out if we should expose `tolerance` or not
-    relativeTo?: SweepRelativeTo
-    tagStart?: string
-    tagEnd?: string
-    bodyType?: KclPreludeBodyType
-  }
-  Loft: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    sketches: Selections
-    vDegree?: KclCommandValue
-    bezApproximateRational?: boolean
-    baseCurveIndex?: KclCommandValue
-    // TODO: figure out if we should expose `tolerance` or not
-    tagStart?: string
-    tagEnd?: string
-    bodyType?: KclPreludeBodyType
-  }
-  Revolve: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // Flow arg
-    axisOrEdge: 'Axis' | 'Edge'
-    // KCL stdlib arguments
-    sketches: Selections
-    axis: string | undefined
-    edge: Selections | undefined
-    angle: KclCommandValue
-    // TODO: figure out if we should expose `tolerance` or not
-    tagStart?: string
-    tagEnd?: string
-    symmetric?: boolean
-    bidirectionalAngle?: KclCommandValue
-    bodyType?: KclPreludeBodyType
-  }
-  Shell: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments, with solids inferred from faces here
-    faces: Selections
-    thickness: KclCommandValue
-  }
-  Hole: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments, with solids inferred from faces here
-    face: Selections
-    cutAt: KclCommandValue
-    holeBody: HoleBody
-    blindDepth?: KclCommandValue
-    blindDiameter?: KclCommandValue
-    holeType: HoleType
-    counterboreDepth?: KclCommandValue
-    counterboreDiameter?: KclCommandValue
-    countersinkAngle?: KclCommandValue
-    countersinkDiameter?: KclCommandValue
-    countersinkHeadClearance?: KclCommandValue
-    holeBottom: HoleBottom
-    drillPointAngle?: KclCommandValue
-  }
-  Fillet: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    selection: Selections // this is named 'tags' in the stdlib
-    radius: KclCommandValue
-    tag?: string
-  }
-  Chamfer: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    selection: Selections // this is named 'tags' in the stdlib
-    length: KclCommandValue
-    secondLength?: KclCommandValue
-    angle?: KclCommandValue
-    tag?: string
-  }
-  'Offset plane': {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    plane: Selections
-    offset: KclCommandValue
-  }
-  Helix: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // Flow arg
-    mode: HelixModes
-    // Three different arguments depending on mode
-    axis?: string
-    edge?: Selections
-    cylinder?: Selections
-    // KCL stdlib arguments
-    revolutions: KclCommandValue
-    angleStart: KclCommandValue
-    radius?: KclCommandValue // axis or edge modes only
-    length?: KclCommandValue // axis or edge modes only
-    ccw?: boolean // optional boolean argument, default value to false
-  }
-  'Helical Gear': {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL gear::helical arguments
-    nTeeth: KclCommandValue
-    module: KclCommandValue
-    pressureAngle: KclCommandValue
-    helixAngle: KclCommandValue
-    gearHeight: KclCommandValue
-  }
-  'Herringbone Gear': {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL gear::herringbone arguments
-    nTeeth: KclCommandValue
-    module: KclCommandValue
-    pressureAngle: KclCommandValue
-    gearHeight: KclCommandValue
-    helixAngle: KclCommandValue
-  }
-  'Spur Gear': {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL gear::spur arguments
-    nTeeth: KclCommandValue
-    module: KclCommandValue
-    pressureAngle: KclCommandValue
-    gearHeight: KclCommandValue
-  }
-  'Ring Gear': {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL gear::ring arguments
-    nTeeth: KclCommandValue
-    module: KclCommandValue
-    pressureAngle: KclCommandValue
-    helixAngle: KclCommandValue
-    gearHeight: KclCommandValue
-  }
+  Extrude: ExtrudeCommandArgs
+  Sweep: SweepCommandArgs
+  Loft: LoftCommandArgs
+  Revolve: RevolveCommandArgs
+  Shell: ShellCommandArgs
+  Hole: HoleCommandArgs
+  Fillet: FilletCommandArgs
+  Chamfer: ChamferCommandArgs
+  'Offset plane': WithNodeToEdit<StdLibCommandArgs<'offsetPlane'>>
+  Helix: HelixCommandArgs
+  'Helical Gear': GearCommandArgs<'gear::helical'>
+  'Herringbone Gear': GearCommandArgs<'gear::herringbone'>
+  'Spur Gear': GearCommandArgs<'gear::spur'>
+  'Ring Gear': GearCommandArgs<'gear::ring'>
   'change tool': {
     tool: SketchTool
   }
@@ -384,187 +418,45 @@ export type ModelingCommandSchema = {
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
-  Appearance: {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    color: string
-    metalness?: KclCommandValue
-    roughness?: KclCommandValue
-    opacity?: KclCommandValue
-  }
-  Translate: {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    x?: KclCommandValue
-    y?: KclCommandValue
-    z?: KclCommandValue
-    global?: boolean
-  }
-  Rotate: {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    roll?: KclCommandValue
-    pitch?: KclCommandValue
-    yaw?: KclCommandValue
-    global?: boolean
-  }
-  Scale: {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    x?: KclCommandValue
-    y?: KclCommandValue
-    z?: KclCommandValue
-    factor?: KclCommandValue
-    global?: boolean
-  }
-  Clone: {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    variableName: string
-  }
-  'Mirror 3D': {
-    bodies: Selections
-    across: Selections
-  }
-  'Pattern Circular 3D': {
-    nodeToEdit?: PathToNode
-    solids: Selections
-    instances: KclCommandValue
-    axis: string
-    center: KclCommandValue
-    arcDegrees?: KclCommandValue
-    rotateDuplicates?: boolean
-    useOriginal?: boolean
-  }
-  'Pattern Linear 3D': {
-    nodeToEdit?: PathToNode
-    solids: Selections
-    instances: KclCommandValue
-    distance: KclCommandValue
-    axis: string
-    useOriginal?: boolean
-  }
-  'GDT Flatness': {
-    nodeToEdit?: PathToNode
-    faces: Selections
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Straightness': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Position': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    datums?: KclCommandValue
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Profile': {
-    nodeToEdit?: PathToNode
-    edges: Selections
-    datums?: KclCommandValue
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Distance': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Perpendicularity': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    datums?: KclCommandValue
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Parallelism': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    datums?: KclCommandValue
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Annotation': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    annotation: string
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'GDT Datum': {
-    nodeToEdit?: PathToNode
-    faces: Selections
-    name: string
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
-  'Boolean Subtract': {
-    solids: Selections
-    tools: Selections
-  }
-  'Boolean Union': {
-    solids: Selections
-  }
-  'Boolean Intersect': {
-    solids: Selections
-  }
-  'Flip Surface': {
-    surface: Selections
-  }
-  'Delete Face': {
-    faces: Selections
-  }
-  'Boolean Split': {
-    nodeToEdit?: PathToNode
-    targets: Selections
-    tools?: Selections
-    merge?: boolean
-    keepTools?: boolean
-  }
-  Blend: {
-    edges: Selections
-  }
-  'Join Surfaces': {
-    selection: Selections
-  }
+  Appearance: AppearanceCommandArgs
+  Translate: WithNodeToEdit<Omit<StdLibCommandArgs<'translate'>, 'xyz'>>
+  Rotate: WithNodeToEdit<Omit<StdLibCommandArgs<'rotate'>, 'axis' | 'angle'>>
+  Scale: WithNodeToEdit<StdLibCommandArgs<'scale'>>
+  Clone: CloneCommandArgs
+  'Mirror 3D': StdLibCommandArgs<'mirror3d'>
+  'Pattern Circular 3D': PatternCircular3DCommandArgs
+  'Pattern Linear 3D': PatternLinear3DCommandArgs
+  'GDT Flatness': WithNodeToEdit<
+    Override<StdLibCommandArgs<'gdt::flatness'>, GdtFrameArgs>
+  >
+  'GDT Straightness': WithNodeToEdit<
+    GdtObjectsArgs<StdLibCommandArgs<'gdt::straightness'>>
+  >
+  'GDT Position': WithNodeToEdit<
+    GdtObjectsArgs<StdLibCommandArgs<'gdt::position'>>
+  >
+  'GDT Profile': WithNodeToEdit<
+    Override<StdLibCommandArgs<'gdt::profile'>, GdtFrameArgs>
+  >
+  'GDT Distance': GdtDistanceCommandArgs
+  'GDT Perpendicularity': WithNodeToEdit<
+    GdtObjectsArgs<StdLibCommandArgs<'gdt::perpendicularity'>>
+  >
+  'GDT Parallelism': WithNodeToEdit<
+    GdtObjectsArgs<StdLibCommandArgs<'gdt::parallelism'>>
+  >
+  'GDT Annotation': WithNodeToEdit<
+    GdtObjectsArgs<StdLibCommandArgs<'gdt::annotation'>>
+  >
+  'GDT Datum': GdtDatumCommandArgs
+  'Boolean Subtract': BooleanCommandArgs<'subtract'>
+  'Boolean Union': BooleanCommandArgs<'union'>
+  'Boolean Intersect': BooleanCommandArgs<'intersect'>
+  'Flip Surface': StdLibCommandArgs<'flipSurface'>
+  'Delete Face': DeleteFaceCommandArgs
+  'Boolean Split': BooleanSplitCommandArgs
+  Blend: StdLibCommandArgs<'blend'>
+  'Join Surfaces': Omit<StdLibCommandArgs<'joinSurfaces'>, 'tolerance'>
 }
 
 const kclDatumArrayToInput = (value: string) => {
