@@ -2,7 +2,7 @@ import {
   BillingError,
   type IBillingInfo,
   getBillingInfo,
-} from '@kittycad/react-shared'
+} from '@kittycad/ui-components'
 import { createKCClient } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'

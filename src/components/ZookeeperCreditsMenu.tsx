@@ -4,7 +4,7 @@ import {
   BillingDialog,
   BillingRemaining,
   BillingRemainingMode,
-} from '@kittycad/react-shared'
+} from '@kittycad/ui-components'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'

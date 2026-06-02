@@ -10,7 +10,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-import { BillingDialog } from '@kittycad/react-shared'
+import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
