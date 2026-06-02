@@ -3281,7 +3281,10 @@ export fn region(
 
 ///TODO don't know about feature tree
 @(impl = std_rust, feature_tree = false)
-export fn createAssembly(): Assembly {}
+export fn createAssembly(
+  /// The name of the new assembly
+  @name: string,
+): Assembly {}
 
 ///TODO temp
 @(impl = std_rust, feature_tree = false)

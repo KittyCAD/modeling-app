@@ -291,6 +291,61 @@ impl HideableGeometry {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
+pub enum SolidOrAssembly {
+    SolidSet(Vec<Solid>),
+    AssemblySet(Vec<Assembly>),
+}
+
+impl From<SolidOrAssembly> for crate::execution::KclValue {
+    fn from(value: SolidOrAssembly) -> Self {
+        match value {
+            SolidOrAssembly::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            SolidOrAssembly::AssemblySet(mut a) => {
+                if a.len() == 1
+                    && let Some(a) = a.pop()
+                {
+                    crate::execution::KclValue::Assembly { value: Box::new(a) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: a
+                            .into_iter()
+                            .map(|a| crate::execution::KclValue::Assembly { value: Box::new(a) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::assembly(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl SolidOrAssembly {
+    pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
+        match self {
+            SolidOrAssembly::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            SolidOrAssembly::AssemblySet(a) => Ok(a.iter().map(|a| a.id).collect()),
+        }
+    }
+}
+/// Data for a solid, sketch, or an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
@@ -332,7 +387,7 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
-            SolidOrSketchOrImportedGeometry::Assembly(a) => crate::execution::KclValue::Assembly { value: a.clone() },
+            SolidOrSketchOrImportedGeometry::Assembly(a) => crate::execution::KclValue::Assembly { value: a },
         }
     }
 }
