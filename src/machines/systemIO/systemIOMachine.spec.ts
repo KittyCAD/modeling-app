@@ -6,6 +6,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   getCloudProjectFolderRenameName,
+  shouldSendProjectFolderReadProgress,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -76,6 +77,14 @@ describe('systemIOMachine - XState', () => {
           ],
         })
       ).toBe('Some demo-3')
+    })
+
+    it('only emits folder read progress for initial loads', () => {
+      expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
+      expect(shouldSendProjectFolderReadProgress([])).toBe(true)
+      expect(
+        shouldSendProjectFolderReadProgress([mockProject('local-project')])
+      ).toBe(false)
     })
   })
 

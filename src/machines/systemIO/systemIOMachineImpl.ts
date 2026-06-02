@@ -99,6 +99,12 @@ async function getUniqueProjectNameForCreate({
   return getUniqueProjectName(requestedProjectName, existingEntries)
 }
 
+export function shouldSendProjectFolderReadProgress(
+  folders: SystemIOContext['folders']
+) {
+  return !folders?.length
+}
+
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
@@ -377,6 +383,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
         const projects: Project[] = []
         const projectDirectoryPath = context.projectDirectoryPath
+        const canSendProgress = shouldSendProjectFolderReadProgress(
+          context.folders
+        )
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
@@ -431,7 +440,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             continue
           }
           projects.push(project)
-          if (projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0) {
+          if (
+            canSendProgress &&
+            projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0
+          ) {
             sendFoldersProgress([...projects])
           }
         }
