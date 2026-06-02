@@ -102,10 +102,14 @@ test(
         resolve()
       }
     }
+    const holdCloudProjects = () => {
+      releaseRemoteList = false
+    }
 
     const apiCalls = {
       creates: [] as string[],
       staleUpdates: [] as string[],
+      remoteListResponses: 0,
     }
 
     await context.route('**/user/projects**', async (route) => {
@@ -116,6 +120,7 @@ test(
 
       if (pathname === '/user/projects' && request.method() === 'GET') {
         await waitForRemoteListRelease()
+        apiCalls.remoteListResponses += 1
         await route
           .fulfill({
             status: 200,
@@ -498,5 +503,63 @@ test(
     )
     expect(localFiles.staleDirty).toContain('staleLocalDirty = 2')
     expect(apiCalls.staleUpdates[0]).toContain('expected_revision')
+
+    const remoteListResponsesAfterHydration = apiCalls.remoteListResponses
+    holdCloudProjects()
+
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expect
+      .poll(() => projectTitles(page))
+      .toEqual(
+        expect.arrayContaining([
+          'Local only project',
+          'Clean synced project',
+          'Stale dirty project',
+          'Remote only project',
+        ])
+      )
+    expect(apiCalls.remoteListResponses).toBe(remoteListResponsesAfterHydration)
+
+    await page.evaluate(async () => {
+      const root = await navigator.storage.getDirectory()
+      const documents = await root.getDirectoryHandle('documents')
+      const projects = await documents.getDirectoryHandle(
+        'zoo-design-studio-projects'
+      )
+      await projects.removeEntry('Remote only project', { recursive: true })
+    })
+    const remoteOnlyExistsAfterManualRemoval = await page.evaluate(
+      async ({ projectDirectory }) => {
+        try {
+          await window.fsZds.stat(`${projectDirectory}/Remote only project`)
+          return true
+        } catch {
+          return false
+        }
+      },
+      { projectDirectory: PROJECT_DIR }
+    )
+    expect(remoteOnlyExistsAfterManualRemoval).toBe(false)
+
+    holdCloudProjects()
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    releaseCloudProjects()
+    await expect
+      .poll(() => projectTitles(page), { timeout: 20_000 })
+      .toEqual(expect.arrayContaining(['Remote only project']))
+    await expect
+      .poll(() =>
+        page.evaluate(
+          ({ projectDirectory }) =>
+            window.fsZds.readFile(
+              `${projectDirectory}/Remote only project/main.kcl`,
+              { encoding: 'utf-8' }
+            ),
+          { projectDirectory: PROJECT_DIR }
+        )
+      )
+      .toContain('remoteOnly = 1')
   }
 )

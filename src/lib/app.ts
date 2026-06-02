@@ -285,6 +285,7 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
     this.auth.actor.subscribe(this.syncOpfsCloudBacking)
     this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
+    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.syncOpfsCloudBacking()
@@ -592,6 +593,8 @@ export class App implements AppSubsystems {
     configureOpfsCloudSync({
       enabled,
       token,
+      projectDirectoryPath:
+        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
     })
   }
 

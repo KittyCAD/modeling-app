@@ -84,6 +84,7 @@ type OPFSCloudConfig = {
   token?: string
   baseUrl?: string
   environmentName?: string
+  projectDirectoryPath?: string
 }
 
 export type OPFSCloudSyncState =
@@ -202,8 +203,24 @@ function getDefaultProjectDirectoryPath() {
   return localFs.join(`${localFs.sep}documents`, PROJECT_FOLDER)
 }
 
+function getConfiguredProjectDirectoryPath() {
+  return config.projectDirectoryPath?.trim()
+    ? normalizePathForSync(config.projectDirectoryPath)
+    : getDefaultProjectDirectoryPath()
+}
+
 function projectNameFromPath(projectPath: string) {
   return localFs.basename(normalizePathForSync(projectPath))
+}
+
+function isProjectPathInDirectory(
+  projectPath: string,
+  projectDirectory: string
+) {
+  return (
+    localFs.dirname(normalizePathForSync(projectPath)) ===
+    normalizePathForSync(projectDirectory)
+  )
 }
 
 function isInternalOpfsPath(targetPath: string) {
@@ -1131,9 +1148,9 @@ async function findLocalProjectPathByRemoteProjectId(
 
 async function cloneRemoteProjectToLocal(
   remoteProject: RemoteProject,
+  projectDirectory = getConfiguredProjectDirectoryPath(),
   preferredProjectPath?: string
 ): Promise<OpfsCloudLocalProject> {
-  const projectDirectory = getDefaultProjectDirectoryPath()
   await localFs.mkdir(projectDirectory, { recursive: true })
   const projectName = sanitizeProjectName(
     remoteProject.title || 'cloud-project',
@@ -1185,12 +1202,20 @@ export async function ensureOpfsCloudProjectLocallySynced(
   const knownLocalMetadata = metadata.find(
     (entry) => entry.remoteProjectId === projectId && !entry.tombstone
   )
+  const projectDirectory = getConfiguredProjectDirectoryPath()
   if (
     knownLocalMetadata &&
+    isProjectPathInDirectory(
+      knownLocalMetadata.localProjectPath,
+      projectDirectory
+    ) &&
     (await exists(knownLocalMetadata.localProjectPath))
   ) {
     scheduleSync(0)
     return localProjectFromMetadata(knownLocalMetadata)
+  }
+  if (knownLocalMetadata) {
+    await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
   }
 
   const remoteProject = await getRemoteProject(projectId)
@@ -1198,7 +1223,6 @@ export async function ensureOpfsCloudProjectLocallySynced(
     remoteProject.title || 'cloud-project',
     'cloud-project'
   )
-  const projectDirectory = getDefaultProjectDirectoryPath()
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
@@ -1219,7 +1243,14 @@ export async function ensureOpfsCloudProjectLocallySynced(
 
   return cloneRemoteProjectToLocal(
     remoteProject,
-    knownLocalMetadata?.localProjectPath
+    projectDirectory,
+    knownLocalMetadata &&
+      isProjectPathInDirectory(
+        knownLocalMetadata.localProjectPath,
+        projectDirectory
+      )
+      ? knownLocalMetadata.localProjectPath
+      : undefined
   )
 }
 
@@ -1597,7 +1628,7 @@ async function syncRemoteIndex() {
     return
   }
 
-  const projectDirectory = getDefaultProjectDirectoryPath()
+  const projectDirectory = getConfiguredProjectDirectoryPath()
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const remoteProjects = await listRemoteProjects()
@@ -1618,6 +1649,26 @@ async function syncRemoteIndex() {
       (entry) => entry.remoteProjectId === remoteProject.id
     )
     if (knownLocalMetadata) {
+      const knownLocalPathIsCurrent =
+        isProjectPathInDirectory(
+          knownLocalMetadata.localProjectPath,
+          projectDirectory
+        ) && (await exists(knownLocalMetadata.localProjectPath))
+      if (!knownLocalPathIsCurrent) {
+        await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
+        await cloneRemoteProjectToLocal(
+          remoteProject,
+          projectDirectory,
+          isProjectPathInDirectory(
+            knownLocalMetadata.localProjectPath,
+            projectDirectory
+          )
+            ? knownLocalMetadata.localProjectPath
+            : undefined
+        )
+        continue
+      }
+
       const nextLocalMetadata = await hydrateCleanLocalProjectTitle(
         knownLocalMetadata,
         remoteProject.title
@@ -1652,7 +1703,7 @@ async function syncRemoteIndex() {
       continue
     }
 
-    await cloneRemoteProjectToLocal(remoteProject)
+    await cloneRemoteProjectToLocal(remoteProject, projectDirectory)
   }
 }
 
@@ -1661,7 +1712,7 @@ async function enqueueExistingLocalProjectsForInitialSync() {
     return
   }
 
-  const projectDirectory = getDefaultProjectDirectoryPath()
+  const projectDirectory = getConfiguredProjectDirectoryPath()
   if (!(await exists(projectDirectory))) {
     initialLocalScanComplete = true
     return
@@ -1899,7 +1950,9 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
     previousConfig.token !== config.token ||
     previousConfig.baseUrl !== config.baseUrl ||
     previousConfig.environmentName !== config.environmentName
-  if (cloudIdentityChanged) {
+  const projectDirectoryChanged =
+    previousConfig.projectDirectoryPath !== config.projectDirectoryPath
+  if (cloudIdentityChanged || projectDirectoryChanged) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
   }
