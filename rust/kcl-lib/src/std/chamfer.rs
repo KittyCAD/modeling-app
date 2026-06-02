@@ -40,13 +40,17 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
-    let edge_cut_number = edge_cut_number.unwrap_or(0);
-    let edge_cut_version: EdgeCutVersion = edge_cut_number.try_into().map_err(|()| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!("{} is not a version of the Zoo edge cut algorithm", edge_cut_number),
-            vec![args.source_range],
-        ))
-    })?;
+    let edge_cut_version: EdgeCutVersion = edge_cut_number
+        .map(|num| {
+            num.try_into().map_err(|()| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("{} is not a version of the Zoo edge cut algorithm", num),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?
+        .unwrap_or_default();
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
