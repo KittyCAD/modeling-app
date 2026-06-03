@@ -17,7 +17,7 @@ import type {
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
@@ -25,23 +25,19 @@ import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   enforceFileEXT,
-  getEXTNoPeriod,
   getEXTWithPeriod,
   getParentAbsolutePath,
-  isExtensionARelevantExtension,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { useApp, useSingletons } from '@src/lib/boot'
 import type { MaybePressOrBlur } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { showWarningToast } from '@src/components/ToastWarning'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -75,6 +71,15 @@ const getDropTargetPath = (
   return getParentAbsolutePath(target.path)
 }
 
+const rowPathMatchesTreeParent = (
+  row: FileExplorerEntry,
+  project: Project
+): boolean => {
+  const [, ...relativeParentParts] = desktopSafePathSplit(row.parentPath)
+  const expectedParentPath = joinOSPaths(project.path, ...relativeParentParts)
+  return getParentAbsolutePath(row.path) === expectedParentPath
+}
+
 const readAllDirectoryEntriesRecursively = async (
   dirEntry: FileSystemDirectoryEntry
 ): Promise<FileSystemEntry[]> => {
@@ -92,37 +97,20 @@ const readAllDirectoryEntriesRecursively = async (
   return entries
 }
 
-const isFileSupportedForImport = (
-  fileName: string,
-  wasmInstance: ModuleType
-): boolean => {
-  const extension = getEXTNoPeriod(fileName)
-  if (!extension) return false
-  const supportedExtensions = relevantFileExtensions(wasmInstance)
-  return isExtensionARelevantExtension(extension, supportedExtensions)
-}
-
 const collectDroppedFiles = async (
   entry: FileSystemEntry,
-  basePath: string,
-  wasmInstance: ModuleType
+  basePath: string
 ): Promise<{
   supported: { file: File; relativePath: string }[]
-  unsupported: string[]
 }> => {
   const supported: { file: File; relativePath: string }[] = []
-  const unsupported: string[] = []
 
   if (entry.isFile) {
     const fileEntry = entry as FileSystemFileEntry
     const file = await new Promise<File>((resolve, reject) =>
       fileEntry.file(resolve, reject)
     )
-    if (isFileSupportedForImport(file.name, wasmInstance)) {
-      supported.push({ file, relativePath: basePath })
-    } else {
-      unsupported.push(joinOSPaths(basePath, file.name))
-    }
+    supported.push({ file, relativePath: basePath })
   } else if (entry.isDirectory) {
     const entries = await readAllDirectoryEntriesRecursively(
       entry as FileSystemDirectoryEntry
@@ -132,17 +120,12 @@ const collectDroppedFiles = async (
       : entry.name
 
     for (const childEntry of entries) {
-      const result = await collectDroppedFiles(
-        childEntry,
-        newBasePath,
-        wasmInstance
-      )
+      const result = await collectDroppedFiles(childEntry, newBasePath)
       supported.push(...result.supported)
-      unsupported.push(...result.unsupported)
     }
   }
 
-  return { supported, unsupported }
+  return { supported }
 }
 
 /**
@@ -326,12 +309,11 @@ export const ProjectExplorer = ({
 
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
-      if (readOnly || !window.electron) return
-      const electron = window.electron
+      if (readOnly) {
+        return
+      }
 
       const supportedFiles: { file: File; relativePath: string }[] = []
-      const unsupportedFiles: string[] = []
-
       // Collect all entries/files synchronously first
       // DataTransferItemList becomes invalid after async operations
       const entries: FileSystemEntry[] = []
@@ -358,9 +340,8 @@ export const ProjectExplorer = ({
       // Now process entries asynchronously
       for (const entry of entries) {
         try {
-          const result = await collectDroppedFiles(entry, '', wasmInstance)
+          const result = await collectDroppedFiles(entry, '')
           supportedFiles.push(...result.supported)
-          unsupportedFiles.push(...result.unsupported)
         } catch (e) {
           console.error('Failed to collect dropped files:', entry?.name, e)
           failedEntryNames.push(entry?.name || 'dropped item')
@@ -379,22 +360,7 @@ export const ProjectExplorer = ({
 
       // Process fallback files (browsers without webkitGetAsEntry support)
       for (const file of fallbackFiles) {
-        if (isFileSupportedForImport(file.name, wasmInstance)) {
-          supportedFiles.push({ file, relativePath: '' })
-        } else {
-          unsupportedFiles.push(file.name)
-        }
-      }
-
-      if (unsupportedFiles.length > 0) {
-        const maxToShow = 5
-        const fileList = unsupportedFiles.slice(0, maxToShow).join(', ')
-        const remaining = unsupportedFiles.length - maxToShow
-        const fileListMessage =
-          remaining > 0 ? `${fileList}, and ${remaining} more` : fileList
-        showWarningToast(fileListMessage, {
-          title: `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}:`,
-        })
+        supportedFiles.push({ file, relativePath: '' })
       }
 
       // Copy supported files to the target directory
@@ -410,7 +376,7 @@ export const ProjectExplorer = ({
 
             // Create parent directories if needed
             if (relativePath && !createdDirs.has(destinationDirPath)) {
-              await electron.mkdir(destinationDirPath, { recursive: true })
+              await fsZds.mkdir(destinationDirPath, { recursive: true })
               createdDirs.add(destinationDirPath)
             }
 
@@ -418,13 +384,11 @@ export const ProjectExplorer = ({
               entryName: file.name,
               baseDir: destinationDirPath,
               wasmInstance,
+              preserveUnknownExtension: true,
             })
 
             const arrayBuffer = await file.arrayBuffer()
-            await electron.writeFile(
-              destinationPath,
-              new Uint8Array(arrayBuffer)
-            )
+            await fsZds.writeFile(destinationPath, new Uint8Array(arrayBuffer))
           } catch (e) {
             console.error('Failed to copy file:', file.name, e)
             toast.error(`Failed to import ${file.name}.`)
@@ -489,6 +453,24 @@ export const ProjectExplorer = ({
       // insert fake row if one is present
     }
 
+    const openedRowsForRender = { ...openedRows }
+    const currentFileRow = file?.path
+      ? flattenedData.find(
+          (child) =>
+            child.path === file.path && rowPathMatchesTreeParent(child, project)
+        )
+      : undefined
+    let openedRowsChanged = false
+    if (currentFileRow) {
+      const pathIterator = desktopSafePathSplit(currentFileRow.parentPath)
+      while (pathIterator.length > 0) {
+        const key = desktopSafePathJoin(pathIterator)
+        openedRowsChanged = openedRowsChanged || !openedRowsForRender[key]
+        openedRowsForRender[key] = true
+        pathIterator.pop()
+      }
+    }
+
     const requestedRows: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
@@ -501,14 +483,15 @@ export const ProjectExplorer = ({
         const pathIterator = desktopSafePathSplit(child.parentPath)
         while (pathIterator.length > 0) {
           const key = desktopSafePathJoin(pathIterator)
-          const isOpened = openedRows[key] || project.name === key
+          const isOpened = openedRowsForRender[key] || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened
           pathIterator.pop()
         }
 
-        const isOpen = openedRows[child.key]
+        const isOpen = openedRowsForRender[child.key]
         const render =
-          (openedRows[child.parentPath] || project.name === child.parentPath) &&
+          (openedRowsForRender[child.parentPath] ||
+            project.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
@@ -946,11 +929,22 @@ export const ProjectExplorer = ({
       return row.render && skipPlaceHolder
     })
 
+    const currentFileRowIndex = requestedRowsToRender.findIndex(
+      (row) => row.path === file?.path
+    )
+    if (currentFileRowIndex >= 0) {
+      setSelectedRowWrapper(requestedRowsToRender[currentFileRowIndex])
+      setActiveIndex(currentFileRowIndex)
+    }
+    if (openedRowsChanged) {
+      setOpenedRows(openedRowsForRender)
+      openedRowsRef.current = openedRowsForRender
+    }
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
     previousProject.current = project
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [project, openedRows, fakeRow, activeIndex, errors])
+  }, [project, openedRows, fakeRow, activeIndex, errors, file?.path])
 
   // Handle clicks and keyboard presses within the global DOM level
   useEffect(() => {

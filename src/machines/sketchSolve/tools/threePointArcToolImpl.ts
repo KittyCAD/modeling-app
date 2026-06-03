@@ -1,8 +1,9 @@
 import type {
   SceneGraphDelta,
-  SourceDelta,
   SegmentCtor,
+  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Coords2d } from '@src/lang/util'
@@ -11,24 +12,23 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { getAngleDiff, roundOff } from '@src/lib/utils'
 import { lerp2d, subVec } from '@src/lib/utils2d'
-import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
-import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import {
   isArcSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  applyConstraintsForSnapTarget,
   type SnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {
   clearToolSnappingState,
   getBestSnappingCandidate,
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Three-point arc tool'
 export const ADDING_FIRST_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding first point`
@@ -205,6 +205,7 @@ async function editArcWithThreePoints({
   kclManager,
   sketchId,
   settings,
+  commitSolverResults = true,
 }: {
   arcId: number
   startPoint: Coords2d
@@ -214,6 +215,7 @@ async function editArcWithThreePoints({
   kclManager: KclManager
   sketchId: number
   settings: Awaited<ReturnType<typeof jsAppSettings>>
+  commitSolverResults?: boolean
 }): Promise<
   | {
       kclSource: SourceDelta
@@ -265,7 +267,10 @@ async function editArcWithThreePoints({
         },
       },
     ],
-    settings
+    settings,
+    false,
+    commitSolverResults ? undefined : [],
+    commitSolverResults
   )
 }
 
@@ -422,6 +427,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           kclManager: context.kclManager,
           sketchId: context.sketchId,
           settings: cachedSettings,
+          commitSolverResults: false,
         })
         if ('error' in result) return
 

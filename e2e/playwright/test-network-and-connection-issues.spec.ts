@@ -15,7 +15,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const networkToggle = page.getByTestId(/network-toggle/)
 
@@ -121,10 +121,9 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await u.waitForPageLoad()
 
-      await u.openDebugPanel()
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.dblclick()
       await toolbar.waitUntilSketchingReady()
@@ -133,7 +132,6 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(page.locator('.cm-content')).toContainText(
         'sketch001 = startSketchOn(XZ)'
       )
-      await u.closeDebugPanel()
 
       await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
@@ -183,7 +181,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
         networkToggleConnectedText.or(networkToggleWeakText)
       ).toBeVisible()
 
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Click off the code pane.
       await page.mouse.click(100, 100)
@@ -217,7 +215,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       ).not.toHaveAttribute('aria-pressed', 'true')
 
       // Exit sketch
-      await page.keyboard.press('Meta+Escape')
+      await page.keyboard.press('Shift+Escape')
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).not.toBeVisible()
@@ -258,7 +256,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
 
       await test.step('Go to modeling scene', async () => {
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Verify pausing behavior', async () => {

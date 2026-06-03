@@ -1,14 +1,11 @@
-import type { Locator, Page } from '@playwright/test'
 import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
+import type { Locator, Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
-
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
   getPixelRGBs,
-  getUtils,
   openAndClearDebugPanel,
   sendCustomCmd,
 } from '@e2e/playwright/test-utils'
@@ -402,13 +399,10 @@ export class SceneFixture {
   }
 
   settled = async (
-    cmdBar: CmdBarFixture,
     { expectError }: Partial<{ expectError: boolean }> | undefined = {
       expectError: false,
     }
   ) => {
-    const u = await getUtils(this.page)
-
     await closeOnboardingModalIfPresent(this.page)
 
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
@@ -419,14 +413,6 @@ export class SceneFixture {
     }
     await expect(this.startEditSketchBtn).toBeVisible()
     await expect(this.engineConnectionsSpinner).not.toBeVisible()
-
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Settings · debug · show panel')
-    await cmdBar.selectOption({ name: 'on' }).click()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
   }
 
   expectPixelColor = async (

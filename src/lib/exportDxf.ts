@@ -1,19 +1,19 @@
-import fsZds from '@src/lib/fs-zds'
-import { isArray } from '@src/lib/utils'
-import { getOperationVariableName } from '@src/lib/operations'
+import type { WebSocketResponse } from '@kittycad/lib'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { KclManager } from '@src/lang/KclManager'
 import {
-  findOperationPlaneLikeArtifact,
   type StdLibCallOp,
+  findOperationPlaneLikeArtifact,
 } from '@src/lang/queryAst'
-import type { WebSocketResponse } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import type { ToastOptions } from 'react-hot-toast'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import fsZds from '@src/lib/fs-zds'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { getOperationVariableName } from '@src/lib/operations'
+import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ToastOptions } from 'react-hot-toast'
 
 function getSketchArtifactId(
   value: OpKclValue | null | undefined
@@ -179,7 +179,7 @@ export async function exportSketchToDxf(
           return null
         }
 
-        return files as Array<{ name?: string; contents: string }>
+        return files
       } catch {
         return null
       }

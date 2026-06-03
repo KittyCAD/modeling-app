@@ -59,17 +59,21 @@ pub enum Operation {
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
-    GroupEnd,
-    #[allow(dead_code)]
     #[serde(rename_all = "camelCase")]
-    SketchSolve {
-        /// The ID of the sketch being modified.
-        sketch_id: ObjectId,
+    ModuleInstance {
+        /// The name of the module being used.
+        name: String,
+        /// The ID of the module which can be used to determine its path.
+        module_id: ModuleId,
+        /// Whether this is a glob import (`import * from "foo.kcl"`).
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        glob: bool,
         /// The node path of the operation in the source code.
         node_path: NodePath,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
+    GroupEnd,
 }
 
 impl Operation {
@@ -77,11 +81,13 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { is_error, .. } => *is_error = is_err,
-            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd | Self::SketchSolve { .. } => {}
+            Self::VariableDeclaration { .. }
+            | Self::GroupBegin { .. }
+            | Self::ModuleInstance { .. }
+            | Self::GroupEnd => {}
         }
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
@@ -106,17 +112,15 @@ impl Operation {
                 node_path,
                 source_range,
                 ..
-            } => {
-                node_path.fill_placeholder(programs, cached_body_items, *source_range);
             }
-            Operation::GroupEnd => {}
-            Operation::SketchSolve {
+            | Operation::ModuleInstance {
                 node_path,
                 source_range,
                 ..
             } => {
                 node_path.fill_placeholder(programs, cached_body_items, *source_range);
             }
+            Operation::GroupEnd => {}
         }
     }
 }
@@ -140,14 +144,12 @@ pub enum Group {
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
     },
-    /// A whole-module import use.
+    /// A sketch block.
     #[allow(dead_code)]
     #[serde(rename_all = "camelCase")]
-    ModuleInstance {
-        /// The name of the module being used.
-        name: String,
-        /// The ID of the module which can be used to determine its path.
-        module_id: ModuleId,
+    SketchBlock {
+        /// The ID of the sketch this group wraps.
+        sketch_id: ObjectId,
     },
 }
 

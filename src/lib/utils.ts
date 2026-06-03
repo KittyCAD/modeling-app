@@ -1,9 +1,9 @@
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import type { BaseUnit, RgbaColor } from '@src/lib/settings/settingsTypes'
 import type { AsyncFn } from '@src/lib/types'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { BaseUnit, RgbaColor } from '@src/lib/settings/settingsTypes'
 
 export const uuidv4 = v4
 
@@ -54,7 +54,7 @@ export function allLabels(callExpression: CallExpressionKw): string[] {
 /**
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
  */
-export function isArray(val: any): val is unknown[] {
+export function isArray(val: unknown): val is readonly unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
 }

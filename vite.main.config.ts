@@ -4,15 +4,16 @@ import vitePluginEslint from '@nabla/vite-plugin-eslint'
 import viteJsPluginReact from '@vitejs/plugin-react'
 import type { ConfigEnv, UserConfig as ViteUserConfig } from 'vite'
 import { mergeConfig } from 'vite'
-import { defineConfig } from 'vitest/config'
 import vitePluginPackageVersion from 'vite-plugin-package-version'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from 'vitest/config'
 import { configDefaults } from 'vitest/config'
 
 import {
   external,
   getBuildConfig,
   getBuildDefine,
+  ignoredWatchPathGlobs,
   pluginHotRestart,
 } from './vite.base.config'
 
@@ -26,13 +27,7 @@ export default defineConfig((env) => {
       open: true,
       port: 3000,
       watch: {
-        ignored: [
-          '**/target/**',
-          '**/dist/**',
-          '**/build/**',
-          '**/test-results/**',
-          '**/playwright-report/**',
-        ],
+        ignored: ignoredWatchPathGlobs,
       },
     },
     test: {

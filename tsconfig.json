@@ -9,6 +9,7 @@
       "@kittycad/codemirror-lang-kcl": [
         "./packages/codemirror-lang-kcl/src/index.ts"
       ],
+      "@kittycad/ui-components": ["./packages/ui-components/src/index.ts"],
       "@rust/*": ["./rust/*"],
       "@e2e/*": ["./e2e/*"],
       "@src/*": ["./src/*"],
@@ -40,6 +41,7 @@
   },
   "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
   "exclude": [
+    "**/*.stories.tsx",
     "node_modules",
     "./*.grammar",
     "vite.config.ts",

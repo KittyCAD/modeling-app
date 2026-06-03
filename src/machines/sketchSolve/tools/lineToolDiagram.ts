@@ -11,6 +11,8 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import {
+  isArcSegment,
+  isConstraint,
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
@@ -275,6 +277,43 @@ export const machine = setup({
             snapConstraintNewObjects = snapResult.newObjectIds
           }
 
+          // Stop chaining lines when snapping to a point that is an end point of a line/arc
+          const hasNewCoincidentSnapConstraintToNonOriginPoint =
+            snapTarget?.type === 'point' &&
+            snapConstraintNewObjects.some((objId) => {
+              const obj = latestSceneGraphDelta.new_graph.objects[objId]
+
+              // First make sure this is a new coincident constraint
+              if (
+                isConstraint(obj, 'Coincident') &&
+                obj.kind.constraint.segments.includes(snapTarget.id)
+              ) {
+                // Then check the snapped point is at the end of a line or arc
+                const point =
+                  latestSceneGraphDelta.new_graph.objects[snapTarget.id]
+                if (isPointSegment(point)) {
+                  const owner = point.kind.segment.owner
+                    ? latestSceneGraphDelta.new_graph.objects[
+                        point.kind.segment.owner
+                      ]
+                    : null
+                  if (isLineSegment(owner) || isArcSegment(owner)) {
+                    if (
+                      owner.kind.segment.start === snapTarget.id ||
+                      owner.kind.segment.end === snapTarget.id
+                    ) {
+                      return true
+                    }
+                  }
+                }
+              }
+
+              // return (
+              //   isConstraint(obj, 'Coincident') &&
+              //   obj.kind.constraint.segments.includes(snapTarget.id)
+              // )
+            })
+
           return {
             kclSource: latestKclSource,
             sceneGraphDelta: {
@@ -286,7 +325,8 @@ export const machine = setup({
             },
             checkpointId: latestCheckpointId,
             lastPointId:
-              snapConstraintNewObjects.length === 0 && isDoubleClick !== true
+              !hasNewCoincidentSnapConstraintToNonOriginPoint &&
+              isDoubleClick !== true
                 ? id
                 : undefined,
           }

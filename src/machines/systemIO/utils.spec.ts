@@ -1,5 +1,7 @@
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds from '@src/lib/fs-zds'
 import {
+  collectProjectFiles,
   normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
@@ -139,6 +141,75 @@ describe('System IO Utils', () => {
       },
     ])
     expect(preparedPayload?.filesToDelete).toEqual([])
+  })
+
+  it('collects project files from disk and excludes .gitignore patterns', async () => {
+    const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+    await fsZds.mkdir(fsZds.join(projectPath, '.hidden-dir'), {
+      recursive: true,
+    })
+    await fsZds.mkdir(fsZds.join(projectPath, 'dist'), { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'main.kcl'),
+      new TextEncoder().encode('cube()')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'notes.txt'),
+      new TextEncoder().encode('notes')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'project.toml'),
+      new TextEncoder().encode('[settings.app]')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, '.gitignore'),
+      new TextEncoder().encode('dist\nnotes.txt\n.hidden-dir/\n')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, '.hidden-dir', 'secret.txt'),
+      new TextEncoder().encode('secret')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'dist', 'ignored.kcl'),
+      new TextEncoder().encode('ignored = 1')
+    )
+
+    try {
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: 'cube()',
+        fileNames: {
+          0: {
+            type: 'Local',
+            value: fsZds.join(projectPath, 'main.kcl'),
+            original_import_path: null,
+          },
+        },
+        projectContext: {
+          name: 'zookeeper-project',
+          path: projectPath,
+          children: [
+            {
+              name: 'main.kcl',
+              path: fsZds.join(projectPath, 'main.kcl'),
+              children: null,
+            },
+          ],
+          metadata: null,
+          kcl_file_count: 1,
+          directory_count: 0,
+          default_file: fsZds.join(projectPath, 'main.kcl'),
+          readWriteAccess: true,
+        },
+      })
+
+      expect(projectFiles.map((file) => file.relPath).sort()).toEqual([
+        '.gitignore',
+        'main.kcl',
+        'project.toml',
+      ])
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
   })
 
   it('keeps the currently focused file as the navigation target after project-wide edits', () => {

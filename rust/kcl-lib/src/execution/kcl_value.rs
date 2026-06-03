@@ -545,6 +545,7 @@ impl KclValue {
     pub(crate) fn from_sketch_var_literal(
         literal: &Node<NumericLiteral>,
         id: SketchVarId,
+        node_path: Option<crate::NodePath>,
         exec_state: &ExecState,
     ) -> Self {
         let meta = vec![literal.metadata()];
@@ -553,6 +554,7 @@ impl KclValue {
             value: Box::new(SketchVar {
                 id,
                 initial_value: literal.value,
+                node_path,
                 meta,
                 ty,
             }),
@@ -721,12 +723,16 @@ impl KclValue {
                 ty: v.ty,
                 meta,
             },
+            // The original sketch var (if any) lives in `sketch_vars` and carries
+            // its own node_path; this synthesized wrapper isn't pushed there, so
+            // its node_path doesn't drive var-solution writeback.
             UnsolvedExpr::Unknown(var_id) => crate::execution::KclValue::SketchVar {
                 value: Box::new(SketchVar {
                     id: var_id,
                     initial_value: Default::default(),
                     // TODO: Should this be the solver units?
                     ty: Default::default(),
+                    node_path: None,
                     meta,
                 }),
             },

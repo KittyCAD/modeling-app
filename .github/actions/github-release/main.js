@@ -1,8 +1,8 @@
-const core = require("@actions/core");
-const path = require("path");
-const fs = require("fs");
-const github = require("@actions/github");
-const glob = require("glob");
+import * as core from "@actions/core";
+import * as github from "@actions/github";
+import { createReadStream, statSync } from "node:fs";
+import path from "node:path";
+import { globSync } from "glob";
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -80,8 +80,8 @@ async function runOnce() {
   const release_id = release.data.id;
 
   // Upload all the relevant assets for this release as just general blobs.
-  for (const file of glob.sync(files)) {
-    const size = fs.statSync(file).size;
+  for (const file of globSync(files)) {
+    const size = statSync(file).size;
     const name = path.basename(file);
 
     await runWithRetry(async function () {
@@ -101,7 +101,7 @@ async function runOnce() {
 
       core.info(`upload ${file}`);
       const headers = { "content-length": size, "content-type": "application/octet-stream" };
-      const data = fs.createReadStream(file);
+      const data = createReadStream(file);
       await octokit.rest.repos.uploadReleaseAsset({
         data,
         headers,

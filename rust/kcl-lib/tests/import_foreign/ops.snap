@@ -5,12 +5,9 @@ description: Operations executed import_foreign.kcl
 {
   "rust/kcl-lib/tests/import_foreign/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "../inputs/cube.gltf",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "cube",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed import_foreign.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

@@ -1,5 +1,5 @@
 import { hasProperty, isArray, isRecord } from '@src/lib/utils'
-import { type Object3D, type Group, BufferGeometry, Material } from 'three'
+import { BufferGeometry, type Group, Material, type Object3D } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**

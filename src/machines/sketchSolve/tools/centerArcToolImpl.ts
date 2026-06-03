@@ -7,11 +7,10 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Coords2d } from '@src/lang/util'
-import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
-import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
 import {
   isArcSegment,
   isPointSegment,
@@ -20,20 +19,21 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  type SnapTarget,
+  applyConstraintsForSnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import {
   calculateArcSwapState,
   shouldSwapStartEnd,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import {
-  applyConstraintsForSnapTarget,
-  type SnapTarget,
-} from '@src/machines/sketchSolve/snapping'
 import {
   clearToolSnappingState,
   getBestSnappingCandidate,
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -345,7 +345,10 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                 },
               },
             ],
-            settings
+            settings,
+            false,
+            [],
+            false
           )
           const sendData: SketchSolveMachineEvent = {
             type: 'update sketch outcome',
@@ -947,6 +950,16 @@ export async function finalizeArcActor({
         y: { type: 'Var', value: roundOff(finalEnd[1]), units },
       },
     }
+    const finalDragAnchorSegmentIds = isArcSegment(arcObj)
+      ? Array.from(
+          new Set([
+            arcObj.kind.segment.center,
+            clickedPointIsStart
+              ? arcObj.kind.segment.end
+              : arcObj.kind.segment.start,
+          ])
+        )
+      : undefined
 
     const settings = jsAppSettings(rustContext.settingsActor)
     const result = await rustContext.editSegments(
@@ -959,7 +972,8 @@ export async function finalizeArcActor({
         },
       ],
       settings,
-      startSnapTarget == null && endSnapTarget == null
+      startSnapTarget == null && endSnapTarget == null,
+      finalDragAnchorSegmentIds
     )
 
     const editedArc = result.sceneGraphDelta.new_graph.objects[arcId]

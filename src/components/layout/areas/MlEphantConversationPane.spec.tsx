@@ -47,7 +47,7 @@ const completedConversation: Conversation = {
           end_of_stream: {
             whole_response: 'Done.',
           },
-        } as any,
+        },
       ],
       deltasAggregated: 'Done.',
     },
@@ -59,6 +59,7 @@ type FakeMlEphantSnapshot = {
   context: {
     abruptlyClosed: boolean
     awaitingResponse: boolean
+    attachmentsLoadedForCurrentPrompt: boolean
     conversation?: Conversation
     conversationId?: string
     defaultMode?: MlCopilotModeId
@@ -91,6 +92,7 @@ const createFakeActor = ({
     context: {
       abruptlyClosed: false,
       awaitingResponse: true,
+      attachmentsLoadedForCurrentPrompt: true,
       conversation,
       conversationId: 'conversation-id',
       defaultMode,
@@ -197,6 +199,7 @@ const createStatefulClearChatActor = () => {
     context: {
       abruptlyClosed: false,
       awaitingResponse: false,
+      attachmentsLoadedForCurrentPrompt: true,
       conversation: completedConversation,
       conversationId: 'old-conversation-id',
       defaultMode: undefined,

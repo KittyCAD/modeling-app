@@ -1,21 +1,22 @@
 import type { UserResponse } from '@kittycad/lib'
+import { users } from '@kittycad/lib'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { type IStat } from '@src/lib/fs-zds/interface'
-import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
+import env from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -29,15 +30,18 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
+import {
+  type GitignoreStackEntry,
+  appendGitignoreForDirectory,
+  createInitialGitignoreStack,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase, isArray } from '@src/lib/utils'
-import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import env from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
-import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
+import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 function getProjectSettingsSection(
   config: DeepPartial<Configuration> | Configuration
@@ -46,7 +50,7 @@ function getProjectSettingsSection(
   return projectSettings &&
     typeof projectSettings === 'object' &&
     !isArray(projectSettings)
-    ? (projectSettings as { [key: string]: JsonValue })
+    ? projectSettings
     : undefined
 }
 
@@ -286,19 +290,15 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   targetPath: string,
+  projectRoot: string,
   canReadWritePath: boolean,
-  fileExtensionsForFilter: string[]
+  showAllFiles: boolean,
+  gitignoreStack: GitignoreStackEntry[]
 ) => {
-  const isRelevantFile = (filename: string): boolean => {
-    const extensionNoPeriod = getEXTNoPeriod(filename)
-    if (!extensionNoPeriod) {
-      return false
-    }
-    return isExtensionARelevantExtension(
-      extensionNoPeriod,
-      fileExtensionsForFilter
-    )
-  }
+  const configurationFileNames = new Set([
+    SETTINGS_FILE_NAME,
+    PROJECT_SETTINGS_FILE_NAME,
+  ])
 
   // Make sure the filesystem object exists.
   try {
@@ -346,22 +346,34 @@ const collectAllFilesRecursiveFrom = async (
 
   for (let e of entries) {
     // ignore hidden files and directories (starting with a dot)
-    if (e.indexOf('.') === 0) {
+    if (!showAllFiles && e.indexOf('.') === 0) {
       continue
     }
 
     const ePath = fsZds.join(targetPath, e)
     const isEDir = await statIsDirectory(ePath)
+    const relativePath = fsZds.relative(projectRoot, ePath).replace(/\\/g, '/')
+
+    if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isEDir)) {
+      continue
+    }
 
     if (isEDir) {
+      const childGitignoreStack = await appendGitignoreForDirectory(
+        gitignoreStack,
+        ePath,
+        projectRoot
+      )
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
+        projectRoot,
         canReadWritePath,
-        fileExtensionsForFilter
+        showAllFiles,
+        childGitignoreStack
       )
       children.push(subChildren)
     } else {
-      if (!isRelevantFile(ePath)) {
+      if (!showAllFiles && configurationFileNames.has(e)) {
         continue
       }
       children.push(
@@ -496,12 +508,18 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
-  const fileExtensionsForFilter = relevantFileExtensions(wasmInstance)
+  const appSettings = await readAppSettingsFile(wasmInstance)
+  const showAllFiles = appSettings.settings?.app?.show_all_files === true
+
+  const gitignoreStack = await createInitialGitignoreStack(projectPath)
+
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
+    projectPath,
     canReadWriteProjectPath,
-    fileExtensionsForFilter
+    showAllFiles,
+    gitignoreStack
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string
@@ -794,9 +812,7 @@ export const readAppSettingsFile = async (
             {},
             getProjectSettingsSection(parsedAppConfig),
             initialProjectDirConfig
-          ) as {
-            [key: string]: JsonValue
-          },
+          ),
         },
       }
       return mergedConfig
@@ -820,7 +836,7 @@ export const readAppSettingsFile = async (
           {},
           getProjectSettingsSection(defaultAppConfig),
           initialProjectDirConfig
-        ) as { [key: string]: JsonValue },
+        ),
       },
     }
     return mergedDefaultConfig
