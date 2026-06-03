@@ -102,6 +102,31 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('matches macOS Option-modified letter chords by physical key code', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.alt-d',
+        title: 'Test Alt+D',
+        command: 'test.alt-d',
+        source: 'test',
+        keystrokes: ['alt+d'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+
+    const keymap = registry.get(keymapService)
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    const event = new KeyboardEvent('keydown', {
+      key: '\u2202',
+      code: 'KeyD',
+      altKey: true,
+    })
+
+    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
+
+    registry[Symbol.dispose]()
+  })
+
   it('uses keybindings as a settings tab argument', () => {
     window.history.replaceState(null, '', '/settings?tab=user')
     const registry = createRegistryWithKeymapItems([
