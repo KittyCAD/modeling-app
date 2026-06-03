@@ -1415,8 +1415,18 @@ function getSweepOutputExprFromSelection(
   ast: Node<Program>,
   wasmInstance: ModuleType
 ): Expr | null {
-  const artifact = selection.artifact
-  if (artifact?.type !== 'sweep') {
+  const selectionArtifact = selection.artifact
+  let artifact: (Artifact & { type: 'sweep' }) | undefined
+  if (selectionArtifact?.type === 'sweep') {
+    artifact = selectionArtifact
+  } else if (selectionArtifact?.type === 'path' && selectionArtifact.sweepId) {
+    const maybeSweep = artifactGraph.get(selectionArtifact.sweepId)
+    if (maybeSweep?.type === 'sweep') {
+      artifact = maybeSweep
+    }
+  }
+
+  if (!artifact) {
     return null
   }
 

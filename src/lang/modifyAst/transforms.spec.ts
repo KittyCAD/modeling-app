@@ -189,9 +189,16 @@ extrude001 = extrude([region001, region002], length = 1)`
         ast,
         rustContextInThisFile
       )
-      const firstRegion = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'path' && artifact.subType === 'region'
-      )
+      const regions = [...artifactGraph.values()]
+        .filter(
+          (artifact): artifact is Extract<Artifact, { type: 'path' }> =>
+            artifact.type === 'path' && artifact.subType === 'region'
+        )
+        .sort((a, b) => a.codeRef.range[0] - b.codeRef.range[0])
+      const firstRegion = regions[0]
+      const secondRegion = regions[1]
+      expect(firstRegion).toBeDefined()
+      expect(secondRegion).toBeDefined()
       const firstExtrudeOutput = [...artifactGraph.values()].find(
         (artifact) =>
           artifact.type === 'sweep' &&
@@ -214,6 +221,31 @@ extrude001 = extrude([region001, region002], length = 1)`
       expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
         'delete(extrude001[0])'
       )
+
+      const resultFromRegionSelection = addDelete({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([firstRegion!], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(resultFromRegionSelection)) throw resultFromRegionSelection
+
+      expect(
+        recast(resultFromRegionSelection.modifiedAst, instanceInThisFile)
+      ).toContain('delete(extrude001[0])')
+
+      const resultFromSecondRegionSelection = addDelete({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([secondRegion!], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(resultFromSecondRegionSelection))
+        throw resultFromSecondRegionSelection
+
+      expect(
+        recast(resultFromSecondRegionSelection.modifiedAst, instanceInThisFile)
+      ).toContain('delete(extrude001[1])')
     })
 
     it('adds delete calls with indexed pattern copy expressions', async () => {
