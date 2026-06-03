@@ -452,6 +452,8 @@ export fn angle(
   sector?: number(Count) = 1,
   /// Whether to constrain the reflex complement of the selected sector.
   reflex?: bool = false,
+  /// The desired position of the constraint label.
+  labelPosition?: Point2d,
 ) {}
 
 /// Constrain two segments to be tangent.

@@ -3765,6 +3765,14 @@ impl FrontendState {
         };
         let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
 
+        let arguments = match &angle.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the angle() call.
         let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
@@ -3775,7 +3783,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -12470,6 +12478,7 @@ splineSketch = sketch(on = XY) {
             },
             sector: None,
             reflex: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, _) = frontend
@@ -13193,6 +13202,7 @@ sketch(on = XY) {
             },
             sector: None,
             reflex: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend

@@ -5144,6 +5144,7 @@ fn axis_constraint_points(
 pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let line_array_ty = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2));
     let sector_ty = RuntimeType::count();
+    let label_position = get_constraint_label_position(exec_state, &args, "angle")?;
     let (lines, mode): (Vec<KclValue>, AngleConstraintMode) =
         if let Some(lines) = args.get_kw_arg_opt("lines", &line_array_ty, exec_state)? {
             let sector = args
@@ -5188,7 +5189,12 @@ pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let line1 = constrainable_line_from_kcl_value(&line1, "angle", args.source_range)?;
 
     let sketch_constraint = SketchConstraint {
-        kind: SketchConstraintKind::Angle { line0, line1, mode },
+        kind: SketchConstraintKind::Angle {
+            line0,
+            line1,
+            mode,
+            label_position,
+        },
         meta: vec![args.source_range.into()],
     };
     Ok(KclValue::SketchConstraint {

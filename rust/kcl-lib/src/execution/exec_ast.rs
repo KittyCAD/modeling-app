@@ -3882,7 +3882,12 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
-                        SketchConstraintKind::Angle { line0, line1, mode } => {
+                        SketchConstraintKind::Angle {
+                            line0,
+                            line1,
+                            mode,
+                            label_position,
+                        } => {
                             let range = self.as_source_range();
                             let desired_angle = match n.ty {
                                 NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
@@ -4034,6 +4039,7 @@ impl Node<BinaryExpression> {
                                 })?,
                                 sector,
                                 reflex,
+                                label_position: label_position.clone(),
                                 source,
                             });
                             sketch_block_state.sketch_constraints.push(constraint_id);
@@ -6094,6 +6100,37 @@ sketch(on = XY) {
             .unwrap();
         assert_eq!(angle.sector, Some(1));
         assert_eq!(angle.reflex, Some(false));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_accepts_label_position() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        let label_position = angle.label_position.as_ref().unwrap();
+        assert_eq!(label_position.x.value, 10.0);
+        assert_eq!(label_position.y.value, 11.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]

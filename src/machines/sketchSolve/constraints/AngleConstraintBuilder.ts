@@ -8,7 +8,9 @@ import type { Coords2d } from '@src/lang/util'
 import {
   TAU,
   addVec,
+  distance2d,
   dot2d,
+  getPolarAngle2d,
   intersectRanges,
   lerp,
   normalizeVec,
@@ -171,19 +173,28 @@ export function calculateArcRenderInput(
   //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
   const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
 
+  const explicitLabelPosition = getAngleLabelPosition(obj)
+  const defaultRadius = Math.abs(adjustedRadiusSigned)
+  const radius = getAngleArcRadius(
+    explicitLabelPosition,
+    center,
+    defaultRadius
+  )
   const startVector = scaleVec(normalizeVec(line1Dir), adjustedRadiusSigned)
   const startAngle = Math.atan2(startVector[1], startVector[0])
-  const labelPosition = addVec(
+  const defaultLabelPosition = addVec(
     center,
     rotateVec2d(startVector, signedAngle / 2)
   )
+  const labelPosition = explicitLabelPosition ?? defaultLabelPosition
 
   return {
     line1,
     line2,
     labelPosition,
+    labelAngle: getAngleLabelAngle(explicitLabelPosition, center),
     center,
-    radius: Math.abs(adjustedRadiusSigned),
+    radius,
     startAngle,
     sweepAngle: signedAngle,
   }
@@ -226,7 +237,8 @@ function calculateExplicitArcRenderInput(
     obj.kind.constraint.reflex === true
       ? [sectorBoundaries[1], sectorBoundaries[0]]
       : sectorBoundaries
-  const radius = calculateExplicitArcRadius(
+  const explicitLabelPosition = getAngleLabelPosition(obj)
+  const defaultRadius = calculateExplicitArcRadius(
     start.line,
     end.line,
     start.dir,
@@ -234,20 +246,57 @@ function calculateExplicitArcRenderInput(
     center,
     scale
   )
+  const radius = getAngleArcRadius(
+    explicitLabelPosition,
+    center,
+    defaultRadius
+  )
   const startVector = scaleVec(start.dir, radius)
   const startAngle = Math.atan2(startVector[1], startVector[0])
   const sweepAngle = ccwSweepBetweenDirections(start.dir, end.dir)
-  const labelPosition = addVec(center, rotateVec2d(startVector, sweepAngle / 2))
+  const defaultLabelPosition = addVec(
+    center,
+    rotateVec2d(startVector, sweepAngle / 2)
+  )
+  const labelPosition = explicitLabelPosition ?? defaultLabelPosition
 
   return {
     line1: start.line,
     line2: end.line,
     labelPosition,
+    labelAngle: getAngleLabelAngle(explicitLabelPosition, center),
     center,
     radius,
     startAngle,
     sweepAngle,
   }
+}
+
+function getAngleLabelPosition(obj: AngleConstraint): Coords2d | null {
+  const labelPosition = obj.kind.constraint.labelPosition
+  return labelPosition
+    ? [labelPosition.x.value, labelPosition.y.value]
+    : null
+}
+
+function getAngleArcRadius(
+  labelPosition: Coords2d | null,
+  center: Coords2d,
+  fallbackRadius: number
+) {
+  if (!labelPosition) {
+    return fallbackRadius
+  }
+
+  const labelRadius = distance2d(labelPosition, center)
+  return labelRadius > OVERLAP_EPSILON ? labelRadius : fallbackRadius
+}
+
+function getAngleLabelAngle(
+  labelPosition: Coords2d | null,
+  center: Coords2d
+) {
+  return labelPosition ? getPolarAngle2d(center, labelPosition) : undefined
 }
 
 function explicitAngleSector(sector: unknown) {

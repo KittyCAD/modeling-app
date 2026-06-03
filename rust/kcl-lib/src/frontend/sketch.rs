@@ -567,6 +567,11 @@ pub struct Angle {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub reflex: Option<bool>,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     pub source: ConstraintSource,
 }
 

@@ -20,12 +20,14 @@ function createAngleConstraintApiObject({
   angle,
   sector,
   reflex,
+  labelPosition,
 }: {
   id: number
   lines: [number, number]
   angle: number
   sector?: 1 | 2 | 3 | 4
   reflex?: boolean
+  labelPosition?: [number, number]
 }): ApiObject {
   return {
     id,
@@ -37,6 +39,12 @@ function createAngleConstraintApiObject({
         angle: { value: angle, units: 'Deg' },
         sector,
         reflex,
+        labelPosition: labelPosition
+          ? {
+              x: { value: labelPosition[0], units: 'Mm' },
+              y: { value: labelPosition[1], units: 'Mm' },
+            }
+          : undefined,
         source: { expr: `${angle}deg`, is_literal: true },
       },
     },
@@ -115,6 +123,26 @@ describe('calculateArcRenderInput', () => {
     ])
     expect(renderInput?.startAngle).toBeCloseTo(Math.PI / 3)
     expect(renderInput?.sweepAngle).toBeCloseTo((5 * Math.PI) / 3)
+  })
+
+  it('uses explicit label position for sector angle rendering', () => {
+    const { objects } = createSectorTestObjects(1)
+    const angleConstraint = createAngleConstraintApiObject({
+      id: 20,
+      lines: [10, 11],
+      angle: 60,
+      sector: 1,
+      labelPosition: [20, 30],
+    })
+    objects[20] = angleConstraint
+
+    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+
+    expect(renderInput?.labelPosition).toEqual([20, 30])
+    expect(renderInput?.labelAngle).toBeCloseTo(Math.atan2(30, 20))
+    expect(renderInput?.radius).toBeCloseTo(Math.hypot(20, 30))
+    expect(renderInput?.startAngle).toBeCloseTo(0)
+    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
   it('does not infer reflex rendering from a major angle value', () => {
@@ -196,6 +224,25 @@ describe('calculateArcRenderInput', () => {
 
     const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
+    expect(renderInput?.startAngle).toBeCloseTo(0)
+    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+  })
+
+  it('uses explicit label position for legacy angle rendering', () => {
+    const { objects } = createSectorTestObjects(1)
+    const angleConstraint = createAngleConstraintApiObject({
+      id: 20,
+      lines: [10, 11],
+      angle: 60,
+      labelPosition: [21, 31],
+    })
+    objects[20] = angleConstraint
+
+    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+
+    expect(renderInput?.labelPosition).toEqual([21, 31])
+    expect(renderInput?.labelAngle).toBeCloseTo(Math.atan2(31, 21))
+    expect(renderInput?.radius).toBeCloseTo(Math.hypot(21, 31))
     expect(renderInput?.startAngle).toBeCloseTo(0)
     expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
