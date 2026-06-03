@@ -28,6 +28,7 @@ import {
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
+  isAngleConstraint,
   isArcLikeSegment,
   isConstraint,
   isControlPointSplineSegment,
@@ -360,7 +361,8 @@ function isConstraintWithDraggableLabel(obj: ApiObject | undefined) {
     obj !== undefined &&
     (isDistanceConstraint(obj) ||
       isRadiusConstraint(obj) ||
-      isDiameterConstraint(obj))
+      isDiameterConstraint(obj) ||
+      isAngleConstraint(obj))
   )
 }
 
