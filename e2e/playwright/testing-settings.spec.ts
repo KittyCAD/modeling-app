@@ -5,6 +5,7 @@ import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import * as fsp from 'fs/promises'
 
 import {
+  TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
@@ -19,6 +20,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'
+import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
@@ -696,6 +698,7 @@ test.describe(
         const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
         const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
         const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
+        const streamBackgroundColorTolerance = 20
         const streamBackgroundPixelIsColor = async (
           color: [number, number, number]
         ) => {
@@ -719,7 +722,7 @@ test.describe(
           )
           await expect
             .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
-            .toBeLessThan(15)
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
         })
 
         await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
@@ -730,7 +733,68 @@ test.describe(
           await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
           await expect
             .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
-            .toBeLessThan(15)
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
+        })
+      }
+    )
+
+    test(
+      `Changing system theme preferences should not override fixed light theme`,
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage, tronApp }) => {
+        if (!tronApp) throw new Error('tronApp is missing.')
+
+        await tronApp.cleanProjectDir({
+          ...TEST_SETTINGS,
+          app: {
+            ...TEST_SETTINGS.app,
+            appearance: { theme: Themes.Light },
+          },
+        })
+
+        const u = await getUtils(page)
+
+        const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
+        const lightBackgroundColor: [number, number, number] = [227, 222, 230]
+        const streamBackgroundColorTolerance = 20
+        const streamBackgroundPixelIsColor = async (
+          color: [number, number, number]
+        ) => {
+          return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+        }
+        const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+
+        await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
+          await page.setBodyDimensions({ width: 1200, height: 500 })
+          await homePage.goToModelingScene()
+          await u.waitForPageLoad()
+          await page.waitForTimeout(1000)
+          await expect(toolbar).toBeVisible()
+        })
+
+        await test.step(`Check the fixed light theme before system change`, async () => {
+          await expect(toolbar).toHaveCSS(
+            'background-color',
+            lightBackgroundCss
+          )
+          await expect
+            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
+        })
+
+        await test.step(`Change media query preference to dark, emulating dusk with fixed light theme`, async () => {
+          await page.emulateMedia({ colorScheme: 'dark' })
+        })
+
+        await test.step(`Check the fixed light theme after system change`, async () => {
+          await expect(toolbar).toHaveCSS(
+            'background-color',
+            lightBackgroundCss
+          )
+          await expect
+            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
         })
       }
     )

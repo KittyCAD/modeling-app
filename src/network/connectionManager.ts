@@ -453,6 +453,7 @@ export class ConnectionManager extends EventTarget {
 
   listenToDarkModeMatcher() {
     const onDarkThemeMediaQueryChange = createOnDarkThemeMediaQueryChange({
+      getTheme: () => this.settings.theme,
       setTheme: this.setTheme.bind(this),
     })
     this.trackListener('darkmodewatcher-change', {
