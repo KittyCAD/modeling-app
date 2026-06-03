@@ -225,7 +225,7 @@ extrude001 = extrude([region001, region002], length = 1)`
       const resultFromRegionSelection = addDelete({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([firstRegion!], artifactGraph),
+        objects: createSelectionFromArtifacts([firstRegion], artifactGraph),
         wasmInstance: instanceInThisFile,
       })
       if (err(resultFromRegionSelection)) throw resultFromRegionSelection
@@ -237,7 +237,7 @@ extrude001 = extrude([region001, region002], length = 1)`
       const resultFromSecondRegionSelection = addDelete({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([secondRegion!], artifactGraph),
+        objects: createSelectionFromArtifacts([secondRegion], artifactGraph),
         wasmInstance: instanceInThisFile,
       })
       if (err(resultFromSecondRegionSelection))
