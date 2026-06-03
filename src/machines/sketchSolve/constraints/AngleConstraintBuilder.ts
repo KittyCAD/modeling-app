@@ -175,11 +175,7 @@ export function calculateArcRenderInput(
 
   const explicitLabelPosition = getAngleLabelPosition(obj)
   const defaultRadius = Math.abs(adjustedRadiusSigned)
-  const radius = getAngleArcRadius(
-    explicitLabelPosition,
-    center,
-    defaultRadius
-  )
+  const radius = getAngleArcRadius(explicitLabelPosition, center, defaultRadius)
   const startVector = scaleVec(normalizeVec(line1Dir), adjustedRadiusSigned)
   const startAngle = Math.atan2(startVector[1], startVector[0])
   const defaultLabelPosition = addVec(
@@ -246,11 +242,7 @@ function calculateExplicitArcRenderInput(
     center,
     scale
   )
-  const radius = getAngleArcRadius(
-    explicitLabelPosition,
-    center,
-    defaultRadius
-  )
+  const radius = getAngleArcRadius(explicitLabelPosition, center, defaultRadius)
   const startVector = scaleVec(start.dir, radius)
   const startAngle = Math.atan2(startVector[1], startVector[0])
   const sweepAngle = ccwSweepBetweenDirections(start.dir, end.dir)
@@ -274,9 +266,7 @@ function calculateExplicitArcRenderInput(
 
 function getAngleLabelPosition(obj: AngleConstraint): Coords2d | null {
   const labelPosition = obj.kind.constraint.labelPosition
-  return labelPosition
-    ? [labelPosition.x.value, labelPosition.y.value]
-    : null
+  return labelPosition ? [labelPosition.x.value, labelPosition.y.value] : null
 }
 
 function getAngleArcRadius(
@@ -292,10 +282,7 @@ function getAngleArcRadius(
   return labelRadius > OVERLAP_EPSILON ? labelRadius : fallbackRadius
 }
 
-function getAngleLabelAngle(
-  labelPosition: Coords2d | null,
-  center: Coords2d
-) {
+function getAngleLabelAngle(labelPosition: Coords2d | null, center: Coords2d) {
   return labelPosition ? getPolarAngle2d(center, labelPosition) : undefined
 }
 
