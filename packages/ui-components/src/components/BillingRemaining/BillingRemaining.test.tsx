@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
+import type { CustomerBalance, PaymentMethod } from '@kittycad/lib'
 import {
   BillingError,
   BillingRemaining,
@@ -7,6 +8,26 @@ import {
   EBillingError,
 } from '@kittycad/ui-components'
 import { expect, test } from 'vitest'
+
+const paymentMethod = {
+  billing_info: {
+    name: 'Zoo User',
+  },
+  created_at: '2026-01-02T21:57:20.048Z',
+  id: 'pm_test',
+  metadata: {},
+  type: 'card',
+} satisfies PaymentMethod
+
+const userPaymentBalance = {
+  created_at: '2026-01-02T21:57:20.048Z',
+  monthly_api_credits_remaining: 0,
+  monthly_api_credits_remaining_monetary_value: 0,
+  stable_api_credits_remaining: 0,
+  stable_api_credits_remaining_monetary_value: 0,
+  total_due: 0,
+  updated_at: '2026-01-02T21:57:20.048Z',
+} satisfies CustomerBalance
 
 test('Shows a loading spinner when uninitialized credit count', async () => {
   const { queryByTestId } = render(
@@ -103,4 +124,16 @@ test('Shows infinite balance for Pro subscription data', async () => {
   expect(queryByTestId('infinity')).toBeVisible()
   expect(queryByTestId('billing-remaining-progress-bar-inline')).toBeNull()
   expect(queryByTestId('billing-remaining-error-indicator')).toBeNull()
+})
+
+test('Hides overrun when total due is zero', async () => {
+  const { queryByText } = render(
+    <BillingRemaining
+      mode={BillingRemainingMode.ProgressBarFixed}
+      paymentMethods={[paymentMethod]}
+      userPaymentBalance={userPaymentBalance}
+    />
+  )
+
+  expect(queryByText('Overrun')).toBeNull()
 })

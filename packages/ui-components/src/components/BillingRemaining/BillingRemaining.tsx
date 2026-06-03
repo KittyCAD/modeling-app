@@ -114,9 +114,9 @@ function BillingBalance({ amount }: { amount: number }) {
 
 export function BillingRemaining(props: BillingRemainingProps) {
   const isFlex = props.mode === BillingRemainingMode.ProgressBarStretch
-  const hasPaymentMethod =
-    props.paymentMethods !== undefined && props.paymentMethods.length > 0
   const totalDue = props.userPaymentBalance?.total_due ?? '0.00'
+  const totalDueString = totalDue.toString()
+  const hasOverrun = Number(totalDueString) > 0
   const [showSpinner, setShowSpinner] = useState<boolean>(true)
 
   useEffect(() => {
@@ -160,9 +160,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
             </div>
           )}
         </div>
-        {!isFlex && (hasPaymentMethod || Number(totalDue.toString()) > 0) && (
-          <TotalDue amount={totalDue.toString()} />
-        )}
+        {!isFlex && hasOverrun && <TotalDue amount={totalDueString} />}
       </div>
       {isFlex && (
         <div className="kc-billing-remaining__summary">

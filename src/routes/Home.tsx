@@ -367,6 +367,7 @@ const Home = () => {
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}
+                    userPaymentBalance={billingContext.userPaymentBalance}
                   />
                 </div>
               </li>
