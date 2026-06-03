@@ -153,10 +153,18 @@ export const createOnEngineConnectionOpened = ({
 }
 
 export const createOnDarkThemeMediaQueryChange = ({
+  getTheme,
   setTheme,
-}: { setTheme: (theme: Themes) => Promise<void> }) => {
-  const onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
-    setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
+}: {
+  getTheme: () => Themes
+  setTheme: (theme: Themes) => Promise<void>
+}) => {
+  const onDarkThemeMediaQueryChange = () => {
+    if (getTheme() !== Themes.System) {
+      return
+    }
+
+    setTheme(Themes.System).catch(reportRejection)
   }
   return onDarkThemeMediaQueryChange
 }

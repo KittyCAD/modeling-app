@@ -123,6 +123,7 @@ import {
 } from '@src/lang/modifyAst/faces'
 import {
   addAnnotationGdt,
+  addCircularityGdt,
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
@@ -591,6 +592,10 @@ export type ModelingMachineEvent =
   | {
       type: 'GDT Straightness'
       data: ModelingCommandSchema['GDT Straightness']
+    }
+  | {
+      type: 'GDT Circularity'
+      data: ModelingCommandSchema['GDT Circularity']
     }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
@@ -5342,6 +5347,53 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtCircularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Circularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addCircularityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     gdtDatumAstMod: fromPromise(
       async ({
         input,
@@ -6397,6 +6449,10 @@ export const modelingMachine = setup({
 
         'GDT Straightness': {
           target: 'Applying GDT Straightness',
+        },
+
+        'GDT Circularity': {
+          target: 'Applying GDT Circularity',
         },
 
         'GDT Datum': {
@@ -8497,6 +8553,26 @@ export const modelingMachine = setup({
         id: 'gdtStraightnessAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Straightness') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Circularity': {
+      invoke: {
+        src: 'gdtCircularityAstMod',
+        id: 'gdtCircularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Circularity') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
