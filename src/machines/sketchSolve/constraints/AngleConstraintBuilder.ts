@@ -245,8 +245,7 @@ function calculateExplicitArcRenderInput(
   )
   const startVector = scaleVec(start.dir, radius)
   const startAngle = Math.atan2(startVector[1], startVector[0])
-  const sweepAngle =
-    renderSector === 'opposite' ? oppositeSweep : primarySweep
+  const sweepAngle = renderSector === 'opposite' ? oppositeSweep : primarySweep
   const labelPosition = addVec(center, rotateVec2d(startVector, sweepAngle / 2))
 
   return {
