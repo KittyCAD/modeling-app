@@ -2360,9 +2360,24 @@ pub struct SketchConstraint {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleRayDirection {
+    Forward,
+    Reverse,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleSector {
+    Primary,
+    Opposite,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AngleConstraintMode {
     LinesAtAngle,
-    PointsAtAngle,
+    PointsAtAngle {
+        rays: [AngleRayDirection; 2],
+        sector: AngleSector,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

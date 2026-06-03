@@ -15,6 +15,8 @@ use crate::errors::KclErrorDetails;
 use crate::exec::Sketch;
 use crate::execution::AbstractSegment;
 use crate::execution::AngleConstraintMode;
+use crate::execution::AngleRayDirection;
+use crate::execution::AngleSector;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
@@ -77,6 +79,8 @@ use crate::front::Object;
 use crate::front::ObjectId;
 use crate::front::ObjectKind;
 use crate::front::PointCtor;
+use crate::frontend::sketch::AngleRayDirection as FrontAngleRayDirection;
+use crate::frontend::sketch::AngleSector as FrontAngleSector;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
@@ -200,91 +204,161 @@ fn datum_line_from_constrainable(
     ))
 }
 
-fn datum_points_from_constrainable_line(
-    line: &ConstrainableLine2d,
+fn push_hidden_sketch_point(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    initial: [f64; 2],
     range: SourceRange,
-) -> Result<[DatumPoint; 2], KclError> {
-    Ok([
-        DatumPoint::new_xy(
-            line.vars[0].x.to_constraint_id(range)?,
-            line.vars[0].y.to_constraint_id(range)?,
-        ),
-        DatumPoint::new_xy(
-            line.vars[1].x.to_constraint_id(range)?,
-            line.vars[1].y.to_constraint_id(range)?,
-        ),
-    ])
+) -> Result<DatumPoint, KclError> {
+    let x_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: x_id,
+            initial_value: initial[0],
+            ty: sketch_var_ty,
+            node_path: None,
+            meta: vec![],
+        }),
+    });
+    let y_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: y_id,
+            initial_value: initial[1],
+            ty: sketch_var_ty,
+            node_path: None,
+            meta: vec![],
+        }),
+    });
+
+    Ok(DatumPoint::new_xy(
+        x_id.to_constraint_id(range)?,
+        y_id.to_constraint_id(range)?,
+    ))
 }
 
-fn same_datum_point(point0: DatumPoint, point1: DatumPoint) -> bool {
-    point0.x_id == point1.x_id && point0.y_id == point1.y_id
+fn vec2_sub(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+    [a[0] - b[0], a[1] - b[1]]
 }
 
-fn connected_datum_points(existing_constraints: &[Constraint], point0: DatumPoint, point1: DatumPoint) -> bool {
-    if same_datum_point(point0, point1) {
-        return true;
-    }
-
-    let mut visited = vec![point0];
-    let mut index = 0;
-    while let Some(current) = visited.get(index).copied() {
-        index += 1;
-
-        for constraint in existing_constraints {
-            let Constraint::PointsCoincident(a, b) = constraint else {
-                continue;
-            };
-            let next = if same_datum_point(current, *a) {
-                *b
-            } else if same_datum_point(current, *b) {
-                *a
-            } else {
-                continue;
-            };
-
-            if same_datum_point(next, point1) {
-                return true;
-            }
-            if !visited.iter().any(|point| same_datum_point(*point, next)) {
-                visited.push(next);
-            }
-        }
-    }
-
-    false
+fn vec2_add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+    [a[0] + b[0], a[1] + b[1]]
 }
 
-fn points_at_angle_constraint(
-    line0: &ConstrainableLine2d,
-    line1: &ConstrainableLine2d,
-    existing_constraints: &[Constraint],
-    angle_kind: ezpz::datatypes::AngleKind,
-    range: SourceRange,
-) -> Result<Constraint, KclError> {
-    let line0_points = datum_points_from_constrainable_line(line0, range)?;
-    let line1_points = datum_points_from_constrainable_line(line1, range)?;
-    let mut candidates = Vec::new();
+fn vec2_scale(a: [f64; 2], scale: f64) -> [f64; 2] {
+    [a[0] * scale, a[1] * scale]
+}
 
-    for (line0_vertex_index, line0_vertex) in line0_points.iter().copied().enumerate() {
-        for (line1_vertex_index, line1_vertex) in line1_points.iter().copied().enumerate() {
-            if connected_datum_points(existing_constraints, line0_vertex, line1_vertex) {
-                candidates.push((
-                    line0_vertex,
-                    line0_points[1 - line0_vertex_index],
-                    line1_points[1 - line1_vertex_index],
-                ));
-            }
-        }
-    }
+fn vec2_cross(a: [f64; 2], b: [f64; 2]) -> f64 {
+    a[0] * b[1] - a[1] * b[0]
+}
 
-    let [(vertex, point0, point1)] = candidates.as_slice() else {
+fn vec2_len(a: [f64; 2]) -> f64 {
+    libm::hypot(a[0], a[1])
+}
+
+fn vec2_normalized(a: [f64; 2], range: SourceRange, description: &str) -> Result<[f64; 2], KclError> {
+    let len = vec2_len(a);
+    if len <= 1e-9 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle(lines = ...) requires the two lines to share exactly one endpoint".to_owned(),
+            format!("angle() {description} must not be degenerate"),
             vec![range],
         )));
-    };
+    }
 
-    Ok(Constraint::PointsAtAngle(*vertex, *point0, *point1, angle_kind))
+    Ok([a[0] / len, a[1] / len])
+}
+
+fn intersection_of_initial_lines(
+    line0: ([f64; 2], [f64; 2]),
+    line1: ([f64; 2], [f64; 2]),
+    range: SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let p = line0.0;
+    let r = vec2_sub(line0.1, line0.0);
+    let q = line1.0;
+    let s = vec2_sub(line1.1, line1.0);
+    let denom = vec2_cross(r, s);
+    if denom.abs() <= 1e-9 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "angle(lines = ..., rays = ...) requires non-parallel lines".to_owned(),
+            vec![range],
+        )));
+    }
+
+    let t = vec2_cross(vec2_sub(q, p), s) / denom;
+    Ok(vec2_add(p, vec2_scale(r, t)))
+}
+
+fn front_angle_ray_direction(ray: AngleRayDirection) -> FrontAngleRayDirection {
+    match ray {
+        AngleRayDirection::Forward => FrontAngleRayDirection::Forward,
+        AngleRayDirection::Reverse => FrontAngleRayDirection::Reverse,
+    }
+}
+
+fn front_angle_sector(sector: AngleSector) -> FrontAngleSector {
+    match sector {
+        AngleSector::Primary => FrontAngleSector::Primary,
+        AngleSector::Opposite => FrontAngleSector::Opposite,
+    }
+}
+
+fn angle_ray_initial(
+    vertex: [f64; 2],
+    line: ([f64; 2], [f64; 2]),
+    ray: AngleRayDirection,
+    distance: f64,
+    range: SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let direction = vec2_normalized(vec2_sub(line.1, line.0), range, "line")?;
+    let sign = match ray {
+        AngleRayDirection::Forward => 1.0,
+        AngleRayDirection::Reverse => -1.0,
+    };
+    Ok(vec2_add(vertex, vec2_scale(direction, sign * distance)))
+}
+
+fn push_points_at_angle_for_line_rays(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    line0: &ConstrainableLine2d,
+    line1: &ConstrainableLine2d,
+    initial_vertex: [f64; 2],
+    initial_ray_points: [[f64; 2]; 2],
+    ray_distance: f64,
+    angle_kind: ezpz::datatypes::AngleKind,
+    range: SourceRange,
+) -> Result<(), KclError> {
+    let solver_line0 = datum_line_from_constrainable(line0, range)?;
+    let solver_line1 = datum_line_from_constrainable(line1, range)?;
+    let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_vertex, range)?;
+    let ray0 = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_ray_points[0], range)?;
+    let ray1 = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_ray_points[1], range)?;
+
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(vertex, solver_line0, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(vertex, solver_line1, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(ray0, solver_line0, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(ray1, solver_line1, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::Distance(vertex, ray0, ray_distance));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::Distance(vertex, ray1, ray_distance));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointsAtAngle(vertex, ray0, ray1, angle_kind));
+
+    Ok(())
 }
 
 fn sketch_var_initial_value(
@@ -3774,30 +3848,64 @@ impl Node<BinaryExpression> {
                                     return Err(internal_err(message, self));
                                 }
                             };
-                            let angle_kind = ezpz::datatypes::AngleKind::Other(desired_angle);
-                            let solver_constraint = match mode {
-                                AngleConstraintMode::LinesAtAngle => Constraint::LinesAtAngle(
-                                    datum_line_from_constrainable(line0, range)?,
-                                    datum_line_from_constrainable(line1, range)?,
-                                    angle_kind,
-                                ),
-                                AngleConstraintMode::PointsAtAngle => {
-                                    let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
-                                        let message =
-                                            "Being inside a sketch block should have already been checked above"
-                                                .to_owned();
-                                        debug_assert!(false, "{}", &message);
-                                        return Err(internal_err(message, self));
-                                    };
-                                    points_at_angle_constraint(
+                            let points_at_angle_data = match *mode {
+                                AngleConstraintMode::LinesAtAngle => None,
+                                AngleConstraintMode::PointsAtAngle { rays, .. } => {
+                                    let sketch_vars = exec_state
+                                        .mod_local
+                                        .sketch_block
+                                        .as_ref()
+                                        .ok_or_else(|| {
+                                            internal_err(
+                                                "Being inside a sketch block should have already been checked above",
+                                                self,
+                                            )
+                                        })?
+                                        .sketch_vars
+                                        .clone();
+                                    let initial_line0 = constrainable_line_initial_positions(
+                                        &sketch_vars,
                                         line0,
-                                        line1,
-                                        &sketch_block_state.solver_constraints,
-                                        angle_kind,
+                                        exec_state,
                                         range,
-                                    )?
+                                        "angle line0",
+                                    )?;
+                                    let initial_line1 = constrainable_line_initial_positions(
+                                        &sketch_vars,
+                                        line1,
+                                        exec_state,
+                                        range,
+                                        "angle line1",
+                                    )?;
+                                    let initial_vertex =
+                                        intersection_of_initial_lines(initial_line0, initial_line1, range)?;
+                                    let line0_length = vec2_len(vec2_sub(initial_line0.1, initial_line0.0));
+                                    let line1_length = vec2_len(vec2_sub(initial_line1.1, initial_line1.0));
+                                    let ray_distance = (line0_length.min(line1_length) * 0.25).max(1.0);
+                                    Some((
+                                        initial_vertex,
+                                        [
+                                            angle_ray_initial(
+                                                initial_vertex,
+                                                initial_line0,
+                                                rays[0],
+                                                ray_distance,
+                                                range,
+                                            )?,
+                                            angle_ray_initial(
+                                                initial_vertex,
+                                                initial_line1,
+                                                rays[1],
+                                                ray_distance,
+                                                range,
+                                            )?,
+                                        ],
+                                        ray_distance,
+                                        ezpz::datatypes::AngleKind::Other(desired_angle),
+                                    ))
                                 }
                             };
+                            let sketch_var_ty = solver_numeric_type(exec_state);
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                 let message =
@@ -3805,7 +3913,34 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (*mode, points_at_angle_data) {
+                                (AngleConstraintMode::LinesAtAngle, None) => {
+                                    sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                        datum_line_from_constrainable(line0, range)?,
+                                        datum_line_from_constrainable(line1, range)?,
+                                        ezpz::datatypes::AngleKind::Other(desired_angle),
+                                    ));
+                                }
+                                (
+                                    AngleConstraintMode::PointsAtAngle { .. },
+                                    Some((initial_vertex, initial_ray_points, ray_distance, angle_kind)),
+                                ) => push_points_at_angle_for_line_rays(
+                                    sketch_block_state,
+                                    sketch_var_ty,
+                                    line0,
+                                    line1,
+                                    initial_vertex,
+                                    initial_ray_points,
+                                    ray_distance,
+                                    angle_kind,
+                                    range,
+                                )?,
+                                _ => {
+                                    let message = "Invalid angle constraint lowering state".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(internal_err(message, self));
+                                }
+                            }
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
@@ -3818,11 +3953,20 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
+                            let (rays, sector) = match *mode {
+                                AngleConstraintMode::LinesAtAngle => (None, None),
+                                AngleConstraintMode::PointsAtAngle { rays, sector } => (
+                                    Some([front_angle_ray_direction(rays[0]), front_angle_ray_direction(rays[1])]),
+                                    Some(front_angle_sector(sector)),
+                                ),
+                            };
                             let sketch_constraint = crate::front::Constraint::Angle(Angle {
                                 lines: vec![line0.object_id, line1.object_id],
                                 angle: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert angle units numeric suffix:", range)
                                 })?,
+                                rays,
+                                sector,
                                 source,
                             });
                             sketch_block_state.sketch_constraints.push(constraint_id);
@@ -5822,107 +5966,7 @@ mod test {
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
-    use crate::execution::SketchVarId;
     use crate::execution::parse_execute;
-    use crate::front::ObjectId;
-
-    fn test_line(object_id: usize, start: [usize; 2], end: [usize; 2]) -> ConstrainableLine2d {
-        ConstrainableLine2d {
-            vars: [
-                crate::front::Point2d {
-                    x: SketchVarId(start[0]),
-                    y: SketchVarId(start[1]),
-                },
-                crate::front::Point2d {
-                    x: SketchVarId(end[0]),
-                    y: SketchVarId(end[1]),
-                },
-            ],
-            object_id: ObjectId(object_id),
-        }
-    }
-
-    fn test_point(ids: [usize; 2]) -> DatumPoint {
-        DatumPoint::new_xy(ids[0].try_into().unwrap(), ids[1].try_into().unwrap())
-    }
-
-    fn assert_datum_point(point: DatumPoint, ids: [usize; 2]) {
-        assert_eq!(point.x_id, ids[0] as ezpz::Id);
-        assert_eq!(point.y_id, ids[1] as ezpz::Id);
-    }
-
-    #[test]
-    fn points_at_angle_constraint_uses_shared_endpoint() {
-        let line0 = test_line(0, [0, 1], [2, 3]);
-        let line1 = test_line(1, [0, 1], [4, 5]);
-
-        let constraint = points_at_angle_constraint(
-            &line0,
-            &line1,
-            &[],
-            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
-            SourceRange::default(),
-        )
-        .unwrap();
-
-        let Constraint::PointsAtAngle(vertex, point0, point1, _) = constraint else {
-            panic!("expected PointsAtAngle");
-        };
-        assert_datum_point(vertex, [0, 1]);
-        assert_datum_point(point0, [2, 3]);
-        assert_datum_point(point1, [4, 5]);
-    }
-
-    #[test]
-    fn points_at_angle_constraint_uses_coincident_endpoint() {
-        let line0 = test_line(0, [0, 1], [2, 3]);
-        let line1 = test_line(1, [4, 5], [6, 7]);
-        let existing_constraints = [Constraint::PointsCoincident(test_point([0, 1]), test_point([4, 5]))];
-
-        let constraint = points_at_angle_constraint(
-            &line0,
-            &line1,
-            &existing_constraints,
-            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
-            SourceRange::default(),
-        )
-        .unwrap();
-
-        let Constraint::PointsAtAngle(vertex, point0, point1, _) = constraint else {
-            panic!("expected PointsAtAngle");
-        };
-        assert_datum_point(vertex, [0, 1]);
-        assert_datum_point(point0, [2, 3]);
-        assert_datum_point(point1, [6, 7]);
-    }
-
-    #[test]
-    fn points_at_angle_constraint_requires_unique_shared_endpoint() {
-        let line0 = test_line(0, [0, 1], [2, 3]);
-        let line1 = test_line(1, [4, 5], [6, 7]);
-
-        let no_shared_endpoint = points_at_angle_constraint(
-            &line0,
-            &line1,
-            &[],
-            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
-            SourceRange::default(),
-        );
-        assert!(no_shared_endpoint.is_err());
-
-        let existing_constraints = [
-            Constraint::PointsCoincident(test_point([0, 1]), test_point([4, 5])),
-            Constraint::PointsCoincident(test_point([2, 3]), test_point([6, 7])),
-        ];
-        let ambiguous = points_at_angle_constraint(
-            &line0,
-            &line1,
-            &existing_constraints,
-            ezpz::datatypes::AngleKind::Other(ezpz::datatypes::Angle::from_degrees(60.0)),
-            SourceRange::default(),
-        );
-        assert!(ambiguous.is_err());
-    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn angle_unlabeled_keeps_legacy_lines_at_angle() {
@@ -5941,14 +5985,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_allows_missing_unlabeled_input() {
+    async fn angle_labelled_lines_with_rays_allows_missing_unlabeled_input() {
         parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 3mm])
-  coincident([line1.end, line2.start])
-  angle(lines = [line1, line2]) == 60deg
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angle(lines = [line1, line2], rays = [1, -1]) == 60deg
 }
 "#,
         )
@@ -5957,7 +6000,40 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_requires_unique_shared_endpoint() {
+    async fn angle_labelled_lines_accepts_opposite_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var -3.464mm])
+  angle(lines = [line1, line2], rays = [1, 1], sector = "opposite") == 360deg - 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(
+            angle.rays,
+            Some([FrontAngleRayDirection::Forward, FrontAngleRayDirection::Forward])
+        );
+        assert_eq!(angle.sector, Some(FrontAngleSector::Opposite));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_requires_rays() {
         let err = parse_execute(
             r#"
 sketch(on = XY) {
@@ -5971,8 +6047,7 @@ sketch(on = XY) {
         .unwrap_err();
 
         assert!(
-            err.to_string()
-                .contains("angle(lines = ...) requires the two lines to share exactly one endpoint"),
+            err.to_string().contains("requires a keyword argument `rays`"),
             "unexpected error: {err:?}"
         );
     }
@@ -5985,9 +6060,48 @@ sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 3mm])
   line3 = line(start = [var 0mm, var 1mm], end = [var 1mm, var 1mm])
-  line4 = line(start = [var 0mm, var 2mm], end = [var 1mm, var 2mm])
-  coincident([line1.end, line2.start])
-  angle([line1, line2], lines = [line3, line4]) == 60deg
+  line4 = line(start = [var 0mm, var 2mm], end = [var 1mm, var 3mm])
+  angle([line1, line2], lines = [line3, line4], rays = [1, 0]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string().contains("angle() rays must be either 1 or -1"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_rejects_invalid_sector() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angle(lines = [line1, line2], rays = [1, -1], sector = "side") == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string().contains("angle() sector must be either"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_rejects_parallel_lines() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
+  angle(lines = [line1, line2], rays = [1, -1]) == 60deg
 }
 "#,
         )
@@ -5996,7 +6110,7 @@ sketch(on = XY) {
 
         assert!(
             err.to_string()
-                .contains("angle(lines = ...) requires the two lines to share exactly one endpoint"),
+                .contains("angle(lines = ..., rays = ...) requires non-parallel lines"),
             "unexpected error: {err:?}"
         );
     }

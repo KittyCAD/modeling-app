@@ -448,6 +448,10 @@ export fn angle(
   @input?: [Segment; 2],
   /// The two line segments whose oriented relative angle should match the value set with `==`.
   lines?: [Segment; 2],
+  /// Which ray to use for each line: `1` for start-to-end, `-1` for end-to-start.
+  rays?: [number(Count); 2],
+  /// Which angle sector to constrain: "primary" or "opposite".
+  sector?: string = "primary",
 ) {}
 
 /// Constrain two segments to be tangent.

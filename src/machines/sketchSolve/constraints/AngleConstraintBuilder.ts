@@ -124,6 +124,19 @@ export function calculateArcRenderInput(
 
   const line1Dir = normalizeVec(subVec(line1[1], line1[0]))
   const line2Dir = normalizeVec(subVec(line2[1], line2[0]))
+  const explicitRenderInput = calculateExplicitArcRenderInput(
+    obj,
+    line1,
+    line2,
+    line1Dir,
+    line2Dir,
+    center,
+    scale
+  )
+  if (explicitRenderInput) {
+    return explicitRenderInput
+  }
+
   // The distances of the line segment end points from the intersection (center)
   const line1SignedDistances = [
     dot2d(subVec(line1[0], center), line1Dir),
@@ -186,6 +199,147 @@ export function normalizeAngleRad(angle: ApiNumber) {
 // Major angles are ones > 180deg
 export function isMajorConstraintAngle(angle: ApiNumber) {
   return normalizeAngleRad(angle) > Math.PI
+}
+
+function calculateExplicitArcRenderInput(
+  obj: AngleConstraint,
+  line1: LineSegment,
+  line2: LineSegment,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d,
+  center: Coords2d,
+  scale: number
+): ArcLineInfo | null {
+  const { rays, sector } = obj.kind.constraint
+  if (!rays) {
+    return null
+  }
+
+  const ray1Dir = angleRayDirection(line1Dir, rays[0])
+  const ray2Dir = angleRayDirection(line2Dir, rays[1])
+  const primarySweep = ccwSweepBetweenDirections(ray1Dir, ray2Dir)
+  const oppositeSweep = ccwSweepBetweenDirections(ray2Dir, ray1Dir)
+  const renderSector =
+    angleSectorFromSweep(
+      normalizeAngleRad(obj.kind.constraint.angle),
+      primarySweep,
+      oppositeSweep
+    ) ??
+    explicitAngleSector(sector) ??
+    'primary'
+  const start =
+    renderSector === 'opposite'
+      ? { line: line2, dir: ray2Dir }
+      : { line: line1, dir: ray1Dir }
+  const end =
+    renderSector === 'opposite'
+      ? { line: line1, dir: ray1Dir }
+      : { line: line2, dir: ray2Dir }
+  const radius = calculateExplicitArcRadius(
+    start.line,
+    end.line,
+    start.dir,
+    end.dir,
+    center,
+    scale
+  )
+  const startVector = scaleVec(start.dir, radius)
+  const startAngle = Math.atan2(startVector[1], startVector[0])
+  const sweepAngle =
+    renderSector === 'opposite' ? oppositeSweep : primarySweep
+  const labelPosition = addVec(center, rotateVec2d(startVector, sweepAngle / 2))
+
+  return {
+    line1: start.line,
+    line2: end.line,
+    labelPosition,
+    center,
+    radius,
+    startAngle,
+    sweepAngle,
+  }
+}
+
+function angleRayDirection(lineDir: Coords2d, ray: 'forward' | 'reverse') {
+  return ray === 'reverse' ? scaleVec(lineDir, -1) : lineDir
+}
+
+function explicitAngleSector(sector: unknown) {
+  if (sector === 'opposite' || sector === 'Opposite') {
+    return 'opposite'
+  }
+  if (sector === 'primary' || sector === 'Primary') {
+    return 'primary'
+  }
+  return null
+}
+
+function angleSectorFromSweep(
+  desiredSweep: number,
+  primarySweep: number,
+  oppositeSweep: number
+) {
+  const primaryDelta = Math.abs(desiredSweep - primarySweep)
+  const oppositeDelta = Math.abs(desiredSweep - oppositeSweep)
+  if (primaryDelta === oppositeDelta) {
+    return null
+  }
+  return oppositeDelta < primaryDelta ? 'opposite' : 'primary'
+}
+
+function ccwSweepBetweenDirections(start: Coords2d, end: Coords2d) {
+  const startAngle = Math.atan2(start[1], start[0])
+  const endAngle = Math.atan2(end[1], end[0])
+  return (((endAngle - startAngle) % TAU) + TAU) % TAU
+}
+
+function calculateExplicitArcRadius(
+  line1: LineSegment,
+  line2: LineSegment,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d,
+  center: Coords2d,
+  scale: number
+) {
+  const line1Range = projectionRange(line1, center, line1Dir)
+  const line2Range = projectionRange(line2, center, line2Dir)
+  const commonLineRange = intersectRanges(line1Range, line2Range)
+  const commonRayRange = commonLineRange
+    ? intersectRanges(commonLineRange, [0, Number.POSITIVE_INFINITY])
+    : null
+  const radius = commonRayRange
+    ? findShortestRadiusFromRange(commonRayRange)
+    : findFallbackRayRadius([line1Range, line2Range])
+  const shouldApplyNonOverlapFallback =
+    !commonRayRange ||
+    Math.abs(commonRayRange[1] - commonRayRange[0]) < OVERLAP_EPSILON
+  return shouldApplyNonOverlapFallback
+    ? withMinimumMagnitude(
+        radius,
+        MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX * scale
+      )
+    : radius
+}
+
+function projectionRange(
+  line: LineSegment,
+  center: Coords2d,
+  direction: Coords2d
+): [number, number] {
+  const distances = [
+    dot2d(subVec(line[0], center), direction),
+    dot2d(subVec(line[1], center), direction),
+  ]
+  return [Math.min(...distances), Math.max(...distances)]
+}
+
+function findFallbackRayRadius(ranges: [number, number][]) {
+  return (
+    ranges
+      .flat()
+      .filter((distance) => distance > OVERLAP_EPSILON)
+      .sort((a, b) => a - b)[1] ?? 0
+  )
 }
 
 // finds the shortest radius on the range of projected distances of the 2 lines.

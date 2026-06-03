@@ -561,7 +561,29 @@ impl Distance {
 pub struct Angle {
     pub lines: Vec<ObjectId>,
     pub angle: Number,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub rays: Option<[AngleRayDirection; 2]>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub sector: Option<AngleSector>,
     pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub enum AngleRayDirection {
+    Forward,
+    Reverse,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub enum AngleSector {
+    Primary,
+    Opposite,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
