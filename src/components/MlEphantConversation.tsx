@@ -101,7 +101,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-2 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
