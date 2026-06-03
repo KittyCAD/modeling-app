@@ -40,6 +40,8 @@ use crate::execution::UnsolvedSegment;
 use crate::execution::annotations;
 use crate::execution::cad_op::Operation;
 use crate::execution::id_generator::IdGenerator;
+#[cfg(test)]
+use crate::execution::memory::MemoryBackendKind;
 use crate::execution::memory::ProgramMemory;
 use crate::execution::memory::Stack;
 use crate::execution::sketch_solve::Solved;
@@ -341,6 +343,21 @@ impl ExecState {
         }
     }
 
+    #[cfg(test)]
+    pub(crate) fn new_with_memory_backend(exec_context: &super::ExecutorContext, backend: MemoryBackendKind) -> Self {
+        ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
+            global: GlobalState::new(&exec_context.settings, Default::default()),
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new_with_backend(backend),
+                Default::default(),
+                false,
+                true,
+            ),
+        }
+    }
+
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
@@ -351,6 +368,28 @@ impl ExecState {
             mod_local: ModuleState::new(
                 ModulePath::Main,
                 ProgramMemory::new(),
+                Default::default(),
+                mock_config.sketch_block_id.is_some(),
+                mock_config.freedom_analysis,
+            ),
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn new_mock_with_memory_backend(
+        exec_context: &super::ExecutorContext,
+        mock_config: &MockConfig,
+        backend: MemoryBackendKind,
+    ) -> Self {
+        let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
+        global.drag_anchors = mock_config.drag_anchors.clone();
+        ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
+            global,
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new_with_backend(backend),
                 Default::default(),
                 mock_config.sketch_block_id.is_some(),
                 mock_config.freedom_analysis,
@@ -429,11 +468,15 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_exec_outcome(
+        self,
+        main_ref: EnvironmentRef,
+        ctx: &ExecutorContext,
+    ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        ExecOutcome {
-            variables: self.mod_local.variables(main_ref),
+        Ok(ExecOutcome {
+            variables: self.mod_local.variables(main_ref)?,
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
@@ -442,7 +485,7 @@ impl ExecState {
             var_solutions: self.global.root_module_artifacts.var_solutions,
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
-        }
+        })
     }
 
     #[cfg(feature = "snapshot-engine-responses")]
@@ -663,7 +706,7 @@ impl ExecState {
     /// Search the live environment for the name of a variable holding a Solid
     /// (or an array of Solids) whose value identity matches `target_key`. Used only on
     /// error paths to recover variable names for diagnostics.
-    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Option<String> {
+    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Result<Option<String>, KclError> {
         fn contains_solid_key(value: &KclValue, target_key: ConsumedSolidKey) -> bool {
             match value {
                 KclValue::Solid { value } => {
@@ -815,7 +858,7 @@ impl ExecState {
             error,
             self.issues().to_vec(),
             main_ref
-                .map(|main_ref| self.mod_local.variables(main_ref))
+                .and_then(|main_ref| self.mod_local.variables(main_ref).ok())
                 .unwrap_or_default(),
             self.global.operations_by_module(),
             Default::default(),
@@ -1106,11 +1149,8 @@ impl ModuleState {
         }
     }
 
-    pub(super) fn variables(&self, main_ref: EnvironmentRef) -> IndexMap<String, KclValue> {
-        self.stack
-            .find_all_in_env(main_ref)
-            .map(|(k, v)| (k.clone(), v.clone()))
-            .collect()
+    pub(super) fn variables(&self, main_ref: EnvironmentRef) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.stack.find_all_in_env_owned(main_ref)
     }
 }
 

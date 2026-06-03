@@ -4,6 +4,7 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -25,6 +26,20 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     enableOnContentEditable: true,
   })
 
+  const visibleArgEntries = useMemo<
+    [string, CommandArgument<unknown>][]
+  >(() => {
+    if (!selectedCommand?.args) return []
+    return Object.entries(selectedCommand.args).filter(([name, arg]) => {
+      const { isHidden } = evaluateCommandBarArg(
+        name,
+        arg,
+        commandBarState.context
+      )
+      return !isHidden
+    })
+  }, [selectedCommand, commandBarState.context])
+
   useHotkeys(
     [
       'alt+1',
@@ -39,13 +54,10 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       'alt+0',
     ],
     (_, b) => {
-      if (b.keys && !Number.isNaN(Number.parseInt(b.keys[0], 10))) {
-        if (!selectedCommand?.args) return
-        const argName = Object.keys(selectedCommand.args)[
-          Number.parseInt(b.keys[0], 10) - 1
-        ]
-        const arg = selectedCommand?.args[argName]
-        if (!arg) return
+      if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
+        const argEntry = visibleArgEntries[parseInt(b.keys[0], 10) - 1]
+        if (!argEntry) return
+        const [argName, arg] = argEntry
         commands.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
@@ -53,7 +65,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       }
     },
     { keyup: true, enableOnFormTags: true, enableOnContentEditable: true },
-    [argumentsToSubmit, selectedCommand]
+    [argumentsToSubmit, selectedCommand, visibleArgEntries]
   )
 
   Object.keys(argumentsToSubmit).forEach((key, _i) => {
@@ -146,6 +158,17 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                     key={argName}
                     className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
                   >
+                    {arg.status === 'experimental' && (
+                      <span className="inline-flex items-center">
+                        <CustomIcon name="beaker" className="w-3.5 h-3.5" />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
                     <span className="capitalize">
                       {arg.displayName || argName}
                     </span>

@@ -309,8 +309,9 @@ export const ProjectExplorer = ({
 
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
-      if (readOnly || !window.electron) return
-      const electron = window.electron
+      if (readOnly) {
+        return
+      }
 
       const supportedFiles: { file: File; relativePath: string }[] = []
       // Collect all entries/files synchronously first
@@ -375,7 +376,7 @@ export const ProjectExplorer = ({
 
             // Create parent directories if needed
             if (relativePath && !createdDirs.has(destinationDirPath)) {
-              await electron.mkdir(destinationDirPath, { recursive: true })
+              await fsZds.mkdir(destinationDirPath, { recursive: true })
               createdDirs.add(destinationDirPath)
             }
 
@@ -387,10 +388,7 @@ export const ProjectExplorer = ({
             })
 
             const arrayBuffer = await file.arrayBuffer()
-            await electron.writeFile(
-              destinationPath,
-              new Uint8Array(arrayBuffer)
-            )
+            await fsZds.writeFile(destinationPath, new Uint8Array(arrayBuffer))
           } catch (e) {
             console.error('Failed to copy file:', file.name, e)
             toast.error(`Failed to import ${file.name}.`)

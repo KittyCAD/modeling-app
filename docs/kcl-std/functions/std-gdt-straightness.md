@@ -27,6 +27,9 @@ line element of the face must lie between two parallel lines separated by
 the given `tolerance`. When applied to an edge, the edge itself must lie
 within that zone.
 
+Straightness should usually be applied to edges. But depending on the view,
+a face normal may appear like an edge.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -50,11 +53,11 @@ within that zone.
 ```kcl
 @settings(kclVersion = 2.0)
 
-blockProfile = sketch(on = XY) {
+blockSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
-  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
-  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 24mm])
+  edge3 = line(start = [var 10mm, var 24mm], end = [var 0mm, var 24mm])
+  edge4 = line(start = [var 0mm, var 24mm], end = [var 0mm, var 0mm])
   coincident([edge1.end, edge2.start])
   coincident([edge2.end, edge3.start])
   coincident([edge3.end, edge4.start])
@@ -65,8 +68,10 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-gdt::straightness(faces = [top], tolerance = 0.05mm)
+blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+hide(blockSketch)
+block = extrude(blockRegion, length = 10mm)
+gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
 
 ```
 
