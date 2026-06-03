@@ -24,7 +24,6 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
           error={props.billingContext.error}
           balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}
-          paymentMethods={props.billingContext.paymentMethods}
           userPaymentBalance={props.billingContext.userPaymentBalance}
         />
         {!props.billingContext.error && (
@@ -42,6 +41,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         <BillingDialog
           upgradeHref={withSiteBaseURL('/design-studio-pricing')}
           upgradeClick={openExternalBrowserIfDesktop()}
+          accountClick={openExternalBrowserIfDesktop()}
           error={props.billingContext.error}
           balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}

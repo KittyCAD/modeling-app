@@ -95,6 +95,7 @@ const Home = () => {
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -363,7 +364,8 @@ const Home = () => {
                 <div className="my-2">
                   <BillingDialog
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openExternalBrowserIfDesktop()}
+                    upgradeClick={openBillingLinkExternally}
+                    accountClick={openBillingLinkExternally}
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}

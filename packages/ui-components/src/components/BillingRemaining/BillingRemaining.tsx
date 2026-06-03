@@ -1,4 +1,4 @@
-import type { CustomerBalance, PaymentMethod } from '@kittycad/lib'
+import type { CustomerBalance } from '@kittycad/lib'
 import { useEffect, useState } from 'react'
 import { BillingIcon } from '../Billing/BillingIcon'
 import { Spinner } from '../Billing/Spinner'
@@ -16,7 +16,6 @@ export interface BillingRemainingProps {
   error?: BillingError
   balance?: number
   allowance?: number
-  paymentMethods?: PaymentMethod[]
   userPaymentBalance?: CustomerBalance
 }
 

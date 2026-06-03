@@ -5,7 +5,6 @@
 import {
   type Client,
   type CustomerBalance,
-  type PaymentMethod,
   type UserOrgInfo,
   type ZooProductSubscriptions,
   orgs,
@@ -77,7 +76,6 @@ export interface IBillingInfo {
   balance: number
   allowance?: number
   userPaymentBalance?: CustomerBalance
-  paymentMethods: PaymentMethod[]
   isOrg: boolean
   hasSubscription: boolean
 }
@@ -155,28 +153,9 @@ export async function getBillingInfo(
   )
   const hasOrgError = BillingError.from(org)
 
-  let paymentMethods = await fetchBilling<PaymentMethod[], { client: Client }>(
-    payments.list_payment_methods_for_user,
-    { client }
-  )
-
-  const isOrgUserWithoutPaymentMethod =
-    !hasOrgError &&
-    BillingError.from(paymentMethods) &&
-    paymentMethods.error.type === EBillingError.NotOk &&
-    'status' in paymentMethods.error.response &&
-    paymentMethods.error.response.status === 404
-
-  if (isOrgUserWithoutPaymentMethod) {
-    paymentMethods = []
-  } else if (BillingError.from(paymentMethods)) {
-    return paymentMethods
-  }
-
   if (!hasOrgError) {
     return {
       balance: Number.POSITIVE_INFINITY,
-      paymentMethods,
       userPaymentBalance: billing,
       isOrg: true,
       hasSubscription: true,
@@ -244,7 +223,6 @@ export async function getBillingInfo(
     balance,
     allowance,
     userPaymentBalance: billing,
-    paymentMethods,
     hasSubscription,
     isOrg,
   }

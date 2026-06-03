@@ -1,7 +1,6 @@
 import {
   Client,
   type CustomerBalance,
-  type PaymentMethod,
   type UserOrgInfo,
   type ZooProductSubscriptions,
 } from '@kittycad/lib'
@@ -52,20 +51,6 @@ function createUserOrgResponse(): UserOrgInfo {
   }
 }
 
-function createUserPaymentMethodsResponse(): PaymentMethod[] {
-  return [
-    {
-      billing_info: {
-        name: 'Zoo User',
-      },
-      created_at: '2026-01-02T21:57:20.048Z',
-      id: 'pm_123',
-      metadata: {},
-      type: 'card',
-    },
-  ]
-}
-
 function createUserPaymentSubscriptionsResponse(opts: {
   monthlyPayAsYouGoApiBalanceTotalMonthlyValue: number
   name: string
@@ -107,6 +92,7 @@ test('Handles error fetching billing on balance', async () => {
 
 test('Requests total due in user payment balance', async () => {
   let includeTotalDue: string | null = null
+  let didRequestPaymentMethods = false
 
   server.use(
     http.get('*/user/payment/balance', ({ request }) => {
@@ -121,9 +107,6 @@ test('Requests total due in user payment balance', async () => {
         })
       )
     }),
-    http.get('*/user/payment/methods', () => {
-      return HttpResponse.json(createUserPaymentMethodsResponse())
-    }),
     http.get('*/user/payment/subscriptions', () => {
       return HttpResponse.json(
         createUserPaymentSubscriptionsResponse({
@@ -131,6 +114,10 @@ test('Requests total due in user payment balance', async () => {
           name: 'free',
         })
       )
+    }),
+    http.get('*/user/payment/methods', () => {
+      didRequestPaymentMethods = true
+      return HttpResponse.json([])
     }),
     http.get('*/user/org', () => {
       return new HttpResponse(null, { status: 403 })
@@ -140,6 +127,7 @@ test('Requests total due in user payment balance', async () => {
   const billing = await getBillingInfo(client)
   if (BillingError.from(billing)) throw billing
   expect(includeTotalDue).toBe('true')
+  expect(didRequestPaymentMethods).toBe(false)
   expect(billing.userPaymentBalance?.total_due).toEqual(100.08)
 })
 
@@ -152,9 +140,6 @@ test('Finds the credits of Free subscription', async () => {
           stableApiBalanceRemainingMonthlyValue: 0,
         })
       )
-    }),
-    http.get('*/user/payment/methods', () => {
-      return HttpResponse.json(createUserPaymentMethodsResponse())
     }),
     http.get('*/user/payment/subscriptions', () => {
       return HttpResponse.json(
@@ -187,9 +172,6 @@ test('Finds the credits of Plus subscription', async () => {
         })
       )
     }),
-    http.get('*/user/payment/methods', () => {
-      return HttpResponse.json(createUserPaymentMethodsResponse())
-    }),
     http.get('*/user/payment/subscriptions', () => {
       return HttpResponse.json(
         createUserPaymentSubscriptionsResponse({
@@ -221,9 +203,6 @@ test('Finds infinite credits for Pro subscription', async () => {
         })
       )
     }),
-    http.get('*/user/payment/methods', () => {
-      return HttpResponse.json(createUserPaymentMethodsResponse())
-    }),
     http.get('*/user/payment/subscriptions', () => {
       return HttpResponse.json(
         createUserPaymentSubscriptionsResponse({
@@ -245,7 +224,7 @@ test('Finds infinite credits for Pro subscription', async () => {
   expect(billing.isOrg).toBe(false)
 })
 
-test('Finds infinite credits for org user without payment method', async () => {
+test('Finds infinite credits for org user', async () => {
   server.use(
     http.get('*/user/payment/balance', () => {
       return HttpResponse.json(
@@ -253,15 +232,6 @@ test('Finds infinite credits for org user without payment method', async () => {
           monthlyApiBalanceRemainingMonthlyValue: 10,
           stableApiBalanceRemainingMonthlyValue: 0,
         })
-      )
-    }),
-    http.get('*/user/payment/methods', () => {
-      return HttpResponse.json(
-        {
-          error_code: 'ObjectNotFound',
-          message: 'not found: stripe-customer',
-        },
-        { status: 404 }
       )
     }),
     http.get('*/user/payment/subscriptions', () => {
@@ -282,6 +252,5 @@ test('Finds infinite credits for org user without payment method', async () => {
   expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
   expect(billing.allowance).toBeUndefined()
   expect(billing.hasSubscription).toBe(true)
-  expect(billing.paymentMethods).toEqual([])
   expect(billing.isOrg).toBe(true)
 })

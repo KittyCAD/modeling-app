@@ -1,4 +1,4 @@
-import type { CustomerBalance, PaymentMethod } from '@kittycad/lib'
+import type { CustomerBalance } from '@kittycad/lib'
 import {
   BillingError,
   BillingRemaining,
@@ -6,16 +6,6 @@ import {
   EBillingError,
 } from '@kittycad/ui-components'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-
-const paymentMethod = {
-  billing_info: {
-    name: 'Zoo User',
-  },
-  created_at: '2026-01-02T21:57:20.048Z',
-  id: 'pm_story',
-  metadata: {},
-  type: 'card',
-} satisfies PaymentMethod
 
 const userPaymentBalance = {
   created_at: '2026-01-02T21:57:20.048Z',
@@ -49,7 +39,6 @@ export const Fixed: Story = {}
 
 export const FixedWithOverrun: Story = {
   args: {
-    paymentMethods: [paymentMethod],
     userPaymentBalance,
   },
 }
