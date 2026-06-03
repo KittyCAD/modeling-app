@@ -514,8 +514,12 @@ ${extrudedTriangle}`
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('fillet001 = fillet(')
-      expect(newCode).toContain('version = 2')
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  radius = 1,
+  version = 2,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -964,8 +968,12 @@ ${extrudedTriangle}`
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('chamfer001 = chamfer(')
-      expect(newCode).toContain('version = 2')
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  length = 1,
+  version = 2,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
