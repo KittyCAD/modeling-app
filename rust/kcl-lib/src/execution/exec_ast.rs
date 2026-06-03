@@ -79,8 +79,6 @@ use crate::front::Object;
 use crate::front::ObjectId;
 use crate::front::ObjectKind;
 use crate::front::PointCtor;
-use crate::frontend::sketch::AngleRayDirection as FrontAngleRayDirection;
-use crate::frontend::sketch::AngleSector as FrontAngleSector;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
@@ -281,7 +279,7 @@ fn intersection_of_initial_lines(
     let denom = vec2_cross(r, s);
     if denom.abs() <= 1e-9 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle(lines = ..., rays = ...) requires non-parallel lines".to_owned(),
+            "angle(lines = ..., sector = ...) requires non-parallel lines".to_owned(),
             vec![range],
         )));
     }
@@ -290,18 +288,65 @@ fn intersection_of_initial_lines(
     Ok(vec2_add(p, vec2_scale(r, t)))
 }
 
-fn front_angle_ray_direction(ray: AngleRayDirection) -> FrontAngleRayDirection {
-    match ray {
-        AngleRayDirection::Forward => FrontAngleRayDirection::Forward,
-        AngleRayDirection::Reverse => FrontAngleRayDirection::Reverse,
+fn front_angle_sector(sector: AngleSector) -> u8 {
+    match sector {
+        AngleSector::One => 1,
+        AngleSector::Two => 2,
+        AngleSector::Three => 3,
+        AngleSector::Four => 4,
     }
 }
 
-fn front_angle_sector(sector: AngleSector) -> FrontAngleSector {
-    match sector {
-        AngleSector::Primary => FrontAngleSector::Primary,
-        AngleSector::Opposite => FrontAngleSector::Opposite,
-    }
+#[derive(Clone, Copy)]
+struct AngleSectorRay {
+    line_index: usize,
+    direction: AngleRayDirection,
+}
+
+fn angle_sector_rays(sector: AngleSector, is_reflex: bool) -> [AngleSectorRay; 2] {
+    let rays = match sector {
+        AngleSector::One => [
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Forward,
+            },
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Forward,
+            },
+        ],
+        AngleSector::Two => [
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Forward,
+            },
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Reverse,
+            },
+        ],
+        AngleSector::Three => [
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Reverse,
+            },
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Reverse,
+            },
+        ],
+        AngleSector::Four => [
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Reverse,
+            },
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Forward,
+            },
+        ],
+    };
+    if is_reflex { [rays[1], rays[0]] } else { rays }
 }
 
 fn angle_ray_initial(
@@ -324,6 +369,7 @@ fn push_points_at_angle_for_line_rays(
     sketch_var_ty: NumericType,
     line0: &ConstrainableLine2d,
     line1: &ConstrainableLine2d,
+    ray_line_indices: [usize; 2],
     initial_vertex: [f64; 2],
     initial_ray_points: [[f64; 2]; 2],
     ray_distance: f64,
@@ -332,6 +378,18 @@ fn push_points_at_angle_for_line_rays(
 ) -> Result<(), KclError> {
     let solver_line0 = datum_line_from_constrainable(line0, range)?;
     let solver_line1 = datum_line_from_constrainable(line1, range)?;
+    let solver_ray_lines = [
+        match ray_line_indices[0] {
+            0 => solver_line0,
+            1 => solver_line1,
+            _ => return Err(internal_err("Invalid angle sector line index", range)),
+        },
+        match ray_line_indices[1] {
+            0 => solver_line0,
+            1 => solver_line1,
+            _ => return Err(internal_err("Invalid angle sector line index", range)),
+        },
+    ];
     let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_vertex, range)?;
     let ray0 = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_ray_points[0], range)?;
     let ray1 = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_ray_points[1], range)?;
@@ -344,10 +402,10 @@ fn push_points_at_angle_for_line_rays(
         .push(Constraint::PointLineDistance(vertex, solver_line1, 0.0));
     sketch_block_state
         .solver_constraints
-        .push(Constraint::PointLineDistance(ray0, solver_line0, 0.0));
+        .push(Constraint::PointLineDistance(ray0, solver_ray_lines[0], 0.0));
     sketch_block_state
         .solver_constraints
-        .push(Constraint::PointLineDistance(ray1, solver_line1, 0.0));
+        .push(Constraint::PointLineDistance(ray1, solver_ray_lines[1], 0.0));
     sketch_block_state
         .solver_constraints
         .push(Constraint::Distance(vertex, ray0, ray_distance));
@@ -3850,7 +3908,7 @@ impl Node<BinaryExpression> {
                             };
                             let points_at_angle_data = match *mode {
                                 AngleConstraintMode::LinesAtAngle => None,
-                                AngleConstraintMode::PointsAtAngle { rays, .. } => {
+                                AngleConstraintMode::PointsAtAngle { sector, reflex } => {
                                     let sketch_vars = exec_state
                                         .mod_local
                                         .sketch_block
@@ -3882,24 +3940,27 @@ impl Node<BinaryExpression> {
                                     let line0_length = vec2_len(vec2_sub(initial_line0.1, initial_line0.0));
                                     let line1_length = vec2_len(vec2_sub(initial_line1.1, initial_line1.0));
                                     let ray_distance = (line0_length.min(line1_length) * 0.25).max(1.0);
+                                    let sector_rays = angle_sector_rays(sector, reflex);
+                                    let initial_lines = [initial_line0, initial_line1];
                                     Some((
                                         initial_vertex,
                                         [
                                             angle_ray_initial(
                                                 initial_vertex,
-                                                initial_line0,
-                                                rays[0],
+                                                initial_lines[sector_rays[0].line_index],
+                                                sector_rays[0].direction,
                                                 ray_distance,
                                                 range,
                                             )?,
                                             angle_ray_initial(
                                                 initial_vertex,
-                                                initial_line1,
-                                                rays[1],
+                                                initial_lines[sector_rays[1].line_index],
+                                                sector_rays[1].direction,
                                                 ray_distance,
                                                 range,
                                             )?,
                                         ],
+                                        [sector_rays[0].line_index, sector_rays[1].line_index],
                                         ray_distance,
                                         ezpz::datatypes::AngleKind::Other(desired_angle),
                                     ))
@@ -3923,12 +3984,19 @@ impl Node<BinaryExpression> {
                                 }
                                 (
                                     AngleConstraintMode::PointsAtAngle { .. },
-                                    Some((initial_vertex, initial_ray_points, ray_distance, angle_kind)),
+                                    Some((
+                                        initial_vertex,
+                                        initial_ray_points,
+                                        ray_line_indices,
+                                        ray_distance,
+                                        angle_kind,
+                                    )),
                                 ) => push_points_at_angle_for_line_rays(
                                     sketch_block_state,
                                     sketch_var_ty,
                                     line0,
                                     line1,
+                                    ray_line_indices,
                                     initial_vertex,
                                     initial_ray_points,
                                     ray_distance,
@@ -3953,20 +4021,19 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let (rays, sector) = match *mode {
+                            let (sector, reflex) = match *mode {
                                 AngleConstraintMode::LinesAtAngle => (None, None),
-                                AngleConstraintMode::PointsAtAngle { rays, sector } => (
-                                    Some([front_angle_ray_direction(rays[0]), front_angle_ray_direction(rays[1])]),
-                                    Some(front_angle_sector(sector)),
-                                ),
+                                AngleConstraintMode::PointsAtAngle { sector, reflex } => {
+                                    (Some(front_angle_sector(sector)), Some(reflex))
+                                }
                             };
                             let sketch_constraint = crate::front::Constraint::Angle(Angle {
                                 lines: vec![line0.object_id, line1.object_id],
                                 angle: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert angle units numeric suffix:", range)
                                 })?,
-                                rays,
                                 sector,
+                                reflex,
                                 source,
                             });
                             sketch_block_state.sketch_constraints.push(constraint_id);
@@ -5985,13 +6052,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_with_rays_allows_missing_unlabeled_input() {
+    async fn angle_labelled_lines_with_sector_allows_missing_unlabeled_input() {
         parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  angle(lines = [line1, line2], rays = [1, -1]) == 60deg
+  angle(lines = [line1, line2], sector = 2) == 60deg
 }
 "#,
         )
@@ -6000,13 +6067,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_accepts_opposite_sector() {
+    async fn angle_labelled_lines_defaults_to_sector_one() {
         let result = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var -3.464mm])
-  angle(lines = [line1, line2], rays = [1, 1], sector = "opposite") == 360deg - 60deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle(lines = [line1, line2]) == 60deg
 }
 "#,
         )
@@ -6025,31 +6092,56 @@ sketch(on = XY) {
                 _ => None,
             })
             .unwrap();
-        assert_eq!(
-            angle.rays,
-            Some([FrontAngleRayDirection::Forward, FrontAngleRayDirection::Forward])
-        );
-        assert_eq!(angle.sector, Some(FrontAngleSector::Opposite));
+        assert_eq!(angle.sector, Some(1));
+        assert_eq!(angle.reflex, Some(false));
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_requires_rays() {
-        let err = parse_execute(
+    async fn angle_labelled_lines_accepts_all_four_sectors() {
+        parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  angle(lines = [line1, line2]) == 60deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle(lines = [line1, line2], sector = 1) == 60deg
+  angle(lines = [line1, line2], sector = 2) == 120deg
+  angle(lines = [line1, line2], sector = 3) == 60deg
+  angle(lines = [line1, line2], sector = 4) == 120deg
 }
 "#,
         )
         .await
-        .unwrap_err();
+        .unwrap();
+    }
 
-        assert!(
-            err.to_string().contains("requires a keyword argument `rays`"),
-            "unexpected error: {err:?}"
-        );
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_labelled_lines_accepts_reflex_angle_for_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle(lines = [line1, line2], sector = 1, reflex = true) == 360deg - 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(angle.sector, Some(1));
+        assert_eq!(angle.reflex, Some(true));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6061,7 +6153,7 @@ sketch(on = XY) {
   line2 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 3mm])
   line3 = line(start = [var 0mm, var 1mm], end = [var 1mm, var 1mm])
   line4 = line(start = [var 0mm, var 2mm], end = [var 1mm, var 3mm])
-  angle([line1, line2], lines = [line3, line4], rays = [1, 0]) == 60deg
+  angle([line1, line2], lines = [line3, line4], sector = 5) == 60deg
 }
 "#,
         )
@@ -6069,7 +6161,7 @@ sketch(on = XY) {
         .unwrap_err();
 
         assert!(
-            err.to_string().contains("angle() rays must be either 1 or -1"),
+            err.to_string().contains("angle() sector must be 1, 2, 3, or 4"),
             "unexpected error: {err:?}"
         );
     }
@@ -6081,7 +6173,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  angle(lines = [line1, line2], rays = [1, -1], sector = "side") == 60deg
+  angle(lines = [line1, line2], sector = 5) == 60deg
 }
 "#,
         )
@@ -6089,7 +6181,7 @@ sketch(on = XY) {
         .unwrap_err();
 
         assert!(
-            err.to_string().contains("angle() sector must be either"),
+            err.to_string().contains("angle() sector must be 1, 2, 3, or 4"),
             "unexpected error: {err:?}"
         );
     }
@@ -6101,7 +6193,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
-  angle(lines = [line1, line2], rays = [1, -1]) == 60deg
+  angle(lines = [line1, line2], sector = 2) == 60deg
 }
 "#,
         )
@@ -6110,7 +6202,28 @@ sketch(on = XY) {
 
         assert!(
             err.to_string()
-                .contains("angle(lines = ..., rays = ...) requires non-parallel lines"),
+                .contains("angle(lines = ..., sector = ...) requires non-parallel lines"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_sector_requires_labelled_lines() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angle([line1, line2], sector = 2) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angle() sector and reflex require the labelled lines argument"),
             "unexpected error: {err:?}"
         );
     }

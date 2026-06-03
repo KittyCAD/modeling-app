@@ -12468,8 +12468,8 @@ splineSketch = sketch(on = XY) {
                 value: 30.0,
                 units: NumericSuffix::Deg,
             },
-            rays: None,
             sector: None,
+            reflex: None,
             source: Default::default(),
         });
         let (src_delta, _) = frontend
@@ -13191,8 +13191,8 @@ sketch(on = XY) {
                 value: 30.0,
                 units: NumericSuffix::Deg,
             },
-            rays: None,
             sector: None,
+            reflex: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend

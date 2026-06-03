@@ -16,7 +16,6 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::AbstractSegment;
 use crate::execution::AngleConstraintMode;
-use crate::execution::AngleRayDirection;
 use crate::execution::AngleSector;
 use crate::execution::Artifact;
 use crate::execution::CodeRef;
@@ -446,25 +445,14 @@ fn constrainable_line_from_kcl_value(
     constrainable_line_from_unsolved_segment(segment, function_name, range)
 }
 
-fn angle_ray_direction(ray: TyF64, range: crate::SourceRange) -> Result<AngleRayDirection, KclError> {
-    if ray.n == 1.0 {
-        Ok(AngleRayDirection::Forward)
-    } else if ray.n == -1.0 {
-        Ok(AngleRayDirection::Reverse)
-    } else {
-        Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle() rays must be either 1 or -1".to_owned(),
-            vec![range],
-        )))
-    }
-}
-
-fn angle_sector(sector: &str, range: crate::SourceRange) -> Result<AngleSector, KclError> {
-    match sector {
-        "primary" => Ok(AngleSector::Primary),
-        "opposite" => Ok(AngleSector::Opposite),
+fn angle_sector(sector: TyF64, range: crate::SourceRange) -> Result<AngleSector, KclError> {
+    match sector.n {
+        1.0 => Ok(AngleSector::One),
+        2.0 => Ok(AngleSector::Two),
+        3.0 => Ok(AngleSector::Three),
+        4.0 => Ok(AngleSector::Four),
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle() sector must be either \"primary\" or \"opposite\"".to_owned(),
+            "angle() sector must be 1, 2, 3, or 4".to_owned(),
             vec![range],
         ))),
     }
@@ -5155,34 +5143,32 @@ fn axis_constraint_points(
 
 pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let line_array_ty = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2));
-    let ray_array_ty = RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(2));
+    let sector_ty = RuntimeType::count();
     let (lines, mode): (Vec<KclValue>, AngleConstraintMode) =
         if let Some(lines) = args.get_kw_arg_opt("lines", &line_array_ty, exec_state)? {
-            let rays: [TyF64; 2] = args.get_kw_arg("rays", &ray_array_ty, exec_state)?;
-            let [ray0, ray1] = rays;
             let sector = args
-                .get_kw_arg_opt::<String>("sector", &RuntimeType::string(), exec_state)?
-                .unwrap_or_else(|| "primary".to_owned());
+                .get_kw_arg_opt::<TyF64>("sector", &sector_ty, exec_state)?
+                .unwrap_or_else(|| TyF64::count(1.0));
+            let reflex = args
+                .get_kw_arg_opt::<bool>("reflex", &RuntimeType::bool(), exec_state)?
+                .unwrap_or(false);
             (
                 lines,
                 AngleConstraintMode::PointsAtAngle {
-                    rays: [
-                        angle_ray_direction(ray0, args.source_range)?,
-                        angle_ray_direction(ray1, args.source_range)?,
-                    ],
-                    sector: angle_sector(&sector, args.source_range)?,
+                    sector: angle_sector(sector, args.source_range)?,
+                    reflex,
                 },
             )
         } else {
             if args
-                .get_kw_arg_opt::<[TyF64; 2]>("rays", &ray_array_ty, exec_state)?
+                .get_kw_arg_opt::<TyF64>("sector", &sector_ty, exec_state)?
                 .is_some()
                 || args
-                    .get_kw_arg_opt::<String>("sector", &RuntimeType::string(), exec_state)?
+                    .get_kw_arg_opt::<bool>("reflex", &RuntimeType::bool(), exec_state)?
                     .is_some()
             {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "angle() rays and sector require the labelled lines argument".to_owned(),
+                    "angle() sector and reflex require the labelled lines argument".to_owned(),
                     vec![args.source_range],
                 )));
             }

@@ -210,31 +210,22 @@ function calculateExplicitArcRenderInput(
   center: Coords2d,
   scale: number
 ): ArcLineInfo | null {
-  const { rays, sector } = obj.kind.constraint
-  if (!rays) {
+  const sector = explicitAngleSector(obj.kind.constraint.sector)
+  if (!sector) {
     return null
   }
 
-  const ray1Dir = angleRayDirection(line1Dir, rays[0])
-  const ray2Dir = angleRayDirection(line2Dir, rays[1])
-  const primarySweep = ccwSweepBetweenDirections(ray1Dir, ray2Dir)
-  const oppositeSweep = ccwSweepBetweenDirections(ray2Dir, ray1Dir)
-  const renderSector =
-    angleSectorFromSweep(
-      normalizeAngleRad(obj.kind.constraint.angle),
-      primarySweep,
-      oppositeSweep
-    ) ??
-    explicitAngleSector(sector) ??
-    'primary'
-  const start =
-    renderSector === 'opposite'
-      ? { line: line2, dir: ray2Dir }
-      : { line: line1, dir: ray1Dir }
-  const end =
-    renderSector === 'opposite'
-      ? { line: line1, dir: ray1Dir }
-      : { line: line2, dir: ray2Dir }
+  const sectorBoundaries = angleSectorBoundaries(
+    sector,
+    line1,
+    line2,
+    line1Dir,
+    line2Dir
+  )
+  const [start, end] =
+    obj.kind.constraint.reflex === true
+      ? [sectorBoundaries[1], sectorBoundaries[0]]
+      : sectorBoundaries
   const radius = calculateExplicitArcRadius(
     start.line,
     end.line,
@@ -245,7 +236,7 @@ function calculateExplicitArcRenderInput(
   )
   const startVector = scaleVec(start.dir, radius)
   const startAngle = Math.atan2(startVector[1], startVector[0])
-  const sweepAngle = renderSector === 'opposite' ? oppositeSweep : primarySweep
+  const sweepAngle = ccwSweepBetweenDirections(start.dir, end.dir)
   const labelPosition = addVec(center, rotateVec2d(startVector, sweepAngle / 2))
 
   return {
@@ -259,31 +250,41 @@ function calculateExplicitArcRenderInput(
   }
 }
 
-function angleRayDirection(lineDir: Coords2d, ray: 'forward' | 'reverse') {
-  return ray === 'reverse' ? scaleVec(lineDir, -1) : lineDir
-}
-
 function explicitAngleSector(sector: unknown) {
-  if (sector === 'opposite' || sector === 'Opposite') {
-    return 'opposite'
-  }
-  if (sector === 'primary' || sector === 'Primary') {
-    return 'primary'
-  }
-  return null
+  return sector === 1 || sector === 2 || sector === 3 || sector === 4
+    ? sector
+    : null
 }
 
-function angleSectorFromSweep(
-  desiredSweep: number,
-  primarySweep: number,
-  oppositeSweep: number
+function angleSectorBoundaries(
+  sector: 1 | 2 | 3 | 4,
+  line1: LineSegment,
+  line2: LineSegment,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d
 ) {
-  const primaryDelta = Math.abs(desiredSweep - primarySweep)
-  const oppositeDelta = Math.abs(desiredSweep - oppositeSweep)
-  if (primaryDelta === oppositeDelta) {
-    return null
+  switch (sector) {
+    case 1:
+      return [
+        { line: line1, dir: line1Dir },
+        { line: line2, dir: line2Dir },
+      ] as const
+    case 2:
+      return [
+        { line: line2, dir: line2Dir },
+        { line: line1, dir: scaleVec(line1Dir, -1) },
+      ] as const
+    case 3:
+      return [
+        { line: line1, dir: scaleVec(line1Dir, -1) },
+        { line: line2, dir: scaleVec(line2Dir, -1) },
+      ] as const
+    case 4:
+      return [
+        { line: line2, dir: scaleVec(line2Dir, -1) },
+        { line: line1, dir: line1Dir },
+      ] as const
   }
-  return oppositeDelta < primaryDelta ? 'opposite' : 'primary'
 }
 
 function ccwSweepBetweenDirections(start: Coords2d, end: Coords2d) {

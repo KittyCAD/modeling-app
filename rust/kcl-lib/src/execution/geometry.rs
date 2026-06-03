@@ -2367,17 +2367,16 @@ pub enum AngleRayDirection {
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AngleSector {
-    Primary,
-    Opposite,
+    One,
+    Two,
+    Three,
+    Four,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AngleConstraintMode {
     LinesAtAngle,
-    PointsAtAngle {
-        rays: [AngleRayDirection; 2],
-        sector: AngleSector,
-    },
+    PointsAtAngle { sector: AngleSector, reflex: bool },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

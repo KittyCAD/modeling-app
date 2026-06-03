@@ -446,12 +446,12 @@ export fn perpendicular(
 export fn angle(
   /// The two line segments whose relative angle should match the value set with `==`.
   @input?: [Segment; 2],
-  /// The two line segments whose oriented relative angle should match the value set with `==`.
+  /// The two line segments whose selected angle sector should match the value set with `==`.
   lines?: [Segment; 2],
-  /// Which ray to use for each line: `1` for start-to-end, `-1` for end-to-start.
-  rays?: [number(Count); 2],
-  /// Which angle sector to constrain: "primary" or "opposite".
-  sector?: string = "primary",
+  /// Which of the four angle sectors to constrain, numbered around the line intersection.
+  sector?: number(Count) = 1,
+  /// Whether to constrain the reflex complement of the selected sector.
+  reflex?: bool = false,
 ) {}
 
 /// Constrain two segments to be tangent.

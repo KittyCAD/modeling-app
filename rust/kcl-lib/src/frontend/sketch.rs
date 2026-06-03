@@ -563,27 +563,11 @@ pub struct Angle {
     pub angle: Number,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
-    pub rays: Option<[AngleRayDirection; 2]>,
+    pub sector: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
-    pub sector: Option<AngleSector>,
+    pub reflex: Option<bool>,
     pub source: ConstraintSource,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub enum AngleRayDirection {
-    Forward,
-    Reverse,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub enum AngleSector {
-    Primary,
-    Opposite,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
