@@ -1026,6 +1026,7 @@ sketch001 = startSketchOn(XZ)
       // press arrow down then tab to accept xLine
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
