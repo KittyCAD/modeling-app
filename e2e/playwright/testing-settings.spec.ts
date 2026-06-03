@@ -763,6 +763,24 @@ test.describe(
           return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
         }
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+        const codeMirrorContent = page
+          .locator('.cm-content[data-language="kcl"]')
+          .first()
+        const getCodeMirrorThemeColors = async () =>
+          codeMirrorContent.evaluate((element) => {
+            const editor = element.closest('.cm-editor') ?? element
+            const editorStyle = getComputedStyle(editor)
+            const contentStyle = getComputedStyle(element)
+
+            return {
+              editorBackgroundColor: editorStyle.backgroundColor,
+              contentColor: contentStyle.color,
+              caretColor: contentStyle.caretColor,
+            }
+          })
+        let codeMirrorLightThemeColors:
+          | Awaited<ReturnType<typeof getCodeMirrorThemeColors>>
+          | undefined
 
         await test.step(`Test setup`, async () => {
           await page.emulateMedia({ colorScheme: 'light' })
@@ -778,6 +796,8 @@ test.describe(
             'background-color',
             lightBackgroundCss
           )
+          await expect(codeMirrorContent).toBeVisible()
+          codeMirrorLightThemeColors = await getCodeMirrorThemeColors()
           await expect
             .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
             .toBeLessThanOrEqual(streamBackgroundColorTolerance)
@@ -792,6 +812,12 @@ test.describe(
             'background-color',
             lightBackgroundCss
           )
+          if (!codeMirrorLightThemeColors) {
+            throw new Error('CodeMirror light theme colors were not captured.')
+          }
+          await expect
+            .poll(() => getCodeMirrorThemeColors())
+            .toEqual(codeMirrorLightThemeColors)
           await expect
             .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
             .toBeLessThanOrEqual(streamBackgroundColorTolerance)
