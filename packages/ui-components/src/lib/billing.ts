@@ -16,6 +16,7 @@ export enum EBillingError {
   UnexpectedStatus = 'UnexpectedStatus',
   CatastrophicRequest = 'CatastrophicRequest',
   JSONParse = 'JSONParse',
+  InvalidData = 'InvalidData',
 }
 
 export interface IBillingErrorNotOk {
@@ -40,11 +41,17 @@ export interface IBillingErrorJSONParse {
   error: Error
 }
 
+export interface IBillingErrorInvalidData {
+  type: EBillingError.InvalidData
+  message: string
+}
+
 export type _IBillingError =
   | IBillingErrorNotOk
   | IBillingErrorUnexpectedStatus
   | IBillingErrorCatastrophicRequest
   | IBillingErrorJSONParse
+  | IBillingErrorInvalidData
 export type IBillingError = _IBillingError extends { type: EBillingError }
   ? _IBillingError
   : never
@@ -130,6 +137,13 @@ async function fetchBilling<T, TT>(
   }
 }
 
+function createInvalidBillingDataError(message: string): BillingError {
+  return new BillingError({
+    type: EBillingError.InvalidData,
+    message,
+  })
+}
+
 export async function getBillingInfo(
   client: Client
 ): Promise<BillingError | IBillingInfo> {
@@ -190,7 +204,9 @@ export async function getBillingInfo(
       break
     case 'plus':
       if (ratioSec === undefined || computedAllowance === undefined) {
-        throw new Error('Missing ratioSec or computedAllowance for plus tier')
+        return createInvalidBillingDataError(
+          'Missing ratioSec or computedAllowance for plus tier'
+        )
       }
       allowance = toMinutes(computedAllowance, ratioSec)
       balance = toMinutes(
@@ -203,7 +219,9 @@ export async function getBillingInfo(
       break
     case 'free':
       if (ratioSec === undefined || computedAllowance === undefined) {
-        throw new Error('Missing ratioSec or computedAllowance for free tier')
+        return createInvalidBillingDataError(
+          'Missing ratioSec or computedAllowance for free tier'
+        )
       }
       allowance = toMinutes(computedAllowance, ratioSec)
       balance = toMinutes(
@@ -215,7 +233,9 @@ export async function getBillingInfo(
       hasSubscription = false
       break
     default: {
-      throw new Error(`Unhandled subscription tier: ${tier}`)
+      return createInvalidBillingDataError(
+        `Unhandled subscription tier: ${tier}`
+      )
     }
   }
 

@@ -4,7 +4,11 @@ import {
   type UserOrgInfo,
   type ZooProductSubscriptions,
 } from '@kittycad/lib'
-import { BillingError, getBillingInfo } from '@kittycad/ui-components'
+import {
+  BillingError,
+  EBillingError,
+  getBillingInfo,
+} from '@kittycad/ui-components'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
@@ -52,8 +56,9 @@ function createUserOrgResponse(): UserOrgInfo {
 }
 
 function createUserPaymentSubscriptionsResponse(opts: {
-  monthlyPayAsYouGoApiBalanceTotalMonthlyValue: number
+  monthlyPayAsYouGoApiBalanceTotalMonthlyValue?: number
   name: string
+  payAsYouGoApiCreditPrice?: number
 }): ZooProductSubscriptions {
   return {
     modeling_app: {
@@ -63,7 +68,7 @@ function createUserPaymentSubscriptionsResponse(opts: {
       monthly_pay_as_you_go_api_credits_monetary_value:
         opts.monthlyPayAsYouGoApiBalanceTotalMonthlyValue,
       name: opts.name,
-      pay_as_you_go_api_credit_price: 0.0083,
+      pay_as_you_go_api_credit_price: opts.payAsYouGoApiCreditPrice ?? 0.0083,
       price: {
         interval: 'year',
         price: 50.04,
@@ -253,4 +258,65 @@ test('Finds infinite credits for org user', async () => {
   expect(billing.allowance).toBeUndefined()
   expect(billing.hasSubscription).toBe(true)
   expect(billing.isOrg).toBe(true)
+})
+
+test('Returns billing error for missing subscription credit data', async () => {
+  server.use(
+    http.get('*/user/payment/balance', () => {
+      return HttpResponse.json(
+        createUserPaymentBalanceResponse({
+          monthlyApiBalanceRemainingMonthlyValue: 10,
+          stableApiBalanceRemainingMonthlyValue: 0,
+        })
+      )
+    }),
+    http.get('*/user/payment/subscriptions', () => {
+      return HttpResponse.json(
+        createUserPaymentSubscriptionsResponse({
+          name: 'plus',
+        })
+      )
+    }),
+    http.get('*/user/org', () => {
+      return new HttpResponse(null, { status: 403 })
+    })
+  )
+
+  const billing = await getBillingInfo(client)
+  expect(billing).toBeInstanceOf(BillingError)
+  expect(BillingError.from(billing) && billing.error).toEqual({
+    type: EBillingError.InvalidData,
+    message: 'Missing ratioSec or computedAllowance for plus tier',
+  })
+})
+
+test('Returns billing error for unsupported subscription tier', async () => {
+  server.use(
+    http.get('*/user/payment/balance', () => {
+      return HttpResponse.json(
+        createUserPaymentBalanceResponse({
+          monthlyApiBalanceRemainingMonthlyValue: 10,
+          stableApiBalanceRemainingMonthlyValue: 0,
+        })
+      )
+    }),
+    http.get('*/user/payment/subscriptions', () => {
+      return HttpResponse.json(
+        createUserPaymentSubscriptionsResponse({
+          monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 10,
+          name: 'unsupported',
+        })
+      )
+    }),
+    http.get('*/user/org', () => {
+      return new HttpResponse(null, { status: 403 })
+    })
+  )
+
+  const billing = await getBillingInfo(client)
+  expect(billing).toBeInstanceOf(BillingError)
+  expect(BillingError.from(billing) && billing.error).toEqual({
+    type: EBillingError.InvalidData,
+    message: 'Unhandled subscription tier: unsupported',
+  })
 })
