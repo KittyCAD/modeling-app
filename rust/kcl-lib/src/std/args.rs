@@ -18,6 +18,7 @@ use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Face;
 use crate::execution::Geometry;
 use crate::execution::Helix;
 use crate::execution::KclObjectFields;
@@ -1235,11 +1236,21 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
     }
 }
 
+impl<'a> FromKclValue<'a> for Face {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Face { value } = arg else {
+            return None;
+        };
+        Some(value.as_ref().to_owned())
+    }
+}
+
 impl<'a> FromKclValue<'a> for Extrudable {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = Box::<Sketch>::from_kcl_val;
         let case2 = FaceTag::from_kcl_val;
-        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
+        let case3 = Box::<Face>::from_kcl_val;
+        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face)).or_else(|| case3(arg).map(Self::Face))
     }
 }
 

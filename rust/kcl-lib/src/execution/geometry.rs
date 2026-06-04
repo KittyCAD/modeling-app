@@ -994,8 +994,10 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
-    /// Face.
-    Face(FaceTag),
+    /// Tagged Face.
+    FaceTag(FaceTag),
+        /// Face.
+    Face(Box<Face>),
 }
 
 impl Extrudable {
@@ -1008,25 +1010,30 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
-            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::Face(face) => Ok(face.id),
         }
     }
 
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face) => match face.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
+            Extrudable::Face(face) => match face.parent_solid.creator_sketch_id {
+                Some(creator_sketch_id) => Some(creator_sketch_id),
+                None => None,
+            }
         }
     }
 
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
                     .sketch()
@@ -1034,6 +1041,7 @@ impl Extrudable {
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
             },
+            Extrudable::Face(face_tag) => todo!(),
         }
     }
 }

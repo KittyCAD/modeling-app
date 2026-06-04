@@ -23,11 +23,13 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::ProfileClosed;
 use crate::execution::Segment;
 use crate::execution::Sketch;
+use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::extrude::BeingExtruded;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::coerce_extrude_targets;
 use crate::std::extrude::do_post_extrude;
@@ -174,6 +176,23 @@ async fn inner_sweep(
                 .build(),
         );
 
+        let being_extruded = match sketch {
+            Extrudable::Sketch(..) => BeingExtruded::Sketch,
+            Extrudable::FaceTag(face_tag) => {
+                let face_id = sketch_or_face_id;
+                let solid_id = match face_tag.geometry() {
+                    Some(crate::execution::Geometry::Solid(solid)) => solid.id,
+                    Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
+                        SketchSurface::Face(face) => face.parent_solid.solid_id,
+                        SketchSurface::Plane(_) => sketch.id,
+                    },
+                    None => face_id,
+                };
+                BeingExtruded::Face { face_id, solid_id }
+            }
+            Extrudable::Face(face) => todo!(),
+        };
+        
         if let Some(post_extr_sketch) = sketch.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
                 exec_state,
@@ -200,7 +219,7 @@ async fn inner_sweep(
                     None,
                     None,
                     body_type,
-                    crate::std::extrude::BeingExtruded::Sketch,
+                    being_extruded,
                 )
                 .await?,
             );
