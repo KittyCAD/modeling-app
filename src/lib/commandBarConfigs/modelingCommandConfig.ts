@@ -67,6 +67,8 @@ import {
 } from '@src/lang/modifyAst/faces'
 import {
   addAnnotationGdt,
+  addCircularityGdt,
+  addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
@@ -207,6 +209,7 @@ export type ModelingCommandSchema = {
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
+    draftAngle?: KclCommandValue
     twistAngle?: KclCommandValue
     twistAngleStep?: KclCommandValue
     twistCenter?: KclCommandValue
@@ -291,6 +294,7 @@ export type ModelingCommandSchema = {
     selection: Selections // this is named 'tags' in the stdlib
     radius: KclCommandValue
     tag?: string
+    version?: KclCommandValue
   }
   Chamfer: {
     // Enables editing workflow
@@ -301,6 +305,7 @@ export type ModelingCommandSchema = {
     secondLength?: KclCommandValue
     angle?: KclCommandValue
     tag?: string
+    version?: KclCommandValue
   }
   'Offset plane': {
     // Enables editing workflow
@@ -459,6 +464,26 @@ export type ModelingCommandSchema = {
     fontSize?: KclCommandValue
   }
   'GDT Straightness': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Circularity': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Cylindricity': {
     nodeToEdit?: PathToNode
     objects: Selections
     tolerance: KclCommandValue
@@ -974,6 +999,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      draftAngle: {
+        inputType: 'kcl',
+        required: false,
+        status: 'experimental',
       },
       twistAngle: {
         inputType: 'kcl',
@@ -2022,11 +2052,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Fillet']
+      const wasmInstance = await kclManager.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        commandArgs.version &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addFillet({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2062,6 +2110,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         // TODO: add validation like for Clone command
       },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '1',
+        required: false,
+        status: 'experimental',
+      },
     },
   },
   Chamfer: {
@@ -2078,11 +2134,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Chamfer']
+      const wasmInstance = await kclManager.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        commandArgs.version &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addChamfer({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2127,6 +2201,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'tagDeclarator',
         required: false,
         // TODO: add validation like for Clone command
+      },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '1',
+        required: false,
+        status: 'experimental',
       },
     },
   },
@@ -2859,6 +2941,146 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addStraightnessGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Straightness']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tolerance: {
+        ...gdtToleranceProps,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: FRAME_PLANE_OPTIONS,
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Circularity': {
+    description:
+      'Add circularity geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtCircularity',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addCircularityGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Circularity']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tolerance: {
+        ...gdtToleranceProps,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: FRAME_PLANE_OPTIONS,
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Cylindricity': {
+    description:
+      'Add cylindricity geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtCylindricity',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addCylindricityGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Cylindricity']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,

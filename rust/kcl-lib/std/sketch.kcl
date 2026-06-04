@@ -824,7 +824,7 @@ export fn extrude(
   tagEnd?: TagDecl,
   /// Positive draft angle means the sketch gets smaller while extruding, i.e. inwards draft.
   /// Negative draft angle means the sketch gets bigger while extruding, i.e. outwards draft.
-  /// Defaults to zero, i.e. 
+  /// Defaults to zero, i.e. no draft.
   @(experimental = true) draftAngle?: number(Angle),
   /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),

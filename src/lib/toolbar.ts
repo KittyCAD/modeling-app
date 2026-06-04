@@ -1389,6 +1389,48 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-circularity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Circularity', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Circularity',
+              icon: 'gdtCircularity',
+              description:
+                'Specifies circularity tolerance - how much a round face or edge can deviate from a perfect circle.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-circularity'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-cylindricity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Cylindricity', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Cylindricity',
+              icon: 'gdtCylindricity',
+              description:
+                'Specifies cylindricity tolerance - how much a round face or edge can deviate from a perfect cylinder.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-cylindricity'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-datum',
               onClick: () =>
                 commands.send({

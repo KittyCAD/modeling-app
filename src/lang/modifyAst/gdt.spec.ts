@@ -1,6 +1,8 @@
 import type { KclManager } from '@src/lang/KclManager'
 import {
   addAnnotationGdt,
+  addCircularityGdt,
+  addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
@@ -708,6 +710,354 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         rustContextInThisFile
       )
       const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        precision,
+        framePosition,
+        framePlane,
+        leaderScale,
+        fontSize,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+      expect(newCode).toContain('precision = 3')
+      expect(newCode).toContain('framePosition = [10, 20]')
+      expect(newCode).toContain('framePlane = XY')
+      expect(newCode).toContain('fontSize = 10mm')
+      expect(newCode).toContain('leaderScale = 1.2')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addCircularityGdt', () => {
+    it('should add a basic circularity annotation to a single face (cap)', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getCapFromCylinder(artifactGraph)
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCircularityGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain(
+        'gdt::circularity(faces = [capEnd001], tolerance = 0.1mm)'
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add circularity annotations to multiple faces', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getWallsFromBox(artifactGraph, 3)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCircularityGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tag = $seg01')
+      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $seg03')
+      const gdtCalls = newCode.match(/gdt::circularity/g)
+      expect(gdtCalls).toHaveLength(3)
+      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add circularity annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCircularityGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::circularity(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add circularity annotation with all optional parameters', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getCapFromCylinder(artifactGraph)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const precision = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePosition = await getKclCommandValue(
+        '[10, 20]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePlane = 'XY'
+      const fontSize = await getKclCommandValue(
+        '10mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const leaderScale = await getKclCommandValue(
+        '1.2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCircularityGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        precision,
+        framePosition,
+        framePlane,
+        leaderScale,
+        fontSize,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+      expect(newCode).toContain('precision = 3')
+      expect(newCode).toContain('framePosition = [10, 20]')
+      expect(newCode).toContain('framePlane = XY')
+      expect(newCode).toContain('fontSize = 10mm')
+      expect(newCode).toContain('leaderScale = 1.2')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addCylindricityGdt', () => {
+    it('should add a basic cylindricity annotation to a single face (cap)', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getCapFromCylinder(artifactGraph)
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCylindricityGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain(
+        'gdt::cylindricity(faces = [capEnd001], tolerance = 0.1mm)'
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add cylindricity annotations to multiple faces', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getWallsFromBox(artifactGraph, 3)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCylindricityGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tag = $seg01')
+      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $seg03')
+      const gdtCalls = newCode.match(/gdt::cylindricity/g)
+      expect(gdtCalls).toHaveLength(3)
+      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add cylindricity annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCylindricityGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::cylindricity(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add cylindricity annotation with all optional parameters', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const objects = getCapFromCylinder(artifactGraph)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const precision = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePosition = await getKclCommandValue(
+        '[10, 20]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePlane = 'XY'
+      const fontSize = await getKclCommandValue(
+        '10mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const leaderScale = await getKclCommandValue(
+        '1.2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addCylindricityGdt({
         ast,
         artifactGraph,
         objects,
