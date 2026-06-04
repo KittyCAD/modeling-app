@@ -591,6 +591,15 @@ export const sketchSolveMachine = setup({
               context.kclManager.fileSettings.defaultLengthUnit
             )
 
+            if (currentSelections.length === 0) {
+              sendToActorIfActive(self, {
+                type: 'equip tool',
+                data: { tool: 'dimensionTool' },
+                keepSelection,
+              })
+              return
+            }
+
             if (currentSelections.length === 2) {
               const first = currentSelections[0]
               const second = currentSelections[1]

@@ -141,6 +141,9 @@ const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
 const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
+const ANGLE_LINES_PARAM: &str = "lines";
+const ANGLE_SECTOR_PARAM: &str = "sector";
+const ANGLE_REFLEX_PARAM: &str = "reflex";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -3766,24 +3769,58 @@ impl FrontendState {
         };
         let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
 
-        let arguments = match &angle.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
+        let lines_ast = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+            elements: vec![l0_ast, l1_ast],
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        let has_explicit_angle_mode = angle.sector.is_some() || angle.reflex.is_some();
+        let mut arguments = if has_explicit_angle_mode {
+            vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_LINES_PARAM)),
+                arg: lines_ast.clone(),
+            }]
+        } else {
+            Default::default()
+        };
+
+        if let Some(sector) = angle.sector {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_SECTOR_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Number {
+                        value: f64::from(sector),
+                        suffix: NumericSuffix::None,
+                    },
+                    raw: sector.to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+
+        if let Some(reflex) = angle.reflex {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_REFLEX_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(reflex),
+                    raw: reflex.to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+
+        if let Some(label_position) = &angle.label_position {
+            arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
                 arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
+            });
+        }
 
         // Create the angle() call.
         let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![l0_ast, l1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
+            unlabeled: (!has_explicit_angle_mode).then_some(lines_ast),
             arguments,
             digest: None,
             non_code_meta: Default::default(),
@@ -13296,6 +13333,74 @@ sketch(on = XY) {
         );
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_angle_with_sector_uses_labelled_lines() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let constraint = Constraint::Angle(Angle {
+            lines: vec![line1_id, line2_id],
+            angle: Number {
+                value: 270.0,
+                units: NumericSuffix::Deg,
+            },
+            sector: Some(1),
+            reflex: Some(true),
+            label_position: Some(Point2d {
+                x: Number {
+                    value: -0.73,
+                    units: NumericSuffix::Mm,
+                },
+                y: Number {
+                    value: 0.75,
+                    units: NumericSuffix::Mm,
+                },
+            }),
+            source: Default::default(),
+        });
+        let (src_delta, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  angle(
+  lines = [line1, line2],
+  sector = 1,
+  reflex = true,
+  labelPosition = [-0.73mm, 0.75mm],
+) == 270deg
+}
+"
+        );
+
         mock_ctx.close().await;
     }
 

@@ -1,101 +1,960 @@
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiConstraint,
+  ApiObject,
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
+import {
+  TAU,
+  dot2d,
+  length2d,
+  normalizeVec,
+  scaleVec,
+  subVec,
+} from '@src/lib/utils2d'
+import {
+  getLinePoints,
+  isLineSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import { createMachine, setup } from 'xstate'
+import { setup } from 'xstate'
 
-type DimensionToolEvent = BaseToolEvent
+type DimensionToolContext = {
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  initialObjects: ApiObject[]
+}
+
+type DimensionToolInput = {
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  kclManager: KclManager
+  sketchId: number
+  initialSelectionIds?: SketchSolveSelectionId[]
+  initialObjects?: ApiObject[]
+  sceneGraphDelta?: SceneGraphDelta
+}
+
+type DimensionToolEvent =
+  | BaseToolEvent
+  | {
+      type: 'done'
+    }
+
+type ParentSketchSolveEvent =
+  | {
+      type: 'update selected ids'
+      data: {
+        selectedIds?: SketchSolveSelectionId[]
+        duringAreaSelectIds?: number[]
+        replaceExistingSelection?: boolean
+      }
+    }
+  | {
+      type: 'update hovered id'
+      data: {
+        hoveredId: SketchSolveSelectionId | null
+      }
+    }
+  | {
+      type: 'update sketch outcome'
+      data: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+        updateEditor?: boolean
+        writeToDisk?: boolean
+        addToHistory?: boolean
+        suppressExecOutcomeIssues?: boolean
+      }
+    }
+  | {
+      type: 'set draft entities'
+      data: {
+        segmentIds: number[]
+        constraintIds: number[]
+      }
+    }
+  | {
+      type: 'clear draft entities'
+    }
+  | {
+      type: 'delete draft entities'
+    }
+
+type LineSelection = {
+  id: number
+  clickPoint: Coords2d
+}
+
+type RayDirection = 'forward' | 'reverse'
+export type AngleSector = 1 | 2 | 3 | 4
+type AngleRayKey =
+  | 'line0Forward'
+  | 'line0Reverse'
+  | 'line1Forward'
+  | 'line1Reverse'
+
+export type DimensionAngleDraftContext = {
+  line0Id: number
+  line1Id: number
+  line0Direction: Coords2d
+  line1Direction: Coords2d
+  vertex: Coords2d
+  baseWedgeIndex: number
+}
+
+type DimensionAngleSelection = {
+  sector: AngleSector
+  reflex: boolean
+}
+
+type AngleRay = {
+  key: AngleRayKey
+  direction: Coords2d
+}
+
+type AngleWedge = {
+  start: AngleRay
+  end: AngleRay
+  selection: DimensionAngleSelection
+}
+
+type DraftRuntime = {
+  firstSelection: LineSelection | null
+  angleContext: DimensionAngleDraftContext | null
+  draftConstraintId: number | null
+  lastDraftKey: string | null
+  previewInFlight: boolean
+  queuedMousePoint: Coords2d | null
+}
+
+const LINE_INTERSECTION_EPSILON = 1e-8
+const SECTOR_EPSILON = 1e-9
+
+function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
+  return baseUnitToNumericSuffix(
+    kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+  )
+}
+
+function sendParent(
+  self: { _parent?: { send: (event: unknown) => void } },
+  event: ParentSketchSolveEvent
+) {
+  self._parent?.send(event)
+}
+
+function createRuntime(): DraftRuntime {
+  return {
+    firstSelection: null,
+    angleContext: null,
+    draftConstraintId: null,
+    lastDraftKey: null,
+    previewInFlight: false,
+    queuedMousePoint: null,
+  }
+}
+
+function getObjects(context: DimensionToolContext) {
+  return context.initialObjects
+}
+
+function getLineIntersection(
+  line0Points: readonly [Coords2d, Coords2d],
+  line1Points: readonly [Coords2d, Coords2d]
+): Coords2d | null {
+  const [p0, p1] = line0Points
+  const [p2, p3] = line1Points
+  const line0Direction = subVec(p1, p0)
+  const line1Direction = subVec(p3, p2)
+  const denominator =
+    line0Direction[0] * line1Direction[1] -
+    line0Direction[1] * line1Direction[0]
+
+  if (Math.abs(denominator) < LINE_INTERSECTION_EPSILON) {
+    return null
+  }
+
+  const delta = subVec(p2, p0)
+  const t =
+    (delta[0] * line1Direction[1] - delta[1] * line1Direction[0]) / denominator
+
+  return [p0[0] + t * line0Direction[0], p0[1] + t * line0Direction[1]]
+}
+
+function getClickedRayDirection(
+  linePoints: readonly [Coords2d, Coords2d],
+  vertex: Coords2d,
+  clickPoint: Coords2d
+): RayDirection {
+  const lineDirection = normalizeVec(subVec(linePoints[1], linePoints[0]))
+  const clickDirection = subVec(clickPoint, vertex)
+  return dot2d(clickDirection, lineDirection) >= 0 ? 'forward' : 'reverse'
+}
+
+export function getBaseAngleSector(
+  line0Ray: RayDirection,
+  line1Ray: RayDirection
+): AngleSector {
+  if (line0Ray === 'forward' && line1Ray === 'forward') {
+    return 1
+  }
+  if (line0Ray === 'reverse' && line1Ray === 'forward') {
+    return 2
+  }
+  if (line0Ray === 'reverse' && line1Ray === 'reverse') {
+    return 3
+  }
+  return 4
+}
+
+function getDimensionAngleContext(
+  firstSelection: LineSelection,
+  secondSelection: LineSelection,
+  objects: ApiObject[]
+): DimensionAngleDraftContext | null {
+  const line0 = objects[firstSelection.id]
+  const line1 = objects[secondSelection.id]
+  const line0Points = getLinePoints(line0, objects)
+  const line1Points = getLinePoints(line1, objects)
+  if (!line0Points || !line1Points) {
+    return null
+  }
+
+  const line0Vector = subVec(line0Points[1], line0Points[0])
+  const line1Vector = subVec(line1Points[1], line1Points[0])
+  if (length2d(line0Vector) === 0 || length2d(line1Vector) === 0) {
+    return null
+  }
+
+  const vertex = getLineIntersection(line0Points, line1Points)
+  if (!vertex) {
+    return null
+  }
+
+  const line0Ray = getClickedRayDirection(
+    line0Points,
+    vertex,
+    firstSelection.clickPoint
+  )
+  const line1Ray = getClickedRayDirection(
+    line1Points,
+    vertex,
+    secondSelection.clickPoint
+  )
+
+  const angleContext = {
+    line0Id: firstSelection.id,
+    line1Id: secondSelection.id,
+    line0Direction: normalizeVec(line0Vector),
+    line1Direction: normalizeVec(line1Vector),
+    vertex,
+    baseWedgeIndex: 0,
+  }
+  angleContext.baseWedgeIndex = findWedgeIndexForRays(
+    angleContext,
+    getClickedRayKey(0, line0Ray),
+    getClickedRayKey(1, line1Ray)
+  )
+  return angleContext
+}
+
+function normalizeAngle(angle: number) {
+  return ((angle % TAU) + TAU) % TAU
+}
+
+function getCcwSweep(start: Coords2d, end: Coords2d) {
+  return normalizeAngle(
+    Math.atan2(end[1], end[0]) - Math.atan2(start[1], start[0])
+  )
+}
+
+function isDirectionInSector(
+  direction: Coords2d,
+  start: Coords2d,
+  end: Coords2d
+) {
+  return (
+    getCcwSweep(start, direction) <= getCcwSweep(start, end) + SECTOR_EPSILON
+  )
+}
+
+function reverseDirection(direction: Coords2d): Coords2d {
+  return scaleVec(direction, -1)
+}
+
+function getClickedRayKey(
+  lineIndex: 0 | 1,
+  direction: RayDirection
+): AngleRayKey {
+  if (lineIndex === 0) {
+    return direction === 'forward' ? 'line0Forward' : 'line0Reverse'
+  }
+  return direction === 'forward' ? 'line1Forward' : 'line1Reverse'
+}
+
+export function getAngleSectorRays(
+  angleContext: Pick<
+    DimensionAngleDraftContext,
+    'line0Direction' | 'line1Direction'
+  >,
+  sector: AngleSector
+): [Coords2d, Coords2d] {
+  switch (sector) {
+    case 1:
+      return [angleContext.line0Direction, angleContext.line1Direction]
+    case 2:
+      return [
+        angleContext.line1Direction,
+        reverseDirection(angleContext.line0Direction),
+      ]
+    case 3:
+      return [
+        reverseDirection(angleContext.line0Direction),
+        reverseDirection(angleContext.line1Direction),
+      ]
+    case 4:
+      return [
+        reverseDirection(angleContext.line1Direction),
+        angleContext.line0Direction,
+      ]
+  }
+}
+
+const DIRECT_SECTOR_BOUNDARIES = [
+  {
+    sector: 1,
+    startKey: 'line0Forward',
+    endKey: 'line1Forward',
+  },
+  {
+    sector: 2,
+    startKey: 'line1Forward',
+    endKey: 'line0Reverse',
+  },
+  {
+    sector: 3,
+    startKey: 'line0Reverse',
+    endKey: 'line1Reverse',
+  },
+  {
+    sector: 4,
+    startKey: 'line1Reverse',
+    endKey: 'line0Forward',
+  },
+] as const satisfies ReadonlyArray<{
+  sector: AngleSector
+  startKey: AngleRayKey
+  endKey: AngleRayKey
+}>
+
+function getAngleRays(
+  angleContext: Pick<
+    DimensionAngleDraftContext,
+    'line0Direction' | 'line1Direction'
+  >
+): AngleRay[] {
+  const rays: AngleRay[] = [
+    { key: 'line0Forward', direction: angleContext.line0Direction },
+    {
+      key: 'line0Reverse',
+      direction: reverseDirection(angleContext.line0Direction),
+    },
+    { key: 'line1Forward', direction: angleContext.line1Direction },
+    {
+      key: 'line1Reverse',
+      direction: reverseDirection(angleContext.line1Direction),
+    },
+  ]
+
+  return rays.sort(
+    (left, right) =>
+      normalizeAngle(Math.atan2(left.direction[1], left.direction[0])) -
+      normalizeAngle(Math.atan2(right.direction[1], right.direction[0]))
+  )
+}
+
+function getSelectionForWedge(startKey: AngleRayKey, endKey: AngleRayKey) {
+  for (const boundary of DIRECT_SECTOR_BOUNDARIES) {
+    if (boundary.startKey === startKey && boundary.endKey === endKey) {
+      return {
+        sector: boundary.sector,
+        reflex: false,
+      }
+    }
+
+    if (boundary.startKey === endKey && boundary.endKey === startKey) {
+      return {
+        sector: boundary.sector,
+        reflex: true,
+      }
+    }
+  }
+}
+
+function getAngleWedges(
+  angleContext: Pick<
+    DimensionAngleDraftContext,
+    'line0Direction' | 'line1Direction'
+  >
+): AngleWedge[] {
+  const rays = getAngleRays(angleContext)
+  const wedges: AngleWedge[] = []
+
+  for (let index = 0; index < rays.length; index++) {
+    const start = rays[index]
+    const end = rays[(index + 1) % rays.length]
+    const selection = getSelectionForWedge(start.key, end.key)
+    if (selection) {
+      wedges.push({ start, end, selection })
+    }
+  }
+
+  return wedges
+}
+
+function findWedgeIndexForRays(
+  angleContext: Pick<
+    DimensionAngleDraftContext,
+    'line0Direction' | 'line1Direction'
+  >,
+  line0Ray: AngleRayKey,
+  line1Ray: AngleRayKey
+) {
+  const wedges = getAngleWedges(angleContext)
+  return Math.max(
+    wedges.findIndex(
+      (wedge) =>
+        (wedge.start.key === line0Ray && wedge.end.key === line1Ray) ||
+        (wedge.start.key === line1Ray && wedge.end.key === line0Ray)
+    ),
+    0
+  )
+}
+
+function getBaseWedgeIndex(angleContext: DimensionAngleDraftContext): number {
+  return angleContext.baseWedgeIndex
+}
+
+function getHoveredWedgeIndex(
+  mousePoint: Coords2d,
+  angleContext: DimensionAngleDraftContext
+): number {
+  const mouseDirection = subVec(mousePoint, angleContext.vertex)
+  if (length2d(mouseDirection) === 0) {
+    return getBaseWedgeIndex(angleContext)
+  }
+
+  const wedges = getAngleWedges(angleContext)
+  const hoveredIndex = wedges.findIndex((wedge) =>
+    isDirectionInSector(
+      mouseDirection,
+      wedge.start.direction,
+      wedge.end.direction
+    )
+  )
+  if (hoveredIndex !== -1) {
+    return hoveredIndex
+  }
+
+  return getBaseWedgeIndex(angleContext)
+}
+
+function invertAngleSelection(
+  selection: DimensionAngleSelection
+): DimensionAngleSelection {
+  return {
+    sector: selection.sector,
+    reflex: !selection.reflex,
+  }
+}
+
+function getOppositeWedgeIndex(wedgeIndex: number) {
+  return (wedgeIndex + 2) % 4
+}
+
+function getWedgeSelection(
+  angleContext: DimensionAngleDraftContext,
+  wedgeIndex: number
+) {
+  const wedges = getAngleWedges(angleContext)
+  return (
+    wedges[wedgeIndex]?.selection ??
+    wedges[getBaseWedgeIndex(angleContext)]?.selection
+  )
+}
+
+export function getDimensionAngleSelection(
+  mousePoint: Coords2d,
+  angleContext: DimensionAngleDraftContext
+): DimensionAngleSelection {
+  const baseWedgeIndex = getBaseWedgeIndex(angleContext)
+  const hoveredWedgeIndex = getHoveredWedgeIndex(mousePoint, angleContext)
+  const baseSelection = getWedgeSelection(angleContext, baseWedgeIndex)
+
+  if (
+    baseSelection &&
+    hoveredWedgeIndex === getOppositeWedgeIndex(baseWedgeIndex)
+  ) {
+    return invertAngleSelection(baseSelection)
+  }
+
+  const hoveredSelection = getWedgeSelection(angleContext, hoveredWedgeIndex)
+  if (hoveredSelection) {
+    return hoveredSelection
+  }
+
+  return {
+    sector: 1,
+    reflex: false,
+  }
+}
+
+function getDimensionAngleDegrees(
+  angleContext: DimensionAngleDraftContext,
+  selection: DimensionAngleSelection
+) {
+  let [start, end] = getAngleSectorRays(angleContext, selection.sector)
+  if (selection.reflex) {
+    ;[start, end] = [end, start]
+  }
+
+  return roundOff((getCcwSweep(start, end) * 180) / Math.PI)
+}
+
+function toNumber(value: number, units: NumericSuffix) {
+  return {
+    value: roundOff(value),
+    units,
+  }
+}
+
+export function buildDimensionAngleConstraint(
+  angleContext: DimensionAngleDraftContext,
+  mousePoint: Coords2d,
+  units: NumericSuffix
+): ApiConstraint {
+  const selection = getDimensionAngleSelection(mousePoint, angleContext)
+  const angle = getDimensionAngleDegrees(angleContext, selection)
+
+  return {
+    type: 'Angle',
+    lines: [angleContext.line0Id, angleContext.line1Id],
+    angle: { value: angle, units: 'Deg' },
+    sector: selection.sector,
+    reflex: selection.reflex,
+    labelPosition: {
+      x: toNumber(mousePoint[0], units),
+      y: toNumber(mousePoint[1], units),
+    },
+    source: {
+      expr: `${angle}deg`,
+      is_literal: true,
+    },
+  }
+}
+
+function getConstraintIdFromResult(result: {
+  sceneGraphDelta: SceneGraphDelta
+}): number | null {
+  return (
+    [...result.sceneGraphDelta.new_objects].reverse().find((objectId) => {
+      const object = result.sceneGraphDelta.new_graph.objects[objectId]
+      return (
+        object?.kind.type === 'Constraint' &&
+        object.kind.constraint.type === 'Angle'
+      )
+    }) ?? null
+  )
+}
+
+function getDraftKey(constraint: ApiConstraint) {
+  if (constraint.type !== 'Angle') {
+    return ''
+  }
+
+  return [
+    constraint.lines.join(','),
+    constraint.angle.value,
+    constraint.sector ?? '',
+    constraint.reflex === true ? 'reflex' : 'direct',
+    constraint.labelPosition?.x.value ?? '',
+    constraint.labelPosition?.y.value ?? '',
+  ].join(':')
+}
+
+async function deleteDraftConstraint(
+  runtime: DraftRuntime,
+  context: DimensionToolContext
+) {
+  if (runtime.draftConstraintId === null) {
+    return
+  }
+
+  await context.rustContext.deleteObjects(
+    SKETCH_FILE_VERSION,
+    context.sketchId,
+    [runtime.draftConstraintId],
+    [],
+    jsAppSettings(context.rustContext.settingsActor),
+    false
+  )
+  runtime.draftConstraintId = null
+}
+
+function sendPreviewResultToParent(
+  self: { _parent?: { send: (event: unknown) => void } },
+  result: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
+  }
+) {
+  sendParent(self, {
+    type: 'update sketch outcome',
+    data: {
+      sourceDelta: result.kclSource,
+      sceneGraphDelta: result.sceneGraphDelta,
+      checkpointId: result.checkpointId ?? null,
+      writeToDisk: false,
+      addToHistory: false,
+      suppressExecOutcomeIssues: true,
+    },
+  })
+}
+
+function sendFinalResultToParent(
+  self: { _parent?: { send: (event: unknown) => void } },
+  result: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
+  }
+) {
+  sendParent(self, {
+    type: 'update sketch outcome',
+    data: {
+      sourceDelta: result.kclSource,
+      sceneGraphDelta: result.sceneGraphDelta,
+      checkpointId: result.checkpointId ?? null,
+    },
+  })
+}
+
+async function replaceDraftAngleConstraint(
+  runtime: DraftRuntime,
+  context: DimensionToolContext,
+  self: { _parent?: { send: (event: unknown) => void } },
+  mousePoint: Coords2d
+) {
+  if (!runtime.angleContext) {
+    return
+  }
+
+  const constraint = buildDimensionAngleConstraint(
+    runtime.angleContext,
+    mousePoint,
+    getDefaultLengthUnit(context.kclManager)
+  )
+  const draftKey = getDraftKey(constraint)
+  if (draftKey === runtime.lastDraftKey) {
+    return
+  }
+
+  await deleteDraftConstraint(runtime, context)
+
+  const result = await context.rustContext.addConstraint(
+    SKETCH_FILE_VERSION,
+    context.sketchId,
+    constraint,
+    jsAppSettings(context.rustContext.settingsActor),
+    false
+  )
+  const constraintId = getConstraintIdFromResult(result)
+  if (constraintId === null) {
+    return
+  }
+
+  runtime.draftConstraintId = constraintId
+  runtime.lastDraftKey = draftKey
+
+  sendPreviewResultToParent(self, result)
+  sendParent(self, {
+    type: 'set draft entities',
+    data: {
+      segmentIds: [],
+      constraintIds: [constraintId],
+    },
+  })
+}
+
+function requestDraftPreview(
+  runtime: DraftRuntime,
+  context: DimensionToolContext,
+  self: { _parent?: { send: (event: unknown) => void } },
+  mousePoint: Coords2d
+) {
+  runtime.queuedMousePoint = mousePoint
+  if (runtime.previewInFlight) {
+    return
+  }
+
+  runtime.previewInFlight = true
+  void (async () => {
+    try {
+      while (runtime.queuedMousePoint) {
+        const nextMousePoint = runtime.queuedMousePoint
+        runtime.queuedMousePoint = null
+        await replaceDraftAngleConstraint(
+          runtime,
+          context,
+          self,
+          nextMousePoint
+        )
+      }
+    } catch (error) {
+      toastSketchSolveError(error)
+    } finally {
+      runtime.previewInFlight = false
+    }
+  })()
+}
+
+async function commitDraftAngleConstraint(
+  runtime: DraftRuntime,
+  context: DimensionToolContext,
+  self: {
+    _parent?: { send: (event: unknown) => void }
+    send: (event: DimensionToolEvent) => void
+  },
+  mousePoint: Coords2d
+) {
+  if (!runtime.angleContext) {
+    return
+  }
+
+  const constraint = buildDimensionAngleConstraint(
+    runtime.angleContext,
+    mousePoint,
+    getDefaultLengthUnit(context.kclManager)
+  )
+
+  try {
+    await deleteDraftConstraint(runtime, context)
+    const result = await context.rustContext.addConstraint(
+      SKETCH_FILE_VERSION,
+      context.sketchId,
+      constraint,
+      jsAppSettings(context.rustContext.settingsActor),
+      true
+    )
+
+    sendFinalResultToParent(self, result)
+    sendParent(self, { type: 'clear draft entities' })
+    self.send({ type: 'done' })
+  } catch (error) {
+    toastSketchSolveError(error)
+  }
+}
+
+function getClosestLineSelection(
+  mousePoint: Coords2d,
+  context: DimensionToolContext
+): LineSelection | null {
+  const objects = getObjects(context)
+  const currentSketchObjects = getCurrentSketchObjectsById(
+    objects,
+    context.sketchId
+  )
+  const closestLine = findClosestApiObjects(
+    mousePoint,
+    currentSketchObjects,
+    context.sceneInfra
+  ).find(({ apiObject }) => isLineSegment(apiObject))
+
+  if (!closestLine) {
+    return null
+  }
+
+  return {
+    id: closestLine.apiObject.id,
+    clickPoint: mousePoint,
+  }
+}
+
+function addDimensionListener({
+  context,
+  self,
+}: {
+  context: DimensionToolContext
+  self: {
+    _parent?: { send: (event: unknown) => void }
+    send: (event: DimensionToolEvent) => void
+  }
+}) {
+  const runtime = createRuntime()
+
+  context.sceneInfra.setCallbacks({
+    onClick: (args) => {
+      if (!args || args.mouseEvent.which !== 1) {
+        return
+      }
+
+      const twoD = args.intersectionPoint?.twoD
+      if (!twoD) {
+        return
+      }
+
+      const mousePoint: Coords2d = [twoD.x, twoD.y]
+      if (runtime.angleContext) {
+        void commitDraftAngleConstraint(runtime, context, self, mousePoint)
+        return
+      }
+
+      const lineSelection = getClosestLineSelection(mousePoint, context)
+      if (!lineSelection) {
+        return
+      }
+
+      if (!runtime.firstSelection) {
+        runtime.firstSelection = lineSelection
+        sendParent(self, {
+          type: 'update selected ids',
+          data: {
+            selectedIds: [lineSelection.id],
+            replaceExistingSelection: true,
+          },
+        })
+        return
+      }
+
+      if (lineSelection.id === runtime.firstSelection.id) {
+        return
+      }
+
+      const angleContext = getDimensionAngleContext(
+        runtime.firstSelection,
+        lineSelection,
+        getObjects(context)
+      )
+      if (!angleContext) {
+        return
+      }
+
+      runtime.angleContext = angleContext
+      sendParent(self, {
+        type: 'update selected ids',
+        data: {
+          selectedIds: [runtime.firstSelection.id, lineSelection.id],
+          replaceExistingSelection: true,
+        },
+      })
+      requestDraftPreview(runtime, context, self, mousePoint)
+    },
+    onMove: (args) => {
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) {
+        sendParent(self, {
+          type: 'update hovered id',
+          data: { hoveredId: null },
+        })
+        return
+      }
+
+      const mousePoint: Coords2d = [twoD.x, twoD.y]
+      if (runtime.angleContext) {
+        requestDraftPreview(runtime, context, self, mousePoint)
+        return
+      }
+
+      const lineSelection = getClosestLineSelection(mousePoint, context)
+      sendParent(self, {
+        type: 'update hovered id',
+        data: { hoveredId: lineSelection?.id ?? null },
+      })
+    },
+  })
+}
+
+function removeDimensionListener({
+  context,
+}: { context: DimensionToolContext }) {
+  context.sceneInfra.setCallbacks({
+    onClick: () => {},
+    onMove: () => {},
+  })
+}
+
+function deleteDraftEntities(self: {
+  _parent?: { send: (event: unknown) => void }
+}) {
+  sendParent(self, { type: 'delete draft entities' })
+}
 
 export const machine = setup({
   types: {
-    context: {},
+    context: {} as DimensionToolContext,
     events: {} as DimensionToolEvent,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-      sceneGraphDelta?: SceneGraphDelta
-    },
+    input: {} as DimensionToolInput,
   },
   actions: {
-    'add point listener': () => {
-      console.log('tool successfully equipped')
-      // Add your action code here
-      // ...
-    },
-    'show draft geometry': () => {
-      // Add your action code here
-      // ...
-    },
-    'remove point listener': () => {
-      // Add your action code here
-      // ...
-    },
+    'add dimension listener': addDimensionListener,
+    'remove dimension listener': removeDimensionListener,
+    'delete draft entities': ({ self }) => deleteDraftEntities(self),
     'toast sketch solve error': ({ event }) => {
       toastSketchSolveError(event)
     },
   },
-  actors: {
-    askUserForDimensionValues: createMachine({
-      /* ... */
-    }),
-  },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QBECWBbMA7WqD2WABAC554A2AxAK5ZgCO1qADgNoAMAuoqM3rsXxYeIAB6J2AGhABPCQF950tJhxCSZcgDoAhgHcdqQViiEAZqgBOsYoT6osxSjogQ7eB8Q7ckIPgKERcQQANgAWMK0AZgB2AFYYgE4ADhD2AEYQqIzpOQQo9PStGOT00rCQxMqAJijkuMVlDGxcAg0KXQMjQlgwAGMCN3tHZ1d3T28RfyNA32DwyNiElLTM7PTcxDC45K1qkLKQ5OqYqLj09iiwxpAVFvVSDoBhAgtLdAdTCGa1AlhKCAEMBaBwANzwAGtgXdfkRHtoXlg3h8TIRvqpWjgEGC8H0dIICN5Jr5pgThHNEHF2DE9ok4md9tUIuFkmFNghkjFqtFUiztmV9jcYZj2gjXlYUV8fpj-mBLJY8JYtMxyPizIr0FphQ9NFpEcjPmjpUJYNisOC8WSiVwpvwZgQglt2OwtCF6TFnYkomd0tU4uzStyyhF0lFEtVEuxqqzFEoQFg8BA4CJtW14baAg6KQgALRhZLsnOhorpL0xLKJeLh-NC41p3X6QzGUxvGzjRwZ+3k0DBKIHLThj0FCJxMIxMKxdm1bkxX1pEpxJnjhpx1NwhtdWy9AZYIYeDsku1kx35EI0kfsKkT9Ie8MhdkRGnHN3bdiRirR66ruvr57i96Gui9x-J2x7Zt6NJemEzp+icfr3rIiAHJEYTVDeo6ltUfqJIktYYjqHS0AwTDMMwnygbMPYSAGZwDr6VLjuElaLrG8hAA */
-  context: {},
+  context: ({ input }): DimensionToolContext => ({
+    sceneInfra: input.sceneInfra,
+    rustContext: input.rustContext,
+    kclManager: input.kclManager,
+    sketchId: input.sketchId,
+    initialObjects:
+      input.initialObjects ?? input.sceneGraphDelta?.new_graph.objects ?? [],
+  }),
   id: 'Dimension tool',
-  initial: 'awaiting first point',
+  initial: 'selecting lines',
   on: {
     unequip: {
       target: '#Dimension tool.unequipping',
-      description:
-        "can be requested from the outside, but we want this tool to have the final say on when it's done.",
+      actions: 'delete draft entities',
     },
     escape: {
       target: '#Dimension tool.unequipping',
-      description: 'ESC unequips the tool',
+      actions: 'delete draft entities',
     },
   },
-  description:
-    'Creates dimension constraints based on two points from the user.',
+  description: 'Creates dimension constraints from sketch selections.',
   states: {
-    'awaiting first point': {
+    'selecting lines': {
+      entry: 'add dimension listener',
       on: {
-        'add point': {
-          target: 'await second point',
-        },
-      },
-      entry: 'add point listener',
-    },
-    'await second point': {
-      on: {
-        'add point': {
-          target: 'Confirming dimensions',
-        },
-      },
-      entry: 'show draft geometry',
-    },
-    'Confirming dimensions': {
-      invoke: {
-        input: {},
-        onDone: {
+        done: {
           target: 'unequipping',
         },
-        onError: {
-          target: 'unequipping',
-          actions: 'toast sketch solve error',
-        },
-        src: 'askUserForDimensionValues',
       },
-      description:
-        'Show the user form fields for dimension values, allowing them to input values directly. This will add dimension-type constraints.',
+      exit: 'remove dimension listener',
     },
     unequipping: {
       type: 'final',
-      entry: 'remove point listener',
       description: 'Any teardown logic should go here.',
     },
   },
