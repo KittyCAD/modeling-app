@@ -589,6 +589,124 @@ async fn inner_circularity(
     Ok(annotations)
 }
 
+pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Vec<String> = args.get_kw_arg(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_runout(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[expect(clippy::too_many_arguments)]
+async fn inner_runout(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    datums: Vec<String>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Runout requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(Some(datums), args, "Runout")?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Runout,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Runout,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
 pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let edges: Vec<EdgeReference> = args.get_kw_arg(
         "edges",
@@ -2006,6 +2124,67 @@ gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [12mm, 8
             assert_close(control_frame.tolerance, expected_tolerance);
             // Circularity is a form tolerance and never references datums.
             assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    const GDT_RUNOUT_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+hide(cylinderSketch)
+cylinder = extrude(cylinderRegion, length = 10mm, tagEnd = $top)
+topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+gdt::datum(face = cylinder.sketch.tags.perimeter, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+gdt::runout(edges = [topEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_RUNOUT_WALL_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+gdt::datum(face = cylinder.sketch.tags.perimeter, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+gdt::runout(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    fn runout_control_frame(commands: &[ModelingCmd]) -> Result<&AnnotationMbdControlFrame, KclError> {
+        commands
+            .iter()
+            .filter_map(|command| feature_control(command).ok())
+            .filter_map(|feature_control| feature_control.control_frame.as_ref())
+            .find(|control_frame| control_frame.symbol == MbdSymbol::Runout)
+            .ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "expected commands to contain a runout feature control frame".to_owned(),
+                    vec![SourceRange::default()],
+                ))
+            })
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_runout_uses_runout_symbol_with_axis_datum() -> Result<(), KclError> {
+        let cases = [
+            ("circular edge", GDT_RUNOUT_EDGE_KCL, 0.05),
+            ("cylinder wall", GDT_RUNOUT_WALL_KCL, 0.02),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = runout_control_frame(&commands)?;
+
+            assert_eq!(control_frame.symbol, MbdSymbol::Runout, "case: {label}");
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
             assert!(control_frame.secondary_datum.is_none(), "case: {label}");
             assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
         }
