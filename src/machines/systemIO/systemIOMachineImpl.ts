@@ -58,7 +58,7 @@ async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
     if (error === 'ENOENT') {
       return []
     }
-    throw error
+    return Promise.reject(error)
   }
 }
 
