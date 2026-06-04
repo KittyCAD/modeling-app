@@ -8,11 +8,11 @@ import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProj
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import fsZds from '@src/lib/fs-zds'
 
 function ProjectCard({
   project,

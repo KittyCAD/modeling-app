@@ -2,11 +2,12 @@
 import { lezer } from '@lezer/generator/rollup'
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 import {
+  createCustomLogger,
   indexHtmlCsp,
   isIgnoredWatchPath,
   pluginExposeRenderer,
@@ -19,6 +20,7 @@ export default defineConfig((env) => {
   const name = forgeConfigSelf?.name ?? 'main_window'
 
   return {
+    customLogger: createCustomLogger(),
     root,
     mode,
     base: './',
@@ -29,6 +31,7 @@ export default defineConfig((env) => {
     },
     build: {
       outDir: `.vite/renderer/${name}`,
+      target: 'es2022',
     },
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },

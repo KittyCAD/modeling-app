@@ -6,15 +6,15 @@ import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
+  TAU,
+  addVec,
+  dot2d,
   intersectRanges,
   lerp,
   normalizeVec,
-  subVec,
-  scaleVec,
   rotateVec2d,
-  addVec,
-  dot2d,
-  TAU,
+  scaleVec,
+  subVec,
 } from '@src/lib/utils2d'
 import {
   ANGLE_CONSTRAINT_ARC_BODY_ROLE,
@@ -31,8 +31,8 @@ import {
   isAngleConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { Group } from 'three'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 
 const OVERLAP_EPSILON = 1e-8
 export const MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX = 20

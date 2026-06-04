@@ -1,8 +1,6 @@
-import { beforeEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
@@ -16,6 +14,8 @@ import {
   readRecentProjectsForEnvironment,
   trackRecentProject,
 } from '@src/lib/desktop'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
 import { buildTheWorldNode } from '@src/unitTestUtils'

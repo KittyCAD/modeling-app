@@ -1,11 +1,12 @@
-import fsZds from '@src/lib/fs-zds'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useApp, useSingletons } from '@src/lib/boot'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -15,29 +16,24 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useLastOperation,
   useProjectDirectoryPath,
-  useProjectIdToConversationId,
   useRequestedFileName,
   useRequestedProjectName,
-  useWatchForNewFileRequestsFromMlEphant,
 } from '@src/machines/systemIO/hooks'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
   SystemIOMachineStates,
-  prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor, project } = useApp()
+  const { settings, systemIOActor, project } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -48,7 +44,6 @@ export function SystemIOMachineLogicListener() {
 
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
-  const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -256,42 +251,6 @@ export function SystemIOMachineLogicListener() {
       project?.path ? [project.path] : []
     )
   }
-
-  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
-
-  useWatchForNewFileRequestsFromMlEphant(
-    mlEphantManagerActor,
-    billing.actor,
-    token,
-    kclManager.engineCommandManager,
-    (props) => {
-      const payload = prepareMlEphantNewFileRequest(props)
-
-      if (payload) {
-        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
-        systemIOActor.send({
-          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
-          data: {
-            files: payload.files,
-            filesToDelete: payload.filesToDelete,
-            override: true,
-            // Gotcha: Both are called "project name" and "file name", but one of them
-            // has to include the project-relative file path between the two.
-            requestedProjectName: payload.requestedProjectName,
-            requestedFileNameWithExtension:
-              payload.requestedFileNameWithExtension ?? '',
-          },
-        })
-      }
-    }
-  )
-
-  // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(
-    mlEphantManagerActor,
-    systemIOActor,
-    settingsValues
-  )
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

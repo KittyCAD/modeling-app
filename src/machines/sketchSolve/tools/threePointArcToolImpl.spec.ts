@@ -9,16 +9,16 @@ vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
 }))
 
 import {
-  addDraftPointActor,
-  finalizeArcActor,
-} from '@src/machines/sketchSolve/tools/threePointArcToolImpl'
-import {
   createArcApiObject,
   createMockKclManager,
   createMockRustContext,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import {
+  addDraftPointActor,
+  finalizeArcActor,
+} from '@src/machines/sketchSolve/tools/threePointArcToolImpl'
 
 describe('threePointArcToolImpl', () => {
   describe('addDraftPointActor', () => {

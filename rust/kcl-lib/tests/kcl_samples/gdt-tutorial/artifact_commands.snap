@@ -576,6 +576,7 @@ description: Artifact commands gdt-tutorial.kcl
           "line_width": null,
           "color": null,
           "position": null,
+          "units": "mm",
           "dimension": {
             "from_entity_id": "[uuid]",
             "from_entity_pos": {

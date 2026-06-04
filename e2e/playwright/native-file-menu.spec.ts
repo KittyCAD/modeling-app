@@ -1,5 +1,5 @@
-import type { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   openSettingsExpectLocator,

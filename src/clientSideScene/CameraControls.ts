@@ -40,9 +40,9 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { degToRad } from 'three/src/math/MathUtils'
 import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
+import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'

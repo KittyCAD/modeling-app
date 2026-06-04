@@ -1,5 +1,8 @@
 import path from 'node:path'
+import type { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import type { Project } from '@src/lib/project'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -8,11 +11,9 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { createActor, fromPromise, waitFor } from 'xstate'
-import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { App } from '@src/lib/app'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
@@ -29,9 +30,9 @@ beforeEach(async () => {
   }
 
   const { instance } = await buildTheWorldAndNoEngineConnection()
-  appInstanceInThisFile = App.fromProvided({
+  appInstanceInThisFile = {
     wasmPromise: Promise.resolve(instance),
-  })
+  } as App
   instanceInThisFile = instance
 })
 
@@ -130,6 +131,65 @@ describe('systemIOMachine - XState', () => {
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
             )
           )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should prefer opening the imported entry file over navigating to the project', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+              [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
+                fromPromise(async () => ({
+                  message: 'Imported',
+                  projectName: 'demo-project',
+                  projectDirectoryPath: '/projects',
+                  fileName: 'shared-project/main.kcl',
+                  subRoute: '',
+                })),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.navigateToProject,
+            data: {
+              requestedProjectName: 'demo-project',
+            },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'demo-project',
+              requestedFileNameWithExtension: 'shared-project/main.kcl',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'demo-project',
+            file: 'shared-project/main.kcl',
+            subRoute: '',
+          })
+          expect(
+            actor.getSnapshot().context.requestedProjectName
+          ).toStrictEqual({
+            name: NO_PROJECT_DIRECTORY,
+          })
         } finally {
           actor.stop()
         }

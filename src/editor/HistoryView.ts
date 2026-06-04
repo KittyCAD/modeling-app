@@ -7,14 +7,14 @@ import {
 import {
   Annotation,
   Compartment,
+  type Extension,
   StateEffect,
   Transaction,
-  type Extension,
   type TransactionSpec,
 } from '@codemirror/state'
 
-import { EditorView } from 'codemirror'
 import { createHistoryExtension } from '@src/editor/historyConfig'
+import { EditorView } from 'codemirror'
 
 /** Any EditorView that wants to be a local history target must use this extension compartment */
 export const localHistoryTarget = new Compartment()

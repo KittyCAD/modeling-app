@@ -1,6 +1,5 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useEffect } from 'react'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
@@ -8,17 +7,43 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
+import {
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/machines/systemIO/hooks'
+import {
+  SystemIOMachineEvents,
+  prepareMlEphantNewFileRequest,
+} from '@src/machines/systemIO/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { useEffect } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
+  const { auth } = useApp()
+  const token = auth.useToken()
+
+  return (
+    <MlEphantManagerReactContext.Provider
+      options={{
+        input: {
+          apiToken: token,
+        },
+      }}
+    >
+      <MlEphantConversationPaneInner {...props} />
+    </MlEphantManagerReactContext.Provider>
+  )
+}
+
+function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
@@ -46,6 +71,38 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
+
+  useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
+    billing.actor,
+    token,
+    kclManager.engineCommandManager,
+    (requestProps) => {
+      const payload = prepareMlEphantNewFileRequest(requestProps)
+
+      if (payload) {
+        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+          data: {
+            files: payload.files,
+            filesToDelete: payload.filesToDelete,
+            override: true,
+            requestedProjectName: payload.requestedProjectName,
+            requestedFileNameWithExtension:
+              payload.requestedFileNameWithExtension ?? '',
+          },
+        })
+      }
+    }
+  )
+
+  // Save the conversation id for the project id if necessary.
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    systemIOActor,
+    settingsValues
+  )
 
   const sendBillingUpdate = () => {
     billing.send({

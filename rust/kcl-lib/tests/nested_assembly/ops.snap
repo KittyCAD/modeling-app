@@ -5,12 +5,9 @@ description: Operations executed nested_assembly.kcl
 {
   "rust/kcl-lib/tests/nested_assembly/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "nested/foo/bar/main.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "bar",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed nested_assembly.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/imported.kcl": [
@@ -146,6 +140,22 @@ description: Operations executed nested_assembly.kcl
           {
             "type": "PipeBodyItem",
             "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/main.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "imported",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
           }
         ]
       },

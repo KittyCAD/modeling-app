@@ -1,5 +1,12 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
@@ -23,14 +30,25 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
+vi.mock('@src/lib/screenshot', async (importOriginal) => {
+  const original = await importOriginal<typeof ScreenshotModule>()
+
+  return {
+    ...original,
+    takeViewportScreenshot: vi.fn(),
+  }
+})
+
+import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
+import type * as ScreenshotModule from '@src/lib/screenshot'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 
 const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   {
@@ -821,6 +839,9 @@ describe('MlEphantConversation', () => {
 
     beforeEach(() => {
       vi.clearAllMocks()
+      vi.mocked(takeViewportScreenshot).mockReturnValue(
+        'data:image/png;base64,aGVsbG8='
+      )
     })
 
     afterEach(() => {
@@ -832,6 +853,58 @@ describe('MlEphantConversation', () => {
       expect(
         screen.getByTestId('ml-ephant-attachments-button')
       ).toBeInTheDocument()
+    })
+
+    test('displays screenshot annotation button', () => {
+      renderConversation()
+      expect(
+        screen.getByTestId('ml-ephant-annotate-screenshot-button')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Zoodle')).toBeInTheDocument()
+    })
+
+    test('adds annotated viewport screenshot as an attachment', async () => {
+      const OriginalImage = globalThis.Image
+      class MockImage {
+        onload: (() => void) | null = null
+        onerror: (() => void) | null = null
+        complete = true
+        naturalWidth = 16
+        naturalHeight = 16
+        width = 16
+        height = 16
+
+        set src(_value: string) {
+          queueMicrotask(() => this.onload?.())
+        }
+      }
+
+      const drawImageSpy = vi
+        .spyOn(CanvasRenderingContext2D.prototype, 'drawImage')
+        .mockImplementation(() => {})
+      globalThis.Image = MockImage as typeof Image
+      try {
+        renderConversation()
+
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-annotate-screenshot-button')
+        )
+
+        expect(
+          screen.getByTestId('viewport-annotation-overlay')
+        ).toBeInTheDocument()
+
+        const sendButton = screen.getByTestId('viewport-annotation-send-button')
+        await waitFor(() => expect(sendButton).not.toBeDisabled())
+        fireEvent.click(sendButton)
+
+        expect(
+          await screen.findByText('annotated-viewport-screenshot.png')
+        ).toBeInTheDocument()
+      } finally {
+        drawImageSpy.mockRestore()
+        globalThis.Image = OriginalImage
+      }
     })
 
     test('shows attached files when files are added via drag and drop', async () => {

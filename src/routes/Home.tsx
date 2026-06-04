@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { BillingDialog } from '@kittycad/react-shared'
+import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
@@ -81,6 +81,7 @@ const Home = () => {
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -323,10 +324,12 @@ const Home = () => {
                 <div className="my-2">
                   <BillingDialog
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openExternalBrowserIfDesktop()}
+                    accountHref={withSiteBaseURL('/account/billing')}
+                    billingClick={openBillingLinkExternally}
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}
+                    userPaymentBalance={billingContext.userPaymentBalance}
                   />
                 </div>
               </li>

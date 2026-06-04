@@ -3,6 +3,22 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_export.kcl
 ---
 {
+  "rust/kcl-lib/tests/import_export/export_1.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "export_2",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "rust/kcl-lib/tests/import_export/export_2.kcl": [
     {
       "type": "VariableDeclaration",
@@ -36,12 +52,9 @@ description: Operations executed import_export.kcl
   ],
   "rust/kcl-lib/tests/import_export/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "export_1.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "export_1",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -51,9 +64,6 @@ description: Operations executed import_export.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

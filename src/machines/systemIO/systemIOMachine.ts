@@ -1518,25 +1518,23 @@ export const systemIOMachine = setup({
                 }
               },
               requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
+                ).output
+
+                if (output.fileName) {
+                  return { name: NO_PROJECT_DIRECTORY }
+                }
+
                 return {
-                  name: (
-                    event as {
-                      output: {
-                        projectName: string
-                        projectDirectoryPath?: string
-                        subRoute?: string
-                      }
-                    }
-                  ).output.projectName,
-                  subRoute: (
-                    event as {
-                      output: {
-                        projectName: string
-                        projectDirectoryPath?: string
-                        subRoute?: string
-                      }
-                    }
-                  ).output.subRoute,
+                  name: output.projectName,
+                  subRoute: output.subRoute,
                 }
               },
             }),

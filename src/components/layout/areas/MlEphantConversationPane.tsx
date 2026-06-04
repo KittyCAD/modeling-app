@@ -1,35 +1,35 @@
-import { reportRejection } from '@src/lib/trap'
-import { NIL as uuidNIL } from 'uuid'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { KclManager } from '@src/lang/KclManager'
-import { useEffect, useState, useRef, useCallback } from 'react'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
 import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { getParentAbsolutePath } from '@src/lib/paths'
+import type { FileEntry, Project } from '@src/lib/project'
+import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { reportRejection } from '@src/lib/trap'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
+import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { FileEntry, Project } from '@src/lib/project'
-import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import { useSelector } from '@xstate/react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-import { getParentAbsolutePath } from '@src/lib/paths'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
+import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
-import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
 
 type MlEphantConversationPaneUser = {
   block_message?: string

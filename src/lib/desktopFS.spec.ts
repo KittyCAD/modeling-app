@@ -1,6 +1,6 @@
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'

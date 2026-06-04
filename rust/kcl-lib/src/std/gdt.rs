@@ -1,7 +1,6 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
-use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
@@ -94,13 +93,6 @@ fn gdt_dot_leader_normal_size() -> f32 {
 
 fn gdt_dimension_leader_scale(leader_scale: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
     gdt_user_leader_scale(leader_scale, DEFAULT_GDT_DIMENSION_LEADER_SCALE, args)
-}
-
-fn set_engine_scene_units_cmd(cmd_id: uuid::Uuid, units: kcmc::units::UnitLength) -> ModelingCmdReq {
-    ModelingCmdReq {
-        cmd_id: cmd_id.into(),
-        cmd: ModelingCmd::from(mcmd::SetSceneUnits::builder().unit(units).build()),
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -295,6 +287,419 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     Ok(annotations.into())
 }
 
+#[allow(clippy::too_many_arguments)]
+async fn inner_flatness(
+    faces: Vec<TagIdentifier>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+    let mut annotations = Vec::with_capacity(faces.len());
+    let display_units = exec_state.length_unit();
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        let meta = vec![Metadata::from(args.source_range)];
+        let annotation_id = exec_state.next_uuid();
+        let feature_control = AnnotationFeatureControl::builder()
+            .entity_id(face_id)
+            // Point to the center of the face.
+            .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+            .leader_type(AnnotationLineEnd::Dot)
+            .control_frame(
+                AnnotationMbdControlFrame::builder()
+                    .symbol(MbdSymbol::Flatness)
+                    .tolerance(tolerance.to_length_units(display_units))
+                    .build(),
+            )
+            .plane_id(frame_plane.id)
+            .offset(if let Some(offset) = &frame_position {
+                KPoint2d {
+                    x: offset[0].to_mm(),
+                    y: offset[1].to_mm(),
+                }
+            } else {
+                KPoint2d { x: 100.0, y: 100.0 }
+            })
+            .precision(precision)
+            .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+            .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
+            .leader_scale(gdt_dot_leader_scale(leader_scale.as_ref(), font_size.as_ref(), args)?)
+            .build();
+        let options = AnnotationOptions::builder().feature_control(feature_control).build();
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+                ModelingCmd::from(
+                    mcmd::NewAnnotation::builder()
+                        .options(options)
+                        .clobber(false)
+                        .annotation_type(AnnotationType::T3D)
+                        .build(),
+                ),
+            )
+            .await?;
+        add_gdt_annotation_artifact(exec_state, args, annotation_id);
+        annotations.push(GdtAnnotation {
+            id: annotation_id,
+            meta,
+        });
+    }
+    Ok(annotations)
+}
+
+pub async fn straightness(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_straightness(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[expect(clippy::too_many_arguments)]
+async fn inner_straightness(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Straightness requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Straightness,
+            &tolerance,
+            &[],
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Straightness,
+            &tolerance,
+            &[],
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
+pub async fn circularity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_circularity(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[expect(clippy::too_many_arguments)]
+async fn inner_circularity(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Circularity requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Roundness,
+            &tolerance,
+            &[],
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Roundness,
+            &tolerance,
+            &[],
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
+pub async fn cylindricity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_cylindricity(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[expect(clippy::too_many_arguments)]
+async fn inner_cylindricity(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cylindricity requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Cylindricity,
+            &tolerance,
+            &[],
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Cylindricity,
+            &tolerance,
+            &[],
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
 pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let edges: Vec<EdgeReference> = args.get_kw_arg(
         "edges",
@@ -328,6 +733,57 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     )
     .await?;
     Ok(annotations.into())
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_profile(
+    edges: Vec<EdgeReference>,
+    datums: Option<Vec<String>>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(datums, args, "Profile")?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(edges.len());
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::ProfileOfLine,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
 }
 
 pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -371,6 +827,83 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     Ok(annotations.into())
 }
 
+#[allow(clippy::too_many_arguments)]
+async fn inner_position(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    datums: Option<Vec<String>>,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Position requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(datums, args, "Position")?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Position,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Position,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
 pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let from: Option<DistanceEntity> = args.get_kw_arg_opt("from", &distance_entity_type(), exec_state)?;
     let to: Option<DistanceEntity> = args.get_kw_arg_opt("to", &distance_entity_type(), exec_state)?;
@@ -402,351 +935,6 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     )
     .await?;
     Ok(annotations.into())
-}
-
-pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
-        "faces",
-        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
-        "datums",
-        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
-    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
-    let frame_position: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
-    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
-    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
-
-    let annotations = inner_perpendicularity(
-        faces.unwrap_or_default(),
-        edges.unwrap_or_default(),
-        datums,
-        tolerance,
-        precision,
-        frame_position,
-        frame_plane,
-        leader_scale,
-        font_size,
-        exec_state,
-        &args,
-    )
-    .await?;
-    Ok(annotations.into())
-}
-
-pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
-        "faces",
-        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
-        "datums",
-        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
-    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
-    let frame_position: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
-    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
-    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
-
-    let annotations = inner_parallelism(
-        faces.unwrap_or_default(),
-        edges.unwrap_or_default(),
-        datums,
-        tolerance,
-        precision,
-        frame_position,
-        frame_plane,
-        leader_scale,
-        font_size,
-        exec_state,
-        &args,
-    )
-    .await?;
-    Ok(annotations.into())
-}
-
-pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let annotation: String = args.get_kw_arg("annotation", &RuntimeType::string(), exec_state)?;
-    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
-        "faces",
-        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
-    let frame_position: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
-    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
-    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
-
-    let annotations = inner_annotation(
-        annotation,
-        faces.unwrap_or_default(),
-        edges.unwrap_or_default(),
-        frame_position,
-        frame_plane,
-        leader_scale,
-        font_size,
-        exec_state,
-        &args,
-    )
-    .await?;
-    Ok(annotations.into())
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_perpendicularity(
-    faces: Vec<TagIdentifier>,
-    edges: Vec<EdgeReference>,
-    datums: Option<Vec<String>>,
-    tolerance: TyF64,
-    precision: Option<TyF64>,
-    frame_position: Option<[TyF64; 2]>,
-    frame_plane: Option<Plane>,
-    leader_scale: Option<TyF64>,
-    font_size: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<GdtAnnotation>, KclError> {
-    if faces.is_empty() && edges.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Perpendicularity requires at least one face or edge.".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    let precision = resolve_precision(precision, args)?;
-    let datums = resolve_datums(datums, args, "Perpendicularity")?;
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
-
-    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
-    for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
-        create_feature_control_annotation(
-            face_id,
-            MbdSymbol::Perpendicularity,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-    for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_feature_control_annotation(
-            edge_id,
-            MbdSymbol::Perpendicularity,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-
-    Ok(annotations)
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_parallelism(
-    faces: Vec<TagIdentifier>,
-    edges: Vec<EdgeReference>,
-    datums: Option<Vec<String>>,
-    tolerance: TyF64,
-    precision: Option<TyF64>,
-    frame_position: Option<[TyF64; 2]>,
-    frame_plane: Option<Plane>,
-    leader_scale: Option<TyF64>,
-    font_size: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<GdtAnnotation>, KclError> {
-    if faces.is_empty() && edges.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Parallelism requires at least one face or edge.".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    let precision = resolve_precision(precision, args)?;
-    let datums = resolve_datums(datums, args, "Parallelism")?;
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
-
-    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
-    for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
-        create_feature_control_annotation(
-            face_id,
-            MbdSymbol::Parallelism,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-    for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_feature_control_annotation(
-            edge_id,
-            MbdSymbol::Parallelism,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-
-    Ok(annotations)
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_annotation(
-    annotation: String,
-    faces: Vec<TagIdentifier>,
-    edges: Vec<EdgeReference>,
-    frame_position: Option<[TyF64; 2]>,
-    frame_plane: Option<Plane>,
-    leader_scale: Option<TyF64>,
-    font_size: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<GdtAnnotation>, KclError> {
-    if annotation.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Annotation text must not be empty.".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-    if faces.is_empty() && edges.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Annotation requires at least one face or edge.".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
-
-    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
-    for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
-        create_annotation(
-            face_id,
-            &annotation,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-    for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_annotation(
-            edge_id,
-            &annotation,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-
-    Ok(annotations)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -848,229 +1036,6 @@ async fn inner_distance(
 }
 
 #[allow(clippy::too_many_arguments)]
-async fn inner_profile(
-    edges: Vec<EdgeReference>,
-    datums: Option<Vec<String>>,
-    tolerance: TyF64,
-    precision: Option<TyF64>,
-    frame_position: Option<[TyF64; 2]>,
-    frame_plane: Option<Plane>,
-    leader_scale: Option<TyF64>,
-    font_size: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<GdtAnnotation>, KclError> {
-    let precision = resolve_precision(precision, args)?;
-    let datums = resolve_datums(datums, args, "Profile")?;
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
-
-    let mut annotations = Vec::with_capacity(edges.len());
-    for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_feature_control_annotation(
-            edge_id,
-            MbdSymbol::ProfileOfLine,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-    Ok(annotations)
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_position(
-    faces: Vec<TagIdentifier>,
-    edges: Vec<EdgeReference>,
-    tolerance: TyF64,
-    datums: Option<Vec<String>>,
-    precision: Option<TyF64>,
-    frame_position: Option<[TyF64; 2]>,
-    frame_plane: Option<Plane>,
-    leader_scale: Option<TyF64>,
-    font_size: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<GdtAnnotation>, KclError> {
-    if faces.is_empty() && edges.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Position requires at least one face or edge.".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    let precision = resolve_precision(precision, args)?;
-    let datums = resolve_datums(datums, args, "Position")?;
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
-
-    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
-    for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
-        create_feature_control_annotation(
-            face_id,
-            MbdSymbol::Position,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-    for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_feature_control_annotation(
-            edge_id,
-            MbdSymbol::Position,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
-    }
-    Ok(annotations)
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_flatness(
-    faces: Vec<TagIdentifier>,
-    tolerance: TyF64,
-    precision: Option<TyF64>,
-    frame_position: Option<[TyF64; 2]>,
-    frame_plane: Option<Plane>,
-    leader_scale: Option<TyF64>,
-    font_size: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<GdtAnnotation>, KclError> {
-    let precision = resolve_precision(precision, args)?;
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        // No plane given. Use one of the standard planes.
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
-    let mut annotations = Vec::with_capacity(faces.len());
-    let display_units = exec_state.length_unit();
-    for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
-        let meta = vec![Metadata::from(args.source_range)];
-        let annotation_id = exec_state.next_uuid();
-        let feature_control = AnnotationFeatureControl::builder()
-            .entity_id(face_id)
-            // Point to the center of the face.
-            .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
-            .leader_type(AnnotationLineEnd::Dot)
-            .control_frame(
-                AnnotationMbdControlFrame::builder()
-                    .symbol(MbdSymbol::Flatness)
-                    .tolerance(tolerance.to_length_units(display_units))
-                    .build(),
-            )
-            .plane_id(frame_plane.id)
-            .offset(if let Some(offset) = &frame_position {
-                KPoint2d {
-                    x: offset[0].to_mm(),
-                    y: offset[1].to_mm(),
-                }
-            } else {
-                KPoint2d { x: 100.0, y: 100.0 }
-            })
-            .precision(precision)
-            .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
-            .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
-            .leader_scale(gdt_dot_leader_scale(leader_scale.as_ref(), font_size.as_ref(), args)?)
-            .build();
-        let options = AnnotationOptions::builder().feature_control(feature_control).build();
-        exec_state
-            .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
-                ModelingCmd::from(
-                    mcmd::NewAnnotation::builder()
-                        .options(options)
-                        .clobber(false)
-                        .annotation_type(AnnotationType::T3D)
-                        .build(),
-                ),
-            )
-            .await?;
-        add_gdt_annotation_artifact(exec_state, args, annotation_id);
-        annotations.push(GdtAnnotation {
-            id: annotation_id,
-            meta,
-        });
-    }
-    Ok(annotations)
-}
-
-fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclError> {
-    if let Some(precision) = precision {
-        let rounded = precision.n.round();
-        if !(0.0..=9.0).contains(&rounded) {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Precision must be between 0 and 9".to_owned(),
-                vec![args.source_range],
-            )));
-        }
-        Ok(rounded as u32)
-    } else {
-        Ok(3)
-    }
-}
-
-#[allow(clippy::too_many_arguments)]
 async fn create_basic_distance_annotation(
     from: DistanceEndpoint,
     to: DistanceEndpoint,
@@ -1111,11 +1076,10 @@ async fn create_basic_distance_annotation(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .arrow_scale(gdt_dimension_leader_scale(leader_scale, args)?)
         .build();
-    let options = AnnotationOptions::builder().dimension(dimension).build();
-    // The engine formats auto-measured MBD distance labels from its current scene units.
-    // Queue the unit switch, annotation, and reset together so other module commands
-    // cannot interleave while the engine's MBD display units are flipped.
-    let use_display_units = display_units != kcmc::units::UnitLength::Millimeters;
+    let options = AnnotationOptions::builder()
+        .dimension(dimension)
+        .units(display_units)
+        .build();
     let annotation_cmd = ModelingCmd::from(
         mcmd::NewAnnotation::builder()
             .options(options)
@@ -1124,31 +1088,373 @@ async fn create_basic_distance_annotation(
             .build(),
     );
     let cmd_meta = ModelingCmdMeta::from_args_id(exec_state, args, annotation_id);
-    if use_display_units {
-        let set_units_id = exec_state.next_uuid();
-        let reset_units_id = exec_state.next_uuid();
-        exec_state
-            .batch_modeling_cmds(
-                cmd_meta,
-                &[
-                    set_engine_scene_units_cmd(set_units_id, display_units),
-                    ModelingCmdReq {
-                        cmd_id: annotation_id.into(),
-                        cmd: annotation_cmd,
-                    },
-                    set_engine_scene_units_cmd(reset_units_id, kcmc::units::UnitLength::Millimeters),
-                ],
-            )
-            .await?;
-    } else {
-        exec_state.batch_modeling_cmd(cmd_meta, annotation_cmd).await?;
-    }
+    exec_state.batch_modeling_cmd(cmd_meta, annotation_cmd).await?;
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
     });
     Ok(())
+}
+
+pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_perpendicularity(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_perpendicularity(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    datums: Option<Vec<String>>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Perpendicularity requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(datums, args, "Perpendicularity")?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Perpendicularity,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Perpendicularity,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+
+    Ok(annotations)
+}
+
+pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_parallelism(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_parallelism(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    datums: Option<Vec<String>>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Parallelism requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(datums, args, "Parallelism")?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Parallelism,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Parallelism,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+
+    Ok(annotations)
+}
+
+pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let annotation: String = args.get_kw_arg("annotation", &RuntimeType::string(), exec_state)?;
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = inner_annotation(
+        annotation,
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_annotation(
+    annotation: String,
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if annotation.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Annotation text must not be empty.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Annotation requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_annotation(
+            face_id,
+            &annotation,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_annotation(
+            edge_id,
+            &annotation,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+
+    Ok(annotations)
+}
+
+fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclError> {
+    if let Some(precision) = precision {
+        let rounded = precision.n.round();
+        if !(0.0..=9.0).contains(&rounded) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Precision must be between 0 and 9".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        Ok(rounded as u32)
+    } else {
+        Ok(3)
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1210,6 +1516,34 @@ async fn create_feature_control_annotation(
     Ok(())
 }
 
+fn gdt_control_frame(symbol: MbdSymbol, tolerance: f64, datums: &[char]) -> AnnotationMbdControlFrame {
+    match datums {
+        [] => AnnotationMbdControlFrame::builder()
+            .symbol(symbol)
+            .tolerance(tolerance)
+            .build(),
+        [primary] => AnnotationMbdControlFrame::builder()
+            .symbol(symbol)
+            .tolerance(tolerance)
+            .primary_datum(*primary)
+            .build(),
+        [primary, secondary] => AnnotationMbdControlFrame::builder()
+            .symbol(symbol)
+            .tolerance(tolerance)
+            .primary_datum(*primary)
+            .secondary_datum(*secondary)
+            .build(),
+        [primary, secondary, tertiary] => AnnotationMbdControlFrame::builder()
+            .symbol(symbol)
+            .tolerance(tolerance)
+            .primary_datum(*primary)
+            .secondary_datum(*secondary)
+            .tertiary_datum(*tertiary)
+            .build(),
+        _ => unreachable!("resolve_datums rejects more than three datums"),
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn create_annotation(
     entity_id: uuid::Uuid,
@@ -1262,34 +1596,6 @@ async fn create_annotation(
         meta,
     });
     Ok(())
-}
-
-fn gdt_control_frame(symbol: MbdSymbol, tolerance: f64, datums: &[char]) -> AnnotationMbdControlFrame {
-    match datums {
-        [] => AnnotationMbdControlFrame::builder()
-            .symbol(symbol)
-            .tolerance(tolerance)
-            .build(),
-        [primary] => AnnotationMbdControlFrame::builder()
-            .symbol(symbol)
-            .tolerance(tolerance)
-            .primary_datum(*primary)
-            .build(),
-        [primary, secondary] => AnnotationMbdControlFrame::builder()
-            .symbol(symbol)
-            .tolerance(tolerance)
-            .primary_datum(*primary)
-            .secondary_datum(*secondary)
-            .build(),
-        [primary, secondary, tertiary] => AnnotationMbdControlFrame::builder()
-            .symbol(symbol)
-            .tolerance(tolerance)
-            .primary_datum(*primary)
-            .secondary_datum(*secondary)
-            .tertiary_datum(*tertiary)
-            .build(),
-        _ => unreachable!("resolve_datums rejects more than three datums"),
-    }
 }
 
 fn resolve_datums(datums: Option<Vec<String>>, args: &Args, annotation_name: &str) -> Result<Vec<char>, KclError> {
@@ -1469,29 +1775,14 @@ gdt::flatness(
             .collect()
     }
 
-    fn set_scene_units(command: &ModelingCmd) -> Result<kcmc::units::UnitLength, KclError> {
-        let ModelingCmd::SetSceneUnits(set_scene_units) = command else {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                format!("expected set_scene_units command, got {command:?}"),
-                vec![SourceRange::default()],
-            )));
-        };
-        Ok(set_scene_units.unit)
-    }
-
-    fn basic_dimension(command: &ModelingCmd) -> Result<&AnnotationBasicDimension, KclError> {
+    fn annotation_options(command: &ModelingCmd) -> Result<&AnnotationOptions, KclError> {
         let ModelingCmd::NewAnnotation(new_annotation) = command else {
             return Err(KclError::new_internal(KclErrorDetails::new(
                 format!("expected new_annotation command, got {command:?}"),
                 vec![SourceRange::default()],
             )));
         };
-        new_annotation.options.dimension.as_ref().ok_or_else(|| {
-            KclError::new_internal(KclErrorDetails::new(
-                "expected new_annotation command to have a dimension".to_owned(),
-                vec![SourceRange::default()],
-            ))
-        })
+        Ok(&new_annotation.options)
     }
 
     fn feature_control(command: &ModelingCmd) -> Result<&AnnotationFeatureControl, KclError> {
@@ -1660,7 +1951,7 @@ gdt::flatness(
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_distance_sets_scene_units_around_non_mm_annotation() -> Result<(), KclError> {
+    async fn gdt_distance_sets_units() -> Result<(), KclError> {
         let cases = [
             (
                 "in",
@@ -1680,20 +1971,29 @@ gdt::flatness(
                 10.0,
                 -10.0,
             ),
+            (
+                "mm",
+                "2.54mm",
+                "[10, -10]",
+                kcmc::units::UnitLength::Millimeters,
+                2.54,
+                10.0,
+                -10.0,
+            ),
         ];
 
         for (default_unit, tolerance, frame_position, scene_unit, expected_tolerance, expected_x, expected_y) in cases {
             let code = gdt_distance_kcl(default_unit, tolerance, frame_position);
             let commands = gdt_commands(&code).await;
             let annotation_index = new_annotation_command_index(&commands)?;
-            let dimension = basic_dimension(&commands[annotation_index])?;
+            let options = annotation_options(&commands[annotation_index])?;
 
-            assert_eq!(set_scene_units(&commands[annotation_index - 1])?, scene_unit);
-            assert_eq!(
-                set_scene_units(&commands[annotation_index + 1])?,
-                kcmc::units::UnitLength::Millimeters
-            );
+            assert_eq!(options.units, Some(scene_unit));
 
+            let dimension = options
+                .dimension
+                .as_ref()
+                .expect("expected new_annotation command to have a dimension");
             assert_close(dimension.dimension.tolerance, expected_tolerance);
             assert_close(dimension.offset.x, expected_x);
             assert_close(dimension.offset.y, expected_y);
@@ -1702,24 +2002,6 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
-        Ok(())
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_distance_keeps_mm_annotation_in_current_scene_units() -> Result<(), KclError> {
-        let code = gdt_distance_kcl("mm", "2.54mm", "[10, -10]");
-        let commands = gdt_commands(&code).await;
-        let annotation_index = new_annotation_command_index(&commands)?;
-        let dimension = basic_dimension(&commands[annotation_index])?;
-
-        assert!(
-            !commands
-                .iter()
-                .any(|command| matches!(command, ModelingCmd::SetSceneUnits(_)))
-        );
-        assert_close(dimension.dimension.tolerance, 2.54);
-        assert_close(dimension.offset.x, 10.0);
-        assert_close(dimension.offset.y, -10.0);
         Ok(())
     }
 
@@ -1769,5 +2051,145 @@ gdt::datum(face = top, name = "A", framePosition = [10mm, 0mm], framePlane = XZ)
     async fn gdt_annotations_do_not_follow_runtime_artifact_graph_setting() {
         assert_eq!(gdt_artifact_count(false).await, 1);
         assert_eq!(gdt_artifact_count(true).await, 1);
+    }
+
+    // Mirrors the gdt::circularity doc examples: annotate a cylinder's circular
+    // edge and its curved wall. Runs in mock mode, so it validates parsing, name
+    // resolution, and that the control frame uses the Roundness (circularity)
+    // symbol without datums. The doc examples additionally render against the
+    // engine in kcl_test_examples.
+    const GDT_CIRCULARITY_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+hide(cylinderSketch)
+cylinder = extrude(cylinderRegion, length = 10mm)
+gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm)
+"#;
+
+    const GDT_CIRCULARITY_WALL_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+gdt::circularity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_CIRCULARITY_COMMON_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_circularity_uses_roundness_symbol_without_datums() -> Result<(), KclError> {
+        let cases = [
+            ("circular edge", GDT_CIRCULARITY_EDGE_KCL, 0.05),
+            ("cylinder wall", GDT_CIRCULARITY_WALL_KCL, 0.02),
+            ("common edge", GDT_CIRCULARITY_COMMON_EDGE_KCL, 0.05),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let annotation_index = new_annotation_command_index(&commands)?;
+            let feature_control = feature_control(&commands[annotation_index])?;
+            let control_frame = feature_control.control_frame.as_ref().ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("expected {label} feature_control to have a control_frame"),
+                    vec![SourceRange::default()],
+                ))
+            })?;
+
+            assert_eq!(control_frame.symbol, MbdSymbol::Roundness, "case: {label}");
+            assert_close(control_frame.tolerance, expected_tolerance);
+            // Circularity is a form tolerance and never references datums.
+            assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    // Mirrors the gdt::cylindricity doc examples: annotate a cylinder's curved
+    // wall and its circular edge. Runs in mock mode, so it validates parsing,
+    // name resolution, and that the control frame uses the Cylindricity symbol
+    // without datums. The doc examples additionally render against the engine in
+    // kcl_test_examples.
+    const GDT_CYLINDRICITY_WALL_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+gdt::cylindricity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_CYLINDRICITY_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+hide(cylinderSketch)
+cylinder = extrude(cylinderRegion, length = 10mm)
+gdt::cylindricity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
+"#;
+
+    const GDT_CYLINDRICITY_COMMON_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_cylindricity_uses_cylindricity_symbol_without_datums() -> Result<(), KclError> {
+        let cases = [
+            ("cylinder wall", GDT_CYLINDRICITY_WALL_KCL, 0.02),
+            ("circular edge", GDT_CYLINDRICITY_EDGE_KCL, 0.05),
+            ("common edge", GDT_CYLINDRICITY_COMMON_EDGE_KCL, 0.05),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let annotation_index = new_annotation_command_index(&commands)?;
+            let feature_control = feature_control(&commands[annotation_index])?;
+            let control_frame = feature_control.control_frame.as_ref().ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("expected {label} feature_control to have a control_frame"),
+                    vec![SourceRange::default()],
+                ))
+            })?;
+
+            assert_eq!(control_frame.symbol, MbdSymbol::Cylindricity, "case: {label}");
+            assert_close(control_frame.tolerance, expected_tolerance);
+            // Cylindricity is a form tolerance and never references datums.
+            assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
     }
 }

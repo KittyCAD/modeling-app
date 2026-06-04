@@ -1,16 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
-import {
-  createActor,
-  createMachine,
-  assign,
-  fromPromise,
-  waitFor,
-} from 'xstate'
-import { Group } from 'three'
-import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { Themes } from '@src/lib/theme'
-import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
 import {
   createControlPointSplineApiObject,
   createMockKclManager,
@@ -18,6 +7,17 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
+import { Group } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { describe, expect, it, vi } from 'vitest'
+import {
+  assign,
+  createActor,
+  createMachine,
+  fromPromise,
+  waitFor,
+} from 'xstate'
 
 function createLeftMouseEvent(detail = 1): MouseEvent {
   const event = new MouseEvent('click', {

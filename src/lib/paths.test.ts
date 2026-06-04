@@ -1,6 +1,5 @@
 import { APP_NAME } from '@src/lib/constants'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { beforeAll, expect, describe, it } from 'vitest'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import {
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
@@ -9,6 +8,7 @@ import {
   toProjectRelativePath,
   toWebSafePath,
 } from '@src/lib/paths'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({

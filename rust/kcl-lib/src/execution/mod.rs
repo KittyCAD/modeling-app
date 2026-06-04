@@ -36,6 +36,8 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::id::ModelingCmdId;
 use kittycad_modeling_cmds::{self as kcmc};
 pub use memory::EnvironmentRef;
+#[cfg(test)]
+pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::Deserialize;
 use serde::Serialize;
@@ -85,6 +87,47 @@ use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Default)]
+#[ts(export)]
+pub struct OperationsByModule {
+    pub map: IndexMap<ModuleId, Vec<Operation>>,
+}
+
+#[derive(Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OperationCallbackArgs {
+    pub module_id: ModuleId,
+    pub operation: Operation,
+    pub index: usize,
+}
+
+pub trait ExecutionCallbacks: std::fmt::Debug + Send + Sync + 'static {
+    fn on_operation(&self, _args: OperationCallbackArgs) {}
+}
+
+impl OperationsByModule {
+    pub fn count(&self) -> usize {
+        self.map.values().map(Vec::len).sum()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.map.values().all(Vec::is_empty)
+    }
+
+    pub fn get(&self, module_id: &ModuleId) -> Option<&Vec<Operation>> {
+        self.map.get(module_id)
+    }
+
+    pub fn values(&self) -> indexmap::map::Values<'_, ModuleId, Vec<Operation>> {
+        self.map.values()
+    }
+
+    pub fn insert(&mut self, module_id: ModuleId, operations: Vec<Operation>) {
+        self.map.insert(module_id, operations);
+    }
+}
 
 pub(crate) mod annotations;
 mod artifact;
@@ -251,9 +294,9 @@ impl PreserveMem {
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
     pub variables: IndexMap<String, KclValue>,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    pub operations: Vec<Operation>,
+    /// Operations that have been performed in execution order, grouped by
+    /// owning module id, for display in the Feature Tree.
+    pub operations: OperationsByModule,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
     /// Objects in the scene, created from execution.
@@ -264,7 +307,7 @@ pub struct ExecOutcome {
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
@@ -475,7 +518,7 @@ impl ExecOutcome {
 }
 
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -486,6 +529,16 @@ pub struct MockConfig {
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SegmentDragAnchor {
+    pub segment_id: ObjectId,
+    pub target: crate::front::Point2d<Number>,
 }
 
 impl Default for MockConfig {
@@ -496,6 +549,7 @@ impl Default for MockConfig {
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
+            drag_anchors: Vec::new(),
         }
     }
 }
@@ -739,6 +793,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
+    pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
 }
 
 /// The executor settings.
@@ -773,6 +828,10 @@ pub struct ExecutorSettings {
     /// If None, no heartbeats will be sent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heartbeats: Option<u64>,
+    /// If given, sets the default backface colour.
+    /// If not, defaults to whatever the engine's default is.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_backface_color: Option<String>,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -791,6 +850,7 @@ impl Default for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: None,
         }
     }
 }
@@ -814,6 +874,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: modeling_settings.backface_color.map(|color| color.0),
         }
     }
 }
@@ -836,6 +897,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: modeling.backface_color.map(|color| color.0),
         }
     }
 }
@@ -852,6 +914,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             fixed_size_grid: true,
             skip_artifact_graph: false,
             heartbeats: None,
+            default_backface_color: None,
         }
     }
 }
@@ -887,6 +950,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Live,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -897,6 +961,7 @@ impl ExecutorContext {
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
+            execution_callbacks: self.execution_callbacks.clone(),
         }
     }
 
@@ -952,6 +1017,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -963,6 +1029,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -987,6 +1054,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         })
     }
 
@@ -998,6 +1066,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -1044,6 +1113,7 @@ impl ExecutorContext {
                 fixed_size_grid: false,
                 skip_artifact_graph: false,
                 heartbeats: None,
+                default_backface_color: None,
             },
             None,
             engine_addr,
@@ -1105,7 +1175,10 @@ impl ExecutorContext {
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        exec_state.mut_stack().push_new_root_env(true);
+        exec_state
+            .mut_stack()
+            .push_new_root_env(true)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         Ok(())
     }
 
@@ -1166,7 +1239,10 @@ impl ExecutorContext {
 
         // Push a scope so that old variables can be overwritten (since we might be re-executing some
         // part of the scene).
-        exec_state.mut_stack().push_new_env_for_scope();
+        exec_state
+            .mut_stack()
+            .push_new_env_for_scope()
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
@@ -1180,9 +1256,12 @@ impl ExecutorContext {
         let id_to_source = exec_state.global.id_to_source.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
-        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        let outcome = exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        stack.squash_env(result.0);
+        stack.squash_env(result.0).map_err(KclErrorWithOutputs::no_outputs)?;
         let state = cache::SketchModeState {
             stack,
             module_infos,
@@ -1298,8 +1377,16 @@ impl ExecutorContext {
 
                             if !clear_scene {
                                 // Return early we don't need to clear the scene.
-                                cache::write_old_memory(cached_state.mock_memory_state()).await;
-                                return Ok(cached_state.into_exec_outcome(self).await);
+                                cache::write_old_memory(
+                                    cached_state
+                                        .mock_memory_state()
+                                        .map_err(KclErrorWithOutputs::no_outputs)?,
+                                )
+                                .await;
+                                return cached_state
+                                    .into_exec_outcome(self)
+                                    .await
+                                    .map_err(KclErrorWithOutputs::no_outputs);
                             }
 
                             (
@@ -1332,14 +1419,30 @@ impl ExecutorContext {
                             ))
                             .await;
 
-                            cache::write_old_memory(cached_state.mock_memory_state()).await;
-                            return Ok(cached_state.into_exec_outcome(self).await);
+                            cache::write_old_memory(
+                                cached_state
+                                    .mock_memory_state()
+                                    .map_err(KclErrorWithOutputs::no_outputs)?,
+                            )
+                            .await;
+                            return cached_state
+                                .into_exec_outcome(self)
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs);
                         }
                         (true, program, None)
                     }
                     CacheResult::NoAction(false) => {
-                        cache::write_old_memory(cached_state.mock_memory_state()).await;
-                        return Ok(cached_state.into_exec_outcome(self).await);
+                        cache::write_old_memory(
+                            cached_state
+                                .mock_memory_state()
+                                .map_err(KclErrorWithOutputs::no_outputs)?,
+                        )
+                        .await;
+                        return cached_state
+                            .into_exec_outcome(self)
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs);
                     }
                 };
 
@@ -1363,7 +1466,7 @@ impl ExecutorContext {
                     }
                     None if clear_scene => {
                         // Pop the execution state, since we are starting fresh.
-                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        let mut exec_state = cached_state.reconstitute_exec_state(self);
                         exec_state.reset(self);
 
                         self.send_clear_scene(&mut exec_state, Default::default())
@@ -1377,8 +1480,11 @@ impl ExecutorContext {
                         (exec_state, result)
                     }
                     None => {
-                        let mut exec_state = cached_state.reconstitute_exec_state();
-                        exec_state.mut_stack().restore_env(cached_state.main.result_env);
+                        let mut exec_state = cached_state.reconstitute_exec_state(self);
+                        exec_state
+                            .mut_stack()
+                            .restore_env(cached_state.main.result_env)
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
                             .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
@@ -1422,7 +1528,10 @@ impl ExecutorContext {
         ))
         .await;
 
-        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        let outcome = exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         Ok(outcome)
     }
 
@@ -1457,6 +1566,42 @@ impl ExecutorContext {
             self.get_universe(program, exec_state).await?
         };
 
+        // Push ModuleInstance ops for the root module's direct imports before
+        // child modules execute. This lets the live feature tree show module
+        // names immediately rather than waiting for the root module body to run.
+        // Sort by source position so they appear in source-code order (the
+        // universe_map is a HashMap with non-deterministic iteration order).
+        let mut sorted_imports: Vec<_> = universe_map.iter().collect();
+        sorted_imports.sort_by_key(|(_, import_stmt)| SourceRange::from(*import_stmt));
+        for (_path, import_stmt) in sorted_imports {
+            // Look up by the raw import filename (e.g. "car-wheel.kcl") which
+            // is the key format used by Universe, NOT the resolved absolute
+            // TypedPath that UniverseMap uses as its key.
+            let filename = match &import_stmt.path {
+                ImportPath::Kcl { filename } => filename.to_string(),
+                ImportPath::Foreign { path } => path.to_string(),
+                ImportPath::Std { .. } => continue,
+            };
+            if let Some((_, module_id, module_path, _)) = universe.get(&filename)
+                && let ModulePath::Local { value, .. } = module_path
+            {
+                let name = import_stmt
+                    .module_name()
+                    .unwrap_or_else(|| value.file_name().unwrap_or_default());
+                let source_range = SourceRange::from(import_stmt);
+                exec_state.push_op(crate::execution::cad_op::Operation::ModuleInstance {
+                    name,
+                    module_id: *module_id,
+                    glob: matches!(
+                        import_stmt.selector,
+                        crate::parsing::ast::types::ImportSelector::Glob(_)
+                    ),
+                    node_path: crate::NodePath::placeholder(),
+                    source_range,
+                });
+            }
+        }
+
         let default_planes = self.engine.get_default_planes().read().await.clone();
 
         // Run the prelude to set up the engine.
@@ -1489,15 +1634,6 @@ impl ExecutorContext {
                 // Clone before mutating.
                 let module_exec_state = exec_state.clone();
 
-                self.add_import_module_ops(
-                    exec_state,
-                    &program.ast,
-                    module_id,
-                    &module_path,
-                    source_range,
-                    &universe_map,
-                );
-
                 let repr = repr.clone();
                 let exec_ctxt = self.clone_with_fresh_execution_batch();
                 let results_tx = results_tx.clone();
@@ -1529,9 +1665,11 @@ impl ExecutorContext {
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
-                            result.map(|val| {
-                                ModuleRepr::Foreign(geom.clone(), Some((val, exec_state.mod_local.artifacts.clone())))
-                            })
+                            // Foreign modules don't produce their own operations;
+                            // use a fresh artifact state instead of capturing the
+                            // cloned root module's artifacts (which may contain
+                            // early-pushed ModuleInstance operations).
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -1618,9 +1756,14 @@ impl ExecutorContext {
             }
         }
 
-        // Since we haven't technically started executing the root module yet,
-        // the operations corresponding to the imports will be missing unless we
-        // track them here.
+        // The early-pushed ModuleInstance operations have already served their
+        // purpose (firing onOperation callbacks for the live feature tree).
+        // Clear them so they don't duplicate the operations the root module
+        // body will produce when it actually executes its import statements.
+        exec_state.mod_local.artifacts.operations.clear();
+
+        // Move any remaining setup artifacts (non-operation data from the
+        // prelude, etc.) into the root state.
         exec_state
             .global
             .root_module_artifacts
@@ -1653,63 +1796,6 @@ impl ExecutorContext {
         .map_err(|err| exec_state.error_with_outputs(err, None, default_planes))?;
 
         Ok((universe, root_imports))
-    }
-
-    fn add_import_module_ops(
-        &self,
-        exec_state: &mut ExecState,
-        program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
-        module_id: ModuleId,
-        module_path: &ModulePath,
-        source_range: SourceRange,
-        universe_map: &UniverseMap,
-    ) {
-        match module_path {
-            ModulePath::Main => {
-                // This should never happen.
-            }
-            ModulePath::Local {
-                value,
-                original_import_path,
-            } => {
-                // We only want to display the top-level module imports in
-                // the Feature Tree, not transitive imports.
-                if universe_map.contains_key(value) {
-                    use crate::NodePath;
-
-                    let node_path = if source_range.is_top_level_module() {
-                        let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(
-                            &exec_state.build_program_lookup(program.clone()),
-                            cached_body_items,
-                            source_range,
-                        )
-                        .unwrap_or_default()
-                    } else {
-                        // The frontend doesn't care about paths in
-                        // files other than the top-level module.
-                        NodePath::placeholder()
-                    };
-
-                    let name = match original_import_path {
-                        Some(value) => value.to_string_lossy(),
-                        None => value.file_name().unwrap_or_default(),
-                    };
-                    exec_state.push_op(Operation::GroupBegin {
-                        group: Group::ModuleInstance { name, module_id },
-                        node_path,
-                        source_range,
-                    });
-                    // Due to concurrent execution, we cannot easily
-                    // group operations by module. So we leave the
-                    // group empty and close it immediately.
-                    exec_state.push_op(Operation::GroupEnd);
-                }
-            }
-            ModulePath::Std { .. } => {
-                // We don't want to display stdlib in the Feature Tree.
-            }
-        }
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
@@ -1746,18 +1832,22 @@ impl ExecutorContext {
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
-            exec_state.stack().memory.stats
+            exec_state.stack().memory.stats()
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
         /// Write the memory of an execution to the cache for reuse in mock
         /// execution.
-        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+        async fn write_old_memory(
+            ctx: &ExecutorContext,
+            exec_state: &ExecState,
+            env_ref: EnvironmentRef,
+        ) -> Result<(), KclError> {
             if ctx.is_mock() {
-                return;
+                return Ok(());
             }
-            let mut stack = exec_state.stack().deep_clone();
-            stack.restore_env(env_ref);
+            let mut stack = exec_state.stack().deep_clone()?;
+            stack.restore_env(env_ref)?;
             let state = cache::SketchModeState {
                 stack,
                 module_infos: exec_state.global.module_infos.clone(),
@@ -1767,6 +1857,7 @@ impl ExecutorContext {
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
             };
             cache::write_old_memory(state).await;
+            Ok(())
         }
 
         let env_ref = match result {
@@ -1775,13 +1866,17 @@ impl ExecutorContext {
                 // Preserve memory on execution failures so follow-up mock
                 // execution can still reuse stable IDs before the error.
                 if let Some(env_ref) = env_ref {
-                    write_old_memory(self, exec_state, env_ref).await;
+                    write_old_memory(self, exec_state, env_ref)
+                        .await
+                        .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
                 }
                 return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
             }
         };
 
-        write_old_memory(self, exec_state, env_ref).await;
+        write_old_memory(self, exec_state, env_ref)
+            .await
+            .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
 
         let session_data = self.engine.get_session_data().await;
 
@@ -1893,7 +1988,7 @@ impl ExecutorContext {
                 .await?;
             let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 
-            exec_state.mut_stack().memory.set_std(module_memory);
+            exec_state.mut_stack().memory.set_std(module_memory)?;
 
             // Operations generated by the prelude are not useful, so clear them
             // out.
@@ -2087,6 +2182,7 @@ pub(crate) async fn parse_execute_with_project_dir(
             ..Default::default()
         },
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
@@ -2162,7 +2258,264 @@ mod tests {
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
-        memory.memory.get_from_unchecked(name, env).unwrap().to_owned()
+        memory.memory.get_from_unchecked(name, env).unwrap()
+    }
+
+    async fn execute_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        execute_outcome_with_backend(code, backend).await.variables
+    }
+
+    async fn execute_outcome_with_backend(code: &str, backend: memory::MemoryBackendKind) -> ExecOutcome {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("test execution outcome should collect variables");
+        ctx.close().await;
+        outcome
+    }
+
+    async fn execute_error_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let error = ctx.run(&program, &mut exec_state).await.unwrap_err();
+        ctx.close().await;
+        error.variables
+    }
+
+    async fn execute_project_variables_with_backend(
+        main_code: &str,
+        files: &[(&str, &str)],
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
+        for (name, contents) in files {
+            tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
+        }
+
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine_batch: EngineBatchContext::default(),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            settings: ExecutorSettings {
+                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("test execution outcome should collect variables");
+        ctx.close().await;
+        outcome.variables
+    }
+
+    async fn run_with_caching_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let _backend = memory::MemoryBackendKind::override_for_test(backend);
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_with_engine(
+            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let cached = ctx.run_with_caching(program).await.unwrap();
+
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
+        cached.variables
+    }
+
+    async fn run_mock_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let _backend = memory::MemoryBackendKind::override_for_test(backend);
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let first = crate::Program::parse_no_errs("x = 2").unwrap();
+        ctx.run_mock(
+            &first,
+            &MockConfig {
+                use_prev_memory: false,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        outcome.variables
+    }
+
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValue>) -> Vec<String> {
+        let mut keys = variables.keys().cloned().collect::<Vec<_>>();
+        keys.sort();
+        keys
+    }
+
+    fn assert_number_variable(variables: &IndexMap<String, KclValue>, key: &str, expected: f64) {
+        let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
+        assert_eq!(value.as_f64().unwrap(), expected, "{key}: {value:?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exec_outcome_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = x + 1\narr = [x, y]";
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["arr", "x", "y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_output_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = missing + 1";
+
+        let legacy = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["x"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = x + 1";
+
+        let legacy = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["x", "y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_variables_match_between_memory_backends() {
+        let code = "y = x + 1";
+
+        let legacy = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn module_imports_and_exported_closures_match_between_memory_backends() {
+        let module_code = r#"
+export base = 40
+
+export fn addBase(n) {
+  return n + base
+}
+"#;
+        let main_code = r#"
+import base, addBase from 'math.kcl'
+import 'math.kcl'
+
+named = addBase(n = 2)
+qualified = math::addBase(n = 1)
+direct = math::base
+"#;
+
+        let legacy = execute_project_variables_with_backend(
+            main_code,
+            &[("math.kcl", module_code)],
+            memory::MemoryBackendKind::Legacy,
+        )
+        .await;
+        let arena = execute_project_variables_with_backend(
+            main_code,
+            &[("math.kcl", module_code)],
+            memory::MemoryBackendKind::Arena,
+        )
+        .await;
+
+        assert_number_variable(&legacy, "named", 42.0);
+        assert_number_variable(&legacy, "qualified", 41.0);
+        assert_number_variable(&legacy, "direct", 40.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_variables_match_between_memory_backends() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [1, 0])
+  line2 = line(start = [1, 0], end = [0, 1])
+}
+lineCount = 2
+"#;
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert!(legacy.contains_key("sketch001"), "actual: {legacy:?}");
+        assert_number_variable(&legacy, "lineCount", 2.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_call_stack_lookup_matches_between_memory_backends() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+
+segLength = segLen(seg01)
+"#;
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_number_variable(&legacy, "segLength", 10.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_transpiler_exec_outcome_variables_match_between_memory_backends() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let legacy = execute_outcome_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_outcome_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        let legacy_transpiled = transpile_old_sketch_to_new(&legacy, &program, "sketch001").unwrap();
+        let arena_transpiled = transpile_old_sketch_to_new(&arena, &program, "sketch001").unwrap();
+        assert_eq!(arena_transpiled, legacy_transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3424,12 +3777,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.operations.len(), 1);
+        assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
-        assert_eq!(mock_result.operations.len(), 1);
+        assert_eq!(mock_result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
         let code2 = code.to_owned()
             + r#"
@@ -3437,7 +3790,7 @@ extrude001 = extrude(profile001, length = 10)
 "#;
         let program2 = crate::Program::parse_no_errs(&code2).unwrap();
         let result = ctx.run_with_caching(program2).await.unwrap();
-        assert_eq!(result.operations.len(), 2);
+        assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 2);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3668,7 +4021,10 @@ fillet(solid001, radius = 0.1, tags = yoyo)
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
-        let outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("constraint report test outcome should collect variables");
         let report = outcome.sketch_constraint_report();
         ctx.close().await;
         report

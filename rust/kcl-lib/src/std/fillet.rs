@@ -5,7 +5,8 @@ use indexmap::IndexMap;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
-use kcmc::shared::CutType;
+use kcmc::shared::CutTypeV2;
+use kcmc::shared::EdgeCutVersion;
 use kittycad_modeling_cmds as kcmc;
 use serde::Deserialize;
 use serde::Serialize;
@@ -96,11 +97,34 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
+    let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let edge_cut_version: EdgeCutVersion = edge_cut_number
+        .map(|num| {
+            num.try_into().map_err(|()| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("{} is not a version of the Zoo edge cut algorithm", num),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?
+        .unwrap_or_default();
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
+    let value = inner_fillet(
+        solid,
+        radius,
+        tags,
+        tolerance,
+        csg_algorithm,
+        tag,
+        edge_cut_version,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -112,6 +136,7 @@ async fn inner_fillet(
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
+    edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -154,17 +179,20 @@ async fn inner_fillet(
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
-                mcmd::Solid3dFilletEdge::builder()
+                mcmd::Solid3dCutEdges::builder()
                     .use_legacy(csg_algorithm.is_legacy())
                     .edge_ids(edge_ids.clone())
                     .extra_face_ids(extra_face_ids)
                     .strategy(Default::default())
                     .object_id(solid.id)
-                    .radius(LengthUnit(radius.to_mm()))
+                    .version(edge_cut_version)
                     .tolerance(LengthUnit(
                         tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
-                    .cut_type(CutType::Fillet)
+                    .cut_type(CutTypeV2::Fillet {
+                        radius: LengthUnit(radius.to_mm()),
+                        second_length: None,
+                    })
                     .build(),
             ),
         )

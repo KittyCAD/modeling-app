@@ -71,6 +71,14 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   }
 }
 
+export type DynamicBooleanSetEvent = {
+  type: `set.${'modeling' | 'plugins'}.${string}`
+  data: {
+    level: SettingsLevel
+    value: boolean
+  }
+}
+
 /** Platform values for hiding settings */
 export type HideOnPlatformValue = 'web' | 'desktop' | 'both'
 

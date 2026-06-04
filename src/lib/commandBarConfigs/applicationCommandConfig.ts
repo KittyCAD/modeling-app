@@ -1,36 +1,36 @@
 import env from '@src/env'
-import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { App } from '@src/lib/app'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
+  getInitialDefaultDir,
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
-  getInitialDefaultDir,
 } from '@src/lib/desktop'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
+import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
+import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import {
-  getStringAfterLastSeparator,
   getEXTNoPeriod,
+  getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { App } from '@src/lib/app'
 
 function onSubmitKCLSampleCreation({
   sample,
