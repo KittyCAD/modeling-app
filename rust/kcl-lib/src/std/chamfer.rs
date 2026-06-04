@@ -286,16 +286,18 @@ async fn inner_chamfer_with_engine_refs(
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
-                object_id: solid.id,
-                edges_references: edge_references,
-                cut_type,
-                tolerance: LengthUnit(DEFAULT_TOLERANCE),
-                strategy,
-                extra_face_ids,
-                use_legacy: csg_algorithm.is_legacy(),
-                version: edge_cut_version,
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdgeReferences::builder()
+                    .object_id(solid.id)
+                    .edges_references(edge_references)
+                    .cut_type(cut_type)
+                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                    .strategy(strategy)
+                    .extra_face_ids(extra_face_ids)
+                    .use_legacy(csg_algorithm.is_legacy())
+                    .version(edge_cut_version)
+                    .build(),
+            ),
         )
         .await?;
 
