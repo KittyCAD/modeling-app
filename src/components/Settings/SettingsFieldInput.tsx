@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import type { EventFrom } from 'xstate'
 
 import { Toggle } from '@src/components/Toggle/Toggle'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
@@ -9,7 +11,6 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { useApp } from '@src/lib/boot'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,
@@ -126,6 +127,7 @@ export function SettingsFieldInput({
           : setting.getFallback(settingsLevel)
       return (
         <input
+          {...noAutofillInputProps}
           // When reverting to default value then the input doesn't update without a key change.
           // Another fix for this would be to make this a controlled component.
           key={`${category}-${settingName}-${settingsLevel}-${String(
@@ -179,7 +181,7 @@ export function SettingsFieldInput({
           min={min}
           disabled={!setting.isEnabled(context)}
           onBlur={(e) => {
-            let numValue = parseFloat(e.target.value)
+            const numValue = Number.parseFloat(e.target.value)
             let updatedValue = numValue
             // "integer" option
             if (setting.commandConfig && 'integer' in setting.commandConfig) {

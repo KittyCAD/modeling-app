@@ -1380,6 +1380,19 @@ impl Point3d {
         }
     }
 
+    /// Normalize `-0.0` to `0.0` for cleaner serialized axis data.
+    pub fn canonicalize_signed_zero(&mut self) {
+        if self.x == 0.0 {
+            self.x = 0.0;
+        }
+        if self.y == 0.0 {
+            self.y = 0.0;
+        }
+        if self.z == 0.0 {
+            self.z = 0.0;
+        }
+    }
+
     /// Calculate the dot product of this vector with another.
     ///
     /// This should only be applied to axes or other vectors which represent only a direction (and

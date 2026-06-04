@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
-import { useSignals } from '@preact/signals-react/runtime'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import {
@@ -12,8 +12,8 @@ import {
 import { err } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
-  memo,
   type ComponentProps,
+  memo,
   useCallback,
   useEffect,
   useState,

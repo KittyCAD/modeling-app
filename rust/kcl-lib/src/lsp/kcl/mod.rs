@@ -1980,7 +1980,7 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
     let mem = cache::read_old_memory().await?;
     let value = mem.stack.get(name, SourceRange::default()).ok()?;
 
-    Some(f(value))
+    Some(f(&value))
 }
 
 #[cfg(test)]

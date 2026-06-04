@@ -4,8 +4,8 @@ import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
-import { refreshPage } from '@src/lib/utils'
 import { isErr, reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {

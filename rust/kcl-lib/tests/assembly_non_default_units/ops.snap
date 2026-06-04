@@ -37,7 +37,7 @@ description: Operations executed assembly_non_default_units.kcl
   "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "other1.kcl",
+      "name": "other1",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -51,7 +51,7 @@ description: Operations executed assembly_non_default_units.kcl
     },
     {
       "type": "ModuleInstance",
-      "name": "other2.kcl",
+      "name": "other2",
       "moduleId": 0,
       "nodePath": {
         "steps": [
@@ -67,7 +67,7 @@ description: Operations executed assembly_non_default_units.kcl
   "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
     {
       "type": "ModuleInstance",
-      "name": "globals.kcl",
+      "name": "globals",
       "moduleId": 0,
       "nodePath": {
         "steps": [

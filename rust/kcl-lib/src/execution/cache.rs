@@ -9,6 +9,7 @@ use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
+use crate::errors::KclError;
 use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
@@ -105,18 +106,19 @@ impl GlobalState {
         self
     }
 
-    pub fn reconstitute_exec_state(&self) -> exec_state::ExecState {
+    pub fn reconstitute_exec_state(&self, ctx: &ExecutorContext) -> exec_state::ExecState {
         exec_state::ExecState {
+            execution_callbacks: ctx.execution_callbacks.clone(),
             global: self.exec_state.clone(),
             mod_local: self.main.exec_state.clone(),
         }
     }
 
-    pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        ExecOutcome {
-            variables: self.main.exec_state.variables(self.main.result_env),
+        Ok(ExecOutcome {
+            variables: self.main.exec_state.variables(self.main.result_env)?,
             filenames: self.exec_state.filenames(),
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
@@ -125,21 +127,21 @@ impl GlobalState {
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             issues: self.exec_state.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
-        }
+        })
     }
 
-    pub fn mock_memory_state(&self) -> SketchModeState {
-        let mut stack = self.main.exec_state.stack.deep_clone();
-        stack.restore_env(self.main.result_env);
+    pub fn mock_memory_state(&self) -> Result<SketchModeState, KclError> {
+        let mut stack = self.main.exec_state.stack.deep_clone()?;
+        stack.restore_env(self.main.result_env)?;
 
-        SketchModeState {
+        Ok(SketchModeState {
             stack,
             module_infos: self.exec_state.module_infos.clone(),
             path_to_source_id: self.exec_state.path_to_source_id.clone(),
             id_to_source: self.exec_state.id_to_source.clone(),
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
-        }
+        })
     }
 }
 

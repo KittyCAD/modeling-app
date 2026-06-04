@@ -11,11 +11,11 @@ import toast from 'react-hot-toast'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'

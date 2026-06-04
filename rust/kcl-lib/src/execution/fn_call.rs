@@ -165,9 +165,9 @@ impl Node<CallExpressionKw> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
-        // Clone the function so that we can use a mutable reference to
-        // exec_state.
-        let func: KclValue = fn_name.get_result(exec_state, ctx).await?.clone();
+        // Resolve the function before evaluating arguments so calls can mutate
+        // exec_state without holding a memory borrow.
+        let func: KclValue = fn_name.get_result(exec_state, ctx).await?;
 
         let Some(fn_src) = func.as_function() else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -354,7 +354,7 @@ impl FunctionSource {
         }
 
         // Don't early return until the stack frame is popped!
-        self.body.prep_mem(exec_state);
+        self.body.prep_mem(exec_state)?;
 
         // Some function calls might get added to the feature tree.
         // We do this by adding an "operation".
@@ -446,7 +446,7 @@ impl FunctionSource {
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
                     exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
-                    exec_state.mut_stack().pop_env();
+                    exec_state.mut_stack().pop_env()?;
                     return Err(e);
                 }
 
@@ -464,14 +464,13 @@ impl FunctionSource {
                             .stack()
                             .get(memory::RETURN_NAME, self.ast.as_source_range())
                             .ok()
-                            .cloned()
                             .map(KclValue::continue_)
                     })
             }
         };
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mod_local.stdlib_entry_source_range = prev_stdlib_entry_source_range;
-        exec_state.mut_stack().pop_env();
+        exec_state.mut_stack().pop_env()?;
 
         if should_track_operation {
             if let Some(mut op) = op {
@@ -510,7 +509,7 @@ impl FunctionSource {
 }
 
 impl FunctionBody {
-    fn prep_mem(&self, exec_state: &mut ExecState) {
+    fn prep_mem(&self, exec_state: &mut ExecState) -> Result<(), KclError> {
         match self {
             FunctionBody::Rust(_) => exec_state.mut_stack().push_new_root_env(true),
             FunctionBody::Kcl(memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
@@ -560,21 +559,18 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     match result {
         KclValue::Sketch { value } if !is_sketch_block => {
             for (name, tag) in value.tags.iter() {
-                if exec_state.stack().cur_frame_contains(name) {
+                if exec_state.stack().cur_frame_contains(name)? {
                     exec_state.mut_stack().update(name, |v, _| {
                         if let Some(existing_tag) = v.as_mut_tag() {
                             existing_tag.merge_info(tag);
                         }
-                    });
+                    })?;
                 } else {
-                    exec_state
-                        .mut_stack()
-                        .add(
-                            name.to_owned(),
-                            KclValue::TagIdentifier(Box::new(tag.clone())),
-                            SourceRange::default(),
-                        )
-                        .unwrap();
+                    exec_state.mut_stack().add(
+                        name.to_owned(),
+                        KclValue::TagIdentifier(Box::new(tag.clone())),
+                        SourceRange::default(),
+                    )?;
                 }
             }
         }
@@ -639,12 +635,12 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     // update the sketch tags.
                     sketch.merge_tags(Some(&tag_id).into_iter());
 
-                    if exec_state.stack().cur_frame_contains(&tag.name) {
+                    if exec_state.stack().cur_frame_contains(&tag.name)? {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
                             if let Some(existing_tag) = v.as_mut_tag() {
                                 existing_tag.merge_info(&tag_id);
                             }
-                        });
+                        })?;
                     } else if !is_sketch_block || !is_part_of_sketch {
                         // The above condition is saying that we add a tag to
                         // the stack in either of these cases:
@@ -655,14 +651,11 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         // part of the sketch. Instead, it's part of the solid,
                         // as in tagging a cap face `extrude(tagEnd, tagStart)`
                         // or chamfer face `chamfer(tag)`.
-                        exec_state
-                            .mut_stack()
-                            .add(
-                                tag.name.clone(),
-                                KclValue::TagIdentifier(Box::new(tag_id)),
-                                SourceRange::default(),
-                            )
-                            .unwrap();
+                        exec_state.mut_stack().add(
+                            tag.name.clone(),
+                            KclValue::TagIdentifier(Box::new(tag_id)),
+                            SourceRange::default(),
+                        )?;
                     }
                 }
             }
@@ -673,20 +666,17 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     return Ok(());
                 }
                 let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
-                let sketches_to_update: Vec<_> = exec_state
-                    .stack()
-                    .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
-                        _ => false,
-                    })
-                    .cloned()
-                    .collect();
+                let sketches_to_update: Vec<_> = exec_state.stack().find_keys_in_current_env(|v| match v {
+                    KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
+                    _ => false,
+                })?;
 
                 for k in sketches_to_update {
                     exec_state.mut_stack().update(&k, |v, _| {
-                        let sketch = v.as_mut_sketch().unwrap();
-                        sketch.merge_tags(sketch_tags.iter());
-                    });
+                        if let Some(sketch) = v.as_mut_sketch() {
+                            sketch.merge_tags(sketch_tags.iter());
+                        }
+                    })?;
                 }
             }
         }
@@ -988,7 +978,7 @@ fn type_check_params_kw(
                 .map(|(_, arg)| arg)
                 .chain(result.labeled.values())
             {
-                warn_if_value_consumed_for_deprecated_call(&arg.value, exec_state, arg.source_range, std_fn_name);
+                warn_if_value_consumed_for_deprecated_call(&arg.value, exec_state, arg.source_range, std_fn_name)?;
             }
         }
     }
@@ -1224,6 +1214,7 @@ mod test {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
+                execution_callbacks: Default::default(),
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();

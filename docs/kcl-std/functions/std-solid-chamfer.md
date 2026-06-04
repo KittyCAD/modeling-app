@@ -16,6 +16,7 @@ chamfer(
   angle?: number(Angle),
   tag?: TagDecl,
   legacyMethod?: bool,
+  version?: number(_),
 ): Solid
 ```
 
@@ -34,6 +35,7 @@ a sharp, straight transitional edge.
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This argument determines the angle between the two cut edges. Requires `length`, incompatible with `secondLength`. The valid range is 0deg < angle < 90deg. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this chamfer | No |
 | `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Experimental.** What version of the fillet algorithm to use. Defaults to 1. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). | No |
 
 ### Returns
 

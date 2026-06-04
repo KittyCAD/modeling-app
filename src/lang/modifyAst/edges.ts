@@ -1,11 +1,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createArrayExpression,
   createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
@@ -17,6 +18,9 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
@@ -25,6 +29,11 @@ import {
   locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import {
+  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
   ArtifactGraph,
@@ -37,23 +46,14 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
-  Selections,
   Selection,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getArtifactOfTypes,
-  getCodeRefsByArtifactId,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 export function addFillet({
   ast,
@@ -61,6 +61,7 @@ export function addFillet({
   selection,
   radius,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -69,6 +70,7 @@ export function addFillet({
   selection: Selections
   radius: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -118,6 +120,9 @@ export function addFillet({
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
@@ -125,10 +130,14 @@ export function addFillet({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
     const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
       createLabeledArg('tags', data.tagsExpr),
       createLabeledArg('radius', valueOrVariable(radius)),
       ...tagArgs,
+      ...versionArgs,
     ])
 
     const pathToNode = setCallInAst({
@@ -154,6 +163,7 @@ export function addChamfer({
   secondLength,
   angle,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -164,6 +174,7 @@ export function addChamfer({
   secondLength?: KclCommandValue
   angle?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -223,6 +234,9 @@ export function addChamfer({
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -236,6 +250,9 @@ export function addChamfer({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
 
     const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
       createLabeledArg('tags', data.tagsExpr),
@@ -243,6 +260,7 @@ export function addChamfer({
       ...secondLengthArgs,
       ...angleArgs,
       ...tagArgs,
+      ...versionArgs,
     ])
 
     const pathToNode = setCallInAst({
