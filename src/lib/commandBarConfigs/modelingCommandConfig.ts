@@ -90,6 +90,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import {
   type SweepRelativeTo,
@@ -292,6 +293,7 @@ export type ModelingCommandSchema = {
     selection: Selections // this is named 'tags' in the stdlib
     radius: KclCommandValue
     tag?: string
+    version?: KclCommandValue
   }
   Chamfer: {
     // Enables editing workflow
@@ -302,6 +304,7 @@ export type ModelingCommandSchema = {
     secondLength?: KclCommandValue
     angle?: KclCommandValue
     tag?: string
+    version?: KclCommandValue
   }
   'Offset plane': {
     // Enables editing workflow
@@ -2045,11 +2048,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Fillet']
+      const wasmInstance = await kclManager.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        commandArgs.version &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addFillet({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2085,6 +2106,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         // TODO: add validation like for Clone command
       },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '1',
+        required: false,
+        status: 'experimental',
+      },
     },
   },
   Chamfer: {
@@ -2101,11 +2130,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Chamfer']
+      const wasmInstance = await kclManager.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        commandArgs.version &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addChamfer({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2150,6 +2197,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'tagDeclarator',
         required: false,
         // TODO: add validation like for Clone command
+      },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '1',
+        required: false,
+        status: 'experimental',
       },
     },
   },
