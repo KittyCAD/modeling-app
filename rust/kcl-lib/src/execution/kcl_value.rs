@@ -56,7 +56,7 @@ pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[allow(clippy::large_enum_variant)]
+#[expect(clippy::large_enum_variant)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {

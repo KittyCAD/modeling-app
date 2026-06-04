@@ -224,7 +224,7 @@ async fn inner_chamfer(
     Ok(solid)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(clippy::too_many_arguments)]
 async fn inner_chamfer_with_engine_refs(
     solid: Box<Solid>,
     length: TyF64,
