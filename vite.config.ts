@@ -64,6 +64,7 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       outDir: 'build',
+      target: 'es2022',
     },
     resolve: {
       alias: {
