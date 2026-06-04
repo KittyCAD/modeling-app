@@ -1870,6 +1870,37 @@ impl FrontendState {
         }
     }
 
+    pub async fn hack_set_program_mock(
+        &mut self,
+        ctx: &ExecutorContext,
+        program: Program,
+        mock_config: &MockConfig,
+    ) -> ExecResult<SetProgramOutcome> {
+        self.program = program.clone();
+        self.point_freedom_cache.clear();
+
+        match ctx.run_mock(&program, mock_config).await {
+            Ok(outcome) => {
+                let outcome = self.update_state_after_exec(outcome, true);
+                let checkpoint_id = self
+                    .create_sketch_checkpoint(outcome.clone())
+                    .await
+                    .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.msg)))?;
+                Ok(SetProgramOutcome::Success {
+                    scene_graph: Box::new(self.scene_graph_for_ui()),
+                    exec_outcome: Box::new(outcome),
+                    checkpoint_id: Some(checkpoint_id),
+                })
+            }
+            Err(mut err) => {
+                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                self.update_state_after_exec(outcome, true);
+                err.scene_graph = Some(self.scene_graph_for_ui());
+                Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
+            }
+        }
+    }
+
     /// Decorate engine execution such that our state is updated and the scene
     /// graph is added to the return.
     pub async fn engine_execute(
