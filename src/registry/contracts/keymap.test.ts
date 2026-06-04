@@ -12,6 +12,7 @@ import {
   createKeymapTreeFromContributions,
   findKeymapItemForCommand,
   matchKeymapKeystrokes,
+  normalizeEventKey,
   normalizeKeymapChord,
 } from '@src/registry/contracts/keymap'
 import { describe, expect, it } from 'vitest'
@@ -30,6 +31,36 @@ describe('keymap contract', () => {
       type: 'full',
       item,
     })
+  })
+
+  it('normalizes modified keyboard events from their unmodified key code', () => {
+    expect(
+      normalizeEventKey({
+        key: '\u2202',
+        code: 'KeyD',
+        altKey: true,
+        ctrlKey: false,
+        metaKey: false,
+      })
+    ).toBe('d')
+    expect(
+      normalizeEventKey({
+        key: '!',
+        code: 'Digit1',
+        altKey: false,
+        ctrlKey: true,
+        metaKey: false,
+      })
+    ).toBe('1')
+    expect(
+      normalizeEventKey({
+        key: '<',
+        code: 'Comma',
+        altKey: false,
+        ctrlKey: false,
+        metaKey: true,
+      })
+    ).toBe(',')
   })
 
   it('returns prefix matches for keymap keystrokes', () => {

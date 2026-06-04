@@ -2087,6 +2087,82 @@ const prepareToEditGdtCircularity: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtCylindricity: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Cylindricity',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Cylindricity'] = {
+    objects: { graphSelections, otherSelections: [] },
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -2775,6 +2851,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Circularity',
     icon: 'gdtCircularity',
     prepareToEdit: prepareToEditGdtCircularity,
+  },
+  'gdt::cylindricity': {
+    label: 'Cylindricity',
+    icon: 'gdtCylindricity',
+    prepareToEdit: prepareToEditGdtCylindricity,
   },
   'gdt::position': {
     label: 'Position',

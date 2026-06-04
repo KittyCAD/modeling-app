@@ -34,6 +34,7 @@ import {
   keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
+  normalizeEventKey,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -436,7 +437,7 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
     return null
   }
 
-  const key = normalizeEventKey(event.key)
+  const key = normalizeEventKey(event)
   if (!key) {
     return null
   }
@@ -464,19 +465,6 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
   parts.push(key)
 
   return parts.join('+')
-}
-
-function normalizeEventKey(key: string) {
-  if (key.length === 1) {
-    return key.toLowerCase()
-  }
-
-  const normalized = key.toLowerCase()
-  if (normalized === ' ') {
-    return 'space'
-  }
-
-  return normalized
 }
 
 function isModifierKey(key: string) {
