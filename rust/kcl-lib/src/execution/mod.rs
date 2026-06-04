@@ -36,6 +36,8 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::id::ModelingCmdId;
 use kittycad_modeling_cmds::{self as kcmc};
 pub use memory::EnvironmentRef;
+#[cfg(test)]
+pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::Deserialize;
 use serde::Serialize;
@@ -1173,7 +1175,10 @@ impl ExecutorContext {
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        exec_state.mut_stack().push_new_root_env(true);
+        exec_state
+            .mut_stack()
+            .push_new_root_env(true)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         Ok(())
     }
 
@@ -1234,7 +1239,10 @@ impl ExecutorContext {
 
         // Push a scope so that old variables can be overwritten (since we might be re-executing some
         // part of the scene).
-        exec_state.mut_stack().push_new_env_for_scope();
+        exec_state
+            .mut_stack()
+            .push_new_env_for_scope()
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
@@ -1248,9 +1256,12 @@ impl ExecutorContext {
         let id_to_source = exec_state.global.id_to_source.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
-        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        let outcome = exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        stack.squash_env(result.0);
+        stack.squash_env(result.0).map_err(KclErrorWithOutputs::no_outputs)?;
         let state = cache::SketchModeState {
             stack,
             module_infos,
@@ -1366,8 +1377,16 @@ impl ExecutorContext {
 
                             if !clear_scene {
                                 // Return early we don't need to clear the scene.
-                                cache::write_old_memory(cached_state.mock_memory_state()).await;
-                                return Ok(cached_state.into_exec_outcome(self).await);
+                                cache::write_old_memory(
+                                    cached_state
+                                        .mock_memory_state()
+                                        .map_err(KclErrorWithOutputs::no_outputs)?,
+                                )
+                                .await;
+                                return cached_state
+                                    .into_exec_outcome(self)
+                                    .await
+                                    .map_err(KclErrorWithOutputs::no_outputs);
                             }
 
                             (
@@ -1400,14 +1419,30 @@ impl ExecutorContext {
                             ))
                             .await;
 
-                            cache::write_old_memory(cached_state.mock_memory_state()).await;
-                            return Ok(cached_state.into_exec_outcome(self).await);
+                            cache::write_old_memory(
+                                cached_state
+                                    .mock_memory_state()
+                                    .map_err(KclErrorWithOutputs::no_outputs)?,
+                            )
+                            .await;
+                            return cached_state
+                                .into_exec_outcome(self)
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs);
                         }
                         (true, program, None)
                     }
                     CacheResult::NoAction(false) => {
-                        cache::write_old_memory(cached_state.mock_memory_state()).await;
-                        return Ok(cached_state.into_exec_outcome(self).await);
+                        cache::write_old_memory(
+                            cached_state
+                                .mock_memory_state()
+                                .map_err(KclErrorWithOutputs::no_outputs)?,
+                        )
+                        .await;
+                        return cached_state
+                            .into_exec_outcome(self)
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs);
                     }
                 };
 
@@ -1446,7 +1481,10 @@ impl ExecutorContext {
                     }
                     None => {
                         let mut exec_state = cached_state.reconstitute_exec_state(self);
-                        exec_state.mut_stack().restore_env(cached_state.main.result_env);
+                        exec_state
+                            .mut_stack()
+                            .restore_env(cached_state.main.result_env)
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
                             .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
@@ -1490,7 +1528,10 @@ impl ExecutorContext {
         ))
         .await;
 
-        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        let outcome = exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         Ok(outcome)
     }
 
@@ -1797,12 +1838,16 @@ impl ExecutorContext {
 
         /// Write the memory of an execution to the cache for reuse in mock
         /// execution.
-        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+        async fn write_old_memory(
+            ctx: &ExecutorContext,
+            exec_state: &ExecState,
+            env_ref: EnvironmentRef,
+        ) -> Result<(), KclError> {
             if ctx.is_mock() {
-                return;
+                return Ok(());
             }
-            let mut stack = exec_state.stack().deep_clone();
-            stack.restore_env(env_ref);
+            let mut stack = exec_state.stack().deep_clone()?;
+            stack.restore_env(env_ref)?;
             let state = cache::SketchModeState {
                 stack,
                 module_infos: exec_state.global.module_infos.clone(),
@@ -1812,6 +1857,7 @@ impl ExecutorContext {
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
             };
             cache::write_old_memory(state).await;
+            Ok(())
         }
 
         let env_ref = match result {
@@ -1820,13 +1866,17 @@ impl ExecutorContext {
                 // Preserve memory on execution failures so follow-up mock
                 // execution can still reuse stable IDs before the error.
                 if let Some(env_ref) = env_ref {
-                    write_old_memory(self, exec_state, env_ref).await;
+                    write_old_memory(self, exec_state, env_ref)
+                        .await
+                        .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
                 }
                 return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
             }
         };
 
-        write_old_memory(self, exec_state, env_ref).await;
+        write_old_memory(self, exec_state, env_ref)
+            .await
+            .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
 
         let session_data = self.engine.get_session_data().await;
 
@@ -1938,7 +1988,7 @@ impl ExecutorContext {
                 .await?;
             let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 
-            exec_state.mut_stack().memory.set_std(module_memory);
+            exec_state.mut_stack().memory.set_std(module_memory)?;
 
             // Operations generated by the prelude are not useful, so clear them
             // out.
@@ -2208,7 +2258,264 @@ mod tests {
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
-        memory.memory.get_from_unchecked(name, env).unwrap().to_owned()
+        memory.memory.get_from_unchecked(name, env).unwrap()
+    }
+
+    async fn execute_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        execute_outcome_with_backend(code, backend).await.variables
+    }
+
+    async fn execute_outcome_with_backend(code: &str, backend: memory::MemoryBackendKind) -> ExecOutcome {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("test execution outcome should collect variables");
+        ctx.close().await;
+        outcome
+    }
+
+    async fn execute_error_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let error = ctx.run(&program, &mut exec_state).await.unwrap_err();
+        ctx.close().await;
+        error.variables
+    }
+
+    async fn execute_project_variables_with_backend(
+        main_code: &str,
+        files: &[(&str, &str)],
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
+        for (name, contents) in files {
+            tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
+        }
+
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine_batch: EngineBatchContext::default(),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            settings: ExecutorSettings {
+                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("test execution outcome should collect variables");
+        ctx.close().await;
+        outcome.variables
+    }
+
+    async fn run_with_caching_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let _backend = memory::MemoryBackendKind::override_for_test(backend);
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_with_engine(
+            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let cached = ctx.run_with_caching(program).await.unwrap();
+
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
+        cached.variables
+    }
+
+    async fn run_mock_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValue> {
+        let _backend = memory::MemoryBackendKind::override_for_test(backend);
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let first = crate::Program::parse_no_errs("x = 2").unwrap();
+        ctx.run_mock(
+            &first,
+            &MockConfig {
+                use_prev_memory: false,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        outcome.variables
+    }
+
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValue>) -> Vec<String> {
+        let mut keys = variables.keys().cloned().collect::<Vec<_>>();
+        keys.sort();
+        keys
+    }
+
+    fn assert_number_variable(variables: &IndexMap<String, KclValue>, key: &str, expected: f64) {
+        let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
+        assert_eq!(value.as_f64().unwrap(), expected, "{key}: {value:?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exec_outcome_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = x + 1\narr = [x, y]";
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["arr", "x", "y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_output_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = missing + 1";
+
+        let legacy = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["x"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = x + 1";
+
+        let legacy = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["x", "y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_variables_match_between_memory_backends() {
+        let code = "y = x + 1";
+
+        let legacy = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn module_imports_and_exported_closures_match_between_memory_backends() {
+        let module_code = r#"
+export base = 40
+
+export fn addBase(n) {
+  return n + base
+}
+"#;
+        let main_code = r#"
+import base, addBase from 'math.kcl'
+import 'math.kcl'
+
+named = addBase(n = 2)
+qualified = math::addBase(n = 1)
+direct = math::base
+"#;
+
+        let legacy = execute_project_variables_with_backend(
+            main_code,
+            &[("math.kcl", module_code)],
+            memory::MemoryBackendKind::Legacy,
+        )
+        .await;
+        let arena = execute_project_variables_with_backend(
+            main_code,
+            &[("math.kcl", module_code)],
+            memory::MemoryBackendKind::Arena,
+        )
+        .await;
+
+        assert_number_variable(&legacy, "named", 42.0);
+        assert_number_variable(&legacy, "qualified", 41.0);
+        assert_number_variable(&legacy, "direct", 40.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_variables_match_between_memory_backends() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [1, 0])
+  line2 = line(start = [1, 0], end = [0, 1])
+}
+lineCount = 2
+"#;
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert!(legacy.contains_key("sketch001"), "actual: {legacy:?}");
+        assert_number_variable(&legacy, "lineCount", 2.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_call_stack_lookup_matches_between_memory_backends() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+
+segLength = segLen(seg01)
+"#;
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_number_variable(&legacy, "segLength", 10.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_transpiler_exec_outcome_variables_match_between_memory_backends() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let legacy = execute_outcome_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_outcome_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        let legacy_transpiled = transpile_old_sketch_to_new(&legacy, &program, "sketch001").unwrap();
+        let arena_transpiled = transpile_old_sketch_to_new(&arena, &program, "sketch001").unwrap();
+        assert_eq!(arena_transpiled, legacy_transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3714,7 +4021,10 @@ fillet(solid001, radius = 0.1, tags = yoyo)
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
-        let outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("constraint report test outcome should collect variables");
         let report = outcome.sketch_constraint_report();
         ctx.close().await;
         report

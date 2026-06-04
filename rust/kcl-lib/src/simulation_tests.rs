@@ -84,13 +84,19 @@ impl ExecState {
         let (outcome, responses) = {
             let mut exec_state = self;
             let responses = Some(exec_state.take_root_module_responses());
-            let outcome = exec_state.into_exec_outcome(main_ref, ctx).await;
+            let outcome = exec_state
+                .into_exec_outcome(main_ref, ctx)
+                .await
+                .expect("simulation test execution outcome should collect variables");
             (outcome, responses)
         };
         #[cfg(not(feature = "snapshot-engine-responses"))]
         let (outcome, responses) = {
             let responses = None;
-            let outcome = self.into_exec_outcome(main_ref, ctx).await;
+            let outcome = self
+                .into_exec_outcome(main_ref, ctx)
+                .await
+                .expect("simulation test execution outcome should collect variables");
             (outcome, responses)
         };
         (outcome, module_state, responses)
