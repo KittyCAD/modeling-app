@@ -103,6 +103,21 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
+async function waitForAppStart(page: Page) {
+  const startSketchButton = page.getByRole('button', { name: 'Start Sketch' })
+  const homeSection = page.getByTestId('home-section')
+
+  await expect(startSketchButton.or(homeSection)).toBeVisible({
+    timeout: 20_000,
+  })
+
+  if (await startSketchButton.isVisible()) {
+    await expect(startSketchButton).toBeEnabled({
+      timeout: 20_000,
+    })
+  }
+}
+
 async function removeCurrentCode(page: Page) {
   // First, hover the element in case the current mouse position is in the way
   await page.mouse.move(0, 0)
@@ -392,12 +407,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForPageLoad(page)
+      await waitForAppStart(page)
     }
   }
 
   await page.goto('/')
-  await waitForPageLoad(page)
+  await waitForAppStart(page)
   return waitForLspPromise
 }
 

@@ -146,6 +146,11 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeEnabled({
+      timeout: 20_000,
+    })
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })

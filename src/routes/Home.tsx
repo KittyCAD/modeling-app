@@ -1,3 +1,4 @@
+import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
@@ -36,11 +37,13 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { opfsCloudSyncStatus } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
@@ -71,7 +74,7 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import type { ActorRefFrom } from 'xstate'
+import { type ActorRefFrom, waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -148,6 +151,37 @@ const Home = () => {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
+
+  useEffect(() => {
+    let disposed = false
+    let lastHandledSyncedAt: string | undefined
+
+    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
+      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
+        return
+      }
+
+      lastHandledSyncedAt = syncedAt
+      void waitFor(systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+        .then(() => {
+          if (disposed || lastHandledSyncedAt !== syncedAt) {
+            return
+          }
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        })
+        .catch(reportRejection)
+    })
+
+    return () => {
+      disposed = true
+      disposeCloudSyncRefreshEffect()
+    }
+  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -576,6 +610,11 @@ function ProjectGrid({
   const state = useSystemIOState()
   const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
+  const loadingMore = isReadingFolders ? (
+    <div className="py-4">
+      <Loading isDummy={true}>Loading more projects...</Loading>
+    </div>
+  ) : null
 
   return (
     <section data-testid="home-section" {...rest}>
@@ -584,41 +623,28 @@ function ProjectGrid({
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <>
-              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {sortedSearchResults.map((project) => (
-                  <ProjectCard
-                    key={project.name}
-                    project={project}
-                    handleRenameProject={handleRenameProject}
-                    handleDeleteProject={handleDeleteProject(systemIOActor)}
-                  />
-                ))}
-              </ul>
-              {isReadingFolders && (
-                <div className="py-4">
-                  <Loading isDummy={true}>Loading more projects...</Loading>
-                </div>
-              )}
-            </>
+            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {sortedSearchResults.map((project) => (
+                <ProjectCard
+                  key={project.name}
+                  project={project}
+                  handleRenameProject={handleRenameProject}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
+                />
+              ))}
+            </ul>
           ) : (
-            <>
-              <p
-                data-testid="projects-none"
-                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-              >
-                No projects found
-                {projects !== undefined && projects.length === 0
-                  ? ', ready to make your first one?'
-                  : ` with the search term "${query}"`}
-              </p>
-              {isReadingFolders && (
-                <div className="py-4">
-                  <Loading isDummy={true}>Loading more projects...</Loading>
-                </div>
-              )}
-            </>
+            <p
+              data-testid="projects-none"
+              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+            >
+              No projects found
+              {projects !== undefined && projects.length === 0
+                ? ', ready to make your first one?'
+                : ` with the search term "${query}"`}
+            </p>
           )}
+          {loadingMore}
         </>
       )}
     </section>
@@ -647,12 +673,16 @@ function handleRenameProject(
       new FormData(e.target as HTMLFormElement)
     )
 
-    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+    if (
+      !project.cloudProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName.startsWith('.')
+    ) {
       toast.error('Project names cannot start with a period.')
       return
     }
 
-    if (newProjectName !== project.name) {
+    if (newProjectName !== getProjectDisplayName(project)) {
       systemIOActor.send({
         type: SystemIOMachineEvents.renameProject,
         data: {

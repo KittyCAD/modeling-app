@@ -5,6 +5,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  getCloudProjectFolderRenameName,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
@@ -54,7 +55,31 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
-  describe('project folder loading', () => {
+  describe('cloud-backed project folder names', () => {
+    it('uses a title-derived folder name when it is available', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [mockProject('Some demo 2')],
+        })
+      ).toBe('Some demo')
+    })
+
+    it('adds numeric suffixes when title-derived folder names already exist', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [
+            mockProject('Some demo'),
+            mockProject('Some demo-2'),
+            mockProject('Some demo 2'),
+          ],
+        })
+      ).toBe('Some demo-3')
+    })
+
     it('only emits folder read progress for initial loads', () => {
       expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
       expect(shouldSendProjectFolderReadProgress([])).toBe(true)

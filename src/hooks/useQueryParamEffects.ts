@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
 import type { KclManager } from '@src/lang/KclManager'
@@ -25,8 +25,10 @@ import {
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
+import { ensureOpfsCloudProjectLocallySynced } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
+import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -55,6 +57,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
   const { auth, commands } = app
   const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
   // only deal with other params after user decided to open in desktop or web.
@@ -121,6 +124,24 @@ export function useQueryParamEffects(kclManager: KclManager) {
       // original query-param route and reopen the project default file.
       await waitForIdleState({ systemIOActor: app.systemIOActor })
       if (cancelled) {
+        return
+      }
+
+      const localCloudProject = await ensureOpfsCloudProjectLocallySynced(
+        projectId
+      ).catch(() => undefined)
+      if (cancelled) {
+        return
+      }
+      if (localCloudProject) {
+        app.systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+        void navigate(
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            localCloudProject.projectPath
+          )}`
+        )
         return
       }
 

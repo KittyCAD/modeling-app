@@ -14,7 +14,7 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { APP_NAME } from '@src/lib/constants'
+import { APP_NAME, OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
@@ -27,6 +27,16 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   file?: FileEntry
 }
 
+export function canNavigateHome({
+  isDesktopApp,
+  hasOpfsCloudFeature,
+}: {
+  isDesktopApp: boolean
+  hasOpfsCloudFeature: boolean
+}) {
+  return isDesktopApp || hasOpfsCloudFeature
+}
+
 const ProjectSidebarMenu = ({
   project,
   file,
@@ -37,14 +47,33 @@ const ProjectSidebarMenu = ({
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset =
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
+  const { userFeatures } = useApp()
+  const hasOpfsCloudFeature = userFeatures.useHas(
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
+  )
+  const homeNavigationEnabled = canNavigateHome({
+    isDesktopApp: isDesktop(),
+    hasOpfsCloudFeature,
+  })
   return (
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home">
-        <AppLogoLink project={project} file={file} />
-        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
+        <AppLogoLink
+          project={project}
+          file={file}
+          enabled={homeNavigationEnabled}
+        />
+        {homeNavigationEnabled && (
+          <Tooltip position="bottom-left">Go home</Tooltip>
+        )}
       </div>
       {enableMenu ? (
-        <ProjectMenuPopover project={project} file={file} />
+        <ProjectMenuPopover
+          project={project}
+          file={file}
+          homeNavigationEnabled={homeNavigationEnabled}
+        />
       ) : (
         <span
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
@@ -61,9 +90,11 @@ const ProjectSidebarMenu = ({
 function AppLogoLink({
   project,
   file,
+  enabled,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  enabled: boolean
 }) {
   const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
@@ -71,7 +102,7 @@ function AppLogoLink({
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  if (!window.electron) {
+  if (!enabled) {
     return (
       <div
         data-testid="app-logo"
@@ -102,9 +133,11 @@ function AppLogoLink({
 function ProjectMenuPopover({
   project,
   file,
+  homeNavigationEnabled,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  homeNavigationEnabled: boolean
 }) {
   const { machineManager, commands, settings } = useApp()
   const { kclManager } = useSingletons()
@@ -252,7 +285,7 @@ function ProjectMenuPopover({
           id: 'go-home',
           Element: 'button',
           children: 'Go to Home',
-          className: !isDesktop() ? 'hidden' : '',
+          className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             kclManager.switchedFiles = true
@@ -273,6 +306,7 @@ function ProjectMenuPopover({
       kclManager.engineCommandManager,
       onProjectClose,
       isDesktop,
+      homeNavigationEnabled,
     ]
   )
 

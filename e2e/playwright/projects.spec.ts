@@ -1101,8 +1101,11 @@ test(
 
     // Find the current file.
     const filesPane = page.locator('#files-pane')
+    const filePaneScroll = page.getByTestId('file-pane-scroll-container')
     // Open the directory
-    await page.getByText('nested').click()
+    await filePaneScroll
+      .getByRole('treeitem', { name: 'nested', exact: true })
+      .click()
     // See the bracket
     await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
 
