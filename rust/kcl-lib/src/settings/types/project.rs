@@ -76,6 +76,12 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
+
+    /// Human-facing project title.
+    ///
+    /// This can differ from the local project directory name.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
 }
 
 /// Cloud-backed project metadata.
@@ -277,7 +283,10 @@ mod tests {
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
+                meta: ProjectMetaSettings {
+                    id: uuid::Uuid::nil(),
+                    title: None,
+                },
                 app: ProjectAppSettings {
                     stream_idle_mode: false,
                     zookeeper_mode: None,
@@ -362,7 +371,10 @@ mod tests {
 
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings { id: local_project_id },
+                meta: ProjectMetaSettings {
+                    id: local_project_id,
+                    title: Some("Bracket".to_owned()),
+                },
                 ..Default::default()
             },
             cloud: ProjectCloudSettings {
@@ -391,6 +403,7 @@ mod tests {
             "[cloud.\"dev.zoo.dev\"]\nproject_id = \"{dev_cloud_project_id}\"\n"
         )));
         assert!(serialized.contains(&format!("[settings.meta]\nid = \"{local_project_id}\"\n")));
+        assert!(serialized.contains("title = \"Bracket\""));
 
         let parsed = ProjectConfiguration::parse_and_validate(&serialized).unwrap();
         assert_eq!(parsed, conf);
