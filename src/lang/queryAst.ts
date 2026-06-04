@@ -1934,18 +1934,6 @@ export function findAllChildrenAndOrderByPlaceInCode(
     }
   }
 
-  const pushReferencingCompositeSolids = (currentId: string) => {
-    for (const [artifactId, artifact] of artifactGraph) {
-      if (
-        artifact.type === 'compositeSolid' &&
-        (artifact.solidIds.includes(currentId) ||
-          artifact.toolIds.includes(currentId))
-      ) {
-        pushToSomething(currentId, artifactId)
-      }
-    }
-  }
-
   while (stack.length > 0) {
     const currentId = stack.pop()!
     if (result.has(currentId)) continue
@@ -1959,7 +1947,6 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current.surfaceIds)
       pushToSomething(currentId, current.pathId)
       pushToSomething(currentId, current.patternIds)
-      pushReferencingCompositeSolids(currentId)
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
@@ -1974,7 +1961,6 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'compositeSolid') {
       pushToSomething(currentId, current.compositeSolidId)
       pushToSomething(currentId, current.patternIds)
-      pushReferencingCompositeSolids(currentId)
     } else if (current?.type === 'pattern') {
       pushToSomething(currentId, current.copyIds)
       pushToSomething(currentId, current.copyFaceIds)
