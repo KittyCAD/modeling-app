@@ -13,6 +13,8 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { BillingContext } from '@src/machines/billingMachine'
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
+
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
@@ -40,8 +42,8 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
       <Popover.Panel className="absolute right-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
         <BillingDialog
           upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-          upgradeClick={openExternalBrowserIfDesktop()}
-          accountClick={openExternalBrowserIfDesktop()}
+          accountHref={withSiteBaseURL('/account/billing')}
+          billingClick={openBillingLinkExternally}
           error={props.billingContext.error}
           balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}

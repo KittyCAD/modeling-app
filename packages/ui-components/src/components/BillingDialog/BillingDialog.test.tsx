@@ -15,29 +15,35 @@ const userPaymentBalance = {
 } satisfies CustomerBalance
 
 test('Shows account billing action when total due is positive', () => {
-  const accountClick = vi.fn()
+  const billingClick = vi.fn()
   const { queryByTestId } = render(
     <BillingDialog
       upgradeHref="https://zoo.dev/design-studio-pricing"
+      accountHref="https://dev.zoo.dev/account/billing"
       balance={8}
       allowance={20}
-      accountClick={accountClick}
+      billingClick={billingClick}
       userPaymentBalance={userPaymentBalance}
     />
   )
 
   const accountButton = queryByTestId('billing-account-button')
   expect(accountButton).toBeVisible()
+  expect(accountButton).toHaveAttribute(
+    'href',
+    'https://dev.zoo.dev/account/billing'
+  )
   expect(queryByTestId('billing-upgrade-button')).toBeNull()
 
   fireEvent.click(accountButton!)
-  expect(accountClick).toHaveBeenCalledOnce()
+  expect(billingClick).toHaveBeenCalledOnce()
 })
 
 test('Shows upgrade action when total due is zero', () => {
   const { queryByTestId } = render(
     <BillingDialog
       upgradeHref="https://zoo.dev/design-studio-pricing"
+      accountHref="https://zoo.dev/account/billing"
       balance={8}
       allowance={20}
       userPaymentBalance={{

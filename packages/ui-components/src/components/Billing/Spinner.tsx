@@ -6,7 +6,10 @@ export function Spinner({ className, ...props }: SVGProps<SVGSVGElement>) {
     <svg
       data-testid="spinner"
       viewBox="0 0 10 10"
-      className={classNames('kc-billing-spinner', className)}
+      className={classNames(
+        'inline-block h-8 w-8 origin-center animate-spin text-current',
+        className
+      )}
       {...props}
     >
       <title>spinner</title>

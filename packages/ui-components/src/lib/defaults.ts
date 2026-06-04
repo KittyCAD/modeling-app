@@ -1,3 +1,5 @@
+// Package-level defaults only. App call sites should pass environment-aware
+// URLs via withSiteBaseURL() when links need to follow dev/prod infra.
 const SITE = 'https://zoo.dev'
 
 export const paths = {

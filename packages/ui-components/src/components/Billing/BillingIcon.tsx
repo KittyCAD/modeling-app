@@ -57,5 +57,10 @@ export function BillingIcon({
 }: { name: BillingIconName } & SVGProps<SVGSVGElement>) {
   const Icon = iconComponents[name]
 
-  return <Icon className={`kc-billing-icon ${className ?? ''}`} {...props} />
+  return (
+    <Icon
+      className={`block h-5 w-5 text-current ${className ?? ''}`}
+      {...props}
+    />
+  )
 }

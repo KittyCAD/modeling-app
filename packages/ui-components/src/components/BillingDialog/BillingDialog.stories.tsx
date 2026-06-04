@@ -32,6 +32,7 @@ const meta = {
   ],
   args: {
     upgradeHref: 'https://zoo.dev/design-studio-pricing',
+    accountHref: 'https://zoo.dev/account/billing',
     balance: 8,
     allowance: 20,
   },

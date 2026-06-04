@@ -364,8 +364,8 @@ const Home = () => {
                 <div className="my-2">
                   <BillingDialog
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openBillingLinkExternally}
-                    accountClick={openBillingLinkExternally}
+                    accountHref={withSiteBaseURL('/account/billing')}
+                    billingClick={openBillingLinkExternally}
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}
