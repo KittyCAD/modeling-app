@@ -1209,7 +1209,8 @@ export function getVariableExprsFromSelection(
       s,
       artifactGraph,
       ast,
-      wasmInstance
+      wasmInstance,
+      nodeToEdit
     )
     if (sweepOutputExpr) {
       const key = outputExprKey(sweepOutputExpr)
@@ -1413,7 +1414,8 @@ function getSweepOutputExprFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
 ): Expr | null {
   const selectionArtifact = selection.artifact
   let artifact: (Artifact & { type: 'sweep' }) | undefined
@@ -1427,6 +1429,19 @@ function getSweepOutputExprFromSelection(
   }
 
   if (!artifact) {
+    return null
+  }
+
+  if (
+    nodeToEdit &&
+    [
+      getNodePathFromSourceRange(ast, artifact.codeRef.range),
+      artifact.codeRef.pathToNode,
+    ].some(
+      (pathToNode) =>
+        stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
+    )
+  ) {
     return null
   }
 
