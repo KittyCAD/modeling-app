@@ -1,4 +1,4 @@
-import { use, useEffect, useMemo, useRef } from 'react'
+import { use, useCallback, useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -32,28 +32,69 @@ function CommandBarPathInput({
   const commandBarState = commands.useState()
   useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
+  const hasUserEditedRef = useRef(false)
+  const [value, setValue] = useState('')
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
   )
-  const defaultValue = useMemo(
-    () =>
-      arg.defaultValue
-        ? arg.defaultValue instanceof Function
+  const resolveDefaultValue = useCallback(
+    async () => {
+      const submittedValue = commandBarState.context.argumentsToSubmit[arg.name]
+      if (submittedValue !== undefined) {
+        const value =
+          submittedValue instanceof Function
+            ? submittedValue(
+                commandBarState.context,
+                argMachineContext,
+                wasmInstance
+              )
+            : submittedValue
+        return String((await value) ?? '')
+      }
+
+      if (!arg.defaultValue) {
+        return ''
+      }
+
+      const defaultValue =
+        arg.defaultValue instanceof Function
           ? arg.defaultValue(
               commandBarState.context,
               argMachineContext,
               wasmInstance
             )
           : arg.defaultValue
-        : '',
+
+      return String((await defaultValue) ?? '')
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [arg.defaultValue, commandBarState.context, argMachineContext, wasmInstance]
   )
+  const opensDirectory =
+    arg.openDialogProperties?.includes('openDirectory') ?? false
+
+  useEffect(() => {
+    let cancelled = false
+
+    resolveDefaultValue()
+      .then((defaultValue) => {
+        if (cancelled || hasUserEditedRef.current) {
+          return
+        }
+
+        setValue(defaultValue)
+      })
+      .catch(reportRejection)
+
+    return () => {
+      cancelled = true
+    }
+  }, [resolveDefaultValue])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    onSubmit(inputRef.current?.value)
+    onSubmit(value)
   }
 
   async function pickFileThroughNativeDialog() {
@@ -61,12 +102,17 @@ function CommandBarPathInput({
     // so we seed the new directory value in the element's dataset
     const inputRefVal = inputRef.current?.dataset.testValue
     if (inputRef.current && inputRefVal && !isArray(inputRefVal)) {
-      inputRef.current.value = inputRefVal
+      hasUserEditedRef.current = true
+      setValue(inputRefVal)
     } else if (inputRef.current) {
+      const defaultPath = value || (await resolveDefaultValue())
       const configuration: OpenDialogOptions = {
         properties: arg.openDialogProperties ?? ['openFile'],
         title:
           arg.openDialogTitle ?? 'Pick a file to load into the current project',
+      }
+      if (defaultPath) {
+        configuration.defaultPath = defaultPath
       }
 
       if (arg.filters) {
@@ -80,7 +126,8 @@ function CommandBarPathInput({
       if (newPath.canceled) {
         return
       }
-      inputRef.current.value = newPath.filePaths[0]
+      hasUserEditedRef.current = true
+      setValue(newPath.filePaths[0])
     } else {
       return new Error("Couldn't find inputRef")
     }
@@ -113,7 +160,11 @@ function CommandBarPathInput({
           required
           className="flex-grow px-2 py-1 !bg-transparent focus:outline-none"
           placeholder="Enter a path"
-          defaultValue={defaultValue}
+          value={value}
+          onChange={(event) => {
+            hasUserEditedRef.current = true
+            setValue(event.currentTarget.value)
+          }}
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
@@ -126,12 +177,12 @@ function CommandBarPathInput({
           className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
           data-testid="cmd-bar-arg-file-button"
           iconEnd={{
-            icon: 'file',
+            icon: opensDirectory ? 'folder' : 'file',
             size: 'sm',
             className: 'p-1',
           }}
         >
-          Open file
+          {opensDirectory ? 'Open folder' : 'Open file'}
         </ActionButton>
       </label>
     </form>

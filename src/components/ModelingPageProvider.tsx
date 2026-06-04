@@ -210,7 +210,6 @@ export const ModelingPageProvider = ({
     filePath,
     kclManager,
     navigate,
-    settings: settingsValues,
     settingsActor,
   })
   useMenuListener(cb)

@@ -7,10 +7,16 @@ export function evaluateCommandBarArg(
   commandBarContext: CommandBarContext
 ) {
   const argumentsToSubmit = commandBarContext.argumentsToSubmit
-  const value =
+  const resolvedValue =
     typeof argumentsToSubmit[name] === 'function'
       ? argumentsToSubmit[name](commandBarContext)
       : argumentsToSubmit[name]
+  const value =
+    resolvedValue &&
+    typeof resolvedValue === 'object' &&
+    'then' in resolvedValue
+      ? undefined
+      : resolvedValue
   const isHidden =
     typeof arg.hidden === 'function'
       ? arg.hidden(commandBarContext)

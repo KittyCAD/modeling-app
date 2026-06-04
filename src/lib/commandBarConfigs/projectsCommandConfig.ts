@@ -1,5 +1,6 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { getInitialProjectDirectoryPath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -8,10 +9,15 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
+  'Create project': {
+    name: string
+    parentDirectory?: string
+  }
   'Import file from URL': {
     name: string
     code?: string
     method: 'newProject' | 'existingProject'
+    parentDirectory?: string
     projectName?: string
   }
 }
@@ -35,6 +41,17 @@ export function createProjectCommands({
   const defaultProjectFolderNameSnapshot = () => {
     const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
     return defaultProjectFolderName
+  }
+  const defaultProjectDirectoryPath = async (
+    _commandBarContext: ContextFrom<typeof commandBarMachine>,
+    _machineContext?: ContextFrom<typeof systemIOMachine>,
+    wasmInstance?: Parameters<typeof getInitialProjectDirectoryPath>[0]
+  ) => {
+    if (!isDesktop()) {
+      return ''
+    }
+
+    return getInitialProjectDirectoryPath(wasmInstance)
   }
 
   const openProjectCommand: Command = {
@@ -75,14 +92,30 @@ export function createProjectCommands({
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
-      if (record) {
+      if (record?.name) {
         systemIOActor.send({
           type: SystemIOMachineEvents.createProject,
-          data: { requestedProjectName: record.name },
+          data: {
+            requestedProjectName: String(record.name),
+            requestedProjectDirectoryPath: record.parentDirectory
+              ? String(record.parentDirectory)
+              : undefined,
+          },
         })
       }
     },
     args: {
+      parentDirectory: {
+        required: () => isDesktop(),
+        hidden: () => !isDesktop(),
+        skip: true,
+        inputType: 'path',
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Choose where to create the project',
+        defaultValue: defaultProjectDirectoryPath,
+        displayName: 'Parent folder',
+      },
       name: {
         required: true,
         inputType: 'string',
@@ -205,6 +238,10 @@ export function createProjectCommands({
             requestedProjectName: record.projectName,
             requestedCode: record.code,
             requestedFileNameWithExtension: record.name,
+            requestedProjectDirectoryPath:
+              record.method === 'newProject' && record.parentDirectory
+                ? String(record.parentDirectory)
+                : undefined,
           },
         })
       }
@@ -227,6 +264,21 @@ export function createProjectCommands({
               : 'Existing project'
             : 'Overwrite'
         },
+      },
+      parentDirectory: {
+        inputType: 'path',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'newProject',
+        hidden: (commandsContext) =>
+          !isDesktop() ||
+          commandsContext.argumentsToSubmit.method !== 'newProject',
+        skip: true,
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Choose where to create the project',
+        defaultValue: defaultProjectDirectoryPath,
+        displayName: 'Parent folder',
       },
       // TODO: We can't get the currently-opened project to auto-populate here because
       // it's not available on projectMachine, but lower in fileMachine. Unify these.

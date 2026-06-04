@@ -7,6 +7,7 @@ import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -256,6 +257,68 @@ describe('systemIOMachine - XState', () => {
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
             )
           )
+        } finally {
+          actor.stop()
+        }
+      })
+    })
+    describe('when creating projects', () => {
+      it('should pass the requested parent directory to the create project actor', async () => {
+        let capturedInput:
+          | {
+              context: SystemIOContext
+              requestedProjectName: string
+              requestedProjectDirectoryPath?: string
+            }
+          | undefined
+
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.createProject]: fromPromise(
+                async ({ input }) => {
+                  capturedInput = input
+                  return {
+                    message: 'Created',
+                    name: 'demo-project',
+                    path: '/projects/demo-project',
+                    projectDirectoryPath: '/projects',
+                  }
+                }
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: 'demo-project',
+              requestedProjectDirectoryPath: '/projects',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(capturedInput?.requestedProjectName).toBe('demo-project')
+          expect(capturedInput?.requestedProjectDirectoryPath).toBe('/projects')
+          expect(
+            actor.getSnapshot().context.requestedProjectName
+          ).toStrictEqual({
+            name: 'demo-project',
+            path: '/projects/demo-project',
+          })
         } finally {
           actor.stop()
         }

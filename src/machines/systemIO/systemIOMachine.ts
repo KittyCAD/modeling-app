@@ -74,7 +74,10 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.createProject
-          data: { requestedProjectName: string }
+          data: {
+            requestedProjectName: string
+            requestedProjectDirectoryPath?: string
+          }
         }
       | {
           type: SystemIOMachineEvents.renameProject
@@ -122,6 +125,7 @@ export const systemIOMachine = setup({
           data: {
             files: RequestedKCLFile[]
             requestedProjectName: string
+            requestedProjectDirectoryPath?: string
             override?: boolean
             requestedSubRoute?: string
           }
@@ -131,6 +135,7 @@ export const systemIOMachine = setup({
           data: {
             files: RequestedProjectFile[]
             requestedProjectName: string
+            requestedProjectDirectoryPath?: string
             requestedFileNameWithExtension?: string
             requestedSubRoute?: string
           }
@@ -142,6 +147,7 @@ export const systemIOMachine = setup({
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
+            requestedProjectDirectoryPath?: string
             override?: boolean
             requestedSubRoute?: string
           }
@@ -152,6 +158,7 @@ export const systemIOMachine = setup({
             files: RequestedKCLFile[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
+            requestedProjectDirectoryPath?: string
             override?: boolean
             requestedSubRoute?: string
           }
@@ -179,6 +186,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedCode: string
+            requestedProjectDirectoryPath?: string
             requestedSubRoute?: string
           }
         }
@@ -459,12 +467,12 @@ export const systemIOMachine = setup({
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
       async ({
-        input: { context, requestedProjectName },
+        input: { context, requestedProjectName, requestedProjectDirectoryPath },
       }: {
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          projectPath?: string
+          requestedProjectDirectoryPath?: string
         }
       }) => {
         return { message: '', name: '', path: '', projectDirectoryPath: '' }
@@ -511,6 +519,7 @@ export const systemIOMachine = setup({
           requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
+          requestedProjectDirectoryPath?: string
           requestedSubRoute?: string
           app: App
         }
@@ -592,6 +601,7 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           files: RequestedKCLFile[]
           requestedProjectName: string
+          requestedProjectDirectoryPath?: string
           requestedSubRoute?: string
           wasmInstancePromise: Promise<ModuleType>
         }
@@ -620,6 +630,7 @@ export const systemIOMachine = setup({
             context: SystemIOContext
             files: RequestedProjectFile[]
             requestedProjectName: string
+            requestedProjectDirectoryPath?: string
             requestedFileNameWithExtension?: string
             requestedSubRoute?: string
           }
@@ -648,6 +659,7 @@ export const systemIOMachine = setup({
           files: RequestedKCLFile[]
           requestedProjectName: string
           requestedFileNameWithExtension: string
+          requestedProjectDirectoryPath?: string
           requestedSubRoute?: string
         }
       }): Promise<{
@@ -677,6 +689,7 @@ export const systemIOMachine = setup({
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
+            requestedProjectDirectoryPath?: string
             requestedSubRoute?: string
           }
         }): Promise<{
@@ -1053,6 +1066,8 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
           }
         },
         onDone: {
@@ -1221,6 +1236,8 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
             app: context.app,
           }
         },
@@ -1367,6 +1384,8 @@ export const systemIOMachine = setup({
             context,
             files: event.data.files,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
             override: event.data.override,
             requestedSubRoute: event.data.requestedSubRoute,
             wasmInstancePromise: context.wasmInstancePromise,
@@ -1410,6 +1429,8 @@ export const systemIOMachine = setup({
             context,
             files: event.data.files,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
             override: event.data.override,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
@@ -1476,6 +1497,8 @@ export const systemIOMachine = setup({
             context,
             files: event.data.files,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
@@ -1562,6 +1585,8 @@ export const systemIOMachine = setup({
             files: event.data.files,
             filesToDelete: event.data.filesToDelete,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
             override: event.data.override,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,

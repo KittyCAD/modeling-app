@@ -3,15 +3,15 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
   createNewProjectDirectory,
-  ensureProjectDirectoryExists,
   getAppSettingsFilePath,
-  getInitialDefaultDir,
+  getInitialProjectDirectoryPath,
   getProjectInfo,
   listRecentProjectsForCurrentEnvironment,
   mkdirOrNOOP,
   readAppSettingsFile,
   removeRecentProjectPath,
   renameProjectDirectory,
+  statIsDirectory,
   trackRecentProject,
 } from '@src/lib/desktop'
 import {
@@ -49,41 +49,50 @@ import { fromPromise } from 'xstate'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
+async function getProjectNamesInDirectory(projectDirectoryPath: string) {
+  await mkdirOrNOOP(projectDirectoryPath)
+  const entries = await fsZds.readdir(projectDirectoryPath)
+  const projectNames = []
+
+  for (const entry of entries) {
+    if (entry.startsWith('.')) {
+      continue
+    }
+
+    const projectPath = fsZds.join(projectDirectoryPath, entry)
+    if (await statIsDirectory(projectPath)) {
+      projectNames.push({ name: entry, path: projectPath, children: [] })
+    }
+  }
+
+  return projectNames
+}
+
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
+  requestedProjectDirectoryPath,
   wasmInstance,
   useReservedProjectName = false,
-  useSettingsProjectDirectoryFallback = false,
 }: {
   context: SystemIOContext
   requestedProjectName?: string
+  requestedProjectDirectoryPath?: string
   wasmInstance: ModuleType
   useReservedProjectName?: boolean
-  useSettingsProjectDirectoryFallback?: boolean
 }) => {
   const configuration = await readAppSettingsFile(wasmInstance)
   const requestedProjectBaseName = requestedProjectName?.split(fsZds.sep)[0]
   const existingRequestedProject = context.folders?.find(
     (project) => project.name === requestedProjectBaseName
   )
-  const configuredProjectDirectory =
-    err(configuration) || !configuration
-      ? ''
-      : configuration.settings?.project &&
-          typeof configuration.settings.project === 'object' &&
-          'directory' in configuration.settings.project &&
-          typeof configuration.settings.project.directory === 'string'
-        ? configuration.settings.project.directory
-        : ''
   const projectDirectoryPath =
     (existingRequestedProject
       ? fsZds.dirname(existingRequestedProject.path)
       : '') ||
+    requestedProjectDirectoryPath ||
     context.projectDirectoryPath ||
-    (useSettingsProjectDirectoryFallback && configuredProjectDirectory
-      ? await ensureProjectDirectoryExists(configuration)
-      : await mkdirOrNOOP(await getInitialDefaultDir()))
+    (await mkdirOrNOOP(await getInitialProjectDirectoryPath(wasmInstance)))
 
   if (!projectDirectoryPath) {
     return Promise.reject(
@@ -91,15 +100,23 @@ const prepareBulkProjectWrite = async ({
     )
   }
 
+  const projectsForNameCollision =
+    requestedProjectDirectoryPath && !existingRequestedProject
+      ? await getProjectNamesInDirectory(projectDirectoryPath)
+      : (context.folders ?? [])
   const targetProjectName =
     requestedProjectName || context.defaultProjectFolderName
   let projectName =
-    useReservedProjectName || requestedProjectName
+    useReservedProjectName || existingRequestedProject
       ? targetProjectName
-      : getUniqueProjectName(targetProjectName, context.folders ?? [])
+      : getUniqueProjectName(targetProjectName, projectsForNameCollision)
 
-  if (!useReservedProjectName && doesProjectNameNeedInterpolated(projectName)) {
-    const nextIndex = getNextProjectIndex(projectName, context.folders ?? [])
+  if (
+    !useReservedProjectName &&
+    !existingRequestedProject &&
+    doesProjectNameNeedInterpolated(projectName)
+  ) {
+    const nextIndex = getNextProjectIndex(projectName, projectsForNameCollision)
     projectName = interpolateProjectNameWithIndex(projectName, nextIndex)
   }
 
@@ -119,6 +136,7 @@ const sharedBulkCreateWorkflow = async ({
   input: {
     context: SystemIOContext
     files: RequestedKCLFile[]
+    requestedProjectDirectoryPath?: string
     wasmInstance: ModuleType
     override?: boolean
   }
@@ -131,6 +149,7 @@ const sharedBulkCreateWorkflow = async ({
   } = await prepareBulkProjectWrite({
     context: input.context,
     requestedProjectName: input.files[0]?.requestedProjectName,
+    requestedProjectDirectoryPath: input.requestedProjectDirectoryPath,
     wasmInstance: input.wasmInstance,
   })
 
@@ -183,6 +202,7 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     context: SystemIOContext
     files: RequestedProjectFile[]
     requestedProjectName: string
+    requestedProjectDirectoryPath?: string
     requestedFileNameWithExtension?: string
   }
 }) => {
@@ -199,9 +219,9 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     const { projectName, projectRoot } = await prepareBulkProjectWrite({
       context: input.context,
       requestedProjectName: input.requestedProjectName,
+      requestedProjectDirectoryPath: input.requestedProjectDirectoryPath,
       wasmInstance,
       useReservedProjectName: true,
-      useSettingsProjectDirectoryFallback: true,
     })
     const requestedFileNameWithExtension =
       input.requestedFileNameWithExtension || ''
@@ -331,18 +351,28 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
-      }) => {
-        const folders = input.context.folders
-        if (!folders) {
-          return Promise.reject(new Error('no folders'))
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedProjectDirectoryPath?: string
         }
-
+      }) => {
         const requestedProjectName = input.requestedProjectName
-        const uniqueName = getUniqueProjectName(requestedProjectName, folders)
+        const wasmInstance = await input.context.wasmInstancePromise
+        const projectDirectoryPath =
+          input.requestedProjectDirectoryPath ||
+          (await getInitialProjectDirectoryPath(wasmInstance))
+        const uniqueName = getUniqueProjectName(
+          requestedProjectName,
+          await getProjectNamesInDirectory(projectDirectoryPath)
+        )
         const project = await createNewProjectDirectory(
           uniqueName,
-          await input.context.wasmInstancePromise
+          wasmInstance,
+          undefined,
+          undefined,
+          undefined,
+          projectDirectoryPath
         )
         await trackRecentProject(project)
         return {
@@ -462,33 +492,40 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         return Promise.reject(new Error('no folders'))
       }
 
-      let newProjectName = requestedProjectName
-
-      if (!newProjectName) {
-        newProjectName = getUniqueProjectName(
-          input.context.defaultProjectFolderName,
-          folders
-        )
+      const wasmInstance = await input.app.wasmPromise
+      const existingProject = folders.find(
+        (project) => project.name === requestedProjectName
+      )
+      let projectDirectoryPath =
+        (existingProject ? fsZds.dirname(existingProject.path) : '') ||
+        input.requestedProjectDirectoryPath ||
+        input.context.projectDirectoryPath
+      if (!projectDirectoryPath) {
+        projectDirectoryPath =
+          await getInitialProjectDirectoryPath(wasmInstance)
       }
+      const projectsForNameCollision =
+        input.requestedProjectDirectoryPath && !existingProject
+          ? await getProjectNamesInDirectory(projectDirectoryPath)
+          : folders
+      let newProjectName =
+        existingProject && requestedProjectName
+          ? requestedProjectName
+          : getUniqueProjectName(
+              requestedProjectName || input.context.defaultProjectFolderName,
+              projectsForNameCollision
+            )
 
       const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
       if (needsInterpolated) {
-        const nextIndex = getNextProjectIndex(newProjectName, folders)
+        const nextIndex = getNextProjectIndex(
+          newProjectName,
+          projectsForNameCollision
+        )
         newProjectName = interpolateProjectNameWithIndex(
           newProjectName,
           nextIndex
         )
-      }
-
-      const wasmInstance = await input.app.wasmPromise
-      const existingProject = folders.find(
-        (project) => project.name === newProjectName
-      )
-      let projectDirectoryPath =
-        (existingProject ? fsZds.dirname(existingProject.path) : '') ||
-        input.context.projectDirectoryPath
-      if (!projectDirectoryPath) {
-        projectDirectoryPath = await getInitialDefaultDir()
       }
 
       const baseDir = fsZds.join(projectDirectoryPath, newProjectName)
@@ -591,6 +628,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           context: SystemIOContext
           files: RequestedKCLFile[]
           requestedProjectName: string
+          requestedProjectDirectoryPath?: string
           override?: boolean
           requestedSubRoute?: string
           wasmInstancePromise: Promise<ModuleType>
@@ -602,12 +640,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input: {
             ...otherInput,
             wasmInstance,
+            requestedProjectDirectoryPath: input.requestedProjectDirectoryPath,
             override: input.override,
           },
         })
         return {
           ...message,
-          projectName: input.requestedProjectName,
+          projectName: message.projectName,
           subRoute: input.requestedSubRoute || '',
         }
       }
@@ -621,6 +660,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             context: SystemIOContext
             files: RequestedProjectFile[]
             requestedProjectName: string
+            requestedProjectDirectoryPath?: string
             requestedFileNameWithExtension?: string
             requestedSubRoute?: string
           }
@@ -644,6 +684,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
+            requestedProjectDirectoryPath?: string
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
@@ -654,6 +695,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             input: {
               ...input,
               wasmInstance,
+              requestedProjectDirectoryPath:
+                input.requestedProjectDirectoryPath,
               override: input.override,
             },
           })
@@ -669,7 +712,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
           return {
             ...message,
-            projectName: input.requestedProjectName,
+            projectName: message.projectName,
             fileName: input.requestedFileNameWithExtension || '',
             subRoute: input.requestedSubRoute || '',
           }
@@ -683,6 +726,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           context: SystemIOContext
           files: RequestedKCLFile[]
           requestedProjectName: string
+          requestedProjectDirectoryPath?: string
           override?: boolean
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
@@ -693,12 +737,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input: {
             ...input,
             wasmInstance,
+            requestedProjectDirectoryPath: input.requestedProjectDirectoryPath,
             override: input.override,
           },
         })
         return {
           ...message,
-          projectName: input.requestedProjectName,
+          projectName: message.projectName,
           fileName: input.requestedFileNameWithExtension || '',
           subRoute: input.requestedSubRoute || '',
         }

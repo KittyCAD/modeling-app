@@ -57,11 +57,28 @@ function getProjectSettingsSection(
     : undefined
 }
 
-function getProjectDirectorySetting(
+export function getProjectDirectorySetting(
   config: DeepPartial<Configuration> | Configuration
 ): string | undefined {
   const directory = getProjectSettingsSection(config)?.directory
   return typeof directory === 'string' ? directory : undefined
+}
+
+export async function getInitialProjectDirectoryPath(
+  wasmInstance?: ModuleType
+): Promise<string> {
+  if (wasmInstance) {
+    const configuration = await readAppSettingsFile(wasmInstance)
+    if (!err(configuration)) {
+      const configuredProjectDirectory =
+        getProjectDirectorySetting(configuration)
+      if (configuredProjectDirectory) {
+        return configuredProjectDirectory
+      }
+    }
+  }
+
+  return getInitialDefaultDir()
 }
 
 const convertIStatToFileMetadata = (
@@ -252,7 +269,10 @@ export async function listProjects(
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
-  const projectDir = await ensureProjectDirectoryExists(configuration)
+  const configuredProjectDirectory = getProjectDirectorySetting(configuration)
+  const projectDir = configuredProjectDirectory
+    ? await ensureProjectDirectoryExists(configuration)
+    : await mkdirOrNOOP(await getInitialProjectDirectoryPath(wasmInstance))
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 

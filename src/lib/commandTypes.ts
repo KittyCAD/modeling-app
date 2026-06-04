@@ -49,6 +49,7 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+type MaybePromise<T> = T | Promise<T>
 type CommandArgumentRequired<C> =
   | boolean
   | ((
@@ -458,12 +459,12 @@ export type CommandArgument<
   | {
       inputType: 'path'
       defaultValue?:
-        | OutputType
+        | MaybePromise<OutputType>
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>,
             wasmInstance?: ModuleType
-          ) => OutputType)
+          ) => MaybePromise<OutputType>)
       filters: FiltersConfig
       openDialogProperties?: OpenDialogOptions['properties']
       openDialogTitle?: string

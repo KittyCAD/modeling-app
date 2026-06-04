@@ -119,9 +119,6 @@ const Home = () => {
         data: {
           groupId: 'projects',
           name: 'Create project',
-          argDefaultValues: {
-            name: settingsValues.projects.defaultProjectName.current,
-          },
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
