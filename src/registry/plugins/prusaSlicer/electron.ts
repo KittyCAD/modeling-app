@@ -1,12 +1,12 @@
-import { spawn } from 'node:child_process'
 import fs from 'fs'
+import { spawn } from 'node:child_process'
 import os from 'node:os'
 import path from 'path'
-import type { IpcMain } from 'electron'
 import {
-  PRUSA_SLICER_OPEN_STL_CHANNEL,
   type OpenStlInPrusaSlicerResult,
+  PRUSA_SLICER_OPEN_STL_CHANNEL,
 } from '@src/registry/plugins/prusaSlicer/ipc'
+import type { IpcMain } from 'electron'
 
 async function firstExistingPath(paths: string[]) {
   for (const maybePath of paths) {
@@ -100,6 +100,19 @@ function getPrusaSlicerCandidatePaths() {
     ].filter((candidate): candidate is string => Boolean(candidate))
   }
 
+  if (process.platform === 'linux') {
+    return [
+      '/usr/bin/prusa-slicer',
+      '/usr/local/bin/prusa-slicer',
+      '/snap/bin/prusa-slicer',
+      ...getPathCandidatesFromEnvironment([
+        'prusa-slicer',
+        'PrusaSlicer',
+        'prusaslicer',
+      ]),
+    ]
+  }
+
   return []
 }
 
@@ -130,11 +143,15 @@ export function register({ ipcMain }: { ipcMain: IpcMain }) {
   ipcMain.handle(
     PRUSA_SLICER_OPEN_STL_CHANNEL,
     async (_event, stlPath: string) => {
-      if (process.platform !== 'darwin' && process.platform !== 'win32') {
+      if (
+        process.platform !== 'darwin' &&
+        process.platform !== 'win32' &&
+        process.platform !== 'linux'
+      ) {
         return {
           ok: false,
           error:
-            'Export to PrusaSlicer is only supported on macOS and Windows.',
+            'Export to PrusaSlicer is only supported on macOS, Windows, and Linux.',
         }
       }
 

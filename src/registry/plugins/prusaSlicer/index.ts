@@ -5,11 +5,11 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
 import { EngineConnectionStateType } from '@src/network/utils'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   layoutActionLibraryValueSpec,
   layoutContributionsValueSpec,
 } from '@src/registry/contracts/layout'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { exportCurrentPartToPrusaSlicer } from '@src/registry/plugins/prusaSlicer/exportToPrusaSlicer'
 
 const exportToPrusaSlicerActionType = 'exportToPrusaSlicer'
@@ -17,7 +17,7 @@ const exportToPrusaSlicerActionType = 'exportToPrusaSlicer'
 function useExportToPrusaSlicerDisabled() {
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady } = useAppState()
-  const kclManager = window.kclManager
+  const kclManager = window.app?.singletons.kclManager
   const engineIsBusyOrUnavailable =
     !kclManager ||
     (overallState !== NetworkHealthState.Ok &&
@@ -65,7 +65,7 @@ const prusaSlicer = createZdsPlugin({
   description:
     'Adds a left-sidebar action that exports the current part as STL and opens it in PrusaSlicer.',
   items: [exportToPrusaSlicerSidebarItem],
-  defaultSetting: 'core',
+  defaultSetting: 'off',
 })
 
 export const order = 30

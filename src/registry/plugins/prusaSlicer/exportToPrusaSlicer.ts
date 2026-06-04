@@ -1,11 +1,11 @@
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
-import toast from 'react-hot-toast'
 import {
-  PRUSA_SLICER_OPEN_STL_CHANNEL,
   type OpenStlInPrusaSlicerResult,
+  PRUSA_SLICER_OPEN_STL_CHANNEL,
 } from '@src/registry/plugins/prusaSlicer/ipc'
+import toast from 'react-hot-toast'
 
 const EXPORT_DIR_NAME = 'prusa-slicer-exports'
 
@@ -16,15 +16,14 @@ function getExportFileName(currentFileName: string | null) {
 
 export async function exportCurrentPartToPrusaSlicer() {
   const electron = window.electron
-  const app = window.app
-  const kclManager = window.kclManager
+  const kclManager = window.app?.singletons.kclManager
 
   if (!electron) {
     toast.error('Export to PrusaSlicer is only available in the desktop app.')
     return
   }
 
-  if (!app || !kclManager) {
+  if (!kclManager) {
     toast.error('The app is not ready to export yet.')
     return
   }
