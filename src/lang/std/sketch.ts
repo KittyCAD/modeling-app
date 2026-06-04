@@ -36,8 +36,6 @@ import {
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/toolTips'
-import { toolTips } from '@src/lang/toolTips'
 import {
   mutateKwArg,
   removeKwArgs,
@@ -60,6 +58,8 @@ import type {
   SketchLineHelperKw,
   addCall,
 } from '@src/lang/std/stdTypes'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import {
   findKwArg,
   findKwArgAny,
@@ -69,6 +69,7 @@ import {
   isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
+import type { Coords2d } from '@src/lang/util'
 import type {
   CallExpressionKw,
   Expr,
@@ -92,9 +93,8 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
-import type { Coords2d } from '@src/lang/util'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')

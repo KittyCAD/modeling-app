@@ -12,6 +12,7 @@ import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -44,13 +45,6 @@ export type CurrentProjectPublicationDetails = {
 type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
   project: Project
 }
-
-type ProjectSettingsCloud = Record<
-  string,
-  {
-    project_id?: string
-  }
->
 
 type UploadFile = {
   name: string
@@ -319,7 +313,10 @@ async function buildProjectUploadFiles({
     return files
   }
 
-  const projectToml = await getProjectTomlContents(project.path, wasmInstance)
+  const projectToml = await getProjectTomlContents({
+    projectPath: project.path,
+    wasmInstance,
+  })
   if (err(projectToml)) {
     return projectToml
   }
@@ -333,31 +330,6 @@ async function buildProjectUploadFiles({
   ]
 }
 
-async function getProjectTomlContents(
-  projectPath: string,
-  wasmInstance: ModuleType
-): Promise<string | Error> {
-  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-
-  try {
-    return await fsZds.readFile(projectTomlPath, { encoding: 'utf-8' })
-  } catch {
-    const projectSettings = await readProjectSettingsFile(
-      projectPath,
-      wasmInstance
-    )
-    const serialized = serializeProjectConfiguration(
-      projectSettings,
-      wasmInstance
-    )
-    if (err(serialized)) {
-      return serialized
-    }
-
-    return serialized
-  }
-}
-
 async function getCloudProjectIdForEnvironment(
   projectPath: string,
   wasmInstance: ModuleType,
@@ -368,7 +340,7 @@ async function getCloudProjectIdForEnvironment(
       projectPath,
       wasmInstance
     )
-    const cloud = (projectSettings.cloud ?? {}) as ProjectSettingsCloud
+    const cloud = projectSettings.cloud ?? {}
     return cloud[environmentName]?.project_id
   } catch (error) {
     return new Error(
@@ -388,7 +360,7 @@ async function persistCloudProjectIdForEnvironment(
       projectPath,
       wasmInstance
     )
-    const cloud = { ...(projectSettings.cloud ?? {}) } as ProjectSettingsCloud
+    const cloud = { ...(projectSettings.cloud ?? {}) }
     cloud[environmentName] = {
       ...(cloud[environmentName] ?? {}),
       project_id: projectId,

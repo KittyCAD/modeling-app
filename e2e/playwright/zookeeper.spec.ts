@@ -17,7 +17,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
   }) => {
     await page.setBodyDimensions({ width: 1500, height: 1000 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step('Submit basic prompt', async () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
@@ -38,7 +38,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await scene.settled(cmdBar)
+      await scene.settled()
       const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
       await expect(extrude).toBeVisible()
     })
@@ -49,7 +49,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
     async ({ page, homePage, scene, toolbar, cmdBar, copilot }) => {
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await test.step('Submit placeholder prompt', async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)

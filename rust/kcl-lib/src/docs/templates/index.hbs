@@ -9,18 +9,18 @@ layout: manual
 ### Functions
 
 {{#each functions}}
-* [**{{name}}**]({{file_name}})
+* [**{{name}}**]({{file_name}}){{#if experimental}} Experimental{{/if}}
 {{#each items}}
-  * [`{{name}}`]({{file_name}})
+  * [`{{name}}`]({{file_name}}){{#if experimental}} Experimental{{/if}}
 {{/each}}
 {{/each}}
 
 ### Constants
 
 {{#each consts}}
-* [**{{name}}**]({{file_name}})
+* [**{{name}}**]({{file_name}}){{#if experimental}} Experimental{{/if}}
 {{#each items}}
-  * [`{{name}}`]({{file_name}})
+  * [`{{name}}`]({{file_name}}){{#if experimental}} Experimental{{/if}}
 {{/each}}
 {{/each}}
 
@@ -29,8 +29,8 @@ layout: manual
 See also the [types overview]({{types_overview_link}})
 
 {{#each types}}
-* [**{{name}}**]({{file_name}})
+* [**{{name}}**]({{file_name}}){{#if experimental}} Experimental{{/if}}
 {{#each items}}
-  * [`{{name}}`]({{file_name}})
+  * [`{{name}}`]({{file_name}}){{#if experimental}} Experimental{{/if}}
 {{/each}}
 {{/each}}

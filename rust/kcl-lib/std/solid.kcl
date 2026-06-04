@@ -115,6 +115,11 @@ export fn fillet(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
+  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo fillet algorithm,
+  /// 2 is the newer algorithm (supports rolling ball fillets).
+  @(experimental = true) version?: number(Count) = 1,
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.
@@ -266,6 +271,11 @@ export fn chamfer(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
+  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo fillet algorithm,
+  /// 2 is the newer algorithm (supports rolling ball fillets).
+  @(experimental = true) version?: number(Count) = 1,
 ): Solid {}
 
 /// Remove volume from a 3-dimensional shape such that a wall of the

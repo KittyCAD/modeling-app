@@ -4,16 +4,13 @@ import {
   provide,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
-import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
-import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
-import { ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID } from './constants'
+import executionIndicator from './executionIndicator'
 
 const UnitsMenu = lazy(async () => {
   const { UnitsMenu } = await import('@src/components/UnitsMenu')
@@ -41,8 +38,8 @@ const EngineSceneExperimentalFeaturesMenu = () =>
  * Engine scene extension.
  *
  * Future home for the whole engine scene layout and modeling state machine
- * behavior. For now it contributes the execution spinner status item and the
- * setting that controls whether users see it.
+ * behavior. For now it contributes always-on local status bar items owned by
+ * the scene.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
@@ -55,6 +52,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             element: 'text' as const,
             label: executionService.value.selectionStatusLabel.value,
             order: 10,
+            scopes: ['file'],
             toolTip: {
               children: 'Currently selected geometry',
             },
@@ -69,6 +67,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'experimental-features',
             component: EngineSceneExperimentalFeaturesMenu,
             order: 30,
+            scopes: ['file'],
           }
         : null
     )
@@ -80,34 +79,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'units',
             component: EngineSceneUnitsMenu,
             order: 20,
+            scopes: ['file'],
           }
         : null
-    )
-  )
-  const executionStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      (() => {
-        const service = executionService.value
-
-        return service?.isExecuting.value
-          ? {
-              id: ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID,
-              'data-testid': 'engine-executing-status',
-              element: 'text' as const,
-              icon: 'loading' as const,
-              label: 'Engine executing',
-              hideLabel: true,
-              order: 0,
-              toolTip: {
-                children: createElement(EngineExecutionStatusTooltip, {
-                  executionElapsedMs: service.executionElapsedMs,
-                  getPendingCommandCount: () =>
-                    executionService.value?.getPendingCommandCount() ?? 0,
-                }),
-              },
-            }
-          : null
-      })()
     )
   )
 
@@ -115,35 +89,14 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
-        provide(settingsValueSpec, {
-          modeling: {
-            showExecutingSpinner: defineBooleanExtensionSetting({
-              defaultValue: false,
-              title: 'Show executing spinner',
-              description:
-                'Whether to show a status bar spinner while the engine is processing commands.',
-              commandConfig: {
-                inputType: 'boolean',
-              },
-              userToml: {
-                sectionKey: 'modeling',
-                tomlKey: 'show_executing_spinner',
-              },
-              projectToml: {
-                sectionKey: 'modeling',
-                tomlKey: 'show_executing_spinner',
-              },
-            }),
-          },
-        }),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
         provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
         provide(
           statusBarLocalItemsValueSpec,
           experimentalFeaturesStatusBarItem
         ),
-        provide(statusBarLocalItemsValueSpec, executionStatusBarItem),
       ],
+      uses: [executionIndicator],
     }),
   }
 }, 'engine-scene-extension')

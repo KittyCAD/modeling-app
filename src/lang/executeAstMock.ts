@@ -6,12 +6,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError } from '@src/lang/errors'
-import type { ExecState, Program } from '@src/lang/wasm'
+import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
-import { isArray } from '@src/lib/utils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { isArray } from '@src/lib/utils'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 
 export interface ExecutionResultMock {
@@ -95,11 +95,13 @@ export async function executeAstMock({
   rustContext,
   path,
   usePrevMemory,
+  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
   usePrevMemory?: boolean
+  callbacks?: ExecCallbacks
 }): Promise<ExecutionResultMock> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
@@ -107,7 +109,8 @@ export async function executeAstMock({
       ast,
       settings,
       path,
-      usePrevMemory
+      usePrevMemory,
+      callbacks
     )
 
     await rustContext.waitForAllEngineModelingCommands()

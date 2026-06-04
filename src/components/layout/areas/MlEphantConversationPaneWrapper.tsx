@@ -12,13 +12,41 @@ import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
+import {
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/machines/systemIO/hooks'
+import {
+  SystemIOMachineEvents,
+  prepareMlEphantNewFileRequest,
+} from '@src/machines/systemIO/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { useEffect } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
+  const { auth } = useApp()
+  const token = auth.useToken()
+
+  return (
+    <MlEphantManagerReactContext.Provider
+      options={{
+        input: {
+          apiToken: token,
+        },
+      }}
+    >
+      <MlEphantConversationPaneInner {...props} />
+    </MlEphantManagerReactContext.Provider>
+  )
+}
+
+function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
-  const { auth, billing, settings, project, systemIOActor } = useApp()
+  const app = useApp()
+  const { auth, billing, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
@@ -30,6 +58,51 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  useEffect(() => {
+    if (!IS_STAGING_OR_DEBUG) return
+
+    app.debug.mlEphantManagerActor = mlEphantManagerActor
+
+    return () => {
+      if (app.debug.mlEphantManagerActor === mlEphantManagerActor) {
+        delete app.debug.mlEphantManagerActor
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
+  }, [])
+
+  useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
+    billing.actor,
+    token,
+    kclManager.engineCommandManager,
+    (requestProps) => {
+      const payload = prepareMlEphantNewFileRequest(requestProps)
+
+      if (payload) {
+        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+          data: {
+            files: payload.files,
+            filesToDelete: payload.filesToDelete,
+            override: true,
+            requestedProjectName: payload.requestedProjectName,
+            requestedFileNameWithExtension:
+              payload.requestedFileNameWithExtension ?? '',
+          },
+        })
+      }
+    }
+  )
+
+  // Save the conversation id for the project id if necessary.
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    systemIOActor,
+    settingsValues
+  )
 
   const sendBillingUpdate = () => {
     billing.send({

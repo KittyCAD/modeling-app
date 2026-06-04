@@ -12,6 +12,7 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
+  ExecCallbacks,
   ExecState,
   Program,
 } from '@src/lang/wasm'
@@ -39,14 +40,16 @@ export async function executeAst({
   ast,
   rustContext,
   path,
+  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
+  callbacks?: ExecCallbacks
 }): Promise<ExecutionResult> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.execute(ast, settings, path)
+    const execState = await rustContext.execute(ast, settings, path, callbacks)
     await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],

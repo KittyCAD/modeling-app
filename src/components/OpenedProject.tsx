@@ -14,7 +14,6 @@ import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -46,17 +45,14 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
-import {
-  MlEphantManagerReactContext,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
+  filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { filterEngineSceneStatusBarItems } from '@src/registry/extensions/engineScene/statusBar'
 import {
   TutorialRequestToast,
   needsToOnboard,
@@ -86,11 +82,8 @@ export function OpenedProject() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
-
   const location = useLocation()
   const navigate = useNavigate()
-  const filePath = useAbsoluteFilePath()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
@@ -170,21 +163,17 @@ export function OpenedProject() {
     )
   }, [onProjectOpen, projectName, projectPath, project])
 
-  useEffect(() => {
-    // Clear conversation
-    mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projectName, projectPath])
-
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
-  const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(
+  const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarGlobalItemsValueSpec).value,
+    ['file']
+  )
+  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
     registry.signal(statusBarLocalItemsValueSpec).value,
-    settingsValues
+    ['file']
   )
   const authToken = auth.useToken()
   const onboardingStatus =
@@ -206,21 +195,6 @@ export function OpenedProject() {
     e.preventDefault()
     kclManager.redo()
   })
-  useHotkeyWrapper(
-    [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
-    () => {
-      if (!filePath) {
-        console.warn('bug: filePath is undefined')
-        return
-      }
-
-      void navigate(filePath + PATHS.SETTINGS)
-    },
-    kclManager,
-    {
-      splitKey: '|',
-    }
-  )
 
   useHotkeyWrapper(
     ['alt + shift + f'],
@@ -415,7 +389,7 @@ export function OpenedProject() {
                 window.electron?.appRestart()
               },
             }),
-            ...registry.signal(statusBarGlobalItemsValueSpec).value,
+            ...registryGlobalStatusBarItems,
           ]}
           localItems={[
             ...(settingsValues.debug.showModelingMachineState.current

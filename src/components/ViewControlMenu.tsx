@@ -1,5 +1,6 @@
-import { useMemo, memo } from 'react'
+import { memo, useMemo } from 'react'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import {
   ContextMenu,
@@ -8,20 +9,19 @@ import {
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { reportRejection } from '@src/lib/trap'
-import toast from 'react-hot-toast'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import {
   DefaultLayoutPaneID,
   getOpenPanes,
   setOpenPanes,
 } from '@src/lib/layout'
-import { useSignals } from '@preact/signals-react/runtime'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { selectSketchPlane } from '@src/lib/selections'
+import { reportRejection } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   useSignals()

@@ -1,8 +1,8 @@
+import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
-import type { KclManager } from '@src/lang/KclManager'
 
 export function createStandardViewsCommands(kclManager: KclManager) {
   const { engineCommandManager, sceneInfra } = kclManager

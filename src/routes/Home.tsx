@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -9,7 +10,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-import { BillingDialog } from '@kittycad/react-shared'
+import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
@@ -59,7 +60,11 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import {
+  filterStatusBarItemsForScopes,
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import {
   acceptOnboarding,
   needsToOnboard,
@@ -76,6 +81,7 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
   const { kclManager } = useSingletons()
@@ -89,6 +95,7 @@ const Home = () => {
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -357,10 +364,12 @@ const Home = () => {
                 <div className="my-2">
                   <BillingDialog
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openExternalBrowserIfDesktop()}
+                    accountHref={withSiteBaseURL('/account/billing')}
+                    billingClick={openBillingLinkExternally}
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}
+                    userPaymentBalance={billingContext.userPaymentBalance}
                   />
                 </div>
               </li>
@@ -423,9 +432,18 @@ const Home = () => {
               window.electron?.appRestart()
             },
           }),
-          ...registry.signal(statusBarGlobalItemsValueSpec).value,
+          ...filterStatusBarItemsForScopes(
+            registry.signal(statusBarGlobalItemsValueSpec).value,
+            ['home']
+          ),
         ]}
-        localItems={defaultLocalStatusBarItems}
+        localItems={[
+          ...filterStatusBarItemsForScopes(
+            registry.signal(statusBarLocalItemsValueSpec).value,
+            ['home']
+          ),
+          ...defaultLocalStatusBarItems,
+        ]}
       />
     </div>
   )

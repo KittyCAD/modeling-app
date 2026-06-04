@@ -28,6 +28,7 @@ import {
 import {
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
+  getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
@@ -89,6 +90,7 @@ export function addFillet({
   selection,
   radius,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -97,6 +99,7 @@ export function addFillet({
   selection: Selections
   radius: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -146,6 +149,9 @@ export function addFillet({
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
@@ -153,10 +159,14 @@ export function addFillet({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
     const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
       createLabeledArg('tags', data.tagsExpr),
       createLabeledArg('radius', valueOrVariable(radius)),
       ...tagArgs,
+      ...versionArgs,
     ])
 
     const pathToNode = setCallInAst({
@@ -182,6 +192,7 @@ export function addChamfer({
   secondLength,
   angle,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -192,6 +203,7 @@ export function addChamfer({
   secondLength?: KclCommandValue
   angle?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -251,6 +263,9 @@ export function addChamfer({
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -264,6 +279,9 @@ export function addChamfer({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
 
     const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
       createLabeledArg('tags', data.tagsExpr),
@@ -271,6 +289,7 @@ export function addChamfer({
       ...secondLengthArgs,
       ...angleArgs,
       ...tagArgs,
+      ...versionArgs,
     ])
 
     const pathToNode = setCallInAst({
@@ -353,97 +372,6 @@ type BodySelectionData = {
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
-}
-
-function getSketchSegmentNameFromSourceSurface(
-  sourceSurfaceArtifact: Artifact,
-  edgeArtifact: Artifact,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
-): string | null {
-  if (sourceSurfaceArtifact.type !== 'sweep') {
-    return null
-  }
-
-  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
-    ast,
-    sourceSurfaceArtifact.codeRef.pathToNode,
-    wasmInstance,
-    ['CallExpressionKw']
-  )
-  if (
-    err(sourceSurfaceNode) ||
-    sourceSurfaceNode.node.type !== 'CallExpressionKw'
-  ) {
-    return null
-  }
-
-  const sweepInput = sourceSurfaceNode.node.unlabeled
-  if (!sweepInput) {
-    return null
-  }
-
-  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
-  if (edgeArtifact.type === 'segment') {
-    segmentArtifact = edgeArtifact
-  } else if (edgeArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: edgeArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      segmentArtifact = segment
-    }
-  }
-
-  if (
-    sweepInput.type === 'MemberExpression' &&
-    sweepInput.property.type === 'Name'
-  ) {
-    return sweepInput.property.name.name
-  }
-
-  if (sweepInput.type !== 'ArrayExpression') {
-    return null
-  }
-
-  if (segmentArtifact) {
-    const pathArtifact = getArtifactOfTypes(
-      { key: sourceSurfaceArtifact.pathId, types: ['path'] },
-      artifactGraph
-    )
-    if (!err(pathArtifact) && pathArtifact.type === 'path') {
-      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
-        (segmentId) =>
-          segmentId === segmentArtifact.originalSegId ||
-          segmentId === segmentArtifact.id
-      )
-
-      if (matchingSegmentIndex !== -1) {
-        const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
-        if (
-          matchingSegmentExpr?.type === 'MemberExpression' &&
-          matchingSegmentExpr.property.type === 'Name'
-        ) {
-          return matchingSegmentExpr.property.name.name
-        }
-      }
-    }
-  }
-
-  const firstSweepSegment = sweepInput.elements.find(
-    (element) =>
-      element.type === 'MemberExpression' && element.property.type === 'Name'
-  )
-  if (
-    firstSweepSegment?.type === 'MemberExpression' &&
-    firstSweepSegment.property.type === 'Name'
-  ) {
-    return firstSweepSegment.property.name.name
-  }
-
-  return null
 }
 
 function getRegionSketchTagExprFromSourceSurface(
@@ -718,6 +646,7 @@ export function groupSelectionsByBodyAndAddTags(
       )
       if (err(sweep)) return sweep
       bodySelectionForSolids = {
+        artifact: sweep as Artifact,
         codeRef: sweep.codeRef,
       }
     }
@@ -736,6 +665,7 @@ export function groupSelectionsByBodyAndAddTags(
       nodeToEdit,
       {
         lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )
     if (err(vars)) return vars
@@ -2108,6 +2038,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
         nodeToEdit,
         {
           lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
         }
       )
       if (err(vars)) return vars

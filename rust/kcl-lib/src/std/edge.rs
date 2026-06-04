@@ -666,7 +666,7 @@ pub(crate) fn face_id_from_first_side_face(
     }
 }
 
-pub async fn inner_get_bounded_edge_with_id(
+pub(crate) async fn inner_get_bounded_edge_with_id(
     face: Solid,
     edge: EdgeReference,
     lower_bound: Option<TyF64>,
@@ -741,7 +741,7 @@ fn bounds_from_opts(
 }
 
 /// Resolve an unresolved edge specifier (tags/UUIDs) to engine EdgeSpecifier (face UUIDs) for blend. Called from blend().
-pub async fn resolve_unresolved_edge_specifier(
+pub(crate) async fn resolve_unresolved_edge_specifier(
     object_id: Uuid,
     unresolved: &UnresolvedEdgeSpecifier,
     exec_state: &mut ExecState,

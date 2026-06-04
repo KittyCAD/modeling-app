@@ -18,7 +18,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-wasm:
+    uses: ./.github/workflows/build-wasm.yml
+
   prepare-files:
+    needs: [build-wasm]
     runs-on: namespace-profile-ubuntu-8-cores
     outputs:
       version: ${{ steps.export_version.outputs.version }}
@@ -33,67 +37,10 @@ jobs:
 
       - run: npm install
 
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v4
+      - uses: actions/download-artifact@v8
         with:
-          filters: |
-            rust:
-              - 'rust/**'
-
-      - name: Download Wasm Cache
-        id: download-wasm
-        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v21
-        continue-on-error: true
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
-          workflow: build-wasm.yml
-          branch: main
+          name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
-
-      - name: Build Wasm condition
-        id: wasm
-        env:
-          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
-          EVENT_NAME: ${{ github.event_name }}
-          RUST_CHANGES: ${{ steps.filter.outputs.rust }}
-        run: |
-          # Build Wasm with pushes to main, Rust changes, or cache misses
-          if [[ "${EVENT_NAME}" == 'push' || "${RUST_CHANGES}" == 'true' || "${DOWNLOAD_OUTCOME}" == 'failure' ]]; then
-            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Use correct Rust toolchain
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-
-      - name: Install rust
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false # Configured below.
-          rustflags: '' # Use .cargo/config.toml
-
-      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        with:
-          tool: wasm-pack
-
-      - name: Rust Cache
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-
-      - name: Run build:wasm
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        run: "npm run build:wasm"
 
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}

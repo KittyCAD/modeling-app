@@ -4,9 +4,10 @@ use anyhow::Result;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
 use kcmc::shared::CutStrategy;
 use kcmc::shared::CutTypeV2;
-use kittycad_modeling_cmds::shared::Angle;
+use kcmc::shared::EdgeCutVersion;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
@@ -37,7 +38,18 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
-    // TODO: custom profiles not ready yet
+    let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let edge_cut_version: EdgeCutVersion = edge_cut_number
+        .map(|num| {
+            num.try_into().map_err(|()| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("{} is not a version of the Zoo edge cut algorithm", num),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?
+        .unwrap_or_default();
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -65,6 +77,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 second_length,
                 angle,
                 csg_algorithm,
+                edge_cut_version,
                 tag,
                 exec_state,
                 args,
@@ -82,6 +95,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 None,
                 tag,
                 csg_algorithm,
+                edge_cut_version,
                 exec_state,
                 args,
             )
@@ -100,6 +114,7 @@ async fn inner_chamfer(
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -207,8 +222,10 @@ async fn inner_chamfer(
                             .extra_face_ids(vec![])
                             .strategy(strategy)
                             .object_id(solid.id)
-                            .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                            // We can let the user set this in the future.
+                            .tolerance(LengthUnit(DEFAULT_TOLERANCE))
                             .cut_type(cut_type)
+                            .version(edge_cut_version)
                             .build(),
                     ),
                 )
@@ -237,7 +254,7 @@ async fn inner_chamfer(
     Ok(solid)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(clippy::too_many_arguments)]
 async fn inner_chamfer_with_engine_refs(
     solid: Box<Solid>,
     length: TyF64,
@@ -245,6 +262,7 @@ async fn inner_chamfer_with_engine_refs(
     second_length: Option<TyF64>,
     angle: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -298,15 +316,18 @@ async fn inner_chamfer_with_engine_refs(
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
-                object_id: solid.id,
-                edges_references: edge_references,
-                cut_type,
-                tolerance: LengthUnit(DEFAULT_TOLERANCE),
-                strategy,
-                extra_face_ids,
-                use_legacy: csg_algorithm.is_legacy(),
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdgeReferences::builder()
+                    .object_id(solid.id)
+                    .edges_references(edge_references)
+                    .cut_type(cut_type)
+                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                    .strategy(strategy)
+                    .extra_face_ids(extra_face_ids)
+                    .use_legacy(csg_algorithm.is_legacy())
+                    .version(edge_cut_version)
+                    .build(),
+            ),
         )
         .await?;
 

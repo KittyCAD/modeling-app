@@ -29,7 +29,6 @@
  *     |> fillet(radius = 1, edges = [{ sideFaces = [e1, capEnd001] }])
  */
 import { join } from 'path'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
@@ -46,6 +45,7 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 const WASM_PATH = join(process.cwd(), 'public', 'kcl_wasm_lib_bg.wasm')
 

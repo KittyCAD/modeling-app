@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
+import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { ActionButton } from '@src/components/ActionButton'
 
 export const MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY =
   'zoo.makeathonAnnouncement.dismissed'

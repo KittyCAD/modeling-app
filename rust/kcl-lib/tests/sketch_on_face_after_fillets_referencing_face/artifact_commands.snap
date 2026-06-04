@@ -250,15 +250,18 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 0.25,
+        "cut_type": {
+          "fillet": {
+            "radius": 0.25,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -286,15 +289,18 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 0.5707134902949093,
+        "cut_type": {
+          "fillet": {
+            "radius": 0.5707134902949093,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
       }

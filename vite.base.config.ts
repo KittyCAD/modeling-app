@@ -1,8 +1,26 @@
 import { builtinModules } from 'node:module'
 import type { AddressInfo } from 'node:net'
-import type { ConfigEnv, Plugin, UserConfig } from 'vite'
+import {
+  type ConfigEnv,
+  type Plugin,
+  type UserConfig,
+  createLogger,
+} from 'vite'
 
 import pkg from './package.json'
+
+const publicAssetWarning =
+  'Assets in public directory cannot be imported from JavaScript'
+
+export function createCustomLogger() {
+  const logger = createLogger()
+  const originalWarn = logger.warn.bind(logger)
+  logger.warn = (msg, opts) => {
+    if (msg.includes(publicAssetWarning)) return
+    originalWarn(msg, opts)
+  }
+  return logger
+}
 
 export const builtins = [
   'electron',
@@ -17,6 +35,26 @@ export const external = [
   'node:fs/promises',
 ]
 
+const ignoredWatchPathNames = [
+  'target',
+  'dist',
+  'build',
+  'test-results',
+  'playwright-report',
+]
+
+export const ignoredWatchPathGlobs = ignoredWatchPathNames.map(
+  (pathName) => `**/${pathName}/**`
+)
+
+export function isIgnoredWatchPath(filePath: string) {
+  const normalizedPath = filePath.replace(/\\/g, '/')
+  const pathParts = normalizedPath.split('/')
+  return ignoredWatchPathNames.some((ignoredPath) =>
+    pathParts.includes(ignoredPath)
+  )
+}
+
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
   const { root, mode, command } = env
 
@@ -28,7 +66,15 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       emptyOutDir: false,
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
-      watch: command === 'serve' ? {} : null,
+      watch:
+        command === 'serve'
+          ? {
+              exclude: ignoredWatchPathGlobs,
+              chokidar: {
+                ignored: isIgnoredWatchPath,
+              },
+            }
+          : null,
       minify: command === 'build',
     },
     clearScreen: false,

@@ -1,5 +1,5 @@
-import JSZip from 'jszip'
 import { projects } from '@kittycad/lib'
+import JSZip from 'jszip'
 
 import env from '@src/env'
 import {
@@ -10,9 +10,10 @@ import {
 } from '@src/lib/constants'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { webSafePathSplit } from '@src/lib/paths'
+import { sanitizeProjectName } from '@src/lib/projectName'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
-import { err, isErr } from '@src/lib/trap'
 
 const DEFAULT_IMPORTED_PROJECT_NAME = 'shared-project'
 const PROJECT_DOWNLOAD_FORMAT = 'zip'
@@ -47,7 +48,10 @@ export async function getPublicProjectNameById(
     return result
   }
 
-  return sanitizeProjectName(result.title || DEFAULT_IMPORTED_PROJECT_NAME)
+  return sanitizeProjectName(
+    result.title || DEFAULT_IMPORTED_PROJECT_NAME,
+    DEFAULT_IMPORTED_PROJECT_NAME
+  )
 }
 
 export async function downloadProjectById(projectId: string): Promise<
@@ -215,7 +219,8 @@ async function parseZipArchive({
   const projectName = sanitizeProjectName(
     rootDirectory ||
       getFilenameStemFromContentDisposition(contentDisposition) ||
-      DEFAULT_IMPORTED_PROJECT_NAME
+      DEFAULT_IMPORTED_PROJECT_NAME,
+    DEFAULT_IMPORTED_PROJECT_NAME
   )
 
   const files = await Promise.all(
@@ -272,7 +277,8 @@ function parseJsonArchive(archive: ArrayBuffer):
   }
 
   const projectName = sanitizeProjectName(
-    parsed?.projectName || parsed?.name || DEFAULT_IMPORTED_PROJECT_NAME
+    parsed?.projectName || parsed?.name || DEFAULT_IMPORTED_PROJECT_NAME,
+    DEFAULT_IMPORTED_PROJECT_NAME
   )
   const files = coerceJsonFiles(parsed?.files, projectName)
 
@@ -454,11 +460,6 @@ function getFilenameStemFromContentDisposition(
 
 function normalizeArchivePath(path: string) {
   return path.replace(/^\/+|\/+$/g, '').replace(/\\/g, '/')
-}
-
-function sanitizeProjectName(name: string) {
-  const trimmed = name.trim().replace(/[\\/]/g, '-')
-  return trimmed || DEFAULT_IMPORTED_PROJECT_NAME
 }
 
 function stripFileExtension(filename: string) {

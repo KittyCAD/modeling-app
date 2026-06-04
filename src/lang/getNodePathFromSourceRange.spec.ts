@@ -1,12 +1,12 @@
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { assertParse, type Name, type Parameter } from '@src/lang/wasm'
 import { join } from 'path'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { topLevelRange } from '@src/lang/util'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
-import { expect, describe, it } from 'vitest'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
+import { type Name, type Parameter, assertParse } from '@src/lang/wasm'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { err } from '@src/lib/trap'
+import { describe, expect, it } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('getNodePathFromSourceRange', () => {

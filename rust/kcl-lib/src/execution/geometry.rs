@@ -4,6 +4,7 @@ use std::ops::AddAssign;
 use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::SubAssign;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -37,6 +38,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
+use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
 use crate::front::Number;
@@ -52,6 +54,7 @@ use crate::std::args::TyF64;
 use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::util::MathExt;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -1383,6 +1386,19 @@ impl Point3d {
         }
     }
 
+    /// Normalize `-0.0` to `0.0` for cleaner serialized axis data.
+    pub fn canonicalize_signed_zero(&mut self) {
+        if self.x == 0.0 {
+            self.x = 0.0;
+        }
+        if self.y == 0.0 {
+            self.y = 0.0;
+        }
+        if self.z == 0.0 {
+            self.z = 0.0;
+        }
+    }
+
     /// Calculate the dot product of this vector with another.
     ///
     /// This should only be applied to axes or other vectors which represent only a direction (and
@@ -1939,8 +1955,8 @@ fn linear_distance(
     [x0, y0]: &[f64; 2],
     [x1, y1]: &[f64; 2]
 ) -> f64 {
-    let y_sq = (y1 - y0).powi(2);
-    let x_sq = (x1 - x0).powi(2);
+    let y_sq = (y1 - y0).squared();
+    let x_sq = (x1 - x0).squared();
     (y_sq + x_sq).sqrt()
 }
 
@@ -2082,6 +2098,8 @@ pub struct SketchVar {
     pub id: SketchVarId,
     pub initial_value: f64,
     pub ty: NumericType,
+    /// Used for solver feedback to source.
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2203,6 +2221,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    ControlPointSpline {
+        controls: Vec<UnsolvedPoint2dExpr>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        degree: u32,
+        construction: bool,
+    },
 }
 
 impl UnsolvedSegmentKind {
@@ -2214,6 +2240,7 @@ impl UnsolvedSegmentKind {
             Self::Line { .. } => "a Line",
             Self::Arc { .. } => "an Arc",
             Self::Circle { .. } => "a Circle",
+            Self::ControlPointSpline { .. } => "a Control Point Spline",
         }
     }
 }
@@ -2230,7 +2257,8 @@ pub struct Segment {
     /// The engine ID of the sketch that this is a part of.
     pub sketch_id: Uuid,
     #[serde(skip)]
-    pub sketch: Option<Sketch>,
+    #[ts(skip)]
+    pub sketch: Option<Arc<Sketch>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
     #[serde(skip)]
@@ -2246,6 +2274,7 @@ impl Segment {
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
             SegmentKind::Circle { construction, .. } => *construction,
+            SegmentKind::ControlPointSpline { construction, .. } => *construction,
         }
     }
 }
@@ -2298,6 +2327,16 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    ControlPointSpline {
+        controls: Vec<[TyF64; 2]>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        control_freedoms: Vec<Option<Freedom>>,
+        degree: u32,
         construction: bool,
     },
 }

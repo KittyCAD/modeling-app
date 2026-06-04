@@ -21,6 +21,7 @@ use crate::SourceRange;
 use crate::engine::PlaneName;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
+use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
 use crate::front::Constraint;
 use crate::front::ObjectId;
@@ -312,6 +313,9 @@ pub struct SketchBlock {
     /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,
+    /// The evaluated plane data backing the sketch block, when the sketch is on a plane.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plane_info: Option<PlaneInfo>,
     /// The path artifact ID created from the sketch block, if there is one.
     /// There are edge cases when a path isn't created, like when there are no
     /// segments.
@@ -512,6 +516,14 @@ pub struct Helix {
     pub consumed: bool,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct GdtAnnotationArtifact {
+    pub id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -541,7 +553,6 @@ pub enum PatternSubType {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
-#[expect(clippy::large_enum_variant)]
 pub enum Artifact {
     CompositeSolid(CompositeSolid),
     Plane(Plane),
@@ -562,6 +573,7 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
+    GdtAnnotation(GdtAnnotationArtifact),
     Pattern(Pattern),
 }
 
@@ -587,6 +599,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
             Artifact::Helix(a) => a.id,
+            Artifact::GdtAnnotation(a) => a.id,
             Artifact::Pattern(a) => a.id,
         }
     }
@@ -614,6 +627,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
             Artifact::Helix(a) => Some(&a.code_ref),
+            Artifact::GdtAnnotation(a) => Some(&a.code_ref),
             Artifact::Pattern(a) => Some(&a.code_ref),
         }
     }
@@ -641,6 +655,7 @@ impl Artifact {
             | Artifact::EdgeCut(_)
             | Artifact::EdgeCutEdge(_)
             | Artifact::Helix(_)
+            | Artifact::GdtAnnotation(_)
             | Artifact::Pattern(_) => None,
         }
     }
@@ -668,6 +683,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(a) => a.merge(new),
+            Artifact::GdtAnnotation(a) => a.merge(new),
             Artifact::Pattern(a) => a.merge(new),
         }
     }
@@ -795,6 +811,17 @@ impl Helix {
         merge_opt_id(&mut self.axis_id, new.axis_id);
         merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
         self.consumed = new.consumed;
+
+        None
+    }
+}
+
+impl GdtAnnotationArtifact {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::GdtAnnotation(new) = new else {
+            return Some(new);
+        };
+        self.code_ref = new.code_ref;
 
         None
     }
@@ -1023,6 +1050,12 @@ fn fill_in_node_paths(
         Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
             constraint.code_ref.node_path =
                 NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
+        }
+        Artifact::GdtAnnotation(annotation) if annotation.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, annotation.code_ref.range, import_code_refs);
+            annotation.code_ref.range = range;
+            annotation.code_ref.node_path = node_path;
         }
         _ => {}
     }
@@ -1302,6 +1335,7 @@ fn remap_artifact_for_clone(
             id: remap_id_for_clone(source.id, entity_id_map),
             standard_plane: source.standard_plane,
             plane_id: remap_opt_id_for_clone(source.plane_id, entity_id_map),
+            plane_info: source.plane_info.clone(),
             path_id: remap_opt_id_for_clone(source.path_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
             sketch_id: source.sketch_id,
@@ -1379,6 +1413,10 @@ fn remap_artifact_for_clone(
             } else {
                 source.consumed
             },
+        }),
+        Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
+            id: remap_id_for_clone(source.id, entity_id_map),
+            code_ref: clone_code_ref.clone(),
         }),
         Artifact::Pattern(source) => Artifact::Pattern(Pattern {
             id: remap_id_for_clone(source.id, entity_id_map),
@@ -1525,6 +1563,71 @@ fn update_consumed_csg_sweep(
     }
 }
 
+fn mark_artifact_consumed_by_id(
+    return_arr: &mut Vec<Artifact>,
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    artifact_id: ArtifactId,
+    consumed_ids: &mut FnvHashSet<ArtifactId>,
+) {
+    let already_marked_as_consumed = !consumed_ids.insert(artifact_id);
+    if already_marked_as_consumed {
+        return;
+    }
+
+    let Some(artifact) = artifacts.get(&artifact_id) else {
+        return;
+    };
+
+    match artifact {
+        Artifact::CompositeSolid(composite) => {
+            let mut new_composite = composite.clone();
+            new_composite.consumed = true;
+            return_arr.push(Artifact::CompositeSolid(new_composite));
+        }
+        Artifact::Path(path) => {
+            let mut new_path = path.clone();
+            new_path.consumed = true;
+            return_arr.push(Artifact::Path(new_path));
+
+            if let Some(sweep_id) = path.sweep_id {
+                mark_artifact_consumed_by_id(return_arr, artifacts, sweep_id, consumed_ids);
+            }
+            if let Some(composite_solid_id) = path.composite_solid_id {
+                mark_artifact_consumed_by_id(return_arr, artifacts, composite_solid_id, consumed_ids);
+            }
+        }
+        Artifact::Sweep(sweep) => {
+            let mut new_sweep = sweep.clone();
+            new_sweep.consumed = true;
+            return_arr.push(Artifact::Sweep(new_sweep));
+        }
+        Artifact::Helix(helix) => {
+            let mut new_helix = helix.clone();
+            new_helix.consumed = true;
+            return_arr.push(Artifact::Helix(new_helix));
+        }
+        _ => {}
+    }
+}
+
+fn mark_deleted_artifacts_consumed(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    object_ids: &std::collections::HashSet<Uuid>,
+) -> Vec<Artifact> {
+    let mut return_arr = Vec::new();
+    let mut consumed_ids = FnvHashSet::default();
+
+    // The order of iteration doesn't matter here, as all artifacts get marked as consumed.
+    // Also the set comes from the API crate which uses HashSet.
+    #[allow(clippy::iter_over_hash_type)]
+    for object_id in object_ids {
+        let artifact_id = ArtifactId::new(*object_id);
+        mark_artifact_consumed_by_id(&mut return_arr, artifacts, artifact_id, &mut consumed_ids);
+    }
+
+    return_arr
+}
+
 fn update_csg_input_artifacts(
     return_arr: &mut Vec<Artifact>,
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -1665,6 +1768,9 @@ fn artifacts_to_update(
                 face_id: object_id.into(),
                 code_ref,
             })]);
+        }
+        ModelingCmd::RemoveSceneObjects(remove) => {
+            return Ok(mark_deleted_artifacts_consumed(artifacts, &remove.object_ids));
         }
         ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
             let existing_plane = artifacts.get(&ArtifactId::new(*entity_id));
