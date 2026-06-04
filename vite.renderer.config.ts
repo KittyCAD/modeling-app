@@ -31,6 +31,7 @@ export default defineConfig((env) => {
     },
     build: {
       outDir: `.vite/renderer/${name}`,
+      target: 'es2022',
     },
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
