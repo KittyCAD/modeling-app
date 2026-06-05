@@ -429,20 +429,20 @@ async fn inner_extrude(
                             z: p[2].n,
                         },
                     },
-                    Point3dOrEdgeReference::Edge(edge) => {
-                        match edge {
-                            crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
-                            crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge {
-                                id: match tag.get_cur_info() {
-                                    Some(info) => info.id,
-                                    None => return Err(KclError::new_semantic(KclErrorDetails::new(
+                    Point3dOrEdgeReference::Edge(edge) => match edge {
+                        crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
+                        crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge {
+                            id: match tag.get_cur_info() {
+                                Some(info) => info.id,
+                                None => {
+                                    return Err(KclError::new_semantic(KclErrorDetails::new(
                                         "Failed to get current info for tag".to_string(),
                                         vec![args.source_range],
-                                    ))),
-                                },
+                                    )));
+                                }
                             },
-                        }
-                    }
+                        },
+                    },
                 };
                 ModelingCmd::from(
                     mcmd::Extrude::builder()
