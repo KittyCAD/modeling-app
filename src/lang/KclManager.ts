@@ -100,6 +100,7 @@ import {
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
 import { EditorView, drawSelection, keymap } from '@codemirror/view'
 import {
+  defaultSelectionFilter,
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
@@ -833,6 +834,7 @@ export class KclManager extends File {
     graphSelections: [],
   }
   private _selectionRangesSignal = signal<Selections>(this._selectionRanges)
+  selectionFilter = signal<EntityType[]>(defaultSelectionFilter)
   private _selectionStatusLabel = computed(
     () =>
       getSelectionTypeDisplayText(
