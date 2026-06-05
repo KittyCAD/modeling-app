@@ -19,6 +19,7 @@ export const PROJECT_EXPLORER_COMMAND_IDS = {
   arrowUp: 'project-explorer.arrow-up',
   arrowDown: 'project-explorer.arrow-down',
   enter: 'project-explorer.enter',
+  rename: 'project-explorer.rename',
 } as const
 
 function createExitSketchBindings({
@@ -117,6 +118,13 @@ export const defaultKeymap: KeymapDocument = {
       scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['enter'],
       command: PROJECT_EXPLORER_COMMAND_IDS.enter,
+    },
+    {
+      id: 'project-explorer.rename',
+      title: 'Rename selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['f2'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.rename,
     },
     {
       id: 'view.top',

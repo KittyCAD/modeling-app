@@ -236,8 +236,10 @@ export const ProjectExplorer = ({
     arrowUp: () => {},
     arrowDown: () => {},
     enter: () => {},
+    rename: () => {},
   })
   const previousProject = useRef(project)
+  const lastSyncedFilePathRef = useRef<string | undefined>(undefined)
 
   onRowEnterRef.current = onRowEnter
 
@@ -450,11 +452,26 @@ export const ProjectExplorer = ({
     onRowEnterRef.current(focusedEntry, activeIndexRef.current)
   }, [setOpenedRowsWrapper])
 
+  const handleRenameCommand = useCallback(() => {
+    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry || focusedEntry.isFake) {
+      return
+    }
+
+    setContextMenuRow(focusedEntry)
+    setIsRenaming(true)
+  }, [readOnly])
+
   projectExplorerCommandHandlersRef.current.arrowLeft = handleArrowLeftCommand
   projectExplorerCommandHandlersRef.current.arrowRight = handleArrowRightCommand
   projectExplorerCommandHandlersRef.current.arrowUp = handleArrowUpCommand
   projectExplorerCommandHandlersRef.current.arrowDown = handleArrowDownCommand
   projectExplorerCommandHandlersRef.current.enter = handleEnterCommand
+  projectExplorerCommandHandlersRef.current.rename = handleRenameCommand
 
   const projectExplorerCommands = useMemo<Command[]>(
     () => [
@@ -502,6 +519,15 @@ export const ProjectExplorer = ({
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.enter(),
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.rename,
+        name: 'rename',
+        groupId: 'project-explorer',
+        displayName: 'Rename selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.rename(),
       },
     ],
     []
@@ -647,13 +673,15 @@ export const ProjectExplorer = ({
     /**
      * You are loading a new project, clear the internal state!
      */
-    if (previousProject.current.name !== project.name) {
+    const didProjectChange = previousProject.current.name !== project.name
+    if (didProjectChange) {
       setOpenedRows({})
       setSelectedRow(null)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
       setRowsToRender([])
       setContextMenuRow(null)
       setIsRenaming(false)
+      lastSyncedFilePathRef.current = undefined
       keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
@@ -677,14 +705,20 @@ export const ProjectExplorer = ({
     }
 
     const openedRowsForRender = { ...openedRows }
+    if (!file?.path) {
+      lastSyncedFilePathRef.current = undefined
+    }
     const currentFileRow = file?.path
       ? flattenedData.find(
           (child) =>
             child.path === file.path && rowPathMatchesTreeParent(child, project)
         )
       : undefined
+    const shouldRevealCurrentFile =
+      !!currentFileRow &&
+      (didProjectChange || lastSyncedFilePathRef.current !== file?.path)
     let openedRowsChanged = false
-    if (currentFileRow) {
+    if (shouldRevealCurrentFile) {
       const pathIterator = desktopSafePathSplit(currentFileRow.parentPath)
       while (pathIterator.length > 0) {
         const key = desktopSafePathJoin(pathIterator)
@@ -1154,9 +1188,13 @@ export const ProjectExplorer = ({
     const currentFileRowIndex = requestedRowsToRender.findIndex(
       (row) => row.path === file?.path
     )
-    if (currentFileRowIndex >= 0) {
+    const shouldSyncCurrentFileSelection =
+      currentFileRowIndex >= 0 && !!shouldRevealCurrentFile
+
+    if (shouldSyncCurrentFileSelection) {
       setSelectedRowWrapper(requestedRowsToRender[currentFileRowIndex])
       setActiveIndexWrapper(currentFileRowIndex)
+      lastSyncedFilePathRef.current = file?.path
     }
     if (openedRowsChanged) {
       setOpenedRowsWrapper(openedRowsForRender)
