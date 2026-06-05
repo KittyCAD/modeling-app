@@ -13,7 +13,15 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react'
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -257,6 +265,72 @@ describe('ProjectExplorer', () => {
       expect(items[0].innerText).toBe('shared-project')
       expect(selectedRows[0]).toBe(items[1])
     })
+  })
+  it('should not handle Enter outside of the explorer when the current file is selected', async () => {
+    project.children = [oneFile]
+    const onRowEnter = vi.fn()
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={onRowEnter}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.keyDown(window, { key: 'Enter' })
+
+    expect(onRowEnter).not.toHaveBeenCalled()
+  })
+  it('should handle Enter through the keymap after the explorer row is clicked', async () => {
+    project.children = [oneFile]
+    const onRowEnter = vi.fn()
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={onRowEnter}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireEvent.keyDown(window, { key: 'Enter' })
+
+    await waitFor(() => {
+      expect(onRowEnter).toHaveBeenCalledTimes(1)
+    })
+    expect(onRowEnter.mock.calls[0][0].path).toBe(oneFile.path)
   })
   it('should render main.kcl on initialization within 3 nested folders', () => {
     const mainFile = createFile('main.kcl', 'parts/very/cool/')

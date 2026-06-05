@@ -18,6 +18,7 @@ import type {
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
+import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
@@ -36,7 +37,14 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
+  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { FocusEvent as ReactFocusEvent } from 'react'
 import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
@@ -167,7 +175,8 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { settings, systemIOActor } = useApp()
+  const { commands, registry, settings, systemIOActor } = useApp()
+  const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const errors = kclManager.errorsSignal.value
   const settingsValues = settings.useSettings()
@@ -220,7 +229,6 @@ export const ProjectExplorer = ({
   const rowsToRenderRef = useRef(rowsToRender)
   const activeIndexRef = useRef(activeIndex)
   const selectedRowRef = useRef(selectedRow)
-  const isRenamingRef = useRef(isRenaming)
   const previousProject = useRef(project)
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
@@ -288,24 +296,227 @@ export const ProjectExplorer = ({
     setOpenedRows({})
   }, [collapsePressed])
 
-  const setSelectedRowWrapper = (row: FileExplorerEntry | null) => {
+  const setSelectedRowWrapper = useCallback((row: FileExplorerEntry | null) => {
     setSelectedRow(row)
     selectedRowRef.current = row
-  }
+  }, [])
+
+  const setActiveIndexWrapper = useCallback((index: number) => {
+    setActiveIndex(index)
+    activeIndexRef.current = index
+  }, [])
+
+  const setOpenedRowsWrapper = useCallback(
+    (rows: { [key: string]: boolean }) => {
+      setOpenedRows(rows)
+      openedRowsRef.current = rows
+    },
+    []
+  )
+
+  const focusProjectExplorer = useCallback(() => {
+    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+    fileExplorerContainer.current?.focus()
+  }, [keymap])
 
   /**
    * Gotcha: closure
    * Needs a reference to openedRows since it is a callback
    */
-  const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
+  const onRowClickCallback = useCallback(
+    (file: FileExplorerEntry, domIndex: number) => {
+      focusProjectExplorer()
+      const newOpenedRows = { ...openedRowsRef.current }
+      const key = file.key
+      const value = openedRowsRef.current[key]
+      newOpenedRows[key] = !value
+      setOpenedRowsWrapper(newOpenedRows)
+      setSelectedRowWrapper(file)
+      setActiveIndexWrapper(domIndex)
+    },
+    [
+      focusProjectExplorer,
+      setActiveIndexWrapper,
+      setOpenedRowsWrapper,
+      setSelectedRowWrapper,
+    ]
+  )
+
+  const handleArrowLeftCommand = useCallback(() => {
+    if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    const isEntryOpened =
+      focusedEntry &&
+      isFileExplorerEntryOpened(openedRowsRef.current, focusedEntry)
+    if (!(focusedEntry && isEntryOpened)) {
+      return
+    }
+
     const newOpenedRows = { ...openedRowsRef.current }
-    const key = file.key
+    const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
-    setOpenedRows(newOpenedRows)
-    setSelectedRowWrapper(file)
-    setActiveIndex(domIndex)
-  }
+    setOpenedRowsWrapper(newOpenedRows)
+
+    // If you press the left arrow and you are at the first child in a folder,
+    // move to the parent and close it.
+    if (
+      focusedEntry.positionInSet === 1 &&
+      focusedEntry.level !== 0 &&
+      activeIndexRef.current > 0
+    ) {
+      onRowClickCallback(
+        rowsToRenderRef.current[activeIndexRef.current - 1],
+        activeIndexRef.current - 1
+      )
+    }
+  }, [onRowClickCallback, setOpenedRowsWrapper])
+
+  const handleArrowRightCommand = useCallback(() => {
+    if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    const isEntryOpened =
+      focusedEntry &&
+      isFileExplorerEntryOpened(openedRowsRef.current, focusedEntry)
+    if (!(focusedEntry && !isEntryOpened)) {
+      return
+    }
+
+    const newOpenedRows = { ...openedRowsRef.current }
+    const key = focusedEntry.key
+    const value = openedRowsRef.current[key]
+    newOpenedRows[key] = !value
+    setOpenedRowsWrapper(newOpenedRows)
+  }, [setOpenedRowsWrapper])
+
+  const handleArrowUpCommand = useCallback(() => {
+    setActiveIndex((previous) => {
+      const next =
+        previous === NOTHING_IS_SELECTED
+          ? STARTING_INDEX_TO_SELECT
+          : Math.max(STARTING_INDEX_TO_SELECT, previous - 1)
+      activeIndexRef.current = next
+      return next
+    })
+  }, [])
+
+  const handleArrowDownCommand = useCallback(() => {
+    const lastRowIndex = rowsToRenderRef.current.length - 1
+    if (lastRowIndex < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    setActiveIndex((previous) => {
+      const next =
+        previous === NOTHING_IS_SELECTED
+          ? STARTING_INDEX_TO_SELECT
+          : Math.min(lastRowIndex, previous + 1)
+      activeIndexRef.current = next
+      return next
+    })
+  }, [])
+
+  const handleEnterCommand = useCallback(() => {
+    if (activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry) {
+      return
+    }
+
+    const newOpenedRows = { ...openedRowsRef.current }
+    const key = focusedEntry.key
+    const value = openedRowsRef.current[key]
+    newOpenedRows[key] = !value
+    setOpenedRowsWrapper(newOpenedRows)
+    onRowEnter(focusedEntry, activeIndexRef.current)
+  }, [onRowEnter, setOpenedRowsWrapper])
+
+  const projectExplorerCommands = useMemo<Command[]>(
+    () => [
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.arrowLeft,
+        name: 'arrow-left',
+        groupId: 'project-explorer',
+        displayName: 'Close selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: handleArrowLeftCommand,
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.arrowRight,
+        name: 'arrow-right',
+        groupId: 'project-explorer',
+        displayName: 'Open selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: handleArrowRightCommand,
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
+        name: 'arrow-up',
+        groupId: 'project-explorer',
+        displayName: 'Move project explorer selection up',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: handleArrowUpCommand,
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
+        name: 'arrow-down',
+        groupId: 'project-explorer',
+        displayName: 'Move project explorer selection down',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: handleArrowDownCommand,
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.enter,
+        name: 'enter',
+        groupId: 'project-explorer',
+        displayName: 'Open selected project explorer file',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: handleEnterCommand,
+      },
+    ],
+    [
+      handleArrowDownCommand,
+      handleArrowLeftCommand,
+      handleArrowRightCommand,
+      handleArrowUpCommand,
+      handleEnterCommand,
+    ]
+  )
+
+  useEffect(() => {
+    commands.send({
+      type: 'Add commands',
+      data: { commands: projectExplorerCommands },
+    })
+
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: { commands: projectExplorerCommands },
+      })
+    }
+  }, [commands, projectExplorerCommands])
+
+  useEffect(() => {
+    return () => {
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+    }
+  }, [keymap])
 
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
@@ -429,10 +640,12 @@ export const ProjectExplorer = ({
     if (previousProject.current.name !== project.name) {
       setOpenedRows({})
       setSelectedRow(null)
-      setActiveIndex(NOTHING_IS_SELECTED)
+      setActiveIndexWrapper(NOTHING_IS_SELECTED)
       setRowsToRender([])
       setContextMenuRow(null)
       setIsRenaming(false)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
 
     // gotcha: sync state
@@ -539,7 +752,8 @@ export const ProjectExplorer = ({
             setOpenedRows(newOpenedRows)
           },
           onContextMenuOpen: (domIndex: number) => {
-            setActiveIndex(domIndex)
+            focusProjectExplorer()
+            setActiveIndexWrapper(domIndex)
             setContextMenuRow(child)
           },
           isFake: false,
@@ -709,12 +923,10 @@ export const ProjectExplorer = ({
             }
 
             setIsRenaming(true)
-            isRenamingRef.current = true
           },
           onRenameEnd: (event: MaybePressOrBlur) => {
             // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
-            isRenamingRef.current = false
             setFakeRow(null)
 
             if (!event) {
@@ -934,11 +1146,10 @@ export const ProjectExplorer = ({
     )
     if (currentFileRowIndex >= 0) {
       setSelectedRowWrapper(requestedRowsToRender[currentFileRowIndex])
-      setActiveIndex(currentFileRowIndex)
+      setActiveIndexWrapper(currentFileRowIndex)
     }
     if (openedRowsChanged) {
-      setOpenedRows(openedRowsForRender)
-      openedRowsRef.current = openedRowsForRender
+      setOpenedRowsWrapper(openedRowsForRender)
     }
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
@@ -946,7 +1157,18 @@ export const ProjectExplorer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project, openedRows, fakeRow, activeIndex, errors, file?.path])
 
-  // Handle clicks and keyboard presses within the global DOM level
+  useEffect(() => {
+    if (isRenaming) {
+      keymap?.applyScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+      return () => {
+        keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+      }
+    }
+
+    keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+  }, [isRenaming, keymap])
+
+  // Handle clicks outside of the explorer at the global DOM level.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const path = event.composedPath ? event.composedPath() : []
@@ -958,125 +1180,17 @@ export const ProjectExplorer = ({
         if (activeIndexRef.current > 0) {
           lastIndexBeforeNothing.current = activeIndexRef.current
         }
-        setActiveIndex(NOTHING_IS_SELECTED)
+        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+        keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+        setActiveIndexWrapper(NOTHING_IS_SELECTED)
       }
     }
 
-    const keyDownHandler = (event: KeyboardEvent) => {
-      if (
-        activeIndexRef.current === NOTHING_IS_SELECTED ||
-        isRenamingRef.current
-      ) {
-        // NO OP you are not focused in this DOM element
-        return
-      }
-
-      const key = event.key
-      const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
-      const shouldCheckOpened = focusedEntry
-      const isEntryOpened =
-        shouldCheckOpened &&
-        isFileExplorerEntryOpened(openedRowsRef.current, focusedEntry)
-      switch (key) {
-        case 'ArrowLeft':
-          if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
-            // NO OP
-          } else if (shouldCheckOpened && isEntryOpened) {
-            // close
-            const newOpenedRows = { ...openedRowsRef.current }
-            const key = focusedEntry.key
-            const value = openedRowsRef.current[key]
-            newOpenedRows[key] = !value
-            setOpenedRows(newOpenedRows)
-
-            // If you press the left arrow and you are at the first child in a folder, run the callback on the parent
-            // folder which would move your cursor up a level and close the folder
-            if (
-              focusedEntry.positionInSet === 1 &&
-              focusedEntry.level !== 0 &&
-              activeIndexRef.current > 0
-            ) {
-              onRowClickCallback(
-                rowsToRenderRef.current[activeIndexRef.current - 1],
-                activeIndexRef.current - 1
-              )
-            }
-          }
-          break
-        case 'ArrowRight':
-          if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
-            // NO OP
-          } else if (shouldCheckOpened && !isEntryOpened) {
-            // open!
-            const newOpenedRows = { ...openedRowsRef.current }
-            const key = focusedEntry.key
-            const value = openedRowsRef.current[key]
-            newOpenedRows[key] = !value
-            setOpenedRows(newOpenedRows)
-          }
-          break
-        case 'ArrowUp':
-          setActiveIndex((previous) => {
-            if (previous === NOTHING_IS_SELECTED) {
-              return STARTING_INDEX_TO_SELECT
-            }
-            return Math.max(STARTING_INDEX_TO_SELECT, previous - 1)
-          })
-          break
-        case 'ArrowDown':
-          if (fileExplorerContainer.current) {
-            const numberOfDOMRows =
-              fileExplorerContainer.current.children[0].children.length - 1
-            setActiveIndex((previous) => {
-              if (previous === NOTHING_IS_SELECTED) {
-                return STARTING_INDEX_TO_SELECT
-              }
-              return Math.min(numberOfDOMRows, previous + 1)
-            })
-          }
-          break
-        case 'Enter':
-          if (activeIndexRef.current >= STARTING_INDEX_TO_SELECT) {
-            // open close folder
-            const newOpenedRows = { ...openedRowsRef.current }
-            const key = focusedEntry.key
-            const value = openedRowsRef.current[key]
-            newOpenedRows[key] = !value
-            setOpenedRows(newOpenedRows)
-            onRowEnter(focusedEntry, activeIndexRef.current)
-          }
-          break
-      }
-    }
-
-    const handleFocus = () => {
-      setActiveIndex(CONTAINER_IS_SELECTED)
-    }
-
-    const handleBlur = (event: FocusEvent) => {
-      const path = event.composedPath ? event.composedPath() : []
-      if (
-        projectExplorerRef.current instanceof HTMLDivElement &&
-        fileExplorerContainer.current &&
-        !path.includes(projectExplorerRef.current)
-      ) {
-        setActiveIndex(NOTHING_IS_SELECTED)
-      }
-    }
-
-    document.addEventListener('keydown', keyDownHandler)
     document.addEventListener('click', handleClickOutside)
-    fileExplorerContainer.current?.addEventListener('focus', handleFocus)
-    fileExplorerContainer.current?.addEventListener('blur', handleBlur)
     return () => {
       document.removeEventListener('click', handleClickOutside)
-      document.removeEventListener('keydown', keyDownHandler)
-      fileExplorerContainer.current?.removeEventListener('focus', handleFocus)
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      fileExplorerContainer.current?.removeEventListener('blur', handleBlur)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [keymap, setActiveIndexWrapper])
 
   // Compute which entry should be highlighted for external drag
   const getHighlightedEntry = useCallback((): FileExplorerEntry | null => {
@@ -1094,6 +1208,36 @@ export const ProjectExplorer = ({
   }, [isExternalDragOver, dragOverTarget, rowsToRender])
 
   const highlightedEntry = getHighlightedEntry()
+
+  const handleExplorerFocus = useCallback(
+    (event: ReactFocusEvent<HTMLDivElement>) => {
+      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      if (
+        event.target === fileExplorerContainer.current &&
+        activeIndexRef.current === NOTHING_IS_SELECTED
+      ) {
+        setActiveIndexWrapper(CONTAINER_IS_SELECTED)
+      }
+    },
+    [keymap, setActiveIndexWrapper]
+  )
+
+  const handleExplorerBlur = useCallback(
+    (event: ReactFocusEvent<HTMLDivElement>) => {
+      const nextTarget = event.relatedTarget
+      if (
+        nextTarget instanceof Node &&
+        projectExplorerRef.current?.contains(nextTarget)
+      ) {
+        return
+      }
+
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+      setActiveIndexWrapper(NOTHING_IS_SELECTED)
+    },
+    [keymap, setActiveIndexWrapper]
+  )
 
   return (
     <div
@@ -1113,9 +1257,12 @@ export const ProjectExplorer = ({
         role="tree"
         aria-label="Files Explorer"
         ref={fileExplorerContainer}
+        onFocus={handleExplorerFocus}
+        onBlur={handleExplorerBlur}
         onClick={(event) => {
           if (event.target === fileExplorerContainer.current) {
-            setActiveIndex(CONTAINER_IS_SELECTED)
+            focusProjectExplorer()
+            setActiveIndexWrapper(CONTAINER_IS_SELECTED)
             setSelectedRowWrapper(null)
           }
         }}
