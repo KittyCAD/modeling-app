@@ -186,6 +186,17 @@ function CommandBarHeaderFooter({
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
+                    {arg.status === 'experimental' && (
+                      <span className="inline-flex items-center">
+                        <CustomIcon name="beaker" className="w-3.5 h-3.5" />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
                       data-test-name="arg-name"

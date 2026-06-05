@@ -123,6 +123,8 @@ import {
 } from '@src/lang/modifyAst/faces'
 import {
   addAnnotationGdt,
+  addCircularityGdt,
+  addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
@@ -591,6 +593,14 @@ export type ModelingMachineEvent =
   | {
       type: 'GDT Straightness'
       data: ModelingCommandSchema['GDT Straightness']
+    }
+  | {
+      type: 'GDT Circularity'
+      data: ModelingCommandSchema['GDT Circularity']
+    }
+  | {
+      type: 'GDT Cylindricity'
+      data: ModelingCommandSchema['GDT Cylindricity']
     }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
@@ -4271,11 +4281,31 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+        let ast = input.kclManager.ast
+        if (
+          input.data.draftAngle &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
+
         const astResult = addExtrude({
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
           ...input.data,
         })
         if (err(astResult)) {
@@ -4829,7 +4859,25 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        let ast = input.kclManager.ast
+        if (
+          input.data.version &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            input.wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
         const astResult = addFillet({
           ...input.data,
           ast,
@@ -4870,7 +4918,25 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        let ast = input.kclManager.ast
+        if (
+          input.data.version &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            input.wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
         const astResult = addChamfer({
           ...input.data,
           ast,
@@ -5303,6 +5369,100 @@ export const modelingMachine = setup({
         })
 
         const result = addStraightnessGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtCircularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Circularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addCircularityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtCylindricityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Cylindricity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addCylindricityGdt({
           ...data,
           ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
@@ -6377,6 +6537,14 @@ export const modelingMachine = setup({
 
         'GDT Straightness': {
           target: 'Applying GDT Straightness',
+        },
+
+        'GDT Circularity': {
+          target: 'Applying GDT Circularity',
+        },
+
+        'GDT Cylindricity': {
+          target: 'Applying GDT Cylindricity',
         },
 
         'GDT Datum': {
@@ -8477,6 +8645,46 @@ export const modelingMachine = setup({
         id: 'gdtStraightnessAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Straightness') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Circularity': {
+      invoke: {
+        src: 'gdtCircularityAstMod',
+        id: 'gdtCircularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Circularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Cylindricity': {
+      invoke: {
+        src: 'gdtCylindricityAstMod',
+        id: 'gdtCylindricityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Cylindricity') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

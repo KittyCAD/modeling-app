@@ -61,6 +61,7 @@ export function addFillet({
   selection,
   radius,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -69,6 +70,7 @@ export function addFillet({
   selection: Selections
   radius: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -118,6 +120,9 @@ export function addFillet({
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
@@ -125,10 +130,14 @@ export function addFillet({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
     const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
       createLabeledArg('tags', data.tagsExpr),
       createLabeledArg('radius', valueOrVariable(radius)),
       ...tagArgs,
+      ...versionArgs,
     ])
 
     const pathToNode = setCallInAst({
@@ -154,6 +163,7 @@ export function addChamfer({
   secondLength,
   angle,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -164,6 +174,7 @@ export function addChamfer({
   secondLength?: KclCommandValue
   angle?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -223,6 +234,9 @@ export function addChamfer({
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -236,6 +250,9 @@ export function addChamfer({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
 
     const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
       createLabeledArg('tags', data.tagsExpr),
@@ -243,6 +260,7 @@ export function addChamfer({
       ...secondLengthArgs,
       ...angleArgs,
       ...tagArgs,
+      ...versionArgs,
     ])
 
     const pathToNode = setCallInAst({

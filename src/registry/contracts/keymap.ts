@@ -105,6 +105,74 @@ export function normalizeKeymapChord(chord: string) {
     .join('+')
 }
 
+type KeyboardEventKeyInput = Pick<
+  KeyboardEvent,
+  'altKey' | 'code' | 'ctrlKey' | 'key' | 'metaKey'
+>
+
+export function normalizeEventKey(event: KeyboardEventKeyInput) {
+  const key = getUnmodifiedKeyFromCode(event)
+  if (key) {
+    return key
+  }
+
+  return normalizeEventKeyValue(event.key)
+}
+
+function normalizeEventKeyValue(key: string) {
+  if (key.length === 1) {
+    return key.toLowerCase()
+  }
+
+  const normalized = key.toLowerCase()
+  if (normalized === ' ') {
+    return 'space'
+  }
+
+  return normalized
+}
+
+/**
+ * Returns the physical key for modified shortcuts when `event.key` contains the
+ * typed character instead. For example, macOS Alt+D reports a symbol as
+ * `event.key`, but `event.code` still identifies the D key as `KeyD`.
+ */
+function getUnmodifiedKeyFromCode(event: KeyboardEventKeyInput) {
+  if (!event.altKey && !event.ctrlKey && !event.metaKey) {
+    return null
+  }
+
+  if (event.code.startsWith('Key') && event.code.length === 4) {
+    return event.code.slice(3).toLowerCase()
+  }
+
+  if (event.code.startsWith('Digit') && event.code.length === 6) {
+    return event.code.slice(5)
+  }
+
+  return unmodifiedKeyByCode[event.code] ?? null
+}
+
+const unmodifiedKeyByCode: Record<string, string> = {
+  Backquote: '`',
+  Backslash: '\\',
+  BracketLeft: '[',
+  BracketRight: ']',
+  Comma: ',',
+  Equal: '=',
+  Minus: '-',
+  NumpadAdd: '+',
+  NumpadDecimal: '.',
+  NumpadDivide: '/',
+  NumpadMultiply: '*',
+  NumpadSubtract: '-',
+  Period: '.',
+  Quote: "'",
+  Semicolon: ';',
+  Slash: '/',
+  Space: 'space',
+}
+
 const nonTextKeymapModifiers = new Set([
   'cmd',
   'command',
