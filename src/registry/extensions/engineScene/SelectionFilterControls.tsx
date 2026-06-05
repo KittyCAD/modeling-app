@@ -105,7 +105,7 @@ export function SelectionFilterControls() {
               className="h-3 w-3 ui-open:rotate-180"
             />
           </Popover.Button>
-          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border border-chalkboard-30 bg-chalkboard-10 p-1 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90">
+          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border b-3 bg-1 p-1 shadow-lg">
             <div className="flex flex-col">
               {selectionFilterOptions.map((option) => {
                 const isActive = option.value === activeOption?.value
@@ -121,8 +121,8 @@ export function SelectionFilterControls() {
                     }}
                     className={`m-0 rounded border-none px-2 py-1 text-left text-xs ${
                       isActive
-                        ? 'bg-primary text-chalkboard-10'
-                        : 'bg-transparent text-chalkboard-90 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
+                        ? 'bg-primary text-6'
+                        : 'bg-transparent text-2 hover:bg-2'
                     }`}
                   >
                     {option.label}
