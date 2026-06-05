@@ -229,7 +229,17 @@ export const ProjectExplorer = ({
   const rowsToRenderRef = useRef(rowsToRender)
   const activeIndexRef = useRef(activeIndex)
   const selectedRowRef = useRef(selectedRow)
+  const onRowEnterRef = useRef(onRowEnter)
+  const projectExplorerCommandHandlersRef = useRef({
+    arrowLeft: () => {},
+    arrowRight: () => {},
+    arrowUp: () => {},
+    arrowDown: () => {},
+    enter: () => {},
+  })
   const previousProject = useRef(project)
+
+  onRowEnterRef.current = onRowEnter
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -437,8 +447,14 @@ export const ProjectExplorer = ({
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRowsWrapper(newOpenedRows)
-    onRowEnter(focusedEntry, activeIndexRef.current)
-  }, [onRowEnter, setOpenedRowsWrapper])
+    onRowEnterRef.current(focusedEntry, activeIndexRef.current)
+  }, [setOpenedRowsWrapper])
+
+  projectExplorerCommandHandlersRef.current.arrowLeft = handleArrowLeftCommand
+  projectExplorerCommandHandlersRef.current.arrowRight = handleArrowRightCommand
+  projectExplorerCommandHandlersRef.current.arrowUp = handleArrowUpCommand
+  projectExplorerCommandHandlersRef.current.arrowDown = handleArrowDownCommand
+  projectExplorerCommandHandlersRef.current.enter = handleEnterCommand
 
   const projectExplorerCommands = useMemo<Command[]>(
     () => [
@@ -449,7 +465,7 @@ export const ProjectExplorer = ({
         displayName: 'Close selected project explorer row',
         needsReview: false,
         hideFromSearch: true,
-        onSubmit: handleArrowLeftCommand,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.arrowLeft(),
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowRight,
@@ -458,7 +474,7 @@ export const ProjectExplorer = ({
         displayName: 'Open selected project explorer row',
         needsReview: false,
         hideFromSearch: true,
-        onSubmit: handleArrowRightCommand,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.arrowRight(),
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
@@ -467,7 +483,7 @@ export const ProjectExplorer = ({
         displayName: 'Move project explorer selection up',
         needsReview: false,
         hideFromSearch: true,
-        onSubmit: handleArrowUpCommand,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.arrowUp(),
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
@@ -476,7 +492,7 @@ export const ProjectExplorer = ({
         displayName: 'Move project explorer selection down',
         needsReview: false,
         hideFromSearch: true,
-        onSubmit: handleArrowDownCommand,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.arrowDown(),
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.enter,
@@ -485,16 +501,10 @@ export const ProjectExplorer = ({
         displayName: 'Open selected project explorer file',
         needsReview: false,
         hideFromSearch: true,
-        onSubmit: handleEnterCommand,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.enter(),
       },
     ],
-    [
-      handleArrowDownCommand,
-      handleArrowLeftCommand,
-      handleArrowRightCommand,
-      handleArrowUpCommand,
-      handleEnterCommand,
-    ]
+    []
   )
 
   useEffect(() => {
