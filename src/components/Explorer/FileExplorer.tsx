@@ -127,6 +127,7 @@ function FileExplorerRowContextMenu({
   onRename,
   onDelete,
   onCopy,
+  onDuplicate,
   onOpenInNewWindow,
   callback,
   onPaste,
@@ -137,24 +138,45 @@ function FileExplorerRowContextMenu({
       menuTargetElement={itemRef}
       callback={callback}
       items={[
-        <ContextMenuItem data-testid="context-menu-rename" onClick={onRename}>
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          hotkey="f2"
+          onClick={onRename}
+        >
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem data-testid="context-menu-delete" onClick={onDelete}>
+        <ContextMenuItem
+          data-testid="context-menu-delete"
+          hotkey="mod+backspace"
+          onClick={onDelete}
+        >
           Delete
         </ContextMenuItem>,
-        <ContextMenuItem data-testid="context-menu-copy" onClick={onCopy}>
+        <ContextMenuItem
+          data-testid="context-menu-copy"
+          hotkey="mod+c"
+          onClick={onCopy}
+        >
           Copy
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-duplicate"
+          hotkey="mod+d"
+          onClick={onDuplicate}
+        >
+          Duplicate
         </ContextMenuItem>,
         <ContextMenuItem
           disabled={!isCopying}
           data-testid="context-menu-paste"
+          hotkey="mod+v"
           onClick={onPaste}
         >
           Paste
         </ContextMenuItem>,
         <ContextMenuItem
           data-testid="context-menu-open-in-new-window"
+          hotkey="mod+enter"
           onClick={onOpenInNewWindow}
         >
           Open in new window
@@ -500,6 +522,9 @@ export const FileExplorerRowElement = ({
         }}
         onCopy={() => {
           row.onCopy()
+        }}
+        onDuplicate={() => {
+          row.onDuplicate()
         }}
         callback={() => {
           row.onContextMenuOpen(row.domIndex)

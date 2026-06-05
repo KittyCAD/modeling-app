@@ -57,6 +57,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onOpenInNewWindow: () => void
   onDelete: () => void
   onCopy: () => void
+  onDuplicate: () => void
   onPaste: () => void
   onDrop: (props: { src: FileExplorerDropData }) => void
   onRenameStart: () => void
@@ -78,6 +79,7 @@ export interface FileExplorerRowContextMenuProps {
   onOpenInNewWindow: () => void
   callback: () => void
   onCopy: () => void
+  onDuplicate: () => void
   onPaste: () => void
   isCopying: boolean
 }

@@ -416,6 +416,100 @@ describe('ProjectExplorer', () => {
       )
     })
   })
+  it('should render hotkey indicators in the project explorer context menu', async () => {
+    project.children = [oneFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.contextMenu(screen.getByText('main.kcl'))
+
+    await waitFor(() => {
+      for (const testId of [
+        'context-menu-rename',
+        'context-menu-delete',
+        'context-menu-copy',
+        'context-menu-duplicate',
+        'context-menu-paste',
+        'context-menu-open-in-new-window',
+      ]) {
+        expect(
+          screen.getByTestId(testId).querySelector('kbd.hotkey')
+        ).not.toBeNull()
+      }
+    })
+  })
+  it('should open the active row in a new window with the keymap shortcut', async () => {
+    project.children = [oneFile]
+    const openInNewWindow = vi.fn()
+    const originalElectronDescriptor = Object.getOwnPropertyDescriptor(
+      window,
+      'electron'
+    )
+    Object.defineProperty(window, 'electron', {
+      configurable: true,
+      value: {
+        ...(window.electron || {}),
+        openInNewWindow,
+      },
+    })
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireModKeyDown('Enter', 'Enter')
+
+    await waitFor(() => {
+      expect(openInNewWindow).toHaveBeenCalledWith(oneFile.path)
+    })
+
+    if (originalElectronDescriptor) {
+      Object.defineProperty(window, 'electron', originalElectronDescriptor)
+    } else {
+      delete window.electron
+    }
+  })
   it('should open delete confirmation with the delete keymap shortcut', async () => {
     project.children = [oneFile]
 
@@ -461,8 +555,16 @@ describe('ProjectExplorer', () => {
           keystrokes: ['mod+c'],
         }),
         expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.duplicate,
+          keystrokes: ['mod+d'],
+        }),
+        expect.objectContaining({
           id: PROJECT_EXPLORER_COMMAND_IDS.paste,
           keystrokes: ['mod+v'],
+        }),
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.openInNewWindow,
+          keystrokes: ['mod+enter'],
         }),
       ])
     )

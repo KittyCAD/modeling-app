@@ -240,7 +240,9 @@ export const ProjectExplorer = ({
     rename: () => {},
     delete: () => {},
     copy: () => {},
+    duplicate: () => {},
     paste: () => {},
+    openInNewWindow: () => {},
   })
   const previousProject = useRef(project)
   const lastSyncedFilePathRef = useRef<string | undefined>(undefined)
@@ -510,6 +512,32 @@ export const ProjectExplorer = ({
     focusedEntry.onPaste()
   }, [readOnly])
 
+  const handleDuplicateCommand = useCallback(() => {
+    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry || focusedEntry.isFake) {
+      return
+    }
+
+    focusedEntry.onDuplicate()
+  }, [readOnly])
+
+  const handleOpenInNewWindowCommand = useCallback(() => {
+    if (activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry || focusedEntry.isFake) {
+      return
+    }
+
+    focusedEntry.onOpenInNewWindow()
+  }, [])
+
   projectExplorerCommandHandlersRef.current.arrowLeft = handleArrowLeftCommand
   projectExplorerCommandHandlersRef.current.arrowRight = handleArrowRightCommand
   projectExplorerCommandHandlersRef.current.arrowUp = handleArrowUpCommand
@@ -518,7 +546,10 @@ export const ProjectExplorer = ({
   projectExplorerCommandHandlersRef.current.rename = handleRenameCommand
   projectExplorerCommandHandlersRef.current.delete = handleDeleteCommand
   projectExplorerCommandHandlersRef.current.copy = handleCopyCommand
+  projectExplorerCommandHandlersRef.current.duplicate = handleDuplicateCommand
   projectExplorerCommandHandlersRef.current.paste = handlePasteCommand
+  projectExplorerCommandHandlersRef.current.openInNewWindow =
+    handleOpenInNewWindowCommand
 
   const projectExplorerCommands = useMemo<Command[]>(
     () => [
@@ -595,6 +626,15 @@ export const ProjectExplorer = ({
         onSubmit: () => projectExplorerCommandHandlersRef.current.copy(),
       },
       {
+        id: PROJECT_EXPLORER_COMMAND_IDS.duplicate,
+        name: 'duplicate',
+        groupId: 'project-explorer',
+        displayName: 'Duplicate selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.duplicate(),
+      },
+      {
         id: PROJECT_EXPLORER_COMMAND_IDS.paste,
         name: 'paste',
         groupId: 'project-explorer',
@@ -602,6 +642,16 @@ export const ProjectExplorer = ({
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.paste(),
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.openInNewWindow,
+        name: 'open-in-new-window',
+        groupId: 'project-explorer',
+        displayName: 'Open selected project explorer row in a new window',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: () =>
+          projectExplorerCommandHandlersRef.current.openInNewWindow(),
       },
     ],
     []
@@ -989,6 +1039,20 @@ export const ProjectExplorer = ({
             // clear the path
             copyToClipBoard.current = null
             setIsCopying(false)
+          },
+          onDuplicate: () => {
+            copyEntryToTarget(
+              {
+                path: row.path,
+                name: row.name,
+                children: row.children,
+              },
+              {
+                path: row.path,
+                name: row.name,
+                children: row.children,
+              }
+            )
           },
           /**
            * For now this mimics {onPaste} and does not destroy the previous location.

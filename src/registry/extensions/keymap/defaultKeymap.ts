@@ -22,7 +22,9 @@ export const PROJECT_EXPLORER_COMMAND_IDS = {
   rename: 'project-explorer.rename',
   delete: 'project-explorer.delete',
   copy: 'project-explorer.copy',
+  duplicate: 'project-explorer.duplicate',
   paste: 'project-explorer.paste',
+  openInNewWindow: 'project-explorer.open-in-new-window',
 } as const
 
 function createExitSketchBindings({
@@ -144,11 +146,25 @@ export const defaultKeymap: KeymapDocument = {
       command: PROJECT_EXPLORER_COMMAND_IDS.copy,
     },
     {
+      id: 'project-explorer.duplicate',
+      title: 'Duplicate selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+d'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.duplicate,
+    },
+    {
       id: 'project-explorer.paste',
       title: 'Paste into selected project explorer row',
       scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['mod+v'],
       command: PROJECT_EXPLORER_COMMAND_IDS.paste,
+    },
+    {
+      id: 'project-explorer.open-in-new-window',
+      title: 'Open selected project explorer row in a new window',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+enter'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.openInNewWindow,
     },
     {
       id: 'view.top',
