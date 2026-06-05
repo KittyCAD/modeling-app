@@ -211,6 +211,7 @@ export const ProjectExplorer = ({
   const [contextMenuRow, setContextMenuRow] =
     useState<FileExplorerEntry | null>(null)
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [isCopying, setIsCopying] = useState<boolean>(false)
   const lastIndexBeforeNothing = useRef<number>(-2)
 
@@ -237,6 +238,9 @@ export const ProjectExplorer = ({
     arrowDown: () => {},
     enter: () => {},
     rename: () => {},
+    delete: () => {},
+    copy: () => {},
+    paste: () => {},
   })
   const previousProject = useRef(project)
   const lastSyncedFilePathRef = useRef<string | undefined>(undefined)
@@ -466,12 +470,55 @@ export const ProjectExplorer = ({
     setIsRenaming(true)
   }, [readOnly])
 
+  const handleDeleteCommand = useCallback(() => {
+    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry || focusedEntry.isFake) {
+      return
+    }
+
+    setContextMenuRow(focusedEntry)
+    setIsDeleting(true)
+  }, [readOnly])
+
+  const handleCopyCommand = useCallback(() => {
+    if (activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry || focusedEntry.isFake) {
+      return
+    }
+
+    focusedEntry.onCopy()
+  }, [])
+
+  const handlePasteCommand = useCallback(() => {
+    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+      return
+    }
+
+    const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+    if (!focusedEntry || focusedEntry.isFake) {
+      return
+    }
+
+    focusedEntry.onPaste()
+  }, [readOnly])
+
   projectExplorerCommandHandlersRef.current.arrowLeft = handleArrowLeftCommand
   projectExplorerCommandHandlersRef.current.arrowRight = handleArrowRightCommand
   projectExplorerCommandHandlersRef.current.arrowUp = handleArrowUpCommand
   projectExplorerCommandHandlersRef.current.arrowDown = handleArrowDownCommand
   projectExplorerCommandHandlersRef.current.enter = handleEnterCommand
   projectExplorerCommandHandlersRef.current.rename = handleRenameCommand
+  projectExplorerCommandHandlersRef.current.delete = handleDeleteCommand
+  projectExplorerCommandHandlersRef.current.copy = handleCopyCommand
+  projectExplorerCommandHandlersRef.current.paste = handlePasteCommand
 
   const projectExplorerCommands = useMemo<Command[]>(
     () => [
@@ -528,6 +575,33 @@ export const ProjectExplorer = ({
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.rename(),
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.delete,
+        name: 'delete',
+        groupId: 'project-explorer',
+        displayName: 'Delete selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.delete(),
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.copy,
+        name: 'copy',
+        groupId: 'project-explorer',
+        displayName: 'Copy selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.copy(),
+      },
+      {
+        id: PROJECT_EXPLORER_COMMAND_IDS.paste,
+        name: 'paste',
+        groupId: 'project-explorer',
+        displayName: 'Paste into selected project explorer row',
+        needsReview: false,
+        hideFromSearch: true,
+        onSubmit: () => projectExplorerCommandHandlersRef.current.paste(),
       },
     ],
     []
@@ -681,6 +755,7 @@ export const ProjectExplorer = ({
       setRowsToRender([])
       setContextMenuRow(null)
       setIsRenaming(false)
+      setIsDeleting(false)
       lastSyncedFilePathRef.current = undefined
       keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
@@ -725,6 +800,32 @@ export const ProjectExplorer = ({
         openedRowsChanged = openedRowsChanged || !openedRowsForRender[key]
         openedRowsForRender[key] = true
         pathIterator.pop()
+      }
+    }
+
+    const copyEntryToTarget = (src: FileEntry, target: FileEntry) => {
+      const absoluteParentPath = getParentAbsolutePath(target.path)
+      const parentIndex = flattenedData.findIndex((entry) => {
+        return entry.path === absoluteParentPath
+      })
+      const parent = parentIndex >= 0 ? flattenedData[parentIndex] : project
+      const result = copyPasteSourceAndTarget(
+        target.children?.map((child) => child.path) || [],
+        parent.children?.map((child) => child.path) || [],
+        src,
+        target,
+        '-copy-'
+      )
+      if (result && result.src && result.target) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.copyRecursive,
+          data: {
+            src: result.src,
+            target: result.target,
+          },
+        })
+      } else {
+        toast.error('Failed to copy and paste the result is null.')
       }
     }
 
@@ -878,34 +979,11 @@ export const ProjectExplorer = ({
           },
           onPaste: () => {
             if (copyToClipBoard.current) {
-              const absoluteParentPath = getParentAbsolutePath(row.path)
-              const parentIndex = flattenedData.findIndex((entry) => {
-                return entry.path === absoluteParentPath
+              copyEntryToTarget(copyToClipBoard.current, {
+                path: row.path,
+                name: row.name,
+                children: row.children,
               })
-              const parent =
-                parentIndex >= 0 ? flattenedData[parentIndex] : project
-              const result = copyPasteSourceAndTarget(
-                row.children?.map((child) => child.path) || [],
-                parent.children?.map((child) => child.path) || [],
-                copyToClipBoard.current,
-                {
-                  path: row.path,
-                  name: row.name,
-                  children: row.children,
-                },
-                '-copy-'
-              )
-              if (result && result.src && result.target) {
-                systemIOActor.send({
-                  type: SystemIOMachineEvents.copyRecursive,
-                  data: {
-                    src: result.src,
-                    target: result.target,
-                  },
-                })
-              } else {
-                toast.error('Failed to copy and paste the result is null.')
-              }
             }
 
             // clear the path
@@ -1207,9 +1285,14 @@ export const ProjectExplorer = ({
 
   useEffect(() => {
     if (isRenaming) {
+      const fileExplorerContainerElement = fileExplorerContainer.current
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
       keymap?.applyScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       return () => {
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
+        if (fileExplorerContainerElement?.contains(document.activeElement)) {
+          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+        }
       }
     }
 
@@ -1352,9 +1435,13 @@ export const ProjectExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isDeleting={isDeleting}
             isCopying={isCopying}
             isExternalDragOver={isExternalDragOver}
             highlightedEntry={highlightedEntry}
+            onDeleteEnd={() => {
+              setIsDeleting(false)
+            }}
             onExternalDragOverRow={handleDragOverTarget}
           />
         )}

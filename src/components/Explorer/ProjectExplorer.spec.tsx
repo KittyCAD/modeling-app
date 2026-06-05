@@ -7,6 +7,10 @@ import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  PROJECT_EXPLORER_COMMAND_IDS,
+  defaultKeymap,
+} from '@src/registry/extensions/keymap/defaultKeymap'
+import {
   cleanup,
   fireEvent,
   render,
@@ -51,6 +55,14 @@ const createFolder = (name: string, children?: FileEntry[]): FileEntry => {
     path: `/${applicationDirectory}/${projectName}/${name}`,
     children: children || [],
   }
+}
+const fireModKeyDown = (key: string, code: string) => {
+  fireEvent.keyDown(window, {
+    key,
+    code,
+    ctrlKey: true,
+    metaKey: true,
+  })
 }
 const oneFile: FileEntry = createFile('main.kcl')
 const PROJECT_TEMPLATE: Project = {
@@ -367,6 +379,93 @@ describe('ProjectExplorer', () => {
         'main.kcl'
       )
     })
+  })
+  it('should enable paste after copying the active row with the keymap shortcut', async () => {
+    project.children = [oneFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireModKeyDown('c', 'KeyC')
+    fireEvent.contextMenu(screen.getByText('main.kcl'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('context-menu-paste')).not.toHaveAttribute(
+        'disabled'
+      )
+    })
+  })
+  it('should open delete confirmation with the delete keymap shortcut', async () => {
+    project.children = [oneFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireModKeyDown('Backspace', 'Backspace')
+
+    await waitFor(() => {
+      expect(screen.getByTestId('delete-confirmation')).toBeInTheDocument()
+    })
+  })
+  it('should define default keymap bindings for project explorer file operations', () => {
+    expect(defaultKeymap.bindings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.delete,
+          keystrokes: ['mod+backspace'],
+        }),
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.copy,
+          keystrokes: ['mod+c'],
+        }),
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.paste,
+          keystrokes: ['mod+v'],
+        }),
+      ])
+    )
   })
   it('should move the active row with keymap arrow navigation without resetting to the current file', async () => {
     const mainFile = createFile('main.kcl')

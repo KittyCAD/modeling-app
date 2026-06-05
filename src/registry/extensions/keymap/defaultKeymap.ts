@@ -20,6 +20,9 @@ export const PROJECT_EXPLORER_COMMAND_IDS = {
   arrowDown: 'project-explorer.arrow-down',
   enter: 'project-explorer.enter',
   rename: 'project-explorer.rename',
+  delete: 'project-explorer.delete',
+  copy: 'project-explorer.copy',
+  paste: 'project-explorer.paste',
 } as const
 
 function createExitSketchBindings({
@@ -125,6 +128,27 @@ export const defaultKeymap: KeymapDocument = {
       scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['f2'],
       command: PROJECT_EXPLORER_COMMAND_IDS.rename,
+    },
+    {
+      id: 'project-explorer.delete',
+      title: 'Delete selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+backspace'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.delete,
+    },
+    {
+      id: 'project-explorer.copy',
+      title: 'Copy selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+c'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.copy,
+    },
+    {
+      id: 'project-explorer.paste',
+      title: 'Paste into selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+v'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.paste,
     },
     {
       id: 'view.top',
