@@ -23,8 +23,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -49,8 +48,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -75,8 +73,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -101,8 +98,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -127,8 +123,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -153,8 +148,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -455,8 +449,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -622,8 +615,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -789,8 +781,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -956,8 +947,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -1123,8 +1113,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -1290,8 +1279,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -1762,8 +1750,7 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -1997,8 +1984,7 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -2232,8 +2218,7 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -2467,8 +2452,7 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -2702,8 +2686,7 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -2937,8 +2920,7 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },

@@ -492,7 +492,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
             "edgeCutIds": [
               "[uuid]",
               "[uuid]",
@@ -882,7 +881,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]",
@@ -1042,7 +1040,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]",

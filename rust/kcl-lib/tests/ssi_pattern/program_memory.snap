@@ -452,8 +452,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -546,8 +545,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -640,8 +638,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -734,8 +731,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -828,8 +824,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -922,8 +917,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1016,8 +1010,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1110,8 +1103,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1204,8 +1196,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1298,8 +1289,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1392,8 +1382,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1486,8 +1475,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1580,8 +1568,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1674,8 +1661,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1768,8 +1754,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1862,8 +1847,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -1956,8 +1940,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2050,8 +2033,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2144,8 +2126,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2238,8 +2219,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2332,8 +2312,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2426,8 +2405,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2520,8 +2498,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2614,8 +2591,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2708,8 +2684,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2802,8 +2777,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2896,8 +2870,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -2990,8 +2963,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -3084,8 +3056,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -3178,8 +3149,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },

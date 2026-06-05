@@ -89,8 +89,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -115,8 +114,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -2608,8 +2606,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -2721,8 +2718,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -2795,8 +2791,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "solidId": "[uuid]"
                 },
                 "units": "mm"
               },
@@ -2911,8 +2906,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -3035,8 +3029,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -3537,8 +3530,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -3676,8 +3668,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -3790,8 +3781,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -3864,8 +3854,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "solidId": "[uuid]"
                 },
                 "units": "mm"
               },
@@ -4111,8 +4100,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -4200,8 +4188,7 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },

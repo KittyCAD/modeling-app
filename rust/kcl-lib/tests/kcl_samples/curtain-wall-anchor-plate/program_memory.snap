@@ -23,8 +23,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -82,8 +81,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }
@@ -2816,8 +2814,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -4769,8 +4766,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -4843,8 +4839,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "solidId": "[uuid]"
                 },
                 "units": "mm"
               },
@@ -4978,8 +4973,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -5052,8 +5046,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -5351,8 +5344,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -7016,8 +7008,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -7393,8 +7384,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -8114,8 +8104,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -8227,8 +8216,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -8340,8 +8328,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -8453,8 +8440,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -8566,8 +8552,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -8679,8 +8664,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -8867,8 +8851,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "solidId": "[uuid]"
                 },
                 "units": "mm"
               },
@@ -9022,8 +9005,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -9136,8 +9118,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "mm"
                 },
@@ -9333,8 +9314,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -9677,8 +9657,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },
@@ -9996,8 +9975,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "mm"
             },

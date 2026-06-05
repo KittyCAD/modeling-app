@@ -330,7 +330,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
             "edgeCutIds": [
               "[uuid]"
             ]
@@ -602,7 +601,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
           "edgeCutIds": [
             "[uuid]"
           ]

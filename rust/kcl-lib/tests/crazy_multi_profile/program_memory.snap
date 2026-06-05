@@ -289,8 +289,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -701,8 +700,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -829,8 +827,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -938,8 +935,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -1013,8 +1009,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -1116,8 +1111,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "mm"
       },
@@ -1793,8 +1787,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },
@@ -2030,8 +2023,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "mm"
     }

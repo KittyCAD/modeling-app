@@ -295,8 +295,7 @@ description: Variables in memory after executing error_revolve_on_edge_get_edge.
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },

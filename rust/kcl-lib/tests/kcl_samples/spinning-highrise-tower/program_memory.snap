@@ -23,8 +23,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "m"
     }
@@ -8923,8 +8922,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "m"
         },
@@ -9161,8 +9159,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -9396,8 +9393,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -9631,8 +9627,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -9866,8 +9861,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -10101,8 +10095,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -10336,8 +10329,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -10571,8 +10563,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -10806,8 +10797,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -11041,8 +11031,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -11276,8 +11265,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -11511,8 +11499,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -11746,8 +11733,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -11981,8 +11967,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -12216,8 +12201,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -12451,8 +12435,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -12686,8 +12669,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -12921,8 +12903,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "m"
             },
@@ -13095,8 +13076,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "m"
       },
@@ -13241,8 +13221,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "m"
                 },
@@ -13354,8 +13333,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "m"
                 },
@@ -13467,8 +13445,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "m"
                 },
@@ -13580,8 +13557,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "m"
                 },
@@ -13720,8 +13696,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "solidId": "[uuid]"
                 },
                 "units": "m"
               },
@@ -15707,8 +15682,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "m"
       },

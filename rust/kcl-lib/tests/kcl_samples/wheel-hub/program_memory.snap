@@ -90,7 +90,6 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
         "edgeCutIds": [
           "[uuid]",
           "[uuid]"
@@ -151,8 +150,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "in"
     }
@@ -533,7 +531,6 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
             "edgeCutIds": [
               "[uuid]",
               "[uuid]"
@@ -697,7 +694,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -815,7 +811,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -933,7 +928,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1050,7 +1044,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1167,7 +1160,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1284,7 +1276,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1401,7 +1392,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1518,7 +1508,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1635,7 +1624,6 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1827,7 +1815,6 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
                   "edgeCutIds": [
                     "[uuid]",
                     "[uuid]"
@@ -2060,7 +2047,6 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]"
@@ -2196,8 +2182,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },
@@ -2311,8 +2296,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },
@@ -2426,8 +2410,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },
@@ -2541,8 +2524,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },
@@ -2656,8 +2638,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },
@@ -2798,8 +2779,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "in"
                 },
@@ -2911,8 +2891,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "in"
                 },
@@ -2985,8 +2964,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "solidId": "[uuid]"
                 },
                 "units": "in"
               },
@@ -3120,8 +3098,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "solidId": "[uuid]"
                   },
                   "units": "in"
                 },
@@ -3194,8 +3171,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "solidId": "[uuid]"
         },
         "units": "in"
       },

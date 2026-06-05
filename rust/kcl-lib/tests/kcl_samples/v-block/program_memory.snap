@@ -588,8 +588,7 @@ description: Variables in memory after executing v-block.kcl
               "units": null
             },
             "parentSolid": {
-              "solidId": "[uuid]",
-              "creatorSketchId": "[uuid]"
+              "solidId": "[uuid]"
             },
             "units": "in"
           },
@@ -663,8 +662,7 @@ description: Variables in memory after executing v-block.kcl
               "units": null
             },
             "parentSolid": {
-              "solidId": "[uuid]",
-              "creatorSketchId": "[uuid]"
+              "solidId": "[uuid]"
             },
             "units": "in"
           },
@@ -720,8 +718,7 @@ description: Variables in memory after executing v-block.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "solidId": "[uuid]"
       },
       "units": "in"
     }
@@ -792,8 +789,7 @@ description: Variables in memory after executing v-block.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },
@@ -886,8 +882,7 @@ description: Variables in memory after executing v-block.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "solidId": "[uuid]"
               },
               "units": "in"
             },

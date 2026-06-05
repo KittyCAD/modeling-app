@@ -256,8 +256,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "solidId": "[uuid]"
           },
           "units": "mm"
         },

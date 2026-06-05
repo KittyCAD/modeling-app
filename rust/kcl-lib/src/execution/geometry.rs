@@ -1025,7 +1025,9 @@ impl Extrudable {
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
-            Extrudable::Face(face) => (face.parent_solid.creator_sketch).as_ref().map(|creator_sketch| (**creator_sketch).clone()),
+            Extrudable::Face(face) => (face.parent_solid.creator_sketch)
+                .as_ref()
+                .map(|creator_sketch| (**creator_sketch).clone()),
         }
     }
 
