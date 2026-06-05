@@ -373,7 +373,7 @@ sketch001 = startSketchOn(XZ)
 
   test(
     'Can add multiple sketches',
-    { tag: '@desktop' },
+    { tag: ['@desktop', '@macos'] },
     async ({ page, context, homePage, scene, toolbar, cmdBar, editor }) => {
       const viewportSize = { width: 1200, height: 500 }
       await context.addInitScript((initialCode) => {
