@@ -190,9 +190,12 @@ async fn inner_sweep(
                 };
                 BeingExtruded::Face { face_id, solid_id }
             }
-            Extrudable::Face(face) => todo!(),
+            Extrudable::Face(face) => BeingExtruded::Face {
+                face_id: face.id,
+                solid_id: face.parent_solid.solid_id,
+            },
         };
-        
+
         if let Some(post_extr_sketch) = sketch.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
                 exec_state,
