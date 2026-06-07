@@ -4722,12 +4722,19 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           "from": [
             0.0,
-            0.0
+            1.75
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 87,
+            "end": 96,
+            "moduleId": 0,
+            "start": 87,
+            "type": "TagDeclarator",
+            "value": "bodyToEye"
+          },
           "to": [
-            0.0,
-            0.0
+            0.55,
+            1.92
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4738,13 +4745,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            0.55,
+            1.92
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 169,
+            "end": 182,
+            "moduleId": 0,
+            "start": 169,
+            "type": "TagDeclarator",
+            "value": "eyeStalkOuter"
+          },
           "to": [
-            0.0,
-            0.0
+            1.04,
+            3.26
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4755,13 +4769,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            0.30000000000000004,
+            3.26
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 375,
+            "end": 388,
+            "moduleId": 0,
+            "start": 375,
+            "type": "TagDeclarator",
+            "value": "eyeStalkInner"
+          },
           "to": [
-            0.0,
-            0.0
+            0.72,
+            2.18
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4772,13 +4793,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            0.72,
+            2.18
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 464,
+            "end": 473,
+            "moduleId": 0,
+            "start": 464,
+            "type": "TagDeclarator",
+            "value": "eyeToClaw"
+          },
           "to": [
-            0.0,
-            0.0
+            2.0,
+            1.58
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4789,13 +4817,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            2.0,
+            1.58
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 549,
+            "end": 561,
+            "moduleId": 0,
+            "start": 549,
+            "type": "TagDeclarator",
+            "value": "clawUpperArm"
+          },
           "to": [
-            0.0,
-            0.0
+            3.35,
+            2.7
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4806,13 +4841,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            3.35,
+            2.7
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 637,
+            "end": 648,
+            "moduleId": 0,
+            "start": 637,
+            "type": "TagDeclarator",
+            "value": "upperPincer"
+          },
           "to": [
-            0.0,
-            0.0
+            5.05,
+            2.42
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4823,13 +4865,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            5.05,
+            2.42
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 724,
+            "end": 733,
+            "moduleId": 0,
+            "start": 724,
+            "type": "TagDeclarator",
+            "value": "clawNotch"
+          },
           "to": [
-            0.0,
-            0.0
+            4.38,
+            1.82
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4840,13 +4889,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.38,
+            1.82
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 809,
+            "end": 820,
+            "moduleId": 0,
+            "start": 809,
+            "type": "TagDeclarator",
+            "value": "lowerPincer"
+          },
           "to": [
-            0.0,
-            0.0
+            4.98,
+            1.12
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4857,13 +4913,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.98,
+            1.12
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 896,
+            "end": 910,
+            "moduleId": 0,
+            "start": 896,
+            "type": "TagDeclarator",
+            "value": "clawOuterLower"
+          },
           "to": [
-            0.0,
-            0.0
+            4.28,
+            0.6
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4874,13 +4937,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.28,
+            0.6
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 986,
+            "end": 996,
+            "moduleId": 0,
+            "start": 986,
+            "type": "TagDeclarator",
+            "value": "clawReturn"
+          },
           "to": [
-            0.0,
-            0.0
+            3.06,
+            0.88
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4891,13 +4961,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            3.06,
+            0.88
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1072,
+            "end": 1085,
+            "moduleId": 0,
+            "start": 1072,
+            "type": "TagDeclarator",
+            "value": "bodyAfterClaw"
+          },
           "to": [
-            0.0,
-            0.0
+            2.02,
+            0.8
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4908,13 +4985,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            2.02,
+            0.8
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1161,
+            "end": 1171,
+            "moduleId": 0,
+            "start": 1161,
+            "type": "TagDeclarator",
+            "value": "bodyToLeg1"
+          },
           "to": [
-            0.0,
-            0.0
+            1.92,
+            0.42
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4925,13 +5009,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            1.92,
+            0.42
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1247,
+            "end": 1256,
+            "moduleId": 0,
+            "start": 1247,
+            "type": "TagDeclarator",
+            "value": "leg1Upper"
+          },
           "to": [
-            0.0,
-            0.0
+            4.26,
+            0.57
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4942,13 +5033,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.26,
+            0.57
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1332,
+            "end": 1339,
+            "moduleId": 0,
+            "start": 1332,
+            "type": "TagDeclarator",
+            "value": "leg1Tip"
+          },
           "to": [
-            0.0,
-            0.0
+            4.9,
+            0.18
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4959,13 +5057,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.9,
+            0.18
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1415,
+            "end": 1424,
+            "moduleId": 0,
+            "start": 1415,
+            "type": "TagDeclarator",
+            "value": "leg1Lower"
+          },
           "to": [
-            0.0,
-            0.0
+            2.14,
+            -0.08
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4976,13 +5081,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            2.14,
+            -0.08
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1501,
+            "end": 1511,
+            "moduleId": 0,
+            "start": 1501,
+            "type": "TagDeclarator",
+            "value": "bodyToLeg2"
+          },
           "to": [
-            0.0,
-            0.0
+            1.96,
+            -0.56
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4993,13 +5105,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            1.96,
+            -0.56
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1589,
+            "end": 1598,
+            "moduleId": 0,
+            "start": 1589,
+            "type": "TagDeclarator",
+            "value": "leg2Upper"
+          },
           "to": [
-            0.0,
-            0.0
+            4.28,
+            -0.76
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5010,13 +5129,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.28,
+            -0.76
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1676,
+            "end": 1683,
+            "moduleId": 0,
+            "start": 1676,
+            "type": "TagDeclarator",
+            "value": "leg2Tip"
+          },
           "to": [
-            0.0,
-            0.0
+            4.96,
+            -1.22
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5027,13 +5153,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.96,
+            -1.22
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1761,
+            "end": 1770,
+            "moduleId": 0,
+            "start": 1761,
+            "type": "TagDeclarator",
+            "value": "leg2Lower"
+          },
           "to": [
-            0.0,
-            0.0
+            2.24,
+            -1.24
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5044,13 +5177,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            2.24,
+            -1.24
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1848,
+            "end": 1858,
+            "moduleId": 0,
+            "start": 1848,
+            "type": "TagDeclarator",
+            "value": "bodyToLeg3"
+          },
           "to": [
-            0.0,
-            0.0
+            1.82,
+            -1.74
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5061,13 +5201,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            1.82,
+            -1.74
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1936,
+            "end": 1945,
+            "moduleId": 0,
+            "start": 1936,
+            "type": "TagDeclarator",
+            "value": "leg3Upper"
+          },
           "to": [
-            0.0,
-            0.0
+            4.02,
+            -2.34
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5078,13 +5225,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.02,
+            -2.34
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 2023,
+            "end": 2030,
+            "moduleId": 0,
+            "start": 2023,
+            "type": "TagDeclarator",
+            "value": "leg3Tip"
+          },
           "to": [
-            0.0,
-            0.0
+            4.72,
+            -2.98
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5095,13 +5249,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            4.72,
+            -2.98
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 2108,
+            "end": 2117,
+            "moduleId": 0,
+            "start": 2108,
+            "type": "TagDeclarator",
+            "value": "leg3Lower"
+          },
           "to": [
-            0.0,
-            0.0
+            1.5034529978486657,
+            -2.2791910150433132
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5111,424 +5272,29 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
+          "ccw": true,
+          "center": [
+            0.8570803132091863,
+            -3.0825664281763765
+          ],
           "from": [
-            0.0,
-            0.0
+            1.5034529978486657,
+            -2.2791910150433132
           ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
+          "radius": 1.0311206049123294,
+          "tag": {
+            "commentStart": 2195,
+            "end": 2200,
+            "moduleId": 0,
+            "start": 2195,
+            "type": "TagDeclarator",
+            "value": "belly"
           },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
-            0.0,
-            0.0
+            -0.06398614829108873,
+            -2.6190512985698766
           ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
+          "type": "Arc",
           "units": "in"
         }
       ],
@@ -5698,337 +5464,337 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 87,
+            "end": 96,
+            "moduleId": 0,
+            "start": 87,
+            "type": "TagDeclarator",
+            "value": "bodyToEye"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 169,
+            "end": 182,
+            "moduleId": 0,
+            "start": 169,
+            "type": "TagDeclarator",
+            "value": "eyeStalkOuter"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 375,
+            "end": 388,
+            "moduleId": 0,
+            "start": 375,
+            "type": "TagDeclarator",
+            "value": "eyeStalkInner"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 464,
+            "end": 473,
+            "moduleId": 0,
+            "start": 464,
+            "type": "TagDeclarator",
+            "value": "eyeToClaw"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 549,
+            "end": 561,
+            "moduleId": 0,
+            "start": 549,
+            "type": "TagDeclarator",
+            "value": "clawUpperArm"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 637,
+            "end": 648,
+            "moduleId": 0,
+            "start": 637,
+            "type": "TagDeclarator",
+            "value": "upperPincer"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 724,
+            "end": 733,
+            "moduleId": 0,
+            "start": 724,
+            "type": "TagDeclarator",
+            "value": "clawNotch"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 809,
+            "end": 820,
+            "moduleId": 0,
+            "start": 809,
+            "type": "TagDeclarator",
+            "value": "lowerPincer"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 896,
+            "end": 910,
+            "moduleId": 0,
+            "start": 896,
+            "type": "TagDeclarator",
+            "value": "clawOuterLower"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 986,
+            "end": 996,
+            "moduleId": 0,
+            "start": 986,
+            "type": "TagDeclarator",
+            "value": "clawReturn"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1072,
+            "end": 1085,
+            "moduleId": 0,
+            "start": 1072,
+            "type": "TagDeclarator",
+            "value": "bodyAfterClaw"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1161,
+            "end": 1171,
+            "moduleId": 0,
+            "start": 1161,
+            "type": "TagDeclarator",
+            "value": "bodyToLeg1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1247,
+            "end": 1256,
+            "moduleId": 0,
+            "start": 1247,
+            "type": "TagDeclarator",
+            "value": "leg1Upper"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1332,
+            "end": 1339,
+            "moduleId": 0,
+            "start": 1332,
+            "type": "TagDeclarator",
+            "value": "leg1Tip"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1415,
+            "end": 1424,
+            "moduleId": 0,
+            "start": 1415,
+            "type": "TagDeclarator",
+            "value": "leg1Lower"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1501,
+            "end": 1511,
+            "moduleId": 0,
+            "start": 1501,
+            "type": "TagDeclarator",
+            "value": "bodyToLeg2"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1589,
+            "end": 1598,
+            "moduleId": 0,
+            "start": 1589,
+            "type": "TagDeclarator",
+            "value": "leg2Upper"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1676,
+            "end": 1683,
+            "moduleId": 0,
+            "start": 1676,
+            "type": "TagDeclarator",
+            "value": "leg2Tip"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1761,
+            "end": 1770,
+            "moduleId": 0,
+            "start": 1761,
+            "type": "TagDeclarator",
+            "value": "leg2Lower"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1848,
+            "end": 1858,
+            "moduleId": 0,
+            "start": 1848,
+            "type": "TagDeclarator",
+            "value": "bodyToLeg3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1936,
+            "end": 1945,
+            "moduleId": 0,
+            "start": 1936,
+            "type": "TagDeclarator",
+            "value": "leg3Upper"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2023,
+            "end": 2030,
+            "moduleId": 0,
+            "start": 2023,
+            "type": "TagDeclarator",
+            "value": "leg3Tip"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2108,
+            "end": 2117,
+            "moduleId": 0,
+            "start": 2108,
+            "type": "TagDeclarator",
+            "value": "leg3Lower"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
+          "tag": {
+            "commentStart": 2195,
+            "end": 2200,
+            "moduleId": 0,
+            "start": 2195,
+            "type": "TagDeclarator",
+            "value": "belly"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -6043,12 +5809,19 @@ description: Variables in memory after executing crab_mirror_region.kcl
             },
             "from": [
               0.0,
-              0.0
+              1.75
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 87,
+              "end": 96,
+              "moduleId": 0,
+              "start": 87,
+              "type": "TagDeclarator",
+              "value": "bodyToEye"
+            },
             "to": [
-              0.0,
-              0.0
+              0.55,
+              1.92
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6059,13 +5832,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              0.55,
+              1.92
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 169,
+              "end": 182,
+              "moduleId": 0,
+              "start": 169,
+              "type": "TagDeclarator",
+              "value": "eyeStalkOuter"
+            },
             "to": [
-              0.0,
-              0.0
+              1.04,
+              3.26
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6076,13 +5856,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              0.30000000000000004,
+              3.26
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 375,
+              "end": 388,
+              "moduleId": 0,
+              "start": 375,
+              "type": "TagDeclarator",
+              "value": "eyeStalkInner"
+            },
             "to": [
-              0.0,
-              0.0
+              0.72,
+              2.18
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6093,13 +5880,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              0.72,
+              2.18
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 464,
+              "end": 473,
+              "moduleId": 0,
+              "start": 464,
+              "type": "TagDeclarator",
+              "value": "eyeToClaw"
+            },
             "to": [
-              0.0,
-              0.0
+              2.0,
+              1.58
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6110,13 +5904,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              2.0,
+              1.58
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 549,
+              "end": 561,
+              "moduleId": 0,
+              "start": 549,
+              "type": "TagDeclarator",
+              "value": "clawUpperArm"
+            },
             "to": [
-              0.0,
-              0.0
+              3.35,
+              2.7
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6127,13 +5928,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              3.35,
+              2.7
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 637,
+              "end": 648,
+              "moduleId": 0,
+              "start": 637,
+              "type": "TagDeclarator",
+              "value": "upperPincer"
+            },
             "to": [
-              0.0,
-              0.0
+              5.05,
+              2.42
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6144,13 +5952,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              5.05,
+              2.42
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 724,
+              "end": 733,
+              "moduleId": 0,
+              "start": 724,
+              "type": "TagDeclarator",
+              "value": "clawNotch"
+            },
             "to": [
-              0.0,
-              0.0
+              4.38,
+              1.82
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6161,13 +5976,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.38,
+              1.82
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 809,
+              "end": 820,
+              "moduleId": 0,
+              "start": 809,
+              "type": "TagDeclarator",
+              "value": "lowerPincer"
+            },
             "to": [
-              0.0,
-              0.0
+              4.98,
+              1.12
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6178,13 +6000,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.98,
+              1.12
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 896,
+              "end": 910,
+              "moduleId": 0,
+              "start": 896,
+              "type": "TagDeclarator",
+              "value": "clawOuterLower"
+            },
             "to": [
-              0.0,
-              0.0
+              4.28,
+              0.6
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6195,13 +6024,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.28,
+              0.6
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 986,
+              "end": 996,
+              "moduleId": 0,
+              "start": 986,
+              "type": "TagDeclarator",
+              "value": "clawReturn"
+            },
             "to": [
-              0.0,
-              0.0
+              3.06,
+              0.88
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6212,13 +6048,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              3.06,
+              0.88
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1072,
+              "end": 1085,
+              "moduleId": 0,
+              "start": 1072,
+              "type": "TagDeclarator",
+              "value": "bodyAfterClaw"
+            },
             "to": [
-              0.0,
-              0.0
+              2.02,
+              0.8
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6229,13 +6072,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              2.02,
+              0.8
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1161,
+              "end": 1171,
+              "moduleId": 0,
+              "start": 1161,
+              "type": "TagDeclarator",
+              "value": "bodyToLeg1"
+            },
             "to": [
-              0.0,
-              0.0
+              1.92,
+              0.42
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6246,13 +6096,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              1.92,
+              0.42
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1247,
+              "end": 1256,
+              "moduleId": 0,
+              "start": 1247,
+              "type": "TagDeclarator",
+              "value": "leg1Upper"
+            },
             "to": [
-              0.0,
-              0.0
+              4.26,
+              0.57
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6263,13 +6120,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.26,
+              0.57
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1332,
+              "end": 1339,
+              "moduleId": 0,
+              "start": 1332,
+              "type": "TagDeclarator",
+              "value": "leg1Tip"
+            },
             "to": [
-              0.0,
-              0.0
+              4.9,
+              0.18
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6280,13 +6144,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.9,
+              0.18
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1415,
+              "end": 1424,
+              "moduleId": 0,
+              "start": 1415,
+              "type": "TagDeclarator",
+              "value": "leg1Lower"
+            },
             "to": [
-              0.0,
-              0.0
+              2.14,
+              -0.08
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6297,13 +6168,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              2.14,
+              -0.08
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1501,
+              "end": 1511,
+              "moduleId": 0,
+              "start": 1501,
+              "type": "TagDeclarator",
+              "value": "bodyToLeg2"
+            },
             "to": [
-              0.0,
-              0.0
+              1.96,
+              -0.56
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6314,13 +6192,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              1.96,
+              -0.56
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1589,
+              "end": 1598,
+              "moduleId": 0,
+              "start": 1589,
+              "type": "TagDeclarator",
+              "value": "leg2Upper"
+            },
             "to": [
-              0.0,
-              0.0
+              4.28,
+              -0.76
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6331,13 +6216,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.28,
+              -0.76
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1676,
+              "end": 1683,
+              "moduleId": 0,
+              "start": 1676,
+              "type": "TagDeclarator",
+              "value": "leg2Tip"
+            },
             "to": [
-              0.0,
-              0.0
+              4.96,
+              -1.22
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6348,13 +6240,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.96,
+              -1.22
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1761,
+              "end": 1770,
+              "moduleId": 0,
+              "start": 1761,
+              "type": "TagDeclarator",
+              "value": "leg2Lower"
+            },
             "to": [
-              0.0,
-              0.0
+              2.24,
+              -1.24
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6365,13 +6264,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              2.24,
+              -1.24
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1848,
+              "end": 1858,
+              "moduleId": 0,
+              "start": 1848,
+              "type": "TagDeclarator",
+              "value": "bodyToLeg3"
+            },
             "to": [
-              0.0,
-              0.0
+              1.82,
+              -1.74
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6382,13 +6288,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              1.82,
+              -1.74
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1936,
+              "end": 1945,
+              "moduleId": 0,
+              "start": 1936,
+              "type": "TagDeclarator",
+              "value": "leg3Upper"
+            },
             "to": [
-              0.0,
-              0.0
+              4.02,
+              -2.34
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6399,13 +6312,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.02,
+              -2.34
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2023,
+              "end": 2030,
+              "moduleId": 0,
+              "start": 2023,
+              "type": "TagDeclarator",
+              "value": "leg3Tip"
+            },
             "to": [
-              0.0,
-              0.0
+              4.72,
+              -2.98
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6416,13 +6336,20 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              4.72,
+              -2.98
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2108,
+              "end": 2117,
+              "moduleId": 0,
+              "start": 2108,
+              "type": "TagDeclarator",
+              "value": "leg3Lower"
+            },
             "to": [
-              0.0,
-              0.0
+              1.5034529978486657,
+              -2.2791910150433132
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6432,424 +6359,29 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
+            "ccw": true,
+            "center": [
+              0.8570803132091863,
+              -3.0825664281763765
+            ],
             "from": [
-              0.0,
-              0.0
+              1.5034529978486657,
+              -2.2791910150433132
             ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
+            "radius": 1.0311206049123294,
+            "tag": {
+              "commentStart": 2195,
+              "end": 2200,
+              "moduleId": 0,
+              "start": 2195,
+              "type": "TagDeclarator",
+              "value": "belly"
             },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
             "to": [
-              0.0,
-              0.0
+              -0.06398614829108873,
+              -2.6190512985698766
             ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
+            "type": "Arc",
             "units": "in"
           }
         ],
