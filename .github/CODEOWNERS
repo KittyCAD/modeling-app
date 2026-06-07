@@ -13,6 +13,7 @@
 # Documentation
 /docs/                            @KittyCAD/frontend @KittyCAD/kcl
 /public/kcl-samples/              @KittyCAD/frontend @KittyCAD/kcl
+/rust/**/kcl_samples/             @KittyCAD/frontend @KittyCAD/kcl
 
 # Tests
 /e2e/playwright/benchmark/        @KittyCAD/mech
