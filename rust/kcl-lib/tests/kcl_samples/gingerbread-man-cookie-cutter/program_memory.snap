@@ -2142,10 +2142,71 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             0.0,
             0.0
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 702,
+            "end": 707,
+            "moduleId": 0,
+            "start": 702,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "to": [
-            0.0,
-            0.0
+            -87.99932870719708,
+            -112.0005283126162
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            -127.75276137595901,
+            -80.7680122895937
+          ],
+          "from": [
+            -87.99932870719708,
+            -112.0005283126162
+          ],
+          "radius": 50.55497469169721,
+          "tag": {
+            "commentStart": 776,
+            "end": 780,
+            "moduleId": 0,
+            "start": 776,
+            "type": "TagDeclarator",
+            "value": "arc2"
+          },
+          "to": [
+            -169.99928669232347,
+            -53.000467119522895
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -169.99928669232347,
+            -53.000467119522895
+          ],
+          "tag": {
+            "commentStart": 929,
+            "end": 934,
+            "moduleId": 0,
+            "start": 929,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -77.0,
+            57.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2156,13 +2217,20 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            -77.0,
+            57.0
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1046,
+            "end": 1051,
+            "moduleId": 0,
+            "start": 1046,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "to": [
-            0.0,
-            0.0
+            -77.0,
+            213.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2173,13 +2241,20 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            0.0,
-            0.0
+            -77.0,
+            213.0
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 1161,
+            "end": 1166,
+            "moduleId": 0,
+            "start": 1161,
+            "type": "TagDeclarator",
+            "value": "line5"
+          },
           "to": [
-            0.0,
-            0.0
+            -187.00007631383218,
+            130.0001009847176
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2189,14 +2264,51 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "id": "[uuid]",
             "sourceRange": []
           },
-          "from": [
-            0.0,
-            0.0
+          "ccw": false,
+          "center": [
+            -210.82971203084693,
+            161.579584208389
           ],
-          "tag": null,
+          "from": [
+            -187.00007631383218,
+            130.0001009847176
+          ],
+          "radius": 39.561538128335826,
+          "tag": {
+            "commentStart": 1278,
+            "end": 1282,
+            "moduleId": 0,
+            "start": 1278,
+            "type": "TagDeclarator",
+            "value": "arc6"
+          },
           "to": [
-            0.0,
-            0.0
+            -232.00006769104291,
+            195.00010694967145
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -232.00006769104291,
+            195.00010694967145
+          ],
+          "tag": {
+            "commentStart": 1431,
+            "end": 1436,
+            "moduleId": 0,
+            "start": 1431,
+            "type": "TagDeclarator",
+            "value": "line7"
+          },
+          "to": [
+            -108.00032698694014,
+            290.00042884692436
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2206,14 +2318,51 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "id": "[uuid]",
             "sourceRange": []
           },
-          "from": [
-            0.0,
-            0.0
+          "ccw": false,
+          "center": [
+            -36.88954649391802,
+            197.18020170809174
           ],
-          "tag": null,
+          "from": [
+            -108.00032698694014,
+            290.00042884692436
+          ],
+          "radius": 116.92877177338029,
+          "tag": {
+            "commentStart": 1550,
+            "end": 1554,
+            "moduleId": 0,
+            "start": 1550,
+            "type": "TagDeclarator",
+            "value": "arc8"
+          },
           "to": [
-            0.0,
-            0.0
+            -59.00001558628024,
+            311.99947197640057
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.00001558628024,
+            311.99947197640057
+          ],
+          "tag": {
+            "commentStart": 1701,
+            "end": 1706,
+            "moduleId": 0,
+            "start": 1701,
+            "type": "TagDeclarator",
+            "value": "line9"
+          },
+          "to": [
+            -59.00001558628023,
+            334.99978567546725
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2223,254 +2372,29 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "id": "[uuid]",
             "sourceRange": []
           },
+          "ccw": false,
+          "center": [
+            0.6002542570635043,
+            433.700953594384
+          ],
           "from": [
-            0.0,
-            0.0
+            -59.00001558628023,
+            334.99978567546725
           ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
+          "radius": 115.30009849934034,
+          "tag": {
+            "commentStart": 1818,
+            "end": 1823,
+            "moduleId": 0,
+            "start": 1818,
+            "type": "TagDeclarator",
+            "value": "arc10"
           },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
-            0.0,
-            0.0
+            0.000002638242600383478,
+            548.9994896299802
           ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
+          "type": "Arc",
           "units": "mm"
         }
       ],
@@ -2580,141 +2504,141 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 702,
+            "end": 707,
+            "moduleId": 0,
+            "start": 702,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 776,
+            "end": 780,
+            "moduleId": 0,
+            "start": 776,
+            "type": "TagDeclarator",
+            "value": "arc2"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 929,
+            "end": 934,
+            "moduleId": 0,
+            "start": 929,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1046,
+            "end": 1051,
+            "moduleId": 0,
+            "start": 1046,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1161,
+            "end": 1166,
+            "moduleId": 0,
+            "start": 1161,
+            "type": "TagDeclarator",
+            "value": "line5"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1278,
+            "end": 1282,
+            "moduleId": 0,
+            "start": 1278,
+            "type": "TagDeclarator",
+            "value": "arc6"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1431,
+            "end": 1436,
+            "moduleId": 0,
+            "start": 1431,
+            "type": "TagDeclarator",
+            "value": "line7"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 1550,
+            "end": 1554,
+            "moduleId": 0,
+            "start": 1550,
+            "type": "TagDeclarator",
+            "value": "arc8"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1701,
+            "end": 1706,
+            "moduleId": 0,
+            "start": 1701,
+            "type": "TagDeclarator",
+            "value": "line9"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
+          "tag": {
+            "commentStart": 1818,
+            "end": 1823,
+            "moduleId": 0,
+            "start": 1818,
+            "type": "TagDeclarator",
+            "value": "arc10"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2731,10 +2655,71 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               0.0,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 702,
+              "end": 707,
+              "moduleId": 0,
+              "start": 702,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
             "to": [
-              0.0,
-              0.0
+              -87.99932870719708,
+              -112.0005283126162
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -127.75276137595901,
+              -80.7680122895937
+            ],
+            "from": [
+              -87.99932870719708,
+              -112.0005283126162
+            ],
+            "radius": 50.55497469169721,
+            "tag": {
+              "commentStart": 776,
+              "end": 780,
+              "moduleId": 0,
+              "start": 776,
+              "type": "TagDeclarator",
+              "value": "arc2"
+            },
+            "to": [
+              -169.99928669232347,
+              -53.000467119522895
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -169.99928669232347,
+              -53.000467119522895
+            ],
+            "tag": {
+              "commentStart": 929,
+              "end": 934,
+              "moduleId": 0,
+              "start": 929,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
+            "to": [
+              -77.0,
+              57.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2745,13 +2730,20 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              -77.0,
+              57.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1046,
+              "end": 1051,
+              "moduleId": 0,
+              "start": 1046,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
             "to": [
-              0.0,
-              0.0
+              -77.0,
+              213.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2762,13 +2754,20 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "sourceRange": []
             },
             "from": [
-              0.0,
-              0.0
+              -77.0,
+              213.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 1161,
+              "end": 1166,
+              "moduleId": 0,
+              "start": 1161,
+              "type": "TagDeclarator",
+              "value": "line5"
+            },
             "to": [
-              0.0,
-              0.0
+              -187.00007631383218,
+              130.0001009847176
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2778,14 +2777,51 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "id": "[uuid]",
               "sourceRange": []
             },
-            "from": [
-              0.0,
-              0.0
+            "ccw": false,
+            "center": [
+              -210.82971203084693,
+              161.579584208389
             ],
-            "tag": null,
+            "from": [
+              -187.00007631383218,
+              130.0001009847176
+            ],
+            "radius": 39.561538128335826,
+            "tag": {
+              "commentStart": 1278,
+              "end": 1282,
+              "moduleId": 0,
+              "start": 1278,
+              "type": "TagDeclarator",
+              "value": "arc6"
+            },
             "to": [
-              0.0,
-              0.0
+              -232.00006769104291,
+              195.00010694967145
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -232.00006769104291,
+              195.00010694967145
+            ],
+            "tag": {
+              "commentStart": 1431,
+              "end": 1436,
+              "moduleId": 0,
+              "start": 1431,
+              "type": "TagDeclarator",
+              "value": "line7"
+            },
+            "to": [
+              -108.00032698694014,
+              290.00042884692436
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2795,14 +2831,51 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "id": "[uuid]",
               "sourceRange": []
             },
-            "from": [
-              0.0,
-              0.0
+            "ccw": false,
+            "center": [
+              -36.88954649391802,
+              197.18020170809174
             ],
-            "tag": null,
+            "from": [
+              -108.00032698694014,
+              290.00042884692436
+            ],
+            "radius": 116.92877177338029,
+            "tag": {
+              "commentStart": 1550,
+              "end": 1554,
+              "moduleId": 0,
+              "start": 1550,
+              "type": "TagDeclarator",
+              "value": "arc8"
+            },
             "to": [
-              0.0,
-              0.0
+              -59.00001558628024,
+              311.99947197640057
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -59.00001558628024,
+              311.99947197640057
+            ],
+            "tag": {
+              "commentStart": 1701,
+              "end": 1706,
+              "moduleId": 0,
+              "start": 1701,
+              "type": "TagDeclarator",
+              "value": "line9"
+            },
+            "to": [
+              -59.00001558628023,
+              334.99978567546725
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2812,254 +2885,29 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "id": "[uuid]",
               "sourceRange": []
             },
+            "ccw": false,
+            "center": [
+              0.6002542570635043,
+              433.700953594384
+            ],
             "from": [
-              0.0,
-              0.0
+              -59.00001558628023,
+              334.99978567546725
             ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
+            "radius": 115.30009849934034,
+            "tag": {
+              "commentStart": 1818,
+              "end": 1823,
+              "moduleId": 0,
+              "start": 1818,
+              "type": "TagDeclarator",
+              "value": "arc10"
             },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
             "to": [
-              0.0,
-              0.0
+              0.000002638242600383478,
+              548.9994896299802
             ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
+            "type": "Arc",
             "units": "mm"
           }
         ],

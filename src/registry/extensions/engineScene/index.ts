@@ -12,6 +12,15 @@ import {
 import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 
+// Registry extension entrypoints are imported eagerly while App is still
+// initializing. SelectionFilterControls pulls in useModelingContext, which
+// reaches boot.ts through ModelingMachineProvider/useMenu; importing it here
+// eagerly creates an App <-> boot cycle where App is still undefined.
+const SelectionFilterControls = lazy(async () => {
+  const { SelectionFilterControls } = await import('./SelectionFilterControls')
+  return { default: SelectionFilterControls }
+})
+
 const UnitsMenu = lazy(async () => {
   const { UnitsMenu } = await import('@src/components/UnitsMenu')
   return { default: UnitsMenu }
@@ -32,6 +41,13 @@ const EngineSceneExperimentalFeaturesMenu = () =>
     Suspense,
     { fallback: null },
     createElement(ExperimentalFeaturesMenu)
+  )
+
+const EngineSceneSelectionFilterControls = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionFilterControls)
   )
 
 /**
@@ -56,6 +72,18 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             toolTip: {
               children: 'Currently selected geometry',
             },
+          }
+        : null
+    )
+  )
+  const selectionFilterStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'selection-filter',
+            component: EngineSceneSelectionFilterControls,
+            order: 11,
+            scopes: ['file'],
           }
         : null
     )
@@ -89,6 +117,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
+        provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
         provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
         provide(

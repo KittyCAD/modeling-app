@@ -6,6 +6,7 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -15,7 +16,7 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import { type Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -100,7 +101,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-2 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
@@ -182,11 +183,11 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           onClick={props.onAnnotateScreenshot}
           disabled={props.attachmentsDisabled}
           className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
-          aria-label="Annotate viewport screenshot"
+          aria-label="Zoodle"
         >
           <CustomIcon name="sketch" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
-            <span>Annotate viewport screenshot</span>
+            <span>Zoodle</span>
           </Tooltip>
         </button>
       </div>
@@ -450,9 +451,7 @@ export const MlEphantConversationInput = (
           className="hidden"
         />
         <textarea
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
+          {...noAutofillInputProps}
           data-testid="ml-ephant-conversation-input"
           onChange={(e) => setValue(e.target.value)}
           value={value}

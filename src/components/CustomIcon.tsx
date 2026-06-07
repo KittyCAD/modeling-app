@@ -1012,6 +1012,43 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  gdtStraightness: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt straightness"
+    >
+      <path d="M3 9.5H17V10.5H3V9.5Z" fill="currentColor" />
+    </svg>
+  ),
+  gdtCircularity: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt circularity"
+    >
+      <circle cx="10" cy="10" r="6.5" stroke="currentColor" fill="none" />
+    </svg>
+  ),
+  gdtCylindricity: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt cylindricity"
+    >
+      <circle cx="10" cy="10" r="4.15" stroke="currentColor" fill="none" />
+      <path d="M4.25 17L7.25 3M12.75 17L15.75 3" stroke="currentColor" />
+    </svg>
+  ),
   gdtPosition: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

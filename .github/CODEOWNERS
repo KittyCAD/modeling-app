@@ -1,6 +1,19 @@
-* @KittyCAD/frontend
-/docs/ @KittyCAD/kcl
-/src/ @KittyCAD/frontend
-/rust/ @KittyCAD/kcl
-/public/kcl-samples/ @KittyCAD/kcl
-/e2e/playwright/benchmark/ @KittyCAD/mech
+*                                 @KittyCAD/frontend
+
+# ZDS
+/src/                             @KittyCAD/frontend
+
+# KCL
+/rust/                            @KittyCAD/kcl
+
+# ZDS-KCL bridge
+/rust/**/frontend.rs              @KittyCAD/frontend
+/rust/**/frontend/                @KittyCAD/frontend
+
+# Documentation
+/docs/                            @KittyCAD/frontend @KittyCAD/kcl
+/public/kcl-samples/              @KittyCAD/frontend @KittyCAD/kcl
+/rust/**/kcl_samples/             @KittyCAD/frontend @KittyCAD/kcl
+
+# Tests
+/e2e/playwright/benchmark/        @KittyCAD/mech

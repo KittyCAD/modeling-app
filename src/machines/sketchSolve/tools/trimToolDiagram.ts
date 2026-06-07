@@ -7,10 +7,8 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
-import {
-  TRIM_PREVIEW_LINE_COLOR_HEX,
-  getTrimPreviewLineWidth,
-} from '@src/lib/freehandLineDrawing'
+import { TRIM_PREVIEW_LINE_COLOR_HEX } from '@src/lib/constants'
+import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
 import type RustContext from '@src/lib/rustContext'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
