@@ -907,7 +907,7 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     const artifact = getArtifactOfTypes(
       {
         key: artifactId,
-        types: ['segment', 'sweepEdge', 'primitiveEdge'],
+        types: ['segment', 'sweepEdge'],
       },
       artifactGraph
     )

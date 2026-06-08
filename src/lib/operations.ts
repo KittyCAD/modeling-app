@@ -284,16 +284,6 @@ async function extractExtrudeDirectionArgument(
     }
   }
 
-  if (directionArg.value.type === 'Uuid') {
-    const edgeSelection = retrieveEdgeSelectionsFromOpArgs(
-      directionArg,
-      artifactGraph
-    )
-    if (edgeSelection.graphSelections.length > 0) {
-      return edgeSelection
-    }
-  }
-
   const direction = await extractKclArgument(
     code,
     operation,

@@ -147,11 +147,12 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with a vector direction', async () => {
-      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
-        circleProfileCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
+      const { ast, sketches, artifactGraph } =
+        await getAstAndSketchSelectionsEngineless(
+          circleProfileCode,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
       const length = await getKclCommandValue(
         '1',
         instanceInThisFile,
