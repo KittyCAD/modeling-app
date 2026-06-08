@@ -3103,12 +3103,8 @@ pub(crate) async fn execute_trim_flow(
         };
 
         let version = Version(0);
-        let initial_scene_graph_delta = crate::frontend::api::SceneGraphDelta {
-            new_graph: initial_scene_graph,
-            new_objects: vec![],
-            invalidates_ids: false,
-            exec_outcome,
-        };
+        let initial_scene_graph_delta =
+            crate::frontend::api::SceneGraphDelta::new(initial_scene_graph, vec![], false, exec_outcome);
 
         // Execute the trim loop with a callback that executes operations using SketchApi
         // We need to use a different approach since we can't easily capture mutable references in closures

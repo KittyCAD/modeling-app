@@ -275,14 +275,7 @@ impl FrontendState {
     pub fn new() -> Self {
         Self {
             program: Program::empty(),
-            scene_graph: SceneGraph {
-                project: ProjectId(0),
-                file: FileId(0),
-                version: Version(0),
-                objects: Default::default(),
-                settings: Default::default(),
-                sketch_mode: Default::default(),
-            },
+            scene_graph: SceneGraph::empty(ProjectId(0), FileId(0), Version(0)),
             point_freedom_cache: HashMap::new(),
             next_drag_anchor_segment_ids: None,
             next_segment_drag_anchors: None,
@@ -418,15 +411,10 @@ impl FrontendState {
             clear_mem_cache().await;
         }
 
-        Ok(RestoreSketchCheckpointOutcome {
-            source_delta: checkpoint.source,
-            scene_graph_delta: SceneGraphDelta {
-                new_graph: self.scene_graph_for_ui(),
-                new_objects: Vec::new(),
-                invalidates_ids: true,
-                exec_outcome: checkpoint.exec_outcome,
-            },
-        })
+        Ok(RestoreSketchCheckpointOutcome::new(
+            checkpoint.source,
+            SceneGraphDelta::new(self.scene_graph_for_ui(), Vec::new(), true, checkpoint.exec_outcome),
+        ))
     }
 
     pub fn clear_sketch_checkpoints(&mut self) {
@@ -563,12 +551,7 @@ impl SketchApi for FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph.clone(),
-            new_objects: Default::default(),
-            invalidates_ids: false,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph.clone(), Default::default(), false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -679,12 +662,7 @@ impl SketchApi for FrontendState {
         self.scene_graph.sketch_mode = Some(sketch_id);
 
         let src_delta = SourceDelta { text: new_source };
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: vec![sketch_id],
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), vec![sketch_id], false, outcome);
         Ok((src_delta, scene_graph_delta, sketch_id))
     }
 
@@ -726,12 +704,7 @@ impl SketchApi for FrontendState {
 
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: Vec::new(),
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), Vec::new(), false, outcome);
         Ok(scene_graph_delta)
     }
 
@@ -1425,14 +1398,15 @@ impl SketchApi for FrontendState {
         // Combine new objects from the line addition and the constraint addition.
         // Both add_line and add_constraint now populate new_objects correctly.
         let mut combined_new_objects = first_scene_delta.new_objects.clone();
+        let final_scene_delta = final_scene_delta.api;
         combined_new_objects.extend(final_scene_delta.new_objects);
 
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: combined_new_objects,
-            exec_outcome: final_scene_delta.exec_outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(
+            self.scene_graph_for_ui(),
+            combined_new_objects,
+            false,
+            final_scene_delta.exec_outcome,
+        );
 
         Ok((final_src_delta, scene_graph_delta))
     }
@@ -1888,14 +1862,14 @@ impl FrontendState {
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
-                Ok(SceneGraphDelta {
-                    new_graph: self.scene_graph_for_ui(),
-                    exec_outcome: outcome,
+                Ok(SceneGraphDelta::new(
+                    self.scene_graph_for_ui(),
                     // We don't know what the new objects are.
-                    new_objects: Default::default(),
+                    Default::default(),
                     // We don't know if IDs were invalidated.
-                    invalidates_ids: Default::default(),
-                })
+                    Default::default(),
+                    outcome,
+                ))
             }
             Err(mut err) => {
                 // Update state as much as possible, even when there's an error.
@@ -2063,12 +2037,7 @@ impl FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Uses .no_freedom_analysis() so freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: new_object_ids,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), new_object_ids, false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -2198,12 +2167,7 @@ impl FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Uses .no_freedom_analysis() so freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: new_object_ids,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), new_object_ids, false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -2340,12 +2304,7 @@ impl FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Uses .no_freedom_analysis() so freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: new_object_ids,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), new_object_ids, false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -2479,12 +2438,7 @@ impl FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Uses .no_freedom_analysis() so freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: new_object_ids,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), new_object_ids, false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -2617,12 +2571,7 @@ impl FrontendState {
         };
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome, false);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: new_object_ids,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), new_object_ids, false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -3341,12 +3290,7 @@ impl FrontendState {
         } else {
             SourceDelta { text: new_source }
         };
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: is_delete,
-            new_objects: Vec::new(),
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), Vec::new(), is_delete, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -3385,12 +3329,7 @@ impl FrontendState {
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
 
         let src_delta = SourceDelta { text: new_source };
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: true,
-            new_objects: Vec::new(),
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), Vec::new(), true, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 
@@ -4692,12 +4631,7 @@ impl FrontendState {
         let outcome = self.update_state_after_exec(outcome, true);
 
         let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraint")?;
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph_for_ui(),
-            invalidates_ids: false,
-            new_objects: new_object_ids,
-            exec_outcome: outcome,
-        };
+        let scene_graph_delta = SceneGraphDelta::new(self.scene_graph_for_ui(), new_object_ids, false, outcome);
         Ok((src_delta, scene_graph_delta))
     }
 

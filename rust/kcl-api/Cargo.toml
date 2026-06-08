@@ -1,0 +1,15 @@
+[package]
+name = "kcl-api"
+description = "Interface for how to execute KCL"
+version = "0.2.164"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+authors = ["Zoo KCL team"]
+
+[dependencies]
+serde = { workspace = true }
+ts-rs = { version = "12.0.1", features = ["no-serde-warnings"] }
+
+[lints]
+workspace = true

@@ -2273,6 +2273,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-api"
+version = "0.2.164"
+dependencies = [
+ "serde",
+ "ts-rs",
+]
+
+[[package]]
 name = "kcl-bumper"
 version = "0.1.165"
 dependencies = [
@@ -2389,6 +2397,7 @@ dependencies = [
  "insta",
  "itertools 0.14.0",
  "js-sys",
+ "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
