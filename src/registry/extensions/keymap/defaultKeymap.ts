@@ -6,11 +6,24 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
 
 const BASE_KEYMAP_SOURCE = 'Base'
+
+export const PROJECT_EXPLORER_COMMAND_IDS = {
+  arrowLeft: 'project-explorer.arrow-left',
+  arrowRight: 'project-explorer.arrow-right',
+  arrowUp: 'project-explorer.arrow-up',
+  arrowDown: 'project-explorer.arrow-down',
+  enter: 'project-explorer.enter',
+  rename: 'project-explorer.rename',
+  delete: 'project-explorer.delete',
+  copy: 'project-explorer.copy',
+  paste: 'project-explorer.paste',
+} as const
 
 function createExitSketchBindings({
   id,
@@ -73,6 +86,69 @@ export const defaultKeymap: KeymapDocument = {
       arguments: {
         tab: 'user',
       },
+    },
+    {
+      id: 'project-explorer.arrow-left',
+      title: 'Close selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['arrowleft'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.arrowLeft,
+    },
+    {
+      id: 'project-explorer.arrow-right',
+      title: 'Open selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['arrowright'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.arrowRight,
+    },
+    {
+      id: 'project-explorer.arrow-up',
+      title: 'Move project explorer selection up',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['arrowup'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
+    },
+    {
+      id: 'project-explorer.arrow-down',
+      title: 'Move project explorer selection down',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['arrowdown'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
+    },
+    {
+      id: 'project-explorer.enter',
+      title: 'Open selected project explorer file',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['enter'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.enter,
+    },
+    {
+      id: 'project-explorer.rename',
+      title: 'Rename selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['f2'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.rename,
+    },
+    {
+      id: 'project-explorer.delete',
+      title: 'Delete selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+backspace'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.delete,
+    },
+    {
+      id: 'project-explorer.copy',
+      title: 'Copy selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+c'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.copy,
+    },
+    {
+      id: 'project-explorer.paste',
+      title: 'Paste into selected project explorer row',
+      scopes: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+v'],
+      command: PROJECT_EXPLORER_COMMAND_IDS.paste,
     },
     {
       id: 'view.top',
