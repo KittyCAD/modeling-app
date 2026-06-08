@@ -164,22 +164,27 @@ export function buildZookeeperHistoryExtension({
             continue
           }
 
+          kclManager.globalHistoryView.setOperationInProgress(true)
           void replayZookeeperEditPatch({
             ...e.value,
             kclManager,
             onCurrentFileDelete,
-          }).catch((error: unknown) => {
-            console.error(error)
-            toast.error(getReplayErrorMessage(error))
-            restoringHistoryAfterFailure = true
-            const restored =
-              e.value.direction === 'undo'
-                ? kclManager.globalHistoryView.redoGlobal()
-                : kclManager.globalHistoryView.undoGlobal()
-            if (!restored) {
-              restoringHistoryAfterFailure = false
-            }
           })
+            .catch((error: unknown) => {
+              console.error(error)
+              toast.error(getReplayErrorMessage(error))
+              restoringHistoryAfterFailure = true
+              const restored =
+                e.value.direction === 'undo'
+                  ? kclManager.globalHistoryView.restoreAfterFailedUndo()
+                  : kclManager.globalHistoryView.restoreAfterFailedRedo()
+              if (!restored) {
+                restoringHistoryAfterFailure = false
+              }
+            })
+            .finally(() => {
+              kclManager.globalHistoryView.setOperationInProgress(false)
+            })
         }
       }
     }

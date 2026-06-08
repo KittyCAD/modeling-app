@@ -58,6 +58,8 @@ type GlobalHistoryDispatchOptions = {
  */
 export class HistoryView {
   private editorView: EditorView
+  private localHistoryTargetView: EditorView | undefined
+  private operationInProgress = false
   historyCompartment = new Compartment()
 
   constructor(extensions: Extension[]) {
@@ -74,6 +76,7 @@ export class HistoryView {
   private static doNotForward = Annotation.define<boolean>()
 
   registerLocalHistoryTarget(target: EditorView) {
+    this.localHistoryTargetView = target
     this.editorView.dispatch({
       effects: [
         globalHistory.reconfigure([this.buildForwardingExtension(target)]),
@@ -127,25 +130,39 @@ export class HistoryView {
 
   /** Undo local history target if possible, fallback to global history */
   undo(localHistoryTarget: EditorView) {
+    if (this.operationInProgress) return false
     const result = undo(localHistoryTarget)
     if (!result) {
-      undo(this.editorView)
+      return undo(this.editorView)
     }
+    return result
   }
   /** Redo local history target if possible, fallback to global history */
   redo(localHistoryTarget: EditorView) {
+    if (this.operationInProgress) return false
     const result = redo(localHistoryTarget)
     if (!result) {
-      redo(this.editorView)
+      return redo(this.editorView)
     }
+    return result
   }
 
-  undoGlobal() {
-    return undo(this.editorView)
+  setOperationInProgress(inProgress: boolean) {
+    this.operationInProgress = inProgress
   }
 
-  redoGlobal() {
-    return redo(this.editorView)
+  restoreAfterFailedUndo() {
+    const restoredLocal = this.localHistoryTargetView
+      ? redo(this.localHistoryTargetView)
+      : false
+    return restoredLocal || redo(this.editorView)
+  }
+
+  restoreAfterFailedRedo() {
+    const restoredLocal = this.localHistoryTargetView
+      ? undo(this.localHistoryTargetView)
+      : false
+    return restoredLocal || undo(this.editorView)
   }
 
   /** Extensions attached to a local history target */
