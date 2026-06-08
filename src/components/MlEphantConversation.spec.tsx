@@ -56,12 +56,14 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
     label: 'Standard',
     description: 'Faster reasoning.',
     icon: 'stopwatch',
+    disabled: false,
   },
   {
     id: 'deep',
     label: 'Deep',
     description: 'More thorough reasoning.',
     icon: 'brain',
+    disabled: false,
   },
 ]
 
@@ -309,6 +311,96 @@ describe('MlEphantConversation', () => {
     expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
       'Deep'
     )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
+  test('keeps disabled mode options visible but unelectable with upgrade copy', () => {
+    const handleProcess = vi.fn()
+    const modeOptions: MlCopilotModeOption[] = [
+      { ...SERVER_MODE_OPTIONS[0], disabled: true },
+      SERVER_MODE_OPTIONS[1],
+    ]
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="deep"
+        modeOptions={modeOptions}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+
+    const disabledMode = screen.getByTestId('ml-copilot-effort-button-standard')
+    expect(disabledMode).toBeDisabled()
+    expect(disabledMode).toHaveTextContent('Upgrade your plan to use this mode')
+
+    fireEvent.click(disabledMode)
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Deep'
+    )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
+  test('falls back to an enabled mode when the initial mode is disabled', async () => {
+    const handleProcess = vi.fn()
+    const modeOptions: MlCopilotModeOption[] = [
+      { ...SERVER_MODE_OPTIONS[0], disabled: true },
+      SERVER_MODE_OPTIONS[1],
+    ]
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="standard"
+        modeOptions={modeOptions}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+        'Deep'
+      )
+    })
 
     fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
       target: { value: 'Generate a cube' },
