@@ -33,7 +33,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@kittycad/lib": "^4.2.5"
+    "@kittycad/lib": "^4.2.9"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.4.1",
@@ -51,6 +51,6 @@
     "storybook": "^10.4.1",
     "typescript": "^6.0.3",
     "vite": "^7.3.2",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.8"
   }
 }
