@@ -21,7 +21,10 @@ export function UndoRedoButtons({
         iconName="arrowTurnLeft"
         onClick={() => kclManager.undo()}
         className="rounded-r-none"
-        disabled={kclManager.undoDepth.value === 0}
+        disabled={
+          kclManager.undoDepth.value === 0 ||
+          kclManager.historyOperationInProgress.value
+        }
       />
       <UndoOrRedoButton
         label="Redo"
@@ -29,7 +32,10 @@ export function UndoRedoButtons({
         iconName="arrowTurnRight"
         onClick={() => kclManager.redo()}
         className="rounded-none"
-        disabled={kclManager.redoDepth.value === 0}
+        disabled={
+          kclManager.redoDepth.value === 0 ||
+          kclManager.historyOperationInProgress.value
+        }
       />
       {/** TODO: Remove the refresh button when users don't need it so much. */}
       <UndoOrRedoButton

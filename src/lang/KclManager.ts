@@ -711,6 +711,7 @@ export class KclManager extends File {
 
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
+  private disposeGlobalHistorySubscription: (() => boolean) | undefined
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -845,14 +846,20 @@ export class KclManager extends File {
   )
   undoDepth = signal(0)
   redoDepth = signal(0)
-  undoListenerEffect = EditorView.updateListener.of((vu) => {
-    const localUndo = undoDepth(vu.state)
-    const localRedo = redoDepth(vu.state)
+  historyOperationInProgress = signal(false)
+  private updateHistoryDepth = (state = this._editorView.state) => {
+    const localUndo = undoDepth(state)
+    const localRedo = redoDepth(state)
     const globalUndo = undoDepth(this._globalHistoryView.state)
     const globalRedo = redoDepth(this._globalHistoryView.state)
 
-    this.undoDepth.value = localUndo + globalUndo
-    this.redoDepth.value = localRedo + globalRedo
+    this.undoDepth.value = localUndo || globalUndo
+    this.redoDepth.value = localRedo || globalRedo
+    this.historyOperationInProgress.value =
+      this._globalHistoryView.isOperationInProgress
+  }
+  undoListenerEffect = EditorView.updateListener.of((vu) => {
+    this.updateHistoryDepth(vu.state)
   })
   get operations() {
     return getOperationsForCurrentFile({
@@ -1891,6 +1898,10 @@ export class KclManager extends File {
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+    this.disposeGlobalHistorySubscription =
+      this._globalHistoryView.subscribeToHistoryChanges(() => {
+        this.updateHistoryDepth()
+      })
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1919,6 +1930,7 @@ export class KclManager extends File {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
+    this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
   }

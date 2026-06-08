@@ -60,6 +60,7 @@ export class HistoryView {
   private editorView: EditorView
   private localHistoryTargetView: EditorView | undefined
   private operationInProgress = false
+  private historyChangedListeners = new Set<() => void>()
   historyCompartment = new Compartment()
 
   constructor(extensions: Extension[]) {
@@ -69,6 +70,9 @@ export class HistoryView {
         this.historyCompartment.of([createHistoryExtension()]),
         globalHistory.of([]),
         ...extensions,
+        EditorView.updateListener.of(() => {
+          this.notifyHistoryChanged()
+        }),
       ],
     })
   }
@@ -149,6 +153,20 @@ export class HistoryView {
 
   setOperationInProgress(inProgress: boolean) {
     this.operationInProgress = inProgress
+    this.notifyHistoryChanged()
+  }
+
+  get isOperationInProgress() {
+    return this.operationInProgress
+  }
+
+  subscribeToHistoryChanges(listener: () => void) {
+    this.historyChangedListeners.add(listener)
+    return () => this.historyChangedListeners.delete(listener)
+  }
+
+  private notifyHistoryChanged() {
+    for (const listener of this.historyChangedListeners) listener()
   }
 
   restoreAfterFailedUndo() {

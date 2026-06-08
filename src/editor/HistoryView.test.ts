@@ -1,4 +1,5 @@
 import { invertedEffects } from '@codemirror/commands'
+import { isolateHistory } from '@codemirror/commands'
 import { Annotation, StateEffect, Transaction } from '@codemirror/state'
 import { EditorView } from 'codemirror'
 import { describe, expect, it } from 'vitest'
@@ -7,6 +8,82 @@ import { HistoryView, localHistoryTarget } from '@src/editor/HistoryView'
 import { createHistoryExtension } from '@src/editor/historyConfig'
 
 describe('HistoryView', () => {
+  it('redoes a global edit before later manual edits', () => {
+    const historyEffect = StateEffect.define<number>()
+    const ignoreEffect = Annotation.define<boolean>()
+    const appliedGlobalValues: number[] = []
+
+    let localView: EditorView
+    const historyView = new HistoryView([
+      invertedEffects.of((transaction) =>
+        transaction.effects
+          .filter((effect) => effect.is(historyEffect))
+          .map((effect) => historyEffect.of(-effect.value))
+      ),
+      EditorView.updateListener.of((update) => {
+        for (const transaction of update.transactions) {
+          if (transaction.annotation(ignoreEffect)) continue
+          for (const effect of transaction.effects) {
+            if (effect.is(historyEffect)) {
+              appliedGlobalValues.push(effect.value)
+              const code = effect.value < 0 ? 'pre-zk' : 'zk'
+              localView.dispatch({
+                changes: {
+                  from: 0,
+                  to: localView.state.doc.length,
+                  insert: code,
+                },
+                annotations: [Transaction.addToHistory.of(false)],
+              })
+            }
+          }
+        }
+      }),
+    ])
+    localView = new EditorView({
+      doc: 'zk',
+      extensions: [createHistoryExtension(), localHistoryTarget.of([])],
+    })
+    historyView.registerLocalHistoryTarget(localView)
+
+    historyView.dispatch({
+      effects: historyEffect.of(1),
+      annotations: [ignoreEffect.of(true)],
+    })
+    localView.dispatch({
+      changes: { from: 2, insert: ' manual-1' },
+      annotations: [
+        Transaction.addToHistory.of(true),
+        isolateHistory.of('full'),
+      ],
+    })
+    localView.dispatch({
+      changes: { from: localView.state.doc.length, insert: ' manual-2' },
+      annotations: [
+        Transaction.addToHistory.of(true),
+        isolateHistory.of('full'),
+      ],
+    })
+
+    expect(historyView.undo(localView)).toBe(true)
+    expect(localView.state.doc.toString()).toBe('zk manual-1')
+    expect(historyView.undo(localView)).toBe(true)
+    expect(localView.state.doc.toString()).toBe('zk')
+    expect(historyView.undo(localView)).toBe(true)
+    expect(appliedGlobalValues).toEqual([-1])
+    expect(localView.state.doc.toString()).toBe('pre-zk')
+
+    expect(historyView.redo(localView)).toBe(true)
+    expect(appliedGlobalValues).toEqual([-1, 1])
+    expect(localView.state.doc.toString()).toBe('zk')
+    expect(historyView.redo(localView)).toBe(true)
+    expect(localView.state.doc.toString()).toBe('zk manual-1')
+    expect(historyView.redo(localView)).toBe(true)
+    expect(localView.state.doc.toString()).toBe('zk manual-1 manual-2')
+
+    localView.destroy()
+  })
+
   it('locks mixed history and restores both pointers after a failed global undo', () => {
     const historyEffect = StateEffect.define<number>()
     const ignoreEffect = Annotation.define<boolean>()
