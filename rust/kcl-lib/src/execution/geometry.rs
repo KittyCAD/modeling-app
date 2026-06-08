@@ -1323,6 +1323,63 @@ impl EdgeCut {
     }
 }
 
+#[cfg(test)]
+mod solid_edge_cut_tests {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_api_edge_cuts_record_pending_edge_cut_ids() {
+        let code = r#"
+@settings(experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
+  right = line(start = [20mm, 0mm], end = [20mm, 10mm])
+  top = line(start = [20mm, 10mm], end = [0mm, 10mm])
+  left = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+
+region001 = region(point = [10mm, 5mm], sketch = profile)
+body = extrude(region001, length = 8mm, tagEnd = $topCap)
+
+rounded = fillet(
+  body,
+  radius = 1mm,
+  edges = [{ sideFaces = [region001.tags.bottom, topCap] }],
+  tag = $roundedFace,
+)
+
+beveled = chamfer(
+  body,
+  length = 1mm,
+  edges = [{ sideFaces = [region001.tags.right, topCap] }],
+  tag = $beveledFace,
+)
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let outcome = ctx
+            .run_mock(&program, &crate::execution::MockConfig::default())
+            .await
+            .unwrap();
+
+        for variable in ["rounded", "beveled"] {
+            let Some(crate::execution::KclValue::Solid { value }) = outcome.variables.get(variable) else {
+                panic!("expected `{variable}` to be a solid");
+            };
+            assert!(
+                value.edge_cuts.is_empty(),
+                "{variable} should use the face-api pending-id path"
+            );
+            assert_eq!(value.pending_edge_cut_ids.len(), 1);
+
+            let flushable_ids = value.get_all_edge_cut_ids().collect::<Vec<_>>();
+            assert_eq!(flushable_ids.as_slice(), value.pending_edge_cut_ids.as_slice());
+        }
+
+        ctx.close().await;
+    }
+}
+
 #[derive(Debug, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
 #[ts(export)]
 pub struct Point2d {
