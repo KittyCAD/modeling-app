@@ -301,6 +301,8 @@ async fn inner_chamfer_with_engine_refs(
         )
         .await?;
 
+    solid.pending_edge_cut_ids.push(id);
+
     if let Some(ref tag) = tag {
         solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
             face_id: id,

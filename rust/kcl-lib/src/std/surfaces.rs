@@ -334,6 +334,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
         start_cap_id: None,
         end_cap_id: None,
         edge_cuts: vec![],
+        pending_edge_cut_ids: vec![],
         units: exec_state.length_unit(),
         sectional: false,
         meta: vec![crate::execution::Metadata {
@@ -399,6 +400,7 @@ async fn inner_join(
             start_cap_id: None,
             end_cap_id: None,
             edge_cuts: vec![],
+            pending_edge_cut_ids: vec![],
             units: exec_state.length_unit(),
             sectional: false,
             meta: vec![args.source_range.into()],

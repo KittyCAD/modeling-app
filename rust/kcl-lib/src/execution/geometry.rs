@@ -1179,6 +1179,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1238,7 +1242,10 @@ impl Solid {
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
-        self.edge_cuts.iter().map(|foc| foc.id())
+        self.edge_cuts
+            .iter()
+            .map(|foc| foc.id())
+            .chain(self.pending_edge_cut_ids.iter().copied())
     }
 }
 

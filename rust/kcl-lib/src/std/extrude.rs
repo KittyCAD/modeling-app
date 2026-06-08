@@ -959,6 +959,7 @@ pub(crate) async fn do_post_extrude<'a>(
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
+        pending_edge_cut_ids: vec![],
     })
 }
 

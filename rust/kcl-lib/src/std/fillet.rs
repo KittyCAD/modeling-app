@@ -370,6 +370,8 @@ async fn inner_fillet_with_engine_refs(
         )
         .await?;
 
+    solid.pending_edge_cut_ids.push(id);
+
     if let Some(ref tag) = params.tag {
         solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
             face_id: id,
