@@ -57,6 +57,12 @@ pub(crate) async fn get_face_ids_for_edge(
     edge_id: Uuid,
     args: &Args,
 ) -> Result<Vec<Uuid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        // Return two so that anything that is expecting an edge on a solid
+        // works.
+        return Ok(vec![exec_state.next_uuid(), exec_state.next_uuid()]);
+    }
+
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
