@@ -146,6 +146,71 @@ profile002 = rectangle(
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call with a vector direction', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const direction = await getKclCommandValue(
+        '[1, 0, 1]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        direction,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 1, direction = [1, 0, 1])`
+      )
+    })
+
+    it('should add an extrude call with a segment direction', async () => {
+      const { ast, artifactGraph, sketches } =
+        await getAstAndSketchSelectionsEngineless(
+          triangleRegion,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      const segment = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment'
+      )
+      if (!segment) {
+        throw new Error('Segment artifact not found')
+      }
+      const direction = createSelectionFromArtifacts([segment], artifactGraph)
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        direction,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(s, length = 1, direction = s.line1)`
+      )
+    })
+
     it('should add a basic extrude call on a cap', async () => {
       const code = `${circleProfileCode}
   extrude001 = extrude(profile001, length = 1)`

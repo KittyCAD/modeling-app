@@ -205,6 +205,7 @@ export type ModelingCommandSchema = {
     length?: KclCommandValue
     to?: Selections
     symmetric?: boolean
+    direction?: KclCommandValue | Selections
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
@@ -982,6 +983,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'boolean',
         required: false,
+      },
+      direction: {
+        inputType: 'vector3d',
+        required: false,
+        defaultValue: '[0, 0, 1]',
       },
       bidirectionalLength: {
         inputType: 'kcl',

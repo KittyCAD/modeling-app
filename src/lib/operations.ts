@@ -257,6 +257,57 @@ async function extractOptionalKclArrayArgument(
   return extractKclArgument(code, operation, argName, rustContext, true, true)
 }
 
+async function extractExtrudeDirectionArgument(
+  code: string,
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph,
+  rustContext: RustContext
+): Promise<
+  ModelingCommandSchema['Extrude']['direction'] | undefined | { error: string }
+> {
+  const directionArg = operation.labeledArgs?.direction
+  if (!directionArg?.sourceRange) {
+    return undefined
+  }
+
+  if (
+    directionArg.value.type === 'TagIdentifier' ||
+    directionArg.value.type === 'Segment' ||
+    directionArg.value.type === 'Uuid'
+  ) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      directionArg,
+      artifactGraph
+    )
+    if (!err(axisEdgeSelection) && axisEdgeSelection.edge) {
+      return axisEdgeSelection.edge
+    }
+  }
+
+  if (directionArg.value.type === 'Uuid') {
+    const edgeSelection = retrieveEdgeSelectionsFromOpArgs(
+      directionArg,
+      artifactGraph
+    )
+    if (edgeSelection.graphSelections.length > 0) {
+      return edgeSelection
+    }
+  }
+
+  const direction = await extractKclArgument(
+    code,
+    operation,
+    'direction',
+    rustContext,
+    true
+  )
+  if (!('error' in direction)) {
+    return direction
+  }
+
+  return { error: 'Missing or invalid direction argument' }
+}
+
 /**
  * Gather up the a Parameter operation's data
  * to be used in the command bar edit flow.
@@ -366,6 +417,17 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
         ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
       ) === 'true'
   }
+
+  const directionResult = await extractExtrudeDirectionArgument(
+    code,
+    operation,
+    artifactGraph,
+    rustContext
+  )
+  if (directionResult && 'error' in directionResult) {
+    return { reason: directionResult.error }
+  }
+  const direction = directionResult
 
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
@@ -509,6 +571,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     length,
     to,
     symmetric,
+    direction,
     bidirectionalLength,
     tagStart,
     tagEnd,

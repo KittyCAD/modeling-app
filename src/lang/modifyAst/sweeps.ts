@@ -58,6 +58,14 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 
+type ExtrudeDirection = KclCommandValue | Selections
+
+function isSelectionDirection(
+  direction: ExtrudeDirection
+): direction is Selections {
+  return 'graphSelections' in direction
+}
+
 export function addExtrude({
   ast,
   artifactGraph,
@@ -66,6 +74,7 @@ export function addExtrude({
   length,
   to,
   symmetric,
+  direction,
   bidirectionalLength,
   tagStart,
   tagEnd,
@@ -85,6 +94,7 @@ export function addExtrude({
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
+  direction?: ExtrudeDirection
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
@@ -188,6 +198,28 @@ export function addExtrude({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
+  let directionExpr: LabeledArg[] = []
+  if (direction) {
+    if (isSelectionDirection(direction)) {
+      const directionResult = getAxisExpression(
+        undefined,
+        direction,
+        modifiedAst,
+        wasmInstance,
+        artifactGraph,
+        mNodeToEdit
+      )
+      if (err(directionResult)) return directionResult
+      modifiedAst = directionResult.modifiedAst
+      directionExpr = [
+        createLabeledArg('direction', directionResult.generatedAxis),
+      ]
+    } else {
+      directionExpr = [
+        createLabeledArg('direction', valueOrVariable(direction)),
+      ]
+    }
+  }
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -236,6 +268,7 @@ export function addExtrude({
     ...lengthExpr,
     ...toExpr,
     ...symmetricExpr,
+    ...directionExpr,
     ...bidirectionalLengthExpr,
     ...tagStartExpr,
     ...tagEndExpr,
@@ -251,6 +284,14 @@ export function addExtrude({
   // Insert variables for labeled arguments if provided
   if (length && 'variableName' in length && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
+  }
+  if (
+    direction &&
+    !isSelectionDirection(direction) &&
+    'variableName' in direction &&
+    direction.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(direction, modifiedAst, mNodeToEdit)
   }
   if (
     bidirectionalLength &&
@@ -860,13 +901,13 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   let axis: string | undefined
   let edge: Selections | undefined
   const axisValue = opArg.value
-  const buildEdgeSelectionFromSegmentId = (
-    segmentId: string
+  const buildEdgeSelectionFromArtifactId = (
+    artifactId: string
   ): Selections | Error => {
     const artifact = getArtifactOfTypes(
       {
-        key: segmentId,
-        types: ['segment'],
+        key: artifactId,
+        types: ['segment', 'sweepEdge', 'primitiveEdge'],
       },
       artifactGraph
     )
@@ -874,11 +915,22 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       return new Error("Couldn't find related edge artifact")
     }
 
+    let codeRef
+    if (artifact.type === 'sweepEdge') {
+      const sweepEdgeCodeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+      if (err(sweepEdgeCodeRef)) {
+        return new Error("Couldn't find related edge code ref")
+      }
+      codeRef = sweepEdgeCodeRef
+    } else {
+      codeRef = artifact.codeRef
+    }
+
     return {
       graphSelections: [
         {
           artifact,
-          codeRef: artifact.codeRef,
+          codeRef,
         },
       ],
       otherSelections: [],
@@ -908,9 +960,11 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       return new Error('Bad direction vector for axis')
     }
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
-    // segment case
+    // tagged edge or segment case
     axisOrEdge = 'Edge'
-    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    const edgeSelection = buildEdgeSelectionFromArtifactId(
+      axisValue.artifact_id
+    )
     if (err(edgeSelection)) {
       return edgeSelection
     }
@@ -918,7 +972,9 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'Segment') {
     // segment case from sketch-solve member expressions (for example: sketch001.line5)
     axisOrEdge = 'Edge'
-    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    const edgeSelection = buildEdgeSelectionFromArtifactId(
+      axisValue.artifact_id
+    )
     if (err(edgeSelection)) {
       return edgeSelection
     }
@@ -926,31 +982,11 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge case
     axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.value,
-        types: ['sweepEdge'],
-      },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
+    const edgeSelection = buildEdgeSelectionFromArtifactId(axisValue.value)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
-
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    if (err(codeRef)) {
-      return new Error("Couldn't find related edge code ref")
-    }
-
-    edge = {
-      graphSelections: [
-        {
-          artifact,
-          codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
+    edge = edgeSelection
   } else {
     return new Error('The type of the axis argument is unsupported')
   }

@@ -408,6 +408,182 @@ describe('operations.test.ts', () => {
       expect(result.data.name).toBe('Extrude')
       expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
     })
+
+    it('preserves vector direction in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(profile001, length = 10, direction = [1, 0, 1])'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        direction: {
+          value: {
+            type: 'Array',
+            value: [
+              { type: 'Number', value: 1, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 1, ty: { type: 'Any' } },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[1, 0, 1]'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        direction?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Extrude')
+      expect(argDefaultValues.direction?.valueText).toBe('[1, 0, 1]')
+    })
+
+    it('preserves tagged segment direction in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(profile001, length = 10, direction = seg01)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        direction: {
+          value: {
+            type: 'TagIdentifier',
+            value: 'seg01',
+            artifact_id: 'segment-id',
+          },
+          sourceRange: rangeOfText(code, 'seg01'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          pathArtifact('path-id'),
+          segmentArtifact('segment-id'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        direction?: {
+          graphSelections: Array<{ artifact: Artifact }>
+        }
+      }
+      expect(result.data.name).toBe('Extrude')
+      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
+        'segment-id'
+      )
+    })
+
+    it('preserves tagged sweep edge direction in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(profile001, length = 10, direction = edge01)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        direction: {
+          value: {
+            type: 'TagIdentifier',
+            value: 'edge01',
+            artifact_id: 'sweep-edge-id',
+          },
+          sourceRange: rangeOfText(code, 'edge01'),
+        },
+      }
+
+      const sweepEdge: Artifact = {
+        type: 'sweepEdge',
+        id: 'sweep-edge-id',
+        subType: 'adjacent',
+        segId: 'segment-id',
+        cmdId: 'cmd-id',
+        sweepId: 'sweep-id',
+        commonSurfaceIds: [],
+      }
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          pathArtifact('path-id'),
+          segmentArtifact('segment-id'),
+          sweepEdge,
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        direction?: {
+          graphSelections: Array<{ artifact: Artifact }>
+        }
+      }
+      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
+        'sweep-edge-id'
+      )
+    })
   })
 
   describe('GDT edit flow', () => {
