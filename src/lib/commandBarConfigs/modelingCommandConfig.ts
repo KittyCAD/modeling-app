@@ -933,11 +933,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Extrude']
+      const wasmInstance = await context.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        (commandArgs.draftAngle || commandArgs.direction) &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addExtrude({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -987,6 +1005,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       direction: {
         inputType: 'vector3d',
         required: false,
+        status: 'experimental',
         defaultValue: '[0, 0, 1]',
       },
       bidirectionalLength: {

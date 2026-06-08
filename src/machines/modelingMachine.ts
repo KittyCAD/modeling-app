@@ -4285,7 +4285,7 @@ export const modelingMachine = setup({
         const wasmInstance = await input.kclManager.wasmInstancePromise
         let ast = input.kclManager.ast
         if (
-          input.data.draftAngle &&
+          (input.data.draftAngle || input.data.direction) &&
           input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
         ) {
           const astWithNewSetting = setExperimentalFeatures(
