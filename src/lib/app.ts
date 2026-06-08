@@ -9,14 +9,19 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+import { buildZookeeperHistoryExtension } from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  BODIES_PANE_FEATURE_FLAG,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import fsZds from '@src/lib/fs-zds'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -58,6 +63,7 @@ import {
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
@@ -554,13 +560,48 @@ export class App implements AppSubsystems {
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
-    // This extension makes it possible to mark FS operations as un/redoable
+    // These extensions make global project operations un/redoable.
     effect(() => {
       if (this.project?.executingEditor.value) {
-        buildFSHistoryExtension(
+        const executingEditor = this.project.executingEditor.value
+        const disposeFSHistory = buildFSHistoryExtension(
           this.systemIOActor,
-          this.project.executingEditor.value
+          executingEditor
         )
+        const disposeZookeeperHistory = buildZookeeperHistoryExtension({
+          kclManager: executingEditor,
+          onCurrentFileDelete: (deletedPaths) => {
+            if (!this.project) {
+              throw new Error(
+                `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
+              )
+            }
+            const entrypointPath = fsZds.join(
+              this.project.path,
+              PROJECT_ENTRYPOINT
+            )
+            const entrypointFile = this.project.files.find(
+              (file) => file.path === entrypointPath
+            )
+            if (!entrypointFile || deletedPaths.has(entrypointPath)) {
+              throw new Error(
+                `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
+              )
+            }
+            this.systemIOActor.send({
+              type: SystemIOMachineEvents.navigateToFile,
+              data: {
+                requestedProjectName: this.project.name,
+                requestedFileName: PROJECT_ENTRYPOINT,
+              },
+            })
+          },
+        })
+
+        return () => {
+          disposeFSHistory()
+          disposeZookeeperHistory()
+        }
       }
     })
 

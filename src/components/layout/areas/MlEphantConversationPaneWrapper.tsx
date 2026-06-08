@@ -3,6 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
+import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -91,6 +92,19 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             requestedProjectName: payload.requestedProjectName,
             requestedFileNameWithExtension:
               payload.requestedFileNameWithExtension ?? '',
+            onSuccess: () => {
+              if (
+                project?.path &&
+                payload.zookeeperEditPatch?.changed_files?.length
+              ) {
+                kclManager.addGlobalHistoryEvent(
+                  zookeeperEditPatchHistoryEvent({
+                    projectPath: project.path,
+                    patch: payload.zookeeperEditPatch,
+                  })
+                )
+              }
+            },
           },
         })
       }

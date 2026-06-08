@@ -150,6 +150,7 @@ import {
   themeCompartment,
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
+import { zookeeperHistoryExtension } from '@src/editor/plugins/zookeeper'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
@@ -934,6 +935,8 @@ export class KclManager extends File {
           this.updateCodeEditor(code, {
             shouldExecute: !isInSketchMode,
             shouldResetCamera: !isInSketchMode,
+            shouldAddToHistory:
+              !this.mlEphantManagerMachineBulkManipulatingFileSystem,
             // We explicitly do not write to the file here since we are loading from
             // the file system and not the editor.
             shouldWriteToDisk: false,
@@ -1875,7 +1878,10 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
+    this._globalHistoryView = new HistoryView([
+      fsHistoryExtension(),
+      zookeeperHistoryExtension(),
+    ])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())

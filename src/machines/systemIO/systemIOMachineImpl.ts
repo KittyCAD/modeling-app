@@ -614,6 +614,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            onSuccess?: () => void
           }
         }) => {
           const wasmInstance = await input.context.wasmInstancePromise
@@ -633,6 +634,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           })
 
           message.message += `, ${totalDeleted} deleted`
+
+          input.onSuccess?.()
 
           return {
             ...message,

@@ -140,6 +140,14 @@ export class HistoryView {
     }
   }
 
+  undoGlobal() {
+    return undo(this.editorView)
+  }
+
+  redoGlobal() {
+    return redo(this.editorView)
+  }
+
   /** Extensions attached to a local history target */
   private localHistoryExtension(): Extension {
     /**

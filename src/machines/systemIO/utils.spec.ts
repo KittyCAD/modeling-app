@@ -1,3 +1,4 @@
+import type { MlToolResult } from '@kittycad/lib'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import {
@@ -255,6 +256,90 @@ describe('System IO Utils', () => {
 
     expect(preparedPayload?.filesToDelete).toEqual([
       { requestedFileName: 'old.kcl' },
+    ])
+  })
+
+  it('carries Zookeeper edit patch metadata into edit requests', () => {
+    const zookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'main.kcl',
+          status: 'modified',
+          diff: '--- a/main.kcl\n+++ b/main.kcl\n@@ -1 +1 @@\n-width = 5\n+width = 10\n',
+        },
+        {
+          path: 'old.kcl',
+          status: 'deleted',
+          previous_contents: 'old = true\n',
+        },
+      ],
+    }
+    const toolOutput = {
+      status_code: 200,
+      type: 'edit_kcl_code',
+      project_name: 'some-project',
+      outputs: {
+        'main.kcl': 'width = 10',
+      },
+      zookeeper_edit_patch: zookeeperEditPatch,
+    } as MlToolResult
+
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      toolOutput,
+    })
+
+    expect(preparedPayload?.zookeeperEditPatch).toEqual(zookeeperEditPatch)
+    expect(preparedPayload?.filesToDelete).toEqual([
+      { requestedFileName: 'old.kcl' },
+    ])
+  })
+
+  it('does not allow Zookeeper to delete the project entrypoint', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      filesToDelete: [{ requestedFileName: './main.kcl' }],
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: { 'part.kcl': 'part = true' },
+        zookeeper_edit_patch: {
+          run_id: 'run-main-delete',
+          changed_files: [
+            {
+              path: 'main.kcl',
+              status: 'deleted',
+              previous_contents: 'main = true',
+            },
+            {
+              path: 'part.kcl',
+              status: 'created',
+              contents: 'part = true',
+            },
+          ],
+        },
+      } as MlToolResult,
+    })
+
+    expect(preparedPayload?.filesToDelete).toEqual([])
+    expect(preparedPayload?.zookeeperEditPatch?.changed_files).toEqual([
+      {
+        path: 'part.kcl',
+        status: 'created',
+        contents: 'part = true',
+      },
     ])
   })
 

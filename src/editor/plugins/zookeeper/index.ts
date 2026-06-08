@@ -1,0 +1,580 @@
+import { invertedEffects } from '@codemirror/commands'
+import type { Extension, Transaction } from '@codemirror/state'
+import { Annotation, Compartment, StateEffect } from '@codemirror/state'
+import type { MlToolResult } from '@kittycad/lib'
+import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
+import type { KclManager } from '@src/lang/KclManager'
+import { isCodeTheSame } from '@src/lib/codeEditor'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
+import { EditorView } from 'codemirror'
+import {
+  type StructuredPatch,
+  applyPatch,
+  parsePatch,
+  reversePatch,
+} from 'diff'
+import toast from 'react-hot-toast'
+
+type ZookeeperCreatedPatchFile = {
+  path: string
+  status: 'created'
+  contents?: string | null
+}
+
+type ZookeeperModifiedPatchFile = {
+  path: string
+  status: 'modified'
+  diff?: string | null
+}
+
+type ZookeeperDeletedPatchFile = {
+  path: string
+  status: 'deleted'
+  previous_contents?: string | null
+}
+
+export type ZookeeperEditPatchFile =
+  | ZookeeperCreatedPatchFile
+  | ZookeeperModifiedPatchFile
+  | ZookeeperDeletedPatchFile
+
+export type ZookeeperEditPatch = {
+  run_id: string
+  changed_files?: ZookeeperEditPatchFile[]
+}
+
+export function isZookeeperProjectEntrypointPath(path: string) {
+  return normalizeZookeeperPatchPath(path) === PROJECT_ENTRYPOINT
+}
+
+type EditKclCodeToolResultWithPatch = Extract<
+  MlToolResult,
+  { type: 'edit_kcl_code' }
+> & {
+  zookeeper_edit_patch?: ZookeeperEditPatch | null
+}
+
+type ZookeeperPatchReplayDirection = 'undo' | 'redo'
+
+type ZookeeperPatchEffectProps = {
+  projectPath: string
+  patch: ZookeeperEditPatch
+  direction: ZookeeperPatchReplayDirection
+}
+
+type ZookeeperPatchFileReplay = {
+  kind: 'content'
+  relativePath: string
+  absolutePath: string
+  expectedContent: string | null
+  nextContent: string | null
+}
+
+type ZookeeperPatchFileDiffReplay = {
+  kind: 'diff'
+  relativePath: string
+  absolutePath: string
+  patch: StructuredPatch
+}
+
+type ZookeeperPatchReplay =
+  | ZookeeperPatchFileReplay
+  | ZookeeperPatchFileDiffReplay
+
+type ZookeeperPatchReplayContents =
+  | {
+      kind: 'content'
+      expectedContent: string | null
+      nextContent: string | null
+    }
+  | {
+      kind: 'diff'
+      patch: StructuredPatch
+    }
+
+type PreparedZookeeperPatchFileReplay = {
+  relativePath: string
+  absolutePath: string
+  previousContent: string | null
+  nextContent: string | null
+}
+
+type ZookeeperPatchReplayOptions = {
+  fileContentOverrides?: Map<string, string>
+}
+
+type ZookeeperHistoryExtensionDependencies = {
+  kclManager: KclManager
+  onCurrentFileDelete: (deletedPaths: Set<string>) => void
+}
+
+const zookeeperEffectCompartment = new Compartment()
+export const zookeeperPatchIgnoreAnnotationType = Annotation.define<true>()
+
+const zookeeperEditPatchEffect = StateEffect.define<ZookeeperPatchEffectProps>()
+
+const textEncoder = new TextEncoder()
+
+export function getZookeeperEditPatchFromToolOutput(
+  toolOutput: MlToolResult
+): ZookeeperEditPatch | undefined {
+  if (toolOutput.type !== 'edit_kcl_code') {
+    return
+  }
+
+  return (
+    (toolOutput as EditKclCodeToolResultWithPatch).zookeeper_edit_patch ??
+    undefined
+  )
+}
+
+export function zookeeperEditPatchHistoryEvent({
+  projectPath,
+  patch,
+}: {
+  projectPath: string
+  patch: ZookeeperEditPatch
+}): TransactionSpecNoChanges {
+  return {
+    effects: zookeeperEditPatchEffect.of({
+      projectPath,
+      patch,
+      direction: 'redo',
+    }),
+    annotations: [zookeeperPatchIgnoreAnnotationType.of(true)],
+  }
+}
+
+export function buildZookeeperHistoryExtension({
+  kclManager,
+  onCurrentFileDelete,
+}: ZookeeperHistoryExtensionDependencies) {
+  let restoringHistoryAfterFailure = false
+  const zookeeperPatchListener = EditorView.updateListener.of((vu) => {
+    for (const tr of vu.transactions) {
+      if (tr.annotation(zookeeperPatchIgnoreAnnotationType)) {
+        continue
+      }
+
+      for (const e of tr.effects) {
+        if (e.is(zookeeperEditPatchEffect)) {
+          if (restoringHistoryAfterFailure) {
+            restoringHistoryAfterFailure = false
+            continue
+          }
+
+          void replayZookeeperEditPatch({
+            ...e.value,
+            kclManager,
+            onCurrentFileDelete,
+          }).catch((error: unknown) => {
+            console.error(error)
+            toast.error(getReplayErrorMessage(error))
+            restoringHistoryAfterFailure = true
+            const restored =
+              e.value.direction === 'undo'
+                ? kclManager.globalHistoryView.redoGlobal()
+                : kclManager.globalHistoryView.undoGlobal()
+            if (!restored) {
+              restoringHistoryAfterFailure = false
+            }
+          })
+        }
+      }
+    }
+  })
+
+  kclManager.globalHistoryView.dispatch(
+    {
+      effects: [zookeeperEffectCompartment.reconfigure(zookeeperPatchListener)],
+    },
+    { shouldForwardToLocalHistory: false }
+  )
+
+  return () => {
+    kclManager.globalHistoryView.dispatch(
+      {
+        effects: [zookeeperEffectCompartment.reconfigure([])],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
+  }
+}
+
+export function zookeeperHistoryExtension(): Extension {
+  const undoableZookeeperEditPatch = invertedEffects.of((tr: Transaction) => {
+    const found: StateEffect<unknown>[] = []
+
+    for (const e of tr.effects) {
+      if (e.is(zookeeperEditPatchEffect)) {
+        found.push(
+          zookeeperEditPatchEffect.of({
+            ...e.value,
+            direction: invertZookeeperPatchReplayDirection(e.value.direction),
+          })
+        )
+      }
+    }
+
+    return found
+  })
+
+  return [undoableZookeeperEditPatch, zookeeperEffectCompartment.of([])]
+}
+
+export async function applyZookeeperEditPatch({
+  projectPath,
+  patch,
+  direction,
+  fileContentOverrides,
+}: ZookeeperPatchEffectProps & ZookeeperPatchReplayOptions) {
+  const replayFiles = getZookeeperPatchFileReplays({
+    projectPath,
+    patch,
+    direction,
+  })
+
+  await writeZookeeperPatchReplay(
+    await prepareZookeeperPatchReplay(replayFiles, { fileContentOverrides })
+  )
+}
+
+async function replayZookeeperEditPatch({
+  kclManager,
+  ...effectProps
+}: ZookeeperPatchEffectProps & {
+  kclManager: KclManager
+  onCurrentFileDelete: (deletedPaths: Set<string>) => void
+}) {
+  const replayFiles = getZookeeperPatchFileReplays(effectProps)
+  const preparedReplayFiles = await prepareZookeeperPatchReplay(replayFiles, {
+    fileContentOverrides: new Map([[kclManager.path, kclManager.code]]),
+  })
+  const currentFileReplay = preparedReplayFiles.find(
+    (replayFile) => replayFile.absolutePath === kclManager.path
+  )
+
+  const deletesCurrentFile = currentFileReplay?.nextContent === null
+  if (deletesCurrentFile) {
+    effectProps.onCurrentFileDelete(
+      new Set(
+        preparedReplayFiles
+          .filter((replayFile) => replayFile.nextContent === null)
+          .map((replayFile) => replayFile.absolutePath)
+      )
+    )
+  }
+
+  await writeZookeeperPatchReplay(preparedReplayFiles)
+
+  if (currentFileReplay && currentFileReplay.nextContent !== null) {
+    kclManager.updateCodeEditor(currentFileReplay.nextContent, {
+      shouldAddToHistory: false,
+      shouldClearHistory: false,
+      shouldExecute: true,
+      shouldResetCamera: false,
+      shouldWriteToDisk: true,
+    })
+    return
+  }
+
+  if (deletesCurrentFile) {
+    return
+  }
+
+  await kclManager.executeCode()
+}
+
+function getZookeeperPatchFileReplays({
+  projectPath,
+  patch,
+  direction,
+}: ZookeeperPatchEffectProps): ZookeeperPatchReplay[] {
+  return (patch.changed_files ?? []).map((file) => {
+    if (
+      file.status === 'deleted' &&
+      isZookeeperProjectEntrypointPath(file.path)
+    ) {
+      throw new Error(
+        `Cannot replay Zookeeper edit patch because ${PROJECT_ENTRYPOINT} is the project entrypoint and cannot be deleted.`
+      )
+    }
+    const pathProps = {
+      relativePath: file.path,
+      absolutePath: getZookeeperPatchAbsolutePath(projectPath, file.path),
+    }
+
+    return {
+      ...pathProps,
+      ...getZookeeperPatchReplayContents(file, direction),
+    }
+  })
+}
+
+function getZookeeperPatchReplayContents(
+  file: ZookeeperEditPatchFile,
+  direction: ZookeeperPatchReplayDirection
+): ZookeeperPatchReplayContents {
+  switch (file.status) {
+    case 'created':
+      return direction === 'undo'
+        ? {
+            kind: 'content',
+            expectedContent: requiredContent(file.contents, file),
+            nextContent: null,
+          }
+        : {
+            kind: 'content',
+            expectedContent: null,
+            nextContent: requiredContent(file.contents, file),
+          }
+    case 'modified':
+      return {
+        kind: 'diff',
+        patch: getZookeeperPatchStructuredPatch(file, direction),
+      }
+    case 'deleted':
+      return direction === 'undo'
+        ? {
+            kind: 'content',
+            expectedContent: null,
+            nextContent: requiredContent(file.previous_contents, file),
+          }
+        : {
+            kind: 'content',
+            expectedContent: requiredContent(file.previous_contents, file),
+            nextContent: null,
+          }
+  }
+}
+
+async function prepareZookeeperPatchReplay(
+  replayFiles: ZookeeperPatchReplay[],
+  { fileContentOverrides }: ZookeeperPatchReplayOptions = {}
+): Promise<PreparedZookeeperPatchFileReplay[]> {
+  const preparedReplayFiles: PreparedZookeeperPatchFileReplay[] = []
+
+  for (const replayFile of replayFiles) {
+    const currentContent =
+      fileContentOverrides?.get(replayFile.absolutePath) ??
+      (await readTextFileIfExists(replayFile.absolutePath))
+
+    if (replayFile.kind === 'diff') {
+      if (currentContent === null) {
+        throw zookeeperPatchConflictError(replayFile.relativePath)
+      }
+
+      const nextContent = applyPatch(currentContent, replayFile.patch, {
+        fuzzFactor: 0,
+      })
+      if (nextContent === false) {
+        throw zookeeperPatchConflictError(replayFile.relativePath)
+      }
+      preparedReplayFiles.push({
+        relativePath: replayFile.relativePath,
+        absolutePath: replayFile.absolutePath,
+        previousContent: currentContent,
+        nextContent,
+      })
+      continue
+    }
+
+    validateExpectedContent(replayFile, currentContent)
+    preparedReplayFiles.push({
+      relativePath: replayFile.relativePath,
+      absolutePath: replayFile.absolutePath,
+      previousContent: currentContent,
+      nextContent: replayFile.nextContent,
+    })
+  }
+
+  return preparedReplayFiles
+}
+
+function validateExpectedContent(
+  replayFile: ZookeeperPatchFileReplay,
+  currentContent: string | null
+) {
+  if (replayFile.expectedContent === null) {
+    if (currentContent !== null) {
+      throw zookeeperPatchConflictError(replayFile.relativePath)
+    }
+    return
+  }
+
+  if (
+    currentContent === null ||
+    !isCodeTheSame(currentContent, replayFile.expectedContent)
+  ) {
+    throw zookeeperPatchConflictError(replayFile.relativePath)
+  }
+}
+
+async function writeZookeeperPatchReplay(
+  replayFiles: PreparedZookeeperPatchFileReplay[]
+) {
+  const writtenFiles: PreparedZookeeperPatchFileReplay[] = []
+
+  try {
+    for (const replayFile of replayFiles) {
+      await writeZookeeperReplayFile(
+        replayFile.absolutePath,
+        replayFile.nextContent
+      )
+      writtenFiles.push(replayFile)
+    }
+  } catch (error: unknown) {
+    const rollbackErrors: unknown[] = []
+    for (const replayFile of writtenFiles.reverse()) {
+      try {
+        await writeZookeeperReplayFile(
+          replayFile.absolutePath,
+          replayFile.previousContent
+        )
+      } catch (rollbackError: unknown) {
+        rollbackErrors.push(rollbackError)
+      }
+    }
+
+    if (rollbackErrors.length > 0) {
+      throw new AggregateError(
+        [error, ...rollbackErrors],
+        'Zookeeper edit replay failed and could not be fully rolled back.'
+      )
+    }
+    throw error
+  }
+}
+
+async function writeZookeeperReplayFile(
+  absolutePath: string,
+  content: string | null
+) {
+  if (content === null) {
+    await fsZds.rm(absolutePath)
+    return
+  }
+
+  await fsZds.mkdir(fsZds.dirname(absolutePath), { recursive: true })
+  await fsZds.writeFile(absolutePath, textEncoder.encode(content))
+}
+
+async function readTextFileIfExists(path: string): Promise<string | null> {
+  try {
+    return await fsZds.readFile(path, 'utf8')
+  } catch (error: unknown) {
+    if (isEnoentError(error)) {
+      return null
+    }
+
+    throw error
+  }
+}
+
+function getZookeeperPatchAbsolutePath(
+  projectPath: string,
+  relativePath: string
+) {
+  const normalizedPath = normalizeZookeeperPatchPath(relativePath)
+  const pathSeparator = '/'
+  const pathParts = normalizedPath.split(pathSeparator)
+  const safePathParts = pathParts.filter(
+    (part) => part.length > 0 && part !== '.'
+  )
+
+  if (
+    pathParts.some((part) => part === '..') ||
+    safePathParts.length === 0 ||
+    normalizedPath.startsWith('/') ||
+    /^[A-Za-z]:/.test(normalizedPath)
+  ) {
+    throw new Error(
+      `Cannot replay Zookeeper edit patch for unsafe path "${relativePath}".`
+    )
+  }
+
+  return fsZds.join(projectPath, ...safePathParts)
+}
+
+function normalizeZookeeperPatchPath(path: string) {
+  return path.replaceAll('\\', '/').replace(/^(?:\.\/)+/, '')
+}
+
+function requiredContent(
+  content: string | null | undefined,
+  file: ZookeeperEditPatchFile
+): string {
+  if (content == null) {
+    throw new Error(
+      `Cannot replay Zookeeper edit patch for "${file.path}" because the ${file.status} file content is missing.`
+    )
+  }
+
+  return content
+}
+
+function getZookeeperPatchStructuredPatch(
+  file: ZookeeperModifiedPatchFile,
+  direction: ZookeeperPatchReplayDirection
+): StructuredPatch {
+  const diff = requiredDiff(file.diff, file)
+  let patches: StructuredPatch[]
+
+  try {
+    patches = parsePatch(diff)
+  } catch {
+    throw new Error(
+      `Cannot replay Zookeeper edit patch for "${file.path}" because the diff is invalid.`
+    )
+  }
+
+  const patch = patches[0]
+  if (!patch || patches.length !== 1) {
+    throw new Error(
+      `Cannot replay Zookeeper edit patch for "${file.path}" because the diff must contain exactly one file patch.`
+    )
+  }
+
+  return direction === 'undo' ? reversePatch(patch) : patch
+}
+
+function requiredDiff(
+  diff: string | null | undefined,
+  file: ZookeeperEditPatchFile
+): string {
+  if (diff == null) {
+    throw new Error(
+      `Cannot replay Zookeeper edit patch for "${file.path}" because the ${file.status} file diff is missing.`
+    )
+  }
+
+  return diff
+}
+
+function invertZookeeperPatchReplayDirection(
+  direction: ZookeeperPatchReplayDirection
+): ZookeeperPatchReplayDirection {
+  return direction === 'undo' ? 'redo' : 'undo'
+}
+
+function zookeeperPatchConflictError(path: string) {
+  return new Error(
+    `Cannot replay Zookeeper edit patch because "${path}" changed since the edit was recorded.`
+  )
+}
+
+function getReplayErrorMessage(error: unknown) {
+  return error instanceof Error
+    ? error.message
+    : 'Failed to replay Zookeeper edit patch.'
+}
+
+function isEnoentError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (('cause' in error && error.cause === 'ENOENT') ||
+      ('code' in error && error.code === 'ENOENT'))
+  )
+}

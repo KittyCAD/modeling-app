@@ -1,3 +1,7 @@
+import {
+  getZookeeperEditPatchFromToolOutput,
+  isZookeeperProjectEntrypointPath,
+} from '@src/editor/plugins/zookeeper'
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
@@ -463,11 +467,39 @@ export const prepareMlEphantNewFileRequest = ({
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
     ? rawRelativePath.slice(fsZds.sep.length)
     : rawRelativePath
+  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
+  const zookeeperEditPatch = rawZookeeperEditPatch
+    ? {
+        ...rawZookeeperEditPatch,
+        changed_files: rawZookeeperEditPatch.changed_files?.filter(
+          (file) =>
+            file.status !== 'deleted' ||
+            !isZookeeperProjectEntrypointPath(file.path)
+        ),
+      }
+    : undefined
+  const filesToDeleteByPath = new Map<string, RequestedKCLFileDelete>()
+
+  for (const file of filesToDelete) {
+    if (isZookeeperProjectEntrypointPath(file.requestedFileName)) continue
+    filesToDeleteByPath.set(
+      normalizeKCLFileDeletePath(file.requestedFileName),
+      file
+    )
+  }
+
+  for (const file of zookeeperEditPatch?.changed_files ?? []) {
+    if (file.status !== 'deleted') continue
+    filesToDeleteByPath.set(normalizeKCLFileDeletePath(file.path), {
+      requestedFileName: file.path,
+    })
+  }
 
   return {
     files: requestedFiles,
-    filesToDelete,
+    filesToDelete: Array.from(filesToDeleteByPath.values()),
     requestedProjectName: projectNameCurrentlyOpened,
     requestedFileNameWithExtension,
+    zookeeperEditPatch,
   }
 }

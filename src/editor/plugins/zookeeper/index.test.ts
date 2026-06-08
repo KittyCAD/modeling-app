@@ -1,0 +1,281 @@
+import {
+  type ZookeeperEditPatch,
+  applyZookeeperEditPatch,
+} from '@src/editor/plugins/zookeeper'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds from '@src/lib/fs-zds'
+import { createTwoFilesPatch } from 'diff'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+describe('Zookeeper history patch replay', () => {
+  it('replays create, modify, and delete changes locally', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const modifiedBefore = 'length = 10\n'
+    const modifiedAfter = 'length = 20\n'
+    const patch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'created.kcl',
+          status: 'created',
+          contents: 'created = true',
+        },
+        {
+          path: 'parts/modified.kcl',
+          status: 'modified',
+          diff: unifiedDiff(
+            'parts/modified.kcl',
+            modifiedBefore,
+            modifiedAfter
+          ),
+        },
+        {
+          path: 'deleted.kcl',
+          status: 'deleted',
+          previous_contents: 'deleted = false',
+        },
+      ],
+    }
+
+    await fsZds.mkdir(fsZds.join(projectPath, 'parts'), { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'created.kcl'),
+      new TextEncoder().encode('created = true')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'parts', 'modified.kcl'),
+      new TextEncoder().encode(modifiedAfter)
+    )
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch,
+        direction: 'undo',
+      })
+
+      await expect(
+        fsZds.readFile(fsZds.join(projectPath, 'created.kcl'), 'utf8')
+      ).rejects.toThrow()
+      await expect(
+        fsZds.readFile(fsZds.join(projectPath, 'parts', 'modified.kcl'), 'utf8')
+      ).resolves.toBe(modifiedBefore)
+      await expect(
+        fsZds.readFile(fsZds.join(projectPath, 'deleted.kcl'), 'utf8')
+      ).resolves.toBe('deleted = false')
+
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch,
+        direction: 'redo',
+      })
+
+      await expect(
+        fsZds.readFile(fsZds.join(projectPath, 'created.kcl'), 'utf8')
+      ).resolves.toBe('created = true')
+      await expect(
+        fsZds.readFile(fsZds.join(projectPath, 'parts', 'modified.kcl'), 'utf8')
+      ).resolves.toBe(modifiedAfter)
+      await expect(
+        fsZds.readFile(fsZds.join(projectPath, 'deleted.kcl'), 'utf8')
+      ).rejects.toThrow()
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('refuses to replay when a file changed after the Zookeeper edit', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const untouchedPath = fsZds.join(projectPath, 'untouched.kcl')
+    const patch: ZookeeperEditPatch = {
+      run_id: 'run-2',
+      changed_files: [
+        {
+          path: 'changed.kcl',
+          status: 'modified',
+          diff: unifiedDiff('changed.kcl', 'length = 10\n', 'length = 20\n'),
+        },
+        {
+          path: 'untouched.kcl',
+          status: 'modified',
+          diff: unifiedDiff('untouched.kcl', 'width = 10\n', 'width = 20\n'),
+        },
+      ],
+    }
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'changed.kcl'),
+      new TextEncoder().encode('length = 30\n')
+    )
+    await fsZds.writeFile(
+      untouchedPath,
+      new TextEncoder().encode('width = 20\n')
+    )
+
+    try {
+      await expect(
+        applyZookeeperEditPatch({
+          projectPath,
+          patch,
+          direction: 'undo',
+        })
+      ).rejects.toThrow('changed since the edit was recorded')
+
+      await expect(fsZds.readFile(untouchedPath, 'utf8')).resolves.toBe(
+        'width = 20\n'
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('uses current editor contents when replaying the open file', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const beforeZookeeperEdit = 'length = 10\n'
+    const afterZookeeperEdit = 'length = 20\n'
+    const staleDiskContent = `${afterZookeeperEdit}manual = true\n`
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(mainPath, new TextEncoder().encode(staleDiskContent))
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: {
+          run_id: 'run-current-editor',
+          changed_files: [
+            {
+              path: 'main.kcl',
+              status: 'modified',
+              diff: unifiedDiff(
+                'main.kcl',
+                beforeZookeeperEdit,
+                afterZookeeperEdit
+              ),
+            },
+          ],
+        },
+        direction: 'undo',
+        fileContentOverrides: new Map([[mainPath, afterZookeeperEdit]]),
+      })
+
+      await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(
+        beforeZookeeperEdit
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects unsafe patch paths before writing files', async () => {
+    await expect(
+      applyZookeeperEditPatch({
+        projectPath: `/tmp/zookeeper-history-${crypto.randomUUID()}`,
+        patch: {
+          run_id: 'run-3',
+          changed_files: [
+            {
+              path: '../outside.kcl',
+              status: 'created',
+              contents: 'outside = true',
+            },
+          ],
+        },
+        direction: 'redo',
+      })
+    ).rejects.toThrow('unsafe path')
+  })
+
+  it('rejects patches that delete the project entrypoint', async () => {
+    await expect(
+      applyZookeeperEditPatch({
+        projectPath: `/tmp/zookeeper-history-${crypto.randomUUID()}`,
+        patch: {
+          run_id: 'run-main-delete',
+          changed_files: [
+            {
+              path: './main.kcl',
+              status: 'deleted',
+              previous_contents: 'main = true',
+            },
+          ],
+        },
+        direction: 'redo',
+      })
+    ).rejects.toThrow('project entrypoint')
+  })
+
+  it('rolls back earlier files when a later write fails', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const modifiedPath = fsZds.join(projectPath, 'modified.kcl')
+    const createdPath = fsZds.join(projectPath, 'created.kcl')
+    const originalWriteFile = fsZds.writeFile.bind(fsZds)
+    let shouldFailModifiedWrite = true
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await originalWriteFile(
+      modifiedPath,
+      new TextEncoder().encode('length = 10\n')
+    )
+
+    vi.spyOn(fsZds, 'writeFile').mockImplementation(async (path, data) => {
+      if (path === modifiedPath && shouldFailModifiedWrite) {
+        shouldFailModifiedWrite = false
+        throw new Error('disk write failed')
+      }
+      return originalWriteFile(path, data)
+    })
+
+    try {
+      await expect(
+        applyZookeeperEditPatch({
+          projectPath,
+          patch: {
+            run_id: 'run-4',
+            changed_files: [
+              {
+                path: 'created.kcl',
+                status: 'created',
+                contents: 'created = true\n',
+              },
+              {
+                path: 'modified.kcl',
+                status: 'modified',
+                diff: unifiedDiff(
+                  'modified.kcl',
+                  'length = 10\n',
+                  'length = 20\n'
+                ),
+              },
+            ],
+          },
+          direction: 'redo',
+        })
+      ).rejects.toThrow('disk write failed')
+
+      await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+      await expect(fsZds.readFile(modifiedPath, 'utf8')).resolves.toBe(
+        'length = 10\n'
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+})
+
+function unifiedDiff(path: string, before: string, after: string) {
+  return createTwoFilesPatch(`a/${path}`, `b/${path}`, before, after)
+}
