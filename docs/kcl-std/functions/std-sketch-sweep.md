@@ -494,6 +494,7 @@ sketch002 = sketch(on = XZ) {
 
 // sweep the tagged facec
 sweep(capFace, path = sketch002)
+  |> appearance(color = "#ff00aa")
 
 ```
 
