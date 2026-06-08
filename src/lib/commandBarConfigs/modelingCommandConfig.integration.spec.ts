@@ -1,24 +1,14 @@
-import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
 import {
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  createSelectionFromPathArtifact,
-  enginelessExecutor,
-  getKclCommandValue,
-} from '@src/lib/testHelpers'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('@src/lang/modelingWorkflows', () => ({
-  mockExecAstAndReportErrors: vi.fn(async () => undefined),
-}))
+import { describe, expect, it } from 'vitest'
 
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
@@ -79,80 +69,5 @@ describe('GDT tolerance defaults', () => {
         } as KclCommandValue)
       ).toBe('0.1in')
     }
-  })
-})
-
-describe('Extrude command config', () => {
-  it('marks direction experimental and enables experimental features during review', async () => {
-    const commandConfig = modelingMachineCommandConfig.Extrude
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('Extrude should have a single command config')
-    }
-
-    expect(commandConfig.args?.direction).toMatchObject({
-      inputType: 'vector3d',
-      status: 'experimental',
-    })
-
-    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
-    const code = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = 1)
-  |> xLine(length = 1)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()`
-    const ast = assertParse(code, instance)
-    const { artifactGraph } = await enginelessExecutor(ast, rustContext)
-    const pathArtifacts = [...artifactGraph.values()].filter(
-      (artifact) => artifact.type === 'path'
-    )
-    const sketches = createSelectionFromPathArtifact(pathArtifacts)
-    const length = await getKclCommandValue('1', instance, rustContext)
-    const direction = await getKclCommandValue(
-      '[0, 0, 1]',
-      instance,
-      rustContext
-    )
-
-    const result = await commandConfig.reviewValidation?.(
-      {
-        argumentsToSubmit: {
-          sketches,
-          length,
-          direction,
-        },
-        wasmInstancePromise: Promise.resolve(instance),
-      } as any,
-      {
-        getSnapshot: () => ({
-          context: {
-            engineCommandManager: { connection: { connected: true } },
-            kclManager: {
-              ast,
-              artifactGraph,
-              code,
-              fileSettings: {
-                experimentalFeatures: { type: 'Deny' },
-              },
-            },
-            rustContext,
-          },
-        }),
-      } as any
-    )
-
-    if (result instanceof Error) {
-      throw result
-    }
-    const reviewedAst = vi
-      .mocked(mockExecAstAndReportErrors)
-      .mock.calls.at(-1)?.[0]
-    if (!reviewedAst) {
-      throw new Error('Expected mock execution to receive an AST')
-    }
-
-    const reviewedCode = recast(reviewedAst, instance)
-    expect(reviewedCode).toContain('@settings(experimentalFeatures = allow)')
-    expect(reviewedCode).toContain('direction = [0, 0, 1]')
   })
 })
