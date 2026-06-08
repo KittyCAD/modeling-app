@@ -15,7 +15,7 @@ function screenshotName(step: number, name: string, mode: Themes) {
 }
 
 const screenshotOptions = (page: Page) => ({
-  maxDiffPixels: 300,
+  maxDiffPixelRatio: 0.001,
   mask: lowerRightMasks(page),
 })
 
