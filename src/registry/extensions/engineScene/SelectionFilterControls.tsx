@@ -105,7 +105,7 @@ export function SelectionFilterControls() {
               className="h-3 w-3 ui-open:rotate-180"
             />
           </Popover.Button>
-          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border b-3 bg-1 p-1 shadow-lg">
+          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border b-3 bg-default p-1 shadow-lg">
             <div className="flex flex-col">
               {selectionFilterOptions.map((option) => {
                 const isActive = option.value === activeOption?.value
