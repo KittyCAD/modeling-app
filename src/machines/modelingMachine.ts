@@ -157,6 +157,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addDelete,
   addHide,
   addMirror3D,
   addRotate,
@@ -585,6 +586,12 @@ export type ModelingMachineEvent =
     }
   | {
       type: 'Hide'
+      data: {
+        objects: Selections
+      }
+    }
+  | {
+      type: 'Delete'
       data: {
         objects: Selections
       }
@@ -5294,6 +5301,62 @@ export const modelingMachine = setup({
         )
       }
     ),
+    deleteAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data:
+                | {
+                    objects: Selections
+                  }
+                | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let ast: Node<Program> = input.kclManager.ast
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithExperimentalFeatures = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(astWithExperimentalFeatures)) {
+            return Promise.reject(astWithExperimentalFeatures)
+          }
+
+          ast = astWithExperimentalFeatures
+        }
+
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addDelete({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager
+        )
+      }
+    ),
     gdtFlatnessAstMod: fromPromise(
       async ({
         input,
@@ -6529,6 +6592,10 @@ export const modelingMachine = setup({
 
         Hide: {
           target: 'Applying hide',
+        },
+
+        Delete: {
+          target: 'Applying delete',
         },
 
         'GDT Flatness': {
@@ -8604,6 +8671,27 @@ export const modelingMachine = setup({
         id: 'hideAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Hide') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying delete': {
+      invoke: {
+        src: 'deleteAstMod',
+        id: 'deleteAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Delete') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

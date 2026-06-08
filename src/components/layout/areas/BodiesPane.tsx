@@ -1,5 +1,6 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ContextMenuItem } from '@src/components/ContextMenu'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -12,12 +13,14 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   type HideOperation,
   getHideOpByArtifactId,
+  onDelete,
   onHide,
   onUnhide,
 } from '@src/lib/operations'
@@ -79,11 +82,21 @@ export function BodiesPane(props: AreaTypeComponentProps) {
 function BodiesList({
   bodies,
 }: { bodies: Map<string, PropsOf<typeof BodyItem>> }) {
+  const { userFeatures } = useApp()
+  const showExperimentalPointAndClick = userFeatures.useHas(
+    EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+    false
+  )
+
   return (
     <section className="overflow-auto mr-1 pb-8">
       <ul>
         {Array.from(bodies.entries()).map(([id, props], i) => (
-          <BodyItem key={id || i} {...props} />
+          <BodyItem
+            key={id || i}
+            {...props}
+            showExperimentalPointAndClick={showExperimentalPointAndClick}
+          />
         ))}
       </ul>
     </section>
@@ -97,6 +110,7 @@ function BodyItem({
   hideOperation,
   engineEntityId,
   patternIndex,
+  showExperimentalPointAndClick = false,
 }: {
   label: string
   artifact: SolidArtifact
@@ -104,6 +118,7 @@ function BodyItem({
   hideOperation?: HideOperation
   engineEntityId?: string
   patternIndex?: number
+  showExperimentalPointAndClick?: boolean
 }) {
   const { kclManager } = useSingletons()
   const {
@@ -157,13 +172,33 @@ function BodyItem({
       true
     )
   }
+  const handleDelete = () => {
+    onSelect()
+    onDelete({
+      modelingActor,
+      objects: selections,
+    })
+  }
 
   return (
     <li className="px-1 py-0.5 group/visibilityToggle">
       <RowItemWithIconMenuAndToggle
         icon="body"
         onClick={onSelect}
+        onContextMenu={() => onSelect()}
         isSelected={isSelected}
+        menuItems={
+          showExperimentalPointAndClick
+            ? [
+                <ContextMenuItem
+                  onClick={handleDelete}
+                  data-testid="context-menu-delete"
+                >
+                  Delete
+                </ContextMenuItem>,
+              ]
+            : undefined
+        }
         Toggle={
           <VisibilityToggle
             visible={hideOperation === undefined}
