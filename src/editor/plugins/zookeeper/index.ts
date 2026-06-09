@@ -361,9 +361,11 @@ async function prepareZookeeperPatchReplay(
   const preparedReplayFiles: PreparedZookeeperPatchFileReplay[] = []
 
   for (const replayFile of replayFiles) {
+    const diskContent = await readTextFileIfExists(replayFile.absolutePath)
     const currentContent =
-      fileContentOverrides?.get(replayFile.absolutePath) ??
-      (await readTextFileIfExists(replayFile.absolutePath))
+      diskContent === null
+        ? null
+        : (fileContentOverrides?.get(replayFile.absolutePath) ?? diskContent)
 
     if (replayFile.kind === 'diff') {
       if (currentContent === null) {

@@ -180,6 +180,111 @@ describe('Zookeeper history patch replay', () => {
     }
   })
 
+  it('ignores a stale editor buffer when recreating a deleted active file', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const createdPath = fsZds.join(projectPath, 'created.kcl')
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: {
+          run_id: 'run-recreate-active-file',
+          changed_files: [
+            {
+              path: 'created.kcl',
+              status: 'created',
+              contents: 'created = true\n',
+            },
+          ],
+        },
+        direction: 'redo',
+        fileContentOverrides: new Map([
+          [createdPath, 'created = true\nmanual = true\n'],
+        ]),
+      })
+
+      await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
+        'created = true\n'
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('recreates an active file after undoing its edit and creation', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const createdPath = fsZds.join(projectPath, 'created.kcl')
+    const createdContents = 'height = 10\n'
+    const editedContents = 'height = 20\n'
+    const createPatch: ZookeeperEditPatch = {
+      run_id: 'run-create-active-file',
+      changed_files: [
+        {
+          path: 'created.kcl',
+          status: 'created',
+          contents: createdContents,
+        },
+      ],
+    }
+    const editPatch: ZookeeperEditPatch = {
+      run_id: 'run-edit-active-file',
+      changed_files: [
+        {
+          path: 'created.kcl',
+          status: 'modified',
+          diff: unifiedDiff('created.kcl', createdContents, editedContents),
+        },
+      ],
+    }
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: createPatch,
+        direction: 'redo',
+      })
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: editPatch,
+        direction: 'redo',
+        fileContentOverrides: new Map([[createdPath, createdContents]]),
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
+        editedContents
+      )
+
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: editPatch,
+        direction: 'undo',
+        fileContentOverrides: new Map([[createdPath, editedContents]]),
+      })
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: createPatch,
+        direction: 'undo',
+        fileContentOverrides: new Map([[createdPath, createdContents]]),
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: createPatch,
+        direction: 'redo',
+        fileContentOverrides: new Map([[createdPath, createdContents]]),
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
+        createdContents
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('rejects unsafe patch paths before writing files', async () => {
     await expect(
       applyZookeeperEditPatch({
