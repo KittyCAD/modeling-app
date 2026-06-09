@@ -141,7 +141,7 @@ function normalizeEventKeyValue(key: string) {
  * `event.key`, but `event.code` still identifies the D key as `KeyD`.
  */
 function getUnmodifiedKeyFromCode(event: KeyboardEventKeyInput) {
-  if (!event.altKey && !event.ctrlKey && !event.metaKey) {
+  if (!event.altKey) {
     return null
   }
 
