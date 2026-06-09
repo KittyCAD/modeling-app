@@ -29,7 +29,7 @@ flowchart LR
   13["Sweep Extrusion<br>[379, 418, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   14["Sweep Extrusion<br>[419, 430, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 6 }, ExpressionStatementExpr]
+    %% [ProgramBodyItem { index: 6 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   15["SketchBlock<br>[81, 222, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   16["SketchBlockConstraint Vertical<br>[186, 220, 0]"]
