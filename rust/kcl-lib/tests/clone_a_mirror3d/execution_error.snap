@@ -7,8 +7,8 @@ KCL Internal error
   × internal: failed to fix tags and references: Engine { details:
   │ KclErrorDetails { source_ranges: [SourceRange([419, 430, 0])], backtrace:
   │ [BacktraceItem { source_range: SourceRange([419, 430, 0]), fn_name:
-  │ None }], message: "Failed to find new face id for old face id: 4d94a4d4-
-  │ 7302-53ba-b94c-58dcef05ea77" } }
+  │ None }], message: "Failed to find new face id for old face id: 76e97e85-
+  │ e537-578b-ac43-e32d1b685418" } }
     ╭─[12:1]
  11 │ doop = mirror3d(extrude001, across = midPlane)
  12 │ clone(doop)
@@ -22,7 +22,7 @@ KCL Internal error
         │ KclErrorDetails { source_ranges: [SourceRange([419, 430, 0])],
         │ backtrace: [BacktraceItem { source_range: SourceRange([419, 430,
         │ 0]), fn_name: None }], message: "Failed to find new face id for old
-        │ face id: [uuid]" } }
+        │ face id: 76e97e85-e537-578b-ac43-e32d1b685418" } }
           ╭─[12:1]
        11 │ doop = mirror3d(extrude001, across = midPlane)
        12 │ clone(doop)
