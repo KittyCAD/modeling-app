@@ -4,10 +4,6 @@ import type {
   OutputFormat3d,
   UnitLength,
 } from '@kittycad/lib'
-import type {
-  STD_LIB_COMMANDS,
-  StdLibCommandName,
-} from '@rust/kcl-lib/bindings/StdLibCommands'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -41,8 +37,6 @@ import {
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
-  type KclPreludeBodyType,
-  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
@@ -62,7 +56,6 @@ import {
   addUnion,
 } from '@src/lang/modifyAst/boolean'
 import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import {
   addDeleteFace,
   addHole,
@@ -97,7 +90,6 @@ import {
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import {
-  type SweepRelativeTo,
   addExtrude,
   addLoft,
   addRevolve,
@@ -112,8 +104,11 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
+import type * as StdLibCommandTypes from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+
+export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -148,8 +143,6 @@ export const EXTRUSION_RESULTS = [
 ] as const
 
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
-
-export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 const FRAME_PLANE_OPTIONS = Object.freeze([
   Object.freeze({ name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true }),
@@ -191,190 +184,6 @@ const hasEngineConnection = (
   )
 }
 
-type StdLibCommandArg<Name extends StdLibCommandName> =
-  (typeof STD_LIB_COMMANDS)[Name]['args'][number]
-type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
-  Arg['ty'] extends 'bool'
-    ? boolean
-    : Arg['ty'] extends 'string' | 'TagDecl'
-      ? string
-      : Arg['ty'] extends
-            | `number${string}`
-            | 'Point2d'
-            | 'Point3d'
-            | `[number${string}; ${string}]`
-            | `[string; ${string}]`
-        ? KclCommandValue
-        : Selections
-type StdLibCommandArgs<Name extends StdLibCommandName> = {
-  [Arg in StdLibCommandArg<Name> as Arg['required'] extends true
-    ? Arg['name']
-    : never]: StdLibCommandArgValue<Arg>
-} & {
-  [Arg in StdLibCommandArg<Name> as Arg['required'] extends false
-    ? Arg['name']
-    : never]?: StdLibCommandArgValue<Arg>
-}
-type Override<Base, Overrides> = Omit<Base, keyof Overrides> & Overrides
-type WithNodeToEdit<Base> = Base & { nodeToEdit?: PathToNode }
-
-type ExtrudeCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'extrude'>, 'direction'>,
-    {
-      method?: KclPreludeExtrudeMethod
-      bodyType?: KclPreludeBodyType
-    }
-  >
->
-type SweepCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'sweep'>, 'tolerance' | 'version'>,
-    {
-      relativeTo?: SweepRelativeTo
-      bodyType?: KclPreludeBodyType
-    }
-  >
->
-type LoftCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'loft'>, 'tolerance'>,
-    {
-      bodyType?: KclPreludeBodyType
-    }
-  >
->
-type RevolveCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'revolve'>, 'axis' | 'tolerance'>,
-    {
-      axisOrEdge: 'Axis' | 'Edge'
-      axis: string | undefined
-      edge: Selections | undefined
-      angle: KclCommandValue
-      bodyType?: KclPreludeBodyType
-    }
-  >
->
-type ShellCommandArgs = WithNodeToEdit<
-  Omit<StdLibCommandArgs<'shell'>, 'solids'>
->
-type HoleCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'hole::hole'>, 'solid'>,
-    {
-      face: Selections
-      cutAt: KclCommandValue
-      holeBody: HoleBody
-      blindDepth?: KclCommandValue
-      blindDiameter?: KclCommandValue
-      holeType: HoleType
-      counterboreDepth?: KclCommandValue
-      counterboreDiameter?: KclCommandValue
-      countersinkAngle?: KclCommandValue
-      countersinkDiameter?: KclCommandValue
-      countersinkHeadClearance?: KclCommandValue
-      holeBottom: HoleBottom
-      drillPointAngle?: KclCommandValue
-    }
-  >
->
-type FilletCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'tolerance'>,
-    {
-      selection: Selections
-      radius: KclCommandValue
-      tag?: string
-    }
-  >
->
-type ChamferCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags'>,
-    {
-      selection: Selections
-      length: KclCommandValue
-      secondLength?: KclCommandValue
-      angle?: KclCommandValue
-      tag?: string
-    }
-  >
->
-type HelixCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'helix'>, 'axis'>,
-    {
-      mode: HelixModes
-      axis?: string
-      edge?: Selections
-    }
-  >
->
-type GearCommandArgs<Name extends StdLibCommandName> = WithNodeToEdit<
-  StdLibCommandArgs<Name>
->
-type AppearanceCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'appearance'>, 'solids'>,
-    {
-      objects: Selections
-      color: string
-    }
-  >
->
-type CloneCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'clone'>, 'geometries'>,
-    {
-      objects: Selections
-      variableName: string
-    }
-  >
->
-type PatternCircular3DCommandArgs = WithNodeToEdit<
-  Override<
-    StdLibCommandArgs<'patternCircular3d'>,
-    {
-      axis: string
-      center: KclCommandValue
-    }
-  >
->
-type PatternLinear3DCommandArgs = WithNodeToEdit<
-  Override<StdLibCommandArgs<'patternLinear3d'>, { axis: string }>
->
-type GdtFrameArgs = {
-  framePlane?: string
-}
-type GdtObjectsArgs<Base> = Override<
-  Omit<Base, 'faces' | 'edges'>,
-  { objects: Selections } & GdtFrameArgs
->
-type GdtDatumCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'gdt::datum'>, 'face'>,
-    { faces: Selections } & GdtFrameArgs
-  >
->
-type GdtDistanceCommandArgs = WithNodeToEdit<
-  Override<
-    Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
-    { objects: Selections } & GdtFrameArgs
-  >
->
-type BooleanCommandArgs<Name extends StdLibCommandName> = Omit<
-  StdLibCommandArgs<Name>,
-  'tolerance' | 'legacyMethod'
->
-type BooleanSplitCommandArgs = WithNodeToEdit<
-  Omit<StdLibCommandArgs<'split'>, 'legacyMethod'>
->
-type DeleteFaceCommandArgs = Override<
-  Omit<StdLibCommandArgs<'deleteFace'>, 'body' | 'faceIndices'>,
-  { faces: Selections }
->
-
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
@@ -386,20 +195,20 @@ export type ModelingCommandSchema = {
   Make: {
     machine: components['schemas']['MachineInfoResponse']
   }
-  Extrude: ExtrudeCommandArgs
-  Sweep: SweepCommandArgs
-  Loft: LoftCommandArgs
-  Revolve: RevolveCommandArgs
-  Shell: ShellCommandArgs
-  Hole: HoleCommandArgs
-  Fillet: FilletCommandArgs
-  Chamfer: ChamferCommandArgs
-  'Offset plane': WithNodeToEdit<StdLibCommandArgs<'offsetPlane'>>
-  Helix: HelixCommandArgs
-  'Helical Gear': GearCommandArgs<'gear::helical'>
-  'Herringbone Gear': GearCommandArgs<'gear::herringbone'>
-  'Spur Gear': GearCommandArgs<'gear::spur'>
-  'Ring Gear': GearCommandArgs<'gear::ring'>
+  Extrude: StdLibCommandTypes.ExtrudeCommandArgs
+  Sweep: StdLibCommandTypes.SweepCommandArgs
+  Loft: StdLibCommandTypes.LoftCommandArgs
+  Revolve: StdLibCommandTypes.RevolveCommandArgs
+  Shell: StdLibCommandTypes.ShellCommandArgs
+  Hole: StdLibCommandTypes.HoleCommandArgs
+  Fillet: StdLibCommandTypes.FilletCommandArgs
+  Chamfer: StdLibCommandTypes.ChamferCommandArgs
+  'Offset plane': StdLibCommandTypes.OffsetPlaneCommandArgs
+  Helix: StdLibCommandTypes.HelixCommandArgs
+  'Helical Gear': StdLibCommandTypes.HelicalGearCommandArgs
+  'Herringbone Gear': StdLibCommandTypes.HerringboneGearCommandArgs
+  'Spur Gear': StdLibCommandTypes.SpurGearCommandArgs
+  'Ring Gear': StdLibCommandTypes.RingGearCommandArgs
   'change tool': {
     tool: SketchTool
   }
@@ -425,51 +234,33 @@ export type ModelingCommandSchema = {
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
-  Appearance: AppearanceCommandArgs
-  Translate: WithNodeToEdit<Omit<StdLibCommandArgs<'translate'>, 'xyz'>>
-  Rotate: WithNodeToEdit<Omit<StdLibCommandArgs<'rotate'>, 'axis' | 'angle'>>
-  Scale: WithNodeToEdit<StdLibCommandArgs<'scale'>>
-  Clone: CloneCommandArgs
-  'Mirror 3D': StdLibCommandArgs<'mirror3d'>
-  'Pattern Circular 3D': PatternCircular3DCommandArgs
-  'Pattern Linear 3D': PatternLinear3DCommandArgs
-  'GDT Flatness': WithNodeToEdit<
-    Override<StdLibCommandArgs<'gdt::flatness'>, GdtFrameArgs>
-  >
-  'GDT Straightness': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::straightness'>>
-  >
-  'GDT Circularity': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::circularity'>>
-  >
-  'GDT Cylindricity': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::cylindricity'>>
-  >
-  'GDT Position': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::position'>>
-  >
-  'GDT Profile': WithNodeToEdit<
-    Override<StdLibCommandArgs<'gdt::profile'>, GdtFrameArgs>
-  >
-  'GDT Distance': GdtDistanceCommandArgs
-  'GDT Perpendicularity': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::perpendicularity'>>
-  >
-  'GDT Parallelism': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::parallelism'>>
-  >
-  'GDT Annotation': WithNodeToEdit<
-    GdtObjectsArgs<StdLibCommandArgs<'gdt::annotation'>>
-  >
-  'GDT Datum': GdtDatumCommandArgs
-  'Boolean Subtract': BooleanCommandArgs<'subtract'>
-  'Boolean Union': BooleanCommandArgs<'union'>
-  'Boolean Intersect': BooleanCommandArgs<'intersect'>
-  'Flip Surface': StdLibCommandArgs<'flipSurface'>
-  'Delete Face': DeleteFaceCommandArgs
-  'Boolean Split': BooleanSplitCommandArgs
-  Blend: StdLibCommandArgs<'blend'>
-  'Join Surfaces': Omit<StdLibCommandArgs<'joinSurfaces'>, 'tolerance'>
+  Appearance: StdLibCommandTypes.AppearanceCommandArgs
+  Translate: StdLibCommandTypes.TranslateCommandArgs
+  Rotate: StdLibCommandTypes.RotateCommandArgs
+  Scale: StdLibCommandTypes.ScaleCommandArgs
+  Clone: StdLibCommandTypes.CloneCommandArgs
+  'Mirror 3D': StdLibCommandTypes.Mirror3DCommandArgs
+  'Pattern Circular 3D': StdLibCommandTypes.PatternCircular3DCommandArgs
+  'Pattern Linear 3D': StdLibCommandTypes.PatternLinear3DCommandArgs
+  'GDT Flatness': StdLibCommandTypes.GdtFlatnessCommandArgs
+  'GDT Straightness': StdLibCommandTypes.GdtStraightnessCommandArgs
+  'GDT Circularity': StdLibCommandTypes.GdtCircularityCommandArgs
+  'GDT Cylindricity': StdLibCommandTypes.GdtCylindricityCommandArgs
+  'GDT Position': StdLibCommandTypes.GdtPositionCommandArgs
+  'GDT Profile': StdLibCommandTypes.GdtProfileCommandArgs
+  'GDT Distance': StdLibCommandTypes.GdtDistanceCommandArgs
+  'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
+  'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
+  'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
+  'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
+  'Boolean Subtract': StdLibCommandTypes.BooleanSubtractCommandArgs
+  'Boolean Union': StdLibCommandTypes.BooleanUnionCommandArgs
+  'Boolean Intersect': StdLibCommandTypes.BooleanIntersectCommandArgs
+  'Flip Surface': StdLibCommandTypes.FlipSurfaceCommandArgs
+  'Delete Face': StdLibCommandTypes.DeleteFaceCommandArgs
+  'Boolean Split': StdLibCommandTypes.BooleanSplitCommandArgs
+  Blend: StdLibCommandTypes.BlendCommandArgs
+  'Join Surfaces': StdLibCommandTypes.JoinSurfacesCommandArgs
 }
 
 const kclDatumArrayToInput = (value: string) => {
