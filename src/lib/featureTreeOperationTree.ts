@@ -1,11 +1,11 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
+import { type OperationsByModule, getOperationsForModule } from '@src/lang/wasm'
 import {
   filterOperations,
   groupNestedOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
-import { getOperationsForModule, type OperationsByModule } from '@src/lang/wasm'
 import { isArray } from '@src/lib/utils'
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>

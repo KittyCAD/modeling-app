@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
-import { expect, vi, describe, test } from 'vitest'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { App } from '@src/lib/app'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnPageMounted', () => {
   const singletons = App.fromProvided({

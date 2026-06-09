@@ -1,5 +1,5 @@
 import type { Extension } from '@codemirror/state'
-import { closeHoverTooltips, EditorView, ViewPlugin } from '@codemirror/view'
+import { EditorView, ViewPlugin, closeHoverTooltips } from '@codemirror/view'
 
 const closeButtonClass = 'cm-diagnosticClose'
 

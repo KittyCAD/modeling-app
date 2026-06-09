@@ -1,34 +1,34 @@
-import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import { topLevelRange } from '@src/lang/util'
-import { isOverlap } from '@src/lib/utils'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import {
+  EdgeTreatmentType,
+  addBlend,
+  addChamfer,
+  addFillet,
+  deleteEdgeTreatment,
+} from '@src/lang/modifyAst/edges'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import { type PathToNode, assertParse, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import {
+  createSelectionFromArtifacts,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import { isOverlap } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type {
   NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import {
-  addBlend,
-  addChamfer,
-  addFillet,
-  deleteEdgeTreatment,
-  EdgeTreatmentType,
-} from '@src/lang/modifyAst/edges'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  enginelessExecutor,
-  createSelectionFromArtifacts,
-  getAstAndArtifactGraph,
-} from '@src/lib/testHelpers'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -477,6 +477,52 @@ fillet001 = fillet(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a fillet call with an algorithm version', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        version,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  radius = 1,
+  version = 2,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit a basic fillet call on sweepEdge', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangleWithFillet,
@@ -526,10 +572,13 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const selection = createSelectionFromArtifacts(
-        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
-        artifactGraph
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
       )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
       const nodeToEdit: PathToNode = [
         ['body', ''],
         [2, 'index'],
@@ -878,6 +927,52 @@ chamfer001 = chamfer(
   length = 1,
   angle = 46deg,
   tag = $myChamferTag,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a chamfer call with an algorithm version', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        version,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  length = 1,
+  version = 2,
 )`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

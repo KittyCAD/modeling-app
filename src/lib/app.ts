@@ -1,4 +1,4 @@
-import type { UserResponse } from '@kittycad/lib/dist/types/src'
+import type { UserFeature, UserResponse } from '@kittycad/lib'
 import {
   Registry,
   type RegistryItem,
@@ -14,6 +14,7 @@ import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
@@ -26,6 +27,7 @@ import {
   defaultLayout,
   loadLayout,
   saveLayout,
+  setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
@@ -57,6 +59,14 @@ import {
 } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import {
+  type UserFeaturesActorRef,
+  type UserFeaturesContext,
+  type UserFeaturesService,
+  UserFeaturesTransition,
+  userFeaturesContextHas,
+  userFeaturesMachine,
+} from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import {
   type CommandSystemService,
@@ -68,7 +78,9 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import {
   appRegistryServicesSlot,
   coreRegistryItems,
@@ -93,9 +105,11 @@ function isPlaywrightRuntime() {
 function createAppRegistryItems({
   wasmPromise,
   machineManager,
+  userFeatures,
 }: {
   wasmPromise: Promise<ModuleType>
   machineManager: MachineManager
+  userFeatures?: AppUserFeaturesSystem
 }): RegistryItem[] {
   return [
     defineRegistryItem({
@@ -106,6 +120,19 @@ function createAppRegistryItems({
       id: 'app.machine-manager',
       providesServices: [provideService(machineManagerService, machineManager)],
     }),
+    ...(userFeatures
+      ? [
+          defineRegistryItem({
+            id: 'app.user-features',
+            providesServices: [
+              provideService(userFeaturesService, {
+                context: userFeatures.contextSignal,
+                has: userFeatures.has,
+              }),
+            ],
+          }),
+        ]
+      : []),
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
     ...coreRegistryItems,
@@ -145,6 +172,14 @@ export type AppBillingSystem = {
   useContext: () => ContextFrom<typeof billingMachine>
 }
 
+export type AppUserFeaturesSystem = UserFeaturesService & {
+  actor: UserFeaturesActorRef
+  send: UserFeaturesActorRef['send']
+  contextSignal: Signal<UserFeaturesContext>
+  useContext: () => UserFeaturesContext
+  useHas: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
+}
+
 export type AppLayoutSystem = {
   signal: Signal<Layout>
   get: () => Layout
@@ -170,6 +205,7 @@ export interface AppSubsystems {
   commands: AppCommandSystem
   settings: AppSettingsSystem
   billing: AppBillingSystem
+  userFeatures: AppUserFeaturesSystem
   layout: AppLayoutSystem
   registry: AppRegistrySystem
 }
@@ -206,6 +242,8 @@ export class App implements AppSubsystems {
   rustContext: RustContext
   /** The billing system for the application */
   billing: AppBillingSystem
+  /** Feature flags available to the authenticated user */
+  userFeatures: AppUserFeaturesSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
   /** The registry system for the application */
@@ -231,6 +269,7 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
+    this.userFeatures = subsystems.userFeatures
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
         wasmInstancePromise: this.wasmPromise,
@@ -251,6 +290,12 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    this.commands.actor.send({
+      type: 'Set userFeatures',
+      data: this.userFeatures,
+    })
+    this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
+    this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -331,6 +376,31 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
+    const userFeaturesActor = createActor(userFeaturesMachine).start()
+    const userFeaturesContextSignal = signal<UserFeaturesContext>(
+      userFeaturesActor.getSnapshot().context
+    )
+    userFeaturesActor.subscribe((snapshot) => {
+      userFeaturesContextSignal.value = snapshot.context
+    })
+    const userFeatures: AppUserFeaturesSystem = {
+      actor: userFeaturesActor,
+      send: userFeaturesActor.send.bind(App),
+      contextSignal: userFeaturesContextSignal,
+      has: (featureFlagId, defaultValue) =>
+        userFeaturesContextHas(
+          userFeaturesActor.getSnapshot().context,
+          featureFlagId,
+          defaultValue
+        ),
+      useContext: () =>
+        useSelector(userFeaturesActor, ({ context }) => context),
+      useHas: (featureFlagId, defaultValue) =>
+        useSelector(userFeaturesActor, ({ context }) =>
+          userFeaturesContextHas(context, featureFlagId, defaultValue)
+        ),
+    }
+
     const usePlaywrightLayout = isPlaywrightRuntime()
     const layoutConfigName = usePlaywrightLayout
       ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
@@ -339,6 +409,12 @@ export class App implements AppSubsystems {
       ? playwrightLayoutConfig
       : defaultLayout
     const layoutSignal = signal<Layout>(runtimeDefaultLayout)
+    const getRuntimeDefaultLayout = () =>
+      setBodiesPaneLayoutEnabled(
+        structuredClone(runtimeDefaultLayout),
+        !usePlaywrightLayout &&
+          userFeatures.has(BODIES_PANE_FEATURE_FLAG, false)
+      )
     const layoutService = createLayoutService(layoutSignal)
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
@@ -347,7 +423,7 @@ export class App implements AppSubsystems {
         layoutSignal.value = structuredClone(l)
       },
       reset: () => {
-        layoutSignal.value = structuredClone(runtimeDefaultLayout)
+        layoutSignal.value = getRuntimeDefaultLayout()
       },
       service: layoutService,
       saveEffectUnsubscribeFn: effect(() =>
@@ -355,15 +431,33 @@ export class App implements AppSubsystems {
       ),
     }
     appRegistry.configure([
-      ...createAppRegistryItems({ wasmPromise, machineManager }),
+      ...createAppRegistryItems({ wasmPromise, machineManager, userFeatures }),
       createLayoutServiceRegistryItem(layoutService),
     ])
 
     let hasHydratedLayout = false
+    let lastBodiesPaneFeatureEnabled: boolean | undefined
     const applyRegistryLayoutContributions = () =>
       layoutService.applyContributions(
         appRegistry.get(layoutContributionsValueSpec)
       )
+    const syncBodiesPaneFeatureLayout = () => {
+      if (!hasHydratedLayout || usePlaywrightLayout) {
+        return
+      }
+
+      const enabled = userFeatures.has(BODIES_PANE_FEATURE_FLAG, false)
+      if (enabled === lastBodiesPaneFeatureEnabled) {
+        return
+      }
+
+      const currentLayout = layoutSignal.peek()
+      const nextLayout = setBodiesPaneLayoutEnabled(currentLayout, enabled)
+      if (nextLayout !== currentLayout) {
+        layoutSignal.value = nextLayout
+      }
+      lastBodiesPaneFeatureEnabled = enabled
+    }
     const hydrateLayoutFromSettings = (
       snapshot: SnapshotFrom<typeof settingsActor>
     ) => {
@@ -407,9 +501,11 @@ export class App implements AppSubsystems {
 
       hasHydratedLayout = true
       applyRegistryLayoutContributions()
+      syncBodiesPaneFeatureLayout()
     }
     settingsActor.subscribe(hydrateLayoutFromSettings)
     hydrateLayoutFromSettings(settingsActor.getSnapshot())
+    userFeaturesActor.subscribe(syncBodiesPaneFeatureLayout)
     effect(() => {
       const contributions = appRegistry.signal(
         layoutContributionsValueSpec
@@ -428,6 +524,7 @@ export class App implements AppSubsystems {
       commands,
       settings,
       billing,
+      userFeatures,
       layout,
       registry: appRegistry,
     }
@@ -493,6 +590,22 @@ export class App implements AppSubsystems {
     this.project = undefined
   }
 
+  syncUserFeaturesFromAuth = (
+    snapshot: SnapshotFrom<typeof this.auth.actor>
+  ) => {
+    if (snapshot.matches('loggedIn')) {
+      this.userFeatures.send({
+        type: UserFeaturesTransition.Load,
+        token: snapshot.context.token,
+      })
+      return
+    }
+
+    if (snapshot.matches('loggedOut')) {
+      this.userFeatures.send({ type: UserFeaturesTransition.Clear })
+    }
+  }
+
   /**
    * Keep plugin runtime state aligned with the persisted settings model.
    *
@@ -502,15 +615,24 @@ export class App implements AppSubsystems {
    * extension-owned settings state.
    */
   syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    const pluginSettings = snapshot.context.plugins as
-      | Record<string, { current: boolean }>
-      | undefined
-    if (!pluginSettings) {
-      return
-    }
+    const pluginActivationSettings = new Map(
+      this.registry
+        .get(zdsPluginActivationSettingsValueSpec)
+        .map((setting) => [setting.pluginId, setting])
+    )
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
-      const desiredActive = pluginSettings[plugin.id]?.current
+      const activationSetting = pluginActivationSettings.get(plugin.id)
+      if (!activationSetting) {
+        continue
+      }
+
+      const desiredActive = (
+        snapshot.context as unknown as Record<
+          string,
+          Record<string, { current: unknown } | undefined> | undefined
+        >
+      )[activationSetting.category]?.[activationSetting.settingName]?.current
       if (typeof desiredActive !== 'boolean') {
         continue
       }

@@ -1,19 +1,19 @@
 import JSZip from 'jszip'
 import toast from 'react-hot-toast'
 
+import { browserSaveFile } from '@src/lib/browserSaveFile'
 import {
   EXPORT_TOAST_MESSAGES,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
-import type { Project } from '@src/lib/project'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
-import { browserSaveFile } from '@src/lib/browserSaveFile'
 
 type ProjectZipFile = {
   relativePath: string

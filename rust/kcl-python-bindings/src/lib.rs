@@ -356,7 +356,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
     let (ctx, mut state) = new_context_state(path, false).await.map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
-            let outcome = state.into_exec_outcome(env_ref, &ctx).await;
+            let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
             Ok(outcome.sketch_constraint_report().into())
         }
         Err(err) => {

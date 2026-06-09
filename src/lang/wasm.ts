@@ -21,7 +21,9 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
+import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { KCLError } from '@src/lang/errors'
 import {
   ARG_INDEX_FIELD,
@@ -35,14 +37,12 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {

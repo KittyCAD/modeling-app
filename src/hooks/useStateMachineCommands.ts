@@ -2,17 +2,18 @@ import { useAppState } from '@src/AppState'
 import { useEffect } from 'react'
 import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { useSignals } from '@preact/signals-react/runtime'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -47,8 +48,12 @@ export default function useStateMachineCommands<
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
-  const { commands, settings } = useApp()
+  const { commands, settings, userFeatures } = useApp()
   const { kclManager } = useSingletons()
+  const showExperimentalCommands = userFeatures.useHas(
+    EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+    false
+  )
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
@@ -80,6 +85,7 @@ export default function useStateMachineCommands<
           commandBarConfig,
           onCancel,
           forceDisable: shouldDisableEngineCommands,
+          showExperimentalCommands,
         })
       })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
@@ -96,5 +102,5 @@ export default function useStateMachineCommands<
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [shouldDisableEngineCommands, commandBarConfig])
+  }, [shouldDisableEngineCommands, showExperimentalCommands, commandBarConfig])
 }

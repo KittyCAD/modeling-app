@@ -11,7 +11,6 @@ import {
   compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
@@ -28,11 +27,11 @@ import type {
 } from '@src/lang/wasm'
 import {
   applyOperationCallbackToOperationsByModule,
-  emptyOperationsByModule,
-  getOperationsForCurrentFile,
   emptyExecState,
+  emptyOperationsByModule,
   execStateFromRust,
   getKclVersion,
+  getOperationsForCurrentFile,
   getSketchCheckpointLimit,
   parse,
   recast,
@@ -44,6 +43,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
+import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import fsZds from '@src/lib/fs-zds'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
@@ -91,8 +91,8 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
-  Prec,
   type Extension,
+  Prec,
   StateEffect,
   Transaction,
   type TransactionSpec,
@@ -100,6 +100,8 @@ import {
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
 import { EditorView, drawSelection, keymap } from '@codemirror/view'
 import {
+  clearSceneSelection,
+  defaultSelectionFilter,
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
@@ -167,12 +169,12 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapService,
 } from '@src/registry/contracts/keymap'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 
 interface ExecuteArgs {
@@ -827,12 +829,14 @@ export class KclManager extends File {
   )
   private _lastEvent: { event: string; time: number } | null = null
   private _highlightRange: Array<[number, number]> = [[0, 0]]
-  /** a representation of selections used by modelingMachine */
-  private _selectionRanges: Selections = {
+  static emptySelectionRanges: Selections = {
     otherSelections: [],
     graphSelections: [],
   }
+  /** a representation of selections used by modelingMachine */
+  private _selectionRanges: Selections = KclManager.emptySelectionRanges
   private _selectionRangesSignal = signal<Selections>(this._selectionRanges)
+  selectionFilter = signal<EntityType[]>(defaultSelectionFilter)
   private _selectionStatusLabel = computed(
     () =>
       getSelectionTypeDisplayText(
@@ -2531,6 +2535,11 @@ export class KclManager extends File {
       handleSelectionBatchFn: handleSelectionBatch,
       wasmInstance,
     })
+  }
+
+  async clearSelection() {
+    this._selectionRangesSignal.value = KclManager.emptySelectionRanges
+    return clearSceneSelection(this.engineCommandManager)
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file

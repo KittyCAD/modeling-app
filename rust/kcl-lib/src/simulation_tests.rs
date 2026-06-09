@@ -84,13 +84,19 @@ impl ExecState {
         let (outcome, responses) = {
             let mut exec_state = self;
             let responses = Some(exec_state.take_root_module_responses());
-            let outcome = exec_state.into_exec_outcome(main_ref, ctx).await;
+            let outcome = exec_state
+                .into_exec_outcome(main_ref, ctx)
+                .await
+                .expect("simulation test execution outcome should collect variables");
             (outcome, responses)
         };
         #[cfg(not(feature = "snapshot-engine-responses"))]
         let (outcome, responses) = {
             let responses = None;
-            let outcome = self.into_exec_outcome(main_ref, ctx).await;
+            let outcome = self
+                .into_exec_outcome(main_ref, ctx)
+                .await
+                .expect("simulation test execution outcome should collect variables");
             (outcome, responses)
         };
         (outcome, module_state, responses)
@@ -5662,6 +5668,27 @@ mod christmas_tree_mirror3d_union {
 }
 mod delete_body {
     const TEST_NAME: &str = "delete_body";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod extrude_split {
+    const TEST_NAME: &str = "extrude_split";
 
     /// Test parsing KCL.
     #[test]

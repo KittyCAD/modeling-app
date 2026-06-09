@@ -15,11 +15,6 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import {
-  getConstraintForSnapTarget,
-  getObjectIdForSnapTarget,
-  type SnapTarget,
-} from '@src/machines/sketchSolve/snapping'
-import {
   getControlPointSplinePoints,
   isControlPointSplineSegment,
   isLineSegment,
@@ -35,6 +30,11 @@ import type {
   SketchSolveMachineEvent,
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  type SnapTarget,
+  getConstraintForSnapTarget,
+  getObjectIdForSnapTarget,
+} from '@src/machines/sketchSolve/snapping'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {
   clearToolSnappingState,

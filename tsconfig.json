@@ -41,6 +41,7 @@
   },
   "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
   "exclude": [
+    "**/*.stories.tsx",
     "node_modules",
     "./*.grammar",
     "vite.config.ts",

@@ -1137,7 +1137,10 @@ mod tests {
         let ctx = snapshot.1;
         let env_ref = snapshot.2;
 
-        let exec_outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let exec_outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("sketch transpiler test outcome should collect variables");
         let transpiled = transpile_old_sketch_to_new(&exec_outcome, &program, variable_name);
 
         ctx.close().await;
@@ -1218,7 +1221,10 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
         let env_ref = snapshot.2;
 
         // Convert to ExecOutcome
-        let exec_outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let exec_outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("sketch transpiler test outcome should collect variables");
 
         // Expected transpiled output
         // Note: Coordinates are from actual execution, may have small rounding differences
@@ -1482,7 +1488,10 @@ profile001 = startProfile(sketch001, at = [2.25, 4.48])
         let env_ref = snapshot.2;
 
         // Convert to ExecOutcome
-        let exec_outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let exec_outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("sketch transpiler test outcome should collect variables");
 
         // Expected transpiled output
         // Note: Coordinates are from actual execution, may have small rounding differences
@@ -1539,7 +1548,10 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
         let env_ref = snapshot.2;
 
         // Convert to ExecOutcome
-        let exec_outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let exec_outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("sketch transpiler test outcome should collect variables");
 
         // Try to transpile - this should fail because bezier curves are not supported
         let result = transpile_old_sketch_to_new(&exec_outcome, &program, "profile001");
@@ -1582,7 +1594,10 @@ profile001 = startProfile(sketch001, at = [2.0, 3.0])
         let env_ref = snapshot.2;
 
         // Convert to ExecOutcome
-        let exec_outcome = exec_state.into_exec_outcome(env_ref, &ctx).await;
+        let exec_outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("sketch transpiler test outcome should collect variables");
 
         // Try to transpile - this should succeed and output "-XY" for the plane
         let transpiled =

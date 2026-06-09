@@ -1,17 +1,15 @@
+import { useAppState } from '@src/AppState'
+import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
+import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
+import { reportRejection } from '@src/lib/trap'
 import { useMachine } from '@xstate/react'
 import type React from 'react'
 import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
-import { useAppState } from '@src/AppState'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import {
-  useMenuListener,
-  useSketchModeMenuEnableDisable,
-} from '@src/hooks/useMenu'
-import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { reportRejection } from '@src/lib/trap'
 
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'

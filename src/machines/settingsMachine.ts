@@ -23,6 +23,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type {
   BaseUnit,
+  DynamicBooleanSetEvent,
   SetEventTypes,
   SettingsLevel,
   SettingsPaths,
@@ -58,6 +59,7 @@ export const settingsMachine = setup({
     input: {} as SettingsMachineContext,
     events: {} as (
       | WildcardSetEvent<SettingsPaths>
+      | DynamicBooleanSetEvent
       | SetEventTypes
       | {
           type: 'set.modeling.units'

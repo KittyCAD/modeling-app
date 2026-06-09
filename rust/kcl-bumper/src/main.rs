@@ -90,7 +90,7 @@ fn update_semver(bump: Option<SemverBump>, cargo_dot_toml: &mut DocumentMut) -> 
 fn update_kcl_lib_dependency_versions(cargo_dot_toml: &mut DocumentMut, next_version: &semver::Version) {
     // Make kcl-lib depend on the new versions so that crates that depend on
     // kcl-lib also update these.
-    for dependency in ["kcl-derive-docs", "kcl-error"] {
+    for dependency in ["kcl-derive-docs", "kcl-error", "kcl-syntax"] {
         if !update_dependency_version(cargo_dot_toml, dependency, next_version) {
             eprintln!("Warning: could not find dependency `{dependency}` in kcl-lib [dependencies]");
         }

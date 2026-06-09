@@ -1,6 +1,8 @@
 import path from 'node:path'
+import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -9,11 +11,9 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { createActor, fromPromise, waitFor } from 'xstate'
-import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { App } from '@src/lib/app'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!

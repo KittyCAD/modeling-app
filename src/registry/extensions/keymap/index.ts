@@ -30,10 +30,13 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
+  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
+  normalizeEventKey,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -41,6 +44,7 @@ import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
 const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
+const KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP = 'project-explorer'
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
 
 const defaultKeymapScopes: readonly KeymapScope[] = [
@@ -102,6 +106,20 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
     displayName: 'Code editor focused',
     group: KEYMAP_CONTEXT_SCOPE_GROUP,
     priority: 1000,
+    userEditable: false,
+  },
+  {
+    id: PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Project explorer focused',
+    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
+    priority: 100,
+    userEditable: false,
+  },
+  {
+    id: PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
+    displayName: 'Project explorer renaming',
+    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
+    priority: 200,
     userEditable: false,
   },
 ]
@@ -436,7 +454,7 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
     return null
   }
 
-  const key = normalizeEventKey(event.key)
+  const key = normalizeEventKey(event)
   if (!key) {
     return null
   }
@@ -464,19 +482,6 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
   parts.push(key)
 
   return parts.join('+')
-}
-
-function normalizeEventKey(key: string) {
-  if (key.length === 1) {
-    return key.toLowerCase()
-  }
-
-  const normalized = key.toLowerCase()
-  if (normalized === ' ') {
-    return 'space'
-  }
-
-  return normalized
 }
 
 function isModifierKey(key: string) {
