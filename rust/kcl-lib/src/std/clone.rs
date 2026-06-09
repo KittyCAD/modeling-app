@@ -120,7 +120,7 @@ async fn inner_clone(
     Ok(res)
 }
 /// Fix the tags and references of the cloned geometry.
-async fn fix_tags_and_references(
+pub(super) async fn fix_tags_and_references(
     new_geometry: &mut GeometryWithImportedGeometry,
     old_geometry_id: uuid::Uuid,
     exec_state: &mut ExecState,
