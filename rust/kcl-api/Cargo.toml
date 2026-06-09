@@ -8,6 +8,7 @@ repository = "https://github.com/KittyCAD/modeling-app"
 authors = ["Zoo KCL team"]
 
 [dependencies]
+schemars = "0.8.22"
 serde = { workspace = true }
 ts-rs = { version = "12.0.1", features = ["no-serde-warnings"] }
 

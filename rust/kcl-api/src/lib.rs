@@ -2,6 +2,7 @@
 
 #![allow(async_fn_in_trait)]
 
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -16,7 +17,7 @@ pub trait LifecycleApi {
     async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph<Settings, Object> {
     pub project: ProjectId,
@@ -41,7 +42,7 @@ impl<Settings: Default, Object> SceneGraph<Settings, Object> {
     }
 }
 
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraphDelta<SceneGraph, ExecOutcome> {
     pub new_graph: SceneGraph,
@@ -66,13 +67,13 @@ impl<SceneGraph, ExecOutcome> SceneGraphDelta<SceneGraph, ExecOutcome> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SourceDelta {
     pub text: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema, ts_rs::TS)]
 pub struct SketchCheckpointId(u64);
 
 impl SketchCheckpointId {
@@ -81,7 +82,7 @@ impl SketchCheckpointId {
     }
 }
 
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct SketchMutationOutcome<SceneGraphDelta> {
@@ -90,7 +91,7 @@ pub struct SketchMutationOutcome<SceneGraphDelta> {
     pub checkpoint_id: Option<SketchCheckpointId>,
 }
 
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct NewSketchOutcome<SceneGraphDelta> {
@@ -100,7 +101,7 @@ pub struct NewSketchOutcome<SceneGraphDelta> {
     pub checkpoint_id: Option<SketchCheckpointId>,
 }
 
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct EditSketchOutcome<SceneGraphDelta> {
@@ -108,7 +109,7 @@ pub struct EditSketchOutcome<SceneGraphDelta> {
     pub checkpoint_id: Option<SketchCheckpointId>,
 }
 
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct RestoreSketchCheckpointOutcome<SceneGraphDelta> {
@@ -116,7 +117,7 @@ pub struct RestoreSketchCheckpointOutcome<SceneGraphDelta> {
     pub scene_graph_delta: SceneGraphDelta,
 }
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
@@ -126,19 +127,19 @@ impl ObjectId {
     }
 }
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
 pub struct Version(pub usize);
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiProjectId")]
 pub struct ProjectId(pub usize);
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiFileId")]
 pub struct FileId(pub usize);
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiFile")]
 pub struct File {
     pub id: FileId,
@@ -146,7 +147,7 @@ pub struct File {
     pub text: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Error {
     pub msg: String,
