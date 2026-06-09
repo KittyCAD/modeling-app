@@ -68,6 +68,26 @@ async function getProjectNamesInDirectory(projectDirectoryPath: string) {
   return projectNames
 }
 
+export function shouldSendProjectFolderReadProgress(
+  folders: SystemIOContext['folders']
+) {
+  return !folders?.length
+}
+
+type ProjectDirectoryEntry = {
+  name: string
+  path: string
+  modified: number
+}
+
+export function sortProjectDirectoryEntriesByModifiedDesc(
+  entries: ProjectDirectoryEntry[]
+) {
+  return entries.toSorted(
+    (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
+  )
+}
+
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,

@@ -501,35 +501,50 @@ function ProjectGrid({
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
   const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ||
-      projects === undefined ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
-                <ProjectCard
-                  key={project.path}
-                  project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject(systemIOActor)}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {sortedSearchResults.map((project) => (
+                  <ProjectCard
+                    key={project.path}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject(systemIOActor)}
+                  />
+                ))}
+              </ul>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           ) : (
-            <p
-              data-testid="projects-none"
-              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-            >
-              No projects found
-              {projects !== undefined && projects.length === 0
-                ? ', open or create one to add it here.'
-                : ` with the search term "${query}"`}
-            </p>
+            <>
+              <p
+                data-testid="projects-none"
+                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+              >
+                No projects found
+                {projects !== undefined && projects.length === 0
+                  ? ', open or create one to add it here.'
+                  : ` with the search term "${query}"`}
+              </p>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

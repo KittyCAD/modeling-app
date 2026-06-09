@@ -30,6 +30,8 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
+  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
@@ -42,6 +44,7 @@ import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
 const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
+const KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP = 'project-explorer'
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
 
 const defaultKeymapScopes: readonly KeymapScope[] = [
@@ -103,6 +106,20 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
     displayName: 'Code editor focused',
     group: KEYMAP_CONTEXT_SCOPE_GROUP,
     priority: 1000,
+    userEditable: false,
+  },
+  {
+    id: PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Project explorer focused',
+    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
+    priority: 100,
+    userEditable: false,
+  },
+  {
+    id: PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
+    displayName: 'Project explorer renaming',
+    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
+    priority: 200,
     userEditable: false,
   },
 ]
