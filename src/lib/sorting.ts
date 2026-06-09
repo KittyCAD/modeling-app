@@ -36,12 +36,14 @@ export function getSortFunction(sortBy: string) {
   }
 
   const sortByModified = (a: Project, b: Project) => {
-    if (a.metadata?.modified && b.metadata?.modified) {
-      const aDate = new Date(a.metadata.modified)
-      const bDate = new Date(b.metadata.modified)
-      return !sortBy || sortBy.includes('desc')
-        ? bDate.getTime() - aDate.getTime()
-        : aDate.getTime() - bDate.getTime()
+    const aModified = a.metadata?.modified ?? Number.NEGATIVE_INFINITY
+    const bModified = b.metadata?.modified ?? Number.NEGATIVE_INFINITY
+    const modifiedComparison =
+      !sortBy || sortBy.includes('desc')
+        ? bModified - aModified
+        : aModified - bModified
+    if (!Number.isNaN(modifiedComparison) && modifiedComparison !== 0) {
+      return modifiedComparison
     }
 
     return getProjectDisplayName(a).localeCompare(getProjectDisplayName(b))
