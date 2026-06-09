@@ -28,6 +28,7 @@ export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
     uiOnlyArgs: editFlowArgs,
+    omittedStdLibArgs: ['direction'],
   },
   Sweep: {
     stdLibName: 'sweep',
@@ -149,6 +150,22 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Straightness': {
     stdLibName: 'gdt::straightness',
+    uiOnlyArgs: editFlowArgs,
+    argAliases: {
+      faces: 'objects',
+      edges: 'objects',
+    },
+  },
+  'GDT Circularity': {
+    stdLibName: 'gdt::circularity',
+    uiOnlyArgs: editFlowArgs,
+    argAliases: {
+      faces: 'objects',
+      edges: 'objects',
+    },
+  },
+  'GDT Cylindricity': {
+    stdLibName: 'gdt::cylindricity',
     uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',

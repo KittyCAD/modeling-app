@@ -1,9 +1,7 @@
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import {
-  useMenuListener,
-  useSketchModeMenuEnableDisable,
-} from '@src/hooks/useMenu'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { reportRejection } from '@src/lib/trap'
 import { useMachine } from '@xstate/react'

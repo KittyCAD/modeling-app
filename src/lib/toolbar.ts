@@ -1273,6 +1273,26 @@ export function buildToolbarConfig(
                 },
               ],
             },
+            {
+              id: 'delete',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Delete', groupId: 'modeling' },
+                }),
+              status: 'experimental',
+              title: 'Delete',
+              icon: 'trash',
+              description: 'Delete selected bodies from the scene.',
+              links: [
+                {
+                  label: 'API docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-transform-delete'
+                  ),
+                },
+              ],
+            },
           ],
         },
         {
@@ -1364,6 +1384,48 @@ export function buildToolbarConfig(
                   label: 'KCL docs',
                   url: withSiteBaseURL(
                     '/docs/kcl-std/functions/std-gdt-straightness'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-circularity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Circularity', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Circularity',
+              icon: 'gdtCircularity',
+              description:
+                'Specifies circularity tolerance - how much a round face or edge can deviate from a perfect circle.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-circularity'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-cylindricity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Cylindricity', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Cylindricity',
+              icon: 'gdtCylindricity',
+              description:
+                'Specifies cylindricity tolerance - how much a round face or edge can deviate from a perfect cylinder.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-cylindricity'
                   ),
                 },
               ],
