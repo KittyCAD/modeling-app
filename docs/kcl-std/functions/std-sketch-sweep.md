@@ -492,7 +492,7 @@ sketch002 = sketch(on = XZ) {
   tangent([arc1, arc2])
 }
 
-// sweep the tagged facec
+// sweep the tagged face
 sweep(capFace, path = sketch002)
   |> appearance(color = "#ff00aa")
 
