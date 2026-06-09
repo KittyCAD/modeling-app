@@ -406,7 +406,10 @@ export class ZDSProject {
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
-    if (found) {
+    if (
+      found &&
+      (!providedEditor || found !== providedEditor || found.path === path)
+    ) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
     }
@@ -425,6 +428,17 @@ export class ZDSProject {
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
+    if (providedEditor && providedEditor.path !== path) {
+      const previousEditorFileIndex = this.files.findIndex(
+        (file) => file === providedEditor
+      )
+      if (previousEditorFileIndex > -1) {
+        this.files[previousEditorFileIndex] = new File(
+          providedEditor.path,
+          providedEditor.id
+        )
+      }
+    }
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
@@ -455,7 +469,9 @@ export class ZDSProject {
       )
       .catch(reportRejection)
 
-    this.set(signal(path), newEditor)
+    if (!foundEditor) {
+      this.set(signal(path), newEditor)
+    }
 
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
@@ -568,6 +584,45 @@ export class ZDSProject {
   /** Get all the KCL files in this project as a flat array. */
   private getAllKclFiles(): Promise<ApiFile[]> {
     return Promise.all(this.files.map((f) => f.asRustApiFile()))
+  }
+
+  async syncReplayedFilesToRust(
+    replayFiles: readonly {
+      absolutePath: string
+      nextContent: string | null
+    }[]
+  ) {
+    const editor = this.executingEditor.value
+    if (!editor) return
+
+    for (const replayFile of replayFiles) {
+      const foundIndex = this.files.findIndex(
+        (file) => file.path === replayFile.absolutePath
+      )
+      const foundFile = this.files[foundIndex]
+
+      if (replayFile.nextContent === null) {
+        if (!foundFile) continue
+        this.files = this.files.filter((_, index) => index !== foundIndex)
+        await editor.rustContext
+          .sendRemoveFile(foundFile.id)
+          .catch(reportRejection)
+        continue
+      }
+
+      if (foundFile) {
+        await editor.rustContext
+          .sendUpdateFile(foundFile.id, replayFile.nextContent)
+          .catch(reportRejection)
+        continue
+      }
+
+      const newFile = new File(replayFile.absolutePath, this.nextFileId++)
+      this.files.push(newFile)
+      await editor.rustContext
+        .sendAddFile(await newFile.asRustApiFile())
+        .catch(reportRejection)
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import { isolateHistory } from '@codemirror/commands'
 import { createTwoFilesPatch } from 'diff'
 import { applyPatch, parsePatch } from 'diff'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import {
   type ZookeeperEditPatch,
@@ -25,6 +25,7 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
+  vi.restoreAllMocks()
   for (const app of apps.splice(0)) await disposeApp(app)
 })
 
@@ -436,6 +437,71 @@ describe('Zookeeper project history integration', () => {
     await waitForHistoryIdle(harness.kclManager)
     expect(harness.kclManager.path).toBe(mainPath)
     await expect(fsZds.readFile(partPath, 'utf8')).rejects.toThrow()
+
+    disposeHistory()
+  })
+
+  it('undoes a multi-file Zookeeper edit from a non-entrypoint active file', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'big = 1\n',
+      'smallBox.kcl': 'small = 1\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const smallBoxPath = fsZds.join(harness.projectPath, 'smallBox.kcl')
+    const mainFile = harness.app.project?.files.find(
+      (file) => file.path === mainPath
+    )
+    const smallBoxFile = harness.app.project?.files.find(
+      (file) => file.path === smallBoxPath
+    )
+    expect(mainFile).toBeDefined()
+    expect(smallBoxFile).toBeDefined()
+    const mainFileId = mainFile?.id
+    await harness.app.project?.openEditor(smallBoxPath, harness.kclManager)
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => undefined,
+      onActiveFileRestore: async (path) => {
+        await harness.app.project?.openEditor(path, harness.kclManager)
+      },
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+
+    harness.kclManager.addGlobalHistoryEventWithCodeChange(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: smallBoxPath,
+        patch: {
+          run_id: 'active-imported-file-edit',
+          changed_files: [modifiedFile('main.kcl', 'big = 1\n', 'big = 2\n')],
+        },
+      }),
+      'small = 2\n'
+    )
+    await writeText(mainPath, 'big = 2\n')
+    await writeText(smallBoxPath, 'small = 2\n')
+    const sendUpdateFile = vi.spyOn(
+      harness.kclManager.rustContext,
+      'sendUpdateFile'
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(smallBoxPath)
+    expect(harness.kclManager.code).toBe('small = 1\n')
+    await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe('big = 1\n')
+    expect(sendUpdateFile).toHaveBeenCalledWith(mainFileId, 'big = 1\n')
+
+    sendUpdateFile.mockClear()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(smallBoxPath)
+    expect(harness.kclManager.code).toBe('small = 2\n')
+    await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe('big = 2\n')
+    expect(sendUpdateFile).toHaveBeenCalledWith(mainFileId, 'big = 2\n')
 
     disposeHistory()
   })

@@ -95,7 +95,7 @@ type ZookeeperPatchReplayContents =
       patch: StructuredPatch
     }
 
-type PreparedZookeeperPatchFileReplay = {
+export type PreparedZookeeperPatchFileReplay = {
   relativePath: string
   absolutePath: string
   previousContent: string | null
@@ -110,6 +110,9 @@ type ZookeeperHistoryExtensionDependencies = {
   kclManager: KclManager
   onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
   onActiveFileRestore: (restoredPath: string) => void | Promise<void>
+  onProjectFilesReplay?: (
+    replayFiles: readonly PreparedZookeeperPatchFileReplay[]
+  ) => void | Promise<void>
 }
 
 const zookeeperEffectCompartment = new Compartment()
@@ -156,6 +159,7 @@ export function buildZookeeperHistoryExtension({
   kclManager,
   onCurrentFileDelete,
   onActiveFileRestore,
+  onProjectFilesReplay,
 }: ZookeeperHistoryExtensionDependencies) {
   let restoringHistoryAfterFailure = false
   const zookeeperPatchListener = EditorView.updateListener.of((vu) => {
@@ -177,6 +181,7 @@ export function buildZookeeperHistoryExtension({
             kclManager,
             onCurrentFileDelete,
             onActiveFileRestore,
+            onProjectFilesReplay,
           })
             .catch((error: unknown) => {
               console.error(error)
@@ -263,6 +268,9 @@ async function replayZookeeperEditPatch({
   kclManager: KclManager
   onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
   onActiveFileRestore: (restoredPath: string) => void | Promise<void>
+  onProjectFilesReplay?: (
+    replayFiles: readonly PreparedZookeeperPatchFileReplay[]
+  ) => void | Promise<void>
 }) {
   const replayFiles = getZookeeperPatchFileReplays(effectProps)
   if (isErr(replayFiles)) {
@@ -277,6 +285,7 @@ async function replayZookeeperEditPatch({
 
   const deletesCurrentFile = currentFileReplay?.nextContent === null
   await writeZookeeperPatchReplay(preparedReplayFiles)
+  await effectProps.onProjectFilesReplay?.(preparedReplayFiles)
 
   if (deletesCurrentFile) {
     await effectProps.onCurrentFileDelete(

@@ -602,6 +602,9 @@ export class App implements AppSubsystems {
               fsZds.relative(this.project.path, restoredPath)
             )
           },
+          onProjectFilesReplay: async (replayFiles) => {
+            await this.project?.syncReplayedFilesToRust(replayFiles)
+          },
         })
 
         return () => {
