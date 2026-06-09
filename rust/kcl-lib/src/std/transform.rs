@@ -464,13 +464,14 @@ async fn inner_rotate(
     Ok(objects)
 }
 
-/// Hide solids, sketches, helices, or imported objects.
+/// Hide solids, planes, sketches, helices, or imported objects.
 pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::planes(),
             RuntimeType::helices(),
             RuntimeType::imported(),
             RuntimeType::gdts(),
@@ -534,6 +535,7 @@ async fn delete_inner(mut objects: HideableGeometry, exec_state: &mut ExecState,
 
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
     use pretty_assertions::assert_eq;
 
     use crate::errors::Severity;
@@ -875,6 +877,34 @@ hide(helixPath)
 hide(sketch001)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_plane() {
+        let ast = r#"plane001 = offsetPlane(YZ, offset = 500)
+
+hide(plane001)
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let object_visible_commands = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::ObjectVisible(object_visible) => Some(object_visible),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            object_visible_commands.len(),
+            1,
+            "expected exactly one ObjectVisible command, got: {:#?}",
+            result.root_module_artifact_commands()
+        );
+        assert!(
+            object_visible_commands[0].hidden,
+            "expected ObjectVisible command to hide the plane"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
