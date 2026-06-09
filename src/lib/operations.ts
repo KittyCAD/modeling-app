@@ -3041,6 +3041,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  delete: {
+    label: 'Delete',
+    icon: 'trash',
+  },
   angle: {
     label: 'Angle Constraint',
     icon: 'angle',
@@ -4151,6 +4155,18 @@ export function onHide(props: {
     type: 'Hide',
     data: {
       objects: selection,
+    },
+  })
+}
+
+export function onDelete(props: {
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+  objects: Selections
+}) {
+  props.modelingActor.send({
+    type: 'Delete',
+    data: {
+      objects: props.objects,
     },
   })
 }

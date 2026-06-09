@@ -33,7 +33,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@kittycad/lib": "^4.2.5"
+    "@kittycad/lib": "^4.2.9"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.4.1",
@@ -43,14 +43,14 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "^4.4.1",
+    "@vitejs/plugin-react": "^6.0.2",
     "happy-dom": "^20.9.0",
     "msw": "^2.14.6",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "storybook": "^10.4.1",
     "typescript": "^6.0.3",
-    "vite": "^7.3.2",
-    "vitest": "^4.1.7"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   }
 }
