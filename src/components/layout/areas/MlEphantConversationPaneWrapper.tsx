@@ -7,6 +7,7 @@ import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -19,6 +20,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   SystemIOMachineEvents,
+  normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
@@ -82,6 +84,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       const payload = prepareMlEphantNewFileRequest(requestProps)
 
       if (payload) {
+        let historyRecorded = false
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
@@ -93,16 +96,49 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             requestedFileNameWithExtension:
               payload.requestedFileNameWithExtension ?? '',
             onSuccess: () => {
+              if (historyRecorded) return
+              historyRecorded = true
               if (
                 project?.path &&
                 payload.zookeeperEditPatch?.changed_files?.length
               ) {
-                kclManager.addGlobalHistoryEvent(
-                  zookeeperEditPatchHistoryEvent({
-                    projectPath: project.path,
-                    patch: payload.zookeeperEditPatch,
-                  })
+                const currentRelativePath = normalizeKCLFileDeletePath(
+                  fsZds.relative(project.path, kclManager.path)
                 )
+                const currentFile = payload.files.find(
+                  (file) =>
+                    normalizeKCLFileDeletePath(file.requestedFileName) ===
+                    currentRelativePath
+                )
+                const patchWithoutCurrentFile = {
+                  ...payload.zookeeperEditPatch,
+                  changed_files:
+                    payload.zookeeperEditPatch.changed_files?.filter(
+                      (file) =>
+                        normalizeKCLFileDeletePath(file.path) !==
+                        currentRelativePath
+                    ),
+                }
+
+                if (
+                  currentFile &&
+                  kclManager.code !== currentFile.requestedCode
+                ) {
+                  kclManager.addGlobalHistoryEventWithCodeChange(
+                    zookeeperEditPatchHistoryEvent({
+                      projectPath: project.path,
+                      patch: patchWithoutCurrentFile,
+                    }),
+                    currentFile.requestedCode
+                  )
+                } else {
+                  kclManager.addGlobalHistoryEvent(
+                    zookeeperEditPatchHistoryEvent({
+                      projectPath: project.path,
+                      patch: payload.zookeeperEditPatch,
+                    })
+                  )
+                }
               }
             },
           },

@@ -635,13 +635,37 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
           message.message += `, ${totalDeleted} deleted`
 
-          input.onSuccess?.()
+          const project = input.context.app.project
+          const requestedRelativePath = normalizeKCLFileDeletePath(
+            input.requestedFileNameWithExtension
+          )
+          const deletesRequestedFile = (input.filesToDelete ?? []).some(
+            (file) =>
+              normalizeKCLFileDeletePath(file.requestedFileName) ===
+              requestedRelativePath
+          )
+          const requestedAbsolutePath = project
+            ? fsZds.join(project.path, input.requestedFileNameWithExtension)
+            : ''
+          const shouldNavigate =
+            !project ||
+            project.name !== input.requestedProjectName ||
+            project.executingPath !== requestedAbsolutePath ||
+            deletesRequestedFile
+
+          if (!shouldNavigate) {
+            input.onSuccess?.()
+          }
 
           return {
             ...message,
             projectName: input.requestedProjectName,
             fileName: input.requestedFileNameWithExtension || '',
             subRoute: input.requestedSubRoute || '',
+            shouldNavigate,
+            ...(shouldNavigate && input.onSuccess
+              ? { onNavigationComplete: input.onSuccess }
+              : {}),
           }
         }
       ),

@@ -189,7 +189,12 @@ export type SystemIOContext = SystemIOInput & {
    * if we used a string the useEffect would not change
    */
   requestedProjectName: { name: string; subRoute?: string }
-  requestedFileName: { project: string; file: string; subRoute?: string }
+  requestedFileName: {
+    project: string
+    file: string
+    subRoute?: string
+    onNavigationComplete?: () => void
+  }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
   requestedTextToCadGeneration: {

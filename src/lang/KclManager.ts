@@ -2850,6 +2850,32 @@ export class KclManager extends File {
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
     this._globalHistoryView.dispatch(spec)
   }
+  addGlobalHistoryEventWithCodeChange(
+    spec: TransactionSpecNoChanges,
+    code: string
+  ) {
+    if (code === this.code) {
+      this.addGlobalHistoryEvent(spec)
+      return
+    }
+
+    const globalHistoryEffect =
+      this._globalHistoryView.recordGlobalEventForLocalTransaction(spec)
+    this.updateCodeEditor(
+      code,
+      {
+        shouldAddToHistory: true,
+        shouldClearHistory: false,
+        shouldExecute: true,
+        shouldResetCamera: false,
+        shouldWriteToDisk: true,
+      },
+      {
+        annotations: [isolateHistory.of('full')],
+        effects: [globalHistoryEffect],
+      }
+    )
+  }
   undo() {
     this._globalHistoryView.undo(this._editorView)
   }

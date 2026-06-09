@@ -2,6 +2,7 @@ import {
   invertedEffects,
   isolateHistory,
   redo,
+  redoDepth,
   undo,
 } from '@codemirror/commands'
 import {
@@ -60,6 +61,7 @@ export class HistoryView {
   private editorView: EditorView
   private localHistoryTargetView: EditorView | undefined
   private operationInProgress = false
+  private invalidGlobalRedoDepth = 0
   private historyChangedListeners = new Set<() => void>()
   historyCompartment = new Compartment()
 
@@ -130,6 +132,15 @@ export class HistoryView {
       ...spec,
       annotations,
     })
+    this.invalidGlobalRedoDepth = 0
+  }
+
+  recordGlobalEventForLocalTransaction(spec: TransactionSpecNoChanges) {
+    this.dispatch(spec, { shouldForwardToLocalHistory: false })
+    return globalHistoryRequest.of({
+      historySource: this.editorView,
+      request: 'redo',
+    })
   }
 
   /** Undo local history target if possible, fallback to global history */
@@ -146,7 +157,7 @@ export class HistoryView {
     if (this.operationInProgress) return false
     const result = redo(localHistoryTarget)
     if (!result) {
-      return redo(this.editorView)
+      return this.redoGlobalIfValid()
     }
     return result
   }
@@ -185,6 +196,25 @@ export class HistoryView {
 
   /** Extensions attached to a local history target */
   private localHistoryExtension(): Extension {
+    const invalidateAbandonedGlobalRedo = EditorView.updateListener.of(
+      (update) => {
+        for (const transaction of update.transactions) {
+          if (
+            !transaction.docChanged ||
+            transaction.isUserEvent('undo') ||
+            transaction.isUserEvent('redo') ||
+            transaction.annotation(Transaction.addToHistory) === false ||
+            transaction.effects.some((effect) =>
+              effect.is(globalHistoryRequest)
+            )
+          ) {
+            continue
+          }
+          this.invalidGlobalRedoDepth = redoDepth(this.editorView.state)
+        }
+      }
+    )
+
     /**
      * Extension attached to a local history source to turn effects pointing
      * to "global history requests" into actual history commands on the global history.
@@ -196,7 +226,7 @@ export class HistoryView {
             if (e.value.request === 'undo') {
               undo(e.value.historySource)
             } else {
-              redo(e.value.historySource)
+              this.redoGlobalIfValid()
             }
           }
         }
@@ -223,7 +253,18 @@ export class HistoryView {
       return found
     })
 
-    return [localHistoryEffect, localHistoryInvertedEffect]
+    return [
+      invalidateAbandonedGlobalRedo,
+      localHistoryEffect,
+      localHistoryInvertedEffect,
+    ]
+  }
+
+  private redoGlobalIfValid() {
+    if (redoDepth(this.editorView.state) <= this.invalidGlobalRedoDepth) {
+      return false
+    }
+    return redo(this.editorView)
   }
 
   /**
