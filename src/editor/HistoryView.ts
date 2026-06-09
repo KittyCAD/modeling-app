@@ -62,6 +62,7 @@ export class HistoryView {
   private localHistoryTargetView: EditorView | undefined
   private operationInProgress = false
   private invalidGlobalRedoDepth = 0
+  private suppressNextLocalGlobalHistoryRequest = false
   private historyChangedListeners = new Set<() => void>()
   historyCompartment = new Compartment()
 
@@ -194,6 +195,19 @@ export class HistoryView {
     return restoredLocal || undo(this.editorView)
   }
 
+  synchronizeLocalHistoryAfterExternalGlobalRedo() {
+    if (!this.localHistoryTargetView) {
+      return false
+    }
+
+    this.suppressNextLocalGlobalHistoryRequest = true
+    const restored = redo(this.localHistoryTargetView)
+    if (!restored) {
+      this.suppressNextLocalGlobalHistoryRequest = false
+    }
+    return restored
+  }
+
   /** Extensions attached to a local history target */
   private localHistoryExtension(): Extension {
     const invalidateAbandonedGlobalRedo = EditorView.updateListener.of(
@@ -223,6 +237,10 @@ export class HistoryView {
       for (const tr of vu.transactions) {
         for (const e of tr.effects) {
           if (e.is(globalHistoryRequest)) {
+            if (this.suppressNextLocalGlobalHistoryRequest) {
+              this.suppressNextLocalGlobalHistoryRequest = false
+              continue
+            }
             if (e.value.request === 'undo') {
               undo(e.value.historySource)
             } else {

@@ -5,9 +5,10 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 import {
   type ZookeeperEditPatch,
+  buildZookeeperHistoryExtension,
   zookeeperEditPatchHistoryEvent,
 } from '@src/editor/plugins/zookeeper'
-import type { KclManager } from '@src/lang/KclManager'
+import { File, KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
@@ -303,6 +304,79 @@ describe('Zookeeper project history integration', () => {
       shared: 'shared = 0\n',
       abandoned: null,
     })
+  })
+
+  it('restores created-file manual and Zookeeper redo history after navigation', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+      'created.kcl': 'size = 10\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const createdPath = fsZds.join(harness.projectPath, 'created.kcl')
+    const switchToFile = async (path: string) => {
+      await KclManager.fromFile(
+        new File(path),
+        harness.kclManager.systemDeps,
+        harness.kclManager
+      )
+    }
+
+    await switchToFile(createdPath)
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => switchToFile(mainPath),
+      onActiveFileRestore: switchToFile,
+    })
+
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: createdPath,
+        patch: {
+          run_id: 'create-file',
+          changed_files: [
+            {
+              path: 'created.kcl',
+              status: 'created',
+              contents: 'size = 10\n',
+            },
+          ],
+        },
+      })
+    )
+    addManualEdit(harness.kclManager, 'size = 20\n')
+    await writeText(createdPath, 'size = 20\n')
+    harness.kclManager.addGlobalHistoryEventWithCodeChange(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: createdPath,
+        patch: { run_id: 'edit-created-file', changed_files: [] },
+      }),
+      'size = 30\n'
+    )
+    await writeText(createdPath, 'size = 30\n')
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe('size = 20\n')
+    harness.kclManager.undo()
+    expect(harness.kclManager.code).toBe('size = 10\n')
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(mainPath)
+    await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(createdPath)
+    expect(harness.kclManager.code).toBe('size = 10\n')
+    harness.kclManager.redo()
+    expect(harness.kclManager.code).toBe('size = 20\n')
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe('size = 30\n')
+
+    disposeHistory()
   })
 })
 

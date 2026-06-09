@@ -70,6 +70,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileName: string
             requestedSubRoute?: string
+            onNavigationComplete?: () => void
           }
         }
       | {
@@ -375,6 +376,7 @@ export const systemIOMachine = setup({
           project: event.data.requestedProjectName,
           file: event.data.requestedFileName,
           subRoute: event.data.requestedSubRoute,
+          onNavigationComplete: event.data.onNavigationComplete,
         }
       },
     }),

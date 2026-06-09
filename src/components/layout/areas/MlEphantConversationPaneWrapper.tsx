@@ -128,6 +128,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     zookeeperEditPatchHistoryEvent({
                       projectPath: project.path,
                       patch: patchWithoutCurrentFile,
+                      activeFilePath: kclManager.path,
                     }),
                     currentFile.requestedCode
                   )
@@ -136,6 +137,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     zookeeperEditPatchHistoryEvent({
                       projectPath: project.path,
                       patch: payload.zookeeperEditPatch,
+                      activeFilePath: kclManager.path,
                     })
                   )
                 }

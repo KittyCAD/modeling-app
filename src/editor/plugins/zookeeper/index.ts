@@ -61,6 +61,7 @@ type ZookeeperPatchEffectProps = {
   projectPath: string
   patch: ZookeeperEditPatch
   direction: ZookeeperPatchReplayDirection
+  activeFilePath?: string
 }
 
 type ZookeeperPatchFileReplay = {
@@ -106,7 +107,8 @@ type ZookeeperPatchReplayOptions = {
 
 type ZookeeperHistoryExtensionDependencies = {
   kclManager: KclManager
-  onCurrentFileDelete: (deletedPaths: Set<string>) => void
+  onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
+  onActiveFileRestore: (restoredPath: string) => void | Promise<void>
 }
 
 const zookeeperEffectCompartment = new Compartment()
@@ -132,15 +134,18 @@ export function getZookeeperEditPatchFromToolOutput(
 export function zookeeperEditPatchHistoryEvent({
   projectPath,
   patch,
+  activeFilePath,
 }: {
   projectPath: string
   patch: ZookeeperEditPatch
+  activeFilePath?: string
 }): TransactionSpecNoChanges {
   return {
     effects: zookeeperEditPatchEffect.of({
       projectPath,
       patch,
       direction: 'redo',
+      activeFilePath,
     }),
     annotations: [zookeeperPatchIgnoreAnnotationType.of(true)],
   }
@@ -149,6 +154,7 @@ export function zookeeperEditPatchHistoryEvent({
 export function buildZookeeperHistoryExtension({
   kclManager,
   onCurrentFileDelete,
+  onActiveFileRestore,
 }: ZookeeperHistoryExtensionDependencies) {
   let restoringHistoryAfterFailure = false
   const zookeeperPatchListener = EditorView.updateListener.of((vu) => {
@@ -169,6 +175,7 @@ export function buildZookeeperHistoryExtension({
             ...e.value,
             kclManager,
             onCurrentFileDelete,
+            onActiveFileRestore,
           })
             .catch((error: unknown) => {
               console.error(error)
@@ -250,7 +257,8 @@ async function replayZookeeperEditPatch({
   ...effectProps
 }: ZookeeperPatchEffectProps & {
   kclManager: KclManager
-  onCurrentFileDelete: (deletedPaths: Set<string>) => void
+  onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
+  onActiveFileRestore: (restoredPath: string) => void | Promise<void>
 }) {
   const replayFiles = getZookeeperPatchFileReplays(effectProps)
   const preparedReplayFiles = await prepareZookeeperPatchReplay(replayFiles, {
@@ -261,17 +269,34 @@ async function replayZookeeperEditPatch({
   )
 
   const deletesCurrentFile = currentFileReplay?.nextContent === null
+  await writeZookeeperPatchReplay(preparedReplayFiles)
+
   if (deletesCurrentFile) {
-    effectProps.onCurrentFileDelete(
+    await effectProps.onCurrentFileDelete(
       new Set(
         preparedReplayFiles
           .filter((replayFile) => replayFile.nextContent === null)
           .map((replayFile) => replayFile.absolutePath)
       )
     )
+    return
   }
 
-  await writeZookeeperPatchReplay(preparedReplayFiles)
+  const restoresActiveFile = preparedReplayFiles.some(
+    (replayFile) =>
+      replayFile.absolutePath === effectProps.activeFilePath &&
+      replayFile.previousContent === null &&
+      replayFile.nextContent !== null
+  )
+  if (
+    restoresActiveFile &&
+    effectProps.activeFilePath &&
+    kclManager.path !== effectProps.activeFilePath
+  ) {
+    await effectProps.onActiveFileRestore(effectProps.activeFilePath)
+    kclManager.synchronizeLocalHistoryAfterExternalGlobalRedo()
+    return
+  }
 
   if (currentFileReplay && currentFileReplay.nextContent !== null) {
     kclManager.updateCodeEditor(currentFileReplay.nextContent, {
@@ -281,10 +306,6 @@ async function replayZookeeperEditPatch({
       shouldResetCamera: false,
       shouldWriteToDisk: true,
     })
-    return
-  }
-
-  if (deletesCurrentFile) {
     return
   }
 

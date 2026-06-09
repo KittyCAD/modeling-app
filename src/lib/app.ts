@@ -570,7 +570,7 @@ export class App implements AppSubsystems {
         )
         const disposeZookeeperHistory = buildZookeeperHistoryExtension({
           kclManager: executingEditor,
-          onCurrentFileDelete: (deletedPaths) => {
+          onCurrentFileDelete: async (deletedPaths) => {
             if (!this.project) {
               throw new Error(
                 `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
@@ -588,13 +588,15 @@ export class App implements AppSubsystems {
                 `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
               )
             }
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.navigateToFile,
-              data: {
-                requestedProjectName: this.project.name,
-                requestedFileName: PROJECT_ENTRYPOINT,
-              },
-            })
+            await this.navigateToProjectFile(PROJECT_ENTRYPOINT)
+          },
+          onActiveFileRestore: async (restoredPath) => {
+            if (!this.project) {
+              return
+            }
+            await this.navigateToProjectFile(
+              fsZds.relative(this.project.path, restoredPath)
+            )
           },
         })
 
@@ -623,6 +625,23 @@ export class App implements AppSubsystems {
     )
 
     return this.project
+  }
+
+  private navigateToProjectFile(requestedFileName: string) {
+    return new Promise<void>((resolve) => {
+      if (!this.project) {
+        resolve()
+        return
+      }
+      this.systemIOActor.send({
+        type: SystemIOMachineEvents.navigateToFile,
+        data: {
+          requestedProjectName: this.project.name,
+          requestedFileName,
+          onNavigationComplete: resolve,
+        },
+      })
+    })
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {

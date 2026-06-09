@@ -711,6 +711,8 @@ export class KclManager extends File {
 
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
+  private readonly editorStatesByPath = new Map<string, EditorState>()
+  private restoredEditorHistoryOnLastFileSwitch = false
   private disposeGlobalHistorySubscription: (() => boolean) | undefined
 
   /**
@@ -1840,18 +1842,34 @@ export class KclManager extends File {
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     providedEditor.flushRecoverySnapshot()
+    providedEditor.editorStatesByPath.set(
+      providedEditor.path,
+      providedEditor.editorView.state
+    )
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
+    const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
+    const canRestoreEditorState =
+      savedEditorState !== undefined &&
+      savedEditorState.doc.toString() === initialCode
+    providedEditor.restoredEditorHistoryOnLastFileSwitch = canRestoreEditorState
+
+    if (savedEditorState && canRestoreEditorState) {
+      providedEditor.editorView.setState(savedEditorState)
+      providedEditor.updateHistoryDepth(savedEditorState)
+    } else {
+      providedEditor.editorStatesByPath.delete(file.path)
+      providedEditor.updateCodeEditor(initialCode, {
+        shouldExecute:
+          providedEditor.engineCommandManager.connection?.connected,
+        shouldClearHistory: true,
+        shouldResetCamera: true,
+        // We explicitly do not write to the file here since we are loading from
+        // the file system and not the editor.
+        shouldWriteToDisk: false,
+      })
+    }
     providedEditor.markFileCodeAsSynced(diskCode)
     providedEditor.watch()
     return providedEditor
@@ -2881,6 +2899,13 @@ export class KclManager extends File {
   }
   redo() {
     this._globalHistoryView.redo(this._editorView)
+  }
+  synchronizeLocalHistoryAfterExternalGlobalRedo() {
+    if (!this.restoredEditorHistoryOnLastFileSwitch) {
+      return false
+    }
+    this.restoredEditorHistoryOnLastFileSwitch = false
+    return this._globalHistoryView.synchronizeLocalHistoryAfterExternalGlobalRedo()
   }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
