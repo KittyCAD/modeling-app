@@ -208,6 +208,19 @@ export class HistoryView {
     return restored
   }
 
+  synchronizeLocalHistoryAfterExternalGlobalUndo() {
+    if (!this.localHistoryTargetView) {
+      return false
+    }
+
+    this.suppressNextLocalGlobalHistoryRequest = true
+    const restored = undo(this.localHistoryTargetView)
+    if (!restored) {
+      this.suppressNextLocalGlobalHistoryRequest = false
+    }
+    return restored
+  }
+
   /** Extensions attached to a local history target */
   private localHistoryExtension(): Extension {
     const invalidateAbandonedGlobalRedo = EditorView.updateListener.of(

@@ -572,8 +572,10 @@ export class App implements AppSubsystems {
           kclManager: executingEditor,
           onCurrentFileDelete: async (deletedPaths) => {
             if (!this.project) {
-              throw new Error(
-                `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
+              return Promise.reject(
+                new Error(
+                  `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
+                )
               )
             }
             const entrypointPath = fsZds.join(
@@ -584,8 +586,10 @@ export class App implements AppSubsystems {
               (file) => file.path === entrypointPath
             )
             if (!entrypointFile || deletedPaths.has(entrypointPath)) {
-              throw new Error(
-                `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
+              return Promise.reject(
+                new Error(
+                  `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
+                )
               )
             }
             await this.navigateToProjectFile(PROJECT_ENTRYPOINT)

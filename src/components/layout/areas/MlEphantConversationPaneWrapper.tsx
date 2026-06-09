@@ -85,6 +85,20 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
       if (payload) {
         let historyRecorded = false
+        const activeFilePath = kclManager.path
+        const activeRelativePath =
+          project?.path && activeFilePath
+            ? normalizeKCLFileDeletePath(
+                fsZds.relative(project.path, activeFilePath)
+              )
+            : ''
+        const activeFileDeleted =
+          activeRelativePath.length > 0 &&
+          payload.filesToDelete.some(
+            (file) =>
+              normalizeKCLFileDeletePath(file.requestedFileName) ===
+              activeRelativePath
+          )
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
@@ -95,20 +109,17 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             requestedProjectName: payload.requestedProjectName,
             requestedFileNameWithExtension:
               payload.requestedFileNameWithExtension ?? '',
-            onSuccess: () => {
+            onFileSystemSuccess: () => {
               if (historyRecorded) return
               historyRecorded = true
               if (
                 project?.path &&
                 payload.zookeeperEditPatch?.changed_files?.length
               ) {
-                const currentRelativePath = normalizeKCLFileDeletePath(
-                  fsZds.relative(project.path, kclManager.path)
-                )
                 const currentFile = payload.files.find(
                   (file) =>
                     normalizeKCLFileDeletePath(file.requestedFileName) ===
-                    currentRelativePath
+                    activeRelativePath
                 )
                 const patchWithoutCurrentFile = {
                   ...payload.zookeeperEditPatch,
@@ -116,11 +127,12 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     payload.zookeeperEditPatch.changed_files?.filter(
                       (file) =>
                         normalizeKCLFileDeletePath(file.path) !==
-                        currentRelativePath
+                        activeRelativePath
                     ),
                 }
 
                 if (
+                  !activeFileDeleted &&
                   currentFile &&
                   kclManager.code !== currentFile.requestedCode
                 ) {
@@ -128,7 +140,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     zookeeperEditPatchHistoryEvent({
                       projectPath: project.path,
                       patch: patchWithoutCurrentFile,
-                      activeFilePath: kclManager.path,
+                      activeFilePath,
                     }),
                     currentFile.requestedCode
                   )
@@ -137,7 +149,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     zookeeperEditPatchHistoryEvent({
                       projectPath: project.path,
                       patch: payload.zookeeperEditPatch,
-                      activeFilePath: kclManager.path,
+                      activeFilePath,
                     })
                   )
                 }

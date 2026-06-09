@@ -2907,6 +2907,13 @@ export class KclManager extends File {
     this.restoredEditorHistoryOnLastFileSwitch = false
     return this._globalHistoryView.synchronizeLocalHistoryAfterExternalGlobalRedo()
   }
+  synchronizeLocalHistoryAfterExternalGlobalUndo() {
+    if (!this.restoredEditorHistoryOnLastFileSwitch) {
+      return false
+    }
+    this.restoredEditorHistoryOnLastFileSwitch = false
+    return this._globalHistoryView.synchronizeLocalHistoryAfterExternalGlobalUndo()
+  }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
     this.pendingDirectSketchHistoryEntries = []

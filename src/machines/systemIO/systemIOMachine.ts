@@ -139,6 +139,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
         }
@@ -376,7 +377,9 @@ export const systemIOMachine = setup({
           project: event.data.requestedProjectName,
           file: event.data.requestedFileName,
           subRoute: event.data.requestedSubRoute,
-          onNavigationComplete: event.data.onNavigationComplete,
+          ...(event.data.onNavigationComplete
+            ? { onNavigationComplete: event.data.onNavigationComplete }
+            : {}),
         }
       },
     }),
@@ -633,6 +636,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
         }): Promise<{
@@ -1449,6 +1453,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
+            onFileSystemSuccess: event.data.onFileSystemSuccess,
             onSuccess: event.data.onSuccess,
           }
         },
@@ -1481,7 +1486,9 @@ export const systemIOMachine = setup({
                 return {
                   project: output.projectName,
                   file,
-                  onNavigationComplete: output.onNavigationComplete,
+                  ...(output.onNavigationComplete
+                    ? { onNavigationComplete: output.onNavigationComplete }
+                    : {}),
                 }
               },
             }),

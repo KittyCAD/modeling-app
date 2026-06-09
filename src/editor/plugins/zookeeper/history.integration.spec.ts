@@ -378,6 +378,67 @@ describe('Zookeeper project history integration', () => {
 
     disposeHistory()
   })
+
+  it('keeps active-file delete history attached to the deleted file across navigation', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+      'part.kcl': 'part = 1\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const partPath = fsZds.join(harness.projectPath, 'part.kcl')
+    const switchToFile = async (path: string) => {
+      await KclManager.fromFile(
+        new File(path),
+        harness.kclManager.systemDeps,
+        harness.kclManager
+      )
+    }
+
+    await switchToFile(partPath)
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => switchToFile(mainPath),
+      onActiveFileRestore: switchToFile,
+    })
+
+    addManualEdit(harness.kclManager, 'part = 2\n')
+    await writeText(partPath, 'part = 2\n')
+    await fsZds.rm(partPath)
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: partPath,
+        patch: {
+          run_id: 'delete-active-file',
+          changed_files: [
+            {
+              path: 'part.kcl',
+              status: 'deleted',
+              previous_contents: 'part = 2\n',
+            },
+          ],
+        },
+      })
+    )
+    await switchToFile(mainPath)
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(partPath)
+    expect(harness.kclManager.code).toBe('part = 2\n')
+    await expect(fsZds.readFile(partPath, 'utf8')).resolves.toBe('part = 2\n')
+
+    harness.kclManager.undo()
+    expect(harness.kclManager.code).toBe('part = 1\n')
+    harness.kclManager.redo()
+    expect(harness.kclManager.code).toBe('part = 2\n')
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(mainPath)
+    await expect(fsZds.readFile(partPath, 'utf8')).rejects.toThrow()
+
+    disposeHistory()
+  })
 })
 
 async function createProjectHarness(files: Record<string, string>) {

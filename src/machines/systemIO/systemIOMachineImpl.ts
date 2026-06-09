@@ -614,6 +614,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
         }) => {
@@ -634,6 +635,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           })
 
           message.message += `, ${totalDeleted} deleted`
+          input.onFileSystemSuccess?.()
 
           const project = input.context.app.project
           const requestedRelativePath = normalizeKCLFileDeletePath(

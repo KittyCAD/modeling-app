@@ -4,7 +4,7 @@ import {
 } from '@src/editor/plugins/zookeeper'
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
-import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -500,11 +500,20 @@ export const prepareMlEphantNewFileRequest = ({
     })
   }
 
+  const normalizedRequestedFileName = normalizeKCLFileDeletePath(
+    requestedFileNameWithExtension
+  )
+  const requestedFileWasDeleted =
+    normalizedRequestedFileName.length > 0 &&
+    filesToDeleteByPath.has(normalizedRequestedFileName)
+
   return {
     files: requestedFiles,
     filesToDelete: Array.from(filesToDeleteByPath.values()),
     requestedProjectName: projectNameCurrentlyOpened,
-    requestedFileNameWithExtension,
+    requestedFileNameWithExtension: requestedFileWasDeleted
+      ? PROJECT_ENTRYPOINT
+      : requestedFileNameWithExtension,
     zookeeperEditPatch,
   }
 }
