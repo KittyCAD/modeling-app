@@ -490,6 +490,12 @@ pub(crate) fn parse_edge_specifier_object(
     args: &Args,
 ) -> Result<UnresolvedEdgeSpecifier, KclError> {
     let side_faces = parse_tag_or_uuid_array(obj, "sideFaces", true, args)?;
+    if side_faces.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "sideFaces must be an array of at least one face, but zero were given".to_owned(),
+            vec![args.source_range],
+        )));
+    }
     let end_faces = parse_tag_or_uuid_array(obj, "endFaces", false, args)?;
     let index = parse_edge_specifier_index(obj, args)?;
     Ok(UnresolvedEdgeSpecifier {
