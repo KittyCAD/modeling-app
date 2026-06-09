@@ -83,15 +83,6 @@ This setting has the following nested options:
 
 **Default:** None
 
-##### title
-
-Human-facing project title.
-
-This can differ from the local project directory name.
-
-
-**Default:** None
-
 
 #### modeling
 

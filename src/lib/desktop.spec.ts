@@ -284,7 +284,7 @@ describe('desktop utilities', () => {
           return 'dist\nnotes.txt\n'
         }
         if (path === '/test/projects/valid-project/project.toml') {
-          return '[settings.meta]\ntitle = "Some demo"\n'
+          return 'title = "Some demo"\n'
         }
 
         return ''
