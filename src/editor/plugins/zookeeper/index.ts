@@ -49,6 +49,27 @@ export function isZookeeperProjectEntrypointPath(path: string) {
   return normalizeZookeeperPatchPath(path) === PROJECT_ENTRYPOINT
 }
 
+export function mergeZookeeperEditPatches(
+  previousPatch: ZookeeperEditPatch,
+  nextPatch: ZookeeperEditPatch
+): ZookeeperEditPatch {
+  const changedFilesByPath = new Map<string, ZookeeperEditPatchFile>()
+
+  for (const file of previousPatch.changed_files ?? []) {
+    changedFilesByPath.set(normalizeZookeeperPatchPath(file.path), file)
+  }
+
+  for (const file of nextPatch.changed_files ?? []) {
+    changedFilesByPath.set(normalizeZookeeperPatchPath(file.path), file)
+  }
+
+  return {
+    ...nextPatch,
+    run_id: previousPatch.run_id,
+    changed_files: Array.from(changedFilesByPath.values()),
+  }
+}
+
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
   { type: 'edit_kcl_code' }

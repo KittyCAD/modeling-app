@@ -110,6 +110,7 @@ export interface MlEphantNewFileRequestProps {
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
   filesToDelete?: RequestedKCLFileDelete[]
+  exchangeId?: number
 }
 
 // Watch MlEphant for any responses that require files to be created.
@@ -156,6 +157,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
         filesToDelete: Array.from(fileNamesToDelete, (requestedFileName) => ({
           requestedFileName,
         })),
+        exchangeId: exchanges.length - 1,
       })
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor

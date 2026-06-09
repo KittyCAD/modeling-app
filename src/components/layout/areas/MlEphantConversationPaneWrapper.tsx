@@ -3,7 +3,11 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import {
+  type ZookeeperEditPatch,
+  mergeZookeeperEditPatches,
+  zookeeperEditPatchHistoryEvent,
+} from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -12,6 +16,7 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
+  type MlEphantManagerActor,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
 import {
@@ -24,7 +29,7 @@ import {
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { useEffect } from 'react'
+import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
@@ -75,6 +80,120 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
+  const pendingZookeeperHistoryByExchange = useRef(
+    new Map<number, PendingZookeeperHistory>()
+  )
+  const recordZookeeperHistory = useCallback(
+    ({
+      activeFileDeleted,
+      activeFilePath,
+      activeFileRequestedCode,
+      patch,
+      projectPath,
+    }: ReadyPendingZookeeperHistory) => {
+      if (
+        !activeFileDeleted &&
+        activeFileRequestedCode !== undefined &&
+        kclManager.path === activeFilePath &&
+        kclManager.code !== activeFileRequestedCode
+      ) {
+        const activeRelativePath = normalizeKCLFileDeletePath(
+          fsZds.relative(projectPath, activeFilePath)
+        )
+        kclManager.addGlobalHistoryEventWithCodeChange(
+          zookeeperEditPatchHistoryEvent({
+            projectPath,
+            patch: {
+              ...patch,
+              changed_files: patch.changed_files?.filter(
+                (file) =>
+                  normalizeKCLFileDeletePath(file.path) !== activeRelativePath
+              ),
+            },
+            activeFilePath,
+          }),
+          activeFileRequestedCode
+        )
+        return
+      }
+
+      kclManager.addGlobalHistoryEvent(
+        zookeeperEditPatchHistoryEvent({
+          projectPath,
+          patch,
+          activeFilePath,
+        })
+      )
+    },
+    [kclManager]
+  )
+  const tryFlushPendingZookeeperHistory = useCallback(
+    (exchangeId: number) => {
+      const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
+      if (
+        !pending?.streamEnded ||
+        pending.outstandingWrites > 0 ||
+        !pending.projectPath ||
+        !pending.patch?.changed_files?.length ||
+        !pending.activeFilePath
+      ) {
+        return
+      }
+
+      pendingZookeeperHistoryByExchange.current.delete(exchangeId)
+      recordZookeeperHistory({
+        activeFileDeleted: pending.activeFileDeleted,
+        activeFilePath: pending.activeFilePath,
+        activeFileRequestedCode: pending.activeFileRequestedCode,
+        patch: pending.patch,
+        projectPath: pending.projectPath,
+      })
+    },
+    [recordZookeeperHistory]
+  )
+  const beginPendingZookeeperHistoryWrite = useCallback(
+    (exchangeId: number) => {
+      const pending =
+        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
+        createPendingZookeeperHistory()
+      pending.outstandingWrites += 1
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+    },
+    []
+  )
+  const completePendingZookeeperHistoryWrite = useCallback(
+    ({
+      activeFileDeleted,
+      activeFilePath,
+      activeFileRequestedCode,
+      exchangeId,
+      patch,
+      projectPath,
+    }: CompletePendingZookeeperHistoryWriteProps) => {
+      const pending =
+        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
+        createPendingZookeeperHistory()
+      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
+      pending.projectPath = projectPath
+      pending.activeFilePath ??= activeFilePath
+      pending.activeFileDeleted = pending.activeFileDeleted || activeFileDeleted
+      pending.activeFileRequestedCode =
+        activeFileRequestedCode ?? pending.activeFileRequestedCode
+      pending.patch = pending.patch
+        ? mergeZookeeperEditPatches(pending.patch, patch)
+        : patch
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      tryFlushPendingZookeeperHistory(exchangeId)
+    },
+    [tryFlushPendingZookeeperHistory]
+  )
+
+  useFlushZookeeperHistoryOnResponseEnd(
+    mlEphantManagerActor,
+    pendingZookeeperHistoryByExchange,
+    tryFlushPendingZookeeperHistory
+  )
+
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
     billing.actor,
@@ -85,7 +204,9 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
       if (payload) {
         let historyRecorded = false
-        const activeFilePath = kclManager.path
+        const exchangeId = requestProps.exchangeId ?? 0
+        const activeFilePath =
+          requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
         const activeRelativePath =
           project?.path && activeFilePath
             ? normalizeKCLFileDeletePath(
@@ -99,6 +220,12 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
               normalizeKCLFileDeletePath(file.requestedFileName) ===
               activeRelativePath
           )
+        const shouldRecordZookeeperHistory = Boolean(
+          project?.path && payload.zookeeperEditPatch?.changed_files?.length
+        )
+        if (shouldRecordZookeeperHistory) {
+          beginPendingZookeeperHistoryWrite(exchangeId)
+        }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
@@ -113,46 +240,23 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
               if (historyRecorded) return
               historyRecorded = true
               if (
+                shouldRecordZookeeperHistory &&
                 project?.path &&
-                payload.zookeeperEditPatch?.changed_files?.length
+                payload.zookeeperEditPatch
               ) {
                 const currentFile = payload.files.find(
                   (file) =>
                     normalizeKCLFileDeletePath(file.requestedFileName) ===
                     activeRelativePath
                 )
-                const patchWithoutCurrentFile = {
-                  ...payload.zookeeperEditPatch,
-                  changed_files:
-                    payload.zookeeperEditPatch.changed_files?.filter(
-                      (file) =>
-                        normalizeKCLFileDeletePath(file.path) !==
-                        activeRelativePath
-                    ),
-                }
-
-                if (
-                  !activeFileDeleted &&
-                  currentFile &&
-                  kclManager.code !== currentFile.requestedCode
-                ) {
-                  kclManager.addGlobalHistoryEventWithCodeChange(
-                    zookeeperEditPatchHistoryEvent({
-                      projectPath: project.path,
-                      patch: patchWithoutCurrentFile,
-                      activeFilePath,
-                    }),
-                    currentFile.requestedCode
-                  )
-                } else {
-                  kclManager.addGlobalHistoryEvent(
-                    zookeeperEditPatchHistoryEvent({
-                      projectPath: project.path,
-                      patch: payload.zookeeperEditPatch,
-                      activeFilePath,
-                    })
-                  )
-                }
+                completePendingZookeeperHistoryWrite({
+                  activeFileDeleted,
+                  activeFilePath,
+                  activeFileRequestedCode: currentFile?.requestedCode,
+                  exchangeId,
+                  patch: payload.zookeeperEditPatch,
+                  projectPath: project.path,
+                })
               }
             },
           },
@@ -217,6 +321,72 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       />
     </LayoutPanel>
   )
+}
+
+type PendingZookeeperHistory = {
+  activeFileDeleted: boolean
+  activeFilePath?: string
+  activeFileRequestedCode?: string
+  outstandingWrites: number
+  patch?: ZookeeperEditPatch
+  projectPath?: string
+  streamEnded: boolean
+}
+
+type ReadyPendingZookeeperHistory = {
+  activeFileDeleted: boolean
+  activeFilePath: string
+  activeFileRequestedCode?: string
+  patch: ZookeeperEditPatch
+  projectPath: string
+}
+
+type CompletePendingZookeeperHistoryWriteProps =
+  ReadyPendingZookeeperHistory & {
+    exchangeId: number
+  }
+
+function createPendingZookeeperHistory(): PendingZookeeperHistory {
+  return {
+    activeFileDeleted: false,
+    outstandingWrites: 0,
+    streamEnded: false,
+  }
+}
+
+function useFlushZookeeperHistoryOnResponseEnd(
+  mlEphantManagerActor: MlEphantManagerActor,
+  pendingZookeeperHistoryByExchange: MutableRefObject<
+    Map<number, PendingZookeeperHistory>
+  >,
+  tryFlushPendingZookeeperHistory: (exchangeId: number) => void
+) {
+  useEffect(() => {
+    let lastId: number | undefined = undefined
+    const subscription = mlEphantManagerActor.subscribe((next) => {
+      if (next.context.lastMessageId === lastId) return
+      lastId = next.context.lastMessageId
+
+      if (next.context.lastMessageType !== 'end_of_stream') return
+      const exchangeId = (next.context.conversation?.exchanges.length ?? 0) - 1
+      if (exchangeId < 0) return
+
+      const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
+      if (!pending) return
+
+      pending.streamEnded = true
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      tryFlushPendingZookeeperHistory(exchangeId)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [
+    mlEphantManagerActor,
+    pendingZookeeperHistoryByExchange,
+    tryFlushPendingZookeeperHistory,
+  ])
 }
 
 export const MlEphantConversationMenu = () => {

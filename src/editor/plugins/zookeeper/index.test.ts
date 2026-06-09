@@ -1,6 +1,7 @@
 import {
   type ZookeeperEditPatch,
   applyZookeeperEditPatch,
+  mergeZookeeperEditPatches,
 } from '@src/editor/plugins/zookeeper'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
@@ -19,6 +20,50 @@ afterEach(() => {
 })
 
 describe('Zookeeper history patch replay', () => {
+  it('merges streamed edit patches by latest file path', () => {
+    const firstPatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'mainBox.kcl',
+          status: 'modified',
+          diff: unifiedDiff('mainBox.kcl', 'size = 1\n', 'size = 2\n'),
+        },
+      ],
+    }
+    const nextPatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: './smallBox.kcl',
+          status: 'modified',
+          diff: unifiedDiff('smallBox.kcl', 'size = 1\n', 'size = 2\n'),
+        },
+        {
+          path: 'mainBox.kcl',
+          status: 'modified',
+          diff: unifiedDiff('mainBox.kcl', 'size = 1\n', 'size = 3\n'),
+        },
+      ],
+    }
+
+    expect(mergeZookeeperEditPatches(firstPatch, nextPatch)).toEqual({
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'mainBox.kcl',
+          status: 'modified',
+          diff: unifiedDiff('mainBox.kcl', 'size = 1\n', 'size = 3\n'),
+        },
+        {
+          path: './smallBox.kcl',
+          status: 'modified',
+          diff: unifiedDiff('smallBox.kcl', 'size = 1\n', 'size = 2\n'),
+        },
+      ],
+    })
+  })
+
   it('replays create, modify, and delete changes locally', async () => {
     const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
     const modifiedBefore = 'length = 10\n'
