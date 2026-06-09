@@ -1,6 +1,7 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
+import { webSafeJoin } from '@src/lib/pathUtils'
 
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
@@ -234,21 +235,7 @@ export function parentPathRelativeToApplicationDirectory(
   return ''
 }
 
-/**
- * Use this for only web related paths not paths in OS or on disk
- * e.g. document.location.pathname
- * WARNING (lee): THIS IS TRULY FOR ALL WEB USES, EVEN IN ELECTRON RENDERER!
- * I got bit hard by this.
- */
-export function webSafePathSplit(targetPath: string): string[] {
-  // eslint-disable-next-line no-restricted-syntax
-  return targetPath.split('/')
-}
-
-export function webSafeJoin(paths: string[]): string {
-  // eslint-disable-next-line no-restricted-syntax
-  return paths.join('/')
-}
+export { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 
 export function toWebSafePath(targetPath: string, sep = fsZds.sep): string {
   return sep && sep !== '/' ? targetPath.replaceAll(sep, '/') : targetPath
