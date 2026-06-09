@@ -13,6 +13,9 @@ export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
 export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
+export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE = 'project-explorer.focused'
+export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
+  'project-explorer.renaming'
 
 export type KeymapArguments =
   | null

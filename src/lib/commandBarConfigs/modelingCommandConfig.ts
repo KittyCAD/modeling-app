@@ -90,6 +90,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import {
   type SweepRelativeTo,
@@ -101,6 +102,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addDelete,
   addMirror3D,
   addRotate,
   addScale,
@@ -292,6 +294,7 @@ export type ModelingCommandSchema = {
     selection: Selections // this is named 'tags' in the stdlib
     radius: KclCommandValue
     tag?: string
+    version?: KclCommandValue
   }
   Chamfer: {
     // Enables editing workflow
@@ -302,6 +305,7 @@ export type ModelingCommandSchema = {
     secondLength?: KclCommandValue
     angle?: KclCommandValue
     tag?: string
+    version?: KclCommandValue
   }
   'Offset plane': {
     // Enables editing workflow
@@ -382,6 +386,9 @@ export type ModelingCommandSchema = {
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
+  }
+  Delete: {
+    objects: Selections
   }
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -2045,11 +2052,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Fillet']
+      const wasmInstance = await kclManager.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        commandArgs.version &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addFillet({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2085,6 +2110,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         // TODO: add validation like for Clone command
       },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '1',
+        required: false,
+        status: 'experimental',
+      },
     },
   },
   Chamfer: {
@@ -2101,11 +2134,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Chamfer']
+      const wasmInstance = await kclManager.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        commandArgs.version &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addChamfer({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2150,6 +2201,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'tagDeclarator',
         required: false,
         // TODO: add validation like for Clone command
+      },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '1',
+        required: false,
+        status: 'experimental',
       },
     },
   },
@@ -2294,6 +2353,60 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       opacity: {
         inputType: 'kcl',
         required: false,
+      },
+    },
+  },
+  Delete: {
+    description: 'Delete selected bodies from the scene.',
+    icon: 'trash',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+
+      let ast = kclManager.ast
+      if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+        const astWithExperimentalFeatures = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          await kclManager.wasmInstancePromise
+        )
+        if (err(astWithExperimentalFeatures)) {
+          return astWithExperimentalFeatures
+        }
+
+        ast = astWithExperimentalFeatures
+      }
+
+      const modRes = addDelete({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete']),
+        ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      objects: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
       },
     },
   },
