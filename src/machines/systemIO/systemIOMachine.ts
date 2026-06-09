@@ -960,6 +960,10 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.setFolders]: {
           actions: SystemIOMachineActions.setFolders,
         },
+        [SystemIOMachineEvents.setProjectDirectoryPath]: {
+          target: SystemIOMachineStates.checkingReadWrite,
+          actions: [SystemIOMachineActions.setProjectDirectoryPath],
+        },
         [SystemIOMachineEvents.navigateToProject]: {
           actions: [SystemIOMachineActions.setRequestedProjectName],
         },
@@ -1006,6 +1010,12 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [
+            assign({
+              folders: ({ context }) => context.folders ?? [],
+              hasListedProjects: true,
+            }),
+          ],
         },
       },
     },
@@ -1209,6 +1219,11 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.navigateToFile]: {
           actions: [SystemIOMachineActions.setRequestedFileName],
+        },
+        [SystemIOMachineEvents.setProjectDirectoryPath]: {
+          target: SystemIOMachineStates.checkingReadWrite,
+          reenter: true,
+          actions: [SystemIOMachineActions.setProjectDirectoryPath],
         },
         [SystemIOMachineEvents.createProject]: [
           {
