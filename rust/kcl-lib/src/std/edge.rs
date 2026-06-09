@@ -605,8 +605,10 @@ pub(crate) async fn parse_edge_refs_to_references(
     Ok(edge_references)
 }
 
-/// Get the face (surface body) id from the first side_face of an unresolved specifier. Used when building a BoundedEdge from an edge specifier object in blend().
-pub(crate) fn face_id_from_first_side_face(
+/// Get the face (surface body) id from the first side_face of an unresolved
+/// specifier. Used when building a BoundedEdge from an edge specifier object in
+/// blend().
+pub(super) fn face_id_from_first_side_face(
     spec: &UnresolvedEdgeSpecifier,
     exec_state: &mut ExecState,
     args: &Args,

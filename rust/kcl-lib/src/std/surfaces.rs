@@ -255,6 +255,8 @@ pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         .map(|value| KclValue::Solid { value })
 }
 
+/// When edge specifiers are used, the first face in `sideFaces` is used in the
+/// [`BoundedEdge`] struct.
 async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &Args) -> Result<BoundedEdge, KclError> {
     match edge {
         KclValue::BoundedEdge { value, .. } => Ok(value),
