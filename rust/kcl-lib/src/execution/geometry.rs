@@ -119,6 +119,14 @@ impl GeometryWithImportedGeometry {
             }
         }
     }
+
+    pub fn into_solid(self) -> Option<Solid> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(_) => None,
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => None,
+        }
+    }
 }
 
 /// A set of geometry.
