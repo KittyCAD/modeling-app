@@ -51,6 +51,11 @@ export type Project = {
   kcl_file_count: number
   directory_count: number
   /**
+   * Human-facing project title from project.toml.
+   * This may differ from the local project directory name.
+   */
+  title?: string
+  /**
    * Absolute path most likely to main.kcl within the project
    */
   default_file: string
