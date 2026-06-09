@@ -251,20 +251,12 @@ fn vec2_cross(a: [f64; 2], b: [f64; 2]) -> f64 {
     a[0] * b[1] - a[1] * b[0]
 }
 
-fn vec2_len(a: [f64; 2]) -> f64 {
-    libm::hypot(a[0], a[1])
+fn vec2_dot(a: [f64; 2], b: [f64; 2]) -> f64 {
+    a[0] * b[0] + a[1] * b[1]
 }
 
-fn vec2_normalized(a: [f64; 2], range: SourceRange, description: &str) -> Result<[f64; 2], KclError> {
-    let len = vec2_len(a);
-    if len <= 1e-9 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("angle() {description} must not be degenerate"),
-            vec![range],
-        )));
-    }
-
-    Ok([a[0] / len, a[1] / len])
+fn vec2_len(a: [f64; 2]) -> f64 {
+    libm::hypot(a[0], a[1])
 }
 
 fn intersection_of_initial_lines(
@@ -349,50 +341,103 @@ fn angle_sector_rays(sector: AngleSector, is_reflex: bool) -> [AngleSectorRay; 2
     if is_reflex { [rays[1], rays[0]] } else { rays }
 }
 
-fn angle_ray_initial(
-    vertex: [f64; 2],
-    line: ([f64; 2], [f64; 2]),
-    ray: AngleRayDirection,
-    distance: f64,
-    range: SourceRange,
-) -> Result<[f64; 2], KclError> {
-    let direction = vec2_normalized(vec2_sub(line.1, line.0), range, "line")?;
-    let sign = match ray {
-        AngleRayDirection::Forward => 1.0,
-        AngleRayDirection::Reverse => -1.0,
-    };
-    Ok(vec2_add(vertex, vec2_scale(direction, sign * distance)))
+fn normalize_radians(angle: f64) -> f64 {
+    let normalized = angle % std::f64::consts::TAU;
+    if normalized < 0.0 {
+        normalized + std::f64::consts::TAU
+    } else {
+        normalized
+    }
 }
 
-fn push_points_at_angle_for_line_rays(
+fn line_endpoint_datum(
+    line: &ConstrainableLine2d,
+    endpoint_index: usize,
+    range: SourceRange,
+) -> Result<DatumPoint, KclError> {
+    let Some(endpoint) = line.vars.get(endpoint_index) else {
+        return Err(internal_err("Invalid angle line endpoint index", range));
+    };
+
+    Ok(DatumPoint::new_xy(
+        endpoint.x.to_constraint_id(range)?,
+        endpoint.y.to_constraint_id(range)?,
+    ))
+}
+
+fn representative_angle_endpoint(
+    line: &ConstrainableLine2d,
+    initial_line: ([f64; 2], [f64; 2]),
+    vertex: [f64; 2],
+    range: SourceRange,
+) -> Result<(DatumPoint, AngleRayDirection), KclError> {
+    let start_delta = vec2_sub(initial_line.0, vertex);
+    let end_delta = vec2_sub(initial_line.1, vertex);
+    let endpoint_index = if vec2_len(end_delta) >= vec2_len(start_delta) {
+        1
+    } else {
+        0
+    };
+    let endpoint_delta = if endpoint_index == 1 { end_delta } else { start_delta };
+    if vec2_len(endpoint_delta) <= 1e-9 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "angle(lines = ..., sector = ...) requires each line to have an endpoint away from the intersection"
+                .to_owned(),
+            vec![range],
+        )));
+    }
+
+    let line_direction = vec2_sub(initial_line.1, initial_line.0);
+    let direction = if vec2_dot(endpoint_delta, line_direction) >= 0.0 {
+        AngleRayDirection::Forward
+    } else {
+        AngleRayDirection::Reverse
+    };
+
+    Ok((line_endpoint_datum(line, endpoint_index, range)?, direction))
+}
+
+fn remap_angle_for_representative_rays(
+    requested_rays: [AngleSectorRay; 2],
+    representative_directions: [AngleRayDirection; 2],
+    desired_angle: ezpz::datatypes::Angle,
+) -> ezpz::datatypes::Angle {
+    let mut requested_directions = representative_directions;
+    for ray in requested_rays {
+        requested_directions[ray.line_index] = ray.direction;
+    }
+
+    let sign_offset = if (requested_directions[0] != representative_directions[0])
+        ^ (requested_directions[1] != representative_directions[1])
+    {
+        std::f64::consts::PI
+    } else {
+        0.0
+    };
+
+    let desired = desired_angle.to_radians();
+    let representative_angle = if requested_rays[0].line_index == 0 {
+        desired - sign_offset
+    } else {
+        -desired - sign_offset
+    };
+
+    ezpz::datatypes::Angle::from_radians(normalize_radians(representative_angle))
+}
+
+fn push_points_at_angle_for_lines(
     sketch_block_state: &mut SketchBlockState,
     sketch_var_ty: NumericType,
     line0: &ConstrainableLine2d,
     line1: &ConstrainableLine2d,
-    ray_line_indices: [usize; 2],
     initial_vertex: [f64; 2],
-    initial_ray_points: [[f64; 2]; 2],
-    ray_distance: f64,
+    representative_points: [DatumPoint; 2],
     angle_kind: ezpz::datatypes::AngleKind,
     range: SourceRange,
 ) -> Result<(), KclError> {
     let solver_line0 = datum_line_from_constrainable(line0, range)?;
     let solver_line1 = datum_line_from_constrainable(line1, range)?;
-    let solver_ray_lines = [
-        match ray_line_indices[0] {
-            0 => solver_line0,
-            1 => solver_line1,
-            _ => return Err(internal_err("Invalid angle sector line index", range)),
-        },
-        match ray_line_indices[1] {
-            0 => solver_line0,
-            1 => solver_line1,
-            _ => return Err(internal_err("Invalid angle sector line index", range)),
-        },
-    ];
     let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_vertex, range)?;
-    let ray0 = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_ray_points[0], range)?;
-    let ray1 = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_ray_points[1], range)?;
 
     sketch_block_state
         .solver_constraints
@@ -400,21 +445,12 @@ fn push_points_at_angle_for_line_rays(
     sketch_block_state
         .solver_constraints
         .push(Constraint::PointLineDistance(vertex, solver_line1, 0.0));
-    sketch_block_state
-        .solver_constraints
-        .push(Constraint::PointLineDistance(ray0, solver_ray_lines[0], 0.0));
-    sketch_block_state
-        .solver_constraints
-        .push(Constraint::PointLineDistance(ray1, solver_ray_lines[1], 0.0));
-    sketch_block_state
-        .solver_constraints
-        .push(Constraint::Distance(vertex, ray0, ray_distance));
-    sketch_block_state
-        .solver_constraints
-        .push(Constraint::Distance(vertex, ray1, ray_distance));
-    sketch_block_state
-        .solver_constraints
-        .push(Constraint::PointsAtAngle(vertex, ray0, ray1, angle_kind));
+    sketch_block_state.solver_constraints.push(Constraint::PointsAtAngle(
+        vertex,
+        representative_points[0],
+        representative_points[1],
+        angle_kind,
+    ));
 
     Ok(())
 }
@@ -3946,33 +3982,18 @@ impl Node<BinaryExpression> {
                                     )?;
                                     let initial_vertex =
                                         intersection_of_initial_lines(initial_line0, initial_line1, range)?;
-                                    let line0_length = vec2_len(vec2_sub(initial_line0.1, initial_line0.0));
-                                    let line1_length = vec2_len(vec2_sub(initial_line1.1, initial_line1.0));
-                                    let ray_distance = (line0_length.min(line1_length) * 0.25).max(1.0);
+                                    let (line0_representative, line0_direction) =
+                                        representative_angle_endpoint(line0, initial_line0, initial_vertex, range)?;
+                                    let (line1_representative, line1_direction) =
+                                        representative_angle_endpoint(line1, initial_line1, initial_vertex, range)?;
                                     let sector_rays = angle_sector_rays(sector, reflex);
-                                    let initial_lines = [initial_line0, initial_line1];
-                                    Some((
-                                        initial_vertex,
-                                        [
-                                            angle_ray_initial(
-                                                initial_vertex,
-                                                initial_lines[sector_rays[0].line_index],
-                                                sector_rays[0].direction,
-                                                ray_distance,
-                                                range,
-                                            )?,
-                                            angle_ray_initial(
-                                                initial_vertex,
-                                                initial_lines[sector_rays[1].line_index],
-                                                sector_rays[1].direction,
-                                                ray_distance,
-                                                range,
-                                            )?,
-                                        ],
-                                        [sector_rays[0].line_index, sector_rays[1].line_index],
-                                        ray_distance,
-                                        ezpz::datatypes::AngleKind::Other(desired_angle),
-                                    ))
+                                    let angle_kind =
+                                        ezpz::datatypes::AngleKind::Other(remap_angle_for_representative_rays(
+                                            sector_rays,
+                                            [line0_direction, line1_direction],
+                                            desired_angle,
+                                        ));
+                                    Some((initial_vertex, [line0_representative, line1_representative], angle_kind))
                                 }
                             };
                             let sketch_var_ty = solver_numeric_type(exec_state);
@@ -3993,22 +4014,14 @@ impl Node<BinaryExpression> {
                                 }
                                 (
                                     AngleConstraintMode::PointsAtAngle { .. },
-                                    Some((
-                                        initial_vertex,
-                                        initial_ray_points,
-                                        ray_line_indices,
-                                        ray_distance,
-                                        angle_kind,
-                                    )),
-                                ) => push_points_at_angle_for_line_rays(
+                                    Some((initial_vertex, representative_points, angle_kind)),
+                                ) => push_points_at_angle_for_lines(
                                     sketch_block_state,
                                     sketch_var_ty,
                                     line0,
                                     line1,
-                                    ray_line_indices,
                                     initial_vertex,
-                                    initial_ray_points,
-                                    ray_distance,
+                                    representative_points,
                                     angle_kind,
                                     range,
                                 )?,
@@ -6044,6 +6057,72 @@ mod test {
     use crate::exec::UnitType;
     use crate::execution::ContextType;
     use crate::execution::parse_execute;
+
+    fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
+        assert!(
+            (actual.to_degrees() - expected).abs() < 1e-9,
+            "expected {expected}deg, got {}deg",
+            actual.to_degrees()
+        );
+    }
+
+    #[test]
+    fn remaps_sector_angles_to_existing_representative_endpoint_rays() {
+        let representative_directions = [AngleRayDirection::Forward, AngleRayDirection::Forward];
+
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Two, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(120.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Three, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Four, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(120.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, true),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(300.0),
+            ),
+            60.0,
+        );
+    }
+
+    #[test]
+    fn remaps_sector_angles_when_representative_endpoint_is_on_reverse_ray() {
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, false),
+                [AngleRayDirection::Forward, AngleRayDirection::Reverse],
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            240.0,
+        );
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn angle_unlabeled_keeps_legacy_lines_at_angle() {
