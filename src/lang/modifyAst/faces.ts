@@ -40,6 +40,7 @@ import {
   type Expr,
   type PathToNode,
   type Program,
+  type SweepArtifact,
   type VariableDeclaration,
   type VariableMap,
   formatNumberValue,
@@ -979,6 +980,14 @@ function getSolidSelectionsFromFaceSelections(
         return []
       }
 
+      const compositeSolidSelection = getCompositeSolidSelectionFromSweep(
+        sweep,
+        artifactGraph
+      )
+      if (compositeSolidSelection) {
+        return compositeSolidSelection
+      }
+
       return {
         artifact: sweep as Artifact,
         codeRef: sweep.codeRef,
@@ -986,6 +995,47 @@ function getSolidSelectionsFromFaceSelections(
     }),
     otherSelections: [],
   }
+}
+
+function getCompositeSolidSelectionFromSweep(
+  sweep: SweepArtifact,
+  artifactGraph: ArtifactGraph
+): Selection | null {
+  const path = getArtifactOfTypes(
+    { key: sweep.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (err(path)) {
+    return null
+  }
+
+  if (path.compositeSolidId) {
+    const compositeSolid = getArtifactOfTypes(
+      { key: path.compositeSolidId, types: ['compositeSolid'] },
+      artifactGraph
+    )
+    if (!err(compositeSolid)) {
+      return {
+        artifact: compositeSolid,
+        codeRef: compositeSolid.codeRef,
+      }
+    }
+  }
+
+  const compositeSolid = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'compositeSolid' }> =>
+      artifact.type === 'compositeSolid' &&
+      artifact.solidIds.some(
+        (solidId) => solidId === sweep.id || solidId === path.id
+      )
+  )
+
+  return compositeSolid
+    ? {
+        artifact: compositeSolid,
+        codeRef: compositeSolid.codeRef,
+      }
+    : null
 }
 
 export function getBodySelectionFromPrimitiveParentEntityId(
