@@ -1,9 +1,48 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands christmas_tree_mirror3d_union.kcl
+description: Artifact commands clone_a_mirror3d.kcl
 ---
 {
-  "rust/kcl-lib/tests/christmas_tree_mirror3d_union/input.kcl": [
+  "rust/kcl-lib/tests/clone_a_mirror3d/input.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 50.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 100.0,
+        "clobber": false,
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
+      }
+    },
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -15,8 +54,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
@@ -48,8 +87,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": -1.0,
+          "x": 1.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -68,8 +107,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000013537208475017735,
-          "y": 0.00000000001487602247279773,
+          "x": 0.95,
+          "y": 2.02,
           "z": 0.0
         }
       }
@@ -88,113 +127,19 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.999999999995438,
-            "y": 0.000000000017851242805712417,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 0.0,
+            "y": 1.38
           },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 1.999999999925243,
-            "y": 2.7272727273510315,
-            "z": 0.0
+          "radius": 1.1454693361238442,
+          "start": {
+            "unit": "radians",
+            "value": 0.5928451807056142
           },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
           "end": {
-            "x": 4.999999999997193,
-            "y": 2.727272727378552,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 1.9999999999288034,
-            "y": 5.454545454694512,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.999999999983656,
-            "y": 5.454545454692033,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.000000000013537191667278716,
-            "y": 10.000000000059504,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.00000000003604960242087521,
-            "y": 0.00000000002975204496047148,
-            "z": 0.0
+            "unit": "radians",
+            "value": 6.876030487885201
           },
           "relative": false
         }
@@ -216,9 +161,10 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": 2.5,
-          "y": 0.0025
-        }
+          "x": -0.9479266,
+          "y": 0.7413968
+        },
+        "version": "V1"
       }
     },
     {
@@ -231,8 +177,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": -1.0,
+          "x": 1.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -243,7 +189,7 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 5.0,
+        "distance": 10.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -281,92 +227,6 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
-        ],
-        "cut_type": {
-          "fillet": {
-            "radius": 0.5,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
       }
     },
     {
@@ -430,13 +290,76 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "boolean_union",
-        "solid_ids": [
-          "[uuid]",
-          "[uuid]"
-        ],
-        "separate_bodies": false,
-        "tolerance": 0.0000001
+        "type": "entity_clone",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 0.0,
+                "y": 12.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
       }
     }
   ]

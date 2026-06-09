@@ -278,6 +278,29 @@ describe('desktop utilities', () => {
       ])
     })
 
+    it('reads project title from project.toml metadata', async () => {
+      mockElectron.readFile.mockImplementation(async (path: string) => {
+        if (path === '/test/projects/valid-project/.gitignore') {
+          return 'dist\nnotes.txt\n'
+        }
+        if (path === '/test/projects/valid-project/project.toml') {
+          return 'title = "Some demo"\n'
+        }
+
+        return ''
+      })
+
+      const { instance } = await buildTheWorldNode()
+      const wasmInstance = await instance
+      const project = await getProjectInfo('/test/projects/valid-project', {
+        ...wasmInstance,
+        parse_app_settings: vi.fn(() => ({})),
+        parse_project_settings: vi.fn(() => ({})),
+      })
+
+      expect(project.title).toBe('Some demo')
+    })
+
     it('shows config and dot files when app settings enable all files', async () => {
       mockElectron.readFile.mockImplementation(async (path: string) => {
         if (path === '/appData/settings.toml') {
