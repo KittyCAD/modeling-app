@@ -6,6 +6,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import {
   type ZookeeperEditPatch,
   buildZookeeperHistoryExtension,
+  mergeZookeeperEditPatches,
   zookeeperEditPatchHistoryEvent,
 } from '@src/editor/plugins/zookeeper'
 import { File, KclManager } from '@src/lang/KclManager'
@@ -327,6 +328,9 @@ describe('Zookeeper project history integration', () => {
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => switchToFile(mainPath),
       onActiveFileRestore: switchToFile,
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
     })
 
     harness.kclManager.addGlobalHistoryEvent(
@@ -437,6 +441,130 @@ describe('Zookeeper project history integration', () => {
     await waitForHistoryIdle(harness.kclManager)
     expect(harness.kclManager.path).toBe(mainPath)
     await expect(fsZds.readFile(partPath, 'utf8')).rejects.toThrow()
+
+    disposeHistory()
+  })
+
+  it('restores a streamed deleted file when the aggregate patch omits previous contents', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+      'part.kcl': 'part = 1\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const partPath = fsZds.join(harness.projectPath, 'part.kcl')
+    const switchToFile = async (path: string) => {
+      await KclManager.fromFile(
+        new File(path),
+        harness.kclManager.systemDeps,
+        harness.kclManager
+      )
+    }
+
+    await switchToFile(partPath)
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => switchToFile(mainPath),
+      onActiveFileRestore: switchToFile,
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+    const mergedPatch = mergeZookeeperEditPatches(
+      {
+        run_id: 'streamed-delete',
+        changed_files: [
+          {
+            path: 'part.kcl',
+            status: 'deleted',
+            previous_contents: 'part = 1\n',
+          },
+        ],
+      },
+      {
+        run_id: 'streamed-delete',
+        changed_files: [
+          {
+            path: './part.kcl',
+            status: 'deleted',
+          },
+        ],
+      }
+    )
+
+    await fsZds.rm(partPath)
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: partPath,
+        patch: mergedPatch,
+      })
+    )
+    await switchToFile(mainPath)
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(partPath)
+    expect(harness.kclManager.code).toBe('part = 1\n')
+    await expect(fsZds.readFile(partPath, 'utf8')).resolves.toBe('part = 1\n')
+
+    disposeHistory()
+  })
+
+  it('removes a streamed created file when the aggregate patch omits contents', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+    })
+    const createdPath = fsZds.join(harness.projectPath, 'created.kcl')
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => undefined,
+      onActiveFileRestore: async (path) => {
+        await harness.app.project?.openEditor(path, harness.kclManager)
+      },
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+    const mergedPatch = mergeZookeeperEditPatches(
+      {
+        run_id: 'streamed-create',
+        changed_files: [
+          {
+            path: 'created.kcl',
+            status: 'created',
+            contents: 'created = true\n',
+          },
+        ],
+      },
+      {
+        run_id: 'streamed-create',
+        changed_files: [
+          {
+            path: './created.kcl',
+            status: 'created',
+          },
+        ],
+      }
+    )
+
+    await writeText(createdPath, 'created = true\n')
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: harness.kclManager.path,
+        patch: mergedPatch,
+      })
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
+      'created = true\n'
+    )
 
     disposeHistory()
   })

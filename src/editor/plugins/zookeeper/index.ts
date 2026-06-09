@@ -12,6 +12,7 @@ import { EditorView } from 'codemirror'
 import {
   type StructuredPatch,
   applyPatch,
+  createTwoFilesPatch,
   parsePatch,
   reversePatch,
 } from 'diff'
@@ -60,7 +61,17 @@ export function mergeZookeeperEditPatches(
   }
 
   for (const file of nextPatch.changed_files ?? []) {
-    changedFilesByPath.set(normalizeZookeeperPatchPath(file.path), file)
+    const normalizedPath = normalizeZookeeperPatchPath(file.path)
+    const previousFile = changedFilesByPath.get(normalizedPath)
+    const mergedFile = previousFile
+      ? mergeZookeeperEditPatchFile(previousFile, file)
+      : file
+
+    if (mergedFile) {
+      changedFilesByPath.set(normalizedPath, mergedFile)
+    } else {
+      changedFilesByPath.delete(normalizedPath)
+    }
   }
 
   return {
@@ -68,6 +79,91 @@ export function mergeZookeeperEditPatches(
     run_id: previousPatch.run_id,
     changed_files: Array.from(changedFilesByPath.values()),
   }
+}
+
+function mergeZookeeperEditPatchFile(
+  previousFile: ZookeeperEditPatchFile,
+  nextFile: ZookeeperEditPatchFile
+): ZookeeperEditPatchFile | undefined {
+  if (previousFile.status === 'created') {
+    if (nextFile.status === 'modified') {
+      const nextContents = applyModifiedPatch(
+        previousFile.contents,
+        nextFile.diff
+      )
+      return {
+        ...previousFile,
+        contents: nextContents ?? previousFile.contents,
+      }
+    }
+    if (nextFile.status === 'deleted') {
+      return undefined
+    }
+  }
+
+  if (
+    previousFile.status === 'deleted' &&
+    nextFile.status === 'created' &&
+    previousFile.previous_contents != null &&
+    nextFile.contents != null
+  ) {
+    return {
+      path: nextFile.path,
+      status: 'modified',
+      diff: createTwoFilesPatch(
+        `a/${nextFile.path}`,
+        `b/${nextFile.path}`,
+        previousFile.previous_contents,
+        nextFile.contents
+      ),
+    }
+  }
+
+  if (
+    previousFile.status === 'created' &&
+    nextFile.status === 'created' &&
+    nextFile.contents == null
+  ) {
+    return {
+      ...nextFile,
+      contents: previousFile.contents,
+    }
+  }
+
+  if (
+    previousFile.status === 'deleted' &&
+    nextFile.status === 'deleted' &&
+    nextFile.previous_contents == null
+  ) {
+    return {
+      ...nextFile,
+      previous_contents: previousFile.previous_contents,
+    }
+  }
+
+  return nextFile
+}
+
+function applyModifiedPatch(
+  contents: string | null | undefined,
+  diff: string | null | undefined
+) {
+  if (contents == null || diff == null) {
+    return
+  }
+
+  let patch: StructuredPatch | undefined
+  try {
+    patch = parsePatch(diff)[0]
+  } catch {
+    return
+  }
+  if (!patch) {
+    return
+  }
+
+  const nextContents = applyPatch(contents, patch, { fuzzFactor: 0 })
+  return nextContents === false ? undefined : nextContents
 }
 
 type EditKclCodeToolResultWithPatch = Extract<
@@ -676,9 +772,19 @@ function zookeeperPatchConflictError(path: string) {
 }
 
 function getReplayErrorMessage(error: unknown) {
-  return error instanceof Error
-    ? error.message
-    : 'Failed to replay Zookeeper edit patch.'
+  if (error instanceof Error) {
+    return error.message
+  }
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message
+  }
+
+  return 'Failed to replay Zookeeper edit patch.'
 }
 
 function isEnoentError(error: unknown): boolean {

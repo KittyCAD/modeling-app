@@ -64,6 +64,87 @@ describe('Zookeeper history patch replay', () => {
     })
   })
 
+  it('preserves streamed create and delete contents when aggregate patches omit them', () => {
+    const createdFirst: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'newBox.kcl',
+          status: 'created',
+          contents: 'size = 1\n',
+        },
+        {
+          path: 'oldBox.kcl',
+          status: 'deleted',
+          previous_contents: 'size = 2\n',
+        },
+      ],
+    }
+    const aggregatePatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: './newBox.kcl',
+          status: 'created',
+        },
+        {
+          path: './oldBox.kcl',
+          status: 'deleted',
+        },
+      ],
+    }
+
+    expect(mergeZookeeperEditPatches(createdFirst, aggregatePatch)).toEqual({
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: './newBox.kcl',
+          status: 'created',
+          contents: 'size = 1\n',
+        },
+        {
+          path: './oldBox.kcl',
+          status: 'deleted',
+          previous_contents: 'size = 2\n',
+        },
+      ],
+    })
+  })
+
+  it('keeps streamed create edits undoable as file creation', () => {
+    const createdPatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'newBox.kcl',
+          status: 'created',
+          contents: 'size = 1\n',
+        },
+      ],
+    }
+    const modifiedPatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'newBox.kcl',
+          status: 'modified',
+          diff: unifiedDiff('newBox.kcl', 'size = 1\n', 'size = 2\n'),
+        },
+      ],
+    }
+
+    expect(mergeZookeeperEditPatches(createdPatch, modifiedPatch)).toEqual({
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'newBox.kcl',
+          status: 'created',
+          contents: 'size = 2\n',
+        },
+      ],
+    })
+  })
+
   it('replays create, modify, and delete changes locally', async () => {
     const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
     const modifiedBefore = 'length = 10\n'
