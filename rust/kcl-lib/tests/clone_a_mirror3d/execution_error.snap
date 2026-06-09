@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing clone_a_mirror3d.kcl
+---
+KCL Internal error
+
+  × internal: failed to fix tags and references: Engine { details:
+  │ KclErrorDetails { source_ranges: [SourceRange([419, 430, 0])], backtrace:
+  │ [BacktraceItem { source_range: SourceRange([419, 430, 0]), fn_name:
+  │ None }], message: "Failed to find new face id for old face id: 4d94a4d4-
+  │ 7302-53ba-b94c-58dcef05ea77" } }
+    ╭─[12:1]
+ 11 │ doop = mirror3d(extrude001, across = midPlane)
+ 12 │ clone(doop)
+    · ─────┬─────┬
+    ·      ╰── tests/clone_a_mirror3d/input.kcl
+    ·      ╰── tests/clone_a_mirror3d/input.kcl
+    ╰────
+  ╰─▶ KCL Internal error
+      
+        × internal: failed to fix tags and references: Engine { details:
+        │ KclErrorDetails { source_ranges: [SourceRange([419, 430, 0])],
+        │ backtrace: [BacktraceItem { source_range: SourceRange([419, 430,
+        │ 0]), fn_name: None }], message: "Failed to find new face id for old
+        │ face id: [uuid]" } }
+          ╭─[12:1]
+       11 │ doop = mirror3d(extrude001, across = midPlane)
+       12 │ clone(doop)
+          · ─────┬─────
+          ·      ╰── tests/clone_a_mirror3d/input.kcl
+          ╰────
