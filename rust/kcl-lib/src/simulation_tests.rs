@@ -5708,6 +5708,27 @@ mod extrude_split {
         super::execute(TEST_NAME, true).await
     }
 }
+mod hide_offset_plane {
+    const TEST_NAME: &str = "hide_offset_plane";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod clone_a_mirror3d {
     const TEST_NAME: &str = "clone_a_mirror3d";
 
