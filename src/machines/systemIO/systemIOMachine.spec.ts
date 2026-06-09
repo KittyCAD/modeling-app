@@ -213,6 +213,174 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('should restart folder loading when project directory changes while reading folders', async () => {
+        const readProjectDirectoryPaths: string[] = []
+        const readSignals: AbortSignal[] = []
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async ({ input, signal }) => {
+                  readProjectDirectoryPaths.push(input.projectDirectoryPath)
+                  readSignals.push(signal)
+                  return new Promise<Project[]>(() => {})
+                }),
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async (): Promise<{ value: boolean; error: unknown }> => ({
+                  value: true,
+                  error: undefined,
+                })
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: '/projects',
+            },
+          })
+
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.readingFolders) &&
+              state.context.projectDirectoryPath === '/projects' &&
+              readProjectDirectoryPaths.length === 2
+          )
+
+          expect(readProjectDirectoryPaths).toStrictEqual([
+            NO_PROJECT_DIRECTORY,
+            '/projects',
+          ])
+          expect(readSignals[0].aborted).toBe(true)
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should restart read/write checks when project directory changes while checking read/write access', async () => {
+        const checkProjectDirectoryPaths: string[] = []
+        const checkSignals: AbortSignal[] = []
+        const readProjectDirectoryPaths: string[] = []
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async ({ input, signal }) => {
+                  checkProjectDirectoryPaths.push(
+                    input.requestedProjectDirectoryPath
+                  )
+                  checkSignals.push(signal)
+                  if (checkProjectDirectoryPaths.length === 1) {
+                    return new Promise<{ value: boolean; error: unknown }>(
+                      () => {}
+                    )
+                  }
+
+                  return { value: true, error: undefined }
+                }
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async ({ input }) => {
+                  readProjectDirectoryPaths.push(input.projectDirectoryPath)
+                  return new Promise<Project[]>(() => {})
+                }),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: '/stale-projects',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: '/projects',
+            },
+          })
+
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.readingFolders) &&
+              state.context.projectDirectoryPath === '/projects' &&
+              readProjectDirectoryPaths.includes('/projects')
+          )
+
+          expect(checkProjectDirectoryPaths).toStrictEqual([
+            '/stale-projects',
+            '/projects',
+          ])
+          expect(checkSignals[0].aborted).toBe(true)
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should leave a terminal folders value when reading folders fails', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async (): Promise<Project[]> => {
+                  throw new Error('Failed to read projects')
+                }),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.folders !== undefined
+          )
+
+          expect(actor.getSnapshot().context.folders).toStrictEqual([])
+          expect(actor.getSnapshot().context.hasListedProjects).toBe(true)
+        } finally {
+          actor.stop()
+        }
+      })
       it('should update folders incrementally while reading folders', async () => {
         const actor = createActor(
           systemIOMachine.provide({

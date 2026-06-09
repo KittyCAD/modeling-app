@@ -56,6 +56,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
@@ -126,24 +127,39 @@ const Home = () => {
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
-    })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
+    let isCurrent = true
+    const requestedProjectDirectoryPath =
+      settingsValues.app?.projectDirectory?.current || NO_PROJECT_DIRECTORY
+
+    const setProjectDirectoryPath = () => {
+      if (!isCurrent) {
+        return
+      }
+
       systemIOActor.send({
         type: SystemIOMachineEvents.setProjectDirectoryPath,
         data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
+          requestedProjectDirectoryPath,
         },
       })
-    })
+    }
+
+    setProjectDirectoryPath()
+    void waitFor(systemIOActor, (state) =>
+      state.matches(SystemIOMachineStates.idle)
+    )
+      .then(() => {
+        setProjectDirectoryPath()
+      })
+      .catch((error) => {
+        if (isCurrent) {
+          reportRejection(error)
+        }
+      })
+
+    return () => {
+      isCurrent = false
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settingsValues.app?.projectDirectory?.current])
 
