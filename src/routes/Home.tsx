@@ -56,6 +56,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
@@ -126,24 +127,39 @@ const Home = () => {
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
-    })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
+    let isCurrent = true
+    const requestedProjectDirectoryPath =
+      settingsValues.app?.projectDirectory?.current || NO_PROJECT_DIRECTORY
+
+    const setProjectDirectoryPath = () => {
+      if (!isCurrent) {
+        return
+      }
+
       systemIOActor.send({
         type: SystemIOMachineEvents.setProjectDirectoryPath,
         data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
+          requestedProjectDirectoryPath,
         },
       })
-    })
+    }
+
+    setProjectDirectoryPath()
+    void waitFor(systemIOActor, (state) =>
+      state.matches(SystemIOMachineStates.idle)
+    )
+      .then(() => {
+        setProjectDirectoryPath()
+      })
+      .catch((error) => {
+        if (isCurrent) {
+          reportRejection(error)
+        }
+      })
+
+    return () => {
+      isCurrent = false
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settingsValues.app?.projectDirectory?.current])
 
@@ -572,35 +588,50 @@ function ProjectGrid({
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
   const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ||
-      projects === undefined ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
-                <ProjectCard
-                  key={project.name}
-                  project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject(systemIOActor)}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {sortedSearchResults.map((project) => (
+                  <ProjectCard
+                    key={project.name}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject(systemIOActor)}
+                  />
+                ))}
+              </ul>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           ) : (
-            <p
-              data-testid="projects-none"
-              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-            >
-              No projects found
-              {projects !== undefined && projects.length === 0
-                ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
-            </p>
+            <>
+              <p
+                data-testid="projects-none"
+                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+              >
+                No projects found
+                {projects !== undefined && projects.length === 0
+                  ? ', ready to make your first one?'
+                  : ` with the search term "${query}"`}
+              </p>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
