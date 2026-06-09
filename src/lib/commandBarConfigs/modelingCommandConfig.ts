@@ -150,16 +150,6 @@ const FRAME_PLANE_OPTIONS = Object.freeze([
   Object.freeze({ name: 'YZ Plane', value: KCL_PLANE_YZ }),
 ] as const)
 
-// For all nodeToEdit-like arguments needed for edit flows
-const nodeToEditDescription =
-  'Path to the node in the AST to edit. Never shown to the user.'
-const nodeToEditProps = {
-  description: nodeToEditDescription,
-  inputType: 'text',
-  required: false,
-  hidden: true,
-} as CommandArgumentConfig<PathToNode | undefined, ModelingMachineContext>
-
 // For all transforms and boolean commands
 const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
@@ -184,17 +174,16 @@ const hasEngineConnection = (
   )
 }
 
-export type ModelingCommandSchema = {
-  'Enter sketch': { forceNewSketch?: boolean }
-  Export: {
-    type: OutputTypeKey
-    storage?: StorageUnion
-    up?: AxisDirectionPair['axis']
-    scale?: UnitLength
-  }
-  Make: {
-    machine: components['schemas']['MachineInfoResponse']
-  }
+// Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
+type CommandBarEditFlowArgs = {
+  nodeToEdit?: PathToNode
+}
+
+type WithCommandBarEditFlowArgs<Schema> = {
+  [CommandName in keyof Schema]: Schema[CommandName] & CommandBarEditFlowArgs
+}
+
+type EditableStdLibModelingCommandSchema = WithCommandBarEditFlowArgs<{
   Extrude: StdLibCommandTypes.ExtrudeCommandArgs
   Sweep: StdLibCommandTypes.SweepCommandArgs
   Loft: StdLibCommandTypes.LoftCommandArgs
@@ -209,6 +198,38 @@ export type ModelingCommandSchema = {
   'Herringbone Gear': StdLibCommandTypes.HerringboneGearCommandArgs
   'Spur Gear': StdLibCommandTypes.SpurGearCommandArgs
   'Ring Gear': StdLibCommandTypes.RingGearCommandArgs
+  Appearance: StdLibCommandTypes.AppearanceCommandArgs
+  Translate: StdLibCommandTypes.TranslateCommandArgs
+  Rotate: StdLibCommandTypes.RotateCommandArgs
+  Scale: StdLibCommandTypes.ScaleCommandArgs
+  Clone: StdLibCommandTypes.CloneCommandArgs
+  'Pattern Circular 3D': StdLibCommandTypes.PatternCircular3DCommandArgs
+  'Pattern Linear 3D': StdLibCommandTypes.PatternLinear3DCommandArgs
+  'GDT Flatness': StdLibCommandTypes.GdtFlatnessCommandArgs
+  'GDT Straightness': StdLibCommandTypes.GdtStraightnessCommandArgs
+  'GDT Circularity': StdLibCommandTypes.GdtCircularityCommandArgs
+  'GDT Cylindricity': StdLibCommandTypes.GdtCylindricityCommandArgs
+  'GDT Position': StdLibCommandTypes.GdtPositionCommandArgs
+  'GDT Profile': StdLibCommandTypes.GdtProfileCommandArgs
+  'GDT Distance': StdLibCommandTypes.GdtDistanceCommandArgs
+  'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
+  'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
+  'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
+  'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
+  'Boolean Split': StdLibCommandTypes.BooleanSplitCommandArgs
+}>
+
+export type ModelingCommandSchema = {
+  'Enter sketch': { forceNewSketch?: boolean }
+  Export: {
+    type: OutputTypeKey
+    storage?: StorageUnion
+    up?: AxisDirectionPair['axis']
+    scale?: UnitLength
+  }
+  Make: {
+    machine: components['schemas']['MachineInfoResponse']
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -234,34 +255,15 @@ export type ModelingCommandSchema = {
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
-  Appearance: StdLibCommandTypes.AppearanceCommandArgs
-  Translate: StdLibCommandTypes.TranslateCommandArgs
-  Rotate: StdLibCommandTypes.RotateCommandArgs
-  Scale: StdLibCommandTypes.ScaleCommandArgs
-  Clone: StdLibCommandTypes.CloneCommandArgs
   'Mirror 3D': StdLibCommandTypes.Mirror3DCommandArgs
-  'Pattern Circular 3D': StdLibCommandTypes.PatternCircular3DCommandArgs
-  'Pattern Linear 3D': StdLibCommandTypes.PatternLinear3DCommandArgs
-  'GDT Flatness': StdLibCommandTypes.GdtFlatnessCommandArgs
-  'GDT Straightness': StdLibCommandTypes.GdtStraightnessCommandArgs
-  'GDT Circularity': StdLibCommandTypes.GdtCircularityCommandArgs
-  'GDT Cylindricity': StdLibCommandTypes.GdtCylindricityCommandArgs
-  'GDT Position': StdLibCommandTypes.GdtPositionCommandArgs
-  'GDT Profile': StdLibCommandTypes.GdtProfileCommandArgs
-  'GDT Distance': StdLibCommandTypes.GdtDistanceCommandArgs
-  'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
-  'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
-  'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
-  'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
   'Boolean Subtract': StdLibCommandTypes.BooleanSubtractCommandArgs
   'Boolean Union': StdLibCommandTypes.BooleanUnionCommandArgs
   'Boolean Intersect': StdLibCommandTypes.BooleanIntersectCommandArgs
   'Flip Surface': StdLibCommandTypes.FlipSurfaceCommandArgs
   'Delete Face': StdLibCommandTypes.DeleteFaceCommandArgs
-  'Boolean Split': StdLibCommandTypes.BooleanSplitCommandArgs
   Blend: StdLibCommandTypes.BlendCommandArgs
   'Join Surfaces': StdLibCommandTypes.JoinSurfacesCommandArgs
-}
+} & EditableStdLibModelingCommandSchema
 
 const kclDatumArrayToInput = (value: string) => {
   const trimmed = value.trim()
@@ -617,9 +619,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
@@ -733,9 +732,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
@@ -807,9 +803,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
@@ -873,9 +866,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
@@ -973,9 +963,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       faces: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
@@ -1020,9 +1007,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       face: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
@@ -1290,9 +1274,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       targets: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -1347,9 +1328,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       plane: {
         inputType: 'selection',
         selectionTypes: [
@@ -1400,9 +1378,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       mode: {
         inputType: 'options',
         required: true,
@@ -1506,9 +1481,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       nTeeth: {
         inputType: 'kcl',
         required: true,
@@ -1564,9 +1536,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       nTeeth: {
         inputType: 'kcl',
         required: true,
@@ -1622,9 +1591,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       nTeeth: {
         inputType: 'kcl',
         required: true,
@@ -1675,9 +1641,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       nTeeth: {
         inputType: 'kcl',
         required: true,
@@ -1751,9 +1714,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       selection: {
         inputType: 'selection',
         selectionTypes: [
@@ -1833,9 +1793,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       selection: {
         inputType: 'selection',
         selectionTypes: [
@@ -1927,7 +1884,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'make-variable',
     args: {
       currentValue: {
-        description: nodeToEditDescription,
+        description: 'Current value metadata. Never shown to the user.',
         inputType: 'text',
         required: false,
         skip: true,
@@ -1993,9 +1950,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
@@ -2105,9 +2059,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -2164,9 +2115,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -2223,9 +2171,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -2287,9 +2232,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -2412,9 +2354,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       solids: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -2485,9 +2424,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       solids: {
         ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
@@ -2550,9 +2486,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       faces: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
@@ -2620,9 +2553,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -2690,9 +2620,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -2760,9 +2687,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -2830,9 +2754,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       faces: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut'],
@@ -2900,9 +2821,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -2973,9 +2891,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       edges: {
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge'],
@@ -3050,9 +2965,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -3120,9 +3032,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -3193,9 +3102,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
@@ -3265,9 +3171,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
-      nodeToEdit: {
-        ...nodeToEditProps,
-      },
       objects: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],

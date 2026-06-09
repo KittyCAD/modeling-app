@@ -7,8 +7,8 @@ type ModelingCommandName = Extract<keyof ModelingCommandSchema, string>
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
   /**
-   * Command-bar arguments that are not KCL stdlib arguments. These usually
-   * control editing flows or split one KCL value into easier UI inputs.
+   * Additional command-bar arguments that are not KCL stdlib arguments. These
+   * usually split one KCL value into easier UI inputs.
    */
   uiOnlyArgs?: readonly string[]
   /**
@@ -22,38 +22,31 @@ export type StdLibCommandDriftConfig = {
   argAliases?: Readonly<Record<string, string>>
 }
 
-const editFlowArgs = ['nodeToEdit'] as const
-
 export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['direction'],
   },
   Sweep: {
     stdLibName: 'sweep',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['tolerance', 'version'],
   },
   Loft: {
     stdLibName: 'loft',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['tolerance'],
   },
   Revolve: {
     stdLibName: 'revolve',
-    uiOnlyArgs: [...editFlowArgs, 'axisOrEdge', 'edge'],
+    uiOnlyArgs: ['axisOrEdge', 'edge'],
     omittedStdLibArgs: ['tolerance'],
   },
   Shell: {
     stdLibName: 'shell',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['solids'],
   },
   Hole: {
     stdLibName: 'hole::hole',
     uiOnlyArgs: [
-      ...editFlowArgs,
       'blindDepth',
       'blindDiameter',
       'counterboreDepth',
@@ -67,7 +60,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   Fillet: {
     stdLibName: 'fillet',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['solid', 'tolerance'],
     argAliases: {
       tags: 'selection',
@@ -75,7 +67,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   Chamfer: {
     stdLibName: 'chamfer',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['solid'],
     argAliases: {
       tags: 'selection',
@@ -83,52 +74,43 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'Offset plane': {
     stdLibName: 'offsetPlane',
-    uiOnlyArgs: editFlowArgs,
   },
   Helix: {
     stdLibName: 'helix',
-    uiOnlyArgs: [...editFlowArgs, 'mode', 'edge'],
+    uiOnlyArgs: ['mode', 'edge'],
   },
   'Helical Gear': {
     stdLibName: 'gear::helical',
-    uiOnlyArgs: editFlowArgs,
   },
   'Herringbone Gear': {
     stdLibName: 'gear::herringbone',
-    uiOnlyArgs: editFlowArgs,
   },
   'Spur Gear': {
     stdLibName: 'gear::spur',
-    uiOnlyArgs: editFlowArgs,
   },
   'Ring Gear': {
     stdLibName: 'gear::ring',
-    uiOnlyArgs: editFlowArgs,
   },
   Appearance: {
     stdLibName: 'appearance',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       solids: 'objects',
     },
   },
   Translate: {
     stdLibName: 'translate',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['xyz'],
   },
   Rotate: {
     stdLibName: 'rotate',
-    uiOnlyArgs: editFlowArgs,
     omittedStdLibArgs: ['axis', 'angle'],
   },
   Scale: {
     stdLibName: 'scale',
-    uiOnlyArgs: editFlowArgs,
   },
   Clone: {
     stdLibName: 'clone',
-    uiOnlyArgs: [...editFlowArgs, 'variableName'],
+    uiOnlyArgs: ['variableName'],
     argAliases: {
       geometries: 'objects',
     },
@@ -138,19 +120,15 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'Pattern Circular 3D': {
     stdLibName: 'patternCircular3d',
-    uiOnlyArgs: editFlowArgs,
   },
   'Pattern Linear 3D': {
     stdLibName: 'patternLinear3d',
-    uiOnlyArgs: editFlowArgs,
   },
   'GDT Flatness': {
     stdLibName: 'gdt::flatness',
-    uiOnlyArgs: editFlowArgs,
   },
   'GDT Straightness': {
     stdLibName: 'gdt::straightness',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -158,7 +136,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Circularity': {
     stdLibName: 'gdt::circularity',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -166,7 +143,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Cylindricity': {
     stdLibName: 'gdt::cylindricity',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -174,14 +150,12 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Datum': {
     stdLibName: 'gdt::datum',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       face: 'faces',
     },
   },
   'GDT Position': {
     stdLibName: 'gdt::position',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -189,11 +163,9 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Profile': {
     stdLibName: 'gdt::profile',
-    uiOnlyArgs: editFlowArgs,
   },
   'GDT Distance': {
     stdLibName: 'gdt::distance',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       from: 'objects',
       to: 'objects',
@@ -202,7 +174,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Perpendicularity': {
     stdLibName: 'gdt::perpendicularity',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -210,7 +181,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Parallelism': {
     stdLibName: 'gdt::parallelism',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -218,7 +188,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Annotation': {
     stdLibName: 'gdt::annotation',
-    uiOnlyArgs: editFlowArgs,
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -238,7 +207,6 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'Boolean Split': {
     stdLibName: 'split',
-    uiOnlyArgs: editFlowArgs,
   },
   'Flip Surface': {
     stdLibName: 'flipSurface',
