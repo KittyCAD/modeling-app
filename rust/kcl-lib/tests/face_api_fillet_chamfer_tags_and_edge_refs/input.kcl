@@ -1,7 +1,7 @@
 @settings(experimentalFeatures = allow)
 
-// Simulation test: fillet and chamfer with both tags and edgeRefs (merge behavior).
-// Verifies that when both are provided, edges from tags and edgeRefs are all applied.
+// Simulation test: fillet and chamfer with both tags and edgeRefs.
+// Verifies that when both are provided, it's an error.
 
 body = startSketchOn(XY)
 yo = startProfile(body, at = [0, 0])
