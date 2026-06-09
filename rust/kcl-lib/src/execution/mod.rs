@@ -15,6 +15,12 @@ pub use artifact::SketchBlockConstraint;
 pub use artifact::SketchBlockConstraintType;
 pub use artifact::StartSketchOnFace;
 pub use artifact::StartSketchOnPlane;
+#[cfg(test)]
+pub(crate) use artifact::{
+    CompositeSolid as ArtifactCompositeSolid, CompositeSolidSubType as ArtifactCompositeSolidSubType,
+    Path as ArtifactPath, PathSubType as ArtifactPathSubType, Sweep as ArtifactSweep,
+    SweepSubType as ArtifactSweepSubType, Wall as ArtifactWall,
+};
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;

@@ -849,6 +849,15 @@ pub struct ArtifactGraph {
 }
 
 impl ArtifactGraph {
+    #[cfg(test)]
+    pub(crate) fn from_artifacts(artifacts: impl IntoIterator<Item = Artifact>) -> Self {
+        let mut graph = Self::default();
+        for artifact in artifacts {
+            graph.map.insert(artifact.id(), artifact);
+        }
+        graph
+    }
+
     pub fn get(&self, id: &ArtifactId) -> Option<&Artifact> {
         self.map.get(id)
     }
