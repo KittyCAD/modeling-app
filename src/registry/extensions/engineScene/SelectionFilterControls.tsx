@@ -6,6 +6,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
+import { reportRejection } from '@src/lib/trap'
 import { useCallback } from 'react'
 
 type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'bodies'
@@ -83,6 +84,7 @@ export function SelectionFilterControls() {
       } else {
         kclManager.setSelectionFilterToDefault(wasmInstance)
       }
+      kclManager.clearSelection().catch(reportRejection)
     },
     [kclManager, wasmInstance]
   )
@@ -105,7 +107,7 @@ export function SelectionFilterControls() {
               className="h-3 w-3 ui-open:rotate-180"
             />
           </Popover.Button>
-          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border b-3 bg-1 p-1 shadow-lg">
+          <Popover.Panel className="absolute bottom-full right-0 z-50 mb-1 min-w-28 rounded border b-3 bg-default p-1 shadow-lg">
             <div className="flex flex-col">
               {selectionFilterOptions.map((option) => {
                 const isActive = option.value === activeOption?.value
@@ -121,7 +123,7 @@ export function SelectionFilterControls() {
                     }}
                     className={`m-0 rounded border-none px-2 py-1 text-left text-xs ${
                       isActive
-                        ? 'bg-primary text-6'
+                        ? '!bg-primary text-6'
                         : 'bg-transparent text-2 hover:bg-2'
                     }`}
                   >

@@ -9,7 +9,6 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  statIsDirectory,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -25,7 +24,7 @@ import {
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -47,6 +46,73 @@ import {
 import { fromPromise } from 'xstate'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
+
+async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
+  if (!projectDirectoryPath) {
+    return []
+  }
+
+  try {
+    return await fsZds.readdir(projectDirectoryPath)
+  } catch (error) {
+    if (error === 'ENOENT') {
+      return []
+    }
+    return Promise.reject(error)
+  }
+}
+
+async function getUniqueProjectNameForCreate({
+  context,
+  requestedProjectName,
+  projectDirectoryPath,
+}: {
+  context: SystemIOContext
+  requestedProjectName: string
+  projectDirectoryPath?: string
+}) {
+  const knownProjectNames = new Set<string>()
+  for (const folder of context.folders ?? []) {
+    knownProjectNames.add(folder.name)
+  }
+  for (const entryName of await getProjectDirectoryEntryNames(
+    projectDirectoryPath
+  )) {
+    knownProjectNames.add(entryName)
+  }
+
+  const existingEntries: FileEntry[] = Array.from(
+    knownProjectNames,
+    (name) => ({
+      name,
+      path: projectDirectoryPath
+        ? fsZds.join(projectDirectoryPath, name)
+        : name,
+      children: [],
+    })
+  )
+  return getUniqueProjectName(requestedProjectName, existingEntries)
+}
+
+export function shouldSendProjectFolderReadProgress(
+  folders: SystemIOContext['folders']
+) {
+  return !folders?.length
+}
+
+type ProjectDirectoryEntry = {
+  name: string
+  path: string
+  modified: number
+}
+
+export function sortProjectDirectoryEntriesByModifiedDesc(
+  entries: ProjectDirectoryEntry[]
+) {
+  return entries.toSorted(
+    (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
+  )
+}
 
 const prepareBulkProjectWrite = async ({
   context,
@@ -293,33 +359,57 @@ const sharedBulkDeleteWorkflow = async ({
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
-      async ({ input: context }: { input: SystemIOContext }) => {
-        const projects = []
+      async ({ input: context, signal }) => {
+        const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
+        const projects: Project[] = []
         const projectDirectoryPath = context.projectDirectoryPath
+        const canSendProgress = shouldSendProjectFolderReadProgress(
+          context.folders
+        )
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
+        const sendFoldersProgress = (folders: Project[]) => {
+          if (signal.aborted) {
+            return
+          }
+          context.app.systemIOActor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: { folders },
+          })
+        }
+
         await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await fsZds.readdir(projectDirectoryPath)
-        const { value: canReadWriteProjectDirectory } =
-          await canReadWriteDirectory(projectDirectoryPath)
-
-        for (let entry of entries) {
-          // Skip directories that start with a dot
+        const entries: ProjectDirectoryEntry[] = []
+        for (const entry of await fsZds.readdir(projectDirectoryPath)) {
           if (entry.startsWith('.')) {
             continue
           }
-          const projectPath = fsZds.join(projectDirectoryPath, entry)
 
-          // if it's not a directory ignore.
-          // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await statIsDirectory(projectPath)
-          if (!isDirectory) {
+          const projectPath = fsZds.join(projectDirectoryPath, entry)
+          const stat = await fsZds.stat(projectPath)
+          if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
             continue
           }
+
+          entries.push({
+            name: entry,
+            path: projectPath,
+            modified: stat.mtimeMs,
+          })
+        }
+        const { value: canReadWriteProjectDirectory } =
+          await canReadWriteDirectory(projectDirectoryPath)
+
+        for (const entry of sortProjectDirectoryEntriesByModifiedDesc(
+          entries
+        )) {
+          if (signal.aborted) {
+            return projects
+          }
           const project: Project = await getProjectInfo(
-            projectPath,
+            entry.path,
             await context.wasmInstancePromise
           )
           if (
@@ -330,7 +420,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             continue
           }
           projects.push(project)
+          if (
+            canSendProgress &&
+            projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0
+          ) {
+            sendFoldersProgress([...projects])
+          }
         }
+        sendFoldersProgress(projects)
         return projects
       }
     ),
@@ -340,16 +437,24 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
-        const folders = input.context.folders
-        if (!folders) {
-          return Promise.reject(new Error('no folders'))
-        }
-
         const requestedProjectName = input.requestedProjectName
-        const uniqueName = getUniqueProjectName(requestedProjectName, folders)
+        const projectDirectoryPath =
+          input.context.projectDirectoryPath &&
+          input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
+            ? input.context.projectDirectoryPath
+            : undefined
+        const uniqueName = await getUniqueProjectNameForCreate({
+          context: input.context,
+          requestedProjectName,
+          projectDirectoryPath,
+        })
         await createNewProjectDirectory(
           uniqueName,
-          await input.context.wasmInstancePromise
+          await input.context.wasmInstancePromise,
+          undefined,
+          undefined,
+          undefined,
+          projectDirectoryPath
         )
         return {
           message: `Successfully created "${uniqueName}"`,
