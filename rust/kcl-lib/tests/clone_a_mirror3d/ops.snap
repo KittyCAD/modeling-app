@@ -10,7 +10,7 @@ description: Operations executed clone_a_mirror3d.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -227,7 +227,7 @@ description: Operations executed clone_a_mirror3d.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -286,7 +286,7 @@ description: Operations executed clone_a_mirror3d.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -294,7 +294,7 @@ description: Operations executed clone_a_mirror3d.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -327,7 +327,7 @@ description: Operations executed clone_a_mirror3d.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -369,7 +369,7 @@ description: Operations executed clone_a_mirror3d.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -378,7 +378,7 @@ description: Operations executed clone_a_mirror3d.kcl
         "across": {
           "value": {
             "type": "Plane",
-            "artifact_id": "f7696437-0c54-515c-9a57-315967ca9a9d"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -406,7 +406,7 @@ description: Operations executed clone_a_mirror3d.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "544977ad-458e-5b27-aac3-457f8aa7b557"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -423,8 +423,7 @@ description: Operations executed clone_a_mirror3d.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
   "std::math": [
