@@ -8,12 +8,12 @@ import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useApp } from '@src/lib/boot'
 import {
-  hiddenOnPlatform,
   formatSettingsLabel,
+  hiddenOnPlatform,
 } from '@src/lib/settings/settingsUtils'
 import {
   KEYMAP_SCHEMA_VERSION,

@@ -11,9 +11,18 @@ import {
 import { useLocation } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import {
+  type KeybindingRow,
+  createRowUserBinding,
+  findKeybindingConflict,
+  formatKeybindingConflict,
+  getKeybindingRows,
+  normalizeVisibleKeymapScopes,
+  serializeKeymapScopes,
+} from '@src/components/Settings/keybindingRows'
 import Tooltip from '@src/components/Tooltip'
-import type { Command } from '@src/lib/commandTypes'
 import { useApp } from '@src/lib/boot'
+import type { Command } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { commandKey, commandsValueSpec } from '@src/registry/contracts/commands'
@@ -21,89 +30,22 @@ import {
   BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   KEYMAP_SCHEMA_VERSION,
-  USER_KEYMAP_SOURCE,
-  createUnbindBinding,
-  doesKeymapBindingOverrideItem,
-  doesKeymapUnbindBindingMatchItem,
-  getKeymapItemScopes,
-  isUnboundKeymapCommand,
-  keymapBindingCanCollideWithTyping,
   type KeymapArguments,
   type KeymapBinding,
   type KeymapItem,
   type KeymapScope,
   type KeymapService,
-  keymapService,
+  USER_KEYMAP_SOURCE,
+  createUnbindBinding,
+  getKeymapItemScopes,
+  keymapBindingCanCollideWithTyping,
   keymapScopesValueSpec,
+  keymapService,
   keymapValueSpec,
+  normalizeEventKey,
 } from '@src/registry/contracts/keymap'
 
 type AllKeybindingsFieldsProps = object
-
-/**
- * How a row in the keybindings table relates to app-provided keymap items and
- * persisted user keymap TOML.
- *
- * - `app`: an app-provided keybinding with no matching user entry.
- * - `override`: an app-provided keybinding shown with a matching user entry's
- *   editable values.
- * - `unbound`: an app-provided keybinding whose matching user entry disables
- *   the default binding.
- * - `user`: a user-created keybinding that does not override an app-provided
- *   item.
- */
-type KeybindingRowState = 'app' | 'override' | 'unbound' | 'user'
-
-/**
- * UI projection of app-provided keymap items and persisted user keymap TOML.
- */
-type KeybindingRow = {
-  id: string
-  state: KeybindingRowState
-  /**
-   * The app-provided keymap item this row represents. Undefined for standalone
-   * user-created rows.
-   */
-  appItem?: KeymapItem
-  /**
-   * The persisted user binding currently backing this row, either as an
-   * override/unbind of an app item or as a standalone user-created binding.
-   */
-  userBinding?: KeymapBinding
-  /**
-   * Index of `userBinding` inside the persisted TOML bindings array, used to
-   * replace or remove the correct entry when editing.
-   */
-  userBindingIndex?: number
-  /**
-   * Effective command displayed by the row. App-backed rows keep the app
-   * command even when overridden so user edits continue to target that item.
-   */
-  command: string
-  /**
-   * Effective title displayed by the row, preferring a user override title when
-   * present.
-   */
-  title: string
-  /**
-   * Effective keystrokes displayed and edited by the row. Unbound rows expose
-   * an empty list because the user TOML disables the app binding.
-   */
-  keystrokes: readonly string[]
-  /**
-   * Effective serializable command arguments displayed by the row.
-   */
-  arguments?: KeymapArguments
-  /**
-   * Effective scopes displayed and edited by the row.
-   */
-  scopes?: readonly string[]
-  /**
-   * Display source for the row. App-backed rows keep the original app source
-   * even when overridden; standalone user rows use the user source.
-   */
-  source: string
-}
 
 type SearchOption = {
   id: string
@@ -169,14 +111,25 @@ export const AllKeybindingsFields = forwardRef(
       <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-3 px-2 pr-4">
           <div>
-            <button
-              type="button"
-              className="px-2 py-1 text-sm flex gap-1 pl-0.5 pr-2"
-              onClick={() => setIsAdding(true)}
-            >
-              <CustomIcon className="w-5 h-5" name="plus" />
-              Add keybinding
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="px-2 py-1 text-sm flex gap-1 pl-0.5 pr-2"
+                onClick={() => setIsAdding(true)}
+              >
+                <CustomIcon className="w-5 h-5" name="plus" />
+                Add keybinding
+              </button>
+              <button
+                type="button"
+                className="px-2 py-1 text-sm flex gap-1 pl-0.5 pr-2 disabled:pointer-events-none disabled:opacity-40"
+                disabled={persistedKeymap.bindings.length === 0}
+                onClick={() => saveBindings([])}
+              >
+                <CustomIcon className="w-5 h-5" name="refresh" />
+                Reset all
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[920px] border-collapse text-left">
@@ -193,6 +146,7 @@ export const AllKeybindingsFields = forwardRef(
                 {isAdding && (
                   <NewKeybindingRow
                     keymap={keymap}
+                    rows={rows}
                     commandOptions={commandOptions}
                     scopeOptions={scopeOptions}
                     onCancel={() => setIsAdding(false)}
@@ -206,6 +160,7 @@ export const AllKeybindingsFields = forwardRef(
                   <KeybindingTableRow
                     key={row.id}
                     row={row}
+                    rows={rows}
                     keymap={keymap}
                     scopeOptions={scopeOptions}
                     isHighlighted={location.hash === `#${row.id}`}
@@ -242,125 +197,9 @@ export const AllKeybindingsFields = forwardRef(
   }
 )
 
-function getKeybindingRows(
-  appItems: readonly KeymapItem[],
-  userBindings: readonly KeymapBinding[]
-): KeybindingRow[] {
-  const claimedUserBindingIndexes = new Set<number>()
-  const rows: KeybindingRow[] = []
-
-  for (const item of appItems) {
-    const matches = userBindings.flatMap((binding, index) =>
-      doesUserBindingApplyToAppItem(binding, item) ? [{ binding, index }] : []
-    )
-    for (const match of matches) {
-      claimedUserBindingIndexes.add(match.index)
-    }
-
-    if (item.hidden) {
-      continue
-    }
-
-    const effectiveMatch = matches.at(-1)
-    if (
-      effectiveMatch &&
-      isUnboundKeymapCommand(effectiveMatch.binding.command)
-    ) {
-      rows.push(
-        createAppRow(item, {
-          state: 'unbound',
-          userBinding: effectiveMatch.binding,
-          userBindingIndex: effectiveMatch.index,
-          keystrokes: [],
-        })
-      )
-      continue
-    }
-
-    if (effectiveMatch) {
-      rows.push(
-        createAppRow(item, {
-          state: 'override',
-          userBinding: effectiveMatch.binding,
-          userBindingIndex: effectiveMatch.index,
-        })
-      )
-      continue
-    }
-
-    rows.push(createAppRow(item, { state: 'app' }))
-  }
-
-  for (const [index, binding] of userBindings.entries()) {
-    if (
-      claimedUserBindingIndexes.has(index) ||
-      isUnboundKeymapCommand(binding.command)
-    ) {
-      continue
-    }
-
-    rows.push({
-      id: `user.${index}.${binding.command}`,
-      state: 'user',
-      userBinding: binding,
-      userBindingIndex: index,
-      command: binding.command,
-      title: binding.title ?? binding.command,
-      keystrokes: binding.keystrokes,
-      arguments: binding.arguments,
-      scopes: binding.scopes,
-      source: USER_KEYMAP_SOURCE,
-    })
-  }
-
-  return rows.toSorted(compareKeybindingRows)
-}
-
-function createAppRow(
-  item: KeymapItem,
-  options: {
-    state: Extract<KeybindingRowState, 'app' | 'override' | 'unbound'>
-    userBinding?: KeymapBinding
-    userBindingIndex?: number
-    keystrokes?: readonly string[]
-  }
-): KeybindingRow {
-  const binding = options.userBinding
-  return {
-    id: item.id,
-    state: options.state,
-    appItem: item,
-    userBinding: binding,
-    userBindingIndex: options.userBindingIndex,
-    command: item.command,
-    title: binding?.title ?? item.title,
-    keystrokes: options.keystrokes ?? binding?.keystrokes ?? item.keystrokes,
-    arguments: binding?.arguments ?? item.arguments,
-    scopes: binding ? binding.scopes : item.scopes,
-    source: item.source,
-  }
-}
-
-function doesUserBindingApplyToAppItem(
-  binding: KeymapBinding,
-  item: KeymapItem
-) {
-  return isUnboundKeymapCommand(binding.command)
-    ? doesKeymapUnbindBindingMatchItem(binding, item)
-    : doesKeymapBindingOverrideItem(binding, item)
-}
-
-function compareKeybindingRows(a: KeybindingRow, b: KeybindingRow) {
-  const commandCompare = a.command.localeCompare(b.command)
-  if (commandCompare !== 0) {
-    return commandCompare
-  }
-
-  return a.title.localeCompare(b.title)
-}
-
 function KeybindingTableRow({
   row,
+  rows,
   keymap,
   scopeOptions,
   isHighlighted,
@@ -369,6 +208,7 @@ function KeybindingTableRow({
   onAppendBinding,
 }: {
   row: KeybindingRow
+  rows: readonly KeybindingRow[]
   keymap: KeymapService | undefined
   scopeOptions: readonly SearchOption[]
   isHighlighted: boolean
@@ -387,6 +227,11 @@ function KeybindingTableRow({
     keystrokes: visibleKeystrokes,
     scopes: row.scopes,
   }
+  const conflict = findKeybindingConflict(rows, {
+    id: row.id,
+    keystrokes: visibleKeystrokes,
+    scopes: row.scopes,
+  })
   const showsTypingCollisionWarning =
     !isUnbound && keymapBindingCanCollideWithTyping(visibleBinding)
 
@@ -480,6 +325,9 @@ function KeybindingTableRow({
                 />
               </>
             )}
+            {conflict && (
+              <WarningChip>{formatKeybindingConflict(conflict)}</WarningChip>
+            )}
           </div>
         )}
       </td>
@@ -526,12 +374,14 @@ function KeybindingTableRow({
 
 function NewKeybindingRow({
   keymap,
+  rows,
   commandOptions,
   scopeOptions,
   onCancel,
   onSave,
 }: {
   keymap: KeymapService | undefined
+  rows: readonly KeybindingRow[]
   commandOptions: readonly SearchOption[]
   scopeOptions: readonly SearchOption[]
   onCancel: () => void
@@ -543,7 +393,11 @@ function NewKeybindingRow({
   const [argumentsText, setArgumentsText] = useState('')
   const [scopes, setScopes] = useState<readonly string[]>([BASE_KEYMAP_SCOPE])
   const [isListening, setIsListening] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<{
+    field: 'command' | 'keystrokes' | 'arguments'
+    message: string
+  } | null>(null)
+  const conflict = findKeybindingConflict(rows, { keystrokes, scopes })
   const showsTypingCollisionWarning = keymapBindingCanCollideWithTyping({
     command,
     keystrokes,
@@ -553,17 +407,17 @@ function NewKeybindingRow({
   const save = () => {
     setError(null)
     if (!command.trim()) {
-      setError('Action is required.')
+      setError({ field: 'command', message: 'Action is required.' })
       return
     }
     if (keystrokes.length === 0) {
-      setError('Keystrokes are required.')
+      setError({ field: 'keystrokes', message: 'Keystrokes are required.' })
       return
     }
 
     const parsedArguments = parseArgumentsInput(argumentsText)
     if (parsedArguments instanceof Error) {
-      setError(parsedArguments.message)
+      setError({ field: 'arguments', message: parsedArguments.message })
       return
     }
 
@@ -590,8 +444,12 @@ function NewKeybindingRow({
           value={command}
           placeholder="command.id"
           options={commandOptions}
+          hasError={error?.field === 'command'}
           onChange={setCommand}
         />
+        {error?.field === 'command' && (
+          <p className="m-0 mt-1 text-xs text-destroy-80">{error.message}</p>
+        )}
       </td>
       <td className="px-2 py-3">
         <KeystrokesField
@@ -605,6 +463,12 @@ function NewKeybindingRow({
           onStopListening={() => setIsListening(false)}
           onChange={setKeystrokes}
         />
+        {error?.field === 'keystrokes' && (
+          <p className="m-0 mt-1 text-xs text-destroy-80">{error.message}</p>
+        )}
+        {conflict && (
+          <WarningChip>{formatKeybindingConflict(conflict)}</WarningChip>
+        )}
       </td>
       <td className="px-2 py-3">
         <textarea
@@ -613,7 +477,9 @@ function NewKeybindingRow({
           placeholder='{"tab":"project"}'
           onChange={(event) => setArgumentsText(event.target.value)}
         />
-        {error && <p className="m-0 mt-1 text-xs text-destroy-80">{error}</p>}
+        {error?.field === 'arguments' && (
+          <p className="m-0 mt-1 text-xs text-destroy-80">{error.message}</p>
+        )}
       </td>
       <td className="px-2 py-3">
         <ScopesField
@@ -646,28 +512,6 @@ function NewKeybindingRow({
   )
 }
 
-function createRowUserBinding(
-  row: KeybindingRow,
-  keystrokes: readonly string[],
-  scopes: readonly string[] | undefined
-): KeymapBinding {
-  if (row.state === 'user' && row.userBinding) {
-    return {
-      ...row.userBinding,
-      keystrokes,
-      scopes: serializeKeymapScopes(scopes),
-    }
-  }
-
-  const appItem = row.appItem
-  return {
-    command: row.command,
-    keystrokes,
-    arguments: appItem?.arguments,
-    scopes: serializeKeymapScopes(scopes),
-  }
-}
-
 function parseArgumentsInput(
   value: string
 ): KeymapArguments | undefined | Error {
@@ -687,12 +531,14 @@ function SearchableTextField({
   placeholder,
   options,
   className,
+  hasError = false,
   onChange,
 }: {
   value: string
   placeholder: string
   options: readonly SearchOption[]
   className?: string
+  hasError?: boolean
   onChange: (value: string) => void
 }) {
   const [query, setQuery] = useState('')
@@ -718,7 +564,11 @@ function SearchableTextField({
     >
       <div className="relative">
         <Combobox.Input
-          className={`${className ?? ''} bg-transparent`}
+          className={`${className ?? ''} bg-transparent ${
+            hasError
+              ? 'rounded border border-destroy-50 px-1 dark:border-destroy-60'
+              : ''
+          }`}
           displayValue={(selectedValue: string) => selectedValue}
           placeholder={placeholder}
           onChange={(event) => {
@@ -984,26 +834,12 @@ function StateChip({ children }: React.PropsWithChildren) {
   )
 }
 
-function serializeKeymapScopes(scopes: readonly string[] | undefined) {
-  const normalizedScopes = normalizeVisibleKeymapScopes([
-    ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
-  ])
-
-  return normalizedScopes.length === 1 &&
-    normalizedScopes[0] === BASE_KEYMAP_SCOPE
-    ? undefined
-    : normalizedScopes
-}
-
-function normalizeVisibleKeymapScopes(scopes: readonly string[] | undefined) {
-  const normalizedScopes = [
-    ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
-  ]
-  const nonBaseScopes = normalizedScopes.filter(
-    (scope) => scope !== BASE_KEYMAP_SCOPE
+function WarningChip({ children }: React.PropsWithChildren) {
+  return (
+    <span className="mt-1 rounded border border-destroy-50 bg-destroy-10 px-1.5 py-0.5 text-xs text-destroy-80 dark:border-destroy-60 dark:bg-destroy-80/20 dark:text-destroy-30">
+      {children}
+    </span>
   )
-
-  return nonBaseScopes.length > 0 ? nonBaseScopes : [BASE_KEYMAP_SCOPE]
 }
 
 function formatScopeLabel(scope: string, options: readonly SearchOption[]) {
@@ -1106,64 +942,6 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
   parts.push(key)
 
   return parts.join('+')
-}
-
-function normalizeEventKey(event: KeyboardEvent) {
-  const key = getUnmodifiedKeyFromCode(event)
-  if (key) {
-    return key
-  }
-
-  return normalizeEventKeyValue(event.key)
-}
-
-function normalizeEventKeyValue(key: string) {
-  if (key.length === 1) {
-    return key.toLowerCase()
-  }
-
-  const normalized = key.toLowerCase()
-  if (normalized === ' ') {
-    return 'space'
-  }
-
-  return normalized
-}
-
-function getUnmodifiedKeyFromCode(event: KeyboardEvent) {
-  if (!event.altKey && !event.ctrlKey && !event.metaKey) {
-    return null
-  }
-
-  if (event.code.startsWith('Key') && event.code.length === 4) {
-    return event.code.slice(3).toLowerCase()
-  }
-
-  if (event.code.startsWith('Digit') && event.code.length === 6) {
-    return event.code.slice(5)
-  }
-
-  return unmodifiedKeyByCode[event.code] ?? null
-}
-
-const unmodifiedKeyByCode: Record<string, string> = {
-  Backquote: '`',
-  Backslash: '\\',
-  BracketLeft: '[',
-  BracketRight: ']',
-  Comma: ',',
-  Equal: '=',
-  Minus: '-',
-  NumpadAdd: '+',
-  NumpadDecimal: '.',
-  NumpadDivide: '/',
-  NumpadMultiply: '*',
-  NumpadSubtract: '-',
-  Period: '.',
-  Quote: "'",
-  Semicolon: ';',
-  Slash: '/',
-  Space: 'space',
 }
 
 function isModifierKey(key: string) {
