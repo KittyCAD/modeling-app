@@ -1,6 +1,5 @@
 import { ActionIcon } from '@src/components/ActionIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import { shouldShowBrowserStorageWarning } from '@src/components/StatusBar/downloadDesktopAppPolicy'
 import { useApp } from '@src/lib/boot'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -18,8 +17,7 @@ export function DownloadDesktopApp() {
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )
-  const showBrowserStorageWarning =
-    shouldShowBrowserStorageWarning(hasOpfsCloudFeature)
+  const showBrowserStorageWarning = !hasOpfsCloudFeature
   const [showWarning, setShowWarning] = useState(true)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
