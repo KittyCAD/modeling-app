@@ -439,6 +439,22 @@ describe('operations.test.ts', () => {
         } satisfies OpKclValue,
       },
       {
+        operationName: 'gdt::angularity',
+        commandName: 'GDT Angularity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
         operationName: 'gdt::parallelism',
         commandName: 'GDT Parallelism',
         targetLabel: 'faces',

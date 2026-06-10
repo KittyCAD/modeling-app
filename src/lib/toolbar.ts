@@ -1492,6 +1492,30 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-angularity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Angularity',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Angularity',
+              icon: 'angle',
+              description:
+                'Specifies how much a feature may deviate from an orientation at a basic angle.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-angularity'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-perpendicularity',
               onClick: () =>
                 commands.send({
