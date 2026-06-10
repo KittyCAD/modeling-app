@@ -10,6 +10,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
@@ -21,7 +22,16 @@ const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
-const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+export const openExternal = (url: unknown) => {
+  let allowedURL: string
+  try {
+    allowedURL = getAllowedExternalURL(url)
+  } catch (error) {
+    return Promise.reject(error)
+  }
+
+  return ipcRenderer.invoke('shell.openExternal', allowedURL)
+}
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)

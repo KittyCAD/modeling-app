@@ -38,7 +38,8 @@ vi.mock('chokidar', () => ({
   },
 }))
 
-import { move } from '@src/preload'
+import { move, openExternal } from '@src/preload'
+import { ipcRenderer } from 'electron'
 
 describe('move', () => {
   beforeEach(() => {
@@ -113,5 +114,33 @@ describe('move', () => {
     expect(fsPromisesMock.cp).not.toHaveBeenCalled()
     expect(fsPromisesMock.rm).not.toHaveBeenCalled()
     consoleSpy.mockRestore()
+  })
+})
+
+describe('openExternal', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('invokes the main process with normalized http URLs', async () => {
+    vi.mocked(ipcRenderer.invoke).mockResolvedValue(undefined)
+
+    await expect(openExternal('https://zoo.dev/docs')).resolves.toBeUndefined()
+
+    expect(ipcRenderer.invoke).toHaveBeenCalledWith(
+      'shell.openExternal',
+      'https://zoo.dev/docs'
+    )
+  })
+
+  it('rejects unsupported URL schemes before invoking the main process', async () => {
+    await expect(openExternal('file:///tmp/payload.exe')).rejects.toThrow(
+      'External URL protocol is not allowed: file:'
+    )
+    await expect(openExternal('javascript:alert(1)')).rejects.toThrow(
+      'External URL protocol is not allowed: javascript:'
+    )
+
+    expect(ipcRenderer.invoke).not.toHaveBeenCalled()
   })
 })
