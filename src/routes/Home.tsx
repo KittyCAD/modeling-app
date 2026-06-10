@@ -10,7 +10,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-import { BillingDialog } from '@kittycad/react-shared'
+import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
@@ -71,7 +71,6 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import type { ActorRefFrom } from 'xstate'
-import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -95,6 +94,7 @@ const Home = () => {
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -123,28 +123,6 @@ const Home = () => {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
-    })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
-        },
-      })
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settingsValues.app?.projectDirectory?.current])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -363,10 +341,12 @@ const Home = () => {
                 <div className="my-2">
                   <BillingDialog
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openExternalBrowserIfDesktop()}
+                    accountHref={withSiteBaseURL('/account/billing')}
+                    billingClick={openBillingLinkExternally}
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}
+                    userPaymentBalance={billingContext.userPaymentBalance}
                   />
                 </div>
               </li>
@@ -569,35 +549,50 @@ function ProjectGrid({
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
   const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ||
-      projects === undefined ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
-                <ProjectCard
-                  key={project.name}
-                  project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject(systemIOActor)}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {sortedSearchResults.map((project) => (
+                  <ProjectCard
+                    key={project.name}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject(systemIOActor)}
+                  />
+                ))}
+              </ul>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           ) : (
-            <p
-              data-testid="projects-none"
-              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-            >
-              No projects found
-              {projects !== undefined && projects.length === 0
-                ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
-            </p>
+            <>
+              <p
+                data-testid="projects-none"
+                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+              >
+                No projects found
+                {projects !== undefined && projects.length === 0
+                  ? ', ready to make your first one?'
+                  : ` with the search term "${query}"`}
+              </p>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

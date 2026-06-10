@@ -11,6 +11,7 @@ import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
@@ -93,7 +94,7 @@ function ProjectCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isEditing, inputRef.current])
 
-  const projectName = project.name?.replace(FILE_EXT, '')
+  const projectName = getProjectDisplayName(project).replace(FILE_EXT, '')
 
   return (
     <li
@@ -217,11 +218,11 @@ function ProjectCard({
           onDismiss={() => setIsConfirmingDelete(false)}
         >
           <p className="my-4 text-wrap break-words">
-            This will permanently delete "{project.name || 'this file'}
+            This will permanently delete "{projectName || 'this file'}
             ".
           </p>
           <p className="my-4 text-wrap break-words">
-            Are you sure you want to delete "{project.name || 'this file'}
+            Are you sure you want to delete "{projectName || 'this file'}
             "? This action cannot be undone.
           </p>
         </DeleteConfirmationDialog>

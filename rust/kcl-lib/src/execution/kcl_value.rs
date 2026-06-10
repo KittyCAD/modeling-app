@@ -56,6 +56,7 @@ pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[expect(clippy::large_enum_variant)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
@@ -812,6 +813,13 @@ impl KclValue {
         match self {
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
             _ => vec![self],
+        }
+    }
+
+    pub fn as_slice(&self) -> Option<&[KclValue]> {
+        match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            _ => None,
         }
     }
 

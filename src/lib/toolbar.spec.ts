@@ -212,12 +212,41 @@ describe('toolbar state helpers', () => {
         'spline',
         'blend-surface',
         'delete-face',
+        'delete',
         'gear-helical',
         'gear-spur',
         'gear-herringbone',
         'gear-ring',
       ])
     )
+  })
+
+  test('opens the Delete modeling command from the transform dropdown', () => {
+    const commands = { send: vi.fn() }
+    const toolbarConfig = buildToolbarConfig(commands, {
+      showExperimentalFeatures: true,
+    })
+    const deleteItem = getToolbarItems(toolbarConfig).find(
+      (item) => item.id === 'delete'
+    )
+
+    if (!deleteItem) {
+      throw new Error('Could not find toolbar item delete')
+    }
+
+    deleteItem.onClick({
+      modelingSend: vi.fn(),
+      modelingState: stubModelingState([]),
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(commands.send).toHaveBeenCalledWith({
+      type: 'Find and select command',
+      data: { name: 'Delete', groupId: 'modeling' },
+    })
   })
 
   test('starts sketch solve on an already-selected plane', () => {

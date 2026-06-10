@@ -8,6 +8,7 @@ use kcmc::shared::Angle;
 use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::{self as kcmc};
 
+use super::args::FromKclValue;
 use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -16,10 +17,10 @@ use crate::execution::Helix as HelixValue;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
-use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis3dOrEdgeReference;
+use crate::std::edge;
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -27,15 +28,20 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let revolutions: TyF64 = args.get_kw_arg("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
-    let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt(
-        "axis",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::Primitive(PrimitiveType::Axis3d),
-            RuntimeType::segment(),
-        ]),
-        exec_state,
-    )?;
+    // axis accepts: (1) Edge or Axis3d (legacy), or (2) an object with sideFaces (edge reference payload)
+    let axis_value: Option<KclValue> = args.get_kw_arg_opt("axis", &RuntimeType::any(), exec_state)?;
+    let axis: Option<Axis3dOrEdgeReference> = if let Some(axis_val) = axis_value {
+        if edge::is_edge_specifier_object(&axis_val) {
+            let spec = edge::parse_edge_specifier_value(&axis_val, &args)?;
+            let edge_reference =
+                edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
+            Some(Axis3dOrEdgeReference::EdgeSpecifier(edge_reference))
+        } else {
+            Axis3dOrEdgeReference::from_kcl_val(&axis_val)
+        }
+    } else {
+        None
+    };
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let cylinder = args.get_kw_arg_opt("cylinder", &RuntimeType::solid(), exec_state)?;
 
@@ -193,6 +199,7 @@ async fn inner_helix(
             Axis3dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
 
+                // For backwards compatibility, use edge_id directly instead of querying for EdgeReference
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()
                         .radius(LengthUnit(radius.to_mm()))
@@ -209,6 +216,33 @@ async fn inner_helix(
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
                         .edge_id(edge_id)
+                        .build()
+                };
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(exec_state, &args, id),
+                        ModelingCmd::from(cmd),
+                    )
+                    .await?;
+            }
+            Axis3dOrEdgeReference::EdgeSpecifier(edge_ref) => {
+                // New API: use EdgeReference directly
+                let cmd = if let Some(length) = length {
+                    mcmd::EntityMakeHelixFromEdge::builder()
+                        .radius(LengthUnit(radius.to_mm()))
+                        .is_clockwise(!helix_result.ccw)
+                        .revolutions(revolutions)
+                        .start_angle(Angle::from_degrees(angle_start))
+                        .edge_reference(edge_ref.clone())
+                        .length(LengthUnit(length.to_mm()))
+                        .build()
+                } else {
+                    mcmd::EntityMakeHelixFromEdge::builder()
+                        .radius(LengthUnit(radius.to_mm()))
+                        .is_clockwise(!helix_result.ccw)
+                        .revolutions(revolutions)
+                        .start_angle(Angle::from_degrees(angle_start))
+                        .edge_reference(edge_ref.clone())
                         .build()
                 };
                 exec_state
