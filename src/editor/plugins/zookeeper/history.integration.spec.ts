@@ -289,8 +289,10 @@ describe('Zookeeper project history integration', () => {
       shared: 'shared = 1\n',
       abandoned: null,
     })
+    expect(harness.kclManager.redoDepth.value).toBeGreaterThan(0)
 
     addManualEdit(harness.kclManager, 'value = 100\n')
+    expect(harness.kclManager.redoDepth.value).toBe(0)
     expect(harness.kclManager.redo()).toBeUndefined()
     await assertProjectState(harness, {
       main: 'value = 100\n',
@@ -512,6 +514,48 @@ describe('Zookeeper project history integration', () => {
     )
 
     disposeHistory()
+  })
+
+  it('does not skip the next Zookeeper replay after a failed replay restore', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+      'side.kcl': 'side = 1\n',
+    })
+    const sidePath = fsZds.join(harness.projectPath, 'side.kcl')
+    const restoreAfterFailedUndo = vi
+      .spyOn(harness.kclManager.globalHistoryView, 'restoreAfterFailedUndo')
+      .mockReturnValue(true)
+
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: harness.kclManager.path,
+        patch: {
+          run_id: 'invalid-modified-patch',
+          changed_files: [{ path: 'side.kcl', status: 'modified' }],
+        },
+      })
+    )
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(restoreAfterFailedUndo).toHaveBeenCalledOnce()
+
+    restoreAfterFailedUndo.mockRestore()
+    await writeText(sidePath, 'side = 2\n')
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: harness.kclManager.path,
+        patch: {
+          run_id: 'valid-next-patch',
+          changed_files: [modifiedFile('side.kcl', 'side = 1\n', 'side = 2\n')],
+        },
+      })
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    await expect(fsZds.readFile(sidePath, 'utf8')).resolves.toBe('side = 1\n')
   })
 
   it('restores a streamed deleted imported file with later sibling updates', async () => {

@@ -154,6 +154,14 @@ function mergeZookeeperEditPatchFile(
     }
   }
 
+  if (previousFile.status === 'modified' && nextFile.status === 'modified') {
+    // Zookeeper streams each modified-file diff cumulatively from the original
+    // file contents for the run, so the latest diff supersedes earlier diffs.
+    // If the API starts sending incremental diffs instead, this merge path must
+    // compose patches rather than replacing the previous one.
+    return nextFile
+  }
+
   return nextFile
 }
 

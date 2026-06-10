@@ -155,11 +155,13 @@ export function buildZookeeperHistoryExtension({
               console.error(error)
               toast.error(getReplayErrorMessage(error))
               restoringHistoryAfterFailure = true
-              const restored =
-                e.value.direction === 'undo'
-                  ? kclManager.globalHistoryView.restoreAfterFailedUndo()
-                  : kclManager.globalHistoryView.restoreAfterFailedRedo()
-              if (!restored) {
+              try {
+                if (e.value.direction === 'undo') {
+                  kclManager.globalHistoryView.restoreAfterFailedUndo()
+                } else {
+                  kclManager.globalHistoryView.restoreAfterFailedRedo()
+                }
+              } finally {
                 restoringHistoryAfterFailure = false
               }
             })

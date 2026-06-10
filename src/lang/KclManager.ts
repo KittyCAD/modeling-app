@@ -911,8 +911,8 @@ export class KclManager extends File {
   private updateHistoryDepth = (state = this._editorView.state) => {
     const localUndo = undoDepth(state)
     const localRedo = redoDepth(state)
-    const globalUndo = undoDepth(this._globalHistoryView.state)
-    const globalRedo = redoDepth(this._globalHistoryView.state)
+    const globalUndo = this._globalHistoryView.undoDepth
+    const globalRedo = this._globalHistoryView.redoDepth
 
     this.undoDepth.value = localUndo || globalUndo
     this.redoDepth.value = localRedo || globalRedo

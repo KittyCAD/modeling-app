@@ -4,6 +4,7 @@ import {
   redo,
   redoDepth,
   undo,
+  undoDepth,
 } from '@codemirror/commands'
 import {
   Annotation,
@@ -129,11 +130,11 @@ export class HistoryView {
         ? [...spec.annotations, skip]
         : [spec.annotations, skip]
       : [skip]
+    this.invalidGlobalRedoDepth = 0
     this.editorView.dispatch({
       ...spec,
       annotations,
     })
-    this.invalidGlobalRedoDepth = 0
   }
 
   recordGlobalEventForLocalTransaction(spec: TransactionSpecNoChanges) {
@@ -170,6 +171,17 @@ export class HistoryView {
 
   get isOperationInProgress() {
     return this.operationInProgress
+  }
+
+  get undoDepth() {
+    return undoDepth(this.editorView.state)
+  }
+
+  get redoDepth() {
+    return Math.max(
+      0,
+      redoDepth(this.editorView.state) - this.invalidGlobalRedoDepth
+    )
   }
 
   subscribeToHistoryChanges(listener: () => void) {
@@ -237,7 +249,11 @@ export class HistoryView {
           ) {
             continue
           }
-          this.invalidGlobalRedoDepth = redoDepth(this.editorView.state)
+          const invalidRedoDepth = redoDepth(this.editorView.state)
+          if (this.invalidGlobalRedoDepth !== invalidRedoDepth) {
+            this.invalidGlobalRedoDepth = invalidRedoDepth
+            this.notifyHistoryChanged()
+          }
         }
       }
     )
@@ -292,7 +308,7 @@ export class HistoryView {
   }
 
   private redoGlobalIfValid() {
-    if (redoDepth(this.editorView.state) <= this.invalidGlobalRedoDepth) {
+    if (this.redoDepth === 0) {
       return false
     }
     return redo(this.editorView)

@@ -173,9 +173,11 @@ describe('HistoryView', () => {
     expect(localView.state.doc.toString()).toBe('|z1|m1')
     expect(historyView.undo(localView)).toBe(true)
     expect(localView.state.doc.toString()).toBe('|z1')
+    expect(historyView.redoDepth).toBeGreaterThan(0)
 
     applyAction({ kind: 'manual', label: 'new-manual' })
     expect(localView.state.doc.toString()).toBe('|z1|new-manual')
+    expect(historyView.redoDepth).toBe(0)
     expect(historyView.redo(localView)).toBe(false)
 
     expect(historyView.undo(localView)).toBe(true)
@@ -194,9 +196,11 @@ describe('HistoryView', () => {
     expect(historyView.undo(localView)).toBe(true)
     expect(historyView.undo(localView)).toBe(true)
     expect(localView.state.doc.toString()).toBe('|m1')
+    expect(historyView.redoDepth).toBeGreaterThan(0)
 
     applyAction({ kind: 'zookeeper', label: 'new-zookeeper' })
     expect(localView.state.doc.toString()).toBe('|m1|new-zookeeper')
+    expect(historyView.redoDepth).toBe(0)
     expect(historyView.redo(localView)).toBe(false)
 
     expect(historyView.undo(localView)).toBe(true)
