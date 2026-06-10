@@ -7,8 +7,10 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
@@ -52,65 +54,9 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 
-import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import {
-  addIntersect,
-  addSplit,
-  addSubtract,
-  addUnion,
-} from '@src/lang/modifyAst/boolean'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import {
-  addDeleteFace,
-  addHole,
-  addOffsetPlane,
-  addShell,
-} from '@src/lang/modifyAst/faces'
-import {
-  addAnnotationGdt,
-  addCircularityGdt,
-  addCylindricityGdt,
-  addDatumGdt,
-  addDistanceGdt,
-  addFlatnessGdt,
-  addParallelismGdt,
-  addPerpendicularityGdt,
-  addPositionGdt,
-  addProfileGdt,
-  addStraightnessGdt,
-  getNextAvailableDatumName,
-} from '@src/lang/modifyAst/gdt'
-import {
-  addHelicalGear,
-  addHerringboneGear,
-  addRingGear,
-  addSpurGear,
-} from '@src/lang/modifyAst/gears'
-import { addHelix } from '@src/lang/modifyAst/geometry'
-import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
-import {
-  addExtrude,
-  addLoft,
-  addRevolve,
-  addSweep,
-} from '@src/lang/modifyAst/sweeps'
-import {
-  addAppearance,
-  addClone,
-  addDelete,
-  addMirror3D,
-  addRotate,
-  addScale,
-  addTranslate,
-} from '@src/lang/modifyAst/transforms'
+import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type * as StdLibCommandTypes from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { capitaliseFC } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -168,15 +114,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
-
-const hasEngineConnection = (
-  engineCommandManager: ConnectionManager
-): true | Error => {
-  return (
-    engineCommandManager.connection?.connected ||
-    new Error('No engine connection to send command')
-  )
-}
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
 type CommandBarEditFlowArgs = {
@@ -631,29 +568,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addExtrude({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Extrude
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
       {
@@ -710,29 +627,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addSweep({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Sweep
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Sweep']>('Sweep', {
       overrides: {
         sketches: {
@@ -767,29 +664,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addLoft({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Loft
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Loft']>('Loft', {
       overrides: {
         sketches: {
@@ -810,29 +687,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addRevolve({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Revolve
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Revolve']>(
       'Revolve',
       {
@@ -901,29 +758,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Hollow out a 3D solid.',
     icon: 'shell',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addShell({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Shell']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Shell
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Shell']>('Shell', {
       overrides: {
         faces: {
@@ -944,29 +781,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addHole({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Hole']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Hole
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Hole']>('Hole', {
       overrides: {
         face: {
@@ -1085,29 +902,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addSubtract({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Subtract']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Boolean Subtract']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Subtract']>(
       'Boolean Subtract',
       {
@@ -1133,29 +930,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addUnion({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Union']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Boolean Union']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Union']>(
       'Boolean Union',
       {
@@ -1175,29 +952,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addIntersect({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Boolean Intersect']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Intersect']>(
       'Boolean Intersect',
       {
@@ -1218,29 +975,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
     icon: 'split',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addSplit({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Split']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Boolean Split']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Split']>(
       'Boolean Split',
       {
@@ -1266,30 +1003,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Offset a plane.',
     icon: 'plane',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addOffsetPlane({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Offset plane']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        variables: kclManager.variables,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Offset plane']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Offset plane']>(
       'Offset plane',
       {
@@ -1319,29 +1035,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addHelix({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Helix
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Helix']>('Helix', {
       overrides: {
         mode: {
@@ -1417,28 +1113,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Helical Gear'),
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addHelicalGear({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Helical Gear']),
-        ast: kclManager.ast,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Helical Gear']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Helical Gear']>(
       'Helical Gear',
       {
@@ -1467,28 +1144,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Herringbone Gear'),
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addHerringboneGear({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Herringbone Gear']),
-        ast: kclManager.ast,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Herringbone Gear']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Herringbone Gear']>(
       'Herringbone Gear',
       {
@@ -1517,28 +1175,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Spur Gear'),
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addSpurGear({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Spur Gear']),
-        ast: kclManager.ast,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Spur Gear']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Spur Gear']>(
       'Spur Gear',
       {
@@ -1564,28 +1203,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Ring Gear'),
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addRingGear({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Ring Gear']),
-        ast: kclManager.ast,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Ring Gear']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Ring Gear']>(
       'Ring Gear',
       {
@@ -1613,47 +1233,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const commandArgs =
-        context.argumentsToSubmit as ModelingCommandSchema['Fillet']
-      const wasmInstance = await kclManager.wasmInstancePromise
-      let ast = kclManager.ast
-      if (
-        commandArgs.version &&
-        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-      ) {
-        const astWithNewSetting = setExperimentalFeatures(
-          kclManager.code,
-          {
-            type: 'Allow',
-          },
-          wasmInstance
-        )
-        if (err(astWithNewSetting)) return astWithNewSetting
-        ast = astWithNewSetting
-      }
-      const modRes = addFillet({
-        ...commandArgs,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Fillet
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Fillet']>('Fillet', {
       overrides: {
         selection: {
@@ -1683,47 +1265,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const commandArgs =
-        context.argumentsToSubmit as ModelingCommandSchema['Chamfer']
-      const wasmInstance = await kclManager.wasmInstancePromise
-      let ast = kclManager.ast
-      if (
-        commandArgs.version &&
-        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-      ) {
-        const astWithNewSetting = setExperimentalFeatures(
-          kclManager.code,
-          {
-            type: 'Allow',
-          },
-          wasmInstance
-        )
-        if (err(astWithNewSetting)) return astWithNewSetting
-        ast = astWithNewSetting
-      }
-      const modRes = addChamfer({
-        ...commandArgs,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Chamfer
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Chamfer']>(
       'Chamfer',
       {
@@ -1848,29 +1392,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addAppearance({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Appearance']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Appearance
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Appearance']>(
       'Appearance',
       {
@@ -1895,46 +1419,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'trash',
     needsReview: true,
     status: 'experimental',
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-
-      let ast = kclManager.ast
-      if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-        const astWithExperimentalFeatures = setExperimentalFeatures(
-          kclManager.code,
-          {
-            type: 'Allow',
-          },
-          await kclManager.wasmInstancePromise
-        )
-        if (err(astWithExperimentalFeatures)) {
-          return astWithExperimentalFeatures
-        }
-
-        ast = astWithExperimentalFeatures
-      }
-
-      const modRes = addDelete({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete']),
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Delete
+    ),
     args: {
       objects: {
         ...objectsTypesAndFilters,
@@ -1948,29 +1435,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set translation on solid or sketch.',
     icon: 'move',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addTranslate({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Translate']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Translate
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Translate']>(
       'Translate',
       {
@@ -1998,29 +1465,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set rotation on solid or sketch.',
     icon: 'rotate',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addRotate({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Rotate']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Rotate
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
       overrides: {
         objects: {
@@ -2045,29 +1492,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set scale on solid or sketch.',
     icon: 'scale',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addScale({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Scale']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Scale
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
       overrides: {
         objects: {
@@ -2095,29 +1522,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Clone a solid or sketch.',
     icon: 'clone',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addClone({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Clone']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Clone
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
       overrides: {
         objects: {
@@ -2164,34 +1571,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addMirror3D({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        variables: kclManager.variables,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) {
-        return modRes
-      }
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) {
-        return execRes
-      }
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Mirror 3D']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Mirror 3D']>(
       'Mirror 3D',
       {
@@ -2224,29 +1606,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addPatternCircular3D({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Circular 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Pattern Circular 3D']
+    ),
     args: modelingStdLibCommandArgs<
       ModelingCommandSchema['Pattern Circular 3D']
     >('Pattern Circular 3D', {
@@ -2282,29 +1644,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a linear pattern of 3D solids along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addPatternLinear3D({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Linear 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Pattern Linear 3D']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Pattern Linear 3D']>(
       'Pattern Linear 3D',
       {
@@ -2339,29 +1681,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addFlatnessGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Flatness']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Flatness']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Flatness']>(
       'GDT Flatness',
       {
@@ -2383,29 +1705,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add straightness geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtStraightness',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addStraightnessGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Straightness']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Straightness']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Straightness']>(
       'GDT Straightness',
       {
@@ -2428,29 +1730,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add circularity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtCircularity',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addCircularityGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Circularity']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Circularity']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Circularity']>(
       'GDT Circularity',
       {
@@ -2473,29 +1755,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add cylindricity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtCylindricity',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addCylindricityGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Cylindricity']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Cylindricity']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Cylindricity']>(
       'GDT Cylindricity',
       {
@@ -2518,29 +1780,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add datum geometric dimensioning & tolerancing annotation to a face.',
     icon: 'gdtDatum',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addDatumGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Datum']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Datum']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Datum']>(
       'GDT Datum',
       {
@@ -2567,29 +1809,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add position geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'gdtPosition',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addPositionGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Position']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Position']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Position']>(
       'GDT Position',
       {
@@ -2613,29 +1835,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add profile geometric dimensioning & tolerancing annotation to edges.',
     icon: 'gdtFlatness',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addProfileGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Profile']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Profile']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Profile']>(
       'GDT Profile',
       {
@@ -2658,33 +1860,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add an MBD distance annotation to an edge length or between two faces or edges.',
     icon: 'dimension',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addDistanceGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Distance']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) {
-        return modRes
-      }
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) {
-        return execRes
-      }
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Distance']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Distance']>(
       'GDT Distance',
       {
@@ -2707,29 +1885,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add perpendicularity geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'perpendicular',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addPerpendicularityGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Perpendicularity']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Perpendicularity']
+    ),
     args: modelingStdLibCommandArgs<
       ModelingCommandSchema['GDT Perpendicularity']
     >('GDT Perpendicularity', {
@@ -2752,29 +1910,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add parallelism geometric dimensioning & tolerancing annotation to faces and edges.',
     icon: 'parallel',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addParallelismGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Parallelism']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Parallelism']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Parallelism']>(
       'GDT Parallelism',
       {
@@ -2797,29 +1935,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Add model-based definition annotation to faces and edges.',
     icon: 'text',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addAnnotationGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Annotation']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Annotation']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Annotation']>(
       'GDT Annotation',
       {
@@ -2845,29 +1963,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
     icon: 'flipSurface',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addFlipSurface({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Flip Surface']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Flip Surface']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Flip Surface']>(
       'Flip Surface',
       {
@@ -2885,29 +1983,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Join selected surfaces into one polysurface.',
     icon: 'joinSurfaces',
     needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addJoinSurfaces({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Join Surfaces']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Join Surfaces']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Join Surfaces']>(
       'Join Surfaces',
       {
@@ -2926,29 +2004,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'deleteFace',
     needsReview: true,
     status: 'experimental',
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addDeleteFace({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete Face']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Delete Face']
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete Face']>(
       'Delete Face',
       {
@@ -2973,29 +2031,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'blend',
     needsReview: true,
     status: 'experimental',
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addBlend({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Blend']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
-      })
-      if (err(modRes)) return modRes
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) return execRes
-    },
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Blend
+    ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Blend']>('Blend', {
       overrides: {
         edges: {
