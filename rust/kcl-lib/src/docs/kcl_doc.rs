@@ -1014,9 +1014,14 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge | Segment") | Some("Axis3d | Edge | Segment") => {
-                Some((index, format!(r#"{label}${{{index}:X}}"#)))
-            }
+            Some("Axis2d | Edge")
+            | Some("Axis3d | Edge")
+            | Some("Axis2d | Edge | any")
+            | Some("Axis3d | Edge | any")
+            | Some("Axis2d | Edge | Segment")
+            | Some("Axis3d | Edge | Segment")
+            | Some("Axis2d | Edge | Segment | any")
+            | Some("Axis3d | Edge | Segment | any") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
             Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
                 Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
             }
