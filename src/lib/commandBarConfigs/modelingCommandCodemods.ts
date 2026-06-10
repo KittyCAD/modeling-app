@@ -14,6 +14,7 @@ import {
   addShell,
 } from '@src/lang/modifyAst/faces'
 import {
+  addAngularityGdt,
   addAnnotationGdt,
   addCircularityGdt,
   addCylindricityGdt,
@@ -103,6 +104,7 @@ type ModelingCommandCodemodName =
   | 'GDT Profile'
   | 'GDT Distance'
   | 'GDT Perpendicularity'
+  | 'GDT Angularity'
   | 'GDT Parallelism'
   | 'GDT Annotation'
   | 'GDT Datum'
@@ -275,6 +277,7 @@ export const modelingCommandCodemods = {
   'GDT Perpendicularity': withGdtDefaults<'GDT Perpendicularity'>(
     addPerpendicularityGdt
   ),
+  'GDT Angularity': withGdtDefaults<'GDT Angularity'>(addAngularityGdt),
   'GDT Parallelism': withGdtDefaults<'GDT Parallelism'>(addParallelismGdt),
   'GDT Annotation': withGdtDefaults<'GDT Annotation'>(addAnnotationGdt),
   'GDT Datum': withGdtDefaults<'GDT Datum'>(addDatumGdt),

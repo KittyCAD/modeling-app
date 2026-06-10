@@ -57,6 +57,7 @@ describe('GDT tolerance defaults', () => {
       'GDT Profile',
       'GDT Distance',
       'GDT Perpendicularity',
+      'GDT Angularity',
       'GDT Parallelism',
     ] as const
 

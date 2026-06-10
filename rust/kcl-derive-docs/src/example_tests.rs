@@ -90,6 +90,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gdt-cylindricity-0",
     "std-gdt-cylindricity-1",
     "std-gdt-cylindricity-2",
+    "std-gdt-angularity-0",
+    "std-gdt-angularity-1",
     "std-gdt-annotation-0",
     "std-gdt-annotation-1",
     "std-gdt-distance-0",

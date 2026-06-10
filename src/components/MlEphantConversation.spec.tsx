@@ -461,6 +461,73 @@ describe('MlEphantConversation', () => {
     ).toBeInTheDocument()
   })
 
+  test.each([
+    'Manual edits detected since the last Zookeeper state.',
+    'Transient model streaming error; retrying.',
+  ])(
+    'keeps reasoning expanded for non-terminal info notices: %s',
+    async (infoText) => {
+      const conversation: Conversation = {
+        exchanges: [
+          {
+            request: {
+              type: 'user',
+              content: 'Render a bracket',
+            },
+            responses: [
+              {
+                reasoning: {
+                  type: 'text',
+                  content: 'Checking the model stream...',
+                },
+              },
+              {
+                info: {
+                  text: infoText,
+                },
+              },
+            ],
+            deltasAggregated: '',
+          },
+        ],
+      }
+
+      render(
+        <MlEphantConversation
+          isLoading={false}
+          conversation={conversation}
+          onProcess={vi.fn()}
+          onClickClearChat={() => {}}
+          onReconnect={() => {}}
+          onCancel={() => {}}
+          needsReconnect={false}
+          disabled={false}
+          hasPromptCompleted={false}
+          contexts={[]}
+          isProcessing={true}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
+        />
+      )
+
+      expect(
+        screen.getByTestId('ml-response-info-chat-bubble')
+      ).toHaveTextContent(infoText)
+      expect(
+        screen.getByTestId('ml-response-chat-bubble-thinking')
+      ).toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('ml-response-thinking-view')
+        ).toBeInTheDocument()
+      })
+      expect(screen.getByText('Collapse')).toBeInTheDocument()
+      expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+    }
+  )
+
   test('hides the immediate thought when end_of_stream is followed by another response', () => {
     const finalResponse = 'Rendered.'
 

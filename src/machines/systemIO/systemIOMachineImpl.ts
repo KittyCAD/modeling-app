@@ -388,7 +388,12 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
 
           const projectPath = fsZds.join(projectDirectoryPath, entry)
-          const stat = await fsZds.stat(projectPath)
+          let stat: Awaited<ReturnType<typeof fsZds.stat>>
+          try {
+            stat = await fsZds.stat(projectPath)
+          } catch {
+            continue
+          }
           if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
             continue
           }

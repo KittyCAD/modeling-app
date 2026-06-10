@@ -565,6 +565,10 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['GDT Perpendicularity']
     }
   | {
+      type: 'GDT Angularity'
+      data: ModelingCommandSchema['GDT Angularity']
+    }
+  | {
       type: 'GDT Parallelism'
       data: ModelingCommandSchema['GDT Parallelism']
     }
@@ -4389,6 +4393,9 @@ export const modelingMachine = setup({
         modelingCommandCodemods['GDT Perpendicularity']
       )
     ),
+    gdtAngularityAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['GDT Angularity'])
+    ),
     gdtParallelismAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Parallelism'])
     ),
@@ -4882,6 +4889,10 @@ export const modelingMachine = setup({
 
         'GDT Perpendicularity': {
           target: 'Applying GDT Perpendicularity',
+        },
+
+        'GDT Angularity': {
+          target: 'Applying GDT Angularity',
         },
 
         'GDT Parallelism': {
@@ -7123,6 +7134,26 @@ export const modelingMachine = setup({
         id: 'gdtPerpendicularityAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Perpendicularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Angularity': {
+      invoke: {
+        src: 'gdtAngularityAstMod',
+        id: 'gdtAngularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Angularity') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
