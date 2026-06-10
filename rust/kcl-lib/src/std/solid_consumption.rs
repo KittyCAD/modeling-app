@@ -226,6 +226,7 @@ mod tests {
             start_cap_id: None,
             end_cap_id: None,
             edge_cuts: vec![],
+            pending_edge_cut_ids: vec![],
             units: UnitLength::Millimeters,
             sectional: false,
             meta: vec![SourceRange::default().into()],

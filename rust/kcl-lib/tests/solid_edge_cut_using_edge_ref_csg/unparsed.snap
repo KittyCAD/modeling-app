@@ -1,0 +1,59 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing solid_edge_cut_using_edge_ref_csg.kcl
+---
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+rect1 = sketch(on = XY) {
+  line1 = line(start = [var -5.7mm, var 1.02mm], end = [var 2.32mm, var 1.02mm])
+  line2 = line(start = [var 2.32mm, var 1.02mm], end = [var 2.32mm, var 4.1mm])
+  line3 = line(start = [var 2.32mm, var 4.1mm], end = [var -5.7mm, var 4.1mm])
+  line4 = line(start = [var -5.7mm, var 4.1mm], end = [var -5.7mm, var 1.02mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden1 = hide(rect1)
+rectRegion = region(point = [0.575mm, 1.0225mm], sketch = rect1)
+cube1 = extrude(rectRegion, length = 3)
+
+profile = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
+  right = line(start = [20mm, 0mm], end = [20mm, 10mm])
+  top = line(start = [20mm, 10mm], end = [0mm, 10mm])
+  left = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+
+region001 = region(point = [10mm, 5mm], sketch = profile)
+body = extrude(region001, length = 8mm, tagEnd = $topCap)
+hidden2 = hide(profile)
+
+rounded = fillet(
+  body,
+  radius = 1mm,
+  edges = [
+    {
+      sideFaces = [region001.tags.bottom, topCap]
+    }
+  ],
+  tag = $roundedFace,
+)
+
+beveled = chamfer(
+  body,
+  length = 1mm,
+  edges = [
+    {
+      sideFaces = [region001.tags.right, topCap]
+    }
+  ],
+  tag = $beveledFace,
+)
+
+// This should force the edge cuts BEFORE the union.
+result = union([beveled, cube1])
