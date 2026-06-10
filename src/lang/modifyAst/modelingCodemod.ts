@@ -10,6 +10,7 @@ import type { PathToNode, Program } from '@src/lang/wasm'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
@@ -78,7 +79,7 @@ const normalizeFocusPath = <CommandArgs>(
     return codemod.focusPath(result, commandArgs)
   }
 
-  return Array.isArray(result.pathToNode[0]?.[0])
+  return isArray(result.pathToNode[0]?.[0])
     ? (result.pathToNode as PathToNode[])
     : [result.pathToNode as PathToNode]
 }
@@ -189,7 +190,7 @@ export function createModelingCodemodActor<CommandArgs>(
       | undefined
   }) => {
     if (!input || !input.data) {
-      throw new Error(NO_INPUT_PROVIDED_MESSAGE)
+      return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
     }
 
     const codemodResult = await runModelingCodemod({
@@ -199,7 +200,7 @@ export function createModelingCodemodActor<CommandArgs>(
       wasmInstance: input.wasmInstance,
     })
     if (err(codemodResult)) {
-      throw codemodResult
+      return Promise.reject(codemodResult)
     }
 
     await updateModelingState(

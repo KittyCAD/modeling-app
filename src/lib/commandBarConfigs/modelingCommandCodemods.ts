@@ -143,7 +143,7 @@ const withAst = <CommandName extends keyof ModelingCommandSchema>(
         ...args,
         ast,
         wasmInstance,
-      } as AddCodemodArgs<CommandName>),
+      }),
   })
 
 const withArtifactGraph = <CommandName extends keyof ModelingCommandSchema>(
