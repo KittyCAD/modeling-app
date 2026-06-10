@@ -34,14 +34,42 @@ function ProjectCard({
   const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
   const [imageUrl, setImageUrl] = useState('')
+  const [optimisticProjectName, setOptimisticProjectName] = useState<{
+    projectPath: string
+    name: string
+  } | null>(null)
 
   let inputRef = useRef<HTMLInputElement>(null)
+  const projectDisplayName = getProjectDisplayName(project)
+  const displayedProject =
+    optimisticProjectName?.projectPath === project.path
+      ? {
+          ...project,
+          title: optimisticProjectName.name,
+        }
+      : project
 
   function handleSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const newProjectName = new FormData(e.currentTarget).get('newProjectName')
+
+    if (
+      project.cloudProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName !== projectDisplayName
+    ) {
+      setOptimisticProjectName({
+        projectPath: project.path,
+        name: newProjectName,
+      })
+    }
+
     handleRenameProject(e, project)
       .then(() => setIsEditing(false))
-      .catch(reportRejection)
+      .catch((error) => {
+        setOptimisticProjectName(null)
+        reportRejection(error)
+      })
   }
 
   function getDisplayedTime(dateTimeMs: number) {
@@ -94,7 +122,26 @@ function ProjectCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isEditing, inputRef.current])
 
-  const projectName = getProjectDisplayName(project).replace(FILE_EXT, '')
+  useEffect(() => {
+    setOptimisticProjectName((optimisticName) => {
+      if (!optimisticName) {
+        return null
+      }
+      if (
+        !project.cloudProjectId ||
+        optimisticName.projectPath !== project.path ||
+        optimisticName.name === projectDisplayName
+      ) {
+        return null
+      }
+      return optimisticName
+    })
+  }, [project.cloudProjectId, project.path, projectDisplayName])
+
+  const projectName = getProjectDisplayName(displayedProject).replace(
+    FILE_EXT,
+    ''
+  )
 
   return (
     <li
@@ -129,7 +176,7 @@ function ProjectCard({
               onSubmit={handleSave}
               className="flex items-center gap-2 p-2"
               onClick={(e) => e.stopPropagation()}
-              project={project}
+              project={displayedProject}
               onDismiss={() => setIsEditing(false)}
               ref={inputRef}
             />

@@ -121,6 +121,28 @@ describe('opfsCloud sync helpers', () => {
     expect(payload.body.expected_revision).toBe('revision-123')
   })
 
+  it('uses the local project.toml title for renamed cloud project uploads', () => {
+    const payload = prepareProjectFilesForCloudUpload(
+      '/projects/old-cloud-title',
+      [
+        projectFile('main.kcl', 'renamed = 1\n'),
+        projectFile(
+          PROJECT_SETTINGS_FILE_NAME,
+          'title = "New cloud title"\ndefault_file = "main.kcl"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+        ),
+      ],
+      'revision-123'
+    )
+    const projectToml = new TextDecoder().decode(
+      payload.files.find(
+        (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+      )?.data
+    )
+
+    expect(payload.body.title).toBe('New cloud title')
+    expect(projectToml).toContain('title = "New cloud title"')
+  })
+
   it('clones remote projects that exist in cloud but have no local match', () => {
     expect(
       getOpfsCloudRemoteIndexAction({

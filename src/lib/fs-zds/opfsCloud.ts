@@ -1077,6 +1077,11 @@ async function syncRemoteIndex() {
 
   const remoteProjects = await listRemoteProjects(config)
   let metadata = await getAllProjectMetadata()
+  const pendingProjectPaths = new Set(
+    (await getAllOutboxEntries()).map((entry) =>
+      normalizePathForSync(entry.projectPath)
+    )
+  )
   const tombstonedRemoteProjectIds = new Set(
     metadata
       .filter((entry) => entry.tombstone && entry.remoteProjectId)
@@ -1142,16 +1147,34 @@ async function syncRemoteIndex() {
           continue
         }
 
-        const nextLocalMetadata = await hydrateCleanLocalProjectTitle(
-          knownLocalMetadata,
-          remoteProject.title
+        const hasPendingLocalChanges = pendingProjectPaths.has(
+          normalizePathForSync(knownLocalMetadata.localProjectPath)
         )
+        const nextLocalMetadata = hasPendingLocalChanges
+          ? knownLocalMetadata
+          : await hydrateCleanLocalProjectTitle(
+              knownLocalMetadata,
+              remoteProject.title
+            )
         const remoteRevision = getRevision(remoteProject)
         if (
           remoteRevision &&
           nextLocalMetadata.remoteRevision &&
           remoteRevision !== nextLocalMetadata.remoteRevision
         ) {
+          if (hasPendingLocalChanges) {
+            const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
+            if (remoteUpdatedAt) {
+              const indexedMetadata = {
+                ...nextLocalMetadata,
+                remoteUpdatedAt,
+              }
+              await putProjectMetadata(indexedMetadata)
+              upsertMetadata(indexedMetadata)
+            }
+            continue
+          }
+
           await syncProject(nextLocalMetadata.localProjectPath, [])
           const syncedMetadata = await getProjectMetadata(
             nextLocalMetadata.localProjectPath
