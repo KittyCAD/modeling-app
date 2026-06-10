@@ -8,7 +8,7 @@ import {
 } from '@src/machines/sketchSolve/tools/circleToolDiagram'
 import {
   createCircleApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -27,7 +27,7 @@ function createTestMachine(mockActors?: {
 }) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
 
   const testMachine = machine.provide({
     actors: {
@@ -45,20 +45,20 @@ function createTestMachine(mockActors?: {
     machine: testMachine,
     sceneInfra,
     rustContext,
-    kclManager,
+    executingEditor,
   }
 }
 
 describe('circleTool - XState', () => {
   describe('when initialized', () => {
     it('should have default context values', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -72,13 +72,13 @@ describe('circleTool - XState', () => {
     })
 
     it('should call setCallbacks on entry to ready for center click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -91,13 +91,13 @@ describe('circleTool - XState', () => {
 
   describe('escape key handling', () => {
     it('should transition to unequipping when escape is pressed in ready for center click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -111,13 +111,13 @@ describe('circleTool - XState', () => {
 
   describe('unequip handling', () => {
     it('should transition to unequipping when unequip event is sent', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -131,13 +131,13 @@ describe('circleTool - XState', () => {
 
   describe('two-click workflow', () => {
     it('should store center point on first click and transition to Showing radius preview', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -151,13 +151,13 @@ describe('circleTool - XState', () => {
     })
 
     it('should transition to Creating circle on second click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -176,7 +176,7 @@ describe('circleTool - XState', () => {
       const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
       const circleObj = createCircleApiObject({ id: 3, center: 1, start: 2 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           createCircle: async () => ({
             kclSource: { text: 'test' },
@@ -191,7 +191,7 @@ describe('circleTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -213,13 +213,13 @@ describe('circleTool - XState', () => {
 
   describe('escape during workflow', () => {
     it('should transition to unequipping when escape is pressed in Showing radius preview', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()

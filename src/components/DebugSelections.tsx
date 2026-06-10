@@ -22,10 +22,10 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useMemo, useState } from 'react'
 import { use } from 'react'
 
-type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
+type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'executingEditor'>
 
 async function clearSceneSelection(deps: SingletonDeps) {
-  await deps.kclManager.engineCommandManager.sendSceneCommand({
+  await deps.executingEditor.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_clear',
@@ -36,7 +36,7 @@ async function clearSceneSelection(deps: SingletonDeps) {
 
 // Pass in a list of scene ids to select in the 3d scene
 async function sceneSelection(ids: string[], deps: SingletonDeps) {
-  await deps.kclManager.engineCommandManager.sendSceneCommand({
+  await deps.executingEditor.engineCommandManager.sendSceneCommand({
     cmd_id: uuidv4(),
     type: 'modeling_cmd_req',
     cmd: {
@@ -112,7 +112,7 @@ async function selectCodeMirrorRange(range: SourceRange, deps: SingletonDeps) {
     ],
     otherSelections: [],
   }
-  deps.kclManager.selectRange(selections)
+  deps.executingEditor.selectRange(selections)
 }
 
 function codeRangeToIds(
@@ -122,7 +122,7 @@ function codeRangeToIds(
 ): string[] {
   if (!range) return []
 
-  const { kclManager } = deps
+  const { executingEditor } = deps
   const selections = {
     graphSelections: [
       {
@@ -149,13 +149,13 @@ function codeRangeToIds(
       graphSelections: [],
       otherSelections: [],
     },
-    isShiftDown: kclManager.isShiftDown,
-    ast: kclManager.ast,
-    artifactGraph: kclManager.artifactGraph,
-    artifactIndex: kclManager.artifactIndex,
+    isShiftDown: executingEditor.isShiftDown,
+    ast: executingEditor.ast,
+    artifactGraph: executingEditor.artifactGraph,
+    artifactIndex: executingEditor.artifactIndex,
     systemDeps: {
-      engineCommandManager: kclManager.engineCommandManager,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      engineCommandManager: executingEditor.engineCommandManager,
+      sceneEntitiesManager: executingEditor.sceneEntitiesManager,
       wasmInstance: wasmInstance,
     },
   })
@@ -191,17 +191,17 @@ function getEntityIdsFromCmds(
 }
 
 function idToCodeRange(id: string, deps: SingletonDeps) {
-  const { kclManager } = deps
+  const { executingEditor } = deps
   if (id) {
-    const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
+    const codeRefs = getCodeRefsByArtifactId(id, executingEditor.artifactGraph)
     if (codeRefs) {
       return codeRefs.map(({ range }) => range)
     }
   } else if (
-    !kclManager.highlightRange ||
-    (kclManager.highlightRange[0] &&
-      kclManager.highlightRange[0][0] !== 0 &&
-      kclManager.highlightRange[0][1] !== 0)
+    !executingEditor.highlightRange ||
+    (executingEditor.highlightRange[0] &&
+      executingEditor.highlightRange[0][0] !== 0 &&
+      executingEditor.highlightRange[0][1] !== 0)
   ) {
     return [defaultSourceRange()]
   }
@@ -209,24 +209,27 @@ function idToCodeRange(id: string, deps: SingletonDeps) {
 
 // Ported from the feature tree codebase
 function generateOperationList(deps: SingletonDeps) {
-  const { kclManager } = deps
+  const { executingEditor } = deps
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
-  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
+  const parseErrors = executingEditor.errors.filter((e) => e.kind !== 'engine')
 
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return countOperations(error.operations) > countOperations(acc)
-      ? error.operations
-      : acc
-  }, emptyOperationsByModule())
+  const longestErrorOperationList = executingEditor.errors.reduce(
+    (acc, error) => {
+      return countOperations(error.operations) > countOperations(acc)
+        ? error.operations
+        : acc
+    },
+    emptyOperationsByModule()
+  )
 
   const unfilteredOperationList = !parseErrors.length
-    ? !kclManager.errors.length
-      ? kclManager.execState.operations
+    ? !executingEditor.errors.length
+      ? executingEditor.execState.operations
       : longestErrorOperationList
-    : kclManager.lastSuccessfulOperations
+    : executingEditor.lastSuccessfulOperations
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupOperationTypeStreaks(
@@ -258,12 +261,12 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const singletonDeps: SingletonDeps = useMemo(
     () => ({
-      kclManager,
+      executingEditor,
     }),
-    [kclManager]
+    [executingEditor]
   )
   const [selectedId, _setSelectedId] = useState('')
   const [selectedRange, _setSelectedRange] = useState('')
@@ -275,17 +278,17 @@ export function DebugSelections() {
     _setSelectedId('')
     _setSelectedRange(range)
   }
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const highlightMinor = 'bg-red-200 dark:bg-red-950'
   const highlightMajor = 'bg-red-100 dark:bg-red-800'
   const artifactGraphTree = useMemo(() => {
     return formatArtifactGraph(
-      kclManager.artifactGraph,
+      executingEditor.artifactGraph,
       wasmInstance,
       singletonDeps
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.artifactGraph])
+  }, [executingEditor.artifactGraph])
 
   const operationList = useMemo(() => {
     return computeOperationList(
@@ -294,7 +297,7 @@ export function DebugSelections() {
       singletonDeps
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.artifactGraph])
+  }, [executingEditor.artifactGraph])
   return (
     <details data-testid="debug-selections" className="relative">
       <summary>Selections Debugger</summary>

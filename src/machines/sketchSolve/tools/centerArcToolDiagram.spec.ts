@@ -9,7 +9,7 @@ import {
 } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import {
   createArcApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -36,7 +36,7 @@ function createTestMachine(mockActors?: {
 }) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
 
   // Create a machine with mocked actors
   const testMachine = machine.provide({
@@ -62,20 +62,20 @@ function createTestMachine(mockActors?: {
     machine: testMachine,
     sceneInfra,
     rustContext,
-    kclManager,
+    executingEditor,
   }
 }
 
 describe('centerArcTool - XState', () => {
   describe('when initialized', () => {
     it('should have default context values', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -91,13 +91,13 @@ describe('centerArcTool - XState', () => {
     })
 
     it('should call setCallbacks on entry to ready for center click', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -109,13 +109,13 @@ describe('centerArcTool - XState', () => {
 
   describe('escape key handling', () => {
     it('should transition to unequipping when escape is pressed in ready for center click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -129,13 +129,13 @@ describe('centerArcTool - XState', () => {
 
   describe('unequip handling', () => {
     it('should transition to unequipping when unequip event is sent', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -149,13 +149,13 @@ describe('centerArcTool - XState', () => {
 
   describe('three-click workflow', () => {
     it('should store center point on first click and transition to Showing radius preview', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -169,13 +169,13 @@ describe('centerArcTool - XState', () => {
     })
 
     it('should transition to Creating arc on second click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -197,7 +197,7 @@ describe('centerArcTool - XState', () => {
       const endPoint = createPointApiObject({ id: 3, x: 30, y: 40 })
       const arcObj = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           createArc: async () => ({
             kclSource: { text: 'test' },
@@ -212,7 +212,7 @@ describe('centerArcTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -239,7 +239,7 @@ describe('centerArcTool - XState', () => {
       const endPoint = createPointApiObject({ id: 3, x: 30, y: 40 })
       const arcObj = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           createArc: async () => ({
             kclSource: { text: 'test' },
@@ -254,7 +254,7 @@ describe('centerArcTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -280,7 +280,7 @@ describe('centerArcTool - XState', () => {
       const endPoint = createPointApiObject({ id: 3, x: 30, y: 40 })
       const arcObj = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           createArc: async () => ({
             kclSource: { text: 'test' },
@@ -302,7 +302,7 @@ describe('centerArcTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -327,13 +327,13 @@ describe('centerArcTool - XState', () => {
 
   describe('escape during workflow', () => {
     it('should transition to unequipping when escape is pressed in Showing radius preview', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -355,7 +355,7 @@ describe('centerArcTool - XState', () => {
       const endPoint = createPointApiObject({ id: 3, x: 30, y: 40 })
       const arcObj = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           createArc: async () => ({
             kclSource: { text: 'test' },
@@ -370,7 +370,7 @@ describe('centerArcTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()

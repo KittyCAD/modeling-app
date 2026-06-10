@@ -292,7 +292,7 @@ function setUpMoveToolCallbacks({
         })),
       },
     },
-    kclManager: {
+    executingEditor: {
       fileSettings: {
         defaultLengthUnit: 'mm' as UnitLength,
       },

@@ -2,7 +2,7 @@ import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -25,23 +25,23 @@ function CommandBarSelectionInput({
   arg,
   stepBack,
   onSubmit,
-  executingEditor: kclManager,
+  executingEditor: executingEditor,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selection'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
-  executingEditor: KclManager
+  executingEditor: ExecutingEditor
 }) {
   const { commands, wasmPromise } = useApp()
-  const engineCommandManager = kclManager.engineCommandManager
+  const engineCommandManager = executingEditor.engineCommandManager
   const wasmInstance = use(wasmPromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(kclManager.astSignal.value, selection)
-  }, [selection, kclManager.astSignal.value])
+    return getSelectionCountByType(executingEditor.astSignal.value, selection)
+  }, [selection, executingEditor.astSignal.value])
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
@@ -59,7 +59,7 @@ function CommandBarSelectionInput({
   useEffect(() => {
     if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
       toSync(() => {
-        return kclManager.showPlanes()
+        return executingEditor.showPlanes()
       }, reportRejection)()
     }
 
@@ -67,11 +67,11 @@ function CommandBarSelectionInput({
       toSync(() => {
         const promises = [
           new Promise(() =>
-            kclManager.setSelectionFilterToDefault(wasmInstance, selection)
+            executingEditor.setSelectionFilterToDefault(wasmInstance, selection)
           ),
         ]
-        if (!kclManager._isAstEmpty(kclManager.ast)) {
-          promises.push(kclManager.hidePlanes())
+        if (!executingEditor._isAstEmpty(executingEditor.ast)) {
+          promises.push(executingEditor.hidePlanes())
         }
         return Promise.all(promises)
       }, reportRejection)()
@@ -149,9 +149,10 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     if (arg.selectionFilter) {
-      kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+      executingEditor.setSelectionFilter(arg.selectionFilter, wasmInstance)
     }
-    return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
+    return () =>
+      executingEditor.setSelectionFilterToDefault(wasmInstance, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter, wasmInstance])
 
@@ -164,8 +165,10 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
-            ' selected'
+          ? getSelectionTypeDisplayText(
+              executingEditor.astSignal.value,
+              selection
+            ) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}

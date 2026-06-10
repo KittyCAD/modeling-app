@@ -8,11 +8,11 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
 
 export function DebugArtifactGraph() {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const artifactGraphTree = useMemo(() => {
-    return computeTree(kclManager.artifactGraph)
+    return computeTree(executingEditor.artifactGraph)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.artifactGraph])
+  }, [executingEditor.artifactGraph])
 
   const filterKeys: string[] = ['codeRef', 'pathToNode']
   return (

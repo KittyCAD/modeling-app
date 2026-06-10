@@ -75,12 +75,12 @@ export function OpenedProject() {
   useSignals()
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
     useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects(executingEditor)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -127,11 +127,13 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') {
       return
     }
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+    if (
+      executingEditor.mlEphantManagerMachineBulkManipulatingFileSystem === false
+    ) {
       return
     }
     const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    executingEditor.mlEphantManagerMachineBulkManipulatingFileSystem = false
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(
@@ -141,19 +143,25 @@ export function OpenedProject() {
       return
     }
 
-    kclManager
+    executingEditor
       .executeCode()
       .then(async () => {
         if (reloadBehavior === 'execute-and-reset-camera') {
           await resetCameraPosition({
-            sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
+            sceneInfra: executingEditor.sceneInfra,
+            engineCommandManager: executingEditor.engineCommandManager,
             settingsActor,
           })
         }
       })
       .catch(reportRejection)
-  }, [systemIOState, kclManager, modelingState, modelingSend, settingsActor])
+  }, [
+    systemIOState,
+    executingEditor,
+    modelingState,
+    modelingSend,
+    settingsActor,
+  ])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -163,7 +171,7 @@ export function OpenedProject() {
     )
   }, [onProjectOpen, projectName, projectPath, project])
 
-  useHotKeyListener(kclManager)
+  useHotKeyListener(executingEditor)
 
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
@@ -189,19 +197,19 @@ export function OpenedProject() {
   // with the wrapper.
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
-    kclManager.undo()
+    executingEditor.undo()
   })
   useHotkeys('mod+shift+z', (e) => {
     e.preventDefault()
-    kclManager.redo()
+    executingEditor.redo()
   })
 
   useHotkeyWrapper(
     ['alt + shift + f'],
     () => {
-      void kclManager.format()
+      void executingEditor.format()
     },
-    kclManager,
+    executingEditor,
     {
       enabled: !isDesktop(),
       enableOnContentEditable: true,
@@ -214,9 +222,9 @@ export function OpenedProject() {
   useHotkeyWrapper(
     ['ctrl + shift + c'],
     () => {
-      void kclManager.convertToVariable()
+      void executingEditor.convertToVariable()
     },
-    kclManager
+    executingEditor
   )
 
   useEngineConnectionSubscriptions()
@@ -253,7 +261,7 @@ export function OpenedProject() {
           TutorialRequestToast({
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
+            executingEditor,
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,
@@ -274,7 +282,7 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
-    kclManager,
+    executingEditor,
     systemIOActor,
     settingsActor,
   ])
@@ -282,11 +290,11 @@ export function OpenedProject() {
   // This is, at time of writing, the only spot we need @preact/signals-react,
   // because we can't use the core `effect()` function for this signal, because
   // it is initially set to `true`, and will break the web app.
-  // TODO: get the loading pattern of KclManager in order so that it's for real available,
+  // TODO: get the loading pattern of ExecutingEditor in order so that it's for real available,
   // then you might be able to uninstall this package and stick to just using signals-core.
   useSignalEffect(() => {
     const needsWasmInitFailedToast =
-      !isDesktop() && kclManager.wasmInitFailedSignal.value
+      !isDesktop() && executingEditor.wasmInitFailedSignal.value
     if (needsWasmInitFailedToast) {
       toast.success(
         () =>
@@ -335,11 +343,11 @@ export function OpenedProject() {
     () => (
       <UndoRedoButtons
         data-testid="app-header-undo-redo"
-        kclManager={kclManager}
+        executingEditor={executingEditor}
         className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
       />
     ),
-    [kclManager]
+    [executingEditor]
   )
 
   const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
@@ -375,7 +383,7 @@ export function OpenedProject() {
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
-            artifactGraph={kclManager.artifactGraph}
+            artifactGraph={executingEditor.artifactGraph}
           />
         </section>
         <StatusBar

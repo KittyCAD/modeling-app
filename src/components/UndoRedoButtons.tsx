@@ -2,16 +2,16 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { type HTMLProps, type MouseEventHandler } from 'react'
 
 export function UndoRedoButtons({
-  kclManager,
+  executingEditor,
   ...props
-}: HTMLProps<HTMLDivElement> & { kclManager: KclManager }) {
+}: HTMLProps<HTMLDivElement> & { executingEditor: ExecutingEditor }) {
   useSignals()
   return (
     <div {...props}>
@@ -19,17 +19,17 @@ export function UndoRedoButtons({
         label="Undo"
         keyboardShortcut="mod+z"
         iconName="arrowTurnLeft"
-        onClick={() => kclManager.undo()}
+        onClick={() => executingEditor.undo()}
         className="rounded-r-none"
-        disabled={kclManager.undoDepth.value === 0}
+        disabled={executingEditor.undoDepth.value === 0}
       />
       <UndoOrRedoButton
         label="Redo"
         keyboardShortcut="mod+shift+z"
         iconName="arrowTurnRight"
-        onClick={() => kclManager.redo()}
+        onClick={() => executingEditor.redo()}
         className="rounded-none"
-        disabled={kclManager.redoDepth.value === 0}
+        disabled={executingEditor.redoDepth.value === 0}
       />
       {/** TODO: Remove the refresh button when users don't need it so much. */}
       <UndoOrRedoButton

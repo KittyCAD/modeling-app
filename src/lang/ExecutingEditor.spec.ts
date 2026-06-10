@@ -4,13 +4,13 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { createEmptyAst } from '@src/editor/plugins/ast'
-import { File, KclManager } from '@src/lang/KclManager'
+import { ExecutingEditor, File } from '@src/lang/ExecutingEditor'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  createKclManagerTestHarness,
+  createExecutingEditorTestHarness,
   getLatestDispatchedDiagnostics,
-} from '@src/lang/testHelpers/kclManagerTestHarness'
+} from '@src/lang/testHelpers/executingEditorTestHarness'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -55,13 +55,13 @@ function createEmptySceneGraphDelta(): SceneGraphDelta {
   }
 }
 
-function enableSketchSolveEditorExecution(kclManager: KclManager) {
-  kclManager.modelingState = {
+function enableSketchSolveEditorExecution(executingEditor: ExecutingEditor) {
+  executingEditor.modelingState = {
     matches: (value: unknown) => value === 'sketchSolveMode',
-  } as unknown as NonNullable<KclManager['modelingState']>
-  kclManager.engineCommandManager.connection = {
+  } as unknown as NonNullable<ExecutingEditor['modelingState']>
+  executingEditor.engineCommandManager.connection = {
     connected: true,
-  } as unknown as typeof kclManager.engineCommandManager.connection
+  } as unknown as typeof executingEditor.engineCommandManager.connection
 }
 
 afterEach(() => {
@@ -71,9 +71,9 @@ afterEach(() => {
   localStorage?.clear()
 })
 
-describe('KclManager diagnostics', () => {
+describe('ExecutingEditor diagnostics', () => {
   it('filters out duplicated diagnostics', () => {
-    const { kclManager } = createKclManagerTestHarness()
+    const { executingEditor } = createExecutingEditorTestHarness()
 
     const duplicatedDiagnostics: Diagnostic[] = [
       {
@@ -97,12 +97,12 @@ describe('KclManager diagnostics', () => {
     ]
 
     expect(
-      kclManager.makeUniqueDiagnostics(duplicatedDiagnostics)
+      executingEditor.makeUniqueDiagnostics(duplicatedDiagnostics)
     ).toStrictEqual([duplicatedDiagnostics[0]])
   })
 
   it('filters duplicated diagnostics while preserving distinct ones', () => {
-    const { kclManager } = createKclManagerTestHarness()
+    const { executingEditor } = createExecutingEditorTestHarness()
 
     const duplicatedDiagnostics: Diagnostic[] = [
       {
@@ -126,18 +126,18 @@ describe('KclManager diagnostics', () => {
     ]
 
     expect(
-      kclManager.makeUniqueDiagnostics(duplicatedDiagnostics)
+      executingEditor.makeUniqueDiagnostics(duplicatedDiagnostics)
     ).toStrictEqual([duplicatedDiagnostics[0], duplicatedDiagnostics[2]])
   })
 
   it('filters out diagnostics whose ranges are outside the current document', () => {
-    const { kclManager } = createKclManagerTestHarness('abcd')
-    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+    const { executingEditor } = createExecutingEditorTestHarness('abcd')
+    const dispatchSpy = vi.spyOn(executingEditor.editorView, 'dispatch')
 
     const validDiagnostic = createDiagnostic(0, 2, 'valid')
     const staleDiagnostic = createDiagnostic(3, 5, 'stale')
 
-    kclManager.setDiagnostics([validDiagnostic, staleDiagnostic])
+    executingEditor.setDiagnostics([validDiagnostic, staleDiagnostic])
 
     expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
       validDiagnostic,
@@ -145,8 +145,8 @@ describe('KclManager diagnostics', () => {
   })
 
   it('drops stale diagnostics after deleting code while diagnostics are present', () => {
-    const { kclManager } = createKclManagerTestHarness('0123456789')
-    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+    const { executingEditor } = createExecutingEditorTestHarness('0123456789')
+    const dispatchSpy = vi.spyOn(executingEditor.editorView, 'dispatch')
 
     const baseDiagnostic = createDiagnostic(0, 2, 'base diagnostic')
     const staleBaseDiagnostic = createDiagnostic(8, 10, 'stale base diagnostic')
@@ -161,14 +161,14 @@ describe('KclManager diagnostics', () => {
       'stale sketch solve diagnostic'
     )
 
-    kclManager.diagnostics = [baseDiagnostic, staleBaseDiagnostic]
-    kclManager.setSketchSolveDiagnostics([
+    executingEditor.diagnostics = [baseDiagnostic, staleBaseDiagnostic]
+    executingEditor.setSketchSolveDiagnostics([
       sketchSolveDiagnostic,
       staleSketchSolveDiagnostic,
     ])
 
     expect(() =>
-      kclManager.updateCodeEditor('012', {
+      executingEditor.updateCodeEditor('012', {
         shouldExecute: false,
         shouldWriteToDisk: false,
         shouldResetCamera: false,
@@ -182,13 +182,13 @@ describe('KclManager diagnostics', () => {
   })
 
   it('deduplicates identical diagnostics across base and sketch-solve layers', () => {
-    const { kclManager } = createKclManagerTestHarness('abcdef')
-    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+    const { executingEditor } = createExecutingEditorTestHarness('abcdef')
+    const dispatchSpy = vi.spyOn(executingEditor.editorView, 'dispatch')
 
     const duplicateDiagnostic = createDiagnostic(1, 4, 'duplicate')
 
-    kclManager.diagnostics = [duplicateDiagnostic]
-    kclManager.setSketchSolveDiagnostics([duplicateDiagnostic])
+    executingEditor.diagnostics = [duplicateDiagnostic]
+    executingEditor.setSketchSolveDiagnostics([duplicateDiagnostic])
 
     expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
       duplicateDiagnostic,
@@ -196,8 +196,8 @@ describe('KclManager diagnostics', () => {
   })
 
   it('clears sketch-solve diagnostics without persisting them into the base diagnostics layer', () => {
-    const { kclManager } = createKclManagerTestHarness('abcdef')
-    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+    const { executingEditor } = createExecutingEditorTestHarness('abcdef')
+    const dispatchSpy = vi.spyOn(executingEditor.editorView, 'dispatch')
 
     const baseDiagnostic = createDiagnostic(0, 2, 'base diagnostic')
     const sketchSolveDiagnostic = createDiagnostic(
@@ -206,9 +206,9 @@ describe('KclManager diagnostics', () => {
       'sketch solve diagnostic'
     )
 
-    kclManager.diagnostics = [baseDiagnostic]
-    kclManager.setSketchSolveDiagnostics([sketchSolveDiagnostic])
-    kclManager.setSketchSolveDiagnostics([])
+    executingEditor.diagnostics = [baseDiagnostic]
+    executingEditor.setSketchSolveDiagnostics([sketchSolveDiagnostic])
+    executingEditor.setSketchSolveDiagnostics([])
 
     expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
       baseDiagnostic,
@@ -216,13 +216,13 @@ describe('KclManager diagnostics', () => {
   })
 
   it('writes to file when the code is unchanged and shouldWriteToDisk is true', () => {
-    const { kclManager } = createKclManagerTestHarness('persist me')
+    const { executingEditor } = createExecutingEditorTestHarness('persist me')
     const writeToFileSpy = vi
-      .spyOn(kclManager, 'writeToFile')
+      .spyOn(executingEditor, 'writeToFile')
       .mockResolvedValue(undefined)
 
-    const currentCode = kclManager.code
-    kclManager.updateCodeEditor(currentCode, {
+    const currentCode = executingEditor.code
+    executingEditor.updateCodeEditor(currentCode, {
       shouldWriteToDisk: true,
       shouldExecute: false,
       shouldResetCamera: false,
@@ -235,14 +235,14 @@ describe('KclManager diagnostics', () => {
 
   it('writes to file for same-code sketch checkpoint commits', () => {
     const previewCode = 'drag preview source'
-    const { kclManager } = createKclManagerTestHarness(previewCode)
+    const { executingEditor } = createExecutingEditorTestHarness(previewCode)
     const writeToFileSpy = vi
-      .spyOn(kclManager, 'writeToFile')
+      .spyOn(executingEditor, 'writeToFile')
       .mockResolvedValue(undefined)
-    ;(kclManager as any).lastCommittedCode = 'source before drag'
-    ;(kclManager as any).lastCommittedSketchCheckpointId = 2
+    ;(executingEditor as any).lastCommittedCode = 'source before drag'
+    ;(executingEditor as any).lastCommittedSketchCheckpointId = 2
 
-    kclManager.updateCodeEditor(
+    executingEditor.updateCodeEditor(
       previewCode,
       {
         shouldExecute: false,
@@ -260,13 +260,13 @@ describe('KclManager diagnostics', () => {
   })
 
   it('does not write to file when the code is unchanged and shouldWriteToDisk is false', () => {
-    const { kclManager } = createKclManagerTestHarness('persist me')
+    const { executingEditor } = createExecutingEditorTestHarness('persist me')
     const writeToFileSpy = vi
-      .spyOn(kclManager, 'writeToFile')
+      .spyOn(executingEditor, 'writeToFile')
       .mockResolvedValue(undefined)
 
-    const currentCode = kclManager.code
-    kclManager.updateCodeEditor(currentCode, {
+    const currentCode = executingEditor.code
+    executingEditor.updateCodeEditor(currentCode, {
       shouldWriteToDisk: false,
       shouldExecute: false,
       shouldResetCamera: false,
@@ -276,14 +276,14 @@ describe('KclManager diagnostics', () => {
   })
 
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
-    const { kclManager } = createKclManagerTestHarness('persist me')
+    const { executingEditor } = createExecutingEditorTestHarness('persist me')
     const writeToFileSpy = vi
-      .spyOn(kclManager, 'writeToFile')
+      .spyOn(executingEditor, 'writeToFile')
       .mockResolvedValue(undefined)
 
-    kclManager.engineCommandManager.started = true
+    executingEditor.engineCommandManager.started = true
 
-    kclManager.updateCodeEditor('changed programmatically', {
+    executingEditor.updateCodeEditor('changed programmatically', {
       shouldWriteToDisk: false,
       shouldExecute: false,
       shouldResetCamera: false,
@@ -295,22 +295,22 @@ describe('KclManager diagnostics', () => {
   it('debounces repeated direct editor edits down to one execution of the latest code', async () => {
     vi.useFakeTimers()
 
-    const { kclManager } = createKclManagerTestHarness('a')
+    const { executingEditor } = createExecutingEditorTestHarness('a')
     const executeCodeSpy = vi
-      .spyOn(kclManager, 'executeCode')
+      .spyOn(executingEditor, 'executeCode')
       .mockResolvedValue(undefined)
 
-    kclManager.engineCommandManager.started = false
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    executingEditor.engineCommandManager.started = false
+    executingEditor.engineCommandManager.connection = { connected: true } as any
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
     })
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 2, to: 2, insert: 'c' },
     })
 
-    expect(kclManager.code).toBe('abc')
+    expect(executingEditor.code).toBe('abc')
     expect(executeCodeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(999)
@@ -322,43 +322,43 @@ describe('KclManager diagnostics', () => {
   })
 
   it('tracks whether the editor differs from the last execution', () => {
-    const { kclManager } = createKclManagerTestHarness('a')
-    ;(kclManager as any).markCodeAsExecuted('a')
+    const { executingEditor } = createExecutingEditorTestHarness('a')
+    ;(executingEditor as any).markCodeAsExecuted('a')
 
-    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+    expect(executingEditor.hasEditsSinceLastExecutionSignal.value).toBe(false)
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
     })
 
-    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(true)
+    expect(executingEditor.hasEditsSinceLastExecutionSignal.value).toBe(true)
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 1, to: 2, insert: '' },
     })
 
-    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+    expect(executingEditor.hasEditsSinceLastExecutionSignal.value).toBe(false)
   })
 
   it('marks fresh direct sketch editor executions as derived source updates', async () => {
     vi.useFakeTimers()
 
-    const { kclManager } = createKclManagerTestHarness('base')
+    const { executingEditor } = createExecutingEditorTestHarness('base')
     const sceneGraphDelta = createEmptySceneGraphDelta()
     const checkpointId = 55
     const modelingSendSpy = vi.fn()
-    enableSketchSolveEditorExecution(kclManager)
-    kclManager.modelingSend = modelingSendSpy
+    enableSketchSolveEditorExecution(executingEditor)
+    executingEditor.modelingSend = modelingSendSpy
 
-    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
-    vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockResolvedValue({
+    vi.spyOn(executingEditor, 'executeCode').mockResolvedValue(undefined)
+    vi.spyOn(executingEditor.rustContext, 'hackSetProgram').mockResolvedValue({
       type: 'Success',
       sceneGraph: sceneGraphDelta.new_graph,
       execOutcome: sceneGraphDelta.exec_outcome,
       checkpointId,
     })
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 4, to: 4, insert: ' fresh' },
     })
 
@@ -382,31 +382,34 @@ describe('KclManager diagnostics', () => {
   it('drops direct sketch editor executions that go stale while parsing executes', async () => {
     vi.useFakeTimers()
 
-    const { kclManager } = createKclManagerTestHarness('base')
+    const { executingEditor } = createExecutingEditorTestHarness('base')
     const deferredExecution = createDeferred<undefined>()
     const modelingSendSpy = vi.fn()
-    enableSketchSolveEditorExecution(kclManager)
-    kclManager.modelingSend = modelingSendSpy
+    enableSketchSolveEditorExecution(executingEditor)
+    executingEditor.modelingSend = modelingSendSpy
 
-    vi.spyOn(kclManager, 'executeCode').mockReturnValue(
+    vi.spyOn(executingEditor, 'executeCode').mockReturnValue(
       deferredExecution.promise
     )
-    const hackSetProgramSpy = vi.spyOn(kclManager.rustContext, 'hackSetProgram')
+    const hackSetProgramSpy = vi.spyOn(
+      executingEditor.rustContext,
+      'hackSetProgram'
+    )
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 4, to: 4, insert: ' stale' },
     })
 
     await vi.advanceTimersByTimeAsync(1000)
-    expect(kclManager.code).toBe('base stale')
+    expect(executingEditor.code).toBe('base stale')
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 10, to: 10, insert: ' newer' },
     })
     deferredExecution.resolve(undefined)
     await flushPromises()
 
-    expect(kclManager.code).toBe('base stale newer')
+    expect(executingEditor.code).toBe('base stale newer')
     expect(hackSetProgramSpy).not.toHaveBeenCalled()
     expect(modelingSendSpy).not.toHaveBeenCalled()
   })
@@ -414,22 +417,22 @@ describe('KclManager diagnostics', () => {
   it('drops direct sketch editor executions that go stale while Rust updates the program', async () => {
     vi.useFakeTimers()
 
-    const { kclManager } = createKclManagerTestHarness('base')
+    const { executingEditor } = createExecutingEditorTestHarness('base')
     const sceneGraphDelta = createEmptySceneGraphDelta()
     const deferredSetProgram =
       createDeferred<
-        Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>
+        Awaited<ReturnType<typeof executingEditor.rustContext.hackSetProgram>>
       >()
     const modelingSendSpy = vi.fn()
-    enableSketchSolveEditorExecution(kclManager)
-    kclManager.modelingSend = modelingSendSpy
+    enableSketchSolveEditorExecution(executingEditor)
+    executingEditor.modelingSend = modelingSendSpy
 
-    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+    vi.spyOn(executingEditor, 'executeCode').mockResolvedValue(undefined)
     const hackSetProgramSpy = vi
-      .spyOn(kclManager.rustContext, 'hackSetProgram')
+      .spyOn(executingEditor.rustContext, 'hackSetProgram')
       .mockReturnValue(deferredSetProgram.promise)
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 4, to: 4, insert: ' stale' },
     })
 
@@ -437,7 +440,7 @@ describe('KclManager diagnostics', () => {
     await flushPromises()
     expect(hackSetProgramSpy).toHaveBeenCalledTimes(1)
 
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       changes: { from: 10, to: 10, insert: ' newer' },
     })
     deferredSetProgram.resolve({
@@ -448,22 +451,24 @@ describe('KclManager diagnostics', () => {
     })
     await flushPromises()
 
-    expect(kclManager.code).toBe('base stale newer')
+    expect(executingEditor.code).toBe('base stale newer')
     expect(modelingSendSpy).not.toHaveBeenCalled()
   })
 
   it('debounces repeated programmatic updates so only the latest buffer is written', async () => {
     vi.useFakeTimers()
 
-    const { kclManager } = createKclManagerTestHarness('start')
-    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    const { executingEditor } = createExecutingEditorTestHarness('start')
+    const writeSpy = vi
+      .spyOn(executingEditor, 'write')
+      .mockResolvedValue(undefined)
 
-    kclManager.path = '/tmp/kcl-manager-write-test.kcl'
-    ;(kclManager as any).markFileCodeAsSynced('start')
-    kclManager.engineCommandManager.started = true
+    executingEditor.path = '/tmp/kcl-manager-write-test.kcl'
+    ;(executingEditor as any).markFileCodeAsSynced('start')
+    executingEditor.engineCommandManager.started = true
     vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
 
-    kclManager.updateCodeEditor('first', {
+    executingEditor.updateCodeEditor('first', {
       shouldExecute: false,
       shouldWriteToDisk: true,
       shouldResetCamera: false,
@@ -471,7 +476,7 @@ describe('KclManager diagnostics', () => {
 
     await vi.advanceTimersByTimeAsync(500)
 
-    kclManager.updateCodeEditor('second', {
+    executingEditor.updateCodeEditor('second', {
       shouldExecute: false,
       shouldWriteToDisk: true,
       shouldResetCamera: false,
@@ -486,25 +491,25 @@ describe('KclManager diagnostics', () => {
   })
 
   it('reloads clean editor state from disk watcher updates', async () => {
-    const { kclManager } = createKclManagerTestHarness('from disk')
+    const { executingEditor } = createExecutingEditorTestHarness('from disk')
 
-    kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
-    ;(kclManager as any).markFileCodeAsSynced('from disk')
+    executingEditor.path = '/tmp/kcl-manager-watch-test.kcl'
+    ;(executingEditor as any).systemDeps.projectPath.value = '/tmp/project'
+    ;(executingEditor as any).markFileCodeAsSynced('from disk')
 
     vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external edit')
 
-    const watchHandler = kclManager.onWatchEvent.at(-1)
+    const watchHandler = executingEditor.onWatchEvent.at(-1)
     expect(watchHandler).toBeDefined()
 
-    watchHandler?.('change', kclManager.path)
+    watchHandler?.('change', executingEditor.path)
     await flushPromises()
 
-    expect(kclManager.code).toBe('external edit')
+    expect(executingEditor.code).toBe('external edit')
   })
 
   it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
-    const { kclManager } = createKclManagerTestHarness('')
+    const { executingEditor } = createExecutingEditorTestHarness('')
     const path = '/tmp/kcl-manager-watch-open-test.kcl'
     const readSpy = vi
       .spyOn(File.ioImplementations, 'read')
@@ -513,14 +518,14 @@ describe('KclManager diagnostics', () => {
       .spyOn(File.ioImplementations, 'watch')
       .mockImplementation(() => {})
 
-    const opened = await KclManager.fromFile(
+    const opened = await ExecutingEditor.fromFile(
       new File(path, 101),
-      (kclManager as any).systemDeps,
-      kclManager
+      (executingEditor as any).systemDeps,
+      executingEditor
     )
 
-    expect(opened).toBe(kclManager)
-    expect(kclManager.watching).toBe(true)
+    expect(opened).toBe(executingEditor)
+    expect(executingEditor.watching).toBe(true)
     expect(watchSpy).toHaveBeenCalledWith(
       path,
       expect.any(String),
@@ -532,24 +537,24 @@ describe('KclManager diagnostics', () => {
   })
 
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
-    const { kclManager } = createKclManagerTestHarness('local base')
+    const { executingEditor } = createExecutingEditorTestHarness('local base')
     const deferredRead = createDeferred<string>()
-    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+    const updateCodeEditorSpy = vi.spyOn(executingEditor, 'updateCodeEditor')
 
-    kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
-    ;(kclManager as any).markFileCodeAsSynced('local base')
+    executingEditor.path = '/tmp/kcl-manager-watch-test.kcl'
+    ;(executingEditor as any).systemDeps.projectPath.value = '/tmp/project'
+    ;(executingEditor as any).markFileCodeAsSynced('local base')
 
     vi.spyOn(File.ioImplementations, 'read').mockReturnValue(
       deferredRead.promise
     )
 
-    const watchHandler = kclManager.onWatchEvent.at(-1)
+    const watchHandler = executingEditor.onWatchEvent.at(-1)
     expect(watchHandler).toBeDefined()
 
-    watchHandler?.('change', kclManager.path)
+    watchHandler?.('change', executingEditor.path)
 
-    kclManager.updateCodeEditor('local newer', {
+    executingEditor.updateCodeEditor('local newer', {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
@@ -560,24 +565,25 @@ describe('KclManager diagnostics', () => {
     deferredRead.resolve('external edit')
     await flushPromises()
 
-    expect(kclManager.code).toBe('local newer')
+    expect(executingEditor.code).toBe('local newer')
     expect(updateCodeEditorSpy).toHaveBeenCalledTimes(1)
   })
 
   it('refuses to replace the editor with an empty AST unless deletion was explicit', async () => {
-    const { kclManager } = createKclManagerTestHarness('preserve me')
+    const { executingEditor } = createExecutingEditorTestHarness('preserve me')
     const writeToFileSpy = vi
-      .spyOn(kclManager, 'writeToFile')
+      .spyOn(executingEditor, 'writeToFile')
       .mockResolvedValue(undefined)
 
-    await kclManager.updateEditorWithAstAndWriteToFile(createEmptyAst())
+    await executingEditor.updateEditorWithAstAndWriteToFile(createEmptyAst())
 
-    expect(kclManager.code).toBe('preserve me')
+    expect(executingEditor.code).toBe('preserve me')
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 
   it('drops stale sketch checkpoint restores when a newer local edit lands first', async () => {
-    const { kclManager } = createKclManagerTestHarness('checkpoint base')
+    const { executingEditor } =
+      createExecutingEditorTestHarness('checkpoint base')
     const deferredRestore = createDeferred<{
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
@@ -593,7 +599,7 @@ describe('KclManager diagnostics', () => {
         const data = event.data as {
           sourceDelta: SourceDelta
         }
-        kclManager.updateCodeEditor(data.sourceDelta.text, {
+        executingEditor.updateCodeEditor(data.sourceDelta.text, {
           shouldExecute: false,
           shouldWriteToDisk: false,
           shouldResetCamera: false,
@@ -602,18 +608,19 @@ describe('KclManager diagnostics', () => {
       }
     })
 
-    kclManager.modelingState = {
+    executingEditor.modelingState = {
       matches: (value: unknown) => value === 'sketchSolveMode',
     } as any
-    kclManager.modelingSend = modelingSendSpy
+    executingEditor.modelingSend = modelingSendSpy
 
-    vi.spyOn(kclManager.rustContext, 'restoreSketchCheckpoint').mockReturnValue(
-      deferredRestore.promise
-    )
+    vi.spyOn(
+      executingEditor.rustContext,
+      'restoreSketchCheckpoint'
+    ).mockReturnValue(deferredRestore.promise)
 
-    void (kclManager as any).restoreSketchCheckpointForHistory(42)
+    void (executingEditor as any).restoreSketchCheckpointForHistory(42)
 
-    kclManager.updateCodeEditor('local newer', {
+    executingEditor.updateCodeEditor('local newer', {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
@@ -631,7 +638,7 @@ describe('KclManager diagnostics', () => {
     })
     await flushPromises()
 
-    expect(kclManager.code).toBe('local newer')
+    expect(executingEditor.code).toBe('local newer')
     expect(modelingSendSpy).not.toHaveBeenCalled()
   })
 
@@ -640,21 +647,22 @@ describe('KclManager diagnostics', () => {
     const recoveredCode = 'last good preview'
     const preDragCheckpointId = 7
     const recoveredCheckpointId = 11
-    const { kclManager } = createKclManagerTestHarness(baselineCode)
+    const { executingEditor } = createExecutingEditorTestHarness(baselineCode)
     const modelingSendSpy = vi.fn()
 
-    kclManager.modelingState = {
+    executingEditor.modelingState = {
       matches: (value: unknown) => value === 'sketchSolveMode',
     } as any
-    kclManager.modelingSend = modelingSendSpy
-    ;(kclManager as any).lastCommittedCode = baselineCode
-    ;(kclManager as any).lastCommittedAdditionalSpec = {
+    executingEditor.modelingSend = modelingSendSpy
+    ;(executingEditor as any).lastCommittedCode = baselineCode
+    ;(executingEditor as any).lastCommittedAdditionalSpec = {
       sketchCheckpointId: preDragCheckpointId,
     }
-    ;(kclManager as any).lastCommittedSketchCheckpointId = preDragCheckpointId
+    ;(executingEditor as any).lastCommittedSketchCheckpointId =
+      preDragCheckpointId
 
     const restoreSketchCheckpointSpy = vi
-      .spyOn(kclManager.rustContext, 'restoreSketchCheckpoint')
+      .spyOn(executingEditor.rustContext, 'restoreSketchCheckpoint')
       .mockResolvedValue({
         kclSource: { text: baselineCode },
         sceneGraphDelta: {
@@ -665,14 +673,14 @@ describe('KclManager diagnostics', () => {
         },
       })
 
-    kclManager.updateCodeEditor(recoveredCode, {
+    executingEditor.updateCodeEditor(recoveredCode, {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
       shouldAddToHistory: false,
     })
 
-    kclManager.updateCodeEditor(
+    executingEditor.updateCodeEditor(
       recoveredCode,
       {
         shouldExecute: false,
@@ -683,14 +691,16 @@ describe('KclManager diagnostics', () => {
       }
     )
 
-    expect(kclManager.code).toBe(recoveredCode)
-    expect(kclManager.currentSketchCheckpointId).toBe(recoveredCheckpointId)
+    expect(executingEditor.code).toBe(recoveredCode)
+    expect(executingEditor.currentSketchCheckpointId).toBe(
+      recoveredCheckpointId
+    )
 
-    kclManager.undo()
+    executingEditor.undo()
     await flushPromises()
 
-    expect(kclManager.code).toBe(baselineCode)
-    expect(kclManager.currentSketchCheckpointId).toBe(preDragCheckpointId)
+    expect(executingEditor.code).toBe(baselineCode)
+    expect(executingEditor.currentSketchCheckpointId).toBe(preDragCheckpointId)
     expect(restoreSketchCheckpointSpy).toHaveBeenCalledWith(preDragCheckpointId)
     expect(modelingSendSpy).toHaveBeenCalledWith({
       type: 'update sketch outcome',
@@ -710,21 +720,24 @@ describe('KclManager diagnostics', () => {
   })
 
   it('drops stale ast-driven editor rewrites when the document changed while waiting', async () => {
-    const { kclManager } = createKclManagerTestHarness('x = 1')
-    const originalWasmPromise = kclManager.wasmInstancePromise
+    const { executingEditor } = createExecutingEditorTestHarness('x = 1')
+    const originalWasmPromise = executingEditor.wasmInstancePromise
     const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
-    const ast = await kclManager.safeParse('x = 2')
+    const ast = await executingEditor.safeParse('x = 2')
 
     expect(ast).not.toBeNull()
 
-    kclManager.wasmInstancePromise = deferredWasm.promise
+    executingEditor.wasmInstancePromise = deferredWasm.promise
 
-    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
+    const pendingRewrite = executingEditor.updateEditorWithAstAndWriteToFile(
+      ast!,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      }
+    )
 
-    kclManager.updateCodeEditor('local newer', {
+    executingEditor.updateCodeEditor('local newer', {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
@@ -734,26 +747,29 @@ describe('KclManager diagnostics', () => {
     deferredWasm.resolve(await originalWasmPromise)
     await pendingRewrite
 
-    expect(kclManager.code).toBe('local newer')
+    expect(executingEditor.code).toBe('local newer')
   })
 
   it('allows ast-driven editor rewrites to survive intermediate programmatic updates when requested', async () => {
-    const { kclManager } = createKclManagerTestHarness('x = 1')
-    const originalWasmPromise = kclManager.wasmInstancePromise
+    const { executingEditor } = createExecutingEditorTestHarness('x = 1')
+    const originalWasmPromise = executingEditor.wasmInstancePromise
     const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
-    const ast = await kclManager.safeParse('x = 2')
+    const ast = await executingEditor.safeParse('x = 2')
 
     expect(ast).not.toBeNull()
 
-    kclManager.wasmInstancePromise = deferredWasm.promise
+    executingEditor.wasmInstancePromise = deferredWasm.promise
 
-    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-      allowProgrammaticDocumentChanges: true,
-    })
+    const pendingRewrite = executingEditor.updateEditorWithAstAndWriteToFile(
+      ast!,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+        allowProgrammaticDocumentChanges: true,
+      }
+    )
 
-    kclManager.updateCodeEditor('intermediate programmatic', {
+    executingEditor.updateCodeEditor('intermediate programmatic', {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
@@ -763,23 +779,25 @@ describe('KclManager diagnostics', () => {
     deferredWasm.resolve(await originalWasmPromise)
     await pendingRewrite
 
-    expect(kclManager.code.trim()).toBe('x = 2')
+    expect(executingEditor.code.trim()).toBe('x = 2')
   })
 
   it('skips disk writes when the on-disk file changed since the last sync', async () => {
     vi.useFakeTimers()
 
     const path = '/tmp/kcl-manager-cas-write-test.kcl'
-    const { kclManager } = createKclManagerTestHarness('disk base')
-    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    const { executingEditor } = createExecutingEditorTestHarness('disk base')
+    const writeSpy = vi
+      .spyOn(executingEditor, 'write')
+      .mockResolvedValue(undefined)
 
-    kclManager.path = path
-    ;(kclManager as any).markFileCodeAsSynced('disk base')
-    kclManager.engineCommandManager.started = true
+    executingEditor.path = path
+    ;(executingEditor as any).markFileCodeAsSynced('disk base')
+    executingEditor.engineCommandManager.started = true
 
     vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external newer')
 
-    kclManager.updateCodeEditor('local newer', {
+    executingEditor.updateCodeEditor('local newer', {
       shouldExecute: false,
       shouldWriteToDisk: true,
       shouldResetCamera: false,
@@ -788,8 +806,8 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(writeSpy).not.toHaveBeenCalled()
-    expect(kclManager.code).toBe('local newer')
-    expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
+    expect(executingEditor.code).toBe('local newer')
+    expect((executingEditor as any).hasUnsavedLocalChanges()).toBe(true)
   })
 
   it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
@@ -797,12 +815,12 @@ describe('KclManager diagnostics', () => {
 
     const path = '/tmp/kcl-manager-recovery-test.kcl'
     const recoveryKey = getRecoverySnapshotKey(path)
-    const { kclManager } = createKclManagerTestHarness('disk base')
+    const { executingEditor } = createExecutingEditorTestHarness('disk base')
 
-    kclManager.path = path
-    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    executingEditor.path = path
+    ;(executingEditor as any).markFileCodeAsSynced('disk base')
 
-    kclManager.updateCodeEditor('recovered newer', {
+    executingEditor.updateCodeEditor('recovered newer', {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
@@ -817,9 +835,9 @@ describe('KclManager diagnostics', () => {
 
     vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
 
-    const reopened = await KclManager.fromFile(
+    const reopened = await ExecutingEditor.fromFile(
       new File(path, 99),
-      (kclManager as any).systemDeps
+      (executingEditor as any).systemDeps
     )
 
     expect(reopened.code).toBe('recovered newer')

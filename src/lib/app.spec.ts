@@ -1,5 +1,5 @@
 import { pluginsValueSpec } from '@kittycad/registry'
-import { File } from '@src/lang/KclManager'
+import { File } from '@src/lang/ExecutingEditor'
 import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'

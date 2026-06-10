@@ -3,7 +3,7 @@ import type {
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { emptyOperationsByModule } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { Themes } from '@src/lib/theme'
@@ -265,7 +265,7 @@ export function createControlPointSplineApiObject({
 /**
  * Mock dependencies
  * Note: SceneInfra only needs setCallbacks, but we mock it for simplicity
- * RustContext and KclManager MUST be mocked as they have WASM bindings and complex dependencies
+ * RustContext and ExecutingEditor MUST be mocked as they have WASM bindings and complex dependencies
  */
 export function createMockSceneInfra(): SceneInfra {
   return {
@@ -297,10 +297,10 @@ export function createMockRustContext(): RustContext {
   } as unknown as RustContext
 }
 
-export function createMockKclManager(): KclManager {
+export function createMockExecutingEditor(): ExecutingEditor {
   return {
     fileSettings: {
       defaultLengthUnit: 'Mm',
     },
-  } as unknown as KclManager
+  } as unknown as ExecutingEditor
 }

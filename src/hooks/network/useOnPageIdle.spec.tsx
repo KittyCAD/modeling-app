@@ -5,7 +5,7 @@ const hookMocks = vi.hoisted(() => {
   const state = {
     streamIdleMode: 5_000,
     modelingValue: 'idle',
-    kclManager: null as any,
+    executingEditor: null as any,
   }
 
   return {
@@ -22,7 +22,7 @@ const hookMocks = vi.hoisted(() => {
       },
     }),
     useSingletons: () => ({
-      kclManager: state.kclManager,
+      executingEditor: state.executingEditor,
     }),
     useModelingContext: () => ({
       state: {
@@ -54,7 +54,7 @@ describe('useOnPageIdle', () => {
     vi.useFakeTimers()
     hookMocks.state.streamIdleMode = 5_000
     hookMocks.state.modelingValue = 'idle'
-    hookMocks.state.kclManager = {
+    hookMocks.state.executingEditor = {
       isExecuting: false,
       sceneInfra: {
         camControls: {
@@ -75,7 +75,7 @@ describe('useOnPageIdle', () => {
   })
 
   test('does not disconnect while KCL is executing', async () => {
-    hookMocks.state.kclManager.isExecuting = true
+    hookMocks.state.executingEditor.isExecuting = true
 
     const startCallback = vi.fn()
     const idleCallback = vi.fn()
@@ -90,10 +90,11 @@ describe('useOnPageIdle', () => {
     await advance(30_000)
 
     expect(
-      hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState
+      hookMocks.state.executingEditor.sceneInfra.camControls
+        .saveRemoteCameraState
     ).not.toHaveBeenCalled()
     expect(
-      hookMocks.state.kclManager.engineCommandManager.tearDown
+      hookMocks.state.executingEditor.engineCommandManager.tearDown
     ).not.toHaveBeenCalled()
     expect(idleCallback).not.toHaveBeenCalled()
 
@@ -113,28 +114,29 @@ describe('useOnPageIdle', () => {
 
     await advance(4_000)
     expect(
-      hookMocks.state.kclManager.engineCommandManager.tearDown
+      hookMocks.state.executingEditor.engineCommandManager.tearDown
     ).not.toHaveBeenCalled()
 
-    hookMocks.state.kclManager.isExecuting = true
+    hookMocks.state.executingEditor.isExecuting = true
     await advance(10_000)
     expect(
-      hookMocks.state.kclManager.engineCommandManager.tearDown
+      hookMocks.state.executingEditor.engineCommandManager.tearDown
     ).not.toHaveBeenCalled()
 
-    hookMocks.state.kclManager.isExecuting = false
+    hookMocks.state.executingEditor.isExecuting = false
     await advance(5_000)
     expect(
-      hookMocks.state.kclManager.engineCommandManager.tearDown
+      hookMocks.state.executingEditor.engineCommandManager.tearDown
     ).not.toHaveBeenCalled()
 
     await advance(1_000)
 
     expect(
-      hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState
+      hookMocks.state.executingEditor.sceneInfra.camControls
+        .saveRemoteCameraState
     ).toHaveBeenCalledTimes(1)
     expect(
-      hookMocks.state.kclManager.engineCommandManager.tearDown
+      hookMocks.state.executingEditor.engineCommandManager.tearDown
     ).toHaveBeenCalledTimes(1)
     expect(idleCallback).toHaveBeenCalledTimes(1)
 

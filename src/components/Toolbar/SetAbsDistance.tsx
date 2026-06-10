@@ -5,7 +5,7 @@ import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
 } from '@src/components/SetAngleLengthModal'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createName, createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -28,12 +28,12 @@ type Constraint = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 export function absDistanceInfo({
   selectionRanges,
   constraint,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: Constraint
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -49,7 +49,7 @@ export function absDistanceInfo({
         : 'yAbs'
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance,
       ['CallExpressionKw']
@@ -69,7 +69,7 @@ export function absDistanceInfo({
 
   const transforms = getTransformInfos(
     selectionRanges,
-    kclManager.ast,
+    executingEditor.ast,
     disType,
     wasmInstance
   )
@@ -96,11 +96,11 @@ export function absDistanceInfo({
 export async function applyConstraintAbsDistance({
   selectionRanges,
   constraint,
-  kclManager,
+  executingEditor,
 }: {
   selectionRanges: Selections
   constraint: 'xAbs' | 'yAbs'
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -109,19 +109,19 @@ export async function applyConstraintAbsDistance({
   const info = absDistanceInfo({
     selectionRanges,
     constraint,
-    kclManager,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    executingEditor,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
 
   const transform1 = transformAstSketchLines({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { valueUsedInTransform } = transform1
@@ -138,18 +138,18 @@ export async function applyConstraintAbsDistance({
   let finalValue = removeDoubleNegatives(
     valueNode,
     sign,
-    await kclManager.wasmInstancePromise,
+    await executingEditor.wasmInstancePromise,
     variableName
   )
 
   const transform2 = transformAstSketchLines({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap } = transform2
@@ -177,12 +177,12 @@ export async function applyConstraintAbsDistance({
 export function applyConstraintAxisAlign({
   selectionRanges,
   constraint,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: 'snapToYAxis' | 'snapToXAxis'
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -193,7 +193,7 @@ export function applyConstraintAxisAlign({
   const info = absDistanceInfo({
     selectionRanges,
     constraint,
-    kclManager,
+    executingEditor,
     wasmInstance,
   })
   if (err(info)) return info
@@ -202,10 +202,10 @@ export function applyConstraintAxisAlign({
   let finalValue = createName(['turns'], 'ZERO')
 
   return transformAstSketchLines({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
     wasmInstance,

@@ -175,10 +175,10 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    const { kclManager } = window.app.singletons
-    kclManager.editorView.dispatch({
+    const { executingEditor } = window.app.singletons
+    executingEditor.editorView.dispatch({
       selection: {
-        anchor: kclManager.editorView.state.doc.length,
+        anchor: executingEditor.editorView.state.doc.length,
       },
       scrollIntoView: true,
     })

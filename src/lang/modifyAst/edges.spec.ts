@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   EdgeTreatmentType,
@@ -31,7 +31,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let rustContextInThisFile: RustContext = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 
@@ -46,10 +46,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   rustContextInThisFile = rustContext
   engineCommandManagerInThisFile = engineCommandManager
 })
@@ -159,7 +159,7 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -288,7 +288,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const boxSolidStart = code.indexOf('boxSolid = extrude')
       const boxSolidEnd = code.indexOf('bottomPlane =')
@@ -336,7 +336,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       expect(sweep).toBeDefined()
@@ -381,7 +381,7 @@ fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweepEdge = [...artifactGraph.values()].find(
         (a) => a.type === 'sweepEdge'
@@ -436,7 +436,7 @@ fillet001 = fillet(
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -484,7 +484,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweepEdge = [...artifactGraph.values()].find(
         (a) => a.type === 'sweepEdge'
@@ -527,7 +527,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangleWithFillet,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -570,7 +570,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweepEdge = [...artifactGraph.values()].find(
         (a) => a.type === 'sweepEdge'
@@ -612,7 +612,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoExtrudedTriangles,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Get all sweep artifacts (bodies)
@@ -667,7 +667,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         revolvedCShapeWithRectangularProfile,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find a sweepEdge from the revolve
@@ -709,7 +709,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -739,7 +739,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       expect(sweep).toBeDefined()
@@ -784,7 +784,7 @@ chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweepEdge = [...artifactGraph.values()].find(
         (a) => a.type === 'sweepEdge'
@@ -839,7 +839,7 @@ chamfer001 = chamfer(
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -886,7 +886,7 @@ chamfer001 = chamfer(
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -938,7 +938,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweepEdge = [...artifactGraph.values()].find(
         (a) => a.type === 'sweepEdge'
@@ -981,7 +981,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangleWithChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selection = createSelectionFromArtifacts(
         [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
@@ -1015,7 +1015,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoExtrudedTriangles,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Get all sweep artifacts (bodies)
@@ -1070,7 +1070,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         revolvedCShapeWithRectangularProfile,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find a sweepEdge from the revolve
@@ -1112,7 +1112,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const segments = [...artifactGraph.values()].filter(
@@ -1145,7 +1145,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const sweeps = [...artifactGraph.values()].filter(
@@ -1200,7 +1200,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchSolveSurfacesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const sweeps = [...artifactGraph.values()].filter(
@@ -1274,7 +1274,7 @@ ${extrudedTriangle}`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchSolveSweepEdgesAcrossExtrudesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const sweeps = [...artifactGraph.values()].filter(
@@ -1399,7 +1399,7 @@ surface001 = flipSurface(extrude002)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const sweeps = [...artifactGraph.values()].filter(
@@ -1453,7 +1453,7 @@ surface001 = flipSurface(extrude002)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchSolveSurfacesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const sweeps = [...artifactGraph.values()].filter(
@@ -1507,7 +1507,7 @@ surface001 = flipSurface(extrude002)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchSolveSurfacesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const sweeps = [...artifactGraph.values()].filter(
@@ -1561,7 +1561,7 @@ surface001 = flipSurface(extrude002)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const singleEdge = [...artifactGraph.values()].find(
@@ -1588,16 +1588,16 @@ surface001 = flipSurface(extrude002)
     edgeTreatmentSnippet: string,
     expectedCode: string,
     instance: ModuleType,
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
   ) => {
     // parse ast
     const ast = assertParse(code, instance)
 
     // update artifact graph
-    await kclManager.executeAst({ ast })
-    const artifactGraph = kclManager.artifactGraph
+    await executingEditor.executeAst({ ast })
+    const artifactGraph = executingEditor.artifactGraph
 
-    expect(kclManager.errors).toEqual([])
+    expect(executingEditor.errors).toEqual([])
 
     // define snippet range
     const edgeTreatmentRange = topLevelRange(
@@ -1671,7 +1671,7 @@ extrude001 = extrude(sketch001, length = -15)`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         it(`should delete a standalone assigned ${edgeTreatmentType} from a single segment`, async () => {
@@ -1699,7 +1699,7 @@ extrude001 = extrude(sketch001, length = -15)`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         it(`should delete a standalone ${edgeTreatmentType} without assignment from a single segment`, async () => {
@@ -1727,7 +1727,7 @@ extrude001 = extrude(sketch001, length = -15)`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         // getOppositeEdge and getNextAdjacentEdge cases
@@ -1756,7 +1756,7 @@ extrude001 = extrude(sketch001, length = -15)`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         it(`should delete a non-piped ${edgeTreatmentType} tagged with getNextAdjacentEdge`, async () => {
@@ -1784,7 +1784,7 @@ extrude001 = extrude(sketch001, length = -15)`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         // cases with several edge treatments
@@ -1819,7 +1819,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
@@ -1853,7 +1853,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         // Revolve-specific test
@@ -1892,7 +1892,7 @@ revolve001 = revolve(
             edgeTreatmentSnippet,
             expectedCode,
             instanceInThisFile,
-            kclManagerInThisFile
+            executingEditorInThisFile
           )
         }, 10_000)
         // Test deletion of geometrically impossible edge treatment

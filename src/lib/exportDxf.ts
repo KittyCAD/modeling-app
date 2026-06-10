@@ -1,6 +1,6 @@
 import type { WebSocketResponse } from '@kittycad/lib'
 import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   type StdLibCallOp,
   findOperationPlaneLikeArtifact,
@@ -29,19 +29,19 @@ function getSketchArtifactId(
 // by resolving the sketch artifact ID from the operation args.
 function findPlaneArtifactForSubtract2d(
   operation: StdLibCallOp,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ): Artifact | null {
   const sketchId = getSketchArtifactId(operation.unlabeledArg?.value)
   if (!sketchId) return null
 
-  const sketchArtifact = kclManager.artifactGraph.get(sketchId)
+  const sketchArtifact = executingEditor.artifactGraph.get(sketchId)
   const planeArtifact = getPlaneFromArtifact(
     sketchArtifact,
-    kclManager.artifactGraph
+    executingEditor.artifactGraph
   )
 
   if (planeArtifact instanceof Error) return null
-  return kclManager.artifactGraph.get(planeArtifact.id) ?? null
+  return executingEditor.artifactGraph.get(planeArtifact.id) ?? null
 }
 
 // Exports a sketch operation to DXF format
@@ -49,7 +49,7 @@ export async function exportSketchToDxf(
   operation: StdLibCallOp,
   dependencies: {
     engineCommandManager: ConnectionManager
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     toast: {
       error: (message: string, options?: ToastOptions) => void
       loading: (message: string) => string
@@ -70,7 +70,7 @@ export async function exportSketchToDxf(
 ): Promise<boolean | Error> {
   const {
     engineCommandManager,
-    kclManager,
+    executingEditor,
     toast,
     uuidv4,
     base64Decode,
@@ -83,7 +83,7 @@ export async function exportSketchToDxf(
     // For subtract2d operations, find the plane artifact from the same sketch
     let planeArtifact
     if (operation.name === 'subtract2d') {
-      planeArtifact = findPlaneArtifactForSubtract2d(operation, kclManager)
+      planeArtifact = findPlaneArtifactForSubtract2d(operation, executingEditor)
       if (!planeArtifact) {
         toast.error(
           'Could not find sketch to export from subtract2d operation.'
@@ -94,7 +94,7 @@ export async function exportSketchToDxf(
       // Get the plane artifact associated with this sketch operation
       planeArtifact = findOperationPlaneLikeArtifact(
         operation,
-        kclManager.artifactGraph
+        executingEditor.artifactGraph
       )
     }
 
@@ -112,7 +112,7 @@ export async function exportSketchToDxf(
     // Get all entity IDs from the plane's paths
     const entityIds: string[] = []
     for (const pathId of planeArtifact.pathIds) {
-      const pathArtifact = kclManager.artifactGraph.get(pathId)
+      const pathArtifact = executingEditor.artifactGraph.get(pathId)
       if (!pathArtifact) continue
       if ('compositeSolidId' in pathArtifact && pathArtifact.compositeSolidId) {
         // Sketch has been extruded - use the composite solid ID
@@ -217,7 +217,7 @@ export async function exportSketchToDxf(
     try {
       const decoded = base64Decode(
         selectedFile.contents,
-        await kclManager.wasmInstancePromise
+        await executingEditor.wasmInstancePromise
       )
       if (decoded instanceof Error) {
         console.error('Base64 decode failed:', decoded)
@@ -236,8 +236,8 @@ export async function exportSketchToDxf(
     // Generate meaningful filename from sketch name
     const sketchName = getOperationVariableName(
       operation,
-      kclManager.ast,
-      await kclManager.wasmInstancePromise
+      executingEditor.ast,
+      await executingEditor.wasmInstancePromise
     )
     const fileName = `${sketchName || 'sketch'}.dxf`
 

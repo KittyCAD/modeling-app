@@ -647,7 +647,7 @@ export const getDefaultGdtTolerance = (
   modelingContext?: ModelingMachineContext
 ) => {
   const defaultLengthUnit =
-    modelingContext?.kclManager.fileSettings.defaultLengthUnit ||
+    modelingContext?.executingEditor.fileSettings.defaultLengthUnit ||
     DEFAULT_DEFAULT_LENGTH_UNIT
   return `${KCL_DEFAULT_TOLERANCE}${defaultLengthUnit}`
 }
@@ -930,7 +930,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -938,8 +938,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addExtrude({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1046,7 +1046,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1054,8 +1054,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addSweep({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1120,7 +1120,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1128,8 +1128,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addLoft({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1186,7 +1186,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1194,8 +1194,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1286,7 +1286,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1294,8 +1294,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addShell({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Shell']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1333,7 +1333,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1341,8 +1341,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addHole({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Hole']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1481,7 +1481,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1489,9 +1489,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addSubtract({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Subtract']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1526,7 +1526,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1534,9 +1534,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addUnion({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Union']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1564,7 +1564,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1572,9 +1572,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addIntersect({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1603,7 +1603,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1611,9 +1611,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addSplit({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Split']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1659,7 +1659,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1667,9 +1667,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addOffsetPlane({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Offset plane']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        variables: kclManager.variables,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        variables: executingEditor.variables,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1713,7 +1713,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1721,8 +1721,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addHelix({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1820,7 +1820,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1828,7 +1828,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addHelicalGear({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Helical Gear']),
-        ast: kclManager.ast,
+        ast: executingEditor.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1878,7 +1878,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1886,7 +1886,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addHerringboneGear({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Herringbone Gear']),
-        ast: kclManager.ast,
+        ast: executingEditor.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1936,7 +1936,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1944,7 +1944,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addSpurGear({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Spur Gear']),
-        ast: kclManager.ast,
+        ast: executingEditor.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -1989,7 +1989,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -1997,7 +1997,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addRingGear({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Ring Gear']),
-        ast: kclManager.ast,
+        ast: executingEditor.ast,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2046,7 +2046,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2054,14 +2054,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const commandArgs =
         context.argumentsToSubmit as ModelingCommandSchema['Fillet']
-      const wasmInstance = await kclManager.wasmInstancePromise
-      let ast = kclManager.ast
+      const wasmInstance = await executingEditor.wasmInstancePromise
+      let ast = executingEditor.ast
       if (
         commandArgs.version &&
-        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        executingEditor.fileSettings.experimentalFeatures?.type !== 'Allow'
       ) {
         const astWithNewSetting = setExperimentalFeatures(
-          kclManager.code,
+          executingEditor.code,
           {
             type: 'Allow',
           },
@@ -2073,7 +2073,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addFillet({
         ...commandArgs,
         ast,
-        artifactGraph: kclManager.artifactGraph,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance,
       })
       if (err(modRes)) return modRes
@@ -2128,7 +2128,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2136,14 +2136,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const commandArgs =
         context.argumentsToSubmit as ModelingCommandSchema['Chamfer']
-      const wasmInstance = await kclManager.wasmInstancePromise
-      let ast = kclManager.ast
+      const wasmInstance = await executingEditor.wasmInstancePromise
+      let ast = executingEditor.ast
       if (
         commandArgs.version &&
-        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        executingEditor.fileSettings.experimentalFeatures?.type !== 'Allow'
       ) {
         const astWithNewSetting = setExperimentalFeatures(
-          kclManager.code,
+          executingEditor.code,
           {
             type: 'Allow',
           },
@@ -2155,7 +2155,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addChamfer({
         ...commandArgs,
         ast,
-        artifactGraph: kclManager.artifactGraph,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance,
       })
       if (err(modRes)) return modRes
@@ -2233,18 +2233,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
-            kclManager: machineContext.kclManager,
+            executingEditor: machineContext.executingEditor,
             wasmInstance,
           })
           if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
           const { transforms } = angleLength
 
-          // QUESTION: is it okay to reference kclManager here? will its state be up to date?
+          // QUESTION: is it okay to reference executingEditor here? will its state be up to date?
           const sketched = transformAstSketchLines({
-            ast: structuredClone(machineContext.kclManager.ast),
+            ast: structuredClone(machineContext.executingEditor.ast),
             selectionRanges,
             transformInfos: transforms,
-            memVars: machineContext.kclManager.variables,
+            memVars: machineContext.executingEditor.variables,
             referenceSegName: '',
             wasmInstance,
           })
@@ -2306,7 +2306,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2314,8 +2314,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addAppearance({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Appearance']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2365,21 +2365,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
 
-      let ast = kclManager.ast
-      if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+      let ast = executingEditor.ast
+      if (executingEditor.fileSettings.experimentalFeatures?.type !== 'Allow') {
         const astWithExperimentalFeatures = setExperimentalFeatures(
-          kclManager.code,
+          executingEditor.code,
           {
             type: 'Allow',
           },
-          await kclManager.wasmInstancePromise
+          await executingEditor.wasmInstancePromise
         )
         if (err(astWithExperimentalFeatures)) {
           return astWithExperimentalFeatures
@@ -2391,7 +2391,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addDelete({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Delete']),
         ast,
-        artifactGraph: kclManager.artifactGraph,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2418,7 +2418,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2426,8 +2426,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addTranslate({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Translate']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2477,7 +2477,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2485,8 +2485,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addRotate({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Rotate']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2536,7 +2536,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2544,8 +2544,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addScale({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Scale']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2600,7 +2600,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2608,9 +2608,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addClone({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Clone']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -2638,7 +2638,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             return KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
           }
           return findUniqueName(
-            modelingContext.kclManager.ast,
+            modelingContext.executingEditor.ast,
             KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
           )
         },
@@ -2648,8 +2648,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           }
           // Be conservative and error out if there is an item or module with the same name.
           const variableExists =
-            modelingContext.kclManager.variables[data] ||
-            modelingContext.kclManager.variables['__mod_' + data]
+            modelingContext.executingEditor.variables[data] ||
+            modelingContext.executingEditor.variables['__mod_' + data]
           if (variableExists) {
             return 'This variable name is already in use.'
           }
@@ -2668,7 +2668,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2676,10 +2676,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addMirror3D({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        variables: kclManager.variables,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
+        variables: executingEditor.variables,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       })
       if (err(modRes)) {
         return modRes
@@ -2725,7 +2725,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2733,8 +2733,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addPatternCircular3D({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Circular 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2798,7 +2798,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2806,8 +2806,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addPatternLinear3D({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Linear 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2863,7 +2863,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2871,8 +2871,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addFlatnessGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Flatness']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -2933,7 +2933,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -2941,8 +2941,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addStraightnessGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Straightness']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3003,7 +3003,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3011,8 +3011,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addCircularityGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Circularity']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3073,7 +3073,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3081,8 +3081,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addCylindricityGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Cylindricity']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3143,7 +3143,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3151,8 +3151,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addDatumGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Datum']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3177,7 +3177,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'string',
         defaultValue: (_, modelingContext) =>
           modelingContext
-            ? getNextAvailableDatumName(modelingContext.kclManager.ast)
+            ? getNextAvailableDatumName(modelingContext.executingEditor.ast)
             : 'A',
         required: true,
       },
@@ -3213,7 +3213,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3221,8 +3221,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addPositionGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Position']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3286,7 +3286,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3294,8 +3294,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addProfileGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Profile']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3359,7 +3359,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3367,8 +3367,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addDistanceGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Distance']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) {
@@ -3433,7 +3433,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3441,8 +3441,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addPerpendicularityGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Perpendicularity']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3506,7 +3506,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3514,8 +3514,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addParallelismGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Parallelism']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3578,7 +3578,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3586,8 +3586,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addAnnotationGdt({
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Annotation']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3645,7 +3645,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3653,8 +3653,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addFlipSurface({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Flip Surface']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3681,7 +3681,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3689,8 +3689,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addJoinSurfaces({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Join Surfaces']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3718,7 +3718,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3726,8 +3726,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addDeleteFace({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Delete Face']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
@@ -3755,7 +3755,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (!modelingActor) {
         return new Error('modelingMachine not found')
       }
-      const { engineCommandManager, kclManager, rustContext } =
+      const { engineCommandManager, executingEditor, rustContext } =
         modelingActor.getSnapshot().context
       const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
@@ -3763,8 +3763,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
       const modRes = addBlend({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Blend']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
+        ast: executingEditor.ast,
+        artifactGraph: executingEditor.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes

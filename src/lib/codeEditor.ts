@@ -7,7 +7,7 @@ export const normalizeLineEndings = (str: string, normalized = '\n') => {
  * so that if we discover we're doing it wrong we only need to change this function.
  *
  * We use it right now to verify an OS file system "change" event isn't already known
- * about by our in-memory kclManager.
+ * about by our in-memory executingEditor.
  */
 export function isCodeTheSame(left: string, right: string) {
   const leftBasis = normalizeLineEndings(left)

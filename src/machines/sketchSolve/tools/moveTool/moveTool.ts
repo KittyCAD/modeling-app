@@ -1837,7 +1837,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         }
       },
       getCurrentCommittedCheckpointId: () =>
-        context.kclManager.currentSketchCheckpointId,
+        context.executingEditor.currentSketchCheckpointId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
     onDragEnd: createOnDragEndCallback({
@@ -1875,7 +1875,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             const labelPosition = buildConstraintLabelPosition(
               intersectionPoint.twoD,
               baseUnitToNumericSuffix(
-                context.kclManager.fileSettings.defaultLengthUnit
+                context.executingEditor.fileSettings.defaultLengthUnit
               )
             )
             const result =
@@ -1919,7 +1919,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               : null
 
           const units = baseUnitToNumericSuffix(
-            context.kclManager.fileSettings.defaultLengthUnit
+            context.executingEditor.fileSettings.defaultLengthUnit
           )
           const snapConstraints =
             snappingCandidate && draggedEntityId !== null
@@ -2328,7 +2328,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
       },
       getDefaultLengthUnit: () =>
-        context.kclManager.fileSettings.defaultLengthUnit,
+        context.executingEditor.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () =>
         jsAppSettings(context.rustContext.settingsActor),
       sceneInfra: context.sceneInfra,

@@ -90,7 +90,7 @@ function ModelingArea() {
 export const useDefaultAreaLibrary = () => {
   useSignals()
   const { settings, layout, registry } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const getSettings = settings.get
   const registeredAreaLibrary = registry.signal(
     layoutAreaLibraryValueSpec
@@ -106,9 +106,9 @@ export const useDefaultAreaLibrary = () => {
           shouldExpand: true,
         })
       )
-      kclManager.scrollToFirstErrorDiagnosticIfExists()
+      executingEditor.scrollToFirstErrorDiagnosticIfExists()
     },
-    [kclManager, layout]
+    [executingEditor, layout]
   )
 
   return useMemo(
@@ -141,7 +141,7 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + C',
           Component: KclEditorPane,
           useNotifications() {
-            const value = kclManager.diagnosticsSignal.value.filter(
+            const value = executingEditor.diagnosticsSignal.value.filter(
               (diagnostic) => diagnostic.severity === 'error'
             ).length
             return useMemo(() => {
@@ -160,7 +160,9 @@ export const useDefaultAreaLibrary = () => {
           useNotifications() {
             const title = 'Project files have runtime errors'
             // Only compute runtime errors! Compilation errors are not tracked here.
-            const errors = kclErrorsByFilename(kclManager.errorsSignal.value)
+            const errors = kclErrorsByFilename(
+              executingEditor.errorsSignal.value
+            )
             const value = errors.size > 0 ? 'x' : ''
             const onClick: MouseEventHandler = useCallback((e) => {
               e.preventDefault()
@@ -169,7 +171,7 @@ export const useDefaultAreaLibrary = () => {
               // Open the first error in the array of errors
               // Then scroll to error
               // Do you automatically open the project files
-              // kclManager.scrollToFirstErrorDiagnosticIfExists()
+              // executingEditor.scrollToFirstErrorDiagnosticIfExists()
             }, [])
             return useMemo(() => ({ value, onClick, title }), [value, onClick])
           },
@@ -191,7 +193,12 @@ export const useDefaultAreaLibrary = () => {
         },
         ...registeredAreaLibrary,
       } satisfies AreaLibrary),
-    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
+    [
+      getSettings,
+      executingEditor,
+      onCodeNotificationClick,
+      registeredAreaLibrary,
+    ]
   )
 }
 

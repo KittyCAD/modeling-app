@@ -3,7 +3,7 @@ import { createActor } from 'xstate'
 
 import { machine } from '@src/machines/sketchSolve/tools/pointTool'
 import {
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -28,13 +28,13 @@ function createTestActor() {
   const setCallbacksMock = vi.fn()
   sceneInfra.setCallbacks = setCallbacksMock
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
 
   const actor = createActor(machine, {
     input: {
       sceneInfra,
       rustContext,
-      kclManager,
+      executingEditor,
       sketchId: 7,
     },
   }).start()

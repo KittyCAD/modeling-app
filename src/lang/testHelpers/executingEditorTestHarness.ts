@@ -1,29 +1,29 @@
 import { type Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { App } from '@src/lib/app'
 import { isArray } from '@src/lib/utils'
 import { loadWasm } from '@src/unitTestUtils'
 
 const wasmPromise = loadWasm()
 
-export function createKclManagerTestHarness(initialCode = ''): {
+export function createExecutingEditorTestHarness(initialCode = ''): {
   app: App
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 } {
   const app = App.fromProvided({
     wasmPromise,
   })
-  const { kclManager } = app.singletons
+  const { executingEditor } = app.singletons
 
-  if (kclManager.code !== initialCode) {
-    kclManager.updateCodeEditor(initialCode, {
+  if (executingEditor.code !== initialCode) {
+    executingEditor.updateCodeEditor(initialCode, {
       shouldExecute: false,
       shouldWriteToDisk: false,
       shouldResetCamera: false,
     })
   }
 
-  return { app, kclManager }
+  return { app, executingEditor }
 }
 
 export function getLatestDispatchedDiagnostics(

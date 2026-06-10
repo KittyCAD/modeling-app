@@ -76,7 +76,7 @@ const Toolbar_ = memo(
     const app = useApp()
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
-    const { kclManager } = useSingletons()
+    const { executingEditor } = useSingletons()
     const platform = usePlatform()
     const executionService = app.registry.signal(executingEditorService).value
     const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
@@ -84,7 +84,7 @@ const Toolbar_ = memo(
       platform
     )
     const toolbarConfig = useToolbarConfig()
-    const wasmInstance = use(kclManager.wasmInstancePromise)
+    const wasmInstance = use(executingEditor.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
     const bgClassName = '!bg-transparent'
@@ -95,18 +95,18 @@ const Toolbar_ = memo(
     const sketchPathId = useMemo(() => {
       if (
         isCursorInFunctionDefinition(
-          kclManager.ast,
+          executingEditor.ast,
           props.context.selectionRanges.graphSelections[0],
           wasmInstance
         )
       )
         return false
       return isCursorInSketchCommandRange(
-        kclManager.artifactGraph,
+        executingEditor.artifactGraph,
         props.context.selectionRanges
       )
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [kclManager.artifactGraph, props.context.selectionRanges])
+    }, [executingEditor.artifactGraph, props.context.selectionRanges])
 
     const toolbarButtonsRef = useRef<HTMLUListElement>(null)
     const [showRichContent, setShowRichContent] = useState(false)
@@ -193,7 +193,7 @@ const Toolbar_ = memo(
         modelingState: props.state,
         modelingSend: props.send,
         sketchPathId,
-        editorHasFocus: kclManager.editorView.hasFocus,
+        editorHasFocus: executingEditor.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
         keepSelection: false,
       }),
@@ -203,7 +203,7 @@ const Toolbar_ = memo(
         props.send,
         sketchPathId,
 
-        kclManager.editorView.hasFocus,
+        executingEditor.editorView.hasFocus,
       ]
     )
 
@@ -1017,7 +1017,7 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const { settings } = useApp()
   const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()
@@ -1028,7 +1028,7 @@ export function Toolbar() {
     shouldDisableModelingForUnrenderedChanges({
       settings: settingsValues,
       hasEditsSinceLastExecution:
-        kclManager.hasEditsSinceLastExecutionSignal.value,
+        executingEditor.hasEditsSinceLastExecutionSignal.value,
     })
 
   return (
@@ -1041,7 +1041,7 @@ export function Toolbar() {
       isStreamReady={isStreamReady}
       actor={actor}
       isStreamAcceptingInput={isStreamAcceptingInput}
-      isExecuting={kclManager.isExecutingSignal.value}
+      isExecuting={executingEditor.isExecutingSignal.value}
       disableModelingForUnrenderedChanges={disableModelingForUnrenderedChanges}
     />
   )

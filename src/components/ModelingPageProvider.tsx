@@ -9,7 +9,7 @@ import { useMenuListener } from '@src/hooks/useMenu'
 import {
   type PendingFeatureTreeSourceSelection,
   updateOutsideEditorEvent,
-} from '@src/lang/KclManager'
+} from '@src/lang/ExecutingEditor'
 import { sourceRangeToUtf16 } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
@@ -62,8 +62,8 @@ export const ModelingPageProvider = ({
 }) => {
   useSignals()
   const { auth, commands, settings, project, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = auth.useToken()
@@ -78,7 +78,10 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand(kclManager.engineCommandManager, settingsActor)
+    } = createNamedViewsCommand(
+      executingEditor.engineCommandManager,
+      settingsActor
+    )
 
     const {
       topViewCommand,
@@ -88,7 +91,7 @@ export const ModelingPageProvider = ({
       bottomViewCommand,
       leftViewCommand,
       zoomToFitCommand,
-    } = createStandardViewsCommands(kclManager)
+    } = createStandardViewsCommands(executingEditor)
 
     const namedViewCommands = [
       createNamedViewCommand,
@@ -117,20 +120,20 @@ export const ModelingPageProvider = ({
         },
       })
     }
-  }, [commands, settingsActor, kclManager])
+  }, [commands, settingsActor, executingEditor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
   }, [])
 
   useEffect(() => {
-    const pending = kclManager.pendingFeatureTreeSourceSelection
+    const pending = executingEditor.pendingFeatureTreeSourceSelection
     if (!pending || !file?.path) {
       return
     }
 
     if (!isPendingFeatureTreeSelection(pending)) {
-      kclManager.pendingFeatureTreeSourceSelection = null
+      executingEditor.pendingFeatureTreeSourceSelection = null
       return
     }
 
@@ -138,10 +141,10 @@ export const ModelingPageProvider = ({
       return
     }
 
-    kclManager.pendingFeatureTreeSourceSelection = null
+    executingEditor.pendingFeatureTreeSourceSelection = null
 
-    const utf16Range = sourceRangeToUtf16(pending.range, kclManager.code)
-    kclManager.editorView.dispatch({
+    const utf16Range = sourceRangeToUtf16(pending.range, executingEditor.code)
+    executingEditor.editorView.dispatch({
       selection: EditorSelection.create([
         EditorSelection.cursor(utf16Range[0]),
       ]),
@@ -155,9 +158,9 @@ export const ModelingPageProvider = ({
     })
   }, [
     file?.path,
-    kclManager,
-    kclManager.code,
-    kclManager.pendingFeatureTreeSourceSelection,
+    executingEditor,
+    executingEditor.code,
+    executingEditor.pendingFeatureTreeSourceSelection,
   ])
 
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
@@ -208,7 +211,7 @@ export const ModelingPageProvider = ({
     authActor: auth.actor,
     commandBarActor: commands.actor,
     filePath,
-    kclManager,
+    executingEditor,
     navigate,
     settings: settingsValues,
     settingsActor,
@@ -249,7 +252,7 @@ export const ModelingPageProvider = ({
         file,
         code: project?.executingEditor.value?.state.doc.toString() ?? '',
       },
-      kclManager,
+      executingEditor,
       settings: {
         defaultUnit:
           settingsValues.modeling.defaultUnit.current ??
@@ -261,7 +264,7 @@ export const ModelingPageProvider = ({
       wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, project, file])
+  }, [executingEditor, project, file])
 
   useEffect(() => {
     commands.send({

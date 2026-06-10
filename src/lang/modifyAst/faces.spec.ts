@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addDeleteFace,
@@ -37,7 +37,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -52,10 +52,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -186,7 +186,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
@@ -226,7 +226,7 @@ extrude(p, length = 1000)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
@@ -265,7 +265,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
@@ -297,7 +297,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getWalls(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
@@ -326,7 +326,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
         `${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getWalls(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
@@ -357,7 +357,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         multiSolids,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const twoCaps = [...artifactGraph.values()]
         .filter((a) => a.type === 'cap' && a.subType === 'end')
@@ -404,7 +404,7 @@ extrude002 = extrude(profile002, length = 200)`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const firstCap = [...artifactGraph.values()]
         .filter((a) => a.type === 'cap' && a.subType === 'end')
@@ -452,7 +452,7 @@ shell001 = shell(extrude002, faces = capEnd001, thickness = 0.1)`)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const result = addDeleteFace({
@@ -499,7 +499,7 @@ solid001 = subtract(extrude001, tools = extrude002)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const firstSweep = [...artifactGraph.values()].find(
@@ -568,7 +568,7 @@ solid001 = subtract(extrude001, tools = extrude002)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const firstSweep = [...artifactGraph.values()].find(
@@ -649,7 +649,7 @@ extrude001 = extrude(region001, length = 5)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchBlockExtrude,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const wall = [...artifactGraph.values()].find((artifact) => {
@@ -725,7 +725,7 @@ extrude001 = extrude(
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const arcWall = [...artifactGraph.values()].find((artifact) => {
@@ -768,7 +768,7 @@ extrude001 = extrude(
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getWalls(artifactGraph, 1, 2)
       const result = addDeleteFace({
@@ -801,7 +801,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         shell,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const wall = getWalls(artifactGraph, 1).graphSelections[0]
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
@@ -860,7 +860,7 @@ surface002 = deleteFace(loft002, faces = seg03)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const capStart = [...artifactGraph.values()].find(
@@ -926,7 +926,7 @@ surface003 = deleteFace(loft002, faces = capStart001)`)
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
@@ -971,7 +971,7 @@ ${simpleHole}
         `${cylinderWithEndTag}
 ${simpleHole}`,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
@@ -1023,7 +1023,7 @@ hole002 = hole::hole(
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
@@ -1085,7 +1085,7 @@ hole002 = hole::hole(
         `${cylinderWithEndTag}
 ${simpleHole}`,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const face = getCapFromCylinder(artifactGraph)
@@ -1173,7 +1173,7 @@ hole001 = hole::hole(
     const { operations } = await getAstAndArtifactGraph(
       code,
       instanceInThisFile,
-      kclManagerInThisFile
+      executingEditorInThisFile
     )
     const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'hole::hole'
@@ -1363,7 +1363,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         circleProfileInVar,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'shell'
@@ -1404,7 +1404,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         multiSolidsShell,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const lastTwoSweeps = [...artifactGraph.values()]
         .filter((a) => a.type === 'sweep')
@@ -1448,7 +1448,7 @@ plane002 = offsetPlane(plane001, offset = 2)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const op = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -1472,7 +1472,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -1498,7 +1498,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const op = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -1522,7 +1522,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamferAndPlane,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -1551,7 +1551,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         shellWithOffsetPlane,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -1576,7 +1576,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         await getAstAndArtifactGraph(
           code,
           instanceInThisFile,
-          kclManagerInThisFile
+          executingEditorInThisFile
         )
       const offsetPlaneOp = getAllOperations(operations).findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -1607,7 +1607,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
           '',
           instanceInThisFile,
-          kclManagerInThisFile
+          executingEditorInThisFile
         )
         const offset = (await stringToKclExpression(
           '1',
@@ -1674,7 +1674,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const offset = (await stringToKclExpression(
         '2',
@@ -1749,7 +1749,7 @@ plane002 = offsetPlane(plane001, offset = 3)`)
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const plane = getCapFromCylinder(artifactGraph)
       const offset = (await stringToKclExpression(
@@ -1815,7 +1815,7 @@ plane002 = offsetPlane(plane001, offset = 3)`)
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const plane = getWalls(artifactGraph, 1)
       const offset = (await stringToKclExpression(
@@ -1890,7 +1890,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         shell,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
       const primitiveFace: NonCodeSelection = {
@@ -1980,7 +1980,7 @@ face001 = faceId(extrude001, index = 6)`
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const primitiveFace = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'primitiveFace'
@@ -2028,7 +2028,7 @@ plane002 = offsetPlane(plane001, offset = 2)`)
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const chamfer = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
@@ -2098,7 +2098,7 @@ plane002 = offsetPlane(plane001, offset = 1)`)
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
@@ -2118,7 +2118,7 @@ plane002 = offsetPlane(plane001, offset = 1)`)
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithTwoTagsAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'

@@ -4,7 +4,7 @@ import {
   GetInfoModal,
   createInfoModal,
 } from '@src/components/SetHorVertDistanceModal'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import {
@@ -33,11 +33,11 @@ const getModalInfo = createInfoModal(GetInfoModal)
 
 export function intersectInfo({
   selectionRanges,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -57,9 +57,9 @@ export function intersectInfo({
   const previousSegment =
     selectionRanges.graphSelections.length > 1 &&
     isLinesParallelAndConstrained(
-      kclManager.ast,
-      kclManager.artifactGraph,
-      kclManager.variables,
+      executingEditor.ast,
+      executingEditor.artifactGraph,
+      executingEditor.variables,
       selectionRanges.graphSelections[0],
       selectionRanges.graphSelections[1],
       wasmInstance
@@ -85,7 +85,7 @@ export function intersectInfo({
 
   const _nodes = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance
     )
@@ -98,7 +98,7 @@ export function intersectInfo({
 
   const _varDecs = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance,
       'VariableDeclarator'
@@ -113,7 +113,7 @@ export function intersectInfo({
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-    isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
+    isSketchVariablesLinked(secondary, primaryLine, executingEditor.ast)
   )
   const isAllTooltips = nodes.every(
     (node) =>
@@ -126,7 +126,7 @@ export function intersectInfo({
       ...selectionRanges,
       graphSelections: _forcedSelectionRanges.graphSelections.slice(1),
     },
-    kclManager.ast,
+    executingEditor.ast,
     'intersect',
     wasmInstance
   )
@@ -148,10 +148,10 @@ export function intersectInfo({
 
 export async function applyConstraintIntersect({
   selectionRanges,
-  kclManager,
+  executingEditor,
 }: {
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }): Promise<{
   modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap
@@ -159,18 +159,18 @@ export async function applyConstraintIntersect({
 }> {
   const info = intersectInfo({
     selectionRanges,
-    kclManager,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    executingEditor,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const { transforms, forcedSelectionRanges } = info
 
   const transform1 = transformSecondarySketchLinesTagFirst({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    memVars: executingEditor.variables,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -207,17 +207,17 @@ export async function applyConstraintIntersect({
   const finalValue = removeDoubleNegatives(
     valueNode,
     sign,
-    await kclManager.wasmInstancePromise,
+    await executingEditor.wasmInstancePromise,
     variableName
   )
   const transform2 = transformSecondarySketchLinesTagFirst({
-    ast: kclManager.ast,
+    ast: executingEditor.ast,
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =

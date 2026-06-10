@@ -11,7 +11,7 @@ import { reportRejection } from '@src/lib/trap'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
-  const { engineCommandManager, kclManager, rustContext, wasmInstance } =
+  const { engineCommandManager, executingEditor, rustContext, wasmInstance } =
     context
   const stateRef = useRef(state)
   stateRef.current = state
@@ -26,18 +26,20 @@ export function useEngineConnectionSubscriptions() {
         if (data?.entity_id) {
           const codeRefs = getCodeRefsByArtifactId(
             data.entity_id,
-            kclManager.artifactGraph
+            executingEditor.artifactGraph
           )
           if (codeRefs) {
-            kclManager.setHighlightRange(codeRefs.map(({ range }) => range))
+            executingEditor.setHighlightRange(
+              codeRefs.map(({ range }) => range)
+            )
           }
         } else if (
-          !kclManager.highlightRange ||
-          (kclManager.highlightRange[0] &&
-            kclManager.highlightRange[0][0] !== 0 &&
-            kclManager.highlightRange[0][1] !== 0)
+          !executingEditor.highlightRange ||
+          (executingEditor.highlightRange[0] &&
+            executingEditor.highlightRange[0][0] !== 0 &&
+            executingEditor.highlightRange[0][1] !== 0)
         ) {
-          kclManager.setHighlightRange([defaultSourceRange()])
+          executingEditor.setHighlightRange([defaultSourceRange()])
         }
       },
     })
@@ -55,7 +57,7 @@ export function useEngineConnectionSubscriptions() {
           }
           const event = await getEventForSelectWithPoint(engineEvent, {
             engineCommandManager,
-            kclManager,
+            executingEditor,
             rustContext,
             wasmInstance,
           })
@@ -77,7 +79,7 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
-    kclManager,
+    executingEditor,
     send,
     engineCommandManager,
     rustContext,
@@ -94,7 +96,7 @@ export function useEngineConnectionSubscriptions() {
             void selectSketchPlane(
               data.entity_id,
               context.store.useSketchSolveMode?.current,
-              kclManager
+              executingEditor
             )
           }
         : () => {},
@@ -103,7 +105,7 @@ export function useEngineConnectionSubscriptions() {
   }, [
     context.store.useSketchSolveMode,
     state,
-    kclManager,
+    executingEditor,
     rustContext,
     engineCommandManager,
   ])
@@ -112,10 +114,10 @@ export function useEngineConnectionSubscriptions() {
   useEffect(() => {
     const unsubscribe = rustContext.planesCreated.add(() => {
       const vis = stateRef.current.context.defaultPlaneVisibility
-      void kclManager.setPlaneVisibilityByKey('xy', vis.xy)
-      void kclManager.setPlaneVisibilityByKey('xz', vis.xz)
-      void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
+      void executingEditor.setPlaneVisibilityByKey('xy', vis.xy)
+      void executingEditor.setPlaneVisibilityByKey('xz', vis.xz)
+      void executingEditor.setPlaneVisibilityByKey('yz', vis.yz)
     })
     return unsubscribe
-  }, [kclManager, rustContext])
+  }, [executingEditor, rustContext])
 }

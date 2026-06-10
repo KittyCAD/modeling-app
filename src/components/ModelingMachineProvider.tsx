@@ -57,9 +57,9 @@ export const ModelingMachineProvider = ({
   useSignals()
   const { machineManager, commands, settings, layout, project, registry } =
     useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const settingsActor = settings.actor
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
@@ -125,9 +125,9 @@ export const ModelingMachineProvider = ({
     {
       input: {
         machineManager,
-        engineCommandManager: kclManager.engineCommandManager,
-        kclManager,
-        rustContext: kclManager.rustContext,
+        engineCommandManager: executingEditor.engineCommandManager,
+        executingEditor,
+        rustContext: executingEditor.rustContext,
         commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
@@ -196,7 +196,7 @@ export const ModelingMachineProvider = ({
   useSketchModeMenuEnableDisable(
     toolbarConfigurationName,
     overallState,
-    kclManager.isExecutingSignal.value,
+    executingEditor.isExecutingSignal.value,
     isStreamReady,
     [
       { menuLabel: 'View.Standard views' },
@@ -262,24 +262,24 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  // Give the state back to the kclManager.
+  // Give the state back to the executingEditor.
   useEffect(() => {
-    kclManager.modelingSend = modelingSend
-  }, [modelingSend, kclManager])
+    executingEditor.modelingSend = modelingSend
+  }, [modelingSend, executingEditor])
 
   useEffect(() => {
-    kclManager.modelingState = modelingState
-  }, [modelingState, kclManager])
+    executingEditor.modelingState = modelingState
+  }, [modelingState, executingEditor])
 
   useEffect(() => {
-    kclManager.selectionRanges = modelingState.context.selectionRanges
-  }, [modelingState.context.selectionRanges, kclManager])
+    executingEditor.selectionRanges = modelingState.context.selectionRanges
+  }, [modelingState.context.selectionRanges, executingEditor])
 
   // When changing camera modes reset the camera to the default orientation to correct
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    kclManager.engineCommandManager.connection?.deferredPeerConnection?.promise
+    executingEditor.engineCommandManager.connection?.deferredPeerConnection?.promise
       .then(() => {
         if (
           previousCameraOrbit.current === null ||
@@ -292,7 +292,7 @@ export const ModelingMachineProvider = ({
         }
         previousCameraOrbit.current = cameraOrbit.current
         // Gotcha: This will absolutely brick E2E tests if called incorrectly.
-        kclManager.sceneInfra.camControls
+        executingEditor.sceneInfra.camControls
           .resetCameraPosition()
           .catch(reportRejection)
       })
@@ -306,18 +306,18 @@ export const ModelingMachineProvider = ({
         modelingSend({ type: 'Cancel' })
       }
     }
-    kclManager.engineCommandManager.connection?.addEventListener(
+    executingEditor.engineCommandManager.connection?.addEventListener(
       EngineConnectionEvents.ConnectionStateChanged,
       onConnectionStateChanged as EventListener
     )
     return () => {
-      kclManager.engineCommandManager.connection?.removeEventListener(
+      executingEditor.engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChanged as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.engineCommandManager.connection, modelingSend])
+  }, [executingEditor.engineCommandManager.connection, modelingSend])
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')
@@ -327,7 +327,7 @@ export const ModelingMachineProvider = ({
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(
-          kclManager.engineCommandManager,
+          executingEditor.engineCommandManager,
           targetId
         )
           .then(() => {})
@@ -343,7 +343,7 @@ export const ModelingMachineProvider = ({
     // While you are in sketch mode you should be able to control the enable rotate
     // Once you exit it goes back to normal
     if (inSketchMode) {
-      kclManager.sceneInfra.camControls.enableRotate =
+      executingEditor.sceneInfra.camControls.enableRotate =
         allowOrbitInSketchMode.current
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -395,8 +395,8 @@ export const ModelingMachineProvider = ({
   })
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition({
-      sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
+      sceneInfra: executingEditor.sceneInfra,
+      engineCommandManager: executingEditor.engineCommandManager,
       settingsActor,
     }).catch(reportRejection)
   })
@@ -410,7 +410,7 @@ export const ModelingMachineProvider = ({
         data: { level: 'project', value: !snapToGrid.current },
       })
     },
-    kclManager
+    executingEditor
   )
 
   useHotkeys(
@@ -421,8 +421,8 @@ export const ModelingMachineProvider = ({
 
       e.preventDefault()
       const selection = selectAllInCurrentSketch(
-        kclManager.artifactGraph,
-        kclManager.sceneEntitiesManager
+        executingEditor.artifactGraph,
+        executingEditor.sceneEntitiesManager
       )
       modelingSend({
         type: 'Set selection',
@@ -440,7 +440,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig,
-    isExecuting: kclManager.isExecutingSignal.value,
+    isExecuting: executingEditor.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it

@@ -31,7 +31,7 @@ gdt::datum(face = capEnd001, name = "A")`
 describe('GDT tolerance defaults', () => {
   it('uses the current file unit for the tolerance input default', () => {
     const modelingContext = {
-      kclManager: {
+      executingEditor: {
         fileSettings: {
           defaultLengthUnit: 'in',
         },

@@ -39,8 +39,8 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 export const Router = () => {
   useSignals()
   const app = useApp()
-  const { kclManager } = useSingletons()
-  const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
+  const { executingEditor } = useSingletons()
+  const networkStatus = useNetworkStatus(executingEditor.engineCommandManager)
   const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>

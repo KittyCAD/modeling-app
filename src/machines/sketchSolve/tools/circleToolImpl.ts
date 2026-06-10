@@ -4,7 +4,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -58,7 +58,7 @@ export type ToolContext = {
   sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
 }
 
@@ -271,7 +271,7 @@ export async function createCircleActor({
         centerSnapTarget?: SnapTarget
         startSnapTarget?: SnapTarget
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -297,11 +297,11 @@ export async function createCircleActor({
     centerSnapTarget,
     startSnapTarget,
     rustContext,
-    kclManager,
+    executingEditor,
     sketchId,
   } = input
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
 
   try {

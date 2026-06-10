@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -16,11 +16,11 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function equalAngleInfo({
   selectionRanges,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -29,10 +29,14 @@ export function equalAngleInfo({
     }
   | Error {
   const paths = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodePathFromSourceRange(kclManager.ast, codeRef.range)
+    getNodePathFromSourceRange(executingEditor.ast, codeRef.range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
+    const tmp = getNodeFromPath<Expr>(
+      executingEditor.ast,
+      pathToNode,
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -42,7 +46,7 @@ export function equalAngleInfo({
 
   const _varDecs = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
-      kclManager.ast,
+      executingEditor.ast,
       pathToNode,
       wasmInstance,
       'VariableDeclarator'
@@ -57,7 +61,7 @@ export function equalAngleInfo({
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-    isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
+    isSketchVariablesLinked(secondary, primaryLine, executingEditor.ast)
   )
   const isAllTooltips = nodes.every(
     (node) =>
@@ -70,7 +74,7 @@ export function equalAngleInfo({
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
-    kclManager.ast,
+    executingEditor.ast,
     'equalAngle',
     wasmInstance
   )
@@ -86,11 +90,11 @@ export function equalAngleInfo({
 
 export function applyConstraintEqualAngle({
   selectionRanges,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -98,15 +102,19 @@ export function applyConstraintEqualAngle({
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const info = equalAngleInfo({ selectionRanges, kclManager, wasmInstance })
+  const info = equalAngleInfo({
+    selectionRanges,
+    executingEditor,
+    wasmInstance,
+  })
   if (err(info)) return info
   const { transforms } = info
 
   const transform = transformSecondarySketchLinesTagFirst({
-    ast: kclManager.ast,
+    ast: executingEditor.ast,
     selectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     wasmInstance,
   })
   if (err(transform)) return transform

@@ -30,16 +30,16 @@ export const SetVarNameModal = ({
   valueName,
   selectionRanges,
 }: SetVarNameModalProps) => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalculateKclExpression({
       value: '',
       initialVariableName: valueName,
       selectionRanges,
-      rustContext: kclManager.rustContext,
-      code: kclManager.codeSignal.value,
-      ast: kclManager.astSignal.value,
-      variables: kclManager.variablesSignal.value,
+      rustContext: executingEditor.rustContext,
+      code: executingEditor.codeSignal.value,
+      ast: executingEditor.astSignal.value,
+      variables: executingEditor.variablesSignal.value,
     })
   const cancelButton = (
     <ActionButton

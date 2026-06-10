@@ -27,7 +27,7 @@ import {
 
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -40,16 +40,20 @@ export async function deleteSegmentsOrProfiles({
   pathToNodes: PathToNode[]
   sketchDetails: SketchDetails | null
   dependencies: {
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
     sceneInfra: SceneInfra
   }
 }) {
-  let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
-  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
+  let modifiedAst: Node<Program> | Error = dependencies.executingEditor.ast
+  const wasmInstance = await dependencies.executingEditor.wasmInstancePromise
   const dependentRanges = pathToNodes.flatMap((pathToNode) =>
-    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode, wasmInstance)
+    findUsesOfTagInPipe(
+      dependencies.executingEditor.ast,
+      pathToNode,
+      wasmInstance
+    )
   )
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -66,13 +70,13 @@ export async function deleteSegmentsOrProfiles({
   modifiedAst = deleteSegmentOrProfileFromPipeExpression(
     dependentRanges,
     modifiedAst,
-    dependencies.kclManager.variables,
-    dependencies.kclManager.code,
+    dependencies.executingEditor.variables,
+    dependencies.executingEditor.code,
     pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,
     transformAstSketchLines,
-    await dependencies.kclManager.wasmInstancePromise
+    await dependencies.executingEditor.wasmInstancePromise
   )
   if (err(modifiedAst)) {
     return Promise.reject(modifiedAst)
@@ -101,7 +105,7 @@ export async function deleteSegmentsOrProfiles({
     modifiedAst,
     testExecute.execState.artifactGraph,
     sketchDetails,
-    await dependencies.kclManager.wasmInstancePromise
+    await dependencies.executingEditor.wasmInstancePromise
   )
 
   await dependencies.sceneEntitiesManager.updateAstAndRejigSketch(

@@ -24,9 +24,9 @@ export function LogsPane(props: AreaTypeComponentProps) {
   )
 }
 export const LogsPaneContent = () => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const theme = useResolvedTheme()
-  const logs = kclManager.logsSignal.value
+  const logs = executingEditor.logsSignal.value
   return (
     <div className="overflow-hidden">
       <div className="absolute inset-0 p-2 flex flex-col overflow-auto">

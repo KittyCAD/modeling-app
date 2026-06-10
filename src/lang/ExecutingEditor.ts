@@ -288,7 +288,7 @@ interface SystemDeps {
   keymap?: KeymapService
 }
 
-export enum KclManagerEvents {
+export enum ExecutingEditorEvents {
   LongExecution = 'long-execution',
 }
 
@@ -318,7 +318,7 @@ export class ZDSProject {
     return this.projectIORefSignal.value.name
   }
   /** Editors are referenced via Signal in case the file name itself is changed. */
-  public editors = new Map<Signal<string>, KclManager>()
+  public editors = new Map<Signal<string>, ExecutingEditor>()
   #executingPath = signal<Signal<string> | null>(null)
   public executingEditor = computed(() =>
     this.#executingPath.value
@@ -395,9 +395,9 @@ export class ZDSProject {
   async openEditor(
     path: string,
     /** TODO: Remove providedEditor, replace with options about if the editor is the executing one
-     * once the app can handle not having a KclManager.
+     * once the app can handle not having a ExecutingEditor.
      */
-    providedEditor?: KclManager,
+    providedEditor?: ExecutingEditor,
     /** TODO: Remove `providedCode` once no tests rely on initializing
      * editor state through localstorage.
      */
@@ -425,7 +425,7 @@ export class ZDSProject {
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
-    const newEditor = await KclManager.fromFile(
+    const newEditor = await ExecutingEditor.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
         : new File(path, this.nextFileId++),
@@ -675,7 +675,7 @@ export class File extends EventTarget {
   static encoder = new TextEncoder()
 }
 
-export class KclManager extends File {
+export class ExecutingEditor extends File {
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
@@ -713,7 +713,7 @@ export class KclManager extends File {
   private readonly _globalHistoryView: HistoryView
 
   /**
-   * The core state in KclManager are the code and the selection.
+   * The core state in ExecutingEditor are the code and the selection.
    * all other state should be derived from the code or selection in some way.
    */
   private _code = signal(bracket)
@@ -834,7 +834,7 @@ export class KclManager extends File {
     graphSelections: [],
   }
   /** a representation of selections used by modelingMachine */
-  private _selectionRanges: Selections = KclManager.emptySelectionRanges
+  private _selectionRanges: Selections = ExecutingEditor.emptySelectionRanges
   private _selectionRangesSignal = signal<Selections>(this._selectionRanges)
   selectionFilter = signal<EntityType[]>(defaultSelectionFilter)
   private _selectionStatusLabel = computed(
@@ -894,7 +894,7 @@ export class KclManager extends File {
    */
   #onWatchEvent = (_eventType: string, path: string) => {
     // TODO: We can remove this once we make it impossible to have
-    // a KclManager without a ZDSProject.
+    // a ExecutingEditor without a ZDSProject.
     if (
       path !== this.path ||
       !this.systemDeps.projectPath.value ||
@@ -1811,7 +1811,7 @@ export class KclManager extends File {
   static async fromFile(
     file: File,
     systemDeps: SystemDeps,
-    providedEditor?: KclManager,
+    providedEditor?: ExecutingEditor,
     providedCode?: string
   ) {
     const diskCode = normalizeLineEndings(providedCode || (await file.read()))
@@ -1822,7 +1822,12 @@ export class KclManager extends File {
         : diskCode
 
     if (!providedEditor) {
-      const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
+      const editor = new ExecutingEditor(
+        file.path,
+        initialCode,
+        systemDeps,
+        file.id
+      )
       if (!isCodeTheSame(initialCode, diskCode)) {
         editor.markFileCodeAsSynced(diskCode)
       }
@@ -1856,7 +1861,7 @@ export class KclManager extends File {
     fileId = 0
   ) {
     super(path, fileId)
-    // Register our additional, KclManager-specific watch event handler
+    // Register our additional, ExecutingEditor-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
     const getSettings = () =>
@@ -2177,7 +2182,7 @@ export class KclManager extends File {
       if (this.sceneEntitiesManager) {
         setSelectionFilterToDefault({
           engineCommandManager: this.engineCommandManager,
-          kclManager: this,
+          executingEditor: this,
           sceneEntitiesManager: this.sceneEntitiesManager,
           wasmInstance: await this.systemDeps.wasmInstancePromise,
         })
@@ -2342,7 +2347,9 @@ export class KclManager extends File {
         return
       }
 
-      this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
+      this.dispatchEvent(
+        new CustomEvent(ExecutingEditorEvents.LongExecution, {})
+      )
     }, this.longExecutionTimeMs)
 
     await this.executeAst({ ast })
@@ -2512,7 +2519,7 @@ export class KclManager extends File {
   ) {
     setSelectionFilterToDefault({
       engineCommandManager: this.engineCommandManager,
-      kclManager: this,
+      executingEditor: this,
       sceneEntitiesManager: this.sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
@@ -2529,7 +2536,7 @@ export class KclManager extends File {
     setSelectionFilter({
       filter,
       engineCommandManager: this.engineCommandManager,
-      kclManager: this,
+      executingEditor: this,
       sceneEntitiesManager: this.sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
@@ -2538,7 +2545,7 @@ export class KclManager extends File {
   }
 
   async clearSelection() {
-    this._selectionRangesSignal.value = KclManager.emptySelectionRanges
+    this._selectionRangesSignal.value = ExecutingEditor.emptySelectionRanges
     return clearSceneSelection(this.engineCommandManager)
   }
 
@@ -3204,11 +3211,11 @@ export class KclManager extends File {
    */
   updateCodeEditor(
     code: string,
-    options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions,
+    options: Partial<UpdateCodeEditorOptions> = ExecutingEditor.defaultUpdateCodeEditorOptions,
     additionalSpec?: UpdateCodeEditorAdditionalSpec
   ): void {
     const resolvedOptions: UpdateCodeEditorOptions = Object.assign(
-      structuredClone(KclManager.defaultUpdateCodeEditorOptions),
+      structuredClone(ExecutingEditor.defaultUpdateCodeEditorOptions),
       options
     )
 

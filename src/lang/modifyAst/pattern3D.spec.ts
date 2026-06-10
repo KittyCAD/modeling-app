@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -19,7 +19,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -34,10 +34,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -48,15 +48,15 @@ afterAll(() => {
 async function getAstAndArtifactGraph(
   code: string,
   instance: ModuleType,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ) {
   const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
+  await executingEditor.executeAst({ ast })
   const {
     artifactGraph,
     execState: { operations },
     variables,
-  } = kclManager
+  } = executingEditor
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph, operations, variables }
 }
@@ -91,12 +91,12 @@ describe('pattern3D.test.ts', () => {
   async function getAstAndSolidSelections(
     code: string,
     instance: ModuleType,
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
   ) {
     const { ast, artifactGraph } = await getAstAndArtifactGraph(
       code,
       instance,
-      kclManager
+      executingEditor
     )
     // Filter for sweep artifacts that represent 3D solids
     const artifacts = [...artifactGraph.values()].filter(
@@ -121,7 +121,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -164,7 +164,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -205,7 +205,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -245,7 +245,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -292,7 +292,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -332,7 +332,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -379,7 +379,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -430,7 +430,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Test the precedence by creating a mock axis that simulates the edge case
@@ -485,7 +485,7 @@ exampleSketch = startSketchOn(XZ)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -528,7 +528,7 @@ startSketchOn(XY)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -569,7 +569,7 @@ extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -611,7 +611,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -650,7 +650,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -689,7 +689,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -727,7 +727,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -770,7 +770,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -810,7 +810,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -851,7 +851,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -897,7 +897,7 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Test the precedence by creating a mock axis that simulates the edge case
@@ -952,7 +952,7 @@ exampleSketch = startSketchOn(XZ)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -995,7 +995,7 @@ startSketchOn(XY)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -1036,7 +1036,7 @@ extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const result = addPatternLinear3D({

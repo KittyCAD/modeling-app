@@ -45,7 +45,7 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
 
       toast.success('Your work is auto-saved in real-time.')
     },
-    app.singletons.kclManager,
+    app.singletons.executingEditor,
     {
       enabled: !!currentProject,
       registerToCodeMirror: !!currentProject,

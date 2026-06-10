@@ -6,7 +6,7 @@ import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/dra
 import { machine } from '@src/machines/sketchSolve/tools/rectTool'
 import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createSceneGraphDelta,
@@ -41,7 +41,7 @@ function createTestMachine(mockActors?: {
   const setCallbacksMock = vi.fn()
   sceneInfra.setCallbacks = setCallbacksMock
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
 
   const testMachine = machine.provide({
     actors: {
@@ -66,7 +66,7 @@ function createTestMachine(mockActors?: {
     sceneInfra,
     setCallbacksMock,
     rustContext,
-    kclManager,
+    executingEditor,
   }
 }
 
@@ -78,13 +78,13 @@ describe('rectTool - XState', () => {
 
   describe('when initialized', () => {
     it('should have default context values', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -97,13 +97,13 @@ describe('rectTool - XState', () => {
     })
 
     it('should use center origin mode when toolVariant is center', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'center',
         },
@@ -115,13 +115,18 @@ describe('rectTool - XState', () => {
     })
 
     it('should call setCallbacks on entry to awaiting first point', () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -139,13 +144,18 @@ describe('rectTool - XState', () => {
         distance: 0,
       })
 
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -179,15 +189,20 @@ describe('rectTool - XState', () => {
         distance: 0,
       })
 
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine({
-          modAndSolveFirstClick,
-        })
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine({
+        modAndSolveFirstClick,
+      })
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -211,13 +226,13 @@ describe('rectTool - XState', () => {
     })
 
     it('should transition to awaiting second point after first click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -230,13 +245,13 @@ describe('rectTool - XState', () => {
     })
 
     it('should transition to awaiting third point in angled mode after setting second point', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -259,13 +274,18 @@ describe('rectTool - XState', () => {
         distance: 0,
       })
 
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -287,13 +307,13 @@ describe('rectTool - XState', () => {
     })
 
     it('should remain in awaiting second point in angled mode when second point equals first point', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -312,13 +332,18 @@ describe('rectTool - XState', () => {
     })
 
     it('should ignore an aligned finalize click until the rectangle crosses the preview threshold', async () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -348,13 +373,18 @@ describe('rectTool - XState', () => {
         distance: 0,
       })
 
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'center',
         },
@@ -379,13 +409,18 @@ describe('rectTool - XState', () => {
     })
 
     it('should ignore an angled second click until the first side crosses the preview threshold', async () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -412,13 +447,18 @@ describe('rectTool - XState', () => {
     })
 
     it('should remain in awaiting third point in angled mode when third click equals second point', async () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -446,13 +486,18 @@ describe('rectTool - XState', () => {
     })
 
     it('should ignore an angled third click until the rectangle has non-zero width', async () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -485,13 +530,13 @@ describe('rectTool - XState', () => {
 
   describe('escape handling', () => {
     it('should return to awaiting first point on escape after first click', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -511,13 +556,13 @@ describe('rectTool - XState', () => {
 
   describe('finalize handling', () => {
     it('should clear draft and return to awaiting first point', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -535,13 +580,13 @@ describe('rectTool - XState', () => {
     })
 
     it('should clear draft and second point when finalizing angled mode from third point state', async () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
           toolVariant: 'angled',
         },
@@ -573,13 +618,18 @@ describe('rectTool - XState', () => {
       }
       vi.mocked(getBestSnappingCandidate).mockReturnValue(snappingCandidate)
 
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -603,13 +653,18 @@ describe('rectTool - XState', () => {
     })
 
     it('clears snapping preview when pointer leaves the sketch plane', () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -626,13 +681,18 @@ describe('rectTool - XState', () => {
     })
 
     it('skips aligned draft edits until the preview threshold is crossed', async () => {
-      const { machine, sceneInfra, setCallbacksMock, rustContext, kclManager } =
-        createTestMachine()
+      const {
+        machine,
+        sceneInfra,
+        setCallbacksMock,
+        rustContext,
+        executingEditor,
+      } = createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()

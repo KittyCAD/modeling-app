@@ -16,9 +16,9 @@ import { warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
 
 export function ExperimentalFeaturesMenu() {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const currentLevel: WarningLevel =
-    kclManager.fileSettings.experimentalFeatures ??
+    executingEditor.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES
 
   return (
@@ -50,9 +50,9 @@ export function ExperimentalFeaturesMenu() {
 
                         async function awaitWasmAndSetFlag() {
                           const newAst = setExperimentalFeatures(
-                            kclManager.code,
+                            executingEditor.code,
                             level,
-                            await kclManager.wasmInstancePromise
+                            await executingEditor.wasmInstancePromise
                           )
                           if (err(newAst)) {
                             toast.error(
@@ -62,7 +62,7 @@ export function ExperimentalFeaturesMenu() {
                             updateModelingState(
                               newAst,
                               EXECUTION_TYPE_REAL,
-                              kclManager
+                              executingEditor
                             )
                               .then((result) => {
                                 if (err(result)) {

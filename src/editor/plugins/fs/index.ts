@@ -2,7 +2,7 @@ import { invertedEffects } from '@codemirror/commands'
 import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { EditorView } from 'codemirror'
@@ -56,7 +56,7 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
  */
 export function buildFSHistoryExtension(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
@@ -83,7 +83,7 @@ export function buildFSHistoryExtension(
 
   // Note that the FS history extension is not on the EditorView for the code editor itself,
   // but rather the globalHistoryView.
-  kclManager.globalHistoryView.dispatch(
+  executingEditor.globalHistoryView.dispatch(
     {
       effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
     },
@@ -92,7 +92,7 @@ export function buildFSHistoryExtension(
   )
   // Teardown
   return () => {
-    kclManager.globalHistoryView.dispatch(
+    executingEditor.globalHistoryView.dispatch(
       {
         effects: [fsEffectCompartment.reconfigure([])],
       },

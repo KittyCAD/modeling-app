@@ -6,7 +6,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { TRIM_PREVIEW_LINE_COLOR_HEX } from '@src/lib/constants'
 import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
 import type RustContext from '@src/lib/rustContext'
@@ -34,7 +34,7 @@ export const machine = setup({
     context: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
-      kclManager: KclManager
+      executingEditor: ExecutingEditor
       sketchId: number
       sceneGraphDelta?: SceneGraphDelta
       trimPoints: Vector3[]
@@ -46,7 +46,7 @@ export const machine = setup({
     input: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
-      kclManager: KclManager
+      executingEditor: ExecutingEditor
       sketchId: number
       sceneGraphDelta?: SceneGraphDelta
     },
@@ -387,7 +387,7 @@ export const machine = setup({
   context: ({ input }) => ({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId,
     sceneGraphDelta: input.sceneGraphDelta,
     trimPoints: [],

@@ -4,7 +4,7 @@ import {
   defineRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -20,10 +20,10 @@ import { commandsExtension } from '.'
 import { TOOLBAR_COMMAND_IDS, toolbarCommands } from './toolbarCommands'
 
 function createCommandBarContext({
-  kclManager,
+  executingEditor,
   userFeatures,
 }: {
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   userFeatures?: NonNullable<CommandBarContext['userFeatures']>
 }): CommandBarContext {
   const context: CommandBarContext = {
@@ -31,7 +31,7 @@ function createCommandBarContext({
     wasmInstancePromise: Promise.resolve({} as ModuleType),
     machineManager: new MachineManager(),
     argumentsToSubmit: {},
-    kclManager,
+    executingEditor,
   }
 
   if (userFeatures) {
@@ -89,9 +89,9 @@ describe('commands extension', () => {
     )
   })
 
-  it('runs toolbar commands against the KclManager from command input', () => {
+  it('runs toolbar commands against the ExecutingEditor from command input', () => {
     const sentEvents: unknown[] = []
-    const kclManager = {
+    const executingEditor = {
       modelingState: {
         matches: (state: unknown) => state === 'sketchSolveMode',
         context: { sketchSolveToolName: null },
@@ -100,7 +100,7 @@ describe('commands extension', () => {
         sentEvents.push(event)
         return true
       },
-    } as unknown as KclManager
+    } as unknown as ExecutingEditor
 
     const command = toolbarCommands.find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.line
@@ -108,7 +108,7 @@ describe('commands extension', () => {
 
     expect(
       command?.onSubmit({
-        context: { kclManager } as CommandBarContext,
+        context: { executingEditor } as CommandBarContext,
       })
     ).toBe(true)
     expect(sentEvents).toEqual([
@@ -118,7 +118,7 @@ describe('commands extension', () => {
 
   it('does not run experimental toolbar commands without the user feature flag', () => {
     const sentEvents: unknown[] = []
-    const kclManager = {
+    const executingEditor = {
       modelingState: {
         matches: (state: unknown) => state === 'sketchSolveMode',
         context: { sketchSolveToolName: null },
@@ -127,7 +127,7 @@ describe('commands extension', () => {
         sentEvents.push(event)
         return true
       },
-    } as unknown as KclManager
+    } as unknown as ExecutingEditor
 
     const command = toolbarCommands.find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.spline
@@ -136,7 +136,7 @@ describe('commands extension', () => {
     expect(command).toBeDefined()
     expect(
       command?.onSubmit({
-        context: createCommandBarContext({ kclManager }),
+        context: createCommandBarContext({ executingEditor }),
       })
     ).toBeUndefined()
     expect(sentEvents).toEqual([])
@@ -144,7 +144,7 @@ describe('commands extension', () => {
 
   it('runs experimental toolbar commands with the user feature flag', () => {
     const sentEvents: unknown[] = []
-    const kclManager = {
+    const executingEditor = {
       modelingState: {
         matches: (state: unknown) => state === 'sketchSolveMode',
         context: { sketchSolveToolName: null },
@@ -153,7 +153,7 @@ describe('commands extension', () => {
         sentEvents.push(event)
         return true
       },
-    } as unknown as KclManager
+    } as unknown as ExecutingEditor
     const userFeatures = {
       has: vi.fn(() => true),
     } satisfies NonNullable<CommandBarContext['userFeatures']>
@@ -165,7 +165,7 @@ describe('commands extension', () => {
     expect(command).toBeDefined()
     expect(
       command?.onSubmit({
-        context: createCommandBarContext({ kclManager, userFeatures }),
+        context: createCommandBarContext({ executingEditor, userFeatures }),
       })
     ).toBe(true)
     expect(sentEvents).toEqual([
@@ -175,7 +175,7 @@ describe('commands extension', () => {
 
   it('exits sketch solve mode while a sketch solve tool is equipped', () => {
     const sentEvents: unknown[] = []
-    const kclManager = {
+    const executingEditor = {
       modelingState: {
         matches: (state: unknown) => state === 'sketchSolveMode',
         context: { sketchSolveToolName: 'lineTool' },
@@ -184,7 +184,7 @@ describe('commands extension', () => {
         sentEvents.push(event)
         return true
       },
-    } as unknown as KclManager
+    } as unknown as ExecutingEditor
 
     const command = toolbarCommands.find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.exit
@@ -192,15 +192,15 @@ describe('commands extension', () => {
 
     expect(
       command?.onSubmit({
-        context: { kclManager } as CommandBarContext,
+        context: { executingEditor } as CommandBarContext,
       })
     ).toBe(true)
     expect(sentEvents).toEqual([{ type: 'Exit sketch' }])
   })
 
-  it('runs toolbar commands selected by keymaps against the command bar KclManager', () => {
+  it('runs toolbar commands selected by keymaps against the command bar ExecutingEditor', () => {
     const sentEvents: unknown[] = []
-    const kclManager = {
+    const executingEditor = {
       modelingState: {
         matches: (state: unknown) => state === 'sketchSolveMode',
         context: { sketchSolveToolName: null },
@@ -209,7 +209,7 @@ describe('commands extension', () => {
         sentEvents.push(event)
         return true
       },
-    } as unknown as KclManager
+    } as unknown as ExecutingEditor
     const command = toolbarCommands.find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.line
     )
@@ -237,9 +237,12 @@ describe('commands extension', () => {
     ])
 
     const commandSystem = registry.get(commandSystemService)
-    commandSystem.actor.send({ type: 'Set kclManager', data: kclManager })
-    expect(commandSystem.actor.getSnapshot().context.kclManager).toBe(
-      kclManager
+    commandSystem.actor.send({
+      type: 'Set executingEditor',
+      data: executingEditor,
+    })
+    expect(commandSystem.actor.getSnapshot().context.executingEditor).toBe(
+      executingEditor
     )
     commandSystem.send({
       type: 'Find and select command',

@@ -58,7 +58,8 @@ export const baseLoader =
     }
 
     // Web, make a default project and redirect to it.
-    const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
+    const wasmInstance =
+      await app.singletons.executingEditor.wasmInstancePromise
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
@@ -102,7 +103,7 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { kclManager } = app.singletons
+    const { executingEditor } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -117,7 +118,7 @@ export const fileLoader =
       ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
       : undefined
 
-    const wasmInstance = await kclManager.wasmInstancePromise
+    const wasmInstance = await executingEditor.wasmInstancePromise
 
     let settings = await loadAndValidateSettings(
       wasmInstance,
@@ -209,11 +210,11 @@ export const fileLoader =
     const projectRef = await app.openProject(project)
     const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
+      app.singletons.executingEditor,
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
       window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
+        ? executingEditor.localStoragePersistCode()
         : undefined
     )
 

@@ -4,7 +4,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -30,7 +30,7 @@ function createTestMachine(mockActors?: {
 }) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
 
   const testMachine = machine.provide({
     actors: {
@@ -55,18 +55,19 @@ function createTestMachine(mockActors?: {
     machine: testMachine,
     sceneInfra,
     rustContext,
-    kclManager,
+    executingEditor,
   }
 }
 
 describe('tangentialArcTool - XState', () => {
   it('should start in ready-for-info state', () => {
-    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine()
+    const { machine, sceneInfra, rustContext, executingEditor } =
+      createTestMachine()
     const actor = createActor(machine, {
       input: {
         sceneInfra,
         rustContext,
-        kclManager,
+        executingEditor,
         sketchId: 0,
       },
     }).start()
@@ -85,18 +86,19 @@ describe('tangentialArcTool - XState', () => {
       [1, 2, 3, 4]
     )
 
-    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine({
-      createArc: async () => ({
-        kclSource: { text: 'create' },
-        sceneGraphDelta: createResult,
-      }),
-    })
+    const { machine, sceneInfra, rustContext, executingEditor } =
+      createTestMachine({
+        createArc: async () => ({
+          kclSource: { text: 'create' },
+          sceneGraphDelta: createResult,
+        }),
+      })
 
     const actor = createActor(machine, {
       input: {
         sceneInfra,
         rustContext,
-        kclManager,
+        executingEditor,
         sketchId: 0,
       },
     }).start()
@@ -124,22 +126,23 @@ describe('tangentialArcTool - XState', () => {
       [1, 2, 3, 4]
     )
 
-    const { machine, sceneInfra, rustContext, kclManager } = createTestMachine({
-      createArc: async () => ({
-        kclSource: { text: 'create' },
-        sceneGraphDelta: createResult,
-      }),
-      finalizeArc: async () => ({
-        kclSource: { text: 'finalize' },
-        sceneGraphDelta: createResult,
-      }),
-    })
+    const { machine, sceneInfra, rustContext, executingEditor } =
+      createTestMachine({
+        createArc: async () => ({
+          kclSource: { text: 'create' },
+          sceneGraphDelta: createResult,
+        }),
+        finalizeArc: async () => ({
+          kclSource: { text: 'finalize' },
+          sceneGraphDelta: createResult,
+        }),
+      })
 
     const actor = createActor(machine, {
       input: {
         sceneInfra,
         rustContext,
-        kclManager,
+        executingEditor,
         sketchId: 0,
       },
     }).start()

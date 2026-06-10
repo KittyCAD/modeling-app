@@ -16,7 +16,7 @@ import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const EditingConstraintInput = () => {
   const {
-    kclManager: { sceneInfra, rustContext },
+    executingEditor: { sceneInfra, rustContext },
   } = useSingletons()
   const { state } = useModelingContext()
   const editingConstraintId = useSelector(

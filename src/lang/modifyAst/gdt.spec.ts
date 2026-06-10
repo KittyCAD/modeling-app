@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   addAnnotationGdt,
   addCircularityGdt,
@@ -30,7 +30,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -45,10 +45,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -59,11 +59,11 @@ afterAll(() => {
 const executeCode = async (
   code: string,
   instance: ModuleType,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ) => {
   const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const artifactGraph = kclManager.artifactGraph
+  await executingEditor.executeAst({ ast })
+  const artifactGraph = executingEditor.artifactGraph
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph }
 }
@@ -155,7 +155,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const tolerance = await getKclCommandValue(
@@ -189,7 +189,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getWallsFromBox(artifactGraph, 3)
 
@@ -229,7 +229,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         twoBodies,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getEndCapsFromMultipleBodies(artifactGraph)
 
@@ -267,7 +267,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const walls = getWallsFromBox(artifactGraph, 3)
 
@@ -312,7 +312,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
 
@@ -366,7 +366,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
 
@@ -431,7 +431,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         twoBodies,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getEndCapsFromMultipleBodies(artifactGraph)
 
@@ -464,7 +464,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find the edgeCut artifact created by the chamfer operation
@@ -514,7 +514,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndFillet,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find the fillet edgeCut artifact
@@ -569,7 +569,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getCapFromCylinder(artifactGraph)
       const tolerance = await getKclCommandValue(
@@ -601,7 +601,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getWallsFromBox(artifactGraph, 3)
 
@@ -638,7 +638,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
@@ -679,7 +679,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getCapFromCylinder(artifactGraph)
 
@@ -743,7 +743,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getCapFromCylinder(artifactGraph)
       const tolerance = await getKclCommandValue(
@@ -775,7 +775,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getWallsFromBox(artifactGraph, 3)
 
@@ -812,7 +812,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
@@ -853,7 +853,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getCapFromCylinder(artifactGraph)
 
@@ -917,7 +917,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getCapFromCylinder(artifactGraph)
       const tolerance = await getKclCommandValue(
@@ -949,7 +949,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getWallsFromBox(artifactGraph, 3)
 
@@ -986,7 +986,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
@@ -1027,7 +1027,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const objects = getCapFromCylinder(artifactGraph)
 
@@ -1091,7 +1091,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const edge = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'sweepEdge'
@@ -1143,7 +1143,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
@@ -1197,7 +1197,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const edge = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'sweepEdge'
@@ -1240,7 +1240,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const edges = [...artifactGraph.values()]
         .filter((artifact) => artifact.type === 'sweepEdge')
@@ -1284,7 +1284,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const edges = [...artifactGraph.values()]
         .filter((artifact) => artifact.type === 'sweepEdge')
@@ -1326,7 +1326,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = [...artifactGraph.values()]
         .filter(
@@ -1370,7 +1370,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap' || artifact.type === 'wall'
@@ -1417,7 +1417,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const face = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap'
@@ -1471,7 +1471,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selections = [
         ...[...artifactGraph.values()].filter(
@@ -1523,7 +1523,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selections = [
         ...[...artifactGraph.values()].filter(
@@ -1564,7 +1564,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'A'
@@ -1593,7 +1593,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getWallsFromBox(artifactGraph, 1)
       const name = 'C'
@@ -1622,7 +1622,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find the chamfer edgeCut artifact
@@ -1668,7 +1668,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getWallsFromBox(artifactGraph, 2)
       const name = 'A'
@@ -1692,7 +1692,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces: Selections = { graphSelections: [], otherSelections: [] }
       const name = 'A'
@@ -1713,7 +1713,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'AB'
@@ -1736,7 +1736,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = ''
@@ -1758,7 +1758,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = '"'
@@ -1783,7 +1783,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'A'

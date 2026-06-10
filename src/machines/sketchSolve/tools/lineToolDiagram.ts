@@ -5,7 +5,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -80,7 +80,7 @@ export const machine = setup({
           pointData: [number, number]
           snapTarget?: SnapTarget
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<
@@ -97,12 +97,17 @@ export const machine = setup({
             error: string
           }
       > => {
-        const { pointData, snapTarget, rustContext, kclManager, sketchId } =
-          input
+        const {
+          pointData,
+          snapTarget,
+          rustContext,
+          executingEditor,
+          sketchId,
+        } = input
         const [x, y] = pointData
 
         const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
+          executingEditor.fileSettings.defaultLengthUnit
         )
 
         try {
@@ -200,7 +205,7 @@ export const machine = setup({
           snapTarget?: SnapTarget
           isDoubleClick?: boolean
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<
@@ -220,12 +225,12 @@ export const machine = setup({
           snapTarget,
           isDoubleClick,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId,
         } = input
         const [x, y] = pointData
         const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
+          executingEditor.fileSettings.defaultLengthUnit
         )
         const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -347,7 +352,7 @@ export const machine = setup({
           sceneGraphDelta?: SceneGraphDelta
           draftPointData: [number, number]
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<
@@ -369,7 +374,7 @@ export const machine = setup({
           sceneGraphDelta,
           draftPointData,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId,
         } = input
 
@@ -391,7 +396,7 @@ export const machine = setup({
         const [startX, startY] = pointToCoords2d(graphPoint)
         const [endX, endY] = draftPointData
         const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
+          executingEditor.fileSettings.defaultLengthUnit
         )
         const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -478,7 +483,7 @@ export const machine = setup({
     deleteFromEscape: undefined,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId || 0,
   }),
   id: toolId,
@@ -515,7 +520,7 @@ export const machine = setup({
             snapTarget: event.snapTarget,
             isDoubleClick: event.isDoubleClick,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -596,7 +601,7 @@ export const machine = setup({
             sceneGraphDelta: context.pendingSketchOutcome?.sceneGraphDelta,
             draftPointData: event.data,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -656,7 +661,7 @@ export const machine = setup({
             pointData: event.data,
             snapTarget: event.snapTarget,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },

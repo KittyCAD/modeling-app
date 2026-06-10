@@ -92,7 +92,7 @@ import {
   getTanPreviousPoint,
   segmentUtils,
 } from '@src/clientSideScene/segments'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { ARG_AT, ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -195,7 +195,7 @@ type Vec3Array = [number, number, number]
 export class SceneEntities {
   readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
-  readonly kclManager: KclManager
+  readonly executingEditor: ExecutingEditor
   readonly rustContext: RustContext
   commandBarActor: CommandBarActorType
   activeSegments: { [key: string]: Group } = {}
@@ -209,14 +209,14 @@ export class SceneEntities {
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
-    kclManager: KclManager,
+    executingEditor: ExecutingEditor,
     rustContext: RustContext,
     commandBarActor: CommandBarActorType,
     getSettings: typeof this.getSettings
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
-    this.kclManager = kclManager
+    this.executingEditor = executingEditor
     this.rustContext = rustContext
     this.commandBarActor = commandBarActor
     this.getSettings = getSettings
@@ -261,7 +261,7 @@ export class SceneEntities {
   }
 
   onCamChange = async () => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
@@ -793,23 +793,26 @@ export class SceneEntities {
         }
 
         const inserted = insertNewStartProfileAt(
-          this.kclManager.ast,
+          this.executingEditor.ast,
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           startPoint,
           'end',
-          await this.kclManager.wasmInstancePromise
+          await this.executingEditor.wasmInstancePromise
         )
 
         if (trap(inserted)) return
         const { modifiedAst } = inserted
 
-        await this.kclManager.updateAst(modifiedAst, false)
-        await this.kclManager.updateEditorWithAstAndWriteToFile(modifiedAst, {
-          shouldAddToHistory: false,
-          shouldWriteToDisk: false,
-          allowProgrammaticDocumentChanges: true,
-        })
+        await this.executingEditor.updateAst(modifiedAst, false)
+        await this.executingEditor.updateEditorWithAstAndWriteToFile(
+          modifiedAst,
+          {
+            shouldAddToHistory: false,
+            shouldWriteToDisk: false,
+            allowProgrammaticDocumentChanges: true,
+          }
+        )
 
         // Now perform the caller-specified action
         afterClick(args, {
@@ -842,7 +845,7 @@ export class SceneEntities {
     truncatedAst: Node<Program>
     variableDeclarationName: string
   }> {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
     const prepared = this.prepareTruncatedAst(
       sketchNodePaths,
       wasmInstance,
@@ -861,8 +864,8 @@ export class SceneEntities {
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
       variables: execState.variables,
-      kclManager: this.kclManager,
-      wasmInstance: await this.kclManager.wasmInstancePromise,
+      executingEditor: this.executingEditor,
+      wasmInstance: await this.executingEditor.wasmInstancePromise,
     })
 
     const group = new Group()
@@ -1018,7 +1021,7 @@ export class SceneEntities {
         const selection: Selections = computeSelectionFromSourceRangeAndAST(
           sourceRange,
           maybeModdedAst,
-          this.kclManager
+          this.executingEditor
         )
         if (!this.commandBarActor) {
           console.error('command bar actor not found.')
@@ -1037,7 +1040,7 @@ export class SceneEntities {
           sceneInfra: this.sceneInfra,
           selection,
           commandBarActor: this.commandBarActor,
-          kclManager: this.kclManager,
+          executingEditor: this.executingEditor,
           wasmInstance,
         })
         if (err(result)) return
@@ -1094,7 +1097,7 @@ export class SceneEntities {
     updateExtraSegments: typeof updateExtraSegmentsFn
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-    const nextAst = await this.kclManager.updateAst(modifiedAst, false)
+    const nextAst = await this.executingEditor.updateAst(modifiedAst, false)
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -1133,8 +1136,8 @@ export class SceneEntities {
     origin: [number, number, number],
     segmentName: 'line' | 'tangentialArc' = 'line'
   ) => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    const _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    const _ast = structuredClone(this.executingEditor.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1146,7 +1149,7 @@ export class SceneEntities {
     const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
     const sg = sketchFromKclValue(
-      this.kclManager.variables[variableDeclarationName],
+      this.executingEditor.variables[variableDeclarationName],
       variableDeclarationName
     )
     if (err(sg)) return Promise.reject(sg)
@@ -1155,7 +1158,7 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet, no need for `.length -1`
     const mod = addNewSketchLn({
       node: _ast,
-      variables: this.kclManager.variables,
+      variables: this.executingEditor.variables,
       input: {
         type: 'straight-segment',
         to: lastSeg.to,
@@ -1199,18 +1202,18 @@ export class SceneEntities {
         let intersection2d = intersectionPoint?.twoD
 
         let modifiedAst: Node<Program> | Error = structuredClone(
-          this.kclManager.ast
+          this.executingEditor.ast
         )
 
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
-          variables: this.kclManager.variables,
-          kclManager: this.kclManager,
-          wasmInstance: await this.kclManager.wasmInstancePromise,
+          variables: this.executingEditor.variables,
+          executingEditor: this.executingEditor,
+          wasmInstance: await this.executingEditor.wasmInstancePromise,
         })
         if (err(sketch)) return Promise.reject(sketch)
         if (!sketch) return Promise.reject(new Error('No sketch found'))
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         let intersectsProfileStart = false
         if (intersection2d) {
@@ -1248,8 +1251,8 @@ export class SceneEntities {
             ])
 
             modifiedAst = addCallExpressionsToPipe({
-              node: this.kclManager.ast,
-              variables: this.kclManager.variables,
+              node: this.executingEditor.ast,
+              variables: this.executingEditor.variables,
               pathToNode: sketchEntryNodePath,
               expressions: [
                 segmentName === 'tangentialArc'
@@ -1265,7 +1268,7 @@ export class SceneEntities {
             if (trap(modifiedAst)) return Promise.reject(modifiedAst)
             modifiedAst = addCloseToPipe({
               node: modifiedAst,
-              variables: this.kclManager.variables,
+              variables: this.executingEditor.variables,
               pathToNode: sketchEntryNodePath,
               wasmInstance,
             })
@@ -1337,7 +1340,7 @@ export class SceneEntities {
 
             const tmp = addNewSketchLn({
               node: modifiedAst,
-              variables: this.kclManager.variables,
+              variables: this.executingEditor.variables,
               input: {
                 type: 'straight-segment',
                 from: [lastSegment.to[0], lastSegment.to[1]],
@@ -1346,7 +1349,7 @@ export class SceneEntities {
               fnName: resolvedFunctionName,
               pathToNode: sketchEntryNodePath,
               snaps,
-              wasmInstance: await this.kclManager.wasmInstancePromise,
+              wasmInstance: await this.executingEditor.wasmInstancePromise,
             })
             if (trap(tmp)) return Promise.reject(tmp)
             modifiedAst = tmp.modifiedAst
@@ -1360,7 +1363,7 @@ export class SceneEntities {
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_MOCK,
-          this.kclManager,
+          this.executingEditor,
           {
             // TODO: understand why this is needed
             skipErrorsOnMockExecution: true,
@@ -1403,7 +1406,7 @@ export class SceneEntities {
             variableDeclarationName,
           },
           mouseEvent: args.mouseEvent,
-          wasmInstance: await this.kclManager.wasmInstancePromise,
+          wasmInstance: await this.executingEditor.wasmInstancePromise,
         })
       },
     })
@@ -1416,8 +1419,8 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     rectangleOrigin: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    let _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    let _ast = structuredClone(this.executingEditor.ast)
 
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
@@ -1466,9 +1469,9 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    const didReParse = await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.executingEditor.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
-    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+    await this.executingEditor.updateEditorWithAstAndWriteToFile(_ast, {
       shouldAddToHistory: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
@@ -1510,7 +1513,7 @@ export class SceneEntities {
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
 
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         const nodePathWithCorrectedIndexForTruncatedAst =
           getPathNormalisedForTruncatedAst(
@@ -1543,7 +1546,7 @@ export class SceneEntities {
             x,
             y,
             tag,
-            await this.kclManager.wasmInstancePromise
+            await this.executingEditor.wasmInstancePromise
           )
         }
 
@@ -1588,7 +1591,7 @@ export class SceneEntities {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const twoD = args.intersectionPoint?.twoD
         if (!twoD || args.mouseEvent.button !== 0) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         const { snappedPoint } = this.getSnappedDragPoint(
           twoD,
@@ -1625,7 +1628,11 @@ export class SceneEntities {
         // lee: I had this at the bottom of the function, but it's
         // possible sketchFromKclValue "fails" when sketching on a face,
         // and this couldn't wouldn't run.
-        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
+        await updateModelingState(
+          _ast,
+          EXECUTION_TYPE_MOCK,
+          this.executingEditor
+        )
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
     })
@@ -1643,13 +1650,13 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     rectangleOrigin: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    let _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    let _ast = structuredClone(this.executingEditor.ast)
 
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
       planeNodePath,
-      await this.kclManager.wasmInstancePromise,
+      await this.executingEditor.wasmInstancePromise,
       'VariableDeclarator'
     )
 
@@ -1693,8 +1700,8 @@ export class SceneEntities {
     _ast = __recastAst.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
-    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+    await this.executingEditor.executeAstMock(_ast)
+    await this.executingEditor.updateEditorWithAstAndWriteToFile(_ast, {
       shouldAddToHistory: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
@@ -1744,11 +1751,11 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
-          await this.kclManager.wasmInstancePromise,
+          await this.executingEditor.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         const sketchInit = _node.node?.declaration.init
 
         const { snappedPoint } = this.getSnappedDragPoint(
@@ -1768,7 +1775,7 @@ export class SceneEntities {
             tag,
             rectangleOrigin[0],
             rectangleOrigin[1],
-            await this.kclManager.wasmInstancePromise
+            await this.executingEditor.wasmInstancePromise
           )
           if (err(maybeError)) {
             return Promise.reject(maybeError)
@@ -1816,7 +1823,7 @@ export class SceneEntities {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const twoD = args.intersectionPoint?.twoD
         if (!twoD || args.mouseEvent.button !== 0) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         const { snappedPoint } = this.getSnappedDragPoint(
           twoD,
@@ -1860,7 +1867,11 @@ export class SceneEntities {
           // lee: I had this at the bottom of the function, but it's
           // possible sketchFromKclValue "fails" when sketching on a face,
           // and this couldn't wouldn't run.
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
+          await updateModelingState(
+            _ast,
+            EXECUTION_TYPE_MOCK,
+            this.executingEditor
+          )
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
       },
@@ -1880,8 +1891,8 @@ export class SceneEntities {
     point1: [x: number, y: number],
     point2: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    let _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    let _ast = structuredClone(this.executingEditor.ast)
 
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
@@ -1922,9 +1933,9 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    const didReParse = await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.executingEditor.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
-    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+    await this.executingEditor.updateEditorWithAstAndWriteToFile(_ast, {
       shouldAddToHistory: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
@@ -1950,18 +1961,18 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
-          await this.kclManager.wasmInstancePromise,
+          await this.executingEditor.wasmInstancePromise,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
         if (trap(_node)) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         const sketchInit = _node.node.declaration.init
 
         if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
@@ -2028,18 +2039,18 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath || [],
-          await this.kclManager.wasmInstancePromise,
+          await this.executingEditor.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
         if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: updatedEntryNodePath,
@@ -2068,7 +2079,11 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
+          await updateModelingState(
+            _ast,
+            EXECUTION_TYPE_MOCK,
+            this.executingEditor
+          )
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
         }
       },
@@ -2087,8 +2102,8 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     center: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    let _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    let _ast = structuredClone(this.executingEditor.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -2100,7 +2115,7 @@ export class SceneEntities {
     const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
     const sg = sketchFromKclValue(
-      this.kclManager.variables[variableDeclarationName],
+      this.executingEditor.variables[variableDeclarationName],
       variableDeclarationName
     )
     if (err(sg)) return Promise.reject(sg)
@@ -2121,7 +2136,7 @@ export class SceneEntities {
     // Use addNewSketchLn to append an arc to the existing sketch
     const mod = addNewSketchLn({
       node: _ast,
-      variables: this.kclManager.variables,
+      variables: this.executingEditor.variables,
       input: {
         type: 'arc-segment',
         from,
@@ -2141,9 +2156,9 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    const didReParse = await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.executingEditor.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
-    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+    await this.executingEditor.updateEditorWithAstAndWriteToFile(_ast, {
       shouldAddToHistory: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
@@ -2171,7 +2186,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
-          await this.kclManager.wasmInstancePromise,
+          await this.executingEditor.wasmInstancePromise,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
@@ -2193,7 +2208,7 @@ export class SceneEntities {
 
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
@@ -2206,7 +2221,7 @@ export class SceneEntities {
               radius: radius,
               ccw: true,
             },
-            await this.kclManager.wasmInstancePromise
+            await this.executingEditor.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2225,7 +2240,7 @@ export class SceneEntities {
 
         const varDecIndex = Number(sketchEntryNodePath[1][0])
 
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
@@ -2282,7 +2297,7 @@ export class SceneEntities {
 
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: mod.pathToNode,
@@ -2308,7 +2323,11 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
+          await updateModelingState(
+            _ast,
+            EXECUTION_TYPE_MOCK,
+            this.executingEditor
+          )
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
         }
       },
@@ -2327,8 +2346,8 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     p2: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    let _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    let _ast = structuredClone(this.executingEditor.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -2340,7 +2359,7 @@ export class SceneEntities {
     const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
     const sg = sketchFromKclValue(
-      this.kclManager.variables[variableDeclarationName],
+      this.executingEditor.variables[variableDeclarationName],
       variableDeclarationName
     )
     if (err(sg)) return Promise.reject(sg)
@@ -2353,7 +2372,7 @@ export class SceneEntities {
     // Use addNewSketchLn to append an arc to the existing sketch
     const mod = addNewSketchLn({
       node: _ast,
-      variables: this.kclManager.variables,
+      variables: this.executingEditor.variables,
       input: {
         type: 'circle-three-point-segment',
         p1,
@@ -2371,9 +2390,9 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    const didReParse = await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.executingEditor.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
-    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+    await this.executingEditor.updateEditorWithAstAndWriteToFile(_ast, {
       shouldAddToHistory: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
@@ -2401,7 +2420,7 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         const nodePathWithCorrectedIndexForTruncatedAst =
           getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
@@ -2432,7 +2451,7 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
@@ -2495,7 +2514,7 @@ export class SceneEntities {
         // Commit the arc to the full AST/code and return to sketch.idle
         const mousePoint = args.intersectionPoint?.twoD
         if (!mousePoint || args.mouseEvent.button !== 0) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
@@ -2516,7 +2535,7 @@ export class SceneEntities {
 
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: mod.pathToNode,
@@ -2561,7 +2580,7 @@ export class SceneEntities {
 
             const moddedResult = addCloseToPipe({
               node: modded,
-              variables: this.kclManager.variables,
+              variables: this.executingEditor.variables,
               pathToNode: sketchEntryNodePath,
               wasmInstance,
             })
@@ -2577,7 +2596,11 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
+          await updateModelingState(
+            _ast,
+            EXECUTION_TYPE_MOCK,
+            this.executingEditor
+          )
           if (intersectsProfileStart) {
             this.sceneInfra.modelingSend({ type: 'Close sketch' })
           } else {
@@ -2600,8 +2623,8 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     circleCenter: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
-    const wasmInstance = await this.kclManager.wasmInstancePromise
-    let _ast = structuredClone(this.kclManager.ast)
+    const wasmInstance = await this.executingEditor.wasmInstancePromise
+    let _ast = structuredClone(this.executingEditor.ast)
 
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
@@ -2647,9 +2670,9 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    const didReParse = await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.executingEditor.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
-    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+    await this.executingEditor.updateEditorWithAstAndWriteToFile(_ast, {
       shouldAddToHistory: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
@@ -2667,7 +2690,7 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         const nodePathWithCorrectedIndexForTruncatedAst =
           getPathNormalisedForTruncatedAst(
             updatedEntryNodePath,
@@ -2689,7 +2712,7 @@ export class SceneEntities {
         if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
@@ -2751,7 +2774,7 @@ export class SceneEntities {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         const x = roundOff((cornerPoint.x || 0) - circleCenter[0])
         const y = roundOff((cornerPoint.y || 0) - circleCenter[1])
@@ -2769,7 +2792,7 @@ export class SceneEntities {
         if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
-            this.kclManager.variables,
+            this.executingEditor.variables,
             {
               type: 'path',
               pathToNode: updatedEntryNodePath,
@@ -2791,14 +2814,18 @@ export class SceneEntities {
           if (err(newCode)) return
           const pResult = parse(
             newCode,
-            await this.kclManager.wasmInstancePromise
+            await this.executingEditor.wasmInstancePromise
           )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, this.kclManager)
+          await updateModelingState(
+            _ast,
+            EXECUTION_TYPE_MOCK,
+            this.executingEditor
+          )
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
         }
       },
@@ -2835,7 +2862,7 @@ export class SceneEntities {
           await this.setupSketch({
             sketchEntryNodePath,
             sketchNodePaths,
-            maybeModdedAst: this.kclManager.ast,
+            maybeModdedAst: this.executingEditor.ast,
             up,
             forward,
             position,
@@ -2854,7 +2881,7 @@ export class SceneEntities {
         }
         // TODO: update the `updateCodeEditor` workflow to allow for writes to file
         // without execution so that we can drop this stray write to disk
-        await this.kclManager.writeToFile()
+        await this.executingEditor.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -2863,7 +2890,7 @@ export class SceneEntities {
         intersects,
       }) => {
         if (mouseEvent.which !== 1) return
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
 
         const group = getParentGroup(selected, [EXTRA_SEGMENT_HANDLE])
         if (group?.name === EXTRA_SEGMENT_HANDLE) {
@@ -2875,8 +2902,8 @@ export class SceneEntities {
 
           const sketch = sketchFromPathToNode({
             pathToNode,
-            variables: this.kclManager.variables,
-            kclManager: this.kclManager,
+            variables: this.executingEditor.variables,
+            executingEditor: this.executingEditor,
             wasmInstance,
           })
           if (trap(sketch)) return
@@ -2889,8 +2916,8 @@ export class SceneEntities {
           if (addingNewSegmentStatus === 'nothing') {
             const prevSegment = sketch.paths[pipeIndex - 2] // Is undefined when dragging the first segment
             const mod = addNewSketchLn({
-              node: this.kclManager.ast,
-              variables: this.kclManager.variables,
+              node: this.executingEditor.ast,
+              variables: this.executingEditor.variables,
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
@@ -2907,7 +2934,7 @@ export class SceneEntities {
             addingNewSegmentStatus = 'pending'
             if (trap(mod)) return
 
-            const didReParse = await this.kclManager.executeAstMock(
+            const didReParse = await this.executingEditor.executeAstMock(
               mod.modifiedAst
             )
             if (err(didReParse)) return
@@ -2915,7 +2942,7 @@ export class SceneEntities {
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
               sketchNodePaths,
-              maybeModdedAst: this.kclManager.ast,
+              maybeModdedAst: this.executingEditor.ast,
               up,
               forward,
               position,
@@ -2967,8 +2994,8 @@ export class SceneEntities {
         const { selected } = args
         const event = getEventForSegmentSelection(
           selected,
-          this.kclManager.ast,
-          this.kclManager.artifactGraph,
+          this.executingEditor.ast,
+          this.executingEditor.artifactGraph,
           args.wasmInstance
         )
         if (!event) return
@@ -2985,8 +3012,8 @@ export class SceneEntities {
   ) => {
     return prepareTruncatedAst(
       sketchNodePaths,
-      ast || this.kclManager.ast,
-      this.kclManager.lastSuccessfulVariables,
+      ast || this.executingEditor.ast,
+      this.executingEditor.lastSuccessfulVariables,
       wasmInstance,
       draftSegment
     )
@@ -3330,7 +3357,7 @@ export class SceneEntities {
     )
     let modifiedAst = draftInfo
       ? draftInfo.truncatedAst
-      : { ...this.kclManager.ast }
+      : { ...this.executingEditor.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
       getPathNormalisedForTruncatedAst(pathToNode, sketchNodePaths)
@@ -3338,7 +3365,7 @@ export class SceneEntities {
     const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
       draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
-      await this.kclManager.wasmInstancePromise,
+      await this.executingEditor.wasmInstancePromise,
       ['CallExpressionKw']
     )
     if (trap(_node)) return
@@ -3508,19 +3535,19 @@ export class SceneEntities {
           to: dragTo,
           from,
         },
-        variables: this.kclManager.variables,
-        wasmInstance: await this.kclManager.wasmInstancePromise,
+        variables: this.executingEditor.variables,
+        wasmInstance: await this.executingEditor.wasmInstancePromise,
       })
     } else {
       modded = changeSketchArguments(
         modifiedAst,
-        this.kclManager.variables,
+        this.executingEditor.variables,
         {
           type: 'sourceRange',
           sourceRange: topLevelRange(node.start, node.end),
         },
         getChangeSketchInput(),
-        await this.kclManager.wasmInstancePromise
+        await this.executingEditor.wasmInstancePromise
       )
     }
     if (trap(modded)) return
@@ -3530,7 +3557,7 @@ export class SceneEntities {
       ? draftInfo
       : this.prepareTruncatedAst(
           sketchNodePaths || [],
-          await this.kclManager.wasmInstancePromise,
+          await this.executingEditor.wasmInstancePromise,
           modifiedAst
         )
     if (trap(info, { suppress: true })) return
@@ -3541,7 +3568,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        this.kclManager.updateCodeEditor(code)
+        this.executingEditor.updateCodeEditor(code)
 
       const { execState } = await executeAstMock({
         ast: truncatedAst,
@@ -3552,7 +3579,7 @@ export class SceneEntities {
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
         variables,
-        kclManager: this.kclManager,
+        executingEditor: this.executingEditor,
         wasmInstance,
       })
       const callbacks: (() => SegmentOverlayPayload | null)[] = []
@@ -3783,7 +3810,7 @@ export class SceneEntities {
   mouseEnterLeaveCallbacks(updateExtraSegments: typeof updateExtraSegmentsFn) {
     return {
       onMouseEnter: async ({ selected }: OnMouseEnterLeaveArgs) => {
-        const wasmInstance = await this.kclManager.wasmInstancePromise
+        const wasmInstance = await this.executingEditor.wasmInstancePromise
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3796,7 +3823,7 @@ export class SceneEntities {
         )
         if (parent?.userData?.pathToNode) {
           const pResult = parse(
-            recast(this.kclManager.ast, wasmInstance),
+            recast(this.executingEditor.ast, wasmInstance),
             wasmInstance
           )
           if (trap(pResult) || !resultIsOk(pResult))
@@ -3810,7 +3837,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          this.kclManager.setHighlightRange([
+          this.executingEditor.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
           colorSegment(selected, SEGMENT_YELLOW)
@@ -3884,10 +3911,10 @@ export class SceneEntities {
           }
           return
         }
-        this.kclManager.setHighlightRange([defaultSourceRange()])
+        this.executingEditor.setHighlightRange([defaultSourceRange()])
       },
       onMouseLeave: async ({ selected }: OnMouseEnterLeaveArgs) => {
-        this.kclManager.setHighlightRange([defaultSourceRange()])
+        this.executingEditor.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
           SEGMENT_BODIES_PLUS_PROFILE_START
@@ -3952,7 +3979,7 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
-              wasmInstance: await this.kclManager.wasmInstancePromise,
+              wasmInstance: await this.executingEditor.wasmInstancePromise,
             })
           }
         }
@@ -4252,16 +4279,16 @@ function prepareTruncatedAst(
 function sketchFromPathToNode({
   pathToNode,
   variables,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   pathToNode: PathToNode
   variables: VariableMap
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }): Sketch | null | Error {
   const _varDec = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
+    executingEditor.ast,
     pathToNode,
     wasmInstance,
     'VariableDeclarator'
@@ -4329,12 +4356,12 @@ function massageFormats(
 function getSketchesInfo({
   sketchNodePaths,
   variables,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   sketchNodePaths: PathToNode[]
   variables: VariableMap
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }): {
   sketch: Sketch
@@ -4348,7 +4375,7 @@ function getSketchesInfo({
     const sketch = sketchFromPathToNode({
       pathToNode: path,
       variables,
-      kclManager,
+      executingEditor,
       wasmInstance,
     })
     if (err(sketch)) continue
@@ -4370,9 +4397,9 @@ function getSketchesInfo({
 function computeSelectionFromSourceRangeAndAST(
   sourceRange: SourceRange,
   ast: Node<Program>,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ): Selections {
-  const artifactGraph = kclManager.artifactGraph
+  const artifactGraph = executingEditor.artifactGraph
   const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
   const selection: Selections = {
     graphSelections: [

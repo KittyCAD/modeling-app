@@ -1,7 +1,7 @@
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
@@ -25,17 +25,17 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
-  executingEditor: kclManager,
+  executingEditor: executingEditor,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
-  executingEditor: KclManager
+  executingEditor: ExecutingEditor
 }) {
   const { commands, wasmPromise } = useApp()
   const wasmInstance = use(wasmPromise)
-  const engineCommandManager = kclManager.engineCommandManager
-  const sceneEntitiesManager = kclManager.sceneEntitiesManager
+  const engineCommandManager = executingEditor.engineCommandManager
+  const sceneEntitiesManager = executingEditor.sceneEntitiesManager
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -45,8 +45,8 @@ export default function CommandBarSelectionMixedInput({
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(kclManager.ast, selection)
-  }, [selection, kclManager.ast])
+    return getSelectionCountByType(executingEditor.ast, selection)
+  }, [selection, executingEditor.ast])
 
   // Coerce selections to bodies if this argument requires bodies
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function CommandBarSelectionMixedInput({
 
     const coercedSelections = coerceSelectionsToBody(
       selection,
-      kclManager.artifactGraph
+      executingEditor.artifactGraph
     )
     if (err(coercedSelections)) return // Coercion failed, skip update
 
@@ -142,7 +142,7 @@ export default function CommandBarSelectionMixedInput({
       setSelectionFilter({
         filter: arg.selectionFilter,
         engineCommandManager,
-        kclManager,
+        executingEditor,
         sceneEntitiesManager,
         selectionsToRestore: selection,
         handleSelectionBatchFn: handleSelectionBatch,
@@ -154,7 +154,7 @@ export default function CommandBarSelectionMixedInput({
         // Restore default filter with selections on cleanup
         setSelectionFilterToDefault({
           engineCommandManager,
-          kclManager,
+          executingEditor,
           sceneEntitiesManager,
           selectionsToRestore: selection,
           handleSelectionBatchFn: handleSelectionBatch,
@@ -168,7 +168,7 @@ export default function CommandBarSelectionMixedInput({
     hasCoercedSelections,
     wasmInstance,
     engineCommandManager,
-    kclManager,
+    executingEditor,
     sceneEntitiesManager,
   ])
 
@@ -236,8 +236,10 @@ export default function CommandBarSelectionMixedInput({
       >
         {canSubmitSelection &&
         (selection.graphSelections.length || selection.otherSelections.length)
-          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
-            ' selected'
+          ? getSelectionTypeDisplayText(
+              executingEditor.astSignal.value,
+              selection
+            ) + ' selected'
           : 'Select code/objects, or skip'}
 
         {showSceneSelection && (

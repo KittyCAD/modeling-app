@@ -26,7 +26,7 @@ import toast from 'react-hot-toast'
 export function useViewControlMenuItems() {
   useSignals()
   const { settings, layout } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
@@ -60,7 +60,7 @@ export function useViewControlMenuItems() {
         <ContextMenuItem
           key={axisName}
           onClick={() => {
-            kclManager.sceneInfra.camControls
+            executingEditor.sceneInfra.camControls
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
           }}
@@ -73,8 +73,8 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           resetCameraPosition({
-            sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
+            sceneInfra: executingEditor.sceneInfra,
+            engineCommandManager: executingEditor.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
@@ -143,7 +143,7 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           if (planeOrFaceId) {
-            kclManager.sceneInfra.modelingSend({
+            executingEditor.sceneInfra.modelingSend({
               type: 'Enter sketch',
               data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
@@ -151,7 +151,7 @@ export function useViewControlMenuItems() {
             void selectSketchPlane(
               planeOrFaceId,
               modelingState.context.store.useSketchSolveMode?.current,
-              kclManager
+              executingEditor
             )
           }
         }}
@@ -190,7 +190,7 @@ export function useViewControlMenuItems() {
       snapToGrid,
       gizmoType,
       layout.signal.value,
-      kclManager,
+      executingEditor,
       settings,
     ]
   )

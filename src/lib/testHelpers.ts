@@ -1,6 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
@@ -31,15 +31,15 @@ export async function enginelessExecutor(
 export async function getAstAndArtifactGraph(
   code: string,
   instance: ModuleType,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ) {
   const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
+  await executingEditor.executeAst({ ast })
   const {
     artifactGraph,
     execState: { operations },
     variables,
-  } = kclManager
+  } = executingEditor
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph, operations, variables }
 }
@@ -47,13 +47,13 @@ export async function getAstAndArtifactGraph(
 export async function getAstAndSketchSelections(
   code: string,
   instance: ModuleType,
-  kclManager: KclManager,
+  executingEditor: ExecutingEditor,
   count: number | undefined = undefined
 ) {
   const { ast, artifactGraph } = await getAstAndArtifactGraph(
     code,
     instance,
-    kclManager
+    executingEditor
   )
   const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
   if (artifacts.length === 0) {

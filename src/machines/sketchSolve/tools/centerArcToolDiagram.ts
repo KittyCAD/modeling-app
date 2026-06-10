@@ -72,7 +72,7 @@ export const machine = setup({
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId || 0,
   }),
   id: toolId,
@@ -152,7 +152,7 @@ export const machine = setup({
             startPoint: event.data,
             centerSnapTarget: context.centerSnapTarget,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -236,7 +236,7 @@ export const machine = setup({
             startSnapTarget: context.startSnapTarget,
             endSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
             arcIsSwapped: context.arcIsSwapped,
           }

@@ -4,7 +4,7 @@ import {
 } from '@src/components/MlEphantConversation'
 import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import type { FileEntry, Project } from '@src/lib/project'
 import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
@@ -43,7 +43,7 @@ const awaitingResponseSelector = (
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
   systemIOActor: SystemIOActor
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
@@ -119,8 +119,8 @@ export const MlEphantConversationPane = (props: {
     const project: Project = props.theProject
 
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.kclManager.code,
-      fileNames: props.kclManager.execState.filenames,
+      selectedFileContents: props.executingEditor.code,
+      fileNames: props.executingEditor.execState.filenames,
       projectContext: project,
     })
 
@@ -134,11 +134,11 @@ export const MlEphantConversationPane = (props: {
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
-        content: props.kclManager.code,
+        content: props.executingEditor.code,
       },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
-      artifactGraph: props.kclManager.artifactGraph,
+      artifactGraph: props.executingEditor.artifactGraph,
       mode,
       additionalFiles: attachments,
     })
@@ -437,8 +437,8 @@ export const MlEphantConversationPane = (props: {
 
           const currentLoaderFile = loaderFileRef.current
           void collectProjectFiles({
-            selectedFileContents: props.kclManager.code,
-            fileNames: props.kclManager.execState.filenames,
+            selectedFileContents: props.executingEditor.code,
+            fileNames: props.executingEditor.execState.filenames,
             projectContext: project,
           }).then((projectFiles) => {
             props.mlEphantManagerActor.send({

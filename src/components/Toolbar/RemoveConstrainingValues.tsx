@@ -1,6 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
@@ -18,7 +18,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export function removeConstrainingValuesInfo(
   pathToNodes: Array<PathToNode>,
-  kclManager: KclManager,
+  executingEditor: ExecutingEditor,
   wasmInstance: ModuleType
 ):
   | {
@@ -28,7 +28,11 @@ export function removeConstrainingValuesInfo(
     }
   | Error {
   const _nodes = pathToNodes.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
+    const tmp = getNodeFromPath<Expr>(
+      executingEditor.ast,
+      pathToNode,
+      wasmInstance
+    )
     if (tmp instanceof Error) return tmp
     return tmp.node
   })
@@ -42,7 +46,7 @@ export function removeConstrainingValuesInfo(
       (node): Selection => ({
         codeRef: codeRefFromRange(
           topLevelRange(node.start, node.end),
-          kclManager.ast
+          executingEditor.ast
         ),
       })
     ),
@@ -55,7 +59,7 @@ export function removeConstrainingValuesInfo(
 
   const transforms = getRemoveConstraintsTransforms(
     updatedSelectionRanges,
-    kclManager.ast,
+    executingEditor.ast,
     wasmInstance
   )
   if (err(transforms)) return transforms
@@ -67,12 +71,12 @@ export function removeConstrainingValuesInfo(
 export function applyRemoveConstrainingValues({
   selectionRanges,
   pathToNodes,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
   pathToNodes?: Array<PathToNode>
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -87,17 +91,17 @@ export function applyRemoveConstrainingValues({
     })
   const constraint = removeConstrainingValuesInfo(
     pathToNodes,
-    kclManager,
+    executingEditor,
     wasmInstance
   )
   if (err(constraint)) return constraint
   const { transforms, updatedSelectionRanges } = constraint
 
   return transformAstSketchLines({
-    ast: kclManager.ast,
+    ast: executingEditor.ast,
     selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
     wasmInstance,
   })

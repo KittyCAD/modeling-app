@@ -870,12 +870,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           addToHistory: unknown
         }> = []
         const updateCodeEditorCalls: string[] = []
-        const { kclManager } = window.app.singletons
+        const { executingEditor } = window.app.singletons
 
         const originalSendModelingEvent =
-          kclManager.sendModelingEvent.bind(kclManager)
-        kclManager.sendModelingEvent = ((
-          ...args: Parameters<typeof kclManager.sendModelingEvent>
+          executingEditor.sendModelingEvent.bind(executingEditor)
+        executingEditor.sendModelingEvent = ((
+          ...args: Parameters<typeof executingEditor.sendModelingEvent>
         ) => {
           const [event] = args
           if (event.type === 'update sketch outcome') {
@@ -888,17 +888,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           }
 
           return originalSendModelingEvent(...args)
-        }) satisfies typeof kclManager.sendModelingEvent
+        }) satisfies typeof executingEditor.sendModelingEvent
 
         const originalUpdateCodeEditor =
-          kclManager.updateCodeEditor.bind(kclManager)
-        kclManager.updateCodeEditor = ((
-          ...args: Parameters<typeof kclManager.updateCodeEditor>
+          executingEditor.updateCodeEditor.bind(executingEditor)
+        executingEditor.updateCodeEditor = ((
+          ...args: Parameters<typeof executingEditor.updateCodeEditor>
         ) => {
           const [code] = args
           updateCodeEditorCalls.push(code)
           return originalUpdateCodeEditor(...args)
-        }) satisfies typeof kclManager.updateCodeEditor
+        }) satisfies typeof executingEditor.updateCodeEditor
 
         Reflect.set(window, 'directEditorOutcomesForTest', directEditorOutcomes)
         Reflect.set(
@@ -986,8 +986,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Delay the next sketch execution and observe editor saves', async () => {
       await page.evaluate(() => {
         const writeToFileCalls: string[] = []
-        const { kclManager } = window.app.singletons
-        const originalWriteToFile = kclManager.writeToFile.bind(kclManager)
+        const { executingEditor } = window.app.singletons
+        const originalWriteToFile =
+          executingEditor.writeToFile.bind(executingEditor)
         /*
          * This is only a spy on the save path. The test still edits through
          * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
@@ -995,13 +996,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
          * reaches the normal save listener, and that the delayed execution does
          * not add a stale out-of-band save afterward.
          */
-        kclManager.writeToFile = (async (
-          ...args: Parameters<typeof kclManager.writeToFile>
+        executingEditor.writeToFile = (async (
+          ...args: Parameters<typeof executingEditor.writeToFile>
         ) => {
-          const [newCode = kclManager.code] = args
+          const [newCode = executingEditor.code] = args
           writeToFileCalls.push(newCode)
           return originalWriteToFile(...args)
-        }) satisfies typeof kclManager.writeToFile
+        }) satisfies typeof executingEditor.writeToFile
         Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
 
         const originalHackSetProgram = window.rustContext.hackSetProgram.bind(

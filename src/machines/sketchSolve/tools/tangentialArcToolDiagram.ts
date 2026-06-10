@@ -55,7 +55,7 @@ export const machine = setup({
     arcEndPointId: undefined,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId || 0,
   }),
   id: toolId,
@@ -101,7 +101,7 @@ export const machine = setup({
           return {
             tangentInfo: context.tangentInfo,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -171,7 +171,7 @@ export const machine = setup({
             endSnapTarget: event.snapTarget,
             tangentInfo: context.tangentInfo,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },

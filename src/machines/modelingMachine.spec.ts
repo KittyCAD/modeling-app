@@ -1,5 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
   createIdentifier,
@@ -44,7 +44,7 @@ import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
@@ -72,13 +72,13 @@ beforeEach(async () => {
   const {
     instance,
     engineCommandManager,
-    kclManager,
+    executingEditor,
     rustContext,
     commandBarActor,
     machineManager,
   } = await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
   commandBarActorInThisFile = commandBarActor
@@ -176,7 +176,7 @@ describe('modelingMachine.test.ts', () => {
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
         const contextCopied = generateModelingMachineDefaultContext({
-          kclManager: kclManagerInThisFile,
+          executingEditor: executingEditorInThisFile,
           rustContext: rustContextInThisFile,
           wasmInstance: instanceInThisFile,
           engineCommandManager: engineCommandManagerInThisFile,
@@ -946,14 +946,14 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeEditor(code)
+            executingEditorInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
-            await kclManagerInThisFile.executeAst({ ast })
+            await executingEditorInThisFile.executeAst({ ast })
 
-            expect(kclManagerInThisFile.errors).toEqual([])
+            expect(executingEditorInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+            const artifact = [...executingEditorInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -966,7 +966,7 @@ p3 = [342.51, 216.38],
             }
 
             const contextCopied = generateModelingMachineDefaultContext({
-              kclManager: kclManagerInThisFile,
+              executingEditor: executingEditorInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
@@ -1012,7 +1012,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManagerInThisFile.ast,
+              executingEditorInThisFile.ast,
               artifact.codeRef.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
@@ -1022,7 +1022,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              kclManagerInThisFile.code,
+              executingEditorInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1048,13 +1048,13 @@ p3 = [342.51, 216.38],
 
             const startTime = Date.now()
             while (
-              kclManagerInThisFile.code.includes(searchText) &&
+              executingEditorInThisFile.code.includes(searchText) &&
               Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
 
-            expect(kclManagerInThisFile.code).not.toContain(searchText)
+            expect(executingEditorInThisFile.code).not.toContain(searchText)
           }, 10_000)
         }
       )
@@ -1076,15 +1076,15 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeEditor(code)
+            executingEditorInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
-            await kclManagerInThisFile.executeAst({ ast })
+            await executingEditorInThisFile.executeAst({ ast })
 
-            expect(kclManagerInThisFile.errors).toEqual([])
+            expect(executingEditorInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+            const artifact = [...executingEditorInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -1097,7 +1097,7 @@ p3 = [342.51, 216.38],
             }
 
             const contextCopied = generateModelingMachineDefaultContext({
-              kclManager: kclManagerInThisFile,
+              executingEditor: executingEditorInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
@@ -1143,7 +1143,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManagerInThisFile.ast,
+              executingEditorInThisFile.ast,
               artifact.codeRef.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
@@ -1153,7 +1153,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              kclManagerInThisFile.code,
+              executingEditorInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1194,7 +1194,7 @@ p3 = [342.51, 216.38],
               modelingMachineActor: actor,
               stateString: { Sketch: { SketchIdle: 'scene drawn' } },
             })
-            expect(kclManagerInThisFile.code).toContain(expectedResult)
+            expect(executingEditorInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
       )
@@ -1217,15 +1217,15 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeEditor(code)
+            executingEditorInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
-            await kclManagerInThisFile.executeAst({ ast })
+            await executingEditorInThisFile.executeAst({ ast })
 
-            expect(kclManagerInThisFile.errors).toEqual([])
+            expect(executingEditorInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+            const artifact = [...executingEditorInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -1238,7 +1238,7 @@ p3 = [342.51, 216.38],
             }
 
             const contextCopied = generateModelingMachineDefaultContext({
-              kclManager: kclManagerInThisFile,
+              executingEditor: executingEditorInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
@@ -1288,7 +1288,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManagerInThisFile.ast,
+              executingEditorInThisFile.ast,
               artifact.codeRef.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
@@ -1298,7 +1298,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              kclManagerInThisFile.code,
+              executingEditorInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1313,7 +1313,7 @@ p3 = [342.51, 216.38],
               constraint.pathToNode,
               constraint.argPosition,
               ast,
-              kclManagerInThisFile.variables,
+              executingEditorInThisFile.variables,
               removeSingleConstraint,
               transformAstSketchLines,
               instanceInThisFile
@@ -1345,15 +1345,15 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            kclManagerInThisFile.updateCodeEditor(code)
+            executingEditorInThisFile.updateCodeEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
-            await kclManagerInThisFile.executeAst({ ast })
+            await executingEditorInThisFile.executeAst({ ast })
 
-            expect(kclManagerInThisFile.errors).toEqual([])
+            expect(executingEditorInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManagerInThisFile.artifactGraph].find(
+            const artifact = [...executingEditorInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -1366,7 +1366,7 @@ p3 = [342.51, 216.38],
             }
 
             const contextCopied = generateModelingMachineDefaultContext({
-              kclManager: kclManagerInThisFile,
+              executingEditor: executingEditorInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
@@ -1417,7 +1417,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManagerInThisFile.ast,
+              executingEditorInThisFile.ast,
               artifact.codeRef.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
@@ -1454,12 +1454,12 @@ p3 = [342.51, 216.38],
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
             const startTime = Date.now()
             while (
-              !kclManagerInThisFile.code.includes(expectedResult) &&
+              !executingEditorInThisFile.code.includes(expectedResult) &&
               Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
-            expect(kclManagerInThisFile.code).toContain(expectedResult)
+            expect(executingEditorInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
       )
@@ -1476,23 +1476,23 @@ sketch001 = sketch(on = YZ) {
       it('keeps invalid code intact when sketch creation is attempted with parse errors', async () => {
         const {
           instance,
-          kclManager,
+          executingEditor,
           rustContext,
           engineCommandManager,
           commandBarActor,
           machineManager,
         } = await buildTheWorldAndNoEngineConnection()
 
-        kclManager.updateCodeEditor(invalidCode)
-        const parseResult = await kclManager.safeParse(invalidCode)
+        executingEditor.updateCodeEditor(invalidCode)
+        const parseResult = await executingEditor.safeParse(invalidCode)
 
         expect(parseResult).toBeNull()
-        expect(kclManager.hasParseErrors()).toBe(true)
+        expect(executingEditor.hasParseErrors()).toBe(true)
 
         const newSketchSpy = vi.spyOn(rustContext, 'newSketch')
 
         const context = generateModelingMachineDefaultContext({
-          kclManager,
+          executingEditor,
           rustContext,
           wasmInstance: instance,
           engineCommandManager,
@@ -1517,7 +1517,7 @@ sketch001 = sketch(on = YZ) {
         )
 
         expect(newSketchSpy).not.toHaveBeenCalled()
-        expect(kclManager.code).toBe(invalidCode)
+        expect(executingEditor.code).toBe(invalidCode)
         expect(actor.getSnapshot().value).toBe('Sketch no face')
         expect(toastErrorSpy).toHaveBeenCalledWith(
           'Unable to enter sketch while KCL has parse errors.'
@@ -1580,7 +1580,7 @@ sketch001 = sketch(on = YZ) {
             ],
             otherSelections: [],
           },
-          kclManager: {
+          executingEditor: {
             artifactGraph,
             hidePlanes: vi.fn(),
             showPlanes: vi.fn(),
@@ -1637,7 +1637,7 @@ sketch001 = sketch(on = YZ) {
     it('restores camera orbit controls when sketch exit errors', async () => {
       const {
         instance,
-        kclManager,
+        executingEditor,
         rustContext,
         engineCommandManager,
         commandBarActor,
@@ -1649,7 +1649,7 @@ sketch001 = sketch(on = YZ) {
         .mockRejectedValue(new Error('sketch exit failed'))
 
       const context = generateModelingMachineDefaultContext({
-        kclManager,
+        executingEditor,
         rustContext,
         wasmInstance: instance,
         engineCommandManager,
@@ -1706,9 +1706,9 @@ sketch001 = sketch(on = YZ) {
       })
 
       expect(sendSceneCommandSpy).toHaveBeenCalled()
-      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
-      expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
-      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+      expect(executingEditor.sceneInfra.camControls.enableRotate).toBe(true)
+      expect(executingEditor.sceneInfra.camControls.enablePan).toBe(true)
+      expect(executingEditor.sceneInfra.camControls.syncDirection).toBe(
         'engineToClient'
       )
     })
@@ -1716,7 +1716,7 @@ sketch001 = sketch(on = YZ) {
     it('disables camera orbit controls in sketch solve mode', async () => {
       const {
         instance,
-        kclManager,
+        executingEditor,
         rustContext,
         engineCommandManager,
         commandBarActor,
@@ -1724,7 +1724,7 @@ sketch001 = sketch(on = YZ) {
       } = await buildTheWorldAndNoEngineConnection()
 
       const context = generateModelingMachineDefaultContext({
-        kclManager,
+        executingEditor,
         rustContext,
         wasmInstance: instance,
         engineCommandManager,
@@ -1769,8 +1769,8 @@ sketch001 = sketch(on = YZ) {
         )
       })
 
-      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
-      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+      expect(executingEditor.sceneInfra.camControls.enableRotate).toBe(false)
+      expect(executingEditor.sceneInfra.camControls.syncDirection).toBe(
         'clientToEngine'
       )
     })

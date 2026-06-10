@@ -10,7 +10,7 @@ import { layoutActionLibraryValueSpec } from '@src/registry/contracts/layout'
 export const useDefaultActionLibrary = () => {
   useSignals()
   const { commands, settings, registry } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const registeredActionLibrary = registry.signal(
     layoutActionLibraryValueSpec
@@ -21,7 +21,7 @@ export const useDefaultActionLibrary = () => {
       useHidden: () => false,
       useDisabled: () => {
         const engineIsReady = useReliesOnEngine(
-          kclManager.isExecutingSignal.value ?? false
+          executingEditor.isExecutingSignal.value ?? false
         )
         return engineIsReady ? 'Need engine connection to export' : undefined
       },

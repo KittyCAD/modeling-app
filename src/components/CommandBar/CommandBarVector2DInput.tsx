@@ -1,6 +1,6 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
@@ -84,7 +84,7 @@ function CommandBarVector2DInput({
   arg,
   stepBack,
   onSubmit,
-  executingEditor: kclManager,
+  executingEditor: executingEditor,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector2d'
@@ -92,11 +92,11 @@ function CommandBarVector2DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
-  executingEditor: KclManager
+  executingEditor: ExecutingEditor
 }) {
   const { commands, wasmPromise } = useApp()
   const wasmInstance = use(wasmPromise)
-  const rustContext = kclManager.rustContext
+  const rustContext = executingEditor.rustContext
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const argMachineContext = useSelector(
@@ -160,9 +160,9 @@ function CommandBarVector2DInput({
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext: rustContext,
     options: calculateKclExpressionOptions,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
   })
 
   const yCalculation = useCalculateKclExpression({
@@ -170,9 +170,9 @@ function CommandBarVector2DInput({
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext: rustContext,
     options: calculateKclExpressionOptions,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
   })
 
   // DOM access for focus and keyboard navigation

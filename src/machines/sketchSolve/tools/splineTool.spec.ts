@@ -2,7 +2,7 @@ import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { Themes } from '@src/lib/theme'
 import {
   createControlPointSplineApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createPointApiObject,
   createSceneGraphDelta,
@@ -94,7 +94,7 @@ function createToolHarness(
       input: {
         sceneInfra,
         rustContext: options?.rustContext ?? createMockRustContext(),
-        kclManager: createMockKclManager(),
+        executingEditor: createMockExecutingEditor(),
         sketchId: 0,
       },
     },

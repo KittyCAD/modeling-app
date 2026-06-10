@@ -24,7 +24,7 @@ vi.mock('@src/lib/desktop', () => ({
 // Mock useSingletons which requires heavy initialization
 vi.mock('@src/lib/boot', () => ({
   useSingletons: () => ({
-    kclManager: {
+    executingEditor: {
       astSignal: { value: null },
     },
   }),

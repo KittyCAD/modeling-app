@@ -10,7 +10,7 @@ import {
 import {
   createArcApiObject,
   createLineApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -64,7 +64,7 @@ function createHarness({
 }) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
   const events: Array<{ type: string; data?: Record<string, unknown> }> = []
   const sceneGraphDelta = createSceneGraphDelta(objects)
 
@@ -132,7 +132,7 @@ function createHarness({
           input: {
             sceneInfra,
             rustContext,
-            kclManager,
+            executingEditor,
             sketchId: 0,
             initialSelectionIds: selectedIds,
             initialObjects: sceneGraphDelta.new_graph.objects,

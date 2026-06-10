@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
-import { KclManager } from '@src/lang/KclManager'
+import { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   ARG_ANGLE,
   ARG_END_ABSOLUTE_X,
@@ -85,7 +85,7 @@ export async function buildTheWorldAndConnectToEngine() {
     engineCommandManager,
     settingsActor
   )
-  const kclManager = new KclManager('some-file', '', {
+  const executingEditor = new ExecutingEditor('some-file', '', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -95,7 +95,7 @@ export async function buildTheWorldAndConnectToEngine() {
   })
 
   await new Promise((resolve, reject) => {
-    kclManager.engineCommandManager
+    executingEditor.engineCommandManager
       .start({
         token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
@@ -115,15 +115,15 @@ export async function buildTheWorldAndConnectToEngine() {
             console.log('unit test connected!')
           }
         },
-        rustContext: kclManager.rustContext,
+        rustContext: executingEditor.rustContext,
       })
       .catch(reportRejection)
   })
   return {
     instance: await instancePromise,
-    engineCommandManager: kclManager.engineCommandManager,
-    rustContext: kclManager.rustContext,
-    kclManager,
+    engineCommandManager: executingEditor.engineCommandManager,
+    rustContext: executingEditor.rustContext,
+    executingEditor,
     commandBarActor,
     settingsActor,
     machineManager,
@@ -144,7 +144,7 @@ export async function loadWasm() {
  * "Building the world" in Node consists of only the WASM module.
  *
  * Must use for Node integration tests, because some non-Node systems
- * like `kclManager.editorView` rely on browser window APIs that break in Node
+ * like `executingEditor.editorView` rely on browser window APIs that break in Node
  * testing environments.
  */
 export async function buildTheWorldNode() {
@@ -181,7 +181,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     engineCommandManager,
     settingsActor
   )
-  const kclManager = new KclManager('some-file', '', {
+  const executingEditor = new ExecutingEditor('some-file', '', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -194,11 +194,11 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
 
   return {
     instance: await instancePromise,
-    engineCommandManager: kclManager.engineCommandManager,
-    rustContext: kclManager.rustContext,
-    sceneInfra: kclManager.sceneInfra,
-    kclManager,
-    sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    engineCommandManager: executingEditor.engineCommandManager,
+    rustContext: executingEditor.rustContext,
+    sceneInfra: executingEditor.sceneInfra,
+    executingEditor,
+    sceneEntitiesManager: executingEditor.sceneEntitiesManager,
     commandBarActor,
     settingsActor,
     machineManager,

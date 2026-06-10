@@ -177,8 +177,8 @@ export const ProjectExplorer = ({
 }) => {
   const { commands, registry, settings, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
-  const { kclManager } = useSingletons()
-  const errors = kclManager.errorsSignal.value
+  const { executingEditor } = useSingletons()
+  const errors = executingEditor.errorsSignal.value
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
     settingsValues.app.projectDirectory.current
@@ -924,7 +924,7 @@ export const ProjectExplorer = ({
                       requestedProjectName: project.name,
                     },
                   })
-                  kclManager.addGlobalHistoryEvent(
+                  executingEditor.addGlobalHistoryEvent(
                     fsArchiveFile({
                       src,
                       target,
@@ -950,7 +950,7 @@ export const ProjectExplorer = ({
                       successMessage: 'Archived successfully',
                     },
                   })
-                  kclManager.addGlobalHistoryEvent(
+                  executingEditor.addGlobalHistoryEvent(
                     fsArchiveFile({
                       src,
                       target,
@@ -1027,7 +1027,7 @@ export const ProjectExplorer = ({
                     target,
                   },
                 })
-                kclManager.addGlobalHistoryEvent(
+                executingEditor.addGlobalHistoryEvent(
                   fsMoveFile({
                     src,
                     target,

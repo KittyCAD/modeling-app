@@ -11,7 +11,7 @@ import { trap } from '@src/lib/trap'
 // Hook uses [number] to give users familiarity. It is meant to mimic a
 // dependency array, but is intended to only ever be used with 1 value.
 export const useProjectsLoader = (deps?: [number]) => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const [lastTs, setLastTs] = useState(-1)
   const [projectPaths, setProjectPaths] = useState<Project[]>([])
   const [projectsDir, setProjectsDir] = useState<string | undefined>(undefined)
@@ -24,14 +24,14 @@ export const useProjectsLoader = (deps?: [number]) => {
     }
     ;(async () => {
       const { configuration } = await loadAndValidateSettings(
-        kclManager.wasmInstancePromise
+        executingEditor.wasmInstancePromise
       )
       const _projectsDir = await ensureProjectDirectoryExists(configuration)
       setProjectsDir(_projectsDir)
 
       if (projectsDir) {
         const _projectPaths = await listProjects(
-          kclManager.wasmInstancePromise,
+          executingEditor.wasmInstancePromise,
           configuration
         )
         setProjectPaths(_projectPaths)

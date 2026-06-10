@@ -49,7 +49,7 @@ export default function useStateMachineCommands<
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
   const { commands, settings, userFeatures } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const showExperimentalCommands = userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
@@ -61,7 +61,7 @@ export default function useStateMachineCommands<
     {
       settings: settingsValues,
       hasEditsSinceLastExecution:
-        kclManager.hasEditsSinceLastExecutionSignal.value,
+        executingEditor.hasEditsSinceLastExecutionSignal.value,
     }
   )
   const shouldDisableEngineCommands =

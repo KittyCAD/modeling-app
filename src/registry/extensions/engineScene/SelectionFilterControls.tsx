@@ -66,9 +66,9 @@ function getActiveSelectionFilterOption(filter: EntityType[]) {
 export function SelectionFilterControls() {
   useSignals()
   const { state } = useModelingContext()
-  const { kclManager, wasmInstance } = state.context
+  const { executingEditor, wasmInstance } = state.context
   const activeOption = getActiveSelectionFilterOption(
-    kclManager.selectionFilter.value
+    executingEditor.selectionFilter.value
   )
   const activeLabel = activeOption?.label ?? 'Custom'
 
@@ -80,13 +80,13 @@ export function SelectionFilterControls() {
       }
 
       if (option.filter) {
-        kclManager.setSelectionFilter(option.filter, wasmInstance)
+        executingEditor.setSelectionFilter(option.filter, wasmInstance)
       } else {
-        kclManager.setSelectionFilterToDefault(wasmInstance)
+        executingEditor.setSelectionFilterToDefault(wasmInstance)
       }
-      kclManager.clearSelection().catch(reportRejection)
+      executingEditor.clearSelection().catch(reportRejection)
     },
-    [kclManager, wasmInstance]
+    [executingEditor, wasmInstance]
   )
 
   return (

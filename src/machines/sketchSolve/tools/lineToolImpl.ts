@@ -4,7 +4,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -62,7 +62,7 @@ export type ToolContext = {
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
 }
 
@@ -137,7 +137,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         })
 
         const units = baseUnitToNumericSuffix(
-          context.kclManager.fileSettings.defaultLengthUnit
+          context.executingEditor.fileSettings.defaultLengthUnit
         )
         try {
           isEditInProgress = true

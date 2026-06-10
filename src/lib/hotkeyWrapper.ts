@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { useEffect } from 'react'
 import type { Options } from 'react-hotkeys-hook'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -16,7 +16,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 export default function useHotkeyWrapper(
   hotkey: string[],
   callback: () => void,
-  kclManager?: KclManager,
+  executingEditor?: ExecutingEditor,
   additionalOptions?: Options & {
     registerToCodeMirror?: boolean
   }
@@ -30,7 +30,7 @@ export default function useHotkeyWrapper(
     }
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)
-      kclManager?.registerHotkey(keybinding, callback)
+      executingEditor?.registerHotkey(keybinding, callback)
     }
   })
 }

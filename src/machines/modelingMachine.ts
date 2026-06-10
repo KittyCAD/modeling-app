@@ -94,7 +94,7 @@ import {
   applyConstraintAngleLength,
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
@@ -315,7 +315,7 @@ function getSelectedSketchBlockArtifact({
   artifactGraph,
   selectionRanges,
 }: {
-  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
+  artifactGraph: ModelingMachineContext['executingEditor']['artifactGraph']
   selectionRanges: Selections
 }): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
   const selectedArtifact = selectionRanges.graphSelections[0]?.artifact
@@ -349,7 +349,7 @@ function getSelectedSketchBlockArtifact({
 
 async function enterSketchSolveFromSketchBlockArtifact({
   sketchBlockArtifact,
-  kclManager,
+  executingEditor,
   rustContext,
   engineCommandManager,
   defaultUnit,
@@ -357,7 +357,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   wasmInstance,
 }: {
   sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   rustContext: RustContext
   engineCommandManager: ConnectionManager
   defaultUnit?: ModelingMachineContext['store']['defaultUnit']
@@ -375,17 +375,17 @@ async function enterSketchSolveFromSketchBlockArtifact({
   }
 
   const systemDeps = {
-    sceneInfra: kclManager.sceneInfra,
+    sceneInfra: executingEditor.sceneInfra,
     rustContext,
-    sceneEntitiesManager: kclManager.sceneEntitiesManager,
-    ast: kclManager.ast,
-    execState: kclManager.execState,
+    sceneEntitiesManager: executingEditor.sceneEntitiesManager,
+    ast: executingEditor.ast,
+    execState: executingEditor.execState,
     wasmInstance,
   }
 
   const planeData = await getPlaneDataFromSketchBlock(
     sketchBlockArtifact,
-    kclManager.artifactGraph,
+    executingEditor.artifactGraph,
     systemDeps
   )
   if (!planeData) {
@@ -397,7 +397,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
   await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-  kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+  executingEditor.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
   if (!project) {
@@ -413,7 +413,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   try {
     await rustContext.clearSketchCheckpoints()
     await rustContext.hackSetProgram(
-      kclManager.ast,
+      executingEditor.ast,
       jsAppSettings(rustContext.settingsActor)
     )
     editSketchResult = await rustContext.editSketch(
@@ -432,8 +432,8 @@ async function enterSketchSolveFromSketchBlockArtifact({
       toast.error(errorMessage)
       return reject(new Error(errorMessage))
     }
-    kclManager.updateCodeEditor(
-      kclManager.code,
+    executingEditor.updateCodeEditor(
+      executingEditor.code,
       {
         shouldAddToHistory: false,
         shouldWriteToDisk: false,
@@ -754,25 +754,25 @@ export const modelingMachine = setup({
       return context.store.useSketchSolveMode?.current === true
     },
     'Selection is sketchBlock': ({
-      context: { selectionRanges, kclManager },
+      context: { selectionRanges, executingEditor },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
       return !!getSelectedSketchBlockArtifact({
-        artifactGraph: kclManager.artifactGraph,
+        artifactGraph: executingEditor.artifactGraph,
         selectionRanges,
       })
     },
     'Selection is on face': ({
-      context: { selectionRanges, kclManager, wasmInstance },
+      context: { selectionRanges, executingEditor, wasmInstance },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
       if (
         getSelectedSketchBlockArtifact({
-          artifactGraph: kclManager.artifactGraph,
+          artifactGraph: executingEditor.artifactGraph,
           selectionRanges,
         })
       ) {
@@ -784,13 +784,13 @@ export const modelingMachine = setup({
         // See if the selection is "close enough" to be coerced to the plane later
         const maybePlane = getPlaneFromArtifact(
           selectionRanges.graphSelections[0].artifact,
-          kclManager.artifactGraph
+          executingEditor.artifactGraph
         )
         return !err(maybePlane)
       }
       if (
         isCursorInFunctionDefinition(
-          kclManager.ast,
+          executingEditor.ast,
           selectionRanges.graphSelections[0],
           wasmInstance
         )
@@ -798,12 +798,12 @@ export const modelingMachine = setup({
         return false
       }
       return !!isCursorInSketchCommandRange(
-        kclManager.artifactGraph,
+        executingEditor.artifactGraph,
         selectionRanges
       )
     },
-    'Has exportable geometry': ({ context: { kclManager } }) =>
-      !kclManager.hasErrors() && kclManager.ast.body.length > 0,
+    'Has exportable geometry': ({ context: { executingEditor } }) =>
+      !executingEditor.hasErrors() && executingEditor.ast.body.length > 0,
     'has valid selection for deletion': ({ context }) => {
       const isCommandBarClosed =
         context.commandBarActor.getSnapshot().matches('Closed') ?? true
@@ -812,15 +812,15 @@ export const modelingMachine = setup({
       return true
     },
     // TODO: figure out if we really need this one, was separate from 'no kcl errors'
-    'is-error-free': ({ context: { kclManager } }): boolean => {
-      return kclManager.errors.length === 0 && !kclManager.hasErrors()
+    'is-error-free': ({ context: { executingEditor } }): boolean => {
+      return executingEditor.errors.length === 0 && !executingEditor.hasErrors()
     },
     'is editing existing sketch': ({
-      context: { sketchDetails, kclManager, wasmInstance },
+      context: { sketchDetails, executingEditor, wasmInstance },
     }) => {
       return isEditingExistingSketch({
         sketchDetails,
-        kclManager,
+        executingEditor,
         wasmInstance,
       })
     },
@@ -828,7 +828,7 @@ export const modelingMachine = setup({
       const info = horzVertInfo(
         context.selectionRanges,
         'horizontal',
-        context.kclManager.ast,
+        context.executingEditor.ast,
         context.wasmInstance
       )
       if (err(info)) return false
@@ -838,7 +838,7 @@ export const modelingMachine = setup({
       const info = horzVertInfo(
         context.selectionRanges,
         'vertical',
-        context.kclManager.ast,
+        context.executingEditor.ast,
         context.wasmInstance
       )
       if (err(info)) return false
@@ -848,7 +848,7 @@ export const modelingMachine = setup({
       const info = horzVertDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -858,7 +858,7 @@ export const modelingMachine = setup({
       const info = horzVertDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'setVertDistance',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -868,7 +868,7 @@ export const modelingMachine = setup({
       const info = absDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'xAbs',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -878,36 +878,36 @@ export const modelingMachine = setup({
       const info = absDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'yAbs',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
     'Can constrain angle': ({
-      context: { selectionRanges, kclManager, wasmInstance },
+      context: { selectionRanges, executingEditor, wasmInstance },
     }) => {
       const angleBetween = angleBetweenInfo({
         selectionRanges,
-        kclManager,
+        executingEditor,
         wasmInstance,
       })
       if (err(angleBetween)) return false
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
-        kclManager,
+        executingEditor,
         wasmInstance,
       })
       if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
     'Can constrain length': ({
-      context: { selectionRanges, kclManager, wasmInstance },
+      context: { selectionRanges, executingEditor, wasmInstance },
     }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
-        kclManager,
+        executingEditor,
         wasmInstance,
       })
       if (err(angleLength)) return false
@@ -916,7 +916,7 @@ export const modelingMachine = setup({
     'Can constrain perpendicular distance': ({ context }) => {
       const info = intersectInfo({
         selectionRanges: context.selectionRanges,
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -926,7 +926,7 @@ export const modelingMachine = setup({
       const info = horzVertDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -936,7 +936,7 @@ export const modelingMachine = setup({
       const info = horzVertDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -946,7 +946,7 @@ export const modelingMachine = setup({
       const info = absDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'snapToXAxis',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -956,7 +956,7 @@ export const modelingMachine = setup({
       const info = absDistanceInfo({
         selectionRanges: context.selectionRanges,
         constraint: 'snapToYAxis',
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -965,7 +965,7 @@ export const modelingMachine = setup({
     'Can constrain equal length': ({ context }) => {
       const info = setEqualLengthInfo({
         selectionRanges: context.selectionRanges,
-        ast: context.kclManager.ast,
+        ast: context.executingEditor.ast,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
@@ -974,14 +974,14 @@ export const modelingMachine = setup({
     'Can constrain parallel': ({ context }) => {
       const info = equalAngleInfo({
         selectionRanges: context.selectionRanges,
-        kclManager: context.kclManager,
+        executingEditor: context.executingEditor,
         wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
     'Can constrain remove constraints': ({
-      context: { selectionRanges, kclManager, wasmInstance },
+      context: { selectionRanges, executingEditor, wasmInstance },
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
@@ -993,7 +993,7 @@ export const modelingMachine = setup({
           })
       const info = removeConstrainingValuesInfo(
         pathToNodes,
-        kclManager,
+        executingEditor,
         wasmInstance
       )
       if (err(info)) return false
@@ -1004,7 +1004,7 @@ export const modelingMachine = setup({
       if (!event.data) return false
 
       const ast = parse(
-        recast(context.kclManager.ast, context.wasmInstance),
+        recast(context.executingEditor.ast, context.wasmInstance),
         context.wasmInstance
       )
       if (err(ast) || !ast.program || ast.errors.length > 0) return false
@@ -1017,11 +1017,15 @@ export const modelingMachine = setup({
       return isSafeRetVal.isSafe
     },
     'next is tangential arc': ({
-      context: { sketchDetails, currentTool, kclManager, wasmInstance },
+      context: { sketchDetails, currentTool, executingEditor, wasmInstance },
     }) => {
       return (
         currentTool === 'tangentialArc' &&
-        isEditingExistingSketch({ sketchDetails, kclManager, wasmInstance })
+        isEditingExistingSketch({
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        })
       )
     },
     'next is rectangle': ({ context: { currentTool } }) =>
@@ -1057,7 +1061,7 @@ export const modelingMachine = setup({
     toastErrorAndExitSketch: ({
       event,
       context: {
-        kclManager: { sceneEntitiesManager },
+        executingEditor: { sceneEntitiesManager },
       },
     }) => {
       if ('output' in event && event.output instanceof Error) {
@@ -1097,7 +1101,7 @@ export const modelingMachine = setup({
     'hide default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.hidePlanes()
+        context.executingEditor.hidePlanes()
         return { xy: false, xz: false, yz: false }
       },
     }),
@@ -1132,12 +1136,12 @@ export const modelingMachine = setup({
       }
     }),
     'set up draft line': assign(
-      ({ context: { sketchDetails, kclManager }, event }) => {
+      ({ context: { sketchDetails, executingEditor }, event }) => {
         if (!sketchDetails) return {}
         if (event.type !== 'Add start point') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager.setupDraftSegment(
+        executingEditor.sceneEntitiesManager.setupDraftSegment(
           event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
           event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
@@ -1156,12 +1160,12 @@ export const modelingMachine = setup({
       }
     ),
     'set up draft arc': assign(
-      ({ context: { sketchDetails, kclManager }, event }) => {
+      ({ context: { sketchDetails, executingEditor }, event }) => {
         if (!sketchDetails) return {}
         if (event.type !== 'Continue existing profile') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager.setupDraftSegment(
+        executingEditor.sceneEntitiesManager.setupDraftSegment(
           event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
           event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
@@ -1182,7 +1186,7 @@ export const modelingMachine = setup({
     'listen for rectangle origin': ({
       context: {
         sketchDetails,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -1234,7 +1238,7 @@ export const modelingMachine = setup({
     'listen for center rectangle origin': ({
       context: {
         sketchDetails,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -1285,7 +1289,7 @@ export const modelingMachine = setup({
     'listen for circle origin': ({
       context: {
         sketchDetails,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -1337,7 +1341,7 @@ export const modelingMachine = setup({
     'listen for circle first point': ({
       context: {
         sketchDetails,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
     }) => {
@@ -1389,7 +1393,7 @@ export const modelingMachine = setup({
     'listen for circle second point': ({
       context: {
         sketchDetails,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
         wasmInstance,
       },
       event,
@@ -1500,17 +1504,17 @@ export const modelingMachine = setup({
     'show default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.showPlanes()
+        context.executingEditor.showPlanes()
         return { xy: true, xz: true, yz: true }
       },
     }),
     'show default planes if no errors': assign({
       defaultPlaneVisibility: ({
-        context: { kclManager, defaultPlaneVisibility },
+        context: { executingEditor, defaultPlaneVisibility },
       }) => {
-        if (!kclManager.hasErrors()) {
+        if (!executingEditor.hasErrors()) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          kclManager.showPlanes()
+          executingEditor.showPlanes()
           return { xy: true, xz: true, yz: true }
         }
         return { ...defaultPlaneVisibility }
@@ -1522,14 +1526,14 @@ export const modelingMachine = setup({
         // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
         return {}
       }
-      void context.kclManager.showPlanes()
+      void context.executingEditor.showPlanes()
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
       context: {
         sketchDetails,
         currentTool,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
       },
     }) => {
       if (!sketchDetails) return
@@ -1544,18 +1548,18 @@ export const modelingMachine = setup({
           ),
       })
     },
-    'add axis n grid': ({ context: { sketchDetails, kclManager } }) => {
+    'add axis n grid': ({ context: { sketchDetails, executingEditor } }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
 
-      kclManager.sceneEntitiesManager.createSketchAxis(
+      executingEditor.sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+      executingEditor.updateEditorWithAstAndWriteToFile(executingEditor.ast, {
         shouldAddToHistory: false,
         shouldWriteToDisk: false,
       })
@@ -1563,41 +1567,42 @@ export const modelingMachine = setup({
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
       // Orbit controls are always active though.
-      context.kclManager.sceneInfra.resetMouseListeners()
+      context.executingEditor.sceneInfra.resetMouseListeners()
     },
     'restore modeling camera controls': ({ context }) => {
-      const camControls = context.kclManager.sceneInfra.camControls
+      const camControls = context.executingEditor.sceneInfra.camControls
       camControls.enablePan = true
       camControls.enableRotate = true
       camControls.syncDirection = 'engineToClient'
     },
     'clientToEngine cam sync direction': ({ context }) => {
-      context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+      context.executingEditor.sceneInfra.camControls.syncDirection =
+        'clientToEngine'
     },
     'disable rotate for sketch solve mode': ({ context }) => {
       // Sketch solve currently has sync issues with engine and trouble translating world space to sketch space,
       // so block orbit input until those controls are synchronized.
       // When that is the case, the hidden setting "allow orbit in sketch mode" will be shown to users.
-      context.kclManager.sceneInfra.camControls.enableRotate =
-        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
+      context.executingEditor.sceneInfra.camControls.enableRotate =
+        context.executingEditor.sceneInfra.camControls._setting_allowOrbitInSketchMode
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
-      context.kclManager.setSelectionFilter(
+      context.executingEditor.setSelectionFilter(
         ['face', 'object'],
         context.wasmInstance
       )
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
-      context.kclManager.setSelectionFilterToDefault(context.wasmInstance)
+      context.executingEditor.setSelectionFilterToDefault(context.wasmInstance)
     },
     'Delete segments': ({
       context: {
         sketchDetails,
-        kclManager,
+        executingEditor,
         rustContext,
-        kclManager: { sceneEntitiesManager, sceneInfra },
+        executingEditor: { sceneEntitiesManager, sceneInfra },
       },
       event,
     }) => {
@@ -1608,15 +1613,15 @@ export const modelingMachine = setup({
         pathToNodes: event.data,
         sketchDetails,
         dependencies: {
-          kclManager,
+          executingEditor,
           rustContext,
           sceneEntitiesManager,
           sceneInfra,
         },
       })
         .then(() => {
-          return kclManager.updateEditorWithAstAndWriteToFile(
-            kclManager.ast,
+          return executingEditor.updateEditorWithAstAndWriteToFile(
+            executingEditor.ast,
             undefined
           )
         })
@@ -1624,16 +1629,16 @@ export const modelingMachine = setup({
           console.warn('error', e)
         })
     },
-    'remove draft entities': ({ context: { kclManager } }) => {
+    'remove draft entities': ({ context: { executingEditor } }) => {
       const draftPoint =
-        kclManager.sceneInfra.scene.getObjectByName(DRAFT_POINT)
+        executingEditor.sceneInfra.scene.getObjectByName(DRAFT_POINT)
       if (draftPoint) {
-        kclManager.sceneInfra.scene.remove(draftPoint)
+        executingEditor.sceneInfra.scene.remove(draftPoint)
       }
       const draftLine =
-        kclManager.sceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
+        executingEditor.sceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
       if (draftLine) {
-        kclManager.sceneInfra.scene.remove(draftLine)
+        executingEditor.sceneInfra.scene.remove(draftLine)
       }
     },
     'add draft line': ({ event, context }) => {
@@ -1643,8 +1648,8 @@ export const modelingMachine = setup({
       )
         return
 
-      const sceneEntitiesManager = context.kclManager.sceneEntitiesManager
-      const sceneInfra = context.kclManager.sceneInfra
+      const sceneEntitiesManager = context.executingEditor.sceneEntitiesManager
+      const sceneInfra = context.executingEditor.sceneInfra
       let sketchEntryNodePath: PathToNode | undefined
 
       if (event.type === 'Add start point') {
@@ -1657,7 +1662,7 @@ export const modelingMachine = setup({
       }
       if (!sketchEntryNodePath) return
       const varDec = getNodeFromPath<VariableDeclaration>(
-        context.kclManager.ast,
+        context.executingEditor.ast,
         sketchEntryNodePath,
         context.wasmInstance,
         'VariableDeclaration'
@@ -1665,7 +1670,7 @@ export const modelingMachine = setup({
       if (err(varDec)) return
       const varName = varDec.node.declaration.id.name
       const sg = sketchFromKclValue(
-        context.kclManager.variables[varName],
+        context.executingEditor.variables[varName],
         varName
       )
       if (err(sg)) return
@@ -1713,11 +1718,11 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(true)
+    'enable copilot': ({ context: { executingEditor } }) => {
+      executingEditor.setCopilotEnabled(true)
     },
-    'disable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(false)
+    'disable copilot': ({ context: { executingEditor } }) => {
+      executingEditor.setCopilotEnabled(false)
     },
     'Set selection': assign(
       ({
@@ -1725,7 +1730,7 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           engineCommandManager,
-          kclManager,
+          executingEditor,
           wasmInstance,
         },
         event,
@@ -1747,7 +1752,7 @@ export const modelingMachine = setup({
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && kclManager.isShiftDown) {
+          if (!setSelections.selection && executingEditor.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1755,17 +1760,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections,
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !kclManager.isShiftDown) {
+          } else if (!setSelections.selection && !executingEditor.isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !kclManager.isShiftDown) {
+          } else if (setSelections.selection && !executingEditor.isShiftDown) {
             selections = {
               graphSelections: [setSelections.selection],
               otherSelections: [],
             }
-          } else if (setSelections.selection && kclManager.isShiftDown) {
+          } else if (setSelections.selection && executingEditor.isShiftDown) {
             // selecting and deselecting multiple objects
 
             /**
@@ -1841,17 +1846,17 @@ export const modelingMachine = setup({
           const { engineEvents, codeMirrorSelection, updateSceneObjectColors } =
             handleSelectionBatch({
               selections,
-              artifactGraph: kclManager.artifactGraph,
-              code: kclManager.code,
-              ast: kclManager.ast,
+              artifactGraph: executingEditor.artifactGraph,
+              code: executingEditor.code,
+              ast: executingEditor.ast,
               systemDeps: {
                 engineCommandManager,
-                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                sceneEntitiesManager: executingEditor.sceneEntitiesManager,
                 wasmInstance,
               },
             })
           if (codeMirrorSelection) {
-            kclManager.editorView.dispatch({
+            executingEditor.editorView.dispatch({
               selection: codeMirrorSelection,
               effects: setSelections.scrollIntoView
                 ? [
@@ -1893,7 +1898,7 @@ export const modelingMachine = setup({
               selection.entityId === setSelections.selection.entityId
           )
 
-          const otherSelections = kclManager.isShiftDown
+          const otherSelections = executingEditor.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1906,19 +1911,19 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
+            graphSelections: executingEditor.isShiftDown
               ? selectionRanges.graphSelections
               : [],
             otherSelections,
           }
           const { engineEvents } = handleSelectionBatch({
             selections,
-            artifactGraph: kclManager.artifactGraph,
-            code: kclManager.code,
-            ast: kclManager.ast,
+            artifactGraph: executingEditor.artifactGraph,
+            code: executingEditor.code,
+            ast: executingEditor.ast,
             systemDeps: {
               engineCommandManager,
-              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              sceneEntitiesManager: executingEditor.sceneEntitiesManager,
               wasmInstance,
             },
           })
@@ -1942,7 +1947,7 @@ export const modelingMachine = setup({
               selection.id === setSelections.selection.id
           )
 
-          const otherSelections = kclManager.isShiftDown
+          const otherSelections = executingEditor.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1955,19 +1960,19 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
+            graphSelections: executingEditor.isShiftDown
               ? selectionRanges.graphSelections
               : [],
             otherSelections,
           }
           const { engineEvents } = handleSelectionBatch({
             selections,
-            artifactGraph: kclManager.artifactGraph,
-            code: kclManager.code,
-            ast: kclManager.ast,
+            artifactGraph: executingEditor.artifactGraph,
+            code: executingEditor.code,
+            ast: executingEditor.ast,
             systemDeps: {
               engineCommandManager,
-              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              sceneEntitiesManager: executingEditor.sceneEntitiesManager,
               wasmInstance,
             },
           })
@@ -1985,7 +1990,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (kclManager.isShiftDown) {
+          if (executingEditor.isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: [setSelections.selection],
@@ -2000,12 +2005,12 @@ export const modelingMachine = setup({
           if (setSelections.selectionType === 'defaultPlaneSelection') {
             const { engineEvents, codeMirrorSelection } = handleSelectionBatch({
               selections,
-              artifactGraph: kclManager.artifactGraph,
-              code: kclManager.code,
-              ast: kclManager.ast,
+              artifactGraph: executingEditor.artifactGraph,
+              code: executingEditor.code,
+              ast: executingEditor.ast,
               systemDeps: {
                 engineCommandManager,
-                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                sceneEntitiesManager: executingEditor.sceneEntitiesManager,
                 wasmInstance,
               },
             })
@@ -2013,7 +2018,7 @@ export const modelingMachine = setup({
             if (codeMirrorSelection) {
               // Default planes are non-code selections, so clear any previous
               // graph selection still highlighted in the editor.
-              kclManager.editorView.dispatch({
+              executingEditor.editorView.dispatch({
                 selection: codeMirrorSelection,
               })
             }
@@ -2031,23 +2036,23 @@ export const modelingMachine = setup({
         }
 
         if (setSelections.selectionType === 'completeSelection') {
-          const codeMirrorSelection = kclManager.createEditorSelection(
+          const codeMirrorSelection = executingEditor.createEditorSelection(
             setSelections.selection
           )
 
-          kclManager.editorView.dispatch({
+          executingEditor.editorView.dispatch({
             selection: codeMirrorSelection,
           })
 
           // This turns the selection into blue, needed when selecting with ctrl+A
           const { updateSceneObjectColors } = handleSelectionBatch({
             selections: setSelections.selection,
-            artifactGraph: kclManager.artifactGraph,
-            code: kclManager.code,
-            ast: kclManager.ast,
+            artifactGraph: executingEditor.artifactGraph,
+            code: executingEditor.code,
+            ast: executingEditor.ast,
             systemDeps: {
               engineCommandManager,
-              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              sceneEntitiesManager: executingEditor.sceneEntitiesManager,
               wasmInstance,
             },
           })
@@ -2111,7 +2116,7 @@ export const modelingMachine = setup({
             mouseOnParent?.userData?.pathToNode
           )
           const timeoutId = setTimeout(() => {
-            context.kclManager.sceneInfra.modelingSend({
+            context.executingEditor.sceneInfra.modelingSend({
               type: 'Set mouse state',
               data: {
                 type: 'timeoutEnd',
@@ -2191,7 +2196,7 @@ export const modelingMachine = setup({
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
-      context.kclManager.engineCommandManager
+      context.executingEditor.engineCommandManager
         .setPlaneHidden(event.planeId, !newVisibility)
         .catch(reportRejection)
 
@@ -2215,7 +2220,7 @@ export const modelingMachine = setup({
         context.savedDefaultPlaneVisibility
       ) as (keyof PlaneVisibilityMap)[]) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        context.kclManager.setPlaneVisibilityByKey(
+        context.executingEditor.setPlaneVisibilityByKey(
           planeKey,
           context.savedDefaultPlaneVisibility[planeKey]
         )
@@ -2261,7 +2266,7 @@ export const modelingMachine = setup({
     sketchExit: fromPromise(
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
-        const { store, engineCommandManager, kclManager } = context
+        const { store, engineCommandManager, executingEditor } = context
         try {
           // When cancelling the sketch mode we should disable sketch mode within the engine.
           await engineCommandManager.sendSceneCommand({
@@ -2270,19 +2275,21 @@ export const modelingMachine = setup({
             cmd: { type: 'sketch_mode_disable' },
           })
 
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          executingEditor.sceneInfra.camControls.syncDirection =
+            'clientToEngine'
 
           if (store.cameraProjection?.current === 'perspective') {
-            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await executingEditor.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          executingEditor.sceneInfra.camControls.syncDirection =
+            'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
           store.videoElement?.pause()
 
-          await kclManager
+          await executingEditor
             .executeCode()
             .then(() => {
               if (
@@ -2298,14 +2305,16 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
-          kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-          kclManager.sceneEntitiesManager.removeSketchGrid()
+          const camControls = executingEditor.sceneInfra.camControls
+          executingEditor.sceneEntitiesManager.tearDownSketch({
+            removeAxis: false,
+          })
+          executingEditor.sceneEntitiesManager.removeSketchGrid()
           camControls.enablePan = true
           camControls.enableRotate = true
           camControls.syncDirection = 'engineToClient'
-          kclManager.sceneEntitiesManager.resetOverlays()
-          kclManager.sceneInfra.stop()
+          executingEditor.sceneEntitiesManager.resetOverlays()
+          executingEditor.sceneInfra.stop()
         }
       }
     ),
@@ -2317,26 +2326,29 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           data,
-          kclManager,
+          executingEditor,
           wasmInstance,
         },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'wasmInstance' | 'kclManager'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'wasmInstance'
+          | 'executingEditor'
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
-          kclManager,
+          executingEditor,
           wasmInstance,
         })
         if (trap(constraint)) return
         const { pathToNodeMap } = constraint
         if (!sketchDetails) return
         let updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             pathToNodeMap[0],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2350,7 +2362,7 @@ export const modelingMachine = setup({
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
 
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2361,7 +2373,7 @@ export const modelingMachine = setup({
             pathToNodeMap,
             selectionRanges,
             updatedAst.newAst,
-            kclManager.artifactGraph,
+            executingEditor.artifactGraph,
             wasmInstance
           ),
         }
@@ -2369,25 +2381,33 @@ export const modelingMachine = setup({
     ),
     'do-constrain-horizontally': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
-          kclManager.ast,
-          kclManager.variables,
-          await kclManager.wasmInstancePromise
+          executingEditor.ast,
+          executingEditor.variables,
+          await executingEditor.wasmInstancePromise
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails.sketchEntryNodePath,
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2400,7 +2420,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2410,7 +2430,7 @@ export const modelingMachine = setup({
             pathToNodeMap,
             selectionRanges,
             updatedAst.newAst,
-            kclManager.artifactGraph,
+            executingEditor.artifactGraph,
             wasmInstance
           ),
         }
@@ -2418,25 +2438,33 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
-          kclManager.ast,
-          kclManager.variables,
-          await kclManager.wasmInstancePromise
+          executingEditor.ast,
+          executingEditor.variables,
+          await executingEditor.wasmInstancePromise
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2449,7 +2477,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2459,7 +2487,7 @@ export const modelingMachine = setup({
             pathToNodeMap,
             selectionRanges,
             updatedAst.newAst,
-            kclManager.artifactGraph,
+            executingEditor.artifactGraph,
             wasmInstance
           ),
         }
@@ -2467,24 +2495,32 @@ export const modelingMachine = setup({
     ),
     'do-constrain-horizontally-align': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
-          kclManager: kclManager,
-          wasmInstance: await kclManager.wasmInstancePromise,
+          executingEditor: executingEditor,
+          wasmInstance: await executingEditor.wasmInstancePromise,
         })
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails?.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2497,7 +2533,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2505,7 +2541,7 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         return {
@@ -2516,24 +2552,32 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically-align': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
-          kclManager: kclManager,
-          wasmInstance: await kclManager.wasmInstancePromise,
+          executingEditor: executingEditor,
+          wasmInstance: await executingEditor.wasmInstancePromise,
         })
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails?.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2546,7 +2590,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2554,7 +2598,7 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         return {
@@ -2565,24 +2609,32 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-x': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
-          kclManager: kclManager,
-          wasmInstance: await kclManager.wasmInstancePromise,
+          executingEditor: executingEditor,
+          wasmInstance: await executingEditor.wasmInstancePromise,
         })
         if (err(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails?.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2595,7 +2647,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2603,7 +2655,7 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         return {
@@ -2614,24 +2666,32 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-y': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
-          kclManager: kclManager,
-          wasmInstance: await kclManager.wasmInstancePromise,
+          executingEditor: executingEditor,
+          wasmInstance: await executingEditor.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails?.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2644,7 +2704,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2652,7 +2712,7 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         return {
@@ -2663,17 +2723,25 @@ export const modelingMachine = setup({
     ),
     'do-constrain-parallel': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintEqualAngle({
           selectionRanges,
-          kclManager,
-          wasmInstance: await kclManager.wasmInstancePromise,
+          executingEditor,
+          wasmInstance: await executingEditor.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -2686,7 +2754,7 @@ export const modelingMachine = setup({
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails?.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2699,7 +2767,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2708,7 +2776,7 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         return {
@@ -2719,24 +2787,32 @@ export const modelingMachine = setup({
     ),
     'do-constrain-equal-length': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager, wasmInstance },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          executingEditor,
+          wasmInstance,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager' | 'wasmInstance'
+          | 'selectionRanges'
+          | 'sketchDetails'
+          | 'executingEditor'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintEqualLength({
           selectionRanges,
-          ast: kclManager.ast,
-          variables: kclManager.variables,
-          wasmInstance: await kclManager.wasmInstancePromise,
+          ast: executingEditor.ast,
+          variables: executingEditor.variables,
+          wasmInstance: await executingEditor.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             sketchDetails?.sketchEntryNodePath || [],
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
@@ -2749,7 +2825,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        await kclManager.updateEditorWithAstAndWriteToFile(
+        await executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -2757,7 +2833,7 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         return {
@@ -2770,19 +2846,19 @@ export const modelingMachine = setup({
     /* Below are actors which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager },
+        input: { selectionRanges, sketchDetails, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager'
+          'selectionRanges' | 'sketchDetails' | 'executingEditor'
         >
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         const { modifiedAst, pathToNodeMap, exprInsertIndex } =
           await applyConstraintHorzVertDistance({
             constraint: 'setVertDistance',
             selectionRanges,
-            kclManager,
+            executingEditor,
           })
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
@@ -2803,7 +2879,7 @@ export const modelingMachine = setup({
         })
 
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -2816,13 +2892,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -2837,19 +2915,19 @@ export const modelingMachine = setup({
     ),
     'Get ABS X info': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager },
+        input: { selectionRanges, sketchDetails, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager'
+          'selectionRanges' | 'sketchDetails' | 'executingEditor'
         >
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         const { modifiedAst, pathToNodeMap, exprInsertIndex } =
           await applyConstraintAbsDistance({
             constraint: 'xAbs',
             selectionRanges,
-            kclManager,
+            executingEditor,
           })
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
@@ -2869,7 +2947,7 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -2882,13 +2960,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -2903,19 +2983,19 @@ export const modelingMachine = setup({
     ),
     'Get ABS Y info': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager },
+        input: { selectionRanges, sketchDetails, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager'
+          'selectionRanges' | 'sketchDetails' | 'executingEditor'
         >
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         const { modifiedAst, pathToNodeMap, exprInsertIndex } =
           await applyConstraintAbsDistance({
             constraint: 'yAbs',
             selectionRanges,
-            kclManager,
+            executingEditor,
           })
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
@@ -2935,7 +3015,7 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -2948,13 +3028,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -2969,17 +3051,17 @@ export const modelingMachine = setup({
     ),
     'Get angle info': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager },
+        input: { selectionRanges, sketchDetails, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager'
+          'selectionRanges' | 'sketchDetails' | 'executingEditor'
         >
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         const info = angleBetweenInfo({
           selectionRanges,
-          kclManager,
+          executingEditor,
           wasmInstance,
         })
         if (err(info)) return Promise.reject(info)
@@ -2987,12 +3069,12 @@ export const modelingMachine = setup({
           await (info.enabled
             ? applyConstraintAngleBetween({
                 selectionRanges,
-                kclManager,
+                executingEditor,
               })
             : applyConstraintAngleLength({
                 selectionRanges,
                 angleOrLength: 'setAngle',
-                kclManager,
+                executingEditor,
               }))
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
@@ -3015,7 +3097,7 @@ export const modelingMachine = setup({
         })
 
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -3028,13 +3110,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -3049,18 +3133,18 @@ export const modelingMachine = setup({
     ),
     'Get perpendicular distance info': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager },
+        input: { selectionRanges, sketchDetails, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'kclManager'
+          'selectionRanges' | 'sketchDetails' | 'executingEditor'
         >
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         const { modifiedAst, pathToNodeMap, exprInsertIndex } =
           await applyConstraintIntersect({
             selectionRanges,
-            kclManager,
+            executingEditor,
           })
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
@@ -3081,7 +3165,7 @@ export const modelingMachine = setup({
         })
 
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -3094,13 +3178,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -3115,19 +3201,19 @@ export const modelingMachine = setup({
     ),
     'AST-undo-startSketchOn': fromPromise(
       async ({
-        input: { sketchDetails, kclManager },
+        input: { sketchDetails, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'>
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'executingEditor'>
       }) => {
         if (!sketchDetails) return
-        if (kclManager.ast.body.length) {
-          const newAst = structuredClone(kclManager.ast)
+        if (executingEditor.ast.body.length) {
+          const newAst = structuredClone(executingEditor.ast)
           const varDecIndex = sketchDetails.planeNodePath[1][0]
 
           const varDec = getNodeFromPath<VariableDeclaration>(
             newAst,
             sketchDetails.planeNodePath,
-            await kclManager.wasmInstancePromise,
+            await executingEditor.wasmInstancePromise,
             'VariableDeclaration'
           )
           if (err(varDec)) return reject(new Error('No varDec'))
@@ -3150,13 +3236,13 @@ export const modelingMachine = setup({
 
           // remove body item at varDecIndex
           newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
-          const didReParse = await kclManager.executeAstMock(newAst)
+          const didReParse = await executingEditor.executeAstMock(newAst)
           if (err(didReParse)) return reject(didReParse)
-          await kclManager.updateEditorWithAstAndWriteToFile(newAst, {
+          await executingEditor.updateEditorWithAstAndWriteToFile(newAst, {
             shouldAddToHistory: false,
           })
         }
-        kclManager.sceneInfra.setCallbacks({
+        executingEditor.sceneInfra.setCallbacks({
           onClick: () => {},
           onDrag: () => {},
         })
@@ -3169,33 +3255,34 @@ export const modelingMachine = setup({
       }: {
         input?: {
           plane: ExtrudeFacePlane | DefaultPlane | OffsetPlane
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           engineCommandManager: ConnectionManager
           wasmInstance: ModuleType
         }
       }) => {
         if (!input) return null
-        const { plane, kclManager, engineCommandManager, wasmInstance } = input
-        if (kclManager.hasParseErrors()) {
+        const { plane, executingEditor, engineCommandManager, wasmInstance } =
+          input
+        if (executingEditor.hasParseErrors()) {
           const errorMessage =
             'Unable to enter sketch while KCL has parse errors.'
           toast.error(errorMessage)
           return reject(new Error(errorMessage))
         }
         if (plane.type === 'extrudeFace' || plane.type === 'offsetPlane') {
-          const originalCode = kclManager.code
+          const originalCode = executingEditor.code
           const sketched =
             plane.type === 'extrudeFace'
               ? sketchOnExtrudedFace(
-                  kclManager.ast,
+                  executingEditor.ast,
                   plane.sketchPathToNode,
                   plane.extrudePathToNode,
                   addTagForSketchOnFace,
-                  await kclManager.wasmInstancePromise,
+                  await executingEditor.wasmInstancePromise,
                   plane.faceInfo
                 )
               : sketchOnOffsetPlane(
-                  kclManager.ast,
+                  executingEditor.ast,
                   plane.pathToNode,
                   plane.negated,
                   wasmInstance
@@ -3209,10 +3296,10 @@ export const modelingMachine = setup({
           }
           const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
-          const didReParse = await kclManager.executeAstMock(modifiedAst)
+          const didReParse = await executingEditor.executeAstMock(modifiedAst)
           if (err(didReParse)) {
             // there was a problem, restore the original code
-            kclManager.updateCodeEditor(originalCode, {
+            executingEditor.updateCodeEditor(originalCode, {
               shouldAddToHistory: false,
             })
             return reject(didReParse)
@@ -3220,7 +3307,8 @@ export const modelingMachine = setup({
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
           await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          executingEditor.sceneInfra.camControls.syncDirection =
+            'clientToEngine'
           return {
             sketchEntryNodePath: [],
             planeNodePath: pathToNewSketchNode,
@@ -3231,14 +3319,14 @@ export const modelingMachine = setup({
           }
         }
         const { modifiedAst, pathToNode } = startSketchOnDefault(
-          kclManager.ast,
+          executingEditor.ast,
           plane.plane,
-          await kclManager.wasmInstancePromise
+          await executingEditor.wasmInstancePromise
         )
-        await kclManager.updateAst(modifiedAst, false)
-        kclManager.sceneInfra.camControls.enableRotate =
-          kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+        await executingEditor.updateAst(modifiedAst, false)
+        executingEditor.sceneInfra.camControls.enableRotate =
+          executingEditor.sceneInfra.camControls._setting_allowOrbitInSketchMode
+        executingEditor.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
@@ -3263,7 +3351,7 @@ export const modelingMachine = setup({
         input:
           | {
               artifactOrPlaneId: ArtifactId | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
@@ -3281,14 +3369,14 @@ export const modelingMachine = setup({
         }
         const {
           artifactOrPlaneId,
-          kclManager,
+          executingEditor,
           rustContext,
           engineCommandManager,
           wasmInstance,
           defaultUnit,
           projectRef,
         } = input
-        if (kclManager.hasParseErrors()) {
+        if (executingEditor.hasParseErrors()) {
           return reject(
             new Error('Unable to enter sketch while KCL has parse errors.')
           )
@@ -3296,7 +3384,7 @@ export const modelingMachine = setup({
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
 
         const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
-          sceneInfra: kclManager.sceneInfra,
+          sceneInfra: executingEditor.sceneInfra,
           rustContext,
         })
         if (!err(defaultResult) && defaultResult) {
@@ -3305,10 +3393,10 @@ export const modelingMachine = setup({
 
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
         if (!result) {
-          const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+          const artifact = executingEditor.artifactGraph.get(artifactOrPlaneId)
           const offsetResult = await getOffsetSketchPlaneData(artifact, {
-            sceneEntitiesManager: kclManager.sceneEntitiesManager,
-            sceneInfra: kclManager.sceneInfra,
+            sceneEntitiesManager: executingEditor.sceneEntitiesManager,
+            sceneInfra: executingEditor.sceneInfra,
           })
           if (!isErr(offsetResult) && offsetResult) {
             result = offsetResult
@@ -3317,14 +3405,14 @@ export const modelingMachine = setup({
         if (!result) {
           const sweepFaceSelected = await selectionBodyFace(
             artifactOrPlaneId,
-            kclManager.artifactGraph,
-            kclManager.astSignal.value,
-            kclManager.execState,
+            executingEditor.artifactGraph,
+            executingEditor.astSignal.value,
+            executingEditor.execState,
             {
               wasmInstance,
               rustContext,
-              sceneInfra: kclManager.sceneInfra,
-              sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              sceneInfra: executingEditor.sceneInfra,
+              sceneEntitiesManager: executingEditor.sceneEntitiesManager,
             }
           )
           if (sweepFaceSelected) {
@@ -3338,7 +3426,7 @@ export const modelingMachine = setup({
         const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
           result.faceInfo.type === 'wall' &&
-          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
+          isFaceFromLegacySketch(result.faceId, executingEditor.artifactGraph)
             ? result
             : null
 
@@ -3346,7 +3434,7 @@ export const modelingMachine = setup({
           // Temporary compatibility branch for legacy sketch V1.
           // Remove this once sketch-on-face always originates from sketch
           // blocks and no longer needs a JS-side code mod before sketch solve.
-          const legacyFaceArtifact = kclManager.artifactGraph.get(
+          const legacyFaceArtifact = executingEditor.artifactGraph.get(
             legacyExtrudeFaceTemporaryCompat.faceId
           )
           const legacyFaceCodeRef = legacyFaceArtifact
@@ -3359,14 +3447,14 @@ export const modelingMachine = setup({
           }
 
           const legacySketchBlock = sketchBlockOnExtrudedFace(
-            kclManager.ast,
+            executingEditor.ast,
             {
               artifact: legacyFaceArtifact,
               codeRef: legacyFaceCodeRef,
             },
             legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
             legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
-            kclManager.artifactGraph,
+            executingEditor.artifactGraph,
             wasmInstance
           )
           if (err(legacySketchBlock)) {
@@ -3376,7 +3464,7 @@ export const modelingMachine = setup({
           await updateModelingState(
             legacySketchBlock.modifiedAst,
             EXECUTION_TYPE_REAL,
-            kclManager,
+            executingEditor,
             {
               focusPath: [legacySketchBlock.pathToNode],
             }
@@ -3384,7 +3472,7 @@ export const modelingMachine = setup({
 
           const sketchBlockArtifact = getSketchBlockArtifactForPathToNode(
             legacySketchBlock.pathToNode,
-            kclManager.artifactGraph
+            executingEditor.artifactGraph
           )
           if (!sketchBlockArtifact) {
             return reject(
@@ -3394,7 +3482,7 @@ export const modelingMachine = setup({
 
           return enterSketchSolveFromSketchBlockArtifact({
             sketchBlockArtifact,
-            kclManager,
+            executingEditor,
             rustContext,
             engineCommandManager,
             defaultUnit,
@@ -3412,7 +3500,7 @@ export const modelingMachine = setup({
         // Construct SketchCtor based on the result
         let sketchArgs: SketchCtor
         const setProgramOutcome = await rustContext.hackSetProgram(
-          kclManager.ast,
+          executingEditor.ast,
           jsAppSettings(rustContext.settingsActor)
         )
         if (result.type === 'defaultPlane') {
@@ -3429,7 +3517,7 @@ export const modelingMachine = setup({
           const selectedSceneObject = findSceneObjectForPlaneSelection(
             setProgramOutcome.sceneGraph.objects,
             result,
-            kclManager.ast,
+            executingEditor.ast,
             wasmInstance
           )
 
@@ -3464,7 +3552,7 @@ export const modelingMachine = setup({
           )
         } catch (error) {
           await rustContext.hackSetProgram(
-            kclManager.ast,
+            executingEditor.ast,
             jsAppSettings(rustContext.settingsActor)
           )
           return reject(
@@ -3478,8 +3566,8 @@ export const modelingMachine = setup({
           result.type === 'extrudeFace' ? result.faceId : result.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
 
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-        kclManager.updateCodeEditor(
+        executingEditor.sceneInfra.camControls.syncDirection = 'clientToEngine'
+        executingEditor.updateCodeEditor(
           newSketchResult.kclSource.text,
           {
             shouldAddToHistory: true,
@@ -3503,7 +3591,7 @@ export const modelingMachine = setup({
         input:
           | {
               artifactId: ArtifactId | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
@@ -3522,16 +3610,16 @@ export const modelingMachine = setup({
         }
         const {
           artifactId,
-          kclManager,
+          executingEditor,
           rustContext,
           engineCommandManager,
           defaultUnit,
           projectRef,
         } = input
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
 
         // Get the sketchBlock artifact from the artifact graph
-        const artifact = kclManager.artifactGraph.get(artifactId)
+        const artifact = executingEditor.artifactGraph.get(artifactId)
         if (!artifact || artifact.type !== 'sketchBlock') {
           const errorMessage = 'Invalid sketchBlock artifact'
           toast.error(errorMessage)
@@ -3540,7 +3628,7 @@ export const modelingMachine = setup({
 
         return enterSketchSolveFromSketchBlockArtifact({
           sketchBlockArtifact: artifact,
-          kclManager,
+          executingEditor,
           rustContext,
           engineCommandManager,
           defaultUnit,
@@ -3551,19 +3639,19 @@ export const modelingMachine = setup({
     ),
     'Get horizontal info': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, kclManager },
+        input: { selectionRanges, sketchDetails, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges' | 'kclManager'
+          'sketchDetails' | 'selectionRanges' | 'executingEditor'
         >
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         const { modifiedAst, pathToNodeMap, exprInsertIndex } =
           await applyConstraintHorzVertDistance({
             constraint: 'setHorzDistance',
             selectionRanges,
-            kclManager,
+            executingEditor,
           })
         const pResult = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
@@ -3585,7 +3673,7 @@ export const modelingMachine = setup({
         })
 
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -3598,13 +3686,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -3619,21 +3709,21 @@ export const modelingMachine = setup({
     ),
     astConstrainLength: fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, lengthValue, kclManager },
+        input: { selectionRanges, sketchDetails, lengthValue, executingEditor },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges' | 'kclManager'
+          'sketchDetails' | 'selectionRanges' | 'executingEditor'
         > & {
           lengthValue?: KclCommandValue
         }
       }) => {
-        const wasmInstance = await kclManager.wasmInstancePromise
+        const wasmInstance = await executingEditor.wasmInstancePromise
         if (!lengthValue) return Promise.reject(new Error('No length value'))
         const constraintResult = await applyConstraintLength({
           selectionRanges,
           length: lengthValue,
-          kclManager,
+          executingEditor,
         })
         if (err(constraintResult)) return Promise.reject(constraintResult)
         const { modifiedAst, pathToNodeMap, exprInsertIndex } = constraintResult
@@ -3655,7 +3745,7 @@ export const modelingMachine = setup({
           exprInsertIndex,
         })
         const updatedAst =
-          await kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -3668,13 +3758,15 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        await executingEditor.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph,
+          executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -3689,12 +3781,12 @@ export const modelingMachine = setup({
     ),
     'setup-client-side-sketch-segments': fromPromise(
       async ({
-        input: { sketchDetails, selectionRanges, kclManager },
+        input: { sketchDetails, selectionRanges, executingEditor },
       }: {
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
         }
       }) => {
         if (!sketchDetails) {
@@ -3703,23 +3795,25 @@ export const modelingMachine = setup({
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
-          kclManager.sceneInfra.resetMouseListeners()
-          kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          executingEditor.sceneInfra.resetMouseListeners()
+          executingEditor.sceneEntitiesManager.tearDownSketch({
+            removeAxis: false,
+          })
           return
         }
-        kclManager.sceneInfra.resetMouseListeners()
-        await kclManager.sceneEntitiesManager.setupSketch({
+        executingEditor.sceneInfra.resetMouseListeners()
+        await executingEditor.sceneEntitiesManager.setupSketch({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
-          maybeModdedAst: kclManager.ast,
+          maybeModdedAst: executingEditor.ast,
           selectionRanges,
         })
-        kclManager.sceneInfra.resetMouseListeners()
+        executingEditor.sceneInfra.resetMouseListeners()
 
-        kclManager.sceneEntitiesManager.setupSketchIdleCallbacks({
+        executingEditor.sceneEntitiesManager.setupSketchIdleCallbacks({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
@@ -3739,16 +3833,19 @@ export const modelingMachine = setup({
     ),
     'animate-to-sketch': fromPromise(
       async ({
-        input: { selectionRanges, kclManager, engineCommandManager },
+        input: { selectionRanges, executingEditor, engineCommandManager },
       }: {
         input: {
           selectionRanges: Selections
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           engineCommandManager: ConnectionManager
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const artifact = selectionRanges.graphSelections[0].artifact
-        const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
+        const plane = getPlaneFromArtifact(
+          artifact,
+          executingEditor.artifactGraph
+        )
         if (err(plane)) return Promise.reject(plane)
         // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
         // but still works if the user selected a plane/face by defaulting to the first path
@@ -3759,7 +3856,9 @@ export const modelingMachine = setup({
         let sketch: KclValue | null = null
         let planeVar: Plane | null = null
 
-        for (const variable of Object.values(kclManager.execState.variables)) {
+        for (const variable of Object.values(
+          executingEditor.execState.variables
+        )) {
           // find programMemory that matches path artifact
           // This is similar to sketchFromKclValueOptional(), could be combined.
           if (
@@ -3806,7 +3905,7 @@ export const modelingMachine = setup({
               point.z,
             ]
             const planPath = getNodePathFromSourceRange(
-              kclManager.ast,
+              executingEditor.ast,
               planeCodeRef.range
             )
             await letEngineAnimateAndSyncCamAfter(
@@ -3826,7 +3925,7 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No sketch'))
         }
         const info =
-          await kclManager.sceneEntitiesManager.getSketchOrientationDetails(
+          await executingEditor.sceneEntitiesManager.getSketchOrientationDetails(
             sketch.value
           )
         await letEngineAnimateAndSyncCamAfter(
@@ -3834,22 +3933,22 @@ export const modelingMachine = setup({
           info?.sketchDetails?.faceId || ''
         )
 
-        const sketchArtifact = kclManager.artifactGraph.get(mainPath)
+        const sketchArtifact = executingEditor.artifactGraph.get(mainPath)
         if (sketchArtifact?.type !== 'path') {
           return Promise.reject(new Error('No sketch artifact'))
         }
         const sketchPaths = getPathsFromArtifact({
-          artifact: kclManager.artifactGraph.get(plane.id),
+          artifact: executingEditor.artifactGraph.get(plane.id),
           sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-          artifactGraph: kclManager.artifactGraph,
-          ast: kclManager.ast,
+          artifactGraph: executingEditor.artifactGraph,
+          ast: executingEditor.ast,
         })
         if (err(sketchPaths)) return Promise.reject(sketchPaths)
         let codeRef = getFaceCodeRef(plane)
         if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
         // codeRef.pathToNode is not always populated correctly
         const planeNodePath = getNodePathFromSourceRange(
-          kclManager.ast,
+          executingEditor.ast,
           codeRef.range
         )
         return {
@@ -3859,7 +3958,7 @@ export const modelingMachine = setup({
           zAxis: info.sketchDetails.zAxis || null,
           yAxis: info.sketchDetails.yAxis || null,
           origin: info.sketchDetails.origin.map(
-            (a) => a / kclManager.sceneInfra.baseUnitMultiplier
+            (a) => a / executingEditor.sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
         }
@@ -3871,7 +3970,10 @@ export const modelingMachine = setup({
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges' | 'kclManager' | 'wasmInstance'
+          | 'sketchDetails'
+          | 'selectionRanges'
+          | 'executingEditor'
+          | 'wasmInstance'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
         }
@@ -3885,7 +3987,7 @@ export const modelingMachine = setup({
         }
         const wasmInstance = input.wasmInstance
         let pResult = parse(
-          recast(input.kclManager.ast, wasmInstance),
+          recast(input.executingEditor.ast, wasmInstance),
           wasmInstance
         )
         if (trap(pResult) || !resultIsOk(pResult))
@@ -3978,7 +4080,7 @@ export const modelingMachine = setup({
         })
 
         const updatedAst =
-          await input.kclManager.sceneEntitiesManager.updateAstAndRejigSketch(
+          await input.executingEditor.sceneEntitiesManager.updateAstAndRejigSketch(
             updatedSketchEntryNodePath,
             updatedSketchNodePaths,
             updatedPlaneNodePath,
@@ -3991,7 +4093,7 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await input.kclManager.updateEditorWithAstAndWriteToFile(
+        await input.executingEditor.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined
         )
@@ -4000,7 +4102,7 @@ export const modelingMachine = setup({
           { 0: result.pathToReplaced },
           selectionRanges,
           updatedAst.newAst,
-          input.kclManager.artifactGraph,
+          input.executingEditor.artifactGraph,
           wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
@@ -4015,22 +4117,26 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-circle': fromPromise(
       async ({
-        input: { sketchDetails, data, kclManager },
+        input: { sketchDetails, data, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'executingEditor'
+        > & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
 
-        const result = await kclManager.sceneEntitiesManager.setupDraftCircle(
-          sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          data
-        )
+        const result =
+          await executingEditor.sceneEntitiesManager.setupDraftCircle(
+            sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            data
+          )
         if (err(result)) return reject(result)
 
         return result
@@ -4038,16 +4144,19 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-circle-three-point': fromPromise(
       async ({
-        input: { sketchDetails, data, kclManager },
+        input: { sketchDetails, data, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'executingEditor'
+        > & {
           data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
 
         const result =
-          await kclManager.sceneEntitiesManager.setupDraftCircleThreePoint(
+          await executingEditor.sceneEntitiesManager.setupDraftCircleThreePoint(
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
             sketchDetails.zAxis,
@@ -4063,16 +4172,19 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-rectangle': fromPromise(
       async ({
-        input: { sketchDetails, data, kclManager },
+        input: { sketchDetails, data, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'executingEditor'
+        > & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
 
         const result =
-          await kclManager.sceneEntitiesManager.setupDraftRectangle(
+          await executingEditor.sceneEntitiesManager.setupDraftRectangle(
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
             sketchDetails.zAxis,
@@ -4087,15 +4199,18 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-center-rectangle': fromPromise(
       async ({
-        input: { sketchDetails, data, kclManager },
+        input: { sketchDetails, data, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'executingEditor'
+        > & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
         const result =
-          await kclManager.sceneEntitiesManager.setupDraftCenterRectangle(
+          await executingEditor.sceneEntitiesManager.setupDraftCenterRectangle(
             sketchDetails.sketchNodePaths,
             sketchDetails.planeNodePath,
             sketchDetails.zAxis,
@@ -4110,14 +4225,17 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-arc': fromPromise(
       async ({
-        input: { sketchDetails, data, kclManager },
+        input: { sketchDetails, data, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'executingEditor'
+        > & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
-        const result = await kclManager.sceneEntitiesManager.setupDraftArc(
+        const result = await executingEditor.sceneEntitiesManager.setupDraftArc(
           sketchDetails.sketchEntryNodePath,
           sketchDetails.sketchNodePaths,
           sketchDetails.zAxis,
@@ -4132,15 +4250,18 @@ export const modelingMachine = setup({
     ),
     'set-up-draft-arc-three-point': fromPromise(
       async ({
-        input: { sketchDetails, data, kclManager },
+        input: { sketchDetails, data, executingEditor },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'> & {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'executingEditor'
+        > & {
           data: [x: number, y: number]
         }
       }) => {
         if (!sketchDetails || !data) return reject('No sketch details or data')
         const result =
-          await kclManager.sceneEntitiesManager.setupDraftArcThreePoint(
+          await executingEditor.sceneEntitiesManager.setupDraftArcThreePoint(
             sketchDetails.sketchEntryNodePath,
             sketchDetails.sketchNodePaths,
             sketchDetails.zAxis,
@@ -4157,11 +4278,11 @@ export const modelingMachine = setup({
       SketchDetailsUpdate,
       {
         sketchDetails: SketchDetails
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         wasmInstance: ModuleType
         rustContext: RustContext
       }
-    >(async ({ input: { sketchDetails, kclManager, wasmInstance } }) => {
+    >(async ({ input: { sketchDetails, executingEditor, wasmInstance } }) => {
       if (!sketchDetails) {
         return reject(new Error('No sketch details'))
       }
@@ -4182,14 +4303,14 @@ export const modelingMachine = setup({
         return existingSketchInfoNoOp
       }
       const doesNeedSplitting = doesSketchPipeNeedSplitting(
-        kclManager.ast,
+        executingEditor.ast,
         sketchDetails.sketchEntryNodePath,
         wasmInstance
       )
       if (err(doesNeedSplitting)) {
         return reject(doesNeedSplitting)
       }
-      let moddedAst: Node<Program> = structuredClone(kclManager.ast)
+      let moddedAst: Node<Program> = structuredClone(executingEditor.ast)
       let pathToProfile = sketchDetails.sketchEntryNodePath
       let updatedSketchNodePaths = sketchDetails.sketchNodePaths
       if (doesNeedSplitting) {
@@ -4216,7 +4337,7 @@ export const modelingMachine = setup({
         const pipe = getNodeFromPath<PipeExpression>(
           moddedAst,
           pathToProfile,
-          await kclManager.wasmInstancePromise,
+          await executingEditor.wasmInstancePromise,
           'PipeExpression'
         )
         if (err(pipe)) {
@@ -4255,7 +4376,11 @@ export const modelingMachine = setup({
         indexToDelete >= 0 ||
         isLastInPipeThreePointArc
       ) {
-        await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, kclManager)
+        await updateModelingState(
+          moddedAst,
+          EXECUTION_TYPE_MOCK,
+          executingEditor
+        )
       }
       return {
         updatedEntryNodePath: pathToProfile,
@@ -4279,7 +4404,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Extrude'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4288,15 +4413,16 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { artifactGraph } = input.kclManager
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-        let ast = input.kclManager.ast
+        const { artifactGraph } = input.executingEditor
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
+        let ast = input.executingEditor.ast
         if (
           input.data.draftAngle &&
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+            'Allow'
         ) {
           const astWithNewSetting = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
@@ -4323,7 +4449,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4337,7 +4463,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Sweep'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4346,12 +4472,12 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { ast, artifactGraph } = input.executingEditor
         const astResult = addSweep({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4361,7 +4487,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4375,7 +4501,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Loft'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4383,11 +4509,11 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const { ast, artifactGraph } = input.kclManager
+        const { ast, artifactGraph } = input.executingEditor
         const astResult = addLoft({
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
           ...input.data,
         })
         if (err(astResult)) {
@@ -4398,7 +4524,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4412,7 +4538,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Revolve'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4421,11 +4547,11 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { ast, artifactGraph } = input.executingEditor
         const astResult = addRevolve({
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
           ...input.data,
         })
         if (err(astResult)) {
@@ -4436,7 +4562,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4450,7 +4576,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Offset plane'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4459,13 +4585,13 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph, variables } = input.kclManager
+        const { ast, artifactGraph, variables } = input.executingEditor
         const astResult = addOffsetPlane({
           ...input.data,
           ast,
           artifactGraph,
           variables,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4475,7 +4601,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4489,7 +4615,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Helix'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4498,12 +4624,12 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { ast, artifactGraph } = input.executingEditor
         const astResult = addHelix({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4513,7 +4639,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4527,7 +4653,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Helical Gear'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4538,14 +4664,15 @@ export const modelingMachine = setup({
 
         let astWithNewSetting: Node<Program> | undefined
         if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+          'Allow'
         ) {
           const ast = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
-            await input.kclManager.wasmInstancePromise
+            await input.executingEditor.wasmInstancePromise
           )
           if (err(ast)) {
             return Promise.reject(ast)
@@ -4556,8 +4683,8 @@ export const modelingMachine = setup({
 
         const astResult = addHelicalGear({
           ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: astWithNewSetting ?? input.executingEditor.ast,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4567,7 +4694,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4581,7 +4708,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Herringbone Gear'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4592,14 +4719,15 @@ export const modelingMachine = setup({
 
         let astWithNewSetting: Node<Program> | undefined
         if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+          'Allow'
         ) {
           const ast = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
-            await input.kclManager.wasmInstancePromise
+            await input.executingEditor.wasmInstancePromise
           )
           if (err(ast)) {
             return Promise.reject(ast)
@@ -4610,8 +4738,8 @@ export const modelingMachine = setup({
 
         const astResult = addHerringboneGear({
           ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: astWithNewSetting ?? input.executingEditor.ast,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4621,7 +4749,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4635,7 +4763,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Spur Gear'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4646,14 +4774,15 @@ export const modelingMachine = setup({
 
         let astWithNewSetting: Node<Program> | undefined
         if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+          'Allow'
         ) {
           const ast = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
-            await input.kclManager.wasmInstancePromise
+            await input.executingEditor.wasmInstancePromise
           )
           if (err(ast)) {
             return Promise.reject(ast)
@@ -4664,8 +4793,8 @@ export const modelingMachine = setup({
 
         const astResult = addSpurGear({
           ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: astWithNewSetting ?? input.executingEditor.ast,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4675,7 +4804,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4689,7 +4818,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Ring Gear'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4700,14 +4829,15 @@ export const modelingMachine = setup({
 
         let astWithNewSetting: Node<Program> | undefined
         if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+          'Allow'
         ) {
           const ast = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
-            await input.kclManager.wasmInstancePromise
+            await input.executingEditor.wasmInstancePromise
           )
           if (err(ast)) {
             return Promise.reject(ast)
@@ -4718,8 +4848,8 @@ export const modelingMachine = setup({
 
         const astResult = addRingGear({
           ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: astWithNewSetting ?? input.executingEditor.ast,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4729,7 +4859,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4743,7 +4873,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Shell'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4752,12 +4882,12 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { ast, artifactGraph } = input.executingEditor
         const astResult = addShell({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4767,7 +4897,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4781,7 +4911,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Delete Face'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4792,9 +4922,9 @@ export const modelingMachine = setup({
 
         const astResult = addDeleteFace({
           ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4804,7 +4934,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4818,7 +4948,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Hole'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -4829,9 +4959,9 @@ export const modelingMachine = setup({
 
         const astResult = addHole({
           ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -4841,7 +4971,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -4855,7 +4985,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Fillet'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
@@ -4866,14 +4996,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { artifactGraph } = input.kclManager
-        let ast = input.kclManager.ast
+        const { artifactGraph } = input.executingEditor
+        let ast = input.executingEditor.ast
         if (
           input.data.version &&
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+            'Allow'
         ) {
           const astWithNewSetting = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
@@ -4900,7 +5031,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: pathToNode,
           }
@@ -4914,7 +5045,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Chamfer'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
@@ -4925,14 +5056,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { artifactGraph } = input.kclManager
-        let ast = input.kclManager.ast
+        const { artifactGraph } = input.executingEditor
+        let ast = input.executingEditor.ast
         if (
           input.data.version &&
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+            'Allow'
         ) {
           const astWithNewSetting = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
@@ -4959,7 +5091,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: pathToNode,
           }
@@ -4973,7 +5105,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Blend'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -4983,7 +5115,7 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { ast, artifactGraph } = input.executingEditor
         const astResult = addBlend({
           ...input.data,
           ast,
@@ -4999,7 +5131,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [pathToNode],
           }
@@ -5013,7 +5145,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges: Selections
           systemDeps: {
-            kclManager: KclManager
+            executingEditor: ExecutingEditor
             rustContext: RustContext
           }
         }
@@ -5047,7 +5179,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Appearance'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5055,13 +5187,13 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addAppearance({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5069,7 +5201,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5083,7 +5215,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Translate'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5092,13 +5224,13 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addTranslate({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5106,7 +5238,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5120,7 +5252,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Rotate'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5128,13 +5260,13 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addRotate({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5143,7 +5275,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5157,7 +5289,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Scale'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5166,13 +5298,13 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addScale({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5181,7 +5313,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5195,7 +5327,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Clone'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -5204,8 +5336,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addClone({
           ...input.data,
           ast,
@@ -5218,7 +5350,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5232,7 +5364,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Mirror 3D'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -5242,7 +5374,7 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph, variables } = input.kclManager
+        const { ast, artifactGraph, variables } = input.executingEditor
         const result = addMirror3D({
           ...input.data,
           ast,
@@ -5256,7 +5388,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5274,7 +5406,7 @@ export const modelingMachine = setup({
                     objects: Selections
                   }
                 | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -5283,8 +5415,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addHide({
           ...input.data,
           ast,
@@ -5297,7 +5429,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager
+          input.executingEditor
         )
       }
     ),
@@ -5312,7 +5444,7 @@ export const modelingMachine = setup({
                     objects: Selections
                   }
                 | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -5322,16 +5454,17 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let ast: Node<Program> = input.kclManager.ast
+        let ast: Node<Program> = input.executingEditor.ast
         if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+          input.executingEditor.fileSettings.experimentalFeatures?.type !==
+          'Allow'
         ) {
           const astWithExperimentalFeatures = setExperimentalFeatures(
-            input.kclManager.code,
+            input.executingEditor.code,
             {
               type: 'Allow',
             },
-            await input.kclManager.wasmInstancePromise
+            await input.executingEditor.wasmInstancePromise
           )
           if (err(astWithExperimentalFeatures)) {
             return Promise.reject(astWithExperimentalFeatures)
@@ -5340,7 +5473,7 @@ export const modelingMachine = setup({
           ast = astWithExperimentalFeatures
         }
 
-        const artifactGraph = input.kclManager.artifactGraph
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addDelete({
           ...input.data,
           ast,
@@ -5353,7 +5486,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager
+          input.executingEditor
         )
       }
     ),
@@ -5364,7 +5497,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Flatness'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5373,21 +5506,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addFlatnessGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5397,7 +5530,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5411,7 +5544,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Straightness'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5420,21 +5553,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addStraightnessGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5444,7 +5577,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5458,7 +5591,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Circularity'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5467,21 +5600,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addCircularityGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5491,7 +5624,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5505,7 +5638,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Cylindricity'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5514,21 +5647,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addCylindricityGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5538,7 +5671,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5552,7 +5685,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Datum'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5561,21 +5694,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addDatumGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5585,7 +5718,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5599,7 +5732,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Profile'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5608,21 +5741,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addProfileGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5632,7 +5765,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5646,7 +5779,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Position'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5655,21 +5788,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addPositionGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5679,7 +5812,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5693,7 +5826,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Distance'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5702,21 +5835,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addDistanceGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5726,7 +5859,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5740,7 +5873,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Perpendicularity'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5749,21 +5882,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addPerpendicularityGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5773,7 +5906,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5787,7 +5920,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Parallelism'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5796,21 +5929,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addParallelismGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5820,7 +5953,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5834,7 +5967,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Annotation'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5843,21 +5976,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const wasmInstance = await input.kclManager.wasmInstancePromise
+        const wasmInstance = await input.executingEditor.wasmInstancePromise
 
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          engineCommandManager: input.executingEditor.engineCommandManager,
+          ast: input.executingEditor.ast,
+          sourceCode: input.executingEditor.code,
+          outputUnit: input.executingEditor.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
 
         const result = addAnnotationGdt({
           ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
           wasmInstance,
         })
         if (err(result)) {
@@ -5867,7 +6000,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5881,7 +6014,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Flip Surface'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5892,9 +6025,9 @@ export const modelingMachine = setup({
 
         const result = addFlipSurface({
           ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5903,7 +6036,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5917,7 +6050,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Join Surfaces'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -5928,9 +6061,9 @@ export const modelingMachine = setup({
 
         const result = addJoinSurfaces({
           ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ast: input.executingEditor.ast,
+          artifactGraph: input.executingEditor.artifactGraph,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5939,7 +6072,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -5953,7 +6086,7 @@ export const modelingMachine = setup({
         input?:
           | {
               data: ModelingCommandSchema['Export'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
             }
@@ -5962,13 +6095,16 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
-        const { data, kclManager, rustContext, defaultUnit } = input
+        const { data, executingEditor, rustContext, defaultUnit } = input
 
-        if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
+        if (
+          executingEditor.hasErrors() ||
+          executingEditor.ast.body.length === 0
+        ) {
           let errorMessage = 'Unable to Export '
-          if (kclManager.hasErrors()) {
+          if (executingEditor.hasErrors()) {
             errorMessage += 'due to KCL Errors'
-          } else if (kclManager.ast.body.length === 0) {
+          } else if (executingEditor.ast.body.length === 0) {
             errorMessage += 'due to Empty Scene'
           }
           console.error(errorMessage)
@@ -5976,10 +6112,9 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        let fileName = (kclManager.currentFileName ?? 'output.kcl')?.replace(
-          '.kcl',
-          `.${data.type}`
-        )
+        let fileName = (
+          executingEditor.currentFileName ?? 'output.kcl'
+        )?.replace('.kcl', `.${data.type}`)
         // Ensure the file has an extension.
         if (!fileName.includes('.')) {
           fileName += `.${data.type}`
@@ -6140,7 +6275,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Subtract'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -6149,8 +6284,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addSubtract({
           ...input.data,
           ast,
@@ -6163,7 +6298,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -6177,7 +6312,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Union'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -6186,8 +6321,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addUnion({
           ...input.data,
           ast,
@@ -6200,7 +6335,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -6214,7 +6349,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Intersect'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -6224,8 +6359,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addIntersect({
           ...input.data,
           ast,
@@ -6238,7 +6373,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -6252,7 +6387,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Split'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
               wasmInstance: ModuleType
             }
@@ -6262,8 +6397,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addSplit({
           ...input.data,
           ast,
@@ -6276,7 +6411,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -6291,7 +6426,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -6299,13 +6434,13 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addPatternCircular3D({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -6313,7 +6448,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -6328,7 +6463,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
-              kclManager: KclManager
+              executingEditor: ExecutingEditor
               rustContext: RustContext
             }
           | undefined
@@ -6337,13 +6472,13 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const ast = input.executingEditor.ast
+        const artifactGraph = input.executingEditor.artifactGraph
         const result = addPatternLinear3D({
           ...input.data,
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance: await input.executingEditor.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -6351,7 +6486,7 @@ export const modelingMachine = setup({
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
-          input.kclManager,
+          input.executingEditor,
           {
             focusPath: [result.pathToNode],
           }
@@ -6362,11 +6497,11 @@ export const modelingMachine = setup({
     /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
-        input: { sketchDetails, kclManager, wasmInstance },
+        input: { sketchDetails, executingEditor, wasmInstance },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'kclManager' | 'wasmInstance'
+          'sketchDetails' | 'executingEditor' | 'wasmInstance'
         >
       }) => {
         const errorMessage =
@@ -6376,7 +6511,7 @@ export const modelingMachine = setup({
         }
 
         // hasErrors is for parse errors, errors is for runtime errors
-        if (kclManager.errors.length > 0 || kclManager.hasErrors()) {
+        if (executingEditor.errors.length > 0 || executingEditor.hasErrors()) {
           // if there's an error in the execution, we don't actually want to disable sketch mode
           // instead we'll give the user the chance to fix their error
           return {
@@ -6387,8 +6522,8 @@ export const modelingMachine = setup({
         }
 
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
-          kclManager._lastAst,
-          kclManager.ast,
+          executingEditor._lastAst,
+          executingEditor.ast,
           sketchDetails.planeNodePath,
           wasmInstance
         )
@@ -6396,17 +6531,17 @@ export const modelingMachine = setup({
         if (err(updatedPlaneNodePath)) {
           return Promise.reject(new Error(errorMessage))
         }
-        const maybePlaneArtifact = [...kclManager.artifactGraph.values()].find(
-          (artifact) => {
-            const codeRef = getFaceCodeRef(artifact)
-            if (!codeRef) return false
+        const maybePlaneArtifact = [
+          ...executingEditor.artifactGraph.values(),
+        ].find((artifact) => {
+          const codeRef = getFaceCodeRef(artifact)
+          if (!codeRef) return false
 
-            return (
-              stringifyPathToNode(codeRef.pathToNode) ===
-              stringifyPathToNode(updatedPlaneNodePath)
-            )
-          }
-        )
+          return (
+            stringifyPathToNode(codeRef.pathToNode) ===
+            stringifyPathToNode(updatedPlaneNodePath)
+          )
+        })
         if (
           !maybePlaneArtifact ||
           (maybePlaneArtifact.type !== 'plane' &&
@@ -6418,7 +6553,9 @@ export const modelingMachine = setup({
         if (maybePlaneArtifact.type === 'plane') {
           planeArtifact = maybePlaneArtifact
         } else {
-          const face = kclManager.artifactGraph.get(maybePlaneArtifact.faceId)
+          const face = executingEditor.artifactGraph.get(
+            maybePlaneArtifact.faceId
+          )
           if (face) {
             planeArtifact = face
           }
@@ -6434,8 +6571,8 @@ export const modelingMachine = setup({
 
         const newPaths = getPathsFromPlaneArtifact(
           planeArtifact,
-          kclManager.artifactGraph,
-          kclManager.ast
+          executingEditor.artifactGraph,
+          executingEditor.ast
         )
 
         return {
@@ -6467,7 +6604,7 @@ export const modelingMachine = setup({
           target: 'animating to existing sketch solve',
           actions: [
             ({ context }) => {
-              context.kclManager.sceneInfra.animate()
+              context.executingEditor.sceneInfra.animate()
             },
           ],
         },
@@ -6476,7 +6613,7 @@ export const modelingMachine = setup({
             target: 'animating to existing sketch solve',
             actions: [
               ({ context }) => {
-                context.kclManager.sceneInfra.animate()
+                context.executingEditor.sceneInfra.animate()
               },
             ],
             guard: 'Selection is sketchBlock',
@@ -6485,7 +6622,7 @@ export const modelingMachine = setup({
             target: 'animating to existing sketch',
             actions: [
               ({ context }) => {
-                context.kclManager.sceneInfra.animate()
+                context.executingEditor.sceneInfra.animate()
               },
             ],
             guard: 'Selection is on face',
@@ -6494,7 +6631,7 @@ export const modelingMachine = setup({
             target: 'Sketch no face',
             actions: [
               ({ context }) => {
-                context.kclManager.sceneInfra.animate()
+                context.executingEditor.sceneInfra.animate()
               },
             ],
           },
@@ -6826,12 +6963,12 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                 }),
                 onDone: [
                   {
@@ -6866,11 +7003,11 @@ export const modelingMachine = setup({
             src: 'Get horizontal info',
             id: 'get-horizontal-info',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager,
+              executingEditor,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -6885,11 +7022,11 @@ export const modelingMachine = setup({
             src: 'Get vertical info',
             id: 'get-vertical-info',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager,
+              executingEditor,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -6904,11 +7041,11 @@ export const modelingMachine = setup({
             src: 'Get ABS X info',
             id: 'get-abs-x-info',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager,
+              executingEditor,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -6923,11 +7060,11 @@ export const modelingMachine = setup({
             src: 'Get ABS Y info',
             id: 'get-abs-y-info',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager,
+              executingEditor,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -6942,11 +7079,11 @@ export const modelingMachine = setup({
             src: 'Get angle info',
             id: 'get-angle-info',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager,
+              executingEditor,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -6961,7 +7098,7 @@ export const modelingMachine = setup({
             src: 'astConstrainLength',
             id: 'AST-constrain-length',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
               event,
             }) => {
               const data =
@@ -6969,7 +7106,7 @@ export const modelingMachine = setup({
               return {
                 selectionRanges,
                 sketchDetails,
-                kclManager,
+                executingEditor,
                 lengthValue: data?.length,
               }
             },
@@ -6986,11 +7123,11 @@ export const modelingMachine = setup({
             src: 'Get perpendicular distance info',
             id: 'get-perpendicular-distance-info',
             input: ({
-              context: { selectionRanges, sketchDetails, kclManager },
+              context: { selectionRanges, sketchDetails, executingEditor },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager,
+              executingEditor,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -7036,13 +7173,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7109,13 +7246,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7135,9 +7272,9 @@ export const modelingMachine = setup({
             {
               src: 'AST-undo-startSketchOn',
               id: 'AST-undo-startSketchOn',
-              input: ({ context: { sketchDetails, kclManager } }) => ({
+              input: ({ context: { sketchDetails, executingEditor } }) => ({
                 sketchDetails,
-                kclManager,
+                executingEditor,
               }),
 
               onDone: {
@@ -7184,13 +7321,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7205,17 +7342,20 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: 'Awaiting origin',
-                input: ({ context: { sketchDetails, kclManager }, event }) => {
+                input: ({
+                  context: { sketchDetails, executingEditor },
+                  event,
+                }) => {
                   if (event.type !== 'click in scene')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      kclManager,
+                      executingEditor,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    kclManager,
+                    executingEditor,
                   }
                 },
               },
@@ -7263,13 +7403,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7284,17 +7424,20 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: 'Awaiting origin',
-                input: ({ context: { sketchDetails, kclManager }, event }) => {
+                input: ({
+                  context: { sketchDetails, executingEditor },
+                  event,
+                }) => {
                   if (event.type !== 'Add center rectangle origin')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      kclManager,
+                      executingEditor,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    kclManager,
+                    executingEditor,
                   }
                 },
               },
@@ -7316,10 +7459,10 @@ export const modelingMachine = setup({
             src: 'reeval-node-paths',
             id: 'reeval-node-paths',
             input: ({
-              context: { sketchDetails, kclManager, wasmInstance },
+              context: { sketchDetails, executingEditor, wasmInstance },
             }) => ({
               sketchDetails,
-              kclManager,
+              executingEditor,
               wasmInstance,
             }),
 
@@ -7344,7 +7487,7 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 wasmInstance,
-                kclManager,
+                executingEditor,
               },
               event,
             }) => {
@@ -7354,7 +7497,7 @@ export const modelingMachine = setup({
                 sketchDetails,
                 data: event.data,
                 wasmInstance,
-                kclManager,
+                executingEditor,
               }
             },
             onError: 'SketchIdle',
@@ -7374,7 +7517,7 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 wasmInstance,
-                kclManager: providedKclManager,
+                executingEditor: providedExecutingEditor,
               },
               event,
             }) => {
@@ -7386,7 +7529,7 @@ export const modelingMachine = setup({
                     ? event.data
                     : undefined,
                 wasmInstance,
-                kclManager: providedKclManager,
+                executingEditor: providedExecutingEditor,
               }
             },
             onDone: {
@@ -7404,13 +7547,13 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                kclManager: providedKclManager,
+                executingEditor: providedExecutingEditor,
                 wasmInstance,
               },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager: providedKclManager,
+              executingEditor: providedExecutingEditor,
               wasmInstance,
             }),
             onDone: {
@@ -7428,13 +7571,13 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                kclManager: providedKclManager,
+                executingEditor: providedExecutingEditor,
                 wasmInstance,
               },
             }) => ({
               selectionRanges,
               sketchDetails,
-              kclManager: providedKclManager,
+              executingEditor: providedExecutingEditor,
               wasmInstance,
             }),
             onDone: {
@@ -7451,7 +7594,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -7468,7 +7611,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -7485,7 +7628,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -7502,7 +7645,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -7519,7 +7662,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -7536,7 +7679,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               wasmInstance: context.wasmInstance,
             }),
             onDone: {
@@ -7628,13 +7771,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7649,17 +7792,20 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 onError: 'Awaiting origin',
-                input: ({ context: { sketchDetails, kclManager }, event }) => {
+                input: ({
+                  context: { sketchDetails, executingEditor },
+                  event,
+                }) => {
                   if (event.type !== 'Add circle origin')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      kclManager,
+                      executingEditor,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    kclManager,
+                    executingEditor,
                   }
                 },
               },
@@ -7682,7 +7828,7 @@ export const modelingMachine = setup({
                 onError: '#Modeling.Sketch.SketchIdle',
                 input: ({ context }) => ({
                   sketchDetails: context.sketchDetails!,
-                  kclManager: context.kclManager,
+                  executingEditor: context.executingEditor,
                   wasmInstance: context.wasmInstance,
                   rustContext: context.rustContext,
                 }),
@@ -7699,13 +7845,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7744,17 +7890,20 @@ export const modelingMachine = setup({
                   target: 'Awaiting third point',
                   actions: 'update sketchDetails',
                 },
-                input: ({ context: { sketchDetails, kclManager }, event }) => {
+                input: ({
+                  context: { sketchDetails, executingEditor },
+                  event,
+                }) => {
                   if (event.type !== 'Add second point')
                     return {
                       sketchDetails,
                       data: { p1: [0, 0], p2: [0, 0] },
-                      kclManager,
+                      executingEditor,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    kclManager,
+                    executingEditor,
                   }
                 },
               },
@@ -7778,13 +7927,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7829,17 +7978,20 @@ export const modelingMachine = setup({
                   target: 'Awaiting endAngle',
                   actions: 'update sketchDetails',
                 },
-                input: ({ context: { sketchDetails, kclManager }, event }) => {
+                input: ({
+                  context: { sketchDetails, executingEditor },
+                  event,
+                }) => {
                   if (event.type !== 'click in scene')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      kclManager,
+                      executingEditor,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    kclManager,
+                    executingEditor,
                   }
                 },
               },
@@ -7860,13 +8012,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7916,17 +8068,20 @@ export const modelingMachine = setup({
                   target: 'Awaiting third point',
                   actions: 'update sketchDetails',
                 },
-                input: ({ context: { sketchDetails, kclManager }, event }) => {
+                input: ({
+                  context: { sketchDetails, executingEditor },
+                  event,
+                }) => {
                   if (event.type !== 'click in scene')
                     return {
                       sketchDetails,
                       data: [0, 0],
-                      kclManager,
+                      executingEditor,
                     }
                   return {
                     sketchDetails,
                     data: event.data,
-                    kclManager,
+                    executingEditor,
                   }
                 },
               },
@@ -7958,13 +8113,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -7979,13 +8134,13 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    kclManager: providedKclManager,
+                    executingEditor: providedExecutingEditor,
                     wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  kclManager: providedKclManager,
+                  executingEditor: providedExecutingEditor,
                   wasmInstance,
                 }),
               },
@@ -8050,7 +8205,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Select sketch plane') return undefined
           return {
             plane: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
           }
@@ -8072,7 +8227,7 @@ export const modelingMachine = setup({
 
         input: ({ context }) => ({
           selectionRanges: context.selectionRanges,
-          kclManager: context.kclManager,
+          executingEditor: context.executingEditor,
           engineCommandManager: context.engineCommandManager,
         }),
 
@@ -8141,7 +8296,7 @@ export const modelingMachine = setup({
               initialSketchSolvePlane: context.sketchSolveInit,
               sketchId: context.sketchSolveId || 0,
               initialSceneGraphDelta: context.initialSceneGraphDelta,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
             }),
             onDone: {
               target: '#sketchSolveMode.exiting',
@@ -8178,7 +8333,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Extrude') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8198,7 +8353,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Sweep') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8218,7 +8373,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Loft') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8238,7 +8393,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Revolve') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8258,7 +8413,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Offset plane') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8278,7 +8433,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Helix') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8298,7 +8453,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Helical Gear') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8318,7 +8473,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Herringbone Gear') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8338,7 +8493,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Spur Gear') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8358,7 +8513,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Ring Gear') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8378,7 +8533,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Shell') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8398,7 +8553,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Delete Face') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8418,7 +8573,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Hole') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8438,7 +8593,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Fillet') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
@@ -8460,7 +8615,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Chamfer') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
@@ -8482,7 +8637,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Blend') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8524,7 +8679,7 @@ export const modelingMachine = setup({
           return {
             selectionRanges: context.selectionRanges,
             systemDeps: {
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               rustContext: context.rustContext,
             },
           }
@@ -8551,7 +8706,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Appearance') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8571,7 +8726,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Translate') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8591,7 +8746,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Rotate') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8611,7 +8766,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Scale') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8631,7 +8786,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Clone') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8652,7 +8807,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Mirror 3D') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8673,7 +8828,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Hide') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8694,7 +8849,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Delete') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8715,7 +8870,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Flatness') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8735,7 +8890,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Straightness') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8755,7 +8910,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Circularity') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8775,7 +8930,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Cylindricity') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8795,7 +8950,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Datum') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8815,7 +8970,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Profile') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8835,7 +8990,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Position') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8855,7 +9010,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Distance') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8875,7 +9030,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Perpendicularity') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8895,7 +9050,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Parallelism') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8915,7 +9070,7 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Annotation') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -8935,7 +9090,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Flip Surface') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8956,7 +9111,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Join Surfaces') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -8977,7 +9132,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Export') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
             fileName: context.fileName,
@@ -9013,7 +9168,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Subtract') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -9034,7 +9189,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Union') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -9055,7 +9210,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Intersect') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -9076,7 +9231,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Split') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -9097,7 +9252,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Pattern Circular 3D') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -9117,7 +9272,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Pattern Linear 3D') return undefined
           return {
             data: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
           }
         },
@@ -9154,7 +9309,7 @@ export const modelingMachine = setup({
           if (event.type !== 'Select sketch solve plane') return undefined
           return {
             artifactOrPlaneId: event.data,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
@@ -9172,7 +9327,7 @@ export const modelingMachine = setup({
           if (event.type === 'Edit sketch solve') {
             return {
               artifactId: event.data.artifactId,
-              kclManager: context.kclManager,
+              executingEditor: context.executingEditor,
               rustContext: context.rustContext,
               engineCommandManager: context.engineCommandManager,
               defaultUnit: context.store.defaultUnit,
@@ -9181,13 +9336,13 @@ export const modelingMachine = setup({
           }
           if (event.type === 'Enter sketch') {
             const sketchBlockArtifact = getSelectedSketchBlockArtifact({
-              artifactGraph: context.kclManager.artifactGraph,
+              artifactGraph: context.executingEditor.artifactGraph,
               selectionRanges: context.selectionRanges,
             })
             if (sketchBlockArtifact?.id) {
               return {
                 artifactId: sketchBlockArtifact.id,
-                kclManager: context.kclManager,
+                executingEditor: context.executingEditor,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
                 defaultUnit: context.store.defaultUnit,
@@ -9226,7 +9381,7 @@ export const modelingMachine = setup({
         'reset sketch metadata',
         'enable copilot',
         ({ context }) => {
-          context.kclManager.sceneInfra.stop()
+          context.executingEditor.sceneInfra.stop()
         },
       ],
     },
@@ -9310,18 +9465,18 @@ function listenForOriginMove(
 
 export function isEditingExistingSketch({
   sketchDetails,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   sketchDetails: SketchDetails | null
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }): boolean {
   // should check that the variable declaration is a pipeExpression
   // and that the pipeExpression contains a "startProfile" callExpression
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
+    executingEditor.ast,
     sketchDetails.sketchEntryNodePath,
     wasmInstance,
     'VariableDeclarator',
@@ -9360,16 +9515,16 @@ export function isEditingExistingSketch({
 
 export function pipeHasCircle({
   sketchDetails,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   sketchDetails: SketchDetails | null
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }): boolean {
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
+    executingEditor.ast,
     sketchDetails.sketchEntryNodePath,
     wasmInstance,
     'VariableDeclarator'

@@ -2,7 +2,7 @@ import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addModuleImport,
@@ -45,7 +45,7 @@ interface KclCommandConfig {
   specialPropsForInsertCommand: {
     providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
@@ -77,16 +77,17 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           inputType: 'options',
           defaultValue:
-            commandProps.kclManager.fileSettings.defaultLengthUnit ||
+            commandProps.executingEditor.fileSettings.defaultLengthUnit ||
             DEFAULT_DEFAULT_LENGTH_UNIT,
           options: () =>
             Object.values(baseUnitsUnion).map((v) => {
               return {
                 name: v,
                 value: v,
-                isCurrent: commandProps.kclManager.fileSettings
+                isCurrent: commandProps.executingEditor.fileSettings
                   .defaultLengthUnit
-                  ? v === commandProps.kclManager.fileSettings.defaultLengthUnit
+                  ? v ===
+                    commandProps.executingEditor.fileSettings.defaultLengthUnit
                   : v === DEFAULT_DEFAULT_LENGTH_UNIT,
               }
             }),
@@ -95,14 +96,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
           const newCode = changeDefaultUnits(
-            commandProps.kclManager.code,
+            commandProps.executingEditor.code,
             data.unit,
             commandProps.wasmInstance
           )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
-            commandProps.kclManager.updateCodeEditor(newCode, {
+            commandProps.executingEditor.updateCodeEditor(newCode, {
               shouldExecute: true,
               shouldResetCamera: true,
             })
@@ -127,18 +128,18 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           inputType: 'options',
           defaultValue:
-            commandProps.kclManager.fileSettings.experimentalFeatures?.type ||
-            DEFAULT_EXPERIMENTAL_FEATURES.type,
+            commandProps.executingEditor.fileSettings.experimentalFeatures
+              ?.type || DEFAULT_EXPERIMENTAL_FEATURES.type,
           options: () =>
             warningLevels.map((l) => {
               return {
                 name: l.type,
                 value: l.type,
-                isCurrent: commandProps.kclManager.fileSettings
+                isCurrent: commandProps.executingEditor.fileSettings
                   .experimentalFeatures
                   ? l.type ===
-                    commandProps.kclManager.fileSettings.experimentalFeatures
-                      .type
+                    commandProps.executingEditor.fileSettings
+                      .experimentalFeatures.type
                   : l.type === DEFAULT_EXPERIMENTAL_FEATURES.type,
               }
             }),
@@ -150,11 +151,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         async function awaitWasmAndSubmit() {
           if (typeof data === 'object' && 'level' in data) {
             const newAst = setExperimentalFeatures(
-              commandProps.kclManager.code,
+              commandProps.executingEditor.code,
               {
                 type: data.level,
               },
-              await commandProps.kclManager.wasmInstancePromise
+              await commandProps.executingEditor.wasmInstancePromise
             )
             if (err(newAst)) {
               toast.error(
@@ -165,7 +166,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             updateModelingState(
               newAst,
               EXECUTION_TYPE_REAL,
-              commandProps.kclManager
+              commandProps.executingEditor
             )
               .then((result) => {
                 if (err(result)) {
@@ -196,7 +197,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       hide: 'web',
       needsReview: true,
       reviewValidation: async () => {
-        if (commandProps.kclManager.isExecuting) {
+        if (commandProps.executingEditor.isExecuting) {
           return new Error(EXECUTING_MESSAGE)
         }
       },
@@ -227,7 +228,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return providedOptions
           },
           validation: async ({ data }) => {
-            const importExists = commandProps.kclManager.ast.body.find(
+            const importExists = commandProps.executingEditor.ast.body.find(
               (n) =>
                 n.type === 'ImportStatement' &&
                 ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
@@ -254,7 +255,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           },
           validation: async ({ data }) => {
             const variableExists =
-              commandProps.kclManager.variables['__mod_' + data.localName]
+              commandProps.executingEditor.variables['__mod_' + data.localName]
             if (variableExists) {
               return 'This variable name is already in use.'
             }
@@ -268,7 +269,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        const ast = commandProps.kclManager.ast
+        const ast = commandProps.executingEditor.ast
         const { path, localName } = data
         const { modifiedAst, pathToNode } = addModuleImport({
           ast,
@@ -278,7 +279,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          commandProps.kclManager,
+          commandProps.executingEditor,
           {
             focusPath: [pathToNode],
             skipErrorsOnMockExecution: true,
@@ -294,7 +295,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       icon: 'code',
       onSubmit: () => {
-        commandProps.kclManager.format().catch(reportRejection)
+        commandProps.executingEditor.format().catch(reportRejection)
       },
     },
     {
@@ -307,7 +308,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       onSubmit: (input) => {
         copyFileShareLink({
           token: commandProps.authToken,
-          code: commandProps.kclManager.code,
+          code: commandProps.executingEditor.code,
           name: commandProps.projectData.project?.name || '',
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
           password: input?.event.data.password,
@@ -352,9 +353,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error('variable declaration is required')
         }
 
-        const freshAst = await commandProps.kclManager.safeParse(
-          commandProps.kclManager.code,
-          commandProps.kclManager.wasmInstancePromise
+        const freshAst = await commandProps.executingEditor.safeParse(
+          commandProps.executingEditor.code,
+          commandProps.executingEditor.wasmInstancePromise
         )
         if (!freshAst) {
           return new Error('Current code could not be parsed')
@@ -365,13 +366,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         const newCode = recast(
           modifiedAst,
-          await commandProps.kclManager.wasmInstancePromise
+          await commandProps.executingEditor.wasmInstancePromise
         )
         if (err(newCode)) {
           return new Error(`Failed to create parameter: ${newCode.message}`)
         }
 
-        commandProps.kclManager.updateCodeEditor(newCode, {
+        commandProps.executingEditor.updateCodeEditor(newCode, {
           shouldExecute: true,
           shouldWriteToDisk: true,
           shouldAddToHistory: true,
@@ -391,7 +392,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           valueSummary: (nodeToEdit: PathToNode) => {
             const node = getNodeFromPath<VariableDeclarator>(
-              commandProps.kclManager.ast,
+              commandProps.executingEditor.ast,
               nodeToEdit,
               commandProps.wasmInstance,
               'VariableDeclarator',
@@ -404,7 +405,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options() {
             return getAllOperations(
-              commandProps.kclManager.execState.operations
+              commandProps.executingEditor.execState.operations
             ).flatMap((op) => {
               if (op.type !== 'VariableDeclaration') return []
               if (op.value.type !== 'Number') return []
@@ -420,7 +421,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
             if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
             const node = getNodeFromPath<VariableDeclarator>(
-              commandProps.kclManager.ast,
+              commandProps.executingEditor.ast,
               nodeToEdit,
               commandProps.wasmInstance,
               'VariableDeclarator'
@@ -430,11 +431,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const variableName = node.node.id.name || ''
             if (typeof variableName !== 'string') return '5'
             const variableNode = getVariableDeclaration(
-              commandProps.kclManager.ast,
+              commandProps.executingEditor.ast,
               variableName
             )
             if (!variableNode) return '5'
-            const code = commandProps.kclManager.code.slice(
+            const code = commandProps.executingEditor.code.slice(
               variableNode.declaration.init.start,
               variableNode.declaration.init.end
             )
@@ -450,7 +451,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         // Get the variable AST node to edit
         const { nodeToEdit, value } = data
-        const newAst = structuredClone(commandProps.kclManager.ast)
+        const newAst = structuredClone(commandProps.executingEditor.ast)
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
           nodeToEdit,
@@ -471,7 +472,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         updateModelingState(
           newAst,
           EXECUTION_TYPE_REAL,
-          commandProps.kclManager
+          commandProps.executingEditor
         ).catch(reportRejection)
       },
     },

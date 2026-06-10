@@ -1,5 +1,5 @@
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { emptyOperationsByModule } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type RustContext from '@src/lib/rustContext'
@@ -76,7 +76,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
   }
 
 export function generateModelingMachineDefaultContext(systemDeps: {
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   rustContext: RustContext
   wasmInstance: ModuleType
   engineCommandManager: ConnectionManager

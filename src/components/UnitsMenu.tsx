@@ -13,9 +13,9 @@ import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 
 export function UnitsMenu() {
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
-  const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
+  const [fileSettings, setFileSettings] = useState(executingEditor.fileSettings)
   const { state: modelingState } = useModelingContext()
   const inSketchMode = modelingState.matches('Sketch')
 
@@ -29,7 +29,7 @@ export function UnitsMenu() {
     if (!inSketchMode) {
       return
     }
-    const camera = kclManager.sceneInfra.camControls.camera
+    const camera = executingEditor.sceneInfra.camControls.camera
     if (!(camera instanceof OrthographicCamera)) {
       console.error(
         'Camera is not an OrthographicCamera, skipping ruler recalculation'
@@ -37,7 +37,7 @@ export function UnitsMenu() {
       return
     }
 
-    let rulerWidth = kclManager.sceneInfra.getPixelsPerBaseUnit(camera)
+    let rulerWidth = executingEditor.sceneInfra.getPixelsPerBaseUnit(camera)
     let displayValue = 1
 
     if (rulerWidth > 150 || rulerWidth < 20) {
@@ -50,12 +50,12 @@ export function UnitsMenu() {
     }
     setRulerWidth(rulerWidth)
     setRulerLabelValue(displayValue)
-  }, [inSketchMode, kclManager.sceneInfra])
+  }, [inSketchMode, executingEditor.sceneInfra])
 
   useEffect(() => {
     const unsubscribers = [
-      kclManager.sceneInfra.camControls.cameraChange.add(onCameraChange),
-      kclManager.sceneInfra.baseUnitChange.add(onCameraChange),
+      executingEditor.sceneInfra.camControls.cameraChange.add(onCameraChange),
+      executingEditor.sceneInfra.baseUnitChange.add(onCameraChange),
     ]
     onCameraChange()
     return () => {
@@ -63,16 +63,16 @@ export function UnitsMenu() {
     }
   }, [
     onCameraChange,
-    kclManager.sceneInfra.baseUnitChange,
-    kclManager.sceneInfra.camControls.cameraChange,
+    executingEditor.sceneInfra.baseUnitChange,
+    executingEditor.sceneInfra.camControls.cameraChange,
   ])
   useEffect(() => {
-    setFileSettings(kclManager.fileSettings)
+    setFileSettings(executingEditor.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
-    kclManager.fileSettings,
-    kclManager.sceneInfra.baseUnitChange,
-    kclManager.sceneInfra.camControls.cameraChange,
+    executingEditor.fileSettings,
+    executingEditor.sceneInfra.baseUnitChange,
+    executingEditor.sceneInfra.camControls.cameraChange,
   ])
 
   return (
@@ -109,7 +109,7 @@ export function UnitsMenu() {
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
                       const newCode = changeDefaultUnits(
-                        kclManager.code,
+                        executingEditor.code,
                         unit,
                         wasmInstance
                       )
@@ -118,7 +118,7 @@ export function UnitsMenu() {
                           `Failed to set per-file units: ${newCode.message}`
                         )
                       } else {
-                        kclManager.updateCodeEditor(newCode, {
+                        executingEditor.updateCodeEditor(newCode, {
                           shouldExecute: true,
                           shouldResetCamera: true,
                         })

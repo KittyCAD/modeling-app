@@ -73,7 +73,7 @@ import {
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { Coords2d } from '@src/lang/util'
@@ -109,7 +109,7 @@ interface CreateSegmentArgs {
   sceneInfra: SceneInfra
   selection?: Selections
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }
 
@@ -162,7 +162,7 @@ class StraightSegment implements SegmentUtils {
     prevSegment,
     selection,
     commandBarActor,
-    kclManager,
+    executingEditor,
     wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
@@ -223,7 +223,7 @@ class StraightSegment implements SegmentUtils {
         scale,
         sceneInfra,
         commandBarActor,
-        kclManager,
+        executingEditor,
         wasmInstance,
       })
       segmentGroup.add(arrowGroup)
@@ -612,7 +612,7 @@ class CircleSegment implements SegmentUtils {
     isSelected,
     sceneInfra,
     commandBarActor,
-    kclManager,
+    executingEditor,
     wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
@@ -659,7 +659,7 @@ class CircleSegment implements SegmentUtils {
       scale,
       sceneInfra,
       commandBarActor,
-      kclManager,
+      executingEditor,
       wasmInstance,
     })
 
@@ -1081,7 +1081,7 @@ class ArcSegment implements SegmentUtils {
     isSelected,
     sceneInfra,
     commandBarActor,
-    kclManager,
+    executingEditor,
     wasmInstance,
   }) => {
     if (input.type !== 'arc-segment') {
@@ -1124,7 +1124,7 @@ class ArcSegment implements SegmentUtils {
       scale,
       sceneInfra,
       commandBarActor,
-      kclManager,
+      executingEditor,
       wasmInstance,
     })
 
@@ -1180,7 +1180,7 @@ class ArcSegment implements SegmentUtils {
       scale,
       sceneInfra,
       commandBarActor,
-      kclManager,
+      executingEditor,
       wasmInstance,
     })
     endAngleLengthIndicator.name = 'endAngleLengthIndicator'
@@ -1800,7 +1800,7 @@ function createLengthIndicator({
   length = 0.1,
   sceneInfra,
   commandBarActor,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   from: Coords2d
@@ -1809,7 +1809,7 @@ function createLengthIndicator({
   length?: number
   sceneInfra: SceneInfra
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }) {
   const lengthIndicatorGroup = new Group()
@@ -1847,7 +1847,7 @@ function createLengthIndicator({
         graphSelections: [selection.graphSelections[0]],
       },
       angleOrLength: 'setLength',
-      kclManager,
+      executingEditor,
       wasmInstance,
     })
     if (err(canConstrainLength) || !canConstrainLength.enabled) {

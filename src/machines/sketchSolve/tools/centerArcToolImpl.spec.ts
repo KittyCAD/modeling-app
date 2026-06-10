@@ -13,7 +13,7 @@ import {
   storeCreatedArcResult,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
 import {
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import { describe, expect, it, vi } from 'vitest'
@@ -495,7 +495,7 @@ describe('centerArcToolImpl', () => {
   describe('snap constraints', () => {
     it('creates a coincident constraint for the snapped center point only during draft creation', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
       const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
@@ -524,7 +524,7 @@ describe('centerArcToolImpl', () => {
           startPoint: [10, 0],
           centerSnapTarget: { type: 'origin' },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
         },
       })
@@ -555,7 +555,7 @@ describe('centerArcToolImpl', () => {
       'anchors the center and radius-defining endpoint when finalizing a %s arc without snaps',
       async (_name, arcIsSwapped, expectedAnchorIds) => {
         const rustContext = createMockRustContext()
-        const kclManager = createMockKclManager()
+        const executingEditor = createMockExecutingEditor()
         const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
         const currentArc = createArcApiObject({
           id: 4,
@@ -595,7 +595,7 @@ describe('centerArcToolImpl', () => {
             endPoint: [0, 10],
             sceneGraphDelta: inputSceneGraphDelta,
             rustContext,
-            kclManager,
+            executingEditor,
             sketchId: 7,
             arcIsSwapped,
           },
@@ -620,7 +620,7 @@ describe('centerArcToolImpl', () => {
 
     it('adds coincident constraints to the fixed and clicked endpoints when finalizing a swapped arc', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const currentArc = createArcApiObject({
         id: 4,
@@ -678,7 +678,7 @@ describe('centerArcToolImpl', () => {
           startSnapTarget: { type: 'point', id: 77 },
           endSnapTarget: { type: 'point', id: 99 },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
           arcIsSwapped: true,
         },
@@ -717,7 +717,7 @@ describe('centerArcToolImpl', () => {
 
     it('adds the deferred second-click snap to the start endpoint when the arc stays unswapped', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const currentArc = createArcApiObject({
         id: 4,
@@ -761,7 +761,7 @@ describe('centerArcToolImpl', () => {
           sceneGraphDelta: inputSceneGraphDelta,
           startSnapTarget: { type: 'point', id: 77 },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
           arcIsSwapped: false,
         },

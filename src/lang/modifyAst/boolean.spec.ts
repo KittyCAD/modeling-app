@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { addSplit, addSubtract } from '@src/lang/modifyAst/boolean'
 import { recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -15,7 +15,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -30,10 +30,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -46,12 +46,12 @@ async function getSolidsAndTools(
   solidIds: number[],
   toolIds: number[],
   instance: ModuleType,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ) {
   const { artifactGraph, ast } = await getAstAndArtifactGraph(
     code,
     instance,
-    kclManager
+    executingEditor
   )
   // path selection is what p&c is doing with the filter (v. sweep)
   const paths = [...artifactGraph.values()].filter((n) => n.type === 'path')
@@ -84,7 +84,7 @@ describe('boolean', () => {
       solidIds: number[],
       toolIds: number[],
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const { ast, artifactGraph, solids, tools } = await getSolidsAndTools(
@@ -92,7 +92,7 @@ describe('boolean', () => {
         solidIds,
         toolIds,
         instance,
-        kclManager
+        executingEditor
       )
       const result = addSubtract({
         ast,
@@ -123,7 +123,7 @@ extrude002 = extrude(profile002, length = -1)`
         solidIds,
         toolIds,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -145,7 +145,7 @@ startSketchOn(XZ)
         solidIds,
         toolIds,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -168,7 +168,7 @@ extrude003 = extrude(profile003, length = -1)`
         solidIds,
         toolIds,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -192,7 +192,7 @@ extrude003 = extrude(profile004, length = 20)`
         solidIds,
         toolIds,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -227,7 +227,7 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
         solidIds,
         toolIds,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       // Note that this would fail without artifactTypeFilter: ['compositeSolid', 'sweep'] in addSubtract
@@ -264,7 +264,7 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
         targetIds,
         toolIds || [],
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const result = addSplit({
         ast,
@@ -412,7 +412,7 @@ surface002 = joinSurfaces([extrude002, extrude003, surface001])`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const firstSweep = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'sweep'

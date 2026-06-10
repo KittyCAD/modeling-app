@@ -10,7 +10,7 @@ vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
 
 import {
   createArcApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createPointApiObject,
   createSceneGraphDelta,
@@ -24,7 +24,7 @@ describe('threePointArcToolImpl', () => {
   describe('addDraftPointActor', () => {
     it('adds a coincident constraint when the draft point is snapped', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       ;(rustContext.addSegment as any).mockResolvedValue({
         kclSource: { text: 'point' },
@@ -43,7 +43,7 @@ describe('threePointArcToolImpl', () => {
           point: [10, 20],
           snapTarget: { type: 'origin' },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
         },
       })
@@ -72,7 +72,7 @@ describe('threePointArcToolImpl', () => {
   describe('finalizeArcActor', () => {
     it('adds a coincident constraint for the snapped end point before cleanup', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const deleteObjectsSpy = vi.spyOn(rustContext, 'deleteObjects')
       const center = createPointApiObject({ id: 4, x: 1, y: 0 })
@@ -110,7 +110,7 @@ describe('threePointArcToolImpl', () => {
           endPoint: [2, 0],
           endSnapTarget: { type: 'point', id: 99 },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
         },
       })

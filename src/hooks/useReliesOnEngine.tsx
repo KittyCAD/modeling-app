@@ -5,13 +5,13 @@ import { useSingletons } from '@src/lib/boot'
 import { EngineConnectionStateType } from '@src/network/utils'
 
 export function useReliesOnEngine(isExecuting: boolean) {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const reliesOnEngine =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    kclManager.isExecutingSignal.value ||
+    executingEditor.isExecutingSignal.value ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
 

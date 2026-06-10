@@ -8,7 +8,7 @@ import {
 } from '@src/machines/sketchSolve/tools/circleToolImpl'
 import {
   createCircleApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createPointApiObject,
   createSceneGraphDelta,
@@ -30,7 +30,7 @@ describe('circleToolImpl', () => {
     it('creates a circle segment using the circle label', async () => {
       const rustContext = createMockRustContext()
       const spiedFn = vi.spyOn(rustContext, 'addSegment')
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const sceneGraphDelta = createSceneGraphDelta([], [])
       ;(rustContext.addSegment as any).mockResolvedValue({
         kclSource: { text: 'circle' },
@@ -42,7 +42,7 @@ describe('circleToolImpl', () => {
           centerPoint: [10, 20],
           startPoint: [30, 40],
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
         },
       })
@@ -73,7 +73,7 @@ describe('circleToolImpl', () => {
 
     it('adds coincident constraints for snapped center and radius points', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
       const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
@@ -105,7 +105,7 @@ describe('circleToolImpl', () => {
           centerSnapTarget: { type: 'origin' },
           startSnapTarget: { type: 'point', id: 99 },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
         },
       })

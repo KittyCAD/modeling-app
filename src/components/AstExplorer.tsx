@@ -12,17 +12,17 @@ import { trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
-    kclManager.ast,
+    executingEditor.ast,
     context.selectionRanges.graphSelections?.[0]?.codeRef?.range
   )
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
-  const _node = getNodeFromPath(kclManager.ast, pathToNode, wasmInstance)
+  const _node = getNodeFromPath(executingEditor.ast, pathToNode, wasmInstance)
   if (trap(_node)) return
   const node = _node
 
@@ -54,12 +54,12 @@ export function AstExplorer() {
       <div
         className="h-full relative"
         onMouseLeave={(_e) => {
-          kclManager.setHighlightRange([defaultSourceRange()])
+          executingEditor.setHighlightRange([defaultSourceRange()])
         }}
       >
         <pre className="text-xs">
           <DisplayObj
-            obj={kclManager.ast}
+            obj={executingEditor.ast}
             filterKeys={filterKeys}
             node={node}
           />
@@ -101,7 +101,7 @@ function DisplayObj({
   node: any
 }) {
   const { send } = useModelingContext()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const ref = useRef<HTMLPreElement>(null)
   const [hasCursor, setHasCursor] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -126,21 +126,25 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        kclManager.setHighlightRange([topLevelRange(obj?.start || 0, obj.end)])
+        executingEditor.setHighlightRange([
+          topLevelRange(obj?.start || 0, obj.end),
+        ])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        kclManager.setHighlightRange([topLevelRange(obj?.start || 0, obj.end)])
+        executingEditor.setHighlightRange([
+          topLevelRange(obj?.start || 0, obj.end),
+        ])
       }}
       onClick={(e) => {
         const range = topLevelRange(obj?.start || 0, obj.end || 0)
         const idInfo = codeToIdSelections(
-          [{ codeRef: codeRefFromRange(range, kclManager.ast) }],
-          kclManager.artifactGraph,
-          kclManager.artifactIndex
+          [{ codeRef: codeRefFromRange(range, executingEditor.ast) }],
+          executingEditor.artifactGraph,
+          executingEditor.artifactIndex
         )[0]
-        const artifact = kclManager.artifactGraph.get(idInfo?.id || '')
+        const artifact = executingEditor.artifactGraph.get(idInfo?.id || '')
         if (!artifact) return
         send({
           type: 'Set selection',
@@ -148,7 +152,7 @@ function DisplayObj({
             selectionType: 'singleCodeCursor',
             selection: {
               artifact: artifact,
-              codeRef: codeRefFromRange(range, kclManager.ast),
+              codeRef: codeRefFromRange(range, executingEditor.ast),
             },
           },
         })

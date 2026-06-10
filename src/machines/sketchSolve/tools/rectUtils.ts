@@ -3,7 +3,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -105,14 +105,14 @@ function getPointFromDelta(
 
 export async function createDraftRectangle({
   rustContext,
-  kclManager,
+  executingEditor,
   sketchId,
   mode,
   origin = [0, 0],
   snapTarget,
 }: {
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   mode: RectOriginMode
   origin?: Coords2d
@@ -123,7 +123,7 @@ export async function createDraftRectangle({
   draft: RectDraftIds
 }> {
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
   const settings = jsAppSettings(rustContext.settingsActor)
   const draftCorners = getInitialDraftRectangleCorners(origin, mode)
@@ -455,7 +455,7 @@ export async function createDraftRectangle({
 // Updates draft rectangle for center and corner rectangles.
 export async function updateDraftRectangleAligned({
   rustContext,
-  kclManager,
+  executingEditor,
   sketchId,
   draft,
   mode,
@@ -463,7 +463,7 @@ export async function updateDraftRectangleAligned({
   currentPoint,
 }: {
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   draft: RectDraftIds
   mode: Extract<RectOriginMode, 'corner' | 'center'>
@@ -474,7 +474,7 @@ export async function updateDraftRectangleAligned({
   sceneGraphDelta: SceneGraphDelta
 }> {
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
   const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -584,7 +584,7 @@ function getInitialDraftRectangleCorners(
 // Updates draft rectangle for angled (rotated) rectangle
 export async function updateDraftRectangleAngled({
   rustContext,
-  kclManager,
+  executingEditor,
   sketchId,
   draft,
   p1,
@@ -592,7 +592,7 @@ export async function updateDraftRectangleAngled({
   p3,
 }: {
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   draft: RectDraftIds
   p1: Coords2d
@@ -603,7 +603,7 @@ export async function updateDraftRectangleAngled({
   sceneGraphDelta: SceneGraphDelta
 }> {
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
   const settings = jsAppSettings(rustContext.settingsActor)
 

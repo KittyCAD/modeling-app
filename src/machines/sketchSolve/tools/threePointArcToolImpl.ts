@@ -5,7 +5,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -93,7 +93,7 @@ export type ToolContext = {
   arcEndPointId?: number
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
 }
 
@@ -202,7 +202,7 @@ async function editArcWithThreePoints({
   endPoint,
   throughPoint,
   rustContext,
-  kclManager,
+  executingEditor,
   sketchId,
   settings,
   commitSolverResults = true,
@@ -212,7 +212,7 @@ async function editArcWithThreePoints({
   endPoint: Coords2d
   throughPoint: Coords2d
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   settings: Awaited<ReturnType<typeof jsAppSettings>>
   commitSolverResults?: boolean
@@ -241,7 +241,7 @@ async function editArcWithThreePoints({
   })
 
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
 
   return rustContext.editSegments(
@@ -424,7 +424,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           endPoint: [twoD.x, twoD.y],
           throughPoint,
           rustContext: context.rustContext,
-          kclManager: context.kclManager,
+          executingEditor: context.executingEditor,
           sketchId: context.sketchId,
           settings: cachedSettings,
           commitSolverResults: false,
@@ -587,7 +587,7 @@ export async function addDraftPointActor({
         point: Coords2d
         snapTarget?: SnapTarget
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -598,9 +598,9 @@ export async function addDraftPointActor({
     return { error: input.error }
   }
 
-  const { point, snapTarget, rustContext, kclManager, sketchId } = input
+  const { point, snapTarget, rustContext, executingEditor, sketchId } = input
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
   const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -663,7 +663,7 @@ export async function createArcActor({
         startPoint: Coords2d
         throughPoint: Coords2d
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -674,9 +674,10 @@ export async function createArcActor({
     return { error: input.error }
   }
 
-  const { startPoint, throughPoint, rustContext, kclManager, sketchId } = input
+  const { startPoint, throughPoint, rustContext, executingEditor, sketchId } =
+    input
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
   const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -732,7 +733,7 @@ export async function finalizeArcActor({
         endPoint: Coords2d
         endSnapTarget?: SnapTarget
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -759,7 +760,7 @@ export async function finalizeArcActor({
     endPoint,
     endSnapTarget,
     rustContext,
-    kclManager,
+    executingEditor,
     sketchId,
   } = input
 
@@ -770,7 +771,7 @@ export async function finalizeArcActor({
     endPoint,
     throughPoint,
     rustContext,
-    kclManager,
+    executingEditor,
     sketchId,
     settings,
   })

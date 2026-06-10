@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   getSelectedSketchTarget,
   isCursorInFunctionDefinition,
@@ -134,7 +134,7 @@ const createToolbarCommand = ({
 
 // Temporary adapter between registry commands and the pre-registry modeling
 // runtime. Command submissions carry command bar context in `input`, including
-// the active KclManager while we wait for KclManager/modelingMachine to become
+// the active ExecutingEditor while we wait for ExecutingEditor/modelingMachine to become
 // registry services. Once those services exist, toolbar commands should consume
 // them directly and this helper layer can go away.
 function getCommandBarContext(input: unknown): CommandBarContext | undefined {
@@ -147,8 +147,8 @@ function getCommandBarContext(input: unknown): CommandBarContext | undefined {
     : undefined
 }
 
-function getKclManager(input: unknown): KclManager | undefined {
-  return getCommandBarContext(input)?.kclManager
+function getExecutingEditor(input: unknown): ExecutingEditor | undefined {
+  return getCommandBarContext(input)?.executingEditor
 }
 
 function getUserFeatures(input: unknown): CommandBarContext['userFeatures'] {
@@ -163,20 +163,20 @@ function hasSketchExperimentalFeatures(input: unknown): boolean {
 }
 
 function getModelingState(input: unknown): ModelingState | undefined {
-  return getKclManager(input)?.modelingState ?? undefined
+  return getExecutingEditor(input)?.modelingState ?? undefined
 }
 
 function sendModelingEvent(
   input: unknown,
   event: ModelingMachineEvent
 ): true | Error {
-  const kclManager = getKclManager(input)
+  const executingEditor = getExecutingEditor(input)
 
-  if (!kclManager?.modelingState) {
+  if (!executingEditor?.modelingState) {
     return new Error('No active modeling context')
   }
 
-  kclManager.sendModelingEvent(event)
+  executingEditor.sendModelingEvent(event)
   return true
 }
 
@@ -261,22 +261,22 @@ function createSketchSolveActionCommand({
 }
 
 async function enterSketch(input: unknown) {
-  const kclManager = getKclManager(input)
-  const state = kclManager?.modelingState
-  if (!kclManager || !state) {
+  const executingEditor = getExecutingEditor(input)
+  const state = executingEditor?.modelingState
+  if (!executingEditor || !state) {
     return new Error('No active modeling context')
   }
 
-  const wasmInstance = await kclManager.wasmInstancePromise
+  const wasmInstance = await executingEditor.wasmInstancePromise
   const cursorSelection = state.context.selectionRanges.graphSelections[0]
   const sketchPathId = isCursorInFunctionDefinition(
-    kclManager.ast,
+    executingEditor.ast,
     cursorSelection,
     wasmInstance
   )
     ? false
     : isCursorInSketchCommandRange(
-        kclManager.artifactGraph,
+        executingEditor.artifactGraph,
         state.context.selectionRanges
       )
   const isSketchBlock = isSketchBlockSelected(state.context.selectionRanges)
@@ -284,7 +284,7 @@ async function enterSketch(input: unknown) {
     state.context.selectionRanges
   )
 
-  if ((kclManager.editorView.hasFocus && sketchPathId) || isSketchBlock) {
+  if ((executingEditor.editorView.hasFocus && sketchPathId) || isSketchBlock) {
     return sendModelingEvent(input, { type: 'Enter sketch' })
   }
 
@@ -310,7 +310,7 @@ async function enterSketch(input: unknown) {
   void selectSketchPlane(
     selectedSketchTarget,
     state.context.store.useSketchSolveMode?.current,
-    kclManager
+    executingEditor
   )
 
   return result

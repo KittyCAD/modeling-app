@@ -24,11 +24,11 @@ export function KclInput(props: {
   style?: React.CSSProperties
 }) {
   const { settings: settingsSystem } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const settings = settingsSystem.useSettings()
-  const wasmInstance = use(kclManager.rustContext.wasmInstancePromise)
+  const wasmInstance = use(executingEditor.rustContext.wasmInstancePromise)
 
-  const variables = kclManager.variablesSignal.value
+  const variables = executingEditor.variablesSignal.value
 
   const containerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<EditorView | null>(null)

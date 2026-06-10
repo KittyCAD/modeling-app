@@ -40,7 +40,7 @@ export const AllSettingsFields = forwardRef(
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
     const { settings, layout, systemIOActor } = useApp()
-    const { kclManager } = useSingletons()
+    const { executingEditor } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
@@ -67,7 +67,7 @@ export const AllSettingsFields = forwardRef(
       const props = {
         onboardingStatus: onboardingStartPath,
         navigate,
-        kclManager,
+        executingEditor,
         systemIOActor,
         settingsActor: settings.actor,
         executingPath,

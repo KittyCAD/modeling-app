@@ -1,6 +1,6 @@
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type RustContext from '@src/lib/rustContext'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
@@ -15,7 +15,7 @@ export const machine = setup({
     input: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
-      kclManager: KclManager
+      executingEditor: ExecutingEditor
       sketchId: number
       sceneGraphDelta?: SceneGraphDelta
     },

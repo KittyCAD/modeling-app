@@ -254,7 +254,7 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
-        kclManager: { sceneInfra: { modelingSend } },
+        executingEditor: { sceneInfra: { modelingSend } },
         selectionRanges: {
           graphSelections: [
             {
@@ -299,7 +299,7 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
-        kclManager: { sceneInfra: { modelingSend } },
+        executingEditor: { sceneInfra: { modelingSend } },
         selectionRanges: {
           graphSelections: [],
           otherSelections: [{ id: 'default-plane-xy', name: 'XY' }],

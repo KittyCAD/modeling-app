@@ -7,7 +7,7 @@ import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 
 export default function CubeGizmo() {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
 
@@ -32,14 +32,14 @@ export default function CubeGizmo() {
         canvasRef.current,
         initialIsPerspectiveRef.current,
         initialResolvedThemeRef.current,
-        kclManager.sceneInfra
+        executingEditor.sceneInfra
       )
     }
     return () => {
       renderer.current?.dispose()
       renderer.current = null
     }
-  }, [kclManager.sceneInfra])
+  }, [executingEditor.sceneInfra])
 
   // perspective changed
   // useEffect(() => {

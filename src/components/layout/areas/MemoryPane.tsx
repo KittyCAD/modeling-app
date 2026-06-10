@@ -19,8 +19,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { Suspense, use } from 'react'
 
 export const MemoryPaneMenu = () => {
-  const { kclManager } = useSingletons()
-  const variables = kclManager.variablesSignal.value
+  const { executingEditor } = useSingletons()
+  const variables = executingEditor.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
@@ -73,11 +73,11 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 }
 
 export const MemoryPaneContents = () => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const theme = useResolvedTheme()
-  const variables = kclManager.variablesSignal.value
+  const variables = executingEditor.variablesSignal.value
   const { state } = useModelingContext()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const ProcessedMemory = processMemory(variables, wasmInstance)
 
   return (

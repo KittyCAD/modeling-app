@@ -4,7 +4,7 @@ import type {
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { toggleSketchExtension } from '@src/editor/plugins/sketch'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   baseUnitToNumericSuffix,
   distanceBetweenPoint2DExpr,
@@ -71,7 +71,7 @@ const DEFAULT_DISTANCE_FALLBACK = 5
 const constraintToolNameSet = new Set<string>(constraintToolNames)
 
 type SketchSolveInput = {
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   initialSketchSolvePlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchId: number
   initialSceneGraphDelta: SceneGraphDelta
@@ -307,7 +307,7 @@ async function addAxisDistanceConstraint(
       ? providedDistance
       : DEFAULT_DISTANCE_FALLBACK
   const units = baseUnitToNumericSuffix(
-    context.kclManager.fileSettings.defaultLengthUnit
+    context.executingEditor.fileSettings.defaultLengthUnit
   )
   // Calculate distance between two points if both are point segments
   if (currentSelections.length === 2 && providedDistance === undefined) {
@@ -343,7 +343,7 @@ async function addAxisDistanceConstraint(
         is_literal: true,
       },
     },
-    jsAppSettings(context.kclManager.systemDeps.settings),
+    jsAppSettings(context.executingEditor.systemDeps.settings),
     true
   )
   sendToolbarConstraintOutcome(self, result, keepSelection)
@@ -362,7 +362,7 @@ function getPreparedApplyForConstraintTool(
     objects,
     {
       defaultLengthUnit: baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+        context.executingEditor.fileSettings.defaultLengthUnit ?? 'mm'
       ),
     }
   )
@@ -429,11 +429,11 @@ export const sketchSolveMachine = setup({
           objects:
             context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
           defaultLengthUnit: baseUnitToNumericSuffix(
-            context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+            context.executingEditor.fileSettings.defaultLengthUnit ?? 'mm'
           ),
           rustContext: context.rustContext,
           sketchId: context.sketchId,
-          settings: jsAppSettings(context.kclManager.systemDeps.settings),
+          settings: jsAppSettings(context.executingEditor.systemDeps.settings),
           equipConstraintTool: (nextToolName) => {
             sendToActorIfActive(self, {
               type: 'equip tool',
@@ -513,15 +513,15 @@ export const sketchSolveMachine = setup({
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       sketchExecOutcome: {
         sourceDelta: {
-          text: input.kclManager.code,
+          text: input.executingEditor.code,
         },
         sceneGraphDelta: input.initialSceneGraphDelta,
       },
       sketchId: input?.sketchId || 0,
-      sceneInfra: input.kclManager.sceneInfra,
-      sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
-      rustContext: input.kclManager.rustContext,
-      kclManager: input.kclManager,
+      sceneInfra: input.executingEditor.sceneInfra,
+      sceneEntitiesManager: input.executingEditor.sceneEntitiesManager,
+      rustContext: input.executingEditor.rustContext,
+      executingEditor: input.executingEditor,
       showNonVisualConstraints: false,
     }
   },
@@ -588,7 +588,7 @@ export const sketchSolveMachine = setup({
               .filter(Boolean)
             let distance = DEFAULT_DISTANCE_FALLBACK
             const units = baseUnitToNumericSuffix(
-              context.kclManager.fileSettings.defaultLengthUnit
+              context.executingEditor.fileSettings.defaultLengthUnit
             )
 
             if (currentSelections.length === 2) {
@@ -617,7 +617,7 @@ export const sketchSolveMachine = setup({
                     0,
                     context.sketchId,
                     angleConstraint,
-                    jsAppSettings(context.kclManager.systemDeps.settings),
+                    jsAppSettings(context.executingEditor.systemDeps.settings),
                     true
                   )
                   sendToolbarConstraintOutcome(self, result, keepSelection)
@@ -640,7 +640,7 @@ export const sketchSolveMachine = setup({
                 const distanceResult = distanceBetweenPoint2DExpr(
                   point1,
                   point2,
-                  await context.kclManager.wasmInstancePromise
+                  await context.executingEditor.wasmInstancePromise
                 )
                 if (!(distanceResult instanceof Error)) {
                   distance = roundOff(distanceResult.distance)
@@ -679,7 +679,7 @@ export const sketchSolveMachine = setup({
                   const distanceResult = distanceBetweenPoint2DExpr(
                     point1,
                     point2,
-                    await context.kclManager.wasmInstancePromise
+                    await context.executingEditor.wasmInstancePromise
                   )
                   if (!(distanceResult instanceof Error)) {
                     distance = roundOff(distanceResult.distance)
@@ -697,7 +697,7 @@ export const sketchSolveMachine = setup({
                   0,
                   context.sketchId,
                   constraint,
-                  jsAppSettings(context.kclManager.systemDeps.settings),
+                  jsAppSettings(context.executingEditor.systemDeps.settings),
                   true
                 )
                 sendToolbarConstraintOutcome(self, result, keepSelection)
@@ -724,7 +724,7 @@ export const sketchSolveMachine = setup({
                   const distanceResult = distanceBetweenPoint2DExpr(
                     point1,
                     point2,
-                    await context.kclManager.wasmInstancePromise
+                    await context.executingEditor.wasmInstancePromise
                   )
                   if (!(distanceResult instanceof Error)) {
                     distance = roundOff(distanceResult.distance)
@@ -760,7 +760,7 @@ export const sketchSolveMachine = setup({
                   is_literal: true,
                 },
               },
-              jsAppSettings(context.kclManager.systemDeps.settings),
+              jsAppSettings(context.executingEditor.systemDeps.settings),
               true
             )
             sendToolbarConstraintOutcome(self, result, keepSelection)
@@ -897,7 +897,7 @@ export const sketchSolveMachine = setup({
                 0,
                 context.sketchId,
                 segmentsToEdit,
-                jsAppSettings(context.kclManager.systemDeps.settings),
+                jsAppSettings(context.executingEditor.systemDeps.settings),
                 true,
                 []
               )
@@ -971,7 +971,7 @@ export const sketchSolveMachine = setup({
               context.sketchId,
               constraintIds,
               segmentIds,
-              jsAppSettings(context.kclManager.systemDeps.settings),
+              jsAppSettings(context.executingEditor.systemDeps.settings),
               true
             )
             .catch((err) => {
@@ -1140,7 +1140,9 @@ export const sketchSolveMachine = setup({
             ({ event, context, self }) => {
               // Update code editor if new source was returned
               if (event.output?.kclSource) {
-                context.kclManager.updateCodeEditor(event.output.kclSource.text)
+                context.executingEditor.updateCodeEditor(
+                  event.output.kclSource.text
+                )
               }
 
               // Scene cleanup will run on entry of final exiting state
@@ -1191,16 +1193,20 @@ export const sketchSolveMachine = setup({
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
     ({ context, self }) =>
-      toggleSketchExtension(context.kclManager.editorView, true, (ranges) => {
-        sendToActorIfActive(self, {
-          type: 'update selected ids from code selection',
-          data: { ranges },
-        })
-      }),
+      toggleSketchExtension(
+        context.executingEditor.editorView,
+        true,
+        (ranges) => {
+          sendToActorIfActive(self, {
+            type: 'update selected ids from code selection',
+            data: { ranges },
+          })
+        }
+      ),
   ],
 
   exit: [
     ({ context }) =>
-      toggleSketchExtension(context.kclManager.editorView, false),
+      toggleSketchExtension(context.executingEditor.editorView, false),
   ],
 })

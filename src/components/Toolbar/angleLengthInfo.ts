@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { isToolTip } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getTransformInfos } from '@src/lang/std/sketchcombos'
@@ -11,12 +11,12 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -25,9 +25,12 @@ export function angleLengthInfo({
     }
   | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, wasmInstance, [
-      'CallExpressionKw',
-    ])
+    getNodeFromPath<Expr>(
+      executingEditor.ast,
+      codeRef.pathToNode,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
   )
   const _err1 = nodes.find(err)
   if (_err1 instanceof Error) return _err1
@@ -42,7 +45,7 @@ export function angleLengthInfo({
 
   const transforms = getTransformInfos(
     selectionRanges,
-    kclManager.ast,
+    executingEditor.ast,
     angleOrLength,
     wasmInstance
   )

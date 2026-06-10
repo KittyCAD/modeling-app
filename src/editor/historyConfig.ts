@@ -12,7 +12,7 @@ import type { Extension } from '@codemirror/state'
 const CODEMIRROR_HISTORY_HEADROOM = 20
 
 // Conservative bootstrap value used before the wasm-backed checkpoint limit is
-// available. KclManager reconfigures both histories once wasm initialization
+// available. ExecutingEditor reconfigures both histories once wasm initialization
 // completes.
 // Source of truth for this is MAX_SKETCH_CHECKPOINTS in frontend.rs
 export const FALLBACK_SKETCH_CHECKPOINT_LIMIT = 100

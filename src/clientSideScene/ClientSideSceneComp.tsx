@@ -57,7 +57,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   const { state } = useModelingContext()
   const {
-    kclManager: { sceneInfra },
+    executingEditor: { sceneInfra },
   } = useSingletons()
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export const ClientSideScene = ({
   sketchSolveStreamDimming?: number
 }) => {
   const {
-    kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
+    executingEditor: { sceneEntitiesManager, sceneInfra, engineCommandManager },
   } = useSingletons()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
@@ -338,8 +338,8 @@ const Overlay = ({
   overlayIndex: number
   pathToNodeString: string
 }) => {
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const { context, send, state } = useModelingContext()
 
   // Simple check directly from localStorage
@@ -352,7 +352,7 @@ const Overlay = ({
   // than what's available in the AST at the moment of query.
   // It eventually settles on being updated.
   const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
-    kclManager.ast,
+    executingEditor.ast,
     overlay.pathToNode,
     wasmInstance,
     ['CallExpressionKw']
@@ -367,7 +367,7 @@ const Overlay = ({
 
   const constraints = getConstraintInfoKw(
     callExpression,
-    kclManager.codeSignal.value,
+    executingEditor.codeSignal.value,
     overlay.pathToNode,
     overlay.filterValue
   )
@@ -475,11 +475,11 @@ const SegmentMenu = ({
   pathToNode: PathToNode
   stdLibFnName: string
 }) => {
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const { send } = useModelingContext()
   const dependentSourceRanges = findUsesOfTagInPipe(
-    kclManager.ast,
+    executingEditor.ast,
     pathToNode,
     wasmInstance
   )
@@ -541,8 +541,8 @@ const ConstraintSymbol = ({
   verticalPosition: 'top' | 'bottom'
 }) => {
   const { commands } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -626,9 +626,9 @@ const ConstraintSymbol = ({
   const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance),
+    () => getNodeFromPath<Expr>(executingEditor.ast, pathToNode, wasmInstance),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [kclManager.ast, pathToNode]
+    [executingEditor.ast, pathToNode]
   )
   if (err(_node)) return
   const node = _node.node
@@ -654,10 +654,10 @@ const ConstraintSymbol = ({
               : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
-          kclManager.setHighlightRange([range])
+          executingEditor.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          kclManager.setHighlightRange([defaultSourceRange()])
+          executingEditor.setHighlightRange([defaultSourceRange()])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
@@ -678,10 +678,10 @@ const ConstraintSymbol = ({
               },
             })
           } else if (isConstrained) {
-            const wasmInstance = await kclManager.wasmInstancePromise
+            const wasmInstance = await executingEditor.wasmInstancePromise
             try {
               const pResult = parse(
-                recast(kclManager.ast, wasmInstance),
+                recast(executingEditor.ast, wasmInstance),
                 wasmInstance
               )
               if (trap(pResult) || !resultIsOk(pResult))
@@ -701,8 +701,8 @@ const ConstraintSymbol = ({
               const transform = removeSingleConstraintInfo(
                 shallowPath,
                 argPosition,
-                kclManager.ast,
-                kclManager.variables,
+                executingEditor.ast,
+                executingEditor.variables,
                 removeSingleConstraint,
                 transformAstSketchLines,
                 wasmInstance
@@ -711,12 +711,12 @@ const ConstraintSymbol = ({
               if (!transform) return
               const { modifiedAst } = transform
 
-              await kclManager.updateAst(modifiedAst, true)
+              await executingEditor.updateAst(modifiedAst, true)
 
               // Code editor will be updated in the modelingMachine.
               const newCode = recast(modifiedAst, wasmInstance)
               if (err(newCode)) return
-              kclManager.updateCodeEditor(newCode)
+              executingEditor.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }
@@ -796,7 +796,7 @@ const throttled = (sceneInfra: SceneInfra) =>
 export const CamDebugSettings = () => {
   const { commands } = useApp()
   const {
-    kclManager: { sceneInfra },
+    executingEditor: { sceneInfra },
   } = useSingletons()
   const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
     sceneInfra.camControls.reactCameraProperties

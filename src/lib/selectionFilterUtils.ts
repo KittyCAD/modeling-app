@@ -5,7 +5,7 @@
 
 import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -24,14 +24,14 @@ export const defaultSelectionFilter: EntityType[] = [
 /** TODO: This function is not synchronous but is currently treated as such */
 export function setSelectionFilterToDefault({
   engineCommandManager,
-  kclManager,
+  executingEditor,
   sceneEntitiesManager,
   selectionsToRestore,
   handleSelectionBatchFn,
   wasmInstance,
 }: {
   engineCommandManager: ConnectionManager
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sceneEntitiesManager: SceneEntities
   selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
@@ -40,7 +40,7 @@ export function setSelectionFilterToDefault({
   setSelectionFilter({
     filter: defaultSelectionFilter,
     engineCommandManager,
-    kclManager,
+    executingEditor,
     sceneEntitiesManager,
     selectionsToRestore,
     handleSelectionBatchFn,
@@ -52,7 +52,7 @@ export function setSelectionFilterToDefault({
 export function setSelectionFilter({
   filter,
   engineCommandManager,
-  kclManager,
+  executingEditor,
   sceneEntitiesManager,
   selectionsToRestore,
   handleSelectionBatchFn,
@@ -60,21 +60,21 @@ export function setSelectionFilter({
 }: {
   filter: EntityType[]
   engineCommandManager: ConnectionManager
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sceneEntitiesManager: SceneEntities
   selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
   wasmInstance: ModuleType
 }) {
-  kclManager.selectionFilter.value = filter
+  executingEditor.selectionFilter.value = filter
 
   const { engineEvents } =
     selectionsToRestore && handleSelectionBatchFn
       ? handleSelectionBatchFn({
           selections: selectionsToRestore,
-          artifactGraph: kclManager.artifactGraph,
-          code: kclManager.code,
-          ast: kclManager.ast,
+          artifactGraph: executingEditor.artifactGraph,
+          code: executingEditor.code,
+          ast: executingEditor.ast,
           systemDeps: {
             sceneEntitiesManager,
             engineCommandManager,

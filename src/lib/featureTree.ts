@@ -1,6 +1,6 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   deleteSelectionPromise,
@@ -106,7 +106,7 @@ export function sendDeleteCommand(input: {
   artifact: Artifact | undefined
   targetSourceRange: SourceRange | undefined
   systemDeps: {
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
   }
@@ -119,7 +119,7 @@ export function sendDeleteCommand(input: {
     }
 
     const pathToNode = getNodePathFromSourceRange(
-      input.systemDeps.kclManager.ast,
+      input.systemDeps.executingEditor.ast,
       targetSourceRange
     )
     const selection = {
@@ -164,21 +164,23 @@ export function prepareEditCommand(
 export function sendSelectionEvent(
   input: {
     sourceRange: SourceRange
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     modelingSend: ActorRefFrom<typeof modelingMachine>['send']
   },
   convertRangeToUtf16 = false
 ) {
   const artifact =
-    getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
-    undefined
+    getArtifactFromRange(
+      input.sourceRange,
+      input.executingEditor.artifactGraph
+    ) ?? undefined
 
   const selection = {
     codeRef: codeRefFromRange(
       convertRangeToUtf16
-        ? sourceRangeToUtf16(input.sourceRange, input.kclManager.code)
+        ? sourceRangeToUtf16(input.sourceRange, input.executingEditor.code)
         : input.sourceRange,
-      input.kclManager.ast
+      input.executingEditor.ast
     ),
     artifact,
   }

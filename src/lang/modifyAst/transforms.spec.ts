@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   addAppearance,
   addClone,
@@ -37,7 +37,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -52,10 +52,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -282,14 +282,14 @@ extrude001 = extrude([region001, region002], length = 1)`
     async function runAddTranslateTest(
       code: string,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addTranslate({
         ast,
         artifactGraph,
@@ -319,7 +319,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddTranslateTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -338,7 +338,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddTranslateTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -377,7 +377,7 @@ split001 = split(extrude001, tools = extrude002)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const splitOutput = [...artifactGraph.values()].find(
         (artifact) =>
@@ -417,14 +417,14 @@ split001 = split(extrude001, tools = extrude002)`
       code: string,
       nodeToEdit: PathToNode,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addTranslate({
         ast,
         artifactGraph,
@@ -471,7 +471,7 @@ translate(
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -508,7 +508,7 @@ translate(
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -519,14 +519,14 @@ translate(
     async function runAddScaleTest(
       code: string,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addScale({
         ast,
         artifactGraph,
@@ -556,7 +556,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddScaleTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -575,7 +575,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddScaleTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -595,7 +595,7 @@ scale(extrude001, factor = 2)`
       } = await getAstAndSketchSelections(
         cylinderCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const result = addScale({
         ast,
@@ -622,7 +622,7 @@ scale(extrude001, factor = 2)`
       } = await getAstAndSketchSelections(
         scaledCylinderCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const nodeToEdit: PathToNode = [
         ['body', ''],
@@ -654,14 +654,14 @@ scale(extrude001, factor = 2)`
       code: string,
       nodeToEdit: PathToNode,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addScale({
         ast,
         artifactGraph,
@@ -708,7 +708,7 @@ scale(
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -745,7 +745,7 @@ scale(
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -758,14 +758,14 @@ scale(
     async function runAddRotateTest(
       code: string,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addRotate({
         ast,
         artifactGraph,
@@ -795,7 +795,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddRotateTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -814,7 +814,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddRotateTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -824,14 +824,14 @@ extrude001 = extrude(profile001, length = 1)`
       code: string,
       nodeToEdit: PathToNode,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addRotate({
         ast,
         artifactGraph,
@@ -878,7 +878,7 @@ rotate(
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -915,7 +915,7 @@ rotate(
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -928,14 +928,14 @@ rotate(
     async function runAddCloneTest(
       code: string,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addClone({
         ast,
         artifactGraph,
@@ -956,7 +956,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddCloneTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -967,14 +967,14 @@ extrude001 = extrude(profile001, length = 1)`
     async function runAddAppearanceTest(
       code: string,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addAppearance({
         ast,
         artifactGraph,
@@ -995,7 +995,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddAppearanceTest(
         box,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(box + '\n' + expectedNewLine)
@@ -1009,7 +1009,7 @@ extrude001 = extrude(profile001, length = 1)`
       const newCode = await runAddAppearanceTest(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
@@ -1023,7 +1023,7 @@ extrude001 = extrude(profile001, length = 1)`
       } = await getAstAndSketchSelections(
         box,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const result = addAppearance({
         ast,
@@ -1064,14 +1064,14 @@ appearance(
       code: string,
       nodeToEdit: PathToNode,
       instance: ModuleType,
-      kclManager: KclManager,
+      executingEditor: ExecutingEditor,
       rustContext: RustContext
     ) {
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(code, instance, kclManager)
+      } = await getAstAndSketchSelections(code, instance, executingEditor)
       const result = addAppearance({
         ast,
         artifactGraph,
@@ -1103,7 +1103,7 @@ appearance(extrude001, color = "#00FF00")`
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
@@ -1129,7 +1129,7 @@ appearance(extrude001, color = "#00FF00")`
         code,
         nodeToEdit,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)

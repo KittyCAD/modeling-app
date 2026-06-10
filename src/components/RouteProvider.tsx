@@ -16,7 +16,7 @@ export const RouteProviderContext = createContext({})
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
   const { settings, project } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()
   const loadedProject = project?.projectIORefSignal.value
@@ -57,8 +57,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
 
       // Earlier method, this doesn't hurt but it's not needed anymore..
-      if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
-        kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+      if (executingEditor.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+        executingEditor.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
         return
       }
 
@@ -66,18 +66,19 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // If the changes are caused by Zookeeper, ignore. The files are bulk
       // created, but because they are created one-by-one on disk, the system
       // races between reading and execution.
-      // The mlEphantManagerMachine will set a special exception in kclManager.
+      // The mlEphantManagerMachine will set a special exception in executingEditor.
       // Why not pull the actor context in here? Because this RouteProvider
       // is very high in the context tree, higher than mlEphant's.
-      if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem) return
+      if (executingEditor.mlEphantManagerMachineBulkManipulatingFileSystem)
+        return
 
       // We only react on files other than the currently-executing one here
       // because the currently-executing one is handled with its own watcher in
-      // KclManager. In future, all files and folders will watch themselves.
+      // ExecutingEditor. In future, all files and folders will watch themselves.
       if (loadedFile?.path !== path) {
         const fileNameWithExtension = getStringAfterLastSeparator(path)
         // Is the file from the change event type imported into the currently opened file
-        const isImportedInCurrentFile = kclManager.ast.body.some(
+        const isImportedInCurrentFile = executingEditor.ast.body.some(
           (n) =>
             n.type === 'ImportStatement' &&
             ((n.path.type === 'Kcl' &&
@@ -87,7 +88,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         )
 
         const isInExecStateFilenames = Object.values(
-          kclManager.execState.filenames
+          executingEditor.execState.filenames
         ).some((filename) => {
           if (
             filename &&
@@ -101,12 +102,12 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         })
         if (isImportedInCurrentFile || isInExecStateFilenames) {
           // Re execute the file you are in because an imported file was changed
-          await kclManager.executeAst()
+          await executingEditor.executeAst()
         }
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
-    kclManager.livePathsToWatch.value
+    executingEditor.livePathsToWatch.value
   )
 
   useFileSystemWatcher(

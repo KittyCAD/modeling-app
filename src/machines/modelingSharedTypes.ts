@@ -1,7 +1,7 @@
 import type { EntityType, Point2d } from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import type { PathToNode } from '@src/lang/wasm'
@@ -229,7 +229,7 @@ export type MoveDesc = { line: number; snippet: string }
 
 /** Input into the Modeling machine consists of its external dependencies */
 export type ModelingMachineInput = {
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   machineManager: MachineManager

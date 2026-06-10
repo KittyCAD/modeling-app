@@ -45,11 +45,11 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    editorParent.current?.appendChild(kclManager.editorView.dom)
-  }, [kclManager.editorView.dom])
+    editorParent.current?.appendChild(executingEditor.editorView.dom)
+  }, [executingEditor.editorView.dom])
 
   return (
     <div className="relative">
@@ -62,8 +62,10 @@ export const KclEditorPaneContents = () => {
   )
 }
 
-function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
-  if (!kclManager.codeSignal.value) {
+function copyKclCodeToClipboard(
+  executingEditor: Singletons['executingEditor']
+) {
+  if (!executingEditor.codeSignal.value) {
     toast.error('No code available to copy.')
     return
   }
@@ -74,7 +76,7 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
   }
 
   navigator.clipboard
-    .writeText(kclManager.codeSignal.value)
+    .writeText(executingEditor.codeSignal.value)
     .then(() => toast.success(`Copied current file's code to clipboard.`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
@@ -83,11 +85,11 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const platform = usePlatform()
   const settingsActor = settings.actor
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
-    useConvertToVariable(kclManager)
+    useConvertToVariable(executingEditor)
 
   return (
     <HeaderMenu>
@@ -95,7 +97,7 @@ export const KclEditorMenu = () => {
         <button
           type="button"
           onClick={() => {
-            kclManager.format().catch(reportRejection)
+            executingEditor.format().catch(reportRejection)
           }}
           className={styles.button}
         >
@@ -108,7 +110,7 @@ export const KclEditorMenu = () => {
       <Menu.Item>
         <button
           type="button"
-          onClick={() => copyKclCodeToClipboard(kclManager)}
+          onClick={() => copyKclCodeToClipboard(executingEditor)}
           className={styles.button}
         >
           <span>Copy code</span>

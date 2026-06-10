@@ -6,7 +6,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -77,7 +77,7 @@ export const machine = setup({
     context: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
-      kclManager: KclManager
+      executingEditor: ExecutingEditor
       sketchId: number
     },
     events: {} as ToolEvents,
@@ -178,18 +178,23 @@ export const machine = setup({
           pointData: [number, number]
           snapTarget?: SnapTarget
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }) => {
-        const { pointData, snapTarget, rustContext, kclManager, sketchId } =
-          input
+        const {
+          pointData,
+          snapTarget,
+          rustContext,
+          executingEditor,
+          sketchId,
+        } = input
         const [x, y] = pointData
 
         try {
           // Get the current unit from file settings, defaulting to mm if not set
           const units = baseUnitToNumericSuffix(
-            kclManager.fileSettings.defaultLengthUnit
+            executingEditor.fileSettings.defaultLengthUnit
           )
           const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -263,7 +268,7 @@ export const machine = setup({
   context: ({ input }) => ({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId,
   }),
   id: TOOL_ID,
@@ -298,7 +303,7 @@ export const machine = setup({
             pointData: event.data,
             snapTarget: event.snapTarget,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },

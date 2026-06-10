@@ -4,7 +4,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type RustContext from '@src/lib/rustContext'
 import {
   isSketchSolveErrorOutput,
@@ -62,7 +62,7 @@ export type RectToolEvent =
 type RectToolContext = {
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   firstPointId?: number
   draft?: RectDraftIds
@@ -248,7 +248,7 @@ export const machine = setup({
                   isEditInProgress = true
                   result = await updateDraftRectangleAngled({
                     rustContext: context.rustContext,
-                    kclManager: context.kclManager,
+                    executingEditor: context.executingEditor,
                     sketchId: context.sketchId,
                     draft: context.draft,
                     p1: context.origin,
@@ -291,7 +291,7 @@ export const machine = setup({
 
                   result = await updateDraftRectangleAligned({
                     rustContext: context.rustContext,
-                    kclManager: context.kclManager,
+                    executingEditor: context.executingEditor,
                     sketchId: context.sketchId,
                     draft: context.draft,
                     mode: context.rectOriginMode,
@@ -423,7 +423,7 @@ export const machine = setup({
               isEditInProgress = true
               const result = await updateDraftRectangleAngled({
                 rustContext: context.rustContext,
-                kclManager: context.kclManager,
+                executingEditor: context.executingEditor,
                 sketchId: context.sketchId,
                 draft: context.draft,
                 p1: context.origin,
@@ -548,7 +548,7 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
           origin: [number, number]
           snapTarget?: SnapTarget
@@ -557,7 +557,7 @@ export const machine = setup({
       }) => {
         const {
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId,
           rectOriginMode,
           snapTarget,
@@ -566,7 +566,7 @@ export const machine = setup({
         try {
           const result = await createDraftRectangle({
             rustContext,
-            kclManager,
+            executingEditor,
             sketchId,
             mode: rectOriginMode,
             origin: input.origin,
@@ -590,7 +590,7 @@ export const machine = setup({
   context: ({ input }) => ({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId,
     origin: [0, 0],
     originSnapTarget: undefined,
@@ -637,7 +637,7 @@ export const machine = setup({
             snapTarget: context.originSnapTarget,
             rectOriginMode: context.rectOriginMode,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },

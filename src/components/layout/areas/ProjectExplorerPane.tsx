@@ -32,8 +32,8 @@ import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project, systemIOActor, layout } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { executingEditor } = useSingletons()
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
   const projectRef = useRef(project?.projectIORefSignal)

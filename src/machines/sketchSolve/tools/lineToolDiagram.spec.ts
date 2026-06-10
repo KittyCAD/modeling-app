@@ -10,7 +10,7 @@ import {
 } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import {
   createLineApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -48,7 +48,7 @@ function createTestMachine(mockActors?: {
 }) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
-  const kclManager = createMockKclManager()
+  const executingEditor = createMockExecutingEditor()
 
   // Create a machine with mocked actors
   const testMachine = machine.provide({
@@ -84,20 +84,20 @@ function createTestMachine(mockActors?: {
     machine: testMachine,
     sceneInfra,
     rustContext,
-    kclManager,
+    executingEditor,
   }
 }
 
 describe('lineTool - XState', () => {
   describe('when initialized', () => {
     it('should have default context values', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -110,13 +110,13 @@ describe('lineTool - XState', () => {
     })
 
     it('should call setCallbacks on entry to ready for user click', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -128,13 +128,13 @@ describe('lineTool - XState', () => {
 
   describe('escape key handling', () => {
     it('should transition to unequipping when escape is pressed in ready for user click', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -148,13 +148,13 @@ describe('lineTool - XState', () => {
 
   describe('unequip handling', () => {
     it('should transition to unequipping when unequip event is sent', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -168,13 +168,13 @@ describe('lineTool - XState', () => {
 
   describe('adding points', () => {
     it('should transition to Adding point when add point event is sent', () => {
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine()
       const actor = createActor(machine, {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -189,7 +189,7 @@ describe('lineTool - XState', () => {
       const pointObj = createPointApiObject({ id: 1, x: 10, y: 20 })
       const lineObj = createLineApiObject({ id: 2, start: 1, end: 1 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' },
@@ -201,7 +201,7 @@ describe('lineTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -220,7 +220,7 @@ describe('lineTool - XState', () => {
       const pointObj = createPointApiObject({ id: 1, x: 10, y: 20 })
       const lineObj = createLineApiObject({ id: 2, start: 1, end: 1 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' },
@@ -232,7 +232,7 @@ describe('lineTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -255,7 +255,7 @@ describe('lineTool - XState', () => {
       const pointObj2 = createPointApiObject({ id: 3, x: 30, y: 40 })
       const lineObj2 = createLineApiObject({ id: 4, start: 1, end: 3 })
 
-      const { machine, sceneInfra, rustContext, kclManager } =
+      const { machine, sceneInfra, rustContext, executingEditor } =
         createTestMachine({
           modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' },
@@ -287,7 +287,7 @@ describe('lineTool - XState', () => {
         input: {
           sceneInfra,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 0,
         },
       }).start()
@@ -380,7 +380,7 @@ describe('lineTool - XState', () => {
 
         const sceneInfra = createMockSceneInfra()
         const rustContext = createMockRustContext()
-        const kclManager = createMockKclManager()
+        const executingEditor = createMockExecutingEditor()
         // eslint-disable-next-line @typescript-eslint/unbound-method
         const addSegmentMock = vi.mocked(rustContext.addSegment)
         // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -414,7 +414,7 @@ describe('lineTool - XState', () => {
           input: {
             sceneInfra,
             rustContext,
-            kclManager,
+            executingEditor,
             sketchId: 0,
           },
         }).start()

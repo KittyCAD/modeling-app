@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import { recast } from '@src/lang/wasm'
@@ -18,7 +18,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -33,10 +33,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -57,7 +57,7 @@ describe('geometry.test.ts', () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         '',
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const result = addHelix({
         ast,
@@ -99,7 +99,7 @@ describe('geometry.test.ts', () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         '',
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const result = addHelix({
         ast,
@@ -148,7 +148,7 @@ describe('geometry.test.ts', () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const result = addHelix({
         ast,
@@ -205,7 +205,7 @@ helix001 = helix(
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         segmentInPath,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = [...artifactGraph.values()].find(
         (n) => n.type === 'segment'
@@ -239,7 +239,7 @@ helix001 = helix(
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = [...artifactGraph.values()].find(
         (n) => n.type === 'segment'
@@ -300,7 +300,7 @@ extrude001 = extrude(region001, length = 100)`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = [...artifactGraph.values()].find(
         (n) => n.type === 'sweepEdge'
@@ -342,7 +342,7 @@ helix001 = helix(
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = [...artifactGraph.values()].find(
         (n) => n.type === 'segment'
@@ -407,7 +407,7 @@ helix001 = helix(
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         cylinderExtrude,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
@@ -444,7 +444,7 @@ helix001 = helix(
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromCylinder,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {

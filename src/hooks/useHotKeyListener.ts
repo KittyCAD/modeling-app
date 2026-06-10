@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 // Kurt's note: codeMirror styling overrides were needed to make this work
 // namely, the cursor needs to still be shown when the editor is not focused
 // search for code-mirror-override in the repo to find the relevant styles
@@ -8,14 +8,14 @@ import type { KclManager } from '@src/lang/KclManager'
 /**
  * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
  */
-export function useHotKeyListener(kclManager: KclManager) {
+export function useHotKeyListener(executingEditor: ExecutingEditor) {
   const keyName = 'Shift'
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) =>
-      event.key === keyName && kclManager.setIsShiftDown(true)
+      event.key === keyName && executingEditor.setIsShiftDown(true)
     const handleKeyUp = (event: KeyboardEvent) =>
-      event.key === keyName && kclManager.setIsShiftDown(false)
-    const resetShiftKey = () => kclManager.setIsShiftDown(false)
+      event.key === keyName && executingEditor.setIsShiftDown(false)
+    const resetShiftKey = () => executingEditor.setIsShiftDown(false)
     const handleVisibilityChange = () => {
       if (document.hidden) {
         resetShiftKey()
@@ -35,5 +35,5 @@ export function useHotKeyListener(kclManager: KclManager) {
       window.removeEventListener('blur', resetShiftKey)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [kclManager])
+  }, [executingEditor])
 }

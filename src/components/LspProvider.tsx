@@ -73,7 +73,7 @@ type LspContext = {
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -124,17 +124,22 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!window.electron && isKclLspReady && kclLspClient && kclManager.code) {
+    if (
+      !window.electron &&
+      isKclLspReady &&
+      kclLspClient &&
+      executingEditor.code
+    ) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
           languageId: 'kcl',
           version: 1,
-          text: kclManager.code,
+          text: executingEditor.code,
         },
       })
     }
-  }, [kclLspClient, isKclLspReady, kclManager.code])
+  }, [kclLspClient, isKclLspReady, executingEditor.code])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -181,14 +186,14 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (kclLSP === null) {
       return
     }
-    kclManager.editorView.dispatch({
+    executingEditor.editorView.dispatch({
       effects: kclLspCompartment.reconfigure(Prec.highest(kclLSP)),
     })
     return () =>
-      kclManager.editorView.dispatch({
+      executingEditor.editorView.dispatch({
         effects: kclLspCompartment.reconfigure(Prec.highest([])),
       })
-  }, [kclLSP, kclManager.editorView])
+  }, [kclLSP, executingEditor.editorView])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
@@ -242,17 +247,17 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
           client: copilotLspClient,
           allowHTMLContent: true,
         },
-        kclManager
+        executingEditor
       )
 
       // New code to just update the CodeMirror extensions directly.
-      kclManager.editorView.dispatch({
+      executingEditor.editorView.dispatch({
         effects: kclAutocompleteCompartment.reconfigure(Prec.highest(lsp)),
       })
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspReady, kclManager])
+  }, [copilotLspClient, isCopilotLspReady, executingEditor])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {
@@ -278,7 +283,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     })
-    kclManager.clearGlobalHistory()
+    executingEditor.clearGlobalHistory()
 
     if (redirect) {
       void navigate(PATHS.HOME)

@@ -6,7 +6,7 @@ import type {
   Operation,
 } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { toUtf16 } from '@src/lang/errors'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
@@ -4174,14 +4174,15 @@ export function onDelete(props: {
 export async function onUnhide(props: {
   hideOperation: HideOperation
   targetArtifact: Artifact
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }) {
   if (props.hideOperation.unlabeledArg === null) {
     return new Error('Missing unlabeled arg for hide operation')
   }
-  let modifiedAst = structuredClone(props.kclManager.ast)
+  let modifiedAst = structuredClone(props.executingEditor.ast)
   const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
-  const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
+  const wasmInstance =
+    await props.executingEditor.rustContext.wasmInstancePromise
   const hideCall = getNodeFromPath<Node<CallExpressionKw>>(
     modifiedAst,
     pathToNode,
@@ -4209,7 +4210,7 @@ export async function onUnhide(props: {
     }
 
     const deleteResult = deleteTermFromUnlabeledArgumentArray(
-      props.kclManager.ast,
+      props.executingEditor.ast,
       pathToNode,
       wasmInstance,
       termToDelete
@@ -4229,7 +4230,7 @@ export async function onUnhide(props: {
   return updateModelingState(
     modifiedAst,
     EXECUTION_TYPE_REAL,
-    props.kclManager,
+    props.executingEditor,
     {
       focusPath: [],
     }

@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
@@ -13,7 +13,9 @@ let initialized = false
  * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
-export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
+export const initializeWindowExceptionHandler = (
+  executingEditor: ExecutingEditor
+) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
@@ -25,14 +27,14 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
           matchGenericWasmRuntimeHeuristicErrorCrash(event)
         ) {
           // do global singleton cleanup
-          kclManager.executeAstCleanUp()
+          executingEditor.executeAstCleanUp()
           toast.error(
             'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
           )
           try {
             const newModulePromise = reloadModule().then(() => getModule())
-            // Refresh kclManager singleton's reference to the current WASM module.
-            kclManager.wasmInstancePromise = newModulePromise
+            // Refresh executingEditor singleton's reference to the current WASM module.
+            executingEditor.wasmInstancePromise = newModulePromise
             await newModulePromise.then((newModule) => newModule.default())
             /**
              * If I do not cache bust, swapping between files when a rust runtime error happens
@@ -43,8 +45,8 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
              * }
              * ^-- this is the block of code that returns which prevents it from running a new execute
              */
-            await kclManager.rustContext?.clearSceneAndBustCache(
-              jsAppSettings(kclManager.rustContext.settingsActor),
+            await executingEditor.rustContext?.clearSceneAndBustCache(
+              jsAppSettings(executingEditor.rustContext.settingsActor),
               undefined
             )
           } catch (e) {

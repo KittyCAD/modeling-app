@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -17,7 +17,7 @@ export function modelingMenuCallbackMostActions({
   filePath,
   authActor,
   commandBarActor,
-  kclManager,
+  executingEditor,
   settingsActor,
 }: {
   settings: SettingsType
@@ -25,7 +25,7 @@ export function modelingMenuCallbackMostActions({
   filePath: string | undefined
   authActor: ActorRefFrom<typeof authMachine>
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   settingsActor: SettingsActorType
 }) {
   // Menu listeners
@@ -158,13 +158,13 @@ export function modelingMenuCallbackMostActions({
         // Cleaner, but can't import 'electron' to this file:
         // webContents.getFocusedWebContents()?.undo()
       } else {
-        kclManager.undo()
+        executingEditor.undo()
       }
     } else if (data.menuLabel === 'Edit.Redo') {
       if (activeFocusIsInput()) {
         document.execCommand('redo')
       } else {
-        kclManager.redo()
+        executingEditor.redo()
       }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
@@ -183,38 +183,38 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'View.Standard views.Right view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Back view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Top view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Left view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Front view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Bottom view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
-      kclManager.sceneInfra.camControls
+      executingEditor.sceneInfra.camControls
         .resetCameraPosition()
         .catch(reportRejection)
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
       // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
-      kclManager.engineCommandManager
+      executingEditor.engineCommandManager
         .sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

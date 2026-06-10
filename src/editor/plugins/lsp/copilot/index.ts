@@ -36,7 +36,7 @@ import type { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/Copil
 import type { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
 import type { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
 import type { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 
 const copilotPluginAnnotation = Annotation.define<boolean>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(true)
@@ -193,7 +193,7 @@ const completionDecoration = StateField.define<CompletionState>({
 export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
   /** This extension must carry around a reference to our manager singleton class, which is injected */
-  private kclManager: KclManager
+  private executingEditor: ExecutingEditor
   private lastPos: number = 0
 
   private queuedUids: string[] = []
@@ -210,15 +210,15 @@ export class CompletionRequester implements PluginValue {
   constructor(
     readonly view: EditorView,
     client: LanguageServerClient,
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
   ) {
     this.client = client
-    this.kclManager = kclManager
+    this.executingEditor = executingEditor
   }
 
   update(viewUpdate: ViewUpdate) {
     // Make sure we are in a state where we can request completions.
-    if (!this.kclManager.copilotEnabled) {
+    if (!this.executingEditor.copilotEnabled) {
       return
     }
 
@@ -576,12 +576,12 @@ export class CompletionRequester implements PluginValue {
 
 export const copilotPlugin = (
   options: LanguageServerOptions,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ): Extension => {
   let plugin: CompletionRequester | null = null
   const completionPlugin = ViewPlugin.define(
     (view) =>
-      (plugin = new CompletionRequester(view, options.client, kclManager))
+      (plugin = new CompletionRequester(view, options.client, executingEditor))
   )
 
   const domHandlers = EditorView.domEventHandlers({

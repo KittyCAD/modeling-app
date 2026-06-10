@@ -84,7 +84,7 @@ type Singletons = ReturnType<typeof useSingletons>
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
 
-type SystemDeps = Pick<Singletons, 'kclManager'> & {
+type SystemDeps = Pick<Singletons, 'executingEditor'> & {
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
@@ -142,9 +142,9 @@ export const FeatureTreePaneContents = memo(() => {
     UNRENDERED_EXECUTE_HOTKEY,
     platform
   )
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const executionService = app.registry.signal(executingEditorService).value
-  const { engineCommandManager, rustContext } = kclManager
+  const { engineCommandManager, rustContext } = executingEditor
   const {
     send: modelingSend,
     state: modelingState,
@@ -152,35 +152,35 @@ export const FeatureTreePaneContents = memo(() => {
   } = useModelingContext()
   const systemDeps: SystemDeps = useMemo(
     () => ({
-      kclManager,
-      sceneInfra: kclManager.sceneInfra,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      executingEditor,
+      sceneInfra: executingEditor.sceneInfra,
+      sceneEntitiesManager: executingEditor.sceneEntitiesManager,
       rustContext,
       commandBarActor: commands.actor,
     }),
-    [kclManager, rustContext, commands.actor]
+    [executingEditor, rustContext, commands.actor]
   )
 
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
-        kclManager,
+        sourceRange: sourceRangeToUtf16(sourceRange, executingEditor.code),
+        executingEditor,
         modelingSend,
       })
     },
-    [modelingSend, kclManager]
+    [modelingSend, executingEditor]
   )
 
   const sketchNoFace = modelingState.matches('Sketch no face')
-  const hasParseErrors = kclManager.hasParseErrors()
+  const hasParseErrors = executingEditor.hasParseErrors()
   const disableModelingForUnrenderedChanges =
     shouldDisableModelingForUnrenderedChanges({
       settings: settingsValues,
       hasEditsSinceLastExecution:
-        kclManager.hasEditsSinceLastExecutionSignal.value,
+        executingEditor.hasEditsSinceLastExecutionSignal.value,
     })
-  const diagnostics = kclManager.diagnosticsSignal.value
+  const diagnostics = executingEditor.diagnosticsSignal.value
   const parseDiagnostics = hasParseErrors
     ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
     : []
@@ -189,7 +189,7 @@ export const FeatureTreePaneContents = memo(() => {
 
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationsByModule = kclManager.errors.reduce(
+  const longestErrorOperationsByModule = executingEditor.errors.reduce(
     (acc, error) => {
       return countOperations(error.operations) > countOperations(acc)
         ? error.operations
@@ -198,21 +198,21 @@ export const FeatureTreePaneContents = memo(() => {
     emptyOperationsByModule()
   )
 
-  const unfilteredOperationsByModule = kclManager.isExecuting
-    ? kclManager.operationsByModule
+  const unfilteredOperationsByModule = executingEditor.isExecuting
+    ? executingEditor.operationsByModule
     : !hasParseErrors
-      ? !kclManager.errors.length
-        ? kclManager.operationsByModule
+      ? !executingEditor.errors.length
+        ? executingEditor.operationsByModule
         : longestErrorOperationsByModule
-      : kclManager.lastSuccessfulOperations
+      : executingEditor.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
   const operationsCode = hasParseErrors
-    ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+    ? executingEditor.lastSuccessfulCode || executingEditor.codeSignal.value
     : disableModelingForUnrenderedChanges
-      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-      : kclManager.codeSignal.value
+      ? executingEditor.lastSuccessfulCode || executingEditor.codeSignal.value
+      : executingEditor.codeSignal.value
   const isReadOnlyFeatureTree =
     hasParseErrors || disableModelingForUnrenderedChanges
 
@@ -224,20 +224,20 @@ export const FeatureTreePaneContents = memo(() => {
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
+  const liveActiveModuleId = executingEditor.liveActiveModuleId
 
   function goToError() {
     const l = layout.signal.value
     if (!isCodePaneOpen(l)) {
       openCodePane(l, layout.set)
     }
-    kclManager.scrollToFirstErrorDiagnosticIfExists()
+    executingEditor.scrollToFirstErrorDiagnosticIfExists()
   }
 
   function applyParseQuickFix() {
     if (!firstParseDiagnostic || !firstParseAction) return
     firstParseAction.apply(
-      kclManager.editorView,
+      executingEditor.editorView,
       firstParseDiagnostic.from,
       firstParseDiagnostic.to
     )
@@ -250,7 +250,7 @@ export const FeatureTreePaneContents = memo(() => {
         className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         <>
-          {kclManager.isExecuting && (
+          {executingEditor.isExecuting && (
             <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
               Updating feature tree...
             </div>
@@ -273,7 +273,7 @@ export const FeatureTreePaneContents = memo(() => {
                   onClick={() => {
                     executionService?.executeCode().catch(reportRejection)
                   }}
-                  disabled={kclManager.isExecuting || !executionService}
+                  disabled={executingEditor.isExecuting || !executionService}
                   className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
                 >
                   <CustomIcon name="play" className="w-5 h-5" />
@@ -752,28 +752,33 @@ const OperationItem = ({
   const app = useApp()
   const navigate = useNavigate()
   const { layout } = app
-  const { kclManager, commandBarActor } = systemDeps
+  const { executingEditor, commandBarActor } = systemDeps
   const useSketchSolveMode =
     modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
-  const diagnostics = kclManager.diagnosticsSignal.value
-  const liveAst = kclManager.astSignal.value
-  const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const diagnostics = executingEditor.diagnosticsSignal.value
+  const liveAst = executingEditor.astSignal.value
+  const ast = executingEditor.hasParseErrors()
+    ? executingEditor.lastGoodAst
+    : liveAst
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const name = getOperationLabel(item)
   const sourceRange =
     'sourceRange' in item &&
-    sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
+    sourceRangeToUtf16(
+      sourceRangeFromRust(item.sourceRange),
+      executingEditor.code
+    )
   const isLiveLatest =
-    kclManager.liveLatestOperationKey === getOperationKey(item)
+    executingEditor.liveLatestOperationKey === getOperationKey(item)
   const isEditorSelected = useMemo(() => {
     if (!sourceRange) {
       return false
     }
 
-    return kclManager.editorState.selection.ranges.some(({ from, to }) => {
+    return executingEditor.editorState.selection.ranges.some(({ from, to }) => {
       return isOverlap(sourceRange, topLevelRange(from, to))
     })
-  }, [kclManager.editorState.selection, sourceRange])
+  }, [executingEditor.editorState.selection, sourceRange])
   const isSelected = isLiveLatest || isEditorSelected
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
@@ -812,12 +817,12 @@ const OperationItem = ({
         if (isOffsetPlane(item)) {
           const artifact = findOperationPlaneArtifact(
             item,
-            kclManager.artifactGraph
+            executingEditor.artifactGraph
           )
           const result = await selectSketchPlane(
             artifact?.id,
             useSketchSolveMode,
-            kclManager
+            executingEditor
           )
           if (err(result)) {
             console.error(result)
@@ -837,7 +842,7 @@ const OperationItem = ({
       sketchNoFace,
       onSelect,
       item,
-      kclManager,
+      executingEditor,
       useSketchSolveMode,
     ]
   )
@@ -852,7 +857,8 @@ const OperationItem = ({
         item.type === 'ModuleInstance'
           ? item.moduleId
           : (providedSourceRange?.[2] ?? item.sourceRange[2])
-      const targetModulePath = kclManager.execState.filenames[targetModuleId]
+      const targetModulePath =
+        executingEditor.execState.filenames[targetModuleId]
 
       const l = layout.signal.value
       if (!isCodePaneOpen(l)) {
@@ -862,7 +868,7 @@ const OperationItem = ({
       if (targetModulePath?.type === 'Local' && app.project) {
         const targetPath = targetModulePath.value
         if (app.project.executingPath !== targetPath) {
-          kclManager.pendingFeatureTreeSourceSelection = {
+          executingEditor.pendingFeatureTreeSourceSelection = {
             path: targetPath,
             range: providedSourceRange ?? item.sourceRange,
           }
@@ -878,7 +884,7 @@ const OperationItem = ({
 
       onSelect(targetRange)
     },
-    [app, item, kclManager, layout, navigate, onSelect]
+    [app, item, executingEditor, layout, navigate, onSelect]
   )
 
   const enterEditFlow = useCallback(() => {
@@ -893,7 +899,7 @@ const OperationItem = ({
       const artifact =
         getArtifactFromRange(
           item.sourceRange,
-          systemDeps.kclManager.artifactGraph
+          systemDeps.executingEditor.artifactGraph
         ) ?? undefined
       if (
         item.type === 'GroupBegin' &&
@@ -910,8 +916,8 @@ const OperationItem = ({
         return
       }
       prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
+        artifactGraph: systemDeps.executingEditor.artifactGraph,
+        code: systemDeps.executingEditor.code,
         commandBarActor,
         operation: item,
         rustContext: systemDeps.rustContext,
@@ -923,8 +929,8 @@ const OperationItem = ({
     item,
     modelingActor,
     commandBarActor,
-    systemDeps.kclManager.artifactGraph,
-    systemDeps.kclManager.code,
+    systemDeps.executingEditor.artifactGraph,
+    systemDeps.executingEditor.code,
     systemDeps.rustContext,
   ])
 
@@ -1011,7 +1017,7 @@ const OperationItem = ({
       item.type === 'VariableDeclaration'
     ) {
       const maybeArtifact =
-        getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
+        getArtifactFromRange(item.sourceRange, executingEditor.artifactGraph) ??
         undefined
       sendDeleteCommand({
         artifact: maybeArtifact,
@@ -1030,15 +1036,15 @@ const OperationItem = ({
     if (isOffsetPlane(item)) {
       const artifact = findOperationPlaneArtifact(
         item,
-        kclManager.artifactGraph
+        executingEditor.artifactGraph
       )
       if (artifact?.id) {
-        kclManager.sceneInfra.modelingSend({
+        executingEditor.sceneInfra.modelingSend({
           type: 'Enter sketch',
           data: { forceNewSketch: true },
         })
 
-        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
+        void selectSketchPlane(artifact.id, useSketchSolveMode, executingEditor)
       }
     }
   }
@@ -1105,7 +1111,7 @@ const OperationItem = ({
                     if (item.type !== 'StdLibCall') return
                     await exportSketchToDxf(item, {
                       engineCommandManager,
-                      kclManager,
+                      executingEditor,
                       toast,
                       uuidv4,
                       base64Decode,
@@ -1128,7 +1134,7 @@ const OperationItem = ({
                     if (item.type !== 'StdLibCall') return
                     await exportSketchToDxf(item, {
                       engineCommandManager,
-                      kclManager,
+                      executingEditor,
                       toast,
                       uuidv4,
                       base64Decode,
@@ -1252,8 +1258,8 @@ const OperationItem = ({
 
   const visibilityState = resolveFeatureTreeVisibility({
     item,
-    operations: getAllOperations(kclManager.operationsByModule),
-    artifactGraph: kclManager.artifactGraph,
+    operations: getAllOperations(executingEditor.operationsByModule),
+    artifactGraph: executingEditor.artifactGraph,
   })
 
   return (
@@ -1344,15 +1350,15 @@ const OperationItem = ({
                   .then(() => {
                     if (visibilityState.hideOperation === undefined) {
                       onHide({
-                        ast: kclManager.ast,
-                        artifactGraph: kclManager.artifactGraph,
+                        ast: executingEditor.ast,
+                        artifactGraph: executingEditor.artifactGraph,
                         modelingActor,
                       })
                     } else if (visibilityState.targetArtifact !== undefined) {
                       onUnhide({
                         hideOperation: visibilityState.hideOperation,
                         targetArtifact: visibilityState.targetArtifact,
-                        kclManager,
+                        executingEditor,
                       })
                         .then((result) => {
                           if (err(result)) {
@@ -1382,7 +1388,7 @@ const DefaultPlanes = ({
   systemDeps: SystemDeps
   disabled?: boolean
 }) => {
-  const { rustContext, sceneInfra, kclManager } = systemDeps
+  const { rustContext, sceneInfra, executingEditor } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
   const selectedDefaultPlaneId = getSelectedDefaultPlane(
@@ -1395,7 +1401,7 @@ const DefaultPlanes = ({
         void selectSketchPlane(
           planeId,
           modelingState.context.store.useSketchSolveMode?.current,
-          kclManager
+          executingEditor
         )
       } else {
         const foundDefaultPlane =
@@ -1431,10 +1437,14 @@ const DefaultPlanes = ({
       void selectSketchPlane(
         planeId,
         modelingState.context.store.useSketchSolveMode?.current,
-        kclManager
+        executingEditor
       )
     },
-    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
+    [
+      modelingState.context.store.useSketchSolveMode,
+      sceneInfra,
+      executingEditor,
+    ]
   )
 
   const defaultPlanes = rustContext.defaultPlanes

@@ -1,5 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
@@ -42,7 +42,7 @@ import {
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -57,10 +57,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -125,7 +125,7 @@ profile002 = rectangle(
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '1',
@@ -152,7 +152,7 @@ profile002 = rectangle(
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const endCap = [...artifactGraph.values()].findLast(
         (a) => a.type === 'cap'
@@ -191,7 +191,7 @@ extrude001 = extrude(profile001, length = 2)`
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const endWall = [...artifactGraph.values()].findLast(
         (a) => a.type === 'wall'
@@ -342,7 +342,7 @@ extrude001 = extrude(profile002, length = 1)
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const profile = [...artifactGraph.values()].find(
         (a) => a.type === 'solid2d'
@@ -388,7 +388,7 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '1',
@@ -416,7 +416,7 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '10',
@@ -458,7 +458,7 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '10',
@@ -522,7 +522,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '1',
@@ -550,7 +550,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '1',
@@ -578,7 +578,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '1',
@@ -606,7 +606,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         triangleRegion,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = createSelectionFromArtifacts(
         artifactGraph
@@ -642,7 +642,7 @@ extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '1',
@@ -681,7 +681,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         1
       )
       const to = getWalls(artifactGraph, 1)
@@ -718,7 +718,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         1
       )
       const to = getWalls(artifactGraph, 1)
@@ -759,7 +759,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         1
       )
       const to = getCapFromCylinder(artifactGraph)
@@ -790,7 +790,7 @@ extrude002 = extrude(profile002, to = capEnd001)`)
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const length = await getKclCommandValue(
         '10',
@@ -858,7 +858,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile,
+        executingEditorInThisFile,
         1
       )
       const to = createSelectionFromArtifacts(
@@ -911,12 +911,12 @@ profile002 = startProfile(sketch002, at = [0, 0])
     async function getAstAndSketchesForSweep(
       code: string,
       instance: ModuleType,
-      kclManager: KclManager
+      executingEditor: ExecutingEditor
     ) {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instance,
-        kclManager
+        executingEditor
       )
       const artifact1 = [...artifactGraph.values()].find(
         (a) => a.type === 'path'
@@ -938,7 +938,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
         await getAstAndSketchesForSweep(
           circleAndLineCode,
           instanceInThisFile,
-          kclManagerInThisFile
+          executingEditorInThisFile
         )
       const result = addSweep({
         ast,
@@ -1159,7 +1159,7 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
         await getAstAndSketchesForSweep(
           circleAndLineCode,
           instanceInThisFile,
-          kclManagerInThisFile
+          executingEditorInThisFile
         )
       const result = addSweep({
         ast,
@@ -1189,7 +1189,7 @@ s2 = sketch(on = XZ) {
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = createSelectionFromArtifacts(
         [artifactGraph.values().find((a) => a.type === 'segment')!],
@@ -1224,7 +1224,7 @@ s2 = sketch(on = XZ) {
         await getAstAndSketchesForSweep(
           circleAndLineCode,
           instanceInThisFile,
-          kclManagerInThisFile
+          executingEditorInThisFile
         )
       const sectional = true
       const relativeTo = 'SKETCH_PLANE'
@@ -1261,7 +1261,7 @@ sweep001 = sweep(
         await getAstAndSketchesForSweep(
           circleAndLineCodeWithSweep,
           instanceInThisFile,
-          kclManagerInThisFile
+          executingEditorInThisFile
         )
       const sectional = false
       const relativeTo = 'TRAJECTORY'
@@ -1306,7 +1306,7 @@ profile003 = startProfile(sketch002, at = [0, 0])
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         circleAndLineAndRectProfilesCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const artifacts = [...artifactGraph.values()].filter(
         (a) => a.type === 'path'
@@ -1350,7 +1350,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
@@ -1430,7 +1430,7 @@ t = sketch(on = plane001) {
       const { operations } = await getAstAndArtifactGraph(
         newCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const loft = getAllOperations(operations).find(
         (op) => op.type === 'StdLibCall' && op.name === 'loft'
@@ -1490,7 +1490,7 @@ loft001 = loft([region001, region002])`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
@@ -1564,7 +1564,7 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         openPaths,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
@@ -1588,7 +1588,7 @@ profile002 = startProfile(sketch002, at = [-0.75, -3.04])
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(2)
       const result = addLoft({
@@ -1613,7 +1613,7 @@ loft001 = loft([profile001, profile002])`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCodeWithLoft,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(2)
       const vDegree = await getKclCommandValue(
@@ -1648,7 +1648,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
@@ -1759,7 +1759,7 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
@@ -1795,7 +1795,7 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         triangleRegion,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const segment = createSelectionFromArtifacts(
         [artifactGraph.values().find((a) => a.type === 'segment')!],
@@ -1831,7 +1831,7 @@ revolve001 = revolve(
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
@@ -1866,7 +1866,7 @@ revolve001 = revolve(
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       expect(sketches.graphSelections).toHaveLength(1)
       const angle = await getKclCommandValue(
@@ -1901,7 +1901,7 @@ revolve001 = revolve(
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleAndRectProfilesCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const angle = await getKclCommandValue(
         '10',
@@ -1940,7 +1940,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const artifacts = [...artifactGraph.values()]
       const circleArtifact = artifacts.findLast((a) => a.type === 'path')
@@ -1988,7 +1988,7 @@ sketch002 = startSketchOn(XY)
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const artifacts = [...artifactGraph.values()]
       const circleArtifact = artifacts.findLast((a) => a.type === 'path')
@@ -2158,7 +2158,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 1)`,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const edgeArtifact = [...artifactGraph.values()].find(
         (a) => a.type === 'segment'

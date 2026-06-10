@@ -17,7 +17,7 @@ vi.mock('@src/lib/desktop', () => ({
 
 vi.mock('@src/lib/boot', () => ({
   useSingletons: () => ({
-    kclManager: {
+    executingEditor: {
       astSignal: { value: null },
     },
   }),
@@ -267,7 +267,7 @@ const renderPane = ({
       <MlEphantConversationPane
         mlEphantManagerActor={mlEphantManagerActor as any}
         systemIOActor={systemIOActor as any}
-        kclManager={
+        executingEditor={
           {
             code: '',
             execState: {
@@ -428,7 +428,7 @@ describe('MlEphantConversationPane', () => {
         <MlEphantConversationPane
           mlEphantManagerActor={mlEphantManagerActor as any}
           systemIOActor={systemIOActor as any}
-          kclManager={
+          executingEditor={
             {
               code: '',
               execState: {

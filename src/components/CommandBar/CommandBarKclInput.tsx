@@ -32,7 +32,7 @@ import { varMentions } from '@src/lib/varCompletionExtension'
 import { Compartment, EditorState } from '@codemirror/state'
 import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   noAutofillFormProps,
   noAutofillInputProps,
@@ -68,7 +68,7 @@ function CommandBarKclInput({
   arg,
   stepBack,
   onSubmit,
-  executingEditor: kclManager,
+  executingEditor: executingEditor,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'kcl'
@@ -76,7 +76,7 @@ function CommandBarKclInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
-  executingEditor: KclManager
+  executingEditor: ExecutingEditor
 }) {
   const { commands, settings, wasmPromise } = useApp()
   const wasmInstance = use(wasmPromise)
@@ -97,7 +97,7 @@ function CommandBarKclInput({
     const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
     const node = pathToNode
       ? getNodeFromPath<Node<VariableDeclarator>>(
-          kclManager.ast,
+          executingEditor.ast,
           pathToNode,
           wasmInstance
         )
@@ -106,7 +106,10 @@ function CommandBarKclInput({
       ? [node.node.start, node.node.end, node.node.moduleId]
       : undefined
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
+  }, [
+    executingEditor.ast,
+    commandBarState.context.argumentsToSubmit.nodeToEdit,
+  ])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -167,7 +170,7 @@ function CommandBarKclInput({
   useHotkeyWrapper(
     ['esc'],
     () => commands.send({ type: 'Close' }),
-    kclManager,
+    executingEditor,
     { enableOnFormTags: true, enableOnContentEditable: true }
   )
   const editorRef = useRef<HTMLDivElement>(null)
@@ -193,10 +196,10 @@ function CommandBarKclInput({
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
-    rustContext: kclManager.rustContext,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    rustContext: executingEditor.rustContext,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
     options,
   })
 

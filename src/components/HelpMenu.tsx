@@ -21,7 +21,7 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu() {
   const { settings, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
 
@@ -29,7 +29,7 @@ export function HelpMenu() {
     const props = {
       onboardingStatus: onboardingStartPath,
       navigate,
-      kclManager,
+      executingEditor,
       systemIOActor,
       settingsActor: settings.actor,
       executingPath: filePath,

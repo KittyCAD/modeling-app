@@ -1,11 +1,11 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Command } from '@src/lib/commandTypes'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
 
-export function createStandardViewsCommands(kclManager: KclManager) {
-  const { engineCommandManager, sceneInfra } = kclManager
+export function createStandardViewsCommands(executingEditor: ExecutingEditor) {
+  const { engineCommandManager, sceneInfra } = executingEditor
   const topViewCommand: Command = {
     name: 'Top view',
     displayName: `Top view`,

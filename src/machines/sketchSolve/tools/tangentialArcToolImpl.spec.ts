@@ -4,7 +4,7 @@ import { SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE } from '@src/machines/sketchSolve/
 import {
   createArcApiObject,
   createLineApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createMockSceneInfra,
   createPointApiObject,
@@ -324,7 +324,7 @@ describe('tangentialArcToolImpl', () => {
   describe('finalizeArcActor', () => {
     it('adds a coincident constraint for a snapped free endpoint before tangent constraints', async () => {
       const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
+      const executingEditor = createMockExecutingEditor()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const center = createPointApiObject({ id: 1, x: 0, y: 1 })
       const start = createPointApiObject({ id: 2, x: 0, y: 0 })
@@ -362,7 +362,7 @@ describe('tangentialArcToolImpl', () => {
             tangentDirection: [1, 0],
           },
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId: 7,
         },
       })

@@ -8,7 +8,7 @@ import type {
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type RustContext from '@src/lib/rustContext'
 import type { Themes } from '@src/lib/theme'
 import type {
@@ -246,7 +246,7 @@ export type SketchSolveContext = {
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }
 
 export type SolveActionArgs = ActionArgs<
@@ -861,17 +861,17 @@ export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
     range[1]
       ? [
           EditorSelection.cursor(
-            Math.min(range[1], context.kclManager.code.length)
+            Math.min(range[1], context.executingEditor.code.length)
           ),
         ]
       : []
   )
 
-  context.kclManager.editorView.dispatch({
+  context.executingEditor.editorView.dispatch({
     selection: EditorSelection.create(
       codeMirrorSelections.length
         ? codeMirrorSelections
-        : [EditorSelection.cursor(context.kclManager.code.length)],
+        : [EditorSelection.cursor(context.executingEditor.code.length)],
       Math.max(codeMirrorSelections.length - 1, 0)
     ),
     annotations: selectionDispatchedBySketchSolveEvent,
@@ -986,7 +986,7 @@ export function updateHoveredId({
     }
   }
 
-  context.kclManager.setHighlightRange(highlightRanges)
+  context.executingEditor.setHighlightRange(highlightRanges)
 
   return {
     hoveredId,
@@ -995,7 +995,7 @@ export function updateHoveredId({
 }
 
 export function clearHoveredCodeHighlight({ context }: SolveActionArgs) {
-  context.kclManager.setHighlightRange([])
+  context.executingEditor.setHighlightRange([])
 }
 
 function getSourceRangesForObjectId(
@@ -1071,7 +1071,7 @@ export function initializeInitialSceneGraph({
     // Set sketchExecOutcome in context so drag callbacks can access it
     // Use current code from editorManager since editSketch doesn't return kclSource
     const kclSource: SourceDelta = {
-      text: context.kclManager.code,
+      text: context.executingEditor.code,
     }
 
     return {
@@ -1254,24 +1254,24 @@ function getSketchSolveScaleFactor(context: SketchSolveContext): number {
 // Debounced editor update function - persists across calls
 // This allows us to cancel editor updates if a double-click is detected
 // The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
-// We store the latest kclManager reference so the debounced function can access it
+// We store the latest executingEditor reference so the debounced function can access it
 const debouncedEditorUpdate = deferredCallback(
   ({
     text,
-    kclManager,
+    executingEditor,
     sceneGraphDelta,
     shouldWriteToDisk,
     shouldAddToHistory,
     spec,
   }: {
     text: string
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     sceneGraphDelta: SceneGraphDelta
     shouldWriteToDisk: boolean
     shouldAddToHistory: boolean
     spec: { effects: StateEffect<unknown>[] }
   }) => {
-    kclManager.updateCodeEditor(
+    executingEditor.updateCodeEditor(
       text,
       {
         shouldWriteToDisk,
@@ -1280,7 +1280,7 @@ const debouncedEditorUpdate = deferredCallback(
       },
       spec
     )
-    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta)
+    executingEditor.syncSketchSolveOutcome(text, sceneGraphDelta)
   },
   200
 )
@@ -1303,7 +1303,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     getSketchSolveExecOutcomeIssues(sceneGraphDelta),
     event.data.sourceDelta.text
   )
-  context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
+  context.executingEditor.setSketchSolveDiagnostics(sketchSolveDiagnostics)
   if (!event.data.suppressExecOutcomeIssues) {
     toastSketchSolveExecOutcomeErrors(
       sceneGraphDelta,
@@ -1339,14 +1339,14 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   const isCheckpointOnlyCommit =
     shouldAddToHistory &&
     event.data.checkpointId != null &&
-    context.kclManager.code === event.data.sourceDelta.text
+    context.executingEditor.code === event.data.sourceDelta.text
   const shouldDispatchSceneImmediately =
     !shouldUpdateEditor ||
-    context.kclManager.code !== event.data.sourceDelta.text ||
+    context.executingEditor.code !== event.data.sourceDelta.text ||
     isCheckpointOnlyCommit
 
   if (shouldDispatchSceneImmediately) {
-    context.kclManager.dispatch({
+    context.executingEditor.dispatch({
       annotations: Transaction.addToHistory.of(false),
       effects: additionalSpec.effects,
     })
@@ -1365,13 +1365,13 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   if (!shouldUpdateEditor) {
     /*
      * This is the direct CodeMirror edit path. The editor is already the source
-     * of truth, and KclManager has already checked that this async execution is
+     * of truth, and ExecutingEditor has already checked that this async execution is
      * still fresh before sending the event. Keep the derived scene/diagnostic
      * state in sync, but do not write source text back through CodeMirror or
      * disk. A source write here turns an old execution snapshot into an editor
      * command, which is the exact stale overwrite bug this path prevents.
      */
-    context.kclManager.syncSketchSolveOutcome(
+    context.executingEditor.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
       sceneGraphDelta
     )
@@ -1395,7 +1395,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     // If a new update comes in within 200ms, the previous one is cancelled
     debouncedEditorUpdate({
       text: event.data.sourceDelta.text,
-      kclManager: context.kclManager,
+      executingEditor: context.executingEditor,
       sceneGraphDelta,
       shouldWriteToDisk,
       shouldAddToHistory,
@@ -1403,7 +1403,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     })
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(
+    context.executingEditor.updateCodeEditor(
       event.data.sourceDelta.text,
       {
         shouldExecute: false,
@@ -1412,7 +1412,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
       },
       editorAdditionalSpec
     )
-    context.kclManager.syncSketchSolveOutcome(
+    context.executingEditor.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
       sceneGraphDelta
     )
@@ -1554,7 +1554,7 @@ export function spawnTool(
     input: {
       sceneInfra: context.sceneInfra,
       rustContext: context.rustContext,
-      kclManager: context.kclManager,
+      executingEditor: context.executingEditor,
       sketchId: context.sketchId,
       initialSelectionIds: context.selectedIds,
       initialObjects:
@@ -1594,7 +1594,7 @@ export const tearDownSketchSolve = fromPromise(
 export type ToolInput = {
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   initialSelectionIds?: SketchSolveSelectionId[]
   initialObjects?: ApiObject[]

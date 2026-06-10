@@ -32,8 +32,8 @@ type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
-  const { kclManager } = useSingletons()
-  const execState = kclManager.execStateSignal.value
+  const { executingEditor } = useSingletons()
+  const execState = executingEditor.execStateSignal.value
   const artifactGraph = execState.artifactGraph
   const operations = getAllOperations(execState.operations)
   const bodies = getBodiesFromArtifactGraph(artifactGraph)
@@ -120,7 +120,7 @@ function BodyItem({
   patternIndex?: number
   showExperimentalPointAndClick?: boolean
 }) {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const {
     actor: modelingActor,
     context: modelingContext,
@@ -147,10 +147,10 @@ function BodyItem({
     ? modelingContext.selectionRanges.graphSelections.some(
         (selection) => selection.engineEntityId === engineEntityId
       )
-    : kclManager.editorState.selection.main.from >=
-        toUtf16(sourceRange[0], kclManager.code) &&
-      kclManager.editorState.selection.main.to <=
-        toUtf16(sourceRange[1], kclManager.code)
+    : executingEditor.editorState.selection.main.from >=
+        toUtf16(sourceRange[0], executingEditor.code) &&
+      executingEditor.editorState.selection.main.to <=
+        toUtf16(sourceRange[1], executingEditor.code)
   const onSelect = () => {
     if (engineEntityId) {
       modelingSend({
@@ -166,7 +166,7 @@ function BodyItem({
     sendSelectionEvent(
       {
         sourceRange,
-        kclManager,
+        executingEditor,
         modelingSend,
       },
       true
@@ -206,8 +206,8 @@ function BodyItem({
               onSelect()
               if (hideOperation === undefined) {
                 onHide({
-                  ast: kclManager.ast,
-                  artifactGraph: kclManager.artifactGraph,
+                  ast: executingEditor.ast,
+                  artifactGraph: executingEditor.artifactGraph,
                   modelingActor,
                   objects: selections,
                 })
@@ -215,7 +215,7 @@ function BodyItem({
                 onUnhide({
                   hideOperation,
                   targetArtifact: artifact,
-                  kclManager,
+                  executingEditor,
                 })
                   .then((result) => {
                     if (err(result)) {

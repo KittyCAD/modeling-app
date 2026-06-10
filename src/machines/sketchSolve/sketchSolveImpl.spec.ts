@@ -153,7 +153,7 @@ describe('updateSelectedCodeHighlight', () => {
         sketchExecOutcome: {
           sceneGraphDelta: createSceneGraphDelta([firstLine, secondLine]),
         },
-        kclManager: {
+        executingEditor: {
           code: 'x'.repeat(200),
           editorView: { dispatch },
         },
@@ -196,7 +196,7 @@ describe('updateSelectedCodeHighlight', () => {
         sketchExecOutcome: {
           sceneGraphDelta: createSceneGraphDelta([point, ownerLine]),
         },
-        kclManager: {
+        executingEditor: {
           code: 'x'.repeat(200),
           editorView: { dispatch },
         },
@@ -250,7 +250,7 @@ describe('updateHoveredId', () => {
         sketchExecOutcome: {
           sceneGraphDelta: createSceneGraphDelta([line]),
         },
-        kclManager: {
+        executingEditor: {
           setHighlightRange,
         },
       },
@@ -280,7 +280,7 @@ describe('updateHoveredId', () => {
         sketchExecOutcome: {
           sceneGraphDelta: createSceneGraphDelta([line]),
         },
-        kclManager: {
+        executingEditor: {
           setHighlightRange,
         },
       },
@@ -312,7 +312,7 @@ describe('updateHoveredId', () => {
         sketchExecOutcome: {
           sceneGraphDelta: createSceneGraphDelta([point, ownerLine]),
         },
-        kclManager: {
+        executingEditor: {
           setHighlightRange,
         },
       },
@@ -333,7 +333,7 @@ describe('updateHoveredId', () => {
         sketchExecOutcome: {
           sceneGraphDelta: createSceneGraphDelta([]),
         },
-        kclManager: {
+        executingEditor: {
           setHighlightRange,
         },
       },
@@ -349,7 +349,7 @@ describe('updateHoveredId', () => {
 })
 
 describe('updateSketchOutcome', () => {
-  test('syncs sketch solve operations into KclManager after an immediate editor update', () => {
+  test('syncs sketch solve operations into ExecutingEditor after an immediate editor update', () => {
     const setSketchSolveDiagnostics = vi.fn()
     const dispatch = vi.fn()
     const updateCodeEditor = vi.fn()
@@ -358,7 +358,7 @@ describe('updateSketchOutcome', () => {
 
     updateSketchOutcome({
       context: {
-        kclManager: {
+        executingEditor: {
           code: 'old code',
           dispatch,
           setSketchSolveDiagnostics,
@@ -404,7 +404,7 @@ describe('updateSketchOutcome', () => {
 
     updateSketchOutcome({
       context: {
-        kclManager: {
+        executingEditor: {
           code: 'newer editor code',
           dispatch,
           setSketchSolveDiagnostics,
@@ -445,7 +445,7 @@ describe('updateSketchOutcome', () => {
 
       updateSketchOutcome({
         context: {
-          kclManager: {
+          executingEditor: {
             code: 'old code',
             dispatch,
             setSketchSolveDiagnostics,
@@ -489,7 +489,7 @@ describe('updateSketchOutcome', () => {
 
     updateSketchOutcome({
       context: {
-        kclManager: {
+        executingEditor: {
           code: 'last good preview',
           dispatch,
           setSketchSolveDiagnostics,
@@ -546,7 +546,7 @@ describe('updateSketchOutcome', () => {
 
       const result = updateSketchOutcome({
         context: {
-          kclManager: {
+          executingEditor: {
             code: 'old code',
             dispatch,
             setSketchSolveDiagnostics,

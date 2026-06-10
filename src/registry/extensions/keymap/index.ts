@@ -284,17 +284,17 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const resetView = () => {
-    const kclManager = ctx.services
+    const executingEditor = ctx.services
       .optional(commandSystemService)
-      ?.actor.getSnapshot().context.kclManager
-    if (!kclManager) {
+      ?.actor.getSnapshot().context.executingEditor
+    if (!executingEditor) {
       return
     }
 
     resetCameraPosition({
-      sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
-      settingsActor: kclManager.systemDeps.settings,
+      sceneInfra: executingEditor.sceneInfra,
+      engineCommandManager: executingEditor.engineCommandManager,
+      settingsActor: executingEditor.systemDeps.settings,
     }).catch(reportRejection)
   }
 

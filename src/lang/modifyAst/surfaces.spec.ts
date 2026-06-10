@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { type Artifact, recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -16,7 +16,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -31,10 +31,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -52,7 +52,7 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const artifact = [...artifactGraph.values()].find(
         (n) => n.type === 'path'
@@ -129,7 +129,7 @@ surface001 = joinSurfaces([blend001, blend002])`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       const selectedSurface = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'compositeSolid'
@@ -167,7 +167,7 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const pathArtifacts = [...artifactGraph.values()].filter(
@@ -320,7 +320,7 @@ blend005 = blend([
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       const blendArtifacts = [...artifactGraph.values()]

@@ -4,7 +4,7 @@ import {
   createSetAngleLengthModal,
 } from '@src/components/SetAngleLengthModal'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
@@ -27,21 +27,21 @@ const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 export async function applyConstraintLength({
   length,
   selectionRanges,
-  kclManager,
+  executingEditor,
 }: {
   length: KclCommandValue
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
   exprInsertIndex: number
 }> {
-  const ast = kclManager.ast
+  const ast = executingEditor.ast
   const angleLength = angleLengthInfo({
     selectionRanges,
-    kclManager,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    executingEditor,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(angleLength)) return Promise.reject(angleLength)
   const { transforms } = angleLength
@@ -71,10 +71,10 @@ export async function applyConstraintLength({
     ast,
     selectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
     forceValueUsedInTransform: distanceExpression,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(retval)) return Promise.reject(retval)
 
@@ -95,11 +95,11 @@ export async function applyConstraintLength({
 export async function applyConstraintAngleLength({
   selectionRanges,
   angleOrLength = 'setLength',
-  kclManager,
+  executingEditor,
 }: {
   selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -108,19 +108,19 @@ export async function applyConstraintAngleLength({
   const angleLength = angleLengthInfo({
     selectionRanges,
     angleOrLength,
-    kclManager,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    executingEditor,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(angleLength)) return Promise.reject(angleLength)
 
   const { transforms } = angleLength
   const sketched = transformAstSketchLines({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(sketched)) return Promise.reject(sketched)
   const { valueUsedInTransform } = sketched
@@ -177,7 +177,7 @@ export async function applyConstraintAngleLength({
   let finalValue = removeDoubleNegatives(
     valueNode,
     sign,
-    await kclManager.wasmInstancePromise,
+    await executingEditor.wasmInstancePromise,
     variableName
   )
   if (
@@ -188,13 +188,13 @@ export async function applyConstraintAngleLength({
   }
 
   const retval = transformAstSketchLines({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos: transforms,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(retval)) return Promise.reject(retval)
 

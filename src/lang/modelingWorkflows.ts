@@ -7,7 +7,7 @@
  */
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { executeAstMock } from '@src/lang/langHelpers'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
@@ -57,7 +57,7 @@ export async function mockExecAstAndReportErrors(
 export async function updateModelingState(
   ast: Node<Program>,
   executionType: ExecutionType,
-  kclManager: KclManager,
+  executingEditor: ExecutingEditor,
   options?: {
     focusPath?: Array<PathToNode>
     isDeleting?: boolean
@@ -71,39 +71,42 @@ export async function updateModelingState(
 
   // Step 0: Mock execute shit so we know it aint broke
   if (!options?.skipErrorsOnMockExecution) {
-    const res = await mockExecAstAndReportErrors(ast, kclManager.rustContext)
+    const res = await mockExecAstAndReportErrors(
+      ast,
+      executingEditor.rustContext
+    )
     if (err(res)) {
       return Promise.reject(res)
     }
   }
 
   // Step 1: Update AST without executing (prepare selections)
-  updatedAst = await kclManager.updateAst(
+  updatedAst = await executingEditor.updateAst(
     ast,
     false, // Execution handled separately for error resilience
     options
   )
 
   // Step 2: Update the code editor and save file
-  await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst, {
+  await executingEditor.updateEditorWithAstAndWriteToFile(updatedAst.newAst, {
     isDeleting: options?.isDeleting,
     allowProgrammaticDocumentChanges: true,
   })
 
   // Step 3: Set focus on the newly added code if needed
   if (updatedAst.selections) {
-    kclManager.selectRange(updatedAst.selections)
+    executingEditor.selectRange(updatedAst.selections)
   }
 
   // Step 4: Try to execute the new code
   // and continue regardless of errors
   try {
     if (executionType === EXECUTION_TYPE_REAL) {
-      await kclManager.executeAst({
+      await executingEditor.executeAst({
         ast: updatedAst.newAst,
       })
     } else if (executionType === EXECUTION_TYPE_MOCK) {
-      const didReParse = await kclManager.executeAstMock(updatedAst.newAst)
+      const didReParse = await executingEditor.executeAstMock(updatedAst.newAst)
       if (err(didReParse)) return reject(didReParse)
     } else if (executionType === EXECUTION_TYPE_NONE) {
       // No execution.

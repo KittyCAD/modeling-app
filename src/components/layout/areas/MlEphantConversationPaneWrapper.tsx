@@ -47,7 +47,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
@@ -76,12 +76,12 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     mlEphantManagerActor,
     billing.actor,
     token,
-    kclManager.engineCommandManager,
+    executingEditor.engineCommandManager,
     (requestProps) => {
       const payload = prepareMlEphantNewFileRequest(requestProps)
 
       if (payload) {
-        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        executingEditor.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
@@ -134,7 +134,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         {...{
           mlEphantManagerActor: mlEphantManagerActor,
           systemIOActor,
-          kclManager,
+          executingEditor,
           contextModeling,
           sendModeling,
           sendBillingUpdate,

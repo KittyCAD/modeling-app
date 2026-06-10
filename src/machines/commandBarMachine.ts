@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
@@ -64,7 +64,7 @@ export type CommandBarContext = CommandBarInput & {
   argumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
   machineManager: MachineManager
-  kclManager?: KclManager
+  executingEditor?: ExecutingEditor
   userFeatures?: UserFeaturesService
 }
 
@@ -134,7 +134,7 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set kclManager'; data: KclManager }
+  | { type: 'Set executingEditor'; data: ExecutingEditor }
 
 export const commandBarMachine = setup({
   types: {
@@ -155,9 +155,9 @@ export const commandBarMachine = setup({
         }
       },
     }),
-    'Set kclManager': assign({
-      kclManager: ({ event }) => {
-        assertEvent(event, 'Set kclManager')
+    'Set executingEditor': assign({
+      executingEditor: ({ event }) => {
+        assertEvent(event, 'Set executingEditor')
         return event.data
       },
     }),
@@ -757,8 +757,8 @@ export const commandBarMachine = setup({
     },
   },
   on: {
-    'Set kclManager': {
-      actions: 'Set kclManager',
+    'Set executingEditor': {
+      actions: 'Set executingEditor',
     },
     'Set userFeatures': {
       actions: 'Set userFeatures',

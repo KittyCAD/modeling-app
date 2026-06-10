@@ -11,7 +11,7 @@ export const useOnPageIdle = ({
   idleCallback: () => void
 }) => {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const settingsValues = settings.useSettings()
   const streamIdleMode = settingsValues.app.streamIdleMode.current
   const { state: modelingMachineState } = useModelingContext()
@@ -65,7 +65,7 @@ export const useOnPageIdle = ({
         }
 
         const isBusy =
-          kclManager.isExecuting ||
+          executingEditor.isExecuting ||
           !modelingMachineStateRef.current.matches('idle')
 
         // Only start the idle timer once KCL execution and other modeling
@@ -87,26 +87,26 @@ export const useOnPageIdle = ({
           if (elapsed >= idleTimeMs) {
             timeoutStart.current = null
             try {
-              await kclManager.sceneInfra.camControls.saveRemoteCameraState()
+              await executingEditor.sceneInfra.camControls.saveRemoteCameraState()
             } catch (e) {
               console.warn('unable to save old camera state on idle', e)
-              kclManager.sceneInfra.camControls.clearOldCameraState()
+              executingEditor.sceneInfra.camControls.clearOldCameraState()
             }
-            console.log(kclManager.sceneInfra.camControls.oldCameraState)
+            console.log(executingEditor.sceneInfra.camControls.oldCameraState)
             console.warn('detected idle, tearing down connection.')
             EngineDebugger.addLog({
               label: 'useOnPageIdle',
               message: 'Calling tearDown()',
             })
             // We do a full tear down at the moment.
-            kclManager.engineCommandManager.tearDown()
+            executingEditor.engineCommandManager.tearDown()
             idleCallbackRef.current()
           }
         }
       })()
     }, 1_000)
     intervalId.current = interval
-  }, [kclManager])
+  }, [executingEditor])
 
   useEffect(() => {
     if (!idleTimeMsRef.current) return
@@ -120,7 +120,7 @@ export const useOnPageIdle = ({
       }
       startCallbackRef.current()
       timeoutStart.current =
-        kclManager.isExecuting ||
+        executingEditor.isExecuting ||
         !modelingMachineStateRef.current.matches('idle')
           ? null
           : Date.now()
@@ -130,7 +130,8 @@ export const useOnPageIdle = ({
     // all, meaning the timer is not reset to run. We need to set it every
     // time our effect dependencies change then.
     timeoutStart.current =
-      kclManager.isExecuting || !modelingMachineStateRef.current.matches('idle')
+      executingEditor.isExecuting ||
+      !modelingMachineStateRef.current.matches('idle')
         ? null
         : Date.now()
 
@@ -155,5 +156,5 @@ export const useOnPageIdle = ({
       window.document.removeEventListener('touchend', onAnyInput)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, streamIdleMode])
+  }, [executingEditor, streamIdleMode])
 }

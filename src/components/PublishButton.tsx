@@ -56,10 +56,10 @@ function PublishPopoverContent({
 }) {
   useSignals()
   const { auth } = app
-  const { kclManager } = app.singletons
-  const ast = kclManager.astSignal.value
-  const kclEmpty = kclManager.isAstBodyEmpty(ast)
-  const hasKclErrors = kclManager.hasErrors()
+  const { executingEditor } = app.singletons
+  const ast = executingEditor.astSignal.value
+  const kclEmpty = executingEditor.isAstBodyEmpty(ast)
+  const hasKclErrors = executingEditor.hasErrors()
   const authState = auth.useAuthState()
   const token = auth.useToken()
   const user = auth.useUser()
@@ -78,7 +78,7 @@ function PublishPopoverContent({
       return null
     }
 
-    const wasmInstance = await kclManager.wasmInstancePromise
+    const wasmInstance = await executingEditor.wasmInstancePromise
     const details = await getCurrentProjectPublicationDetails({
       token,
       project,
@@ -91,7 +91,7 @@ function PublishPopoverContent({
     }
 
     return details
-  }, [kclManager, project, token])
+  }, [executingEditor, project, token])
 
   useEffect(() => {
     let isCancelled = false
@@ -123,12 +123,12 @@ function PublishPopoverContent({
     Required<ComponentProps<typeof PublishDialog>>['onSubmit']
   >(
     async (submission) => {
-      const wasmInstance = await kclManager.wasmInstancePromise
+      const wasmInstance = await executingEditor.wasmInstancePromise
       const published = await publishCurrentProject({
         token,
         project,
-        currentFilePath: kclManager.path,
-        currentFileContents: kclManager.code,
+        currentFilePath: executingEditor.path,
+        currentFileContents: executingEditor.code,
         wasmInstance,
         submission,
       })
@@ -141,7 +141,7 @@ function PublishPopoverContent({
       setPublicationDetails(details)
       return true
     },
-    [fetchPublicationDetails, kclManager, project, token]
+    [fetchPublicationDetails, executingEditor, project, token]
   )
 
   return (

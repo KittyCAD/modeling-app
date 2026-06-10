@@ -3,7 +3,7 @@ import {
   GetInfoModal,
   createInfoModal,
 } from '@src/components/SetHorVertDistanceModal'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -29,11 +29,11 @@ const getModalInfo = createInfoModal(GetInfoModal)
 
 export function angleBetweenInfo({
   selectionRanges,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -43,7 +43,7 @@ export function angleBetweenInfo({
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance
     )
@@ -56,7 +56,7 @@ export function angleBetweenInfo({
 
   const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance,
       'VariableDeclarator'
@@ -71,7 +71,7 @@ export function angleBetweenInfo({
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-    isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
+    isSketchVariablesLinked(secondary, primaryLine, executingEditor.ast)
   )
   const isAllTooltips = nodes.every(
     (node) =>
@@ -84,7 +84,7 @@ export function angleBetweenInfo({
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
-    kclManager.ast,
+    executingEditor.ast,
     'setAngleBetween',
     wasmInstance
   )
@@ -100,10 +100,10 @@ export function angleBetweenInfo({
 
 export async function applyConstraintAngleBetween({
   selectionRanges,
-  kclManager,
+  executingEditor,
 }: {
   selectionRanges: Selections
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -111,18 +111,18 @@ export async function applyConstraintAngleBetween({
 }> {
   const info = angleBetweenInfo({
     selectionRanges,
-    kclManager,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    executingEditor,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
 
   const transformed1 = transformSecondarySketchLinesTagFirst({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    memVars: executingEditor.variables,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transformed1)) return Promise.reject(transformed1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -159,18 +159,18 @@ export async function applyConstraintAngleBetween({
   const finalValue = removeDoubleNegatives(
     valueNode,
     sign,
-    await kclManager.wasmInstancePromise,
+    await executingEditor.wasmInstancePromise,
     variableName
   )
   // transform again but forcing certain values
   const transformed2 = transformSecondarySketchLinesTagFirst({
-    ast: kclManager.ast,
+    ast: executingEditor.ast,
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transformed2)) return Promise.reject(transformed2)
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =

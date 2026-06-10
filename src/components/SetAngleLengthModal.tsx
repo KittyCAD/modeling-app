@@ -46,7 +46,7 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
     initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
@@ -68,10 +68,10 @@ export const SetAngleLengthModal = ({
     value,
     initialVariableName: valueName,
     selectionRanges,
-    rustContext: kclManager.rustContext,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    rustContext: executingEditor.rustContext,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
   })
   const isDisabled =
     (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable

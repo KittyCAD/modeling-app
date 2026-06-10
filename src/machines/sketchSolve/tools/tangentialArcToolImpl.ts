@@ -8,7 +8,7 @@ import type {
   OnMoveCallbackArgs,
   SceneInfra,
 } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -93,7 +93,7 @@ export type ToolContext = {
   arcEndPointId?: number
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
 }
 
@@ -508,7 +508,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       )
 
       const units = baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit
+        context.executingEditor.fileSettings.defaultLengthUnit
       )
 
       try {
@@ -730,7 +730,7 @@ export async function createArcActor({
     | {
         tangentInfo: TangentInfo
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -749,7 +749,7 @@ export async function createArcActor({
     return { error: input.error }
   }
 
-  const { tangentInfo, rustContext, kclManager, sketchId } = input
+  const { tangentInfo, rustContext, executingEditor, sketchId } = input
   const startPoint = tangentInfo.tangentStart.position
   const tangentDirection = tangentInfo.tangentDirection
   const tangentUnit = normalizeVec(tangentDirection)
@@ -760,7 +760,7 @@ export async function createArcActor({
   const normal = perpendicular(tangentUnit)
   const centerPoint = addVec(startPoint, normal)
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
 
   try {
@@ -805,7 +805,7 @@ export async function finalizeArcActor({
         endSnapTarget?: SnapTarget
         tangentInfo: TangentInfo
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -831,7 +831,7 @@ export async function finalizeArcActor({
     endSnapTarget,
     tangentInfo,
     rustContext,
-    kclManager,
+    executingEditor,
     sketchId,
   } = input
   const startPoint = tangentInfo.tangentStart.position
@@ -856,7 +856,7 @@ export async function finalizeArcActor({
   )
 
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
 
   try {

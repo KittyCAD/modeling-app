@@ -65,7 +65,7 @@ function AppLogoLink({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
@@ -88,7 +88,7 @@ function AppLogoLink({
       data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
-        kclManager.switchedFiles = true
+        executingEditor.switchedFiles = true
       }}
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
@@ -107,7 +107,7 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
@@ -255,7 +255,7 @@ function ProjectMenuPopover({
           className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
-            kclManager.switchedFiles = true
+            executingEditor.switchedFiles = true
           },
         },
       ].filter(
@@ -270,7 +270,7 @@ function ProjectMenuPopover({
       machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      kclManager.engineCommandManager,
+      executingEditor.engineCommandManager,
       onProjectClose,
       isDesktop,
     ]

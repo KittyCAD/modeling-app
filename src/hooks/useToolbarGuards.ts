@@ -5,7 +5,7 @@ import {
   createSetVarNameModal,
 } from '@src/components/SetVarNameModal'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
 import { isNodeSafeToReplace } from '@src/lang/queryAst'
 import type { PathToNode, SourceRange } from '@src/lang/wasm'
@@ -16,17 +16,17 @@ import { toSync } from '@src/lib/utils'
 export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
 export function useConvertToVariable(
-  kclManager: KclManager,
+  executingEditor: ExecutingEditor,
   range?: SourceRange
 ) {
-  const wasmInstance = use(kclManager.wasmInstancePromise)
-  const ast = kclManager.astSignal.value
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
+  const ast = executingEditor.astSignal.value
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
 
   useEffect(() => {
-    kclManager.convertToVariableEnabled = enable
-  }, [enable, kclManager])
+    executingEditor.convertToVariableEnabled = enable
+  }, [enable, executingEditor])
 
   useEffect(() => {
     // Return early if there are no selection ranges for whatever reason
@@ -63,17 +63,20 @@ export function useConvertToVariable(
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =
         moveValueIntoNewVariable(
           ast,
-          kclManager.variables,
+          executingEditor.variables,
           range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
           variableName,
           wasmInstance
         )
 
-      await kclManager.updateAst(_modifiedAst, true)
+      await executingEditor.updateAst(_modifiedAst, true)
 
-      const newCode = recast(_modifiedAst, await kclManager.wasmInstancePromise)
+      const newCode = recast(
+        _modifiedAst,
+        await executingEditor.wasmInstancePromise
+      )
       if (err(newCode)) return
-      kclManager.updateCodeEditor(newCode)
+      executingEditor.updateCodeEditor(newCode)
 
       return pathToReplacedNode
     } catch (e) {
@@ -81,7 +84,10 @@ export function useConvertToVariable(
     }
   }
 
-  kclManager.convertToVariableCallback = toSync(handleClick, reportRejection)
+  executingEditor.convertToVariableCallback = toSync(
+    handleClick,
+    reportRejection
+  )
 
   return { enable, handleClick }
 }

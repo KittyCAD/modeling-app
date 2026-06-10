@@ -598,7 +598,7 @@ export function buildToolbarConfig(
               void selectSketchPlane(
                 selectedSketchTarget,
                 modelingState.context.store.useSketchSolveMode?.current,
-                modelingState.context.kclManager
+                modelingState.context.executingEditor
               )
             } else {
               // No sketch context - start new sketch
@@ -1679,13 +1679,13 @@ export function buildToolbarConfig(
                 return (
                   (!isEditingExistingSketch({
                     sketchDetails: state.context.sketchDetails,
-                    kclManager: state.context.kclManager,
+                    executingEditor: state.context.executingEditor,
                     wasmInstance: state.context.wasmInstance,
                   }) &&
                     !state.matches({ Sketch: 'Tangential arc to' })) ||
                   pipeHasCircle({
                     sketchDetails: state.context.sketchDetails,
-                    kclManager: state.context.kclManager,
+                    executingEditor: state.context.executingEditor,
                     wasmInstance: state.context.wasmInstance,
                   })
                 )
@@ -1693,7 +1693,7 @@ export function buildToolbarConfig(
               disabledReason: (state) => {
                 return !isEditingExistingSketch({
                   sketchDetails: state.context.sketchDetails,
-                  kclManager: state.context.kclManager,
+                  executingEditor: state.context.executingEditor,
                   wasmInstance: state.context.wasmInstance,
                 }) && !state.matches({ Sketch: 'Tangential arc to' })
                   ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."

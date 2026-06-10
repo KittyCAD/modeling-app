@@ -37,7 +37,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
@@ -232,17 +232,17 @@ export async function getEventForSelectWithPoint(
   { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
   {
     engineCommandManager,
-    kclManager,
+    executingEditor,
     rustContext,
     wasmInstance,
   }: {
     engineCommandManager: ConnectionManager
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     rustContext: RustContext
     wasmInstance: ModuleType
   }
 ): Promise<ModelingMachineEvent | null> {
-  const { ast, artifactGraph } = kclManager
+  const { ast, artifactGraph } = executingEditor
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -1526,14 +1526,14 @@ export async function selectOffsetSketchPlane(
 export async function selectSketchPlane(
   planeOrFaceId: string | undefined,
   useSketchSolveMode: boolean | undefined,
-  kclManager?: KclManager
+  executingEditor?: ExecutingEditor
 ) {
   try {
-    if (!kclManager) return
+    if (!executingEditor) return
     if (!planeOrFaceId) return
 
     if (useSketchSolveMode) {
-      kclManager.sceneInfra.modelingSend({
+      executingEditor.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,
       })
@@ -1541,17 +1541,17 @@ export async function selectSketchPlane(
     }
 
     const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId, {
-      sceneInfra: kclManager.sceneInfra,
-      rustContext: kclManager.rustContext,
+      sceneInfra: executingEditor.sceneInfra,
+      rustContext: executingEditor.rustContext,
     })
     if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
       return
     }
 
-    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const artifact = executingEditor.artifactGraph.get(planeOrFaceId)
     const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
-      sceneInfra: kclManager.sceneInfra,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      sceneInfra: executingEditor.sceneInfra,
+      sceneEntitiesManager: executingEditor.sceneEntitiesManager,
     })
     if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
       return
@@ -1559,18 +1559,18 @@ export async function selectSketchPlane(
 
     const sweepFaceSelected = await selectionBodyFace(
       planeOrFaceId,
-      kclManager.artifactGraph,
-      kclManager.ast,
-      kclManager.execState,
+      executingEditor.artifactGraph,
+      executingEditor.ast,
+      executingEditor.execState,
       {
-        rustContext: kclManager.rustContext,
-        sceneInfra: kclManager.sceneInfra,
-        sceneEntitiesManager: kclManager.sceneEntitiesManager,
-        wasmInstance: await kclManager.wasmInstancePromise,
+        rustContext: executingEditor.rustContext,
+        sceneInfra: executingEditor.sceneInfra,
+        sceneEntitiesManager: executingEditor.sceneEntitiesManager,
+        wasmInstance: await executingEditor.wasmInstancePromise,
       }
     )
     if (sweepFaceSelected) {
-      kclManager.sceneInfra.modelingSend({
+      executingEditor.sceneInfra.modelingSend({
         type: 'Select sketch plane',
         data: sweepFaceSelected,
       })

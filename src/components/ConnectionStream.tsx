@@ -43,9 +43,9 @@ export const ConnectionStream = (props: {
 }) => {
   const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
-  const { kclManager } = useSingletons()
-  const engineCommandManager = kclManager.engineCommandManager
-  const sceneInfra = kclManager.sceneInfra
+  const { executingEditor } = useSingletons()
+  const engineCommandManager = executingEditor.engineCommandManager
+  const sceneInfra = executingEditor.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
@@ -126,22 +126,24 @@ export const ConnectionStream = (props: {
               // No entity selected. This is benign
               return
             }
-            const artifact = kclManager.artifactGraph.get(entity_id)
+            const artifact = executingEditor.artifactGraph.get(entity_id)
             if (artifact?.type === 'gdtAnnotation') {
               const operation = findOperationForArtifact({
                 artifact,
-                operations: getAllOperations(kclManager.operationsByModule),
+                operations: getAllOperations(
+                  executingEditor.operationsByModule
+                ),
               })
               if (!operation) {
                 return
               }
 
               await prepareEditCommand({
-                artifactGraph: kclManager.artifactGraph,
-                code: kclManager.code,
+                artifactGraph: executingEditor.artifactGraph,
+                code: executingEditor.code,
                 commandBarActor: commands.actor,
                 operation,
-                rustContext: kclManager.rustContext,
+                rustContext: executingEditor.rustContext,
                 artifact,
               })
               return
@@ -149,7 +151,7 @@ export const ConnectionStream = (props: {
 
             const sketchBlockArtifact = getSketchBlockForArtifact(
               artifact,
-              kclManager.artifactGraph
+              executingEditor.artifactGraph
             )
             if (sketchBlockArtifact) {
               sceneInfra.modelingSend({
@@ -165,8 +167,8 @@ export const ConnectionStream = (props: {
                 const regionSelection =
                   await getEngineRegionSelectionFromEntity(
                     entity_id,
-                    kclManager.artifactGraph,
-                    kclManager.ast,
+                    executingEditor.artifactGraph,
+                    executingEditor.ast,
                     engineCommandManager,
                     wasmInstance
                   )
@@ -189,7 +191,7 @@ export const ConnectionStream = (props: {
                 key: entity_id,
                 types: ['path', 'solid2d', 'segment', 'helix'],
               },
-              kclManager.artifactGraph
+              executingEditor.artifactGraph
             )
             if (err(path)) {
               return path
@@ -203,11 +205,11 @@ export const ConnectionStream = (props: {
         commands.actor,
         engineCommandManager,
         isNetworkOkay,
-        kclManager.artifactGraph,
-        kclManager.ast,
-        kclManager.code,
-        kclManager.operationsByModule,
-        kclManager.rustContext,
+        executingEditor.artifactGraph,
+        executingEditor.ast,
+        executingEditor.code,
+        executingEditor.operationsByModule,
+        executingEditor.rustContext,
         modelingMachineState,
         sceneInfra.camControls.wasDragging,
         sceneInfra.modelingSend,

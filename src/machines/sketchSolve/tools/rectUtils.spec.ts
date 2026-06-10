@@ -13,7 +13,7 @@ import {
 } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
   createLineApiObject,
-  createMockKclManager,
+  createMockExecutingEditor,
   createMockRustContext,
   createPointApiObject,
   createSceneGraphDelta,
@@ -100,7 +100,7 @@ describe('rectUtils.getAngledRectangleCorners', () => {
 describe('rectUtils.createDraftRectangle', () => {
   it('adds center rectangle construction geometry and constraints in center mode', async () => {
     const rustContext = createMockRustContext()
-    const kclManager = createMockKclManager()
+    const executingEditor = createMockExecutingEditor()
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const addSegmentMock = vi.mocked(rustContext.addSegment)
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -171,7 +171,7 @@ describe('rectUtils.createDraftRectangle', () => {
 
     const result = await createDraftRectangle({
       rustContext,
-      kclManager,
+      executingEditor,
       sketchId: 7,
       mode: 'center',
       origin: [12, 8],
@@ -238,7 +238,7 @@ describe('rectUtils.createDraftRectangle', () => {
 
   it('adds a snap constraint for the rectangle origin point when the first click snaps', async () => {
     const rustContext = createMockRustContext()
-    const kclManager = createMockKclManager()
+    const executingEditor = createMockExecutingEditor()
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const addSegmentMock = vi.mocked(rustContext.addSegment)
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -294,7 +294,7 @@ describe('rectUtils.createDraftRectangle', () => {
 
     const result = await createDraftRectangle({
       rustContext,
-      kclManager,
+      executingEditor,
       sketchId: 4,
       mode: 'corner',
       origin: [1, 2],
@@ -312,7 +312,7 @@ describe('rectUtils.createDraftRectangle', () => {
 
   it('seeds corner rectangles at the clicked origin with a non-degenerate draft size', async () => {
     const rustContext = createMockRustContext()
-    const kclManager = createMockKclManager()
+    const executingEditor = createMockExecutingEditor()
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const addSegmentMock = vi.mocked(rustContext.addSegment)
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -353,7 +353,7 @@ describe('rectUtils.createDraftRectangle', () => {
 
     await createDraftRectangle({
       rustContext,
-      kclManager,
+      executingEditor,
       sketchId: 12,
       mode: 'corner',
       origin: [12, 8],
@@ -380,7 +380,7 @@ describe('rectUtils.createDraftRectangle', () => {
 describe('rectUtils.updateDraftRectangleAligned', () => {
   it('updates center rectangle diagonals and center point alongside the outer lines', async () => {
     const rustContext = createMockRustContext()
-    const kclManager = createMockKclManager()
+    const executingEditor = createMockExecutingEditor()
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const editSegmentsMock = vi.mocked(rustContext.editSegments)
 
@@ -391,7 +391,7 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
 
     await updateDraftRectangleAligned({
       rustContext,
-      kclManager,
+      executingEditor,
       sketchId: 9,
       draft: {
         lineIds: [1, 2, 3, 4],
@@ -455,7 +455,7 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
 
   it('keeps the first corner pinned when dragging into the negative quadrant', async () => {
     const rustContext = createMockRustContext()
-    const kclManager = createMockKclManager()
+    const executingEditor = createMockExecutingEditor()
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const editSegmentsMock = vi.mocked(rustContext.editSegments)
 
@@ -466,7 +466,7 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
 
     await updateDraftRectangleAligned({
       rustContext,
-      kclManager,
+      executingEditor,
       sketchId: 9,
       draft: {
         lineIds: [1, 2, 3, 4],

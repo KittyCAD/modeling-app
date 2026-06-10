@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { signal } from '@preact/signals-core'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
-import { KclManager } from '@src/lang/KclManager'
+import { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { App } from '@src/lib/app'
 import type { CommandArgument } from '@src/lib/commandTypes'
 
@@ -56,7 +56,7 @@ describe('CommandBarSelectionMixedInput', () => {
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-file', '', {
+      const executingEditor = new ExecutingEditor('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -89,7 +89,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-file', '', {
+      const executingEditor = new ExecutingEditor('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -119,7 +119,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-file', '', {
+      const executingEditor = new ExecutingEditor('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -149,7 +149,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should send clear selection command only once on mount', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-file', '', {
+      const executingEditor = new ExecutingEditor('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
@@ -194,7 +194,7 @@ describe('CommandBarSelectionMixedInput', () => {
 
     it('should set hasClearedSelection state after clearing', async () => {
       const app = App.getDefaultSystems()
-      const executingEditor = new KclManager('some-file', '', {
+      const executingEditor = new ExecutingEditor('some-file', '', {
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,

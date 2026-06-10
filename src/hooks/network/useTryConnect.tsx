@@ -1,6 +1,6 @@
 import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { useSingletons } from '@src/lib/boot'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -117,13 +117,13 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   sceneInfra,
   settingsActor,
   engineCommandManager,
-  kclManager,
+  executingEditor,
   rustContext,
 }: {
   sceneInfra: SceneInfra
   settingsActor: SettingsActorType
   engineCommandManager: ConnectionManager
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   rustContext: RustContext
 }) => {
   const providedSettings = getSettingsFromActorContext(settingsActor)
@@ -133,19 +133,19 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     message: 'rustContext.clearSceneAndBustCache()',
     metadata: {
       jsAppSettings: settings,
-      filePath: kclManager.path || undefined,
+      filePath: executingEditor.path || undefined,
     },
   })
   // Bust the cache always! A new connection has been made. The engine has no previous state
   await rustContext.clearSceneAndBustCache(
     settings,
-    kclManager.path || undefined
+    executingEditor.path || undefined
   )
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
-    message: 'kclManager.executeCode()',
+    message: 'executingEditor.executeCode()',
   })
-  await kclManager.executeCode()
+  await executingEditor.executeCode()
   // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
@@ -191,7 +191,7 @@ async function tryConnecting({
   setShowManualConnect,
   sceneInfra,
   engineCommandManager,
-  kclManager,
+  executingEditor,
   rustContext,
 }: {
   isConnecting: React.RefObject<boolean>
@@ -206,7 +206,7 @@ async function tryConnecting({
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
   sceneInfra: SceneInfra
   engineCommandManager: ConnectionManager
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   rustContext: RustContext
 }) {
   const connection = new Promise<string>((resolve, reject) => {
@@ -241,7 +241,7 @@ async function tryConnecting({
             sceneInfra,
             settingsActor,
             engineCommandManager,
-            kclManager,
+            executingEditor,
             rustContext,
           })
 
@@ -313,21 +313,21 @@ async function tryConnecting({
   return connection
 }
 export const useTryConnect = () => {
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext'
+    'engineCommandManager' | 'executingEditor' | 'rustContext'
   >
 
   return {
     tryConnecting: (args: TryConnectingArgs) =>
       tryConnecting({
         ...args,
-        engineCommandManager: kclManager.engineCommandManager,
-        kclManager,
-        rustContext: kclManager.rustContext,
+        engineCommandManager: executingEditor.engineCommandManager,
+        executingEditor,
+        rustContext: executingEditor.rustContext,
       }),
     isConnecting,
     numberOfConnectionAttempts,

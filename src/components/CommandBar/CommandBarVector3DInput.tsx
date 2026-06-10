@@ -1,6 +1,6 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
@@ -78,7 +78,7 @@ function CommandBarVector3DInput({
   arg,
   stepBack,
   onSubmit,
-  executingEditor: kclManager,
+  executingEditor: executingEditor,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector3d'
@@ -86,10 +86,10 @@ function CommandBarVector3DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
-  executingEditor: KclManager
+  executingEditor: ExecutingEditor
 }) {
   const { commands } = useApp()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const wasmInstance = use(executingEditor.wasmInstancePromise)
   const commandBarState = commands.useState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)
@@ -139,31 +139,31 @@ function CommandBarVector3DInput({
   const xCalculation = useCalculateKclExpression({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext: kclManager.rustContext,
+    rustContext: executingEditor.rustContext,
     options: calculateKclExpressionOptions,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext: kclManager.rustContext,
+    rustContext: executingEditor.rustContext,
     options: calculateKclExpressionOptions,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
   })
 
   const zCalculation = useCalculateKclExpression({
     value: z,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    rustContext: kclManager.rustContext,
+    rustContext: executingEditor.rustContext,
     options: calculateKclExpressionOptions,
-    code: kclManager.codeSignal.value,
-    ast: kclManager.astSignal.value,
-    variables: kclManager.variablesSignal.value,
+    code: executingEditor.codeSignal.value,
+    ast: executingEditor.astSignal.value,
+    variables: executingEditor.variablesSignal.value,
   })
 
   // DOM access for focus and keyboard navigation
@@ -236,7 +236,7 @@ function CommandBarVector3DInput({
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
     // Calculate the KCL expression
-    stringToKclExpression(vectorExpression, kclManager.rustContext, {
+    stringToKclExpression(vectorExpression, executingEditor.rustContext, {
       allowArrays: true,
     })
       .then((result) => {

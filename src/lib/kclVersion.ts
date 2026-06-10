@@ -1,4 +1,4 @@
-// This value is set by singletons.ts when it initializes kclManager
+// This value is set by singletons.ts when it initializes executingEditor
 let currentKclVersion = ''
 
 export function setKclVersion(version: string): void {

@@ -47,7 +47,7 @@ import {
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -55,7 +55,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -70,10 +70,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager, rustContext } =
+  const { instance, executingEditor, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -1596,7 +1596,7 @@ extrude002 = extrude(capEnd001, length = 5)
     const { artifactGraph, operations } = await getAstAndArtifactGraph(
       circleProfileInVar,
       instanceInThisFile,
-      kclManagerInThisFile
+      executingEditorInThisFile
     )
     const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
@@ -1698,7 +1698,7 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
     const { artifactGraph, operations } = await getAstAndArtifactGraph(
       code,
       instanceInThisFile,
-      kclManagerInThisFile
+      executingEditorInThisFile
     )
     const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'

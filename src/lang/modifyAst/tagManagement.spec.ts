@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
@@ -9,7 +9,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let kclManagerInThisFile: KclManager = null!
+let executingEditorInThisFile: ExecutingEditor = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 
 /**
@@ -23,10 +23,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager } =
+  const { instance, executingEditor, engineCommandManager } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
+  executingEditorInThisFile = executingEditor
   engineCommandManagerInThisFile = engineCommandManager
 })
 afterAll(() => {
@@ -36,11 +36,11 @@ afterAll(() => {
 const executeCode = async (
   code: string,
   instance: ModuleType,
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 ) => {
   const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const artifactGraph = kclManager.artifactGraph
+  await executingEditor.executeAst({ ast })
+  const artifactGraph = executingEditor.artifactGraph
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph }
 }
@@ -172,7 +172,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -204,7 +204,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -236,7 +236,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -269,7 +269,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -301,7 +301,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -332,7 +332,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -366,7 +366,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find a wall face artifact
       const wallArtifact = [...artifactGraph.values()].find(
@@ -403,7 +403,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find a cap face artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -438,7 +438,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
       // Find an edgeCut face artifact (created by chamfer)
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -472,7 +472,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         boxWithOneTagAndChamfer,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find the chamfer edgeCut artifact
@@ -505,7 +505,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const { ast, artifactGraph } = await executeCode(
         boxWithOneTagAndFillet,
         instanceInThisFile,
-        kclManagerInThisFile
+        executingEditorInThisFile
       )
 
       // Find the fillet edgeCut artifact

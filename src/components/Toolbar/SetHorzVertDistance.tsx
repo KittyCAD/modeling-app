@@ -5,7 +5,7 @@ import {
   GetInfoModal,
   createInfoModal,
 } from '@src/components/SetHorVertDistanceModal'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { createLiteral, createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -32,12 +32,12 @@ const getModalInfo = createInfoModal(GetInfoModal)
 export function horzVertDistanceInfo({
   selectionRanges,
   constraint,
-  kclManager,
+  executingEditor,
   wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   wasmInstance: ModuleType
 }):
   | {
@@ -47,7 +47,7 @@ export function horzVertDistanceInfo({
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance
     )
@@ -61,7 +61,7 @@ export function horzVertDistanceInfo({
 
   const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
-      kclManager.ast,
+      executingEditor.ast,
       codeRef.pathToNode,
       wasmInstance,
       'VariableDeclarator'
@@ -76,7 +76,7 @@ export function horzVertDistanceInfo({
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-    isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
+    isSketchVariablesLinked(secondary, primaryLine, executingEditor.ast)
   )
   const isAllTooltips = nodes.every(
     (node) =>
@@ -89,7 +89,7 @@ export function horzVertDistanceInfo({
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
-    kclManager.ast,
+    executingEditor.ast,
     constraint,
     wasmInstance
   )
@@ -104,11 +104,11 @@ export function horzVertDistanceInfo({
 export async function applyConstraintHorzVertDistance({
   selectionRanges,
   constraint,
-  kclManager,
+  executingEditor,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -117,17 +117,17 @@ export async function applyConstraintHorzVertDistance({
   const info = horzVertDistanceInfo({
     selectionRanges: selectionRanges,
     constraint,
-    kclManager,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    executingEditor,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
   const transformed = transformSecondarySketchLinesTagFirst({
-    ast: structuredClone(kclManager.ast),
+    ast: structuredClone(executingEditor.ast),
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
-    wasmInstance: await kclManager.wasmInstancePromise,
+    memVars: executingEditor.variables,
+    wasmInstance: await executingEditor.wasmInstancePromise,
   })
   if (err(transformed)) return Promise.reject(transformed)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -162,18 +162,18 @@ export async function applyConstraintHorzVertDistance({
     let finalValue = removeDoubleNegatives(
       valueNode,
       sign,
-      await kclManager.wasmInstancePromise,
+      await executingEditor.wasmInstancePromise,
       variableName
     )
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
-      ast: kclManager.ast,
+      ast: executingEditor.ast,
       selectionRanges,
       transformInfos,
-      memVars: kclManager.variables,
+      memVars: executingEditor.variables,
       forceSegName: segName,
       forceValueUsedInTransform: finalValue,
-      wasmInstance: await kclManager.wasmInstancePromise,
+      wasmInstance: await executingEditor.wasmInstancePromise,
     })
 
     if (err(transformed)) return Promise.reject(transformed)
@@ -207,12 +207,12 @@ export function applyConstraintHorzVertAlign({
   selectionRanges,
   constraint,
   wasmInstance,
-  kclManager,
+  executingEditor,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
   wasmInstance: ModuleType
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
 }):
   | {
       modifiedAst: Node<Program>
@@ -222,17 +222,17 @@ export function applyConstraintHorzVertAlign({
   const info = horzVertDistanceInfo({
     selectionRanges,
     constraint,
-    kclManager,
+    executingEditor,
     wasmInstance,
   })
   if (err(info)) return info
   const transformInfos = info.transforms
   let finalValue = createLiteral(0, wasmInstance)
   const retval = transformSecondarySketchLinesTagFirst({
-    ast: kclManager.ast,
+    ast: executingEditor.ast,
     selectionRanges,
     transformInfos,
-    memVars: kclManager.variables,
+    memVars: executingEditor.variables,
     forceValueUsedInTransform: finalValue,
     wasmInstance,
   })

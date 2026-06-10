@@ -7,7 +7,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -95,7 +95,7 @@ type ToolContext = {
   committedControlCount: number
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   cancelTarget: 'ready' | 'unequip'
   shouldFinishClosedSpline: boolean
@@ -795,7 +795,7 @@ function animateDraftPointListener({
 
       const [x, y] = snappingCandidate?.position ?? mousePosition
       const units = baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit
+        context.executingEditor.fileSettings.defaultLengthUnit
       )
 
       try {
@@ -1026,14 +1026,15 @@ export const machine = setup({
           points: [Coords2d, Coords2d, Coords2d]
           snapTargets: [SnapTarget | undefined, SnapTarget | undefined]
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<ToolDoneOutput | ErrorOutput> => {
-        const { points, snapTargets, rustContext, kclManager, sketchId } = input
+        const { points, snapTargets, rustContext, executingEditor, sketchId } =
+          input
         const settings = jsAppSettings(rustContext.settingsActor)
         const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
+          executingEditor.fileSettings.defaultLengthUnit
         )
 
         try {
@@ -1123,7 +1124,7 @@ export const machine = setup({
           draftPointId: number
           snapTarget?: SnapTarget
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<ToolDoneOutput | ErrorOutput> => {
@@ -1132,11 +1133,11 @@ export const machine = setup({
           draftPointId,
           snapTarget,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId,
         } = input
         const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
+          executingEditor.fileSettings.defaultLengthUnit
         )
         const settings = jsAppSettings(rustContext.settingsActor)
 
@@ -1195,7 +1196,7 @@ export const machine = setup({
           construction: boolean
           draftPoint: Coords2d
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<ToolDoneOutput | ErrorOutput> => {
@@ -1205,11 +1206,11 @@ export const machine = setup({
           construction,
           draftPoint,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId,
         } = input
         const units = baseUnitToNumericSuffix(
-          kclManager.fileSettings.defaultLengthUnit
+          executingEditor.fileSettings.defaultLengthUnit
         )
         const settings = jsAppSettings(rustContext.settingsActor)
         try {
@@ -1283,7 +1284,7 @@ export const machine = setup({
           points: Coords2d[]
           construction: boolean
           rustContext: RustContext
-          kclManager: KclManager
+          executingEditor: ExecutingEditor
           sketchId: number
         }
       }): Promise<ToolDoneOutput | ErrorOutput> => {
@@ -1292,7 +1293,7 @@ export const machine = setup({
           points,
           construction,
           rustContext,
-          kclManager,
+          executingEditor,
           sketchId,
         } = input
         const settings = jsAppSettings(rustContext.settingsActor)
@@ -1314,7 +1315,7 @@ export const machine = setup({
           }
 
           const units = baseUnitToNumericSuffix(
-            kclManager.fileSettings.defaultLengthUnit
+            executingEditor.fileSettings.defaultLengthUnit
           )
           const result = await rustContext.editSegments(
             0,
@@ -1358,7 +1359,7 @@ export const machine = setup({
     committedControlCount: 0,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
-    kclManager: input.kclManager,
+    executingEditor: input.executingEditor,
     sketchId: input.sketchId,
     cancelTarget: 'ready',
     shouldFinishClosedSpline: false,
@@ -1434,7 +1435,7 @@ export const machine = setup({
               context.secondSnapTarget,
             ] as const,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -1487,7 +1488,7 @@ export const machine = setup({
             draftPointId: context.draftPointId!,
             snapTarget: event.snapTarget,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -1568,7 +1569,7 @@ export const machine = setup({
             construction: state?.splineObj.kind.segment.construction ?? false,
             draftPoint: event.data,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },
@@ -1622,7 +1623,7 @@ export const machine = setup({
             points: state?.points ?? [],
             construction: state?.splineObj.kind.segment.construction ?? false,
             rustContext: context.rustContext,
-            kclManager: context.kclManager,
+            executingEditor: context.executingEditor,
             sketchId: context.sketchId,
           }
         },

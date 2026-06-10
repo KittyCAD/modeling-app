@@ -6,7 +6,7 @@ import type {
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -49,7 +49,7 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 type ConstraintToolContext = {
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   toolName: ConstraintToolName
   initialSelectionIds: SketchSolveSelectionId[]
@@ -65,7 +65,7 @@ type ConstraintToolContext = {
 type ConstraintToolInput = {
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
   initialSelectionIds: SketchSolveSelectionId[]
   initialObjects: ApiObject[]
@@ -78,9 +78,9 @@ type ConstraintToolApplyResult = {
   checkpointId?: number | null
 }
 
-function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
+function getDefaultLengthUnit(executingEditor: ExecutingEditor): NumericSuffix {
   return baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+    executingEditor.fileSettings.defaultLengthUnit ?? 'mm'
   )
 }
 
@@ -731,7 +731,7 @@ export function createConstraintToolMachine({
             normalized.selectionIds,
             event.objects,
             {
-              defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+              defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
             }
           ) !== null
         )
@@ -744,7 +744,7 @@ export function createConstraintToolMachine({
             currentSelectionIds: event.currentSelectionIds,
             clickedSelectionId: event.clickedSelectionId,
             objects: event.objects,
-            defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+            defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
           }).type === 'apply'
         )
       },
@@ -787,7 +787,7 @@ export function createConstraintToolMachine({
           currentSelectionIds: event.currentSelectionIds,
           clickedSelectionId: event.clickedSelectionId,
           objects: event.objects,
-          defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+          defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
         })
 
         if (clickAction.type === 'clear') {
@@ -814,7 +814,9 @@ export function createConstraintToolMachine({
                 normalized.selectionIds,
                 event.objects,
                 {
-                  defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+                  defaultLengthUnit: getDefaultLengthUnit(
+                    context.executingEditor
+                  ),
                 }
               ) ?? undefined,
           }
@@ -828,7 +830,7 @@ export function createConstraintToolMachine({
             currentSelectionIds: event.currentSelectionIds,
             clickedSelectionId: event.clickedSelectionId,
             objects: event.objects,
-            defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+            defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
           })
 
           return {
@@ -851,7 +853,7 @@ export function createConstraintToolMachine({
           currentSelectionIds: event.currentSelectionIds,
           candidateSelectionIds: event.candidateSelectionIds,
           objects: event.objects,
-          defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+          defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
         })
         const previewSelectionIds = getPreviewSelectionIds(selectionAction)
         const previewIds = previewSelectionIds
@@ -876,7 +878,7 @@ export function createConstraintToolMachine({
           currentSelectionIds: event.currentSelectionIds,
           candidateSelectionIds: event.candidateSelectionIds,
           objects: event.objects,
-          defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+          defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
         })
 
         sendDuringAreaSelectionToParent(self, [])
@@ -898,7 +900,7 @@ export function createConstraintToolMachine({
             currentSelectionIds: event.currentSelectionIds,
             candidateSelectionIds: event.candidateSelectionIds,
             objects: event.objects,
-            defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+            defaultLengthUnit: getDefaultLengthUnit(context.executingEditor),
           })
 
           return {
@@ -978,7 +980,7 @@ export function createConstraintToolMachine({
     context: ({ input }): ConstraintToolContext => ({
       sceneInfra: input.sceneInfra,
       rustContext: input.rustContext,
-      kclManager: input.kclManager,
+      executingEditor: input.executingEditor,
       sketchId: input.sketchId,
       toolName,
       initialSelectionIds: input.initialSelectionIds,
@@ -1050,7 +1052,9 @@ export function createConstraintToolMachine({
                     currentSelectionIds: event.currentSelectionIds,
                     candidateSelectionIds: event.candidateSelectionIds,
                     objects: event.objects,
-                    defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
+                    defaultLengthUnit: getDefaultLengthUnit(
+                      context.executingEditor
+                    ),
                   }).type === 'apply'
                 )
               },

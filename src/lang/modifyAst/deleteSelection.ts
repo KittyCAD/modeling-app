@@ -2,7 +2,7 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
@@ -22,11 +22,11 @@ export async function deleteSelectionPromise({
 }: {
   selection: Selection
   systemDeps: {
-    kclManager: KclManager
+    executingEditor: ExecutingEditor
     rustContext: RustContext
   }
 }): Promise<Error | undefined> {
-  const ast = systemDeps.kclManager.ast
+  const ast = systemDeps.executingEditor.ast
 
   // Filtering on type here for Rust API based deletion, as this is the point of convergence
   // of deletion calls, from the feature tree but also Delete hotkey globally.
@@ -70,7 +70,7 @@ export async function deleteSelectionPromise({
       return e as Error
     }
 
-    systemDeps.kclManager.updateCodeEditor(result.kclSource.text, {
+    systemDeps.executingEditor.updateCodeEditor(result.kclSource.text, {
       shouldExecute: true,
       shouldWriteToDisk: true,
     })
@@ -81,11 +81,11 @@ export async function deleteSelectionPromise({
   const modifiedAst = await deleteFromSelection(
     ast,
     selection,
-    systemDeps.kclManager.variables,
-    systemDeps.kclManager.artifactGraph,
-    await systemDeps.kclManager.wasmInstancePromise,
-    systemDeps.kclManager.sceneEntitiesManager.getFaceDetails.bind(
-      systemDeps.kclManager.sceneEntitiesManager
+    systemDeps.executingEditor.variables,
+    systemDeps.executingEditor.artifactGraph,
+    await systemDeps.executingEditor.wasmInstancePromise,
+    systemDeps.executingEditor.sceneEntitiesManager.getFaceDetails.bind(
+      systemDeps.executingEditor.sceneEntitiesManager
     )
   )
   if (err(modifiedAst)) {
@@ -121,7 +121,7 @@ export async function deleteSelectionPromise({
   await updateModelingState(
     astToApply,
     EXECUTION_TYPE_REAL,
-    systemDeps.kclManager,
+    systemDeps.executingEditor,
     {
       isDeleting: true,
     }

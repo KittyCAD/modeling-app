@@ -5,7 +5,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -75,7 +75,7 @@ export type ToolContext = {
   sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
-  kclManager: KclManager
+  executingEditor: ExecutingEditor
   sketchId: number
 }
 
@@ -268,7 +268,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         })
 
         const units = baseUnitToNumericSuffix(
-          context.kclManager.fileSettings.defaultLengthUnit
+          context.executingEditor.fileSettings.defaultLengthUnit
         )
         try {
           isEditInProgress = true
@@ -658,7 +658,7 @@ export async function createArcActor({
         startPoint: [number, number]
         centerSnapTarget?: SnapTarget
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
       }
     | {
@@ -682,11 +682,11 @@ export async function createArcActor({
     startPoint,
     centerSnapTarget,
     rustContext,
-    kclManager,
+    executingEditor,
     sketchId,
   } = input
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
 
   try {
@@ -800,7 +800,7 @@ export async function finalizeArcActor({
         startSnapTarget?: SnapTarget
         endSnapTarget?: SnapTarget
         rustContext: RustContext
-        kclManager: KclManager
+        executingEditor: ExecutingEditor
         sketchId: number
         arcIsSwapped?: boolean
       }
@@ -828,12 +828,12 @@ export async function finalizeArcActor({
     startSnapTarget,
     endSnapTarget,
     rustContext,
-    kclManager,
+    executingEditor,
     sketchId,
     arcIsSwapped: contextIsSwapped,
   } = input
   const units = baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit
+    executingEditor.fileSettings.defaultLengthUnit
   )
 
   try {

@@ -83,10 +83,10 @@ const Home = () => {
   useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
-  const { kclManager } = useSingletons()
+  const { executingEditor } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects(executingEditor)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -216,8 +216,8 @@ const Home = () => {
   // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-    kclManager.cancelAllExecutions()
-  }, [kclManager])
+    executingEditor.cancelAllExecutions()
+  }, [executingEditor])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -257,7 +257,7 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      kclManager,
+                      executingEditor,
                       systemIOActor,
                       settingsActor,
                       executingPath,
