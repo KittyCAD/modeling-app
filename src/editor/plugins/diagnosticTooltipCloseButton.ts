@@ -2,6 +2,9 @@ import type { Extension } from '@codemirror/state'
 import { EditorView, ViewPlugin, closeHoverTooltips } from '@codemirror/view'
 
 const closeButtonClass = 'cm-diagnosticClose'
+const lintTooltipSelector = '.cm-tooltip-lint'
+const tooltipSelector = '.cm-tooltip-hover.cm-tooltip'
+const observedTooltipSelector = `${tooltipSelector}, ${lintTooltipSelector}`
 
 class DiagnosticTooltipCloseButton {
   private observer: MutationObserver | null = null
@@ -14,15 +17,21 @@ class DiagnosticTooltipCloseButton {
       return
     }
 
-    this.observer = new MutationObserver(() => this.addCloseButtons())
+    this.observer = new MutationObserver((records) => {
+      const hasTooltip = records.some((record) =>
+        Array.from(record.addedNodes).some(
+          (node) =>
+            node instanceof HTMLElement && node.matches(observedTooltipSelector)
+        )
+      )
+      if (!hasTooltip) return
+
+      this.addCloseButtons()
+    })
     this.observer.observe(document.body, {
       childList: true,
       subtree: true,
     })
-    this.addCloseButtons()
-  }
-
-  update() {
     this.addCloseButtons()
   }
 
@@ -34,7 +43,7 @@ class DiagnosticTooltipCloseButton {
     if (typeof document === 'undefined') return
 
     document
-      .querySelectorAll<HTMLElement>('.cm-tooltip-lint .cm-diagnostic')
+      .querySelectorAll<HTMLElement>(`${lintTooltipSelector} .cm-diagnostic`)
       .forEach((diagnostic) => {
         if (diagnostic.querySelector(`button.${closeButtonClass}`)) return
 
@@ -49,7 +58,7 @@ class DiagnosticTooltipCloseButton {
           // This only closes the hover tooltip state:
           this.view.dispatch({ effects: closeHoverTooltips })
           // gutter / parse-error lint tooltips removed manually
-          button.closest('.cm-tooltip-lint')?.remove()
+          button.closest(lintTooltipSelector)?.remove()
         }
 
         button.addEventListener('mousedown', close)
