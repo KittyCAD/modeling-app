@@ -258,6 +258,17 @@ impl Args {
             .collect::<Result<Vec<_>, _>>()
     }
 
+    pub(crate) fn kw_arg_edge_array_and_source_opt(
+        &self,
+        label: &str,
+    ) -> Result<Option<Vec<(EdgeReference, SourceRange)>>, KclError> {
+        if !self.labeled.contains_key(label) {
+            return Ok(None);
+        }
+
+        self.kw_arg_edge_array_and_source(label).map(Some)
+    }
+
     pub(crate) fn get_unlabeled_kw_arg_array_and_type(
         &self,
         label: &str,

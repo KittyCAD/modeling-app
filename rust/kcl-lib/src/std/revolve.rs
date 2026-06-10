@@ -11,6 +11,7 @@ use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::DEFAULT_TOLERANCE_MM;
+use super::args::FromKclValue;
 use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -21,12 +22,11 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::types::ArrayLen;
-use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
-use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::edge;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::do_post_extrude;
 
@@ -42,15 +42,24 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ),
         exec_state,
     )?;
-    let axis = args.get_kw_arg(
-        "axis",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::Primitive(PrimitiveType::Axis2d),
-            RuntimeType::segment(),
-        ]),
-        exec_state,
-    )?;
+
+    // axis accepts: (1) Edge or Axis2d (legacy), or (2) an object with sideFaces (edge reference payload)
+    let axis_value: KclValue = args.get_kw_arg("axis", &RuntimeType::any(), exec_state)?;
+    let axis: Axis2dOrEdgeReference = if edge::is_edge_specifier_object(&axis_value) {
+        let spec = edge::parse_edge_specifier_value(&axis_value, &args)?;
+        let edge_reference =
+            edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
+        Axis2dOrEdgeReference::EdgeSpecifier(edge_reference)
+    } else if let Some(axis_val) = Axis2dOrEdgeReference::from_kcl_val(&axis_value) {
+        axis_val
+    } else {
+        return Err(KclError::new_type(KclErrorDetails {
+            message: "axis must be an Edge, Axis2d, Segment, or an object with 'sideFaces' (edge reference)"
+                .to_string(),
+            source_ranges: vec![args.source_range],
+            backtrace: Default::default(),
+        }));
+    };
     let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
@@ -203,6 +212,26 @@ async fn inner_revolve(
                                 .angle(angle)
                                 .target(sketch.id.into())
                                 .edge_id(edge_id)
+                                .tolerance(LengthUnit(tolerance))
+                                .opposite(opposite.clone())
+                                .body_type(body_type)
+                                .build(),
+                        ),
+                    )
+                    .await?;
+                //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear
+                glm::DVec2::new(0.0, 1.0)
+            }
+            Axis2dOrEdgeReference::EdgeSpecifier(edge_ref) => {
+                // New API: use EdgeReference directly
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
+                        ModelingCmd::from(
+                            mcmd::RevolveAboutEdge::builder()
+                                .angle(angle)
+                                .target(sketch.id.into())
+                                .edge_reference(edge_ref.clone())
                                 .tolerance(LengthUnit(tolerance))
                                 .opposite(opposite.clone())
                                 .body_type(body_type)
