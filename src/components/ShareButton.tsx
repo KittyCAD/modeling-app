@@ -76,11 +76,10 @@ function SharePopoverContent({
   const allowOrgRestrict = !!billingContext.isOrg
   const allowPassword = !!billingContext.hasSubscription
   const executingEditor = app.projectSignal.value?.executingEditor.value
-  if (!executingEditor) {
-    return null
-  }
-  const ast = executingEditor.astSignal.value
-  const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
+  const ast = executingEditor?.astSignal.value
+  const shareDisabled =
+    !executingEditor ||
+    (ast?.body.some((n) => n.type === 'ImportStatement') ?? false)
 
   const onCopyShareLink = useCallback(
     async ({
@@ -90,6 +89,9 @@ function SharePopoverContent({
       isRestrictedToOrg: boolean
       password: string
     }) => {
+      if (!executingEditor) {
+        return false
+      }
       return copyFileShareLink({
         token,
         code: executingEditor.code,

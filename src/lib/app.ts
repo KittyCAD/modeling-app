@@ -9,7 +9,7 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { ExecutingEditor, ZDSProject } from '@src/lang/ExecutingEditor'
+import { type ExecutingEditor, ZDSProject } from '@src/lang/ExecutingEditor'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'

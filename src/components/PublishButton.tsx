@@ -68,16 +68,13 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const executingEditor = app.projectSignal.value?.executingEditor.value
-  if (!executingEditor) {
-    return null
-  }
-  const ast = executingEditor.astSignal.value
-  const kclEmpty = executingEditor.isAstBodyEmpty(ast)
-  const hasKclErrors = executingEditor.hasErrors()
-  const buttonDisabled = kclEmpty || hasKclErrors
+  const ast = executingEditor?.astSignal.value
+  const kclEmpty = ast ? executingEditor.isAstBodyEmpty(ast) : true
+  const hasKclErrors = executingEditor?.hasErrors() ?? false
+  const buttonDisabled = !executingEditor || kclEmpty || hasKclErrors
 
   const fetchPublicationDetails = useCallback(async () => {
-    if (!token || !project) {
+    if (!token || !project || !executingEditor) {
       return null
     }
 
@@ -126,6 +123,9 @@ function PublishPopoverContent({
     Required<ComponentProps<typeof PublishDialog>>['onSubmit']
   >(
     async (submission) => {
+      if (!executingEditor) {
+        return false
+      }
       const wasmInstance = await executingEditor.wasmInstancePromise
       const published = await publishCurrentProject({
         token,
