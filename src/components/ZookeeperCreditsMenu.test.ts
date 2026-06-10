@@ -66,6 +66,22 @@ test('does not estimate without a pay as you go price ratio', () => {
   ).toBe(20)
 })
 
+test('leaves unlimited account balances unchanged', () => {
+  const usageStartedAt = new Date('2026-06-08T12:00:00.000Z')
+
+  expect(
+    getEstimatedBillingBalance(
+      createBillingContext({
+        balance: Number.POSITIVE_INFINITY,
+        payAsYouGoApiCreditPrice: 0.0083,
+        usageAccumulatedMs: 120_000,
+        usageStartedAt,
+      }),
+      usageStartedAt.getTime() + 90_000
+    )
+  ).toBe(Number.POSITIVE_INFINITY)
+})
+
 test('does not show negative estimated balances', () => {
   expect(
     getEstimatedBillingBalance(
