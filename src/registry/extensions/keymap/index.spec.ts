@@ -255,7 +255,7 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
-  it('keeps saved overrides active if the initial persisted keymap load resolves later', async () => {
+  it('waits for the initial persisted keymap load before saving overrides', async () => {
     let resolveInitialRead: ((keymap: PersistedKeymap) => void) | undefined
     persistenceMocks.readUserKeymapFile.mockReturnValueOnce(
       new Promise((resolve) => {
@@ -267,7 +267,7 @@ describe('keymap extension', () => {
     const keymap = registry.get(keymapService)
     keymap.applyScope(MODE_SKETCHING_KEYMAP_SCOPE)
 
-    await keymap.savePersistedKeymap({
+    const savePromise = keymap.savePersistedKeymap({
       version: KEYMAP_SCHEMA_VERSION,
       bindings: [
         {
@@ -277,6 +277,12 @@ describe('keymap extension', () => {
         },
       ],
     })
+
+    await Promise.resolve()
+    expect(persistenceMocks.writeUserKeymapFile).not.toHaveBeenCalled()
+
+    resolveInitialRead?.({ version: KEYMAP_SCHEMA_VERSION, bindings: [] })
+    await savePromise
 
     expect(
       keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
@@ -289,15 +295,6 @@ describe('keymap extension', () => {
         { source: 'global' }
       )
     ).toBe(true)
-
-    resolveInitialRead?.({ version: KEYMAP_SCHEMA_VERSION, bindings: [] })
-    await Promise.resolve()
-
-    expect(
-      keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
-        source: 'global',
-      })
-    ).toBe(false)
 
     registry[Symbol.dispose]()
   })

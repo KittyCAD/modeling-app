@@ -1,6 +1,6 @@
+import { parsePersistedKeymap } from '@src/registry/extensions/keymap/persistence'
 import { parse } from 'smol-toml'
 import { describe, expect, it } from 'vitest'
-import { parsePersistedKeymap } from '@src/registry/extensions/keymap/persistence'
 
 describe('keymap persistence', () => {
   it('parses persisted keymap TOML bindings', () => {
