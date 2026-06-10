@@ -827,6 +827,10 @@ function getReplayErrorMessage(error: unknown) {
 }
 
 function isEnoentError(error: unknown): boolean {
+  if (error === 'ENOENT') {
+    return true
+  }
+
   return (
     typeof error === 'object' &&
     error !== null &&

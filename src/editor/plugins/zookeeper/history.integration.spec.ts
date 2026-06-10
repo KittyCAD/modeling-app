@@ -845,6 +845,9 @@ describe('Zookeeper project history integration', () => {
         patch: mergedPatch,
       })
     )
+    vi.spyOn(fsZds, 'readFile').mockImplementationOnce(() =>
+      Promise.reject('ENOENT')
+    )
 
     harness.kclManager.undo()
     await waitForHistoryIdle(harness.kclManager)
