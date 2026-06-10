@@ -413,6 +413,15 @@ export const modelingCommandStdLibDriftConfig = {
       edges: 'objects',
     },
   },
+  'GDT Angularity': {
+    stdLibName: 'gdt::angularity',
+    editFlow: true,
+    requiredArgOrder: ['objects', 'tolerance'],
+    argAliases: {
+      faces: 'objects',
+      edges: 'objects',
+    },
+  },
   'GDT Parallelism': {
     stdLibName: 'gdt::parallelism',
     editFlow: true,

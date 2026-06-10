@@ -1,6 +1,7 @@
 import { STD_LIB_COMMANDS } from '@rust/kcl-lib/bindings/StdLibCommands'
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   type ModelingCommandSchema,
   getDefaultGdtTolerance,
@@ -130,6 +131,12 @@ describe('stdlib command arg derivation', () => {
 })
 
 describe('modeling command stdlib drift', () => {
+  it('covers every shared modeling codemod', () => {
+    expect(Object.keys(modelingCommandStdLibDriftConfig).sort()).toEqual(
+      Object.keys(modelingCommandCodemods).sort()
+    )
+  })
+
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {
     for (const [commandName, driftConfig] of Object.entries(
       modelingCommandStdLibDriftConfig

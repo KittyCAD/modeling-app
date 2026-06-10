@@ -210,6 +210,7 @@ export type GdtDistanceCommandArgs = Override<
 >
 export type GdtPerpendicularityCommandArgs =
   GdtObjectsCommandArgs<'gdt::perpendicularity'>
+export type GdtAngularityCommandArgs = GdtObjectsCommandArgs<'gdt::angularity'>
 export type GdtParallelismCommandArgs =
   GdtObjectsCommandArgs<'gdt::parallelism'>
 export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'gdt::annotation'>

@@ -134,6 +134,20 @@ type AddCodemod<
 type ModelingCodemodOptions<CommandName extends keyof ModelingCommandSchema> =
   Omit<ModelingCommandCodemodConfig<CommandName>, 'run'>
 
+const addCodemodArgs = <
+  CommandName extends keyof ModelingCommandSchema,
+  ExtraContext extends object = object,
+>(
+  args: ModelingCommandSchema[CommandName],
+  context: ExtraContext & {
+    ast: Node<Program>
+    wasmInstance: ModuleType
+  }
+): AddCodemodArgs<CommandName, ExtraContext> => ({
+  ...args,
+  ...context,
+})
+
 const withAst = <CommandName extends keyof ModelingCommandSchema>(
   add: AddCodemod<CommandName>,
   options?: ModelingCodemodOptions<CommandName>
@@ -155,15 +169,13 @@ const withArtifactGraph = <CommandName extends keyof ModelingCommandSchema>(
   defineModelingCodemod<ModelingCommandSchema[CommandName]>({
     ...options,
     run: ({ args, ast, kclManager, wasmInstance }) =>
-      add({
-        ...args,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance,
-      } as unknown as AddCodemodArgs<
-        CommandName,
-        { artifactGraph: ArtifactGraph }
-      >),
+      add(
+        addCodemodArgs(args, {
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          wasmInstance,
+        })
+      ),
   })
 
 const withArtifactGraphAndVariables = <
@@ -178,16 +190,14 @@ const withArtifactGraphAndVariables = <
   defineModelingCodemod<ModelingCommandSchema[CommandName]>({
     ...options,
     run: ({ args, ast, kclManager, wasmInstance }) =>
-      add({
-        ...args,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        variables: kclManager.variables,
-        wasmInstance,
-      } as unknown as AddCodemodArgs<
-        CommandName,
-        { artifactGraph: ArtifactGraph; variables: VariableMap }
-      >),
+      add(
+        addCodemodArgs(args, {
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          variables: kclManager.variables,
+          wasmInstance,
+        })
+      ),
   })
 
 type GdtCommandData = Parameters<typeof withDefaultGdtFrameDefaults>[0]['data']
@@ -208,15 +218,13 @@ const withGdtDefaults = <CommandName extends keyof ModelingCommandSchema>(
         wasmInstance,
       })
 
-      return add({
-        ...data,
-        ast,
-        artifactGraph: kclManager.artifactGraph,
-        wasmInstance,
-      } as unknown as AddCodemodArgs<
-        CommandName,
-        { artifactGraph: ArtifactGraph }
-      >)
+      return add(
+        addCodemodArgs(data as ModelingCommandSchema[CommandName], {
+          ast,
+          artifactGraph: kclManager.artifactGraph,
+          wasmInstance,
+        })
+      )
     },
   })
 

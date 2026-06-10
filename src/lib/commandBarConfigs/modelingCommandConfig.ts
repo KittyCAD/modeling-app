@@ -124,6 +124,16 @@ type WithCommandBarEditFlowArgs<Schema> = {
   [CommandName in keyof Schema]: Schema[CommandName] & CommandBarEditFlowArgs
 }
 
+const isEditingNode = (context: {
+  argumentsToSubmit: Record<string, unknown>
+}) => Boolean(context.argumentsToSubmit.nodeToEdit)
+
+const isEditingNodeSelection = (context: {
+  argumentsToSubmit: Record<string, unknown>
+  selectedCommand?: { useModelingDialog?: boolean }
+}) =>
+  isEditingNode(context) && context.selectedCommand?.useModelingDialog !== true
+
 type EditableStdLibModelingCommandSchema = WithCommandBarEditFlowArgs<{
   Extrude: StdLibCommandTypes.ExtrudeCommandArgs
   Sweep: StdLibCommandTypes.SweepCommandArgs
@@ -154,6 +164,7 @@ type EditableStdLibModelingCommandSchema = WithCommandBarEditFlowArgs<{
   'GDT Profile': StdLibCommandTypes.GdtProfileCommandArgs
   'GDT Distance': StdLibCommandTypes.GdtDistanceCommandArgs
   'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
+  'GDT Angularity': StdLibCommandTypes.GdtAngularityCommandArgs
   'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
   'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
   'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
@@ -196,17 +207,6 @@ export type ModelingCommandSchema = {
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
-  'GDT Angularity': {
-    nodeToEdit?: PathToNode
-    objects: Selections
-    datums?: KclCommandValue
-    tolerance: KclCommandValue
-    precision?: KclCommandValue
-    framePosition?: KclCommandValue
-    framePlane?: string
-    leaderScale?: KclCommandValue
-    fontSize?: KclCommandValue
-  }
   'Mirror 3D': StdLibCommandTypes.Mirror3DCommandArgs
   'Boolean Subtract': StdLibCommandTypes.BooleanSubtractCommandArgs
   'Boolean Union': StdLibCommandTypes.BooleanUnionCommandArgs
@@ -598,7 +598,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'engineRegion',
             ],
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           length: {
             defaultValue: KCL_DEFAULT_LENGTH,
@@ -648,14 +648,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           displayName: 'Profiles',
           selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         path: {
           inputType: 'selection',
           selectionTypes: ['segment', 'path', 'helix'],
           clearSelectionFirst: true,
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         relativeTo: {
           inputType: 'options',
@@ -685,7 +685,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           displayName: 'Profiles',
           selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         bodyType: {
           inputType: 'options',
@@ -715,7 +715,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'engineRegion',
             ],
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           axisOrEdge: {
             inputType: 'options',
@@ -725,7 +725,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
               { name: 'Edge', isCurrent: false, value: 'Edge' },
             ],
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           axis: {
             required: (context) =>
@@ -737,7 +737,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'Y Axis', isCurrent: false, value: 'Y' },
             ],
             hidden: (context) =>
-              Boolean(context.argumentsToSubmit.nodeToEdit) ||
+              isEditingNode(context) ||
               !['Axis'].includes(
                 context.argumentsToSubmit.axisOrEdge as string
               ),
@@ -749,7 +749,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
             multiple: false,
             hidden: (context) =>
-              Boolean(context.argumentsToSubmit.nodeToEdit) ||
+              isEditingNode(context) ||
               !['Edge'].includes(
                 context.argumentsToSubmit.axisOrEdge as string
               ),
@@ -779,7 +779,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           inputType: 'selection',
           selectionTypes: ['cap', 'wall'],
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         thickness: {
           defaultValue: KCL_DEFAULT_LENGTH,
@@ -802,7 +802,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           inputType: 'selection',
           selectionTypes: ['cap', 'wall', 'edgeCut'],
           multiple: false,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         cutAt: {
           defaultValue: KCL_DEFAULT_ORIGIN_2D,
@@ -925,14 +925,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tools: {
             ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
             clearSelectionFirst: true,
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
         },
       }
@@ -954,7 +954,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selectionMixed',
             multiple: true,
             skip: false,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
         },
       }
@@ -976,7 +976,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selectionMixed',
             multiple: true,
             skip: false,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
         },
       }
@@ -998,14 +998,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tools: {
             ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
             clearSelectionFirst: true,
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
         },
       }
@@ -1034,7 +1034,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'primitiveFace',
             ],
             multiple: false,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           offset: {
             defaultValue: KCL_DEFAULT_LENGTH,
@@ -1061,7 +1061,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             { name: 'Edge', isCurrent: false, value: 'Edge' },
             { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
           ],
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         axis: {
           inputType: 'options',
@@ -1082,7 +1082,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           required: (context) =>
             ['Edge'].includes(context.argumentsToSubmit.mode as string),
           hidden: (context) =>
-            Boolean(context.argumentsToSubmit.nodeToEdit) ||
+            isEditingNode(context) ||
             !['Edge'].includes(context.argumentsToSubmit.mode as string),
         },
         cylinder: {
@@ -1092,7 +1092,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           required: (context) =>
             ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
           hidden: (context) =>
-            Boolean(context.argumentsToSubmit.nodeToEdit) ||
+            isEditingNode(context) ||
             !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
         },
         revolutions: {
@@ -1259,8 +1259,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             'enginePrimitiveEdge',
           ],
           multiple: true,
+          required: true,
           skip: false,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         radius: {
           defaultValue: KCL_DEFAULT_LENGTH,
@@ -1293,8 +1294,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'enginePrimitiveEdge',
             ],
             multiple: true,
+            required: true,
             skip: false,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           length: {
             defaultValue: KCL_DEFAULT_LENGTH,
@@ -1417,7 +1419,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['path', 'sweep', 'compositeSolid'],
             selectionFilter: ['object'],
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           color: {
             inputType: 'color',
@@ -1459,7 +1461,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           x: {
             defaultValue: KCL_DEFAULT_TRANSFORM,
@@ -1487,7 +1489,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ...objectsTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         roll: {
           defaultValue: KCL_DEFAULT_TRANSFORM,
@@ -1514,7 +1516,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ...objectsTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         x: {
           defaultValue: KCL_DEFAULT_SCALE,
@@ -1544,7 +1546,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ...objectsTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: false, // only one object can be cloned at this time
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         variableName: {
           inputType: 'string',
@@ -1630,7 +1632,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ...objectsTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         instances: {
           defaultValue: KCL_DEFAULT_INSTANCES,
@@ -1668,7 +1670,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           instances: {
             defaultValue: KCL_DEFAULT_INSTANCES,
@@ -1705,7 +1707,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: ['cap', 'wall', 'edgeCut'],
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
@@ -1730,7 +1732,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
@@ -1755,7 +1757,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
@@ -1780,7 +1782,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
@@ -1804,7 +1806,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: ['cap', 'wall', 'edgeCut'],
             multiple: false,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           name: {
             defaultValue: (_, modelingContext) =>
@@ -1834,7 +1836,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           datums: datumsProps,
           tolerance: gdtToleranceProps,
@@ -1859,7 +1861,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: ['segment', 'sweepEdge'],
             multiple: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           datums: datumsProps,
           tolerance: gdtToleranceProps,
@@ -1885,7 +1887,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
@@ -1910,7 +1912,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
           multiple: true,
           required: true,
-          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          hidden: isEditingNodeSelection,
         },
         datums: datumsProps,
         tolerance: gdtToleranceProps,
@@ -1926,54 +1928,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['GDT Angularity']
     ),
-    args: {
-      nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        inputType: 'text',
-        required: false,
-        hidden: true,
-      },
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      datums: {
-        ...datumsProps,
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Angularity']>(
+      'GDT Angularity',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: isEditingNodeSelection,
+          },
+          datums: datumsProps,
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Parallelism': {
     description:
@@ -1992,7 +1963,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           datums: datumsProps,
           tolerance: gdtToleranceProps,
@@ -2017,7 +1988,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
-            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+            hidden: isEditingNodeSelection,
           },
           annotation: {
             inputType: 'text',

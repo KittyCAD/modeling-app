@@ -1573,6 +1573,7 @@ export function addAngularityGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Angularity')
 
   const createAngularityCall = (
     targetArgName: 'faces' | 'edges',
@@ -1596,11 +1597,11 @@ export function addAngularityGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'angularity',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
