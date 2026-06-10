@@ -46,7 +46,10 @@ class DiagnosticTooltipCloseButton {
         const close = (event: Event) => {
           event.preventDefault()
           event.stopPropagation()
+          // This only closes the hover tooltip state:
           this.view.dispatch({ effects: closeHoverTooltips })
+          // gutter / parse-error lint tooltips removed manually
+          button.closest('.cm-tooltip-lint')?.remove()
         }
 
         button.addEventListener('mousedown', close)
