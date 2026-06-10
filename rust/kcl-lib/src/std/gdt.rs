@@ -116,6 +116,7 @@ enum GdtFeatureControlKind {
     Cylindricity,
     Profile,
     Position,
+    Angularity,
     Perpendicularity,
     Parallelism,
 }
@@ -141,6 +142,7 @@ impl GdtFeatureControlKind {
             Self::Cylindricity => "Cylindricity",
             Self::Profile => "Profile",
             Self::Position => "Position",
+            Self::Angularity => "Angularity",
             Self::Perpendicularity => "Perpendicularity",
             Self::Parallelism => "Parallelism",
         }
@@ -154,6 +156,7 @@ impl GdtFeatureControlKind {
             Self::Cylindricity => MbdSymbol::Cylindricity,
             Self::Profile => MbdSymbol::ProfileOfLine,
             Self::Position => MbdSymbol::Position,
+            Self::Angularity => MbdSymbol::Angularity,
             Self::Perpendicularity => MbdSymbol::Perpendicularity,
             Self::Parallelism => MbdSymbol::Parallelism,
         }
@@ -735,6 +738,50 @@ async fn create_basic_distance_annotation(
         meta,
     });
     Ok(())
+}
+
+pub async fn angularity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = create_feature_control_annotations(
+        GdtFeatureControlKind::Angularity,
+        GdtFeatureControlParams {
+            faces: faces.unwrap_or_default(),
+            edges: edges.unwrap_or_default(),
+            datums,
+            tolerance,
+            precision,
+            frame_position,
+            frame_plane,
+            leader_scale,
+            font_size,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
 }
 
 pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1383,6 +1430,25 @@ gdt::flatness(
         })
     }
 
+    fn find_control_frame_with_symbol(
+        commands: &[ModelingCmd],
+        symbol: MbdSymbol,
+    ) -> Result<&AnnotationMbdControlFrame, KclError> {
+        for command in commands {
+            if let Ok(feature_control) = feature_control(command)
+                && let Some(control_frame) = feature_control.control_frame.as_ref()
+                && control_frame.symbol == symbol
+            {
+                return Ok(control_frame);
+            }
+        }
+
+        Err(KclError::new_internal(KclErrorDetails::new(
+            format!("expected commands to contain a {symbol:?} control frame"),
+            vec![SourceRange::default()],
+        )))
+    }
+
     #[track_caller]
     fn assert_close(actual: f64, expected: f64) {
         assert!((actual - expected).abs() < 1e-6, "expected {expected}, got {actual}");
@@ -1634,6 +1700,127 @@ gdt::datum(face = top, name = "A", framePosition = [10mm, 0mm], framePlane = XZ)
     async fn gdt_annotations_do_not_follow_runtime_artifact_graph_setting() {
         assert_eq!(gdt_artifact_count(false).await, 1);
         assert_eq!(gdt_artifact_count(true).await, 1);
+    }
+
+    const GDT_ANGULARITY_FACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+basicAngle = 30deg
+thickness = 3.5mm
+flangeLength = 24mm
+bendStartX = 5mm
+legLength = 30mm
+legRun = legLength * cos(basicAngle)
+legRise = legLength * sin(basicAngle)
+normalRun = thickness * sin(basicAngle)
+normalRise = thickness * cos(basicAngle)
+annotationFont = 2mm
+
+stampedProfile = sketch(on = XY) {
+  datumFace = line(start = [var 0mm, var 0mm], end = [var 24mm, var 0mm])
+  flangeEnd = line(start = [var 24mm, var 0mm], end = [var 24mm, var 3.5mm])
+  innerFlange = line(start = [var 24mm, var 3.5mm], end = [var 5mm, var 3.5mm])
+  controlledSurface = line(start = [var 5mm, var 3.5mm], end = [var 30.98mm, var 18.5mm])
+  tabEnd = line(start = [var 30.98mm, var 18.5mm], end = [var 29.23mm, var 21.53mm])
+  outerSurface = line(start = [var 29.23mm, var 21.53mm], end = [var 3.25mm, var 6.53mm])
+  outsideBend = line(start = [var 3.25mm, var 6.53mm], end = [var 0mm, var 0mm])
+  coincident([datumFace.end, flangeEnd.start])
+  coincident([flangeEnd.end, innerFlange.start])
+  coincident([innerFlange.end, controlledSurface.start])
+  coincident([controlledSurface.end, tabEnd.start])
+  coincident([tabEnd.end, outerSurface.start])
+  coincident([outerSurface.end, outsideBend.start])
+  coincident([outsideBend.end, datumFace.start])
+  coincident([datumFace.start, ORIGIN])
+  horizontal(datumFace)
+  horizontal(innerFlange)
+  vertical(flangeEnd)
+  distance([datumFace.start, datumFace.end]) == flangeLength
+  distance([flangeEnd.start, flangeEnd.end]) == thickness
+  distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
+  distance([controlledSurface.start, controlledSurface.end]) == legLength
+  distance([tabEnd.start, tabEnd.end]) == thickness
+  distance([outerSurface.start, outerSurface.end]) == legLength
+  parallel([controlledSurface, outerSurface])
+  perpendicular([controlledSurface, tabEnd])
+  angle([datumFace, controlledSurface]) == basicAngle
+}
+
+stampedPart = extrude(region(point = [12mm, 2mm], sketch = stampedProfile), length = 0.8mm)
+
+gdt::datum(face = stampedPart.sketch.tags.datumFace, name = "A", framePosition = [6mm, -4mm], framePlane = XY, fontSize = annotationFont)
+gdt::angularity(faces = [stampedPart.sketch.tags.controlledSurface], tolerance = 0.1mm, datums = ["A"], framePosition = [-12mm, 11mm], framePlane = XZ, fontSize = annotationFont)
+"#;
+
+    const GDT_ANGULARITY_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+basicAngle = 30deg
+thickness = 3.5mm
+flangeLength = 24mm
+bendStartX = 5mm
+legLength = 30mm
+legRun = legLength * cos(basicAngle)
+legRise = legLength * sin(basicAngle)
+normalRun = thickness * sin(basicAngle)
+normalRise = thickness * cos(basicAngle)
+annotationFont = 2mm
+
+stampedProfile = sketch(on = XY) {
+  datumFace = line(start = [var 0mm, var 0mm], end = [var 24mm, var 0mm])
+  flangeEnd = line(start = [var 24mm, var 0mm], end = [var 24mm, var 3.5mm])
+  innerFlange = line(start = [var 24mm, var 3.5mm], end = [var 5mm, var 3.5mm])
+  controlledSurface = line(start = [var 5mm, var 3.5mm], end = [var 30.98mm, var 18.5mm])
+  tabEnd = line(start = [var 30.98mm, var 18.5mm], end = [var 29.23mm, var 21.53mm])
+  outerSurface = line(start = [var 29.23mm, var 21.53mm], end = [var 3.25mm, var 6.53mm])
+  outsideBend = line(start = [var 3.25mm, var 6.53mm], end = [var 0mm, var 0mm])
+  coincident([datumFace.end, flangeEnd.start])
+  coincident([flangeEnd.end, innerFlange.start])
+  coincident([innerFlange.end, controlledSurface.start])
+  coincident([controlledSurface.end, tabEnd.start])
+  coincident([tabEnd.end, outerSurface.start])
+  coincident([outerSurface.end, outsideBend.start])
+  coincident([outsideBend.end, datumFace.start])
+  coincident([datumFace.start, ORIGIN])
+  horizontal(datumFace)
+  horizontal(innerFlange)
+  vertical(flangeEnd)
+  distance([datumFace.start, datumFace.end]) == flangeLength
+  distance([flangeEnd.start, flangeEnd.end]) == thickness
+  distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
+  distance([controlledSurface.start, controlledSurface.end]) == legLength
+  distance([tabEnd.start, tabEnd.end]) == thickness
+  distance([outerSurface.start, outerSurface.end]) == legLength
+  parallel([controlledSurface, outerSurface])
+  perpendicular([controlledSurface, tabEnd])
+  angle([datumFace, controlledSurface]) == basicAngle
+}
+
+stampedRegion = region(point = [12mm, 2mm], sketch = stampedProfile)
+hide(stampedProfile)
+stampedPart = extrude(stampedRegion, length = 0.8mm)
+
+gdt::datum(face = stampedPart.sketch.tags.datumFace, name = "A", framePosition = [6mm, -4mm], framePlane = XY, fontSize = annotationFont)
+gdt::angularity(edges = [stampedRegion.tags.controlledSurface], tolerance = 0.1mm, datums = ["A"], framePosition = [-12mm, 11mm], framePlane = XZ, fontSize = annotationFont)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_angularity_uses_angularity_symbol_with_datums() -> Result<(), KclError> {
+        let cases = [
+            ("angled face", GDT_ANGULARITY_FACE_KCL, 0.1),
+            ("angled edge", GDT_ANGULARITY_EDGE_KCL, 0.1),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::Angularity)?;
+
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
     }
 
     // Mirrors the gdt::circularity doc examples: annotate a cylinder's circular
