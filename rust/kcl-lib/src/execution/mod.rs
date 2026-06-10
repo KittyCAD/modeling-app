@@ -3662,7 +3662,7 @@ solid7 = extrude(r7, length = width)
             KclValue::Face { value } => value,
             value => panic!("expected face7 to be a Face, got {value:?}"),
         };
-        assert!(face7.parent_solid.creator_sketch.is_some());
+        assert!(face7.parent_solid.creator_sketch_id.is_some());
     }
 
     #[tokio::test(flavor = "multi_thread")]

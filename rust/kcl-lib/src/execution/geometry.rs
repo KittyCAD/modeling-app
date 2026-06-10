@@ -804,9 +804,10 @@ pub struct FaceParentSolid {
     /// Which solid does this face belong to?
     pub solid_id: Uuid,
     /// ID of the sketch which created this solid, if any.
-    #[serde(skip)]
+    pub creator_sketch_id: Option<Uuid>,
+    /// Has the creator sketch been closed? This is only relevant if `creator_sketch_id` is Some, and we cannot infer the closed status otherwise.
     #[ts(skip)]
-    pub creator_sketch: Option<Arc<Sketch>>,
+pub creator_sketch_is_closed: Option<ProfileClosed>,
     /// Pending edge cut IDs that may need to be flushed before referencing the face.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_ids: Vec<Uuid>,
@@ -814,7 +815,7 @@ pub struct FaceParentSolid {
 
 impl FaceParentSolid {
     pub(crate) fn sketch_or_solid_id(&self) -> Uuid {
-        self.creator_sketch.as_ref().map(|s| s.id).unwrap_or(self.solid_id)
+        self.creator_sketch_id.unwrap_or(self.solid_id)
     }
 }
 
@@ -1050,9 +1051,7 @@ impl Extrudable {
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
-            Extrudable::Face(face) => (face.parent_solid.creator_sketch)
-                .as_ref()
-                .map(|creator_sketch| (**creator_sketch).clone()),
+            Extrudable::Face(_) => None,
         }
     }
 
@@ -1067,8 +1066,10 @@ impl Extrudable {
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
             },
-            Extrudable::Face(face) => match &(face.parent_solid.creator_sketch) {
-                Some(creator_sketch) => creator_sketch.is_closed,
+            Extrudable::Face(face) => match face.parent_solid.creator_sketch_is_closed {
+                Some(is_closed) => {
+                    is_closed
+                }
                 None => ProfileClosed::Maybe,
             },
         }
@@ -1277,7 +1278,8 @@ impl From<&Solid> for FaceParentSolid {
     fn from(solid: &Solid) -> Self {
         Self {
             solid_id: solid.id,
-            creator_sketch: solid.sketch().map(|sketch| Arc::new(sketch.clone())),
+            creator_sketch_id: solid.sketch_id(),
+            creator_sketch_is_closed: solid.sketch().map(|sketch| sketch.is_closed),
             edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
         }
     }
