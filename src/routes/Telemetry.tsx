@@ -74,12 +74,3 @@ export const Telemetry = () => {
     </Transition>
   )
 }
-
-export const telemetryHomeRoute: RouteObject = {
-  path: webSafeJoin([PATHS.HOME, PATHS.TELEMETRY]),
-  element: <Telemetry />,
-}
-export const telemetryFileRoute: RouteObject = {
-  path: webSafeJoin([PATHS.FILE, ':id', PATHS.TELEMETRY]),
-  element: <Telemetry />,
-}
