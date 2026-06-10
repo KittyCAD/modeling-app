@@ -77,6 +77,8 @@ __all__ = [
     "execute_code_and_measure",
     "execute_code_and_snapshot",
     "execute_code_and_snapshot_views",
+    "export_sketch_svg",
+    "export_sketch_svg_code",
     "format",
     "format_dir",
     "get_sketch_constraint_status",
