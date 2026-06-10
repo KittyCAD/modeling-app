@@ -9,7 +9,10 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { buildZookeeperHistoryExtension } from '@src/editor/plugins/zookeeper'
+import {
+  type PreparedZookeeperPatchFileReplay,
+  buildZookeeperHistoryExtension,
+} from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
@@ -64,6 +67,7 @@ import {
 } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
   type UserFeaturesContext,
@@ -102,6 +106,15 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
+
+function zookeeperReplayChangesProjectFileSet(
+  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
+) {
+  return replayFiles.some(
+    (replayFile) =>
+      replayFile.previousContent === null || replayFile.nextContent === null
+  )
+}
 
 function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
@@ -605,6 +618,11 @@ export class App implements AppSubsystems {
           },
           onProjectFilesReplay: async (replayFiles) => {
             await this.project?.syncReplayedFilesToRust(replayFiles)
+            if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
+              this.systemIOActor.send({
+                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+              })
+            }
           },
         })
 
