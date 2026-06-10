@@ -21,6 +21,10 @@ type EditKclCodeToolResultWithLocalPatch = Omit<
   zookeeper_edit_patch: ZookeeperEditPatch
 }
 
+const asMlToolResult = (
+  toolOutput: EditKclCodeToolResultWithLocalPatch
+): MlToolResult => toolOutput as unknown as MlToolResult
+
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
@@ -305,7 +309,7 @@ describe('System IO Utils', () => {
         path: '/some-project/main.kcl',
         children: null,
       },
-      toolOutput,
+      toolOutput: asMlToolResult(toolOutput),
     })
 
     expect(preparedPayload?.zookeeperEditPatch).toEqual(zookeeperEditPatch)
@@ -344,7 +348,7 @@ describe('System IO Utils', () => {
         children: null,
       },
       filesToDelete: [{ requestedFileName: './main.kcl' }],
-      toolOutput,
+      toolOutput: asMlToolResult(toolOutput),
     })
 
     expect(preparedPayload?.filesToDelete).toEqual([])
@@ -381,7 +385,7 @@ describe('System IO Utils', () => {
         path: '/some-project/part.kcl',
         children: null,
       },
-      toolOutput,
+      toolOutput: asMlToolResult(toolOutput),
     })
 
     expect(preparedPayload?.requestedFileNameWithExtension).toBe('main.kcl')
