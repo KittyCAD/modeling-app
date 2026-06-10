@@ -1,7 +1,3 @@
-import {
-  getZookeeperEditPatchFromToolOutput,
-  isZookeeperProjectEntrypointPath,
-} from '@src/editor/plugins/zookeeper'
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, PROJECT_ENTRYPOINT, REGEXP_UUIDV4 } from '@src/lib/constants'
@@ -20,6 +16,10 @@ import { isErr } from '@src/lib/trap'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  getZookeeperEditPatchFromToolOutput,
+  isZookeeperProjectEntrypointPath,
+} from '@src/lib/zookeeperEditPatch'
 import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'

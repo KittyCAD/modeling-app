@@ -3,16 +3,16 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import {
-  type ZookeeperEditPatch,
-  mergeZookeeperEditPatches,
-  zookeeperEditPatchHistoryEvent,
-} from '@src/editor/plugins/zookeeper'
+import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import {
+  type ZookeeperEditPatch,
+  mergeZookeeperEditPatches,
+} from '@src/lib/zookeeperEditPatch'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,

@@ -1,177 +1,38 @@
 import { invertedEffects } from '@codemirror/commands'
 import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
-import type { MlToolResult } from '@kittycad/lib'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
 import { isCodeTheSame } from '@src/lib/codeEditor'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { isErr } from '@src/lib/trap'
+import {
+  type ZookeeperEditPatch,
+  type ZookeeperEditPatchFile,
+  type ZookeeperModifiedPatchFile,
+  isZookeeperProjectEntrypointPath,
+  normalizeZookeeperPatchPath,
+} from '@src/lib/zookeeperEditPatch'
 import { EditorView } from 'codemirror'
 import {
   type StructuredPatch,
   applyPatch,
-  createTwoFilesPatch,
   parsePatch,
   reversePatch,
 } from 'diff'
 import toast from 'react-hot-toast'
 
-type ZookeeperCreatedPatchFile = {
-  path: string
-  status: 'created'
-  contents?: string | null
-}
-
-type ZookeeperModifiedPatchFile = {
-  path: string
-  status: 'modified'
-  diff?: string | null
-}
-
-type ZookeeperDeletedPatchFile = {
-  path: string
-  status: 'deleted'
-  previous_contents?: string | null
-}
-
-export type ZookeeperEditPatchFile =
-  | ZookeeperCreatedPatchFile
-  | ZookeeperModifiedPatchFile
-  | ZookeeperDeletedPatchFile
-
-export type ZookeeperEditPatch = {
-  run_id: string
-  changed_files?: ZookeeperEditPatchFile[]
-}
-
-export function isZookeeperProjectEntrypointPath(path: string) {
-  return normalizeZookeeperPatchPath(path) === PROJECT_ENTRYPOINT
-}
-
-export function mergeZookeeperEditPatches(
-  previousPatch: ZookeeperEditPatch,
-  nextPatch: ZookeeperEditPatch
-): ZookeeperEditPatch {
-  const changedFilesByPath = new Map<string, ZookeeperEditPatchFile>()
-
-  for (const file of previousPatch.changed_files ?? []) {
-    changedFilesByPath.set(normalizeZookeeperPatchPath(file.path), file)
-  }
-
-  for (const file of nextPatch.changed_files ?? []) {
-    const normalizedPath = normalizeZookeeperPatchPath(file.path)
-    const previousFile = changedFilesByPath.get(normalizedPath)
-    const mergedFile = previousFile
-      ? mergeZookeeperEditPatchFile(previousFile, file)
-      : file
-
-    if (mergedFile) {
-      changedFilesByPath.set(normalizedPath, mergedFile)
-    } else {
-      changedFilesByPath.delete(normalizedPath)
-    }
-  }
-
-  return {
-    ...nextPatch,
-    run_id: previousPatch.run_id,
-    changed_files: Array.from(changedFilesByPath.values()),
-  }
-}
-
-function mergeZookeeperEditPatchFile(
-  previousFile: ZookeeperEditPatchFile,
-  nextFile: ZookeeperEditPatchFile
-): ZookeeperEditPatchFile | undefined {
-  if (previousFile.status === 'created') {
-    if (nextFile.status === 'modified') {
-      const nextContents = applyModifiedPatch(
-        previousFile.contents,
-        nextFile.diff
-      )
-      return {
-        ...previousFile,
-        contents: nextContents ?? previousFile.contents,
-      }
-    }
-    if (nextFile.status === 'deleted') {
-      return undefined
-    }
-  }
-
-  if (
-    previousFile.status === 'deleted' &&
-    nextFile.status === 'created' &&
-    previousFile.previous_contents != null &&
-    nextFile.contents != null
-  ) {
-    return {
-      path: nextFile.path,
-      status: 'modified',
-      diff: createTwoFilesPatch(
-        `a/${nextFile.path}`,
-        `b/${nextFile.path}`,
-        previousFile.previous_contents,
-        nextFile.contents
-      ),
-    }
-  }
-
-  if (
-    previousFile.status === 'created' &&
-    nextFile.status === 'created' &&
-    nextFile.contents == null
-  ) {
-    return {
-      ...nextFile,
-      contents: previousFile.contents,
-    }
-  }
-
-  if (
-    previousFile.status === 'deleted' &&
-    nextFile.status === 'deleted' &&
-    nextFile.previous_contents == null
-  ) {
-    return {
-      ...nextFile,
-      previous_contents: previousFile.previous_contents,
-    }
-  }
-
-  return nextFile
-}
-
-function applyModifiedPatch(
-  contents: string | null | undefined,
-  diff: string | null | undefined
-) {
-  if (contents == null || diff == null) {
-    return
-  }
-
-  let patch: StructuredPatch | undefined
-  try {
-    patch = parsePatch(diff)[0]
-  } catch {
-    return
-  }
-  if (!patch) {
-    return
-  }
-
-  const nextContents = applyPatch(contents, patch, { fuzzFactor: 0 })
-  return nextContents === false ? undefined : nextContents
-}
-
-type EditKclCodeToolResultWithPatch = Extract<
-  MlToolResult,
-  { type: 'edit_kcl_code' }
-> & {
-  zookeeper_edit_patch?: ZookeeperEditPatch | null
-}
+export {
+  getZookeeperEditPatchFromToolOutput,
+  isZookeeperProjectEntrypointPath,
+  mergeZookeeperEditPatches,
+  normalizeZookeeperPatchPath,
+} from '@src/lib/zookeeperEditPatch'
+export type {
+  ZookeeperEditPatch,
+  ZookeeperEditPatchFile,
+} from '@src/lib/zookeeperEditPatch'
 
 type ZookeeperPatchReplayDirection = 'undo' | 'redo'
 
@@ -241,19 +102,6 @@ export const zookeeperPatchIgnoreAnnotationType = Annotation.define<true>()
 const zookeeperEditPatchEffect = StateEffect.define<ZookeeperPatchEffectProps>()
 
 const textEncoder = new TextEncoder()
-
-export function getZookeeperEditPatchFromToolOutput(
-  toolOutput: MlToolResult
-): ZookeeperEditPatch | undefined {
-  if (toolOutput.type !== 'edit_kcl_code') {
-    return
-  }
-
-  return (
-    (toolOutput as EditKclCodeToolResultWithPatch).zookeeper_edit_patch ??
-    undefined
-  )
-}
 
 export function zookeeperEditPatchHistoryEvent({
   projectPath,
@@ -728,11 +576,6 @@ function getZookeeperPatchAbsolutePath(
 
   return fsZds.join(projectPath, ...safePathParts)
 }
-
-function normalizeZookeeperPatchPath(path: string) {
-  return path.replaceAll('\\', '/').replace(/^(?:\.\/)+/, '')
-}
-
 function requiredContent(
   content: string | null | undefined,
   file: ZookeeperEditPatchFile

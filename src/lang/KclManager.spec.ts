@@ -746,7 +746,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.wasmInstancePromise = deferredWasm.promise
 
-    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast, {
       shouldExecute: false,
       shouldWriteToDisk: false,
     })
@@ -774,7 +774,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.wasmInstancePromise = deferredWasm.promise
 
-    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast, {
       shouldExecute: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,
