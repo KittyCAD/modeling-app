@@ -1302,7 +1302,7 @@ const OperationItem = ({
                 hotkey="Delete"
                 data-testid="context-menu-delete"
               >
-                Delete
+                Remove operation
               </ContextMenuItem>,
             ]
           : []),

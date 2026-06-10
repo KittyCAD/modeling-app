@@ -33,7 +33,7 @@ describe('keymap contract', () => {
     })
   })
 
-  it('normalizes modified keyboard events from their unmodified key code', () => {
+  it('normalizes modified alt-including keyboard events from their unmodified key code', () => {
     expect(
       normalizeEventKey({
         key: '\u2202',
@@ -51,7 +51,7 @@ describe('keymap contract', () => {
         ctrlKey: true,
         metaKey: false,
       })
-    ).toBe('1')
+    ).toBe('!')
     expect(
       normalizeEventKey({
         key: '<',
@@ -60,7 +60,7 @@ describe('keymap contract', () => {
         ctrlKey: false,
         metaKey: true,
       })
-    ).toBe(',')
+    ).toBe('<')
   })
 
   it('returns prefix matches for keymap keystrokes', () => {

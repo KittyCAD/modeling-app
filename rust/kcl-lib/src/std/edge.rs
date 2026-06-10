@@ -61,6 +61,12 @@ pub(crate) async fn get_face_ids_for_edge(
     edge_id: Uuid,
     args: &Args,
 ) -> Result<Vec<Uuid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        // Return two so that anything that is expecting an edge on a solid
+        // works.
+        return Ok(vec![exec_state.next_uuid(), exec_state.next_uuid()]);
+    }
+
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
@@ -536,6 +542,12 @@ pub(crate) fn parse_edge_specifier_object(
     args: &Args,
 ) -> Result<UnresolvedEdgeSpecifier, KclError> {
     let side_faces = parse_tag_or_uuid_array(obj, "sideFaces", true, args)?;
+    if side_faces.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "sideFaces must be an array of at least one face, but zero were given".to_owned(),
+            vec![args.source_range],
+        )));
+    }
     let end_faces = parse_tag_or_uuid_array(obj, "endFaces", false, args)?;
     let index = parse_edge_specifier_index(obj, args)?;
     Ok(UnresolvedEdgeSpecifier {
@@ -645,8 +657,10 @@ pub(crate) async fn parse_edge_refs_to_references(
     Ok(edge_references)
 }
 
-/// Get the face (surface body) id from the first side_face of an unresolved specifier. Used when building a BoundedEdge from an edge specifier object in blend().
-pub(crate) fn face_id_from_first_side_face(
+/// Get the face (surface body) id from the first side_face of an unresolved
+/// specifier. Used when building a BoundedEdge from an edge specifier object in
+/// blend().
+pub(super) fn face_id_from_first_side_face(
     spec: &UnresolvedEdgeSpecifier,
     exec_state: &mut ExecState,
     args: &Args,

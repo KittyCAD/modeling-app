@@ -120,6 +120,14 @@ impl GeometryWithImportedGeometry {
             }
         }
     }
+
+    pub fn into_solid(self) -> Option<Solid> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(_) => None,
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => None,
+        }
+    }
 }
 
 /// A set of geometry.
@@ -190,7 +198,7 @@ impl ImportedGeometry {
     }
 }
 
-/// Data for a solid, sketch, or an imported geometry.
+/// Data for geometry that can be hidden.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -198,6 +206,7 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    PlaneSet(Vec<Plane>),
     SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
     GdtAnnotationSet(Vec<GdtAnnotation>),
@@ -207,6 +216,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
     fn from(value: HideableGeometry) -> Self {
         match value {
             HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::PlaneSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Plane { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Plane { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::plane(),
+                    }
+                }
+            }
             HideableGeometry::SolidSet(mut s) => {
                 if s.len() == 1
                     && let Some(s) = s.pop()
@@ -279,6 +303,7 @@ impl HideableGeometry {
 
                 Ok(vec![id])
             }
+            HideableGeometry::PlaneSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
@@ -1179,6 +1204,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1238,7 +1267,10 @@ impl Solid {
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
-        self.edge_cuts.iter().map(|foc| foc.id())
+        self.edge_cuts
+            .iter()
+            .map(|foc| foc.id())
+            .chain(self.pending_edge_cut_ids.iter().copied())
     }
 }
 

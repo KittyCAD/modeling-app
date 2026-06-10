@@ -59,12 +59,12 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
     let edge_inputs = super::fillet::parse_tagged_edge_inputs(
-        solid.id,
         edge_refs,
         tags,
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to chamfer edges",
+        "You must provide either 'tags' or 'edges' to chamfer edges, not both",
     )
     .await?;
 
@@ -330,6 +330,8 @@ async fn inner_chamfer_with_engine_refs(
             ),
         )
         .await?;
+
+    solid.pending_edge_cut_ids.push(id);
 
     if let Some(ref tag) = tag {
         solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {

@@ -1062,17 +1062,20 @@ impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Plane { value } => Some(Self::PlaneSet(vec![(**value).clone()])),
             KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
             KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
             KclValue::GdtAnnotation { value } => Some(Self::GdtAnnotationSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
+                let mut planes = vec![];
                 let mut sketches = vec![];
                 let mut helices = vec![];
                 let mut annotations = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Plane { value } => planes.push((**value).clone()),
                         KclValue::Sketch { value } => sketches.push((**value).clone()),
                         KclValue::Helix { value } => helices.push((**value).clone()),
                         KclValue::GdtAnnotation { value } => annotations.push((**value).clone()),
@@ -1081,6 +1084,8 @@ impl<'a> FromKclValue<'a> for crate::execution::HideableGeometry {
                 }
                 if !solids.is_empty() {
                     Some(Self::SolidSet(solids))
+                } else if !planes.is_empty() {
+                    Some(Self::PlaneSet(planes))
                 } else if !sketches.is_empty() {
                     Some(Self::SketchSet(sketches))
                 } else if !helices.is_empty() {
@@ -1166,6 +1171,18 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         let case2 = super::fillet::EdgeReference::from_kcl_val;
         let case3 = Segment::from_kcl_val;
         case1(arg)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dOrEdgeReference {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = <[TyF64; 3]>::from_kcl_val;
+        let case2 = super::fillet::EdgeReference::from_kcl_val;
+        let case3 = Segment::from_kcl_val;
+        case1(arg)
+            .map(Self::Point)
             .or_else(|| case2(arg).map(Self::Edge))
             .or_else(|| case3(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }

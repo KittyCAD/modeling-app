@@ -88,76 +88,24 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
     Ok(())
 }
 
-/// Convert tags (edge tag refs) to engine EdgeReference list by resolving each to edge ID then face IDs.
-/// Used when both `tags` and `edges` are provided to fillet/chamfer.
-pub(super) async fn tags_to_engine_edge_references(
-    solid_id: uuid::Uuid,
-    tags: Vec<EdgeReference>,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
-    let mut refs = Vec::with_capacity(tags.len());
-    for edge_ref in tags {
-        let edge_id = edge_ref.get_engine_id(exec_state, args)?;
-        let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await?;
-        let engine_ref = kcmc::shared::EdgeSpecifier::builder().side_faces(face_ids).build();
-        refs.push(engine_ref);
-    }
-    Ok(refs)
-}
-
 pub(super) enum TaggedEdgeInputs {
     Tags(Vec<EdgeReference>),
     EngineRefs(Vec<kcmc::shared::EdgeSpecifier>),
 }
 
 pub(super) async fn parse_tagged_edge_inputs(
-    solid_id: uuid::Uuid,
     edge_refs: Option<Vec<KclValue>>,
     tags_with_source: Option<Vec<(EdgeReference, SourceRange)>>,
     exec_state: &mut ExecState,
     args: &Args,
     missing_args_message: &str,
+    both_args_message: &str,
 ) -> Result<TaggedEdgeInputs, KclError> {
     match (edge_refs, tags_with_source) {
-        (Some(edge_refs), Some(tags_with_source)) => {
-            validate_unique(&tags_with_source)?;
-            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-            #[cfg(feature = "artifact-graph")]
-            {
-                let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
-                for edge_ref in &tags {
-                    if let Ok(edge_id) = edge_ref.get_engine_id(exec_state, args)
-                        && let Ok(face_ids) =
-                            super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await
-                        && let [a, b] = face_ids.as_slice()
-                    {
-                        let tag_identifier = match edge_ref {
-                            EdgeReference::Tag(t) => t.value.clone(),
-                            EdgeReference::Uuid(_) => String::new(),
-                        };
-                        if !tag_identifier.is_empty() {
-                            tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                                tag_identifier,
-                                edge_id,
-                                face_ids: [*a, *b],
-                            });
-                        }
-                    }
-                }
-                if !tag_entries.is_empty() {
-                    exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
-                        call_source_range: args.source_range,
-                        tags: tag_entries,
-                    });
-                }
-            }
-            let tags_as_refs = tags_to_engine_edge_references(solid_id, tags, exec_state, args).await?;
-            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
-            let mut all_refs = tags_as_refs;
-            all_refs.extend(edge_refs_parsed);
-            Ok(TaggedEdgeInputs::EngineRefs(all_refs))
-        }
+        (Some(_), Some(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
+            both_args_message.to_owned(),
+            vec![args.source_range],
+        ))),
         (Some(edge_refs), None) => {
             let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
             Ok(TaggedEdgeInputs::EngineRefs(edge_refs_parsed))
@@ -173,7 +121,6 @@ pub(super) async fn parse_tagged_edge_inputs(
         ))),
     }
 }
-
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
@@ -201,12 +148,12 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
     let edge_inputs = parse_tagged_edge_inputs(
-        solid.id,
         edge_refs,
         tags,
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to fillet edges",
+        "You must provide either 'tags' or 'edges' to fillet edges, not both",
     )
     .await?;
 
@@ -422,6 +369,8 @@ async fn inner_fillet_with_engine_refs(
             ),
         )
         .await?;
+
+    solid.pending_edge_cut_ids.push(id);
 
     if let Some(ref tag) = params.tag {
         solid.value.push(ExtrudeSurface::Fillet(FilletSurface {

@@ -14,6 +14,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
 use crate::execution::ExecState;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
@@ -23,6 +24,7 @@ use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
 use crate::std::axis_or_reference::MirrorAcross3d;
+use crate::std::clone::fix_tags_and_references;
 
 /// Mirror a solid.
 pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -49,10 +51,10 @@ async fn inner_mirror_3d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let mut mirrored_bodies = bodies.clone();
+    let unmapped_mirrored_bodies = bodies.clone();
 
     if args.ctx.no_engine_commands().await {
-        return Ok(mirrored_bodies);
+        return Ok(unmapped_mirrored_bodies);
     }
 
     exec_state
@@ -90,12 +92,13 @@ async fn inner_mirror_3d(
         }
     };
 
+    let old_body_ids = bodies.iter().map(|body| body.id).collect::<Vec<_>>();
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(
                 mcmd::EntityMirrorAcross::builder()
-                    .ids(bodies.iter().map(|body| body.id).collect())
+                    .ids(old_body_ids.clone())
                     .across(across)
                     .build(),
             ),
@@ -112,23 +115,43 @@ async fn inner_mirror_3d(
         )));
     };
 
-    if mirrored_bodies.len() != mirror_info.entity_face_edge_ids.len() {
+    if unmapped_mirrored_bodies.len() != mirror_info.entity_face_edge_ids.len() {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!(
                 "EntityMirrorAcross response had {} mirrored bodies for {} input bodies",
                 mirror_info.entity_face_edge_ids.len(),
-                mirrored_bodies.len()
+                unmapped_mirrored_bodies.len()
             ),
             vec![args.source_range],
         )));
     }
 
-    for (body, info) in mirrored_bodies.iter_mut().zip(mirror_info.entity_face_edge_ids.iter()) {
-        body.id = info.object_id;
-        body.artifact_id = ArtifactId::new(info.object_id);
-        if let Some(sketch) = body.sketch_mut() {
-            sketch.id = info.object_id;
-        }
+    let mut mirrored_bodies = Vec::with_capacity(unmapped_mirrored_bodies.len());
+    for ((mut mirrored_body, old_id), info) in unmapped_mirrored_bodies
+        .into_iter()
+        .zip(old_body_ids)
+        .zip(mirror_info.entity_face_edge_ids.iter())
+    {
+        mirrored_body.id = info.object_id;
+        mirrored_body.artifact_id = ArtifactId::new(info.object_id);
+        let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
+        fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+            .await
+            .map_err(|e| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("failed to fix tags and references: {e:?}"),
+                    vec![args.source_range],
+                ))
+            })?;
+        let Some(mirrored_body) = new_geometry.into_solid() else {
+            let message = "failed to extract Solid from Geometry";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message.to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        mirrored_bodies.push(mirrored_body);
     }
 
     Ok(mirrored_bodies)

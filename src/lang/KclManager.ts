@@ -101,6 +101,8 @@ import {
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
 import { EditorView, drawSelection, keymap } from '@codemirror/view'
 import {
+  clearSceneSelection,
+  defaultSelectionFilter,
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
@@ -844,12 +846,14 @@ export class KclManager extends File {
   )
   private _lastEvent: { event: string; time: number } | null = null
   private _highlightRange: Array<[number, number]> = [[0, 0]]
-  /** a representation of selections used by modelingMachine */
-  private _selectionRanges: Selections = {
+  static emptySelectionRanges: Selections = {
     otherSelections: [],
     graphSelections: [],
   }
+  /** a representation of selections used by modelingMachine */
+  private _selectionRanges: Selections = KclManager.emptySelectionRanges
   private _selectionRangesSignal = signal<Selections>(this._selectionRanges)
+  selectionFilter = signal<EntityType[]>(defaultSelectionFilter)
   private _selectionStatusLabel = computed(
     () =>
       getSelectionTypeDisplayText(
@@ -2622,6 +2626,11 @@ export class KclManager extends File {
       handleSelectionBatchFn: handleSelectionBatch,
       wasmInstance,
     })
+  }
+
+  async clearSelection() {
+    this._selectionRangesSignal.value = KclManager.emptySelectionRanges
+    return clearSceneSelection(this.engineCommandManager)
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
