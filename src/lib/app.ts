@@ -593,11 +593,15 @@ export class App implements AppSubsystems {
             }
             await this.project.openEditor(entrypointPath, executingEditor)
           },
-          onActiveFileRestore: async (restoredPath) => {
+          onActiveFileRestore: async (restoredPath, restoredContents) => {
             if (!this.project) {
               return
             }
-            await this.project.openEditor(restoredPath, executingEditor)
+            await this.project.openEditor(
+              restoredPath,
+              executingEditor,
+              restoredContents
+            )
           },
           onProjectFilesReplay: async (replayFiles) => {
             await this.project?.syncReplayedFilesToRust(replayFiles)

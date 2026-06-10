@@ -534,8 +534,12 @@ describe('Zookeeper project history integration', () => {
       onCurrentFileDelete: async () => {
         await harness.app.project?.openEditor(mainPath, harness.kclManager)
       },
-      onActiveFileRestore: async (path) => {
-        await harness.app.project?.openEditor(path, harness.kclManager)
+      onActiveFileRestore: async (path, contents) => {
+        await harness.app.project?.openEditor(
+          path,
+          harness.kclManager,
+          contents
+        )
       },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)
@@ -591,8 +595,12 @@ describe('Zookeeper project history integration', () => {
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => undefined,
-      onActiveFileRestore: async (path) => {
-        await harness.app.project?.openEditor(path, harness.kclManager)
+      onActiveFileRestore: async (path, contents) => {
+        await harness.app.project?.openEditor(
+          path,
+          harness.kclManager,
+          contents
+        )
       },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)
@@ -601,8 +609,22 @@ describe('Zookeeper project history integration', () => {
     const executeCode = vi
       .spyOn(harness.kclManager, 'executeCode')
       .mockRejectedValue({ msg: 'No open project' })
+    const read = File.ioImplementations.read
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation((path) => {
+      if (path === partPath) {
+        return Promise.reject(
+          Object.assign(new Error('ENOENT'), { cause: 'ENOENT' })
+        )
+      }
+      return read(path)
+    })
 
     await fsZds.rm(partPath)
+    if (harness.app.project) {
+      harness.app.project.files = harness.app.project.files.filter(
+        (file) => file.path !== partPath
+      )
+    }
     harness.kclManager.addGlobalHistoryEvent(
       zookeeperEditPatchHistoryEvent({
         projectPath: harness.projectPath,
@@ -770,8 +792,12 @@ describe('Zookeeper project history integration', () => {
       onCurrentFileDelete: async () => {
         await harness.app.project?.openEditor(mainPath, harness.kclManager)
       },
-      onActiveFileRestore: async (path) => {
-        await harness.app.project?.openEditor(path, harness.kclManager)
+      onActiveFileRestore: async (path, contents) => {
+        await harness.app.project?.openEditor(
+          path,
+          harness.kclManager,
+          contents
+        )
       },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)
@@ -846,8 +872,12 @@ describe('Zookeeper project history integration', () => {
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => undefined,
-      onActiveFileRestore: async (path) => {
-        await harness.app.project?.openEditor(path, harness.kclManager)
+      onActiveFileRestore: async (path, contents) => {
+        await harness.app.project?.openEditor(
+          path,
+          harness.kclManager,
+          contents
+        )
       },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)
@@ -917,8 +947,12 @@ describe('Zookeeper project history integration', () => {
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => undefined,
-      onActiveFileRestore: async (path) => {
-        await harness.app.project?.openEditor(path, harness.kclManager)
+      onActiveFileRestore: async (path, contents) => {
+        await harness.app.project?.openEditor(
+          path,
+          harness.kclManager,
+          contents
+        )
       },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)

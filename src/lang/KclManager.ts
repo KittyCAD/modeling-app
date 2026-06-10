@@ -620,7 +620,11 @@ export class ZDSProject {
       const newFile = new File(replayFile.absolutePath, this.nextFileId++)
       this.files.push(newFile)
       await editor.rustContext
-        .sendAddFile(await newFile.asRustApiFile())
+        .sendAddFile({
+          id: newFile.id,
+          path: newFile.path,
+          text: replayFile.nextContent,
+        })
         .catch(reportRejection)
     }
   }

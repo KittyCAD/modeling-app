@@ -226,7 +226,10 @@ type ZookeeperPatchReplayOptions = {
 type ZookeeperHistoryExtensionDependencies = {
   kclManager: KclManager
   onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
-  onActiveFileRestore: (restoredPath: string) => void | Promise<void>
+  onActiveFileRestore: (
+    restoredPath: string,
+    restoredContents: string
+  ) => void | Promise<void>
   onProjectFilesReplay?: (
     replayFiles: readonly PreparedZookeeperPatchFileReplay[]
   ) => void | Promise<void>
@@ -384,7 +387,10 @@ async function replayZookeeperEditPatch({
 }: ZookeeperPatchEffectProps & {
   kclManager: KclManager
   onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
-  onActiveFileRestore: (restoredPath: string) => void | Promise<void>
+  onActiveFileRestore: (
+    restoredPath: string,
+    restoredContents: string
+  ) => void | Promise<void>
   onProjectFilesReplay?: (
     replayFiles: readonly PreparedZookeeperPatchFileReplay[]
   ) => void | Promise<void>
@@ -415,18 +421,21 @@ async function replayZookeeperEditPatch({
     return
   }
 
-  const restoresActiveFile = preparedReplayFiles.some(
+  const restoredActiveFileReplay = preparedReplayFiles.find(
     (replayFile) =>
       replayFile.absolutePath === effectProps.activeFilePath &&
       replayFile.previousContent === null &&
       replayFile.nextContent !== null
   )
   if (
-    restoresActiveFile &&
+    restoredActiveFileReplay &&
     effectProps.activeFilePath &&
     kclManager.path !== effectProps.activeFilePath
   ) {
-    await effectProps.onActiveFileRestore(effectProps.activeFilePath)
+    await effectProps.onActiveFileRestore(
+      effectProps.activeFilePath,
+      restoredActiveFileReplay.nextContent ?? ''
+    )
     if (effectProps.direction === 'undo') {
       kclManager.synchronizeLocalHistoryAfterExternalGlobalUndo()
     } else {
