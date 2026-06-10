@@ -558,6 +558,46 @@ describe('KclManager diagnostics', () => {
     watchSpy.mockRestore()
   })
 
+  it('refreshes derived state when restoring cached editor state for a reopened file', async () => {
+    vi.useFakeTimers()
+
+    const mainPath = '/tmp/kcl-manager-restored-main.kcl'
+    const depsPath = '/tmp/kcl-manager-restored-deps.kcl'
+    const mainCode = 'import x from "deps.kcl"\n'
+    const depsCode = 'export x = 42\n'
+    const { kclManager } = createKclManagerTestHarness(mainCode)
+    const systemDeps = (kclManager as any).systemDeps
+
+    kclManager.path = mainPath
+    kclManager.id = 1
+
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
+      async (path) => {
+        return path === depsPath ? depsCode : mainCode
+      }
+    )
+
+    await KclManager.fromFile(new File(depsPath, 2), systemDeps, kclManager)
+
+    const sendUpdateFileSpy = vi
+      .spyOn(kclManager.rustContext, 'sendUpdateFile')
+      .mockResolvedValue(undefined)
+    const executeCodeSpy = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+    } as typeof kclManager.engineCommandManager.connection
+
+    await KclManager.fromFile(new File(mainPath, 1), systemDeps, kclManager)
+
+    expect(sendUpdateFileSpy).toHaveBeenCalledWith(1, mainCode)
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(executeCodeSpy).toHaveBeenCalledWith(mainCode)
+  })
+
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
     const { kclManager } = createKclManagerTestHarness('local base')
     const deferredRead = createDeferred<string>()
@@ -742,7 +782,9 @@ describe('KclManager diagnostics', () => {
     const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
     const ast = await kclManager.safeParse('x = 2')
 
-    expect(ast).not.toBeNull()
+    if (ast === null) {
+      throw new Error('Expected test KCL to parse')
+    }
 
     kclManager.wasmInstancePromise = deferredWasm.promise
 
@@ -770,7 +812,9 @@ describe('KclManager diagnostics', () => {
     const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
     const ast = await kclManager.safeParse('x = 2')
 
-    expect(ast).not.toBeNull()
+    if (ast === null) {
+      throw new Error('Expected test KCL to parse')
+    }
 
     kclManager.wasmInstancePromise = deferredWasm.promise
 

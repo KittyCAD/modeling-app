@@ -12,6 +12,11 @@ import { beforeAll, describe, expect, it } from 'vitest'
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
   { type: 'edit_kcl_code' }
+>
+
+type EditKclCodeToolResultWithLocalPatch = Omit<
+  EditKclCodeToolResultWithPatch,
+  'zookeeper_edit_patch'
 > & {
   zookeeper_edit_patch: ZookeeperEditPatch
 }
@@ -283,7 +288,7 @@ describe('System IO Utils', () => {
         },
       ],
     }
-    const toolOutput: EditKclCodeToolResultWithPatch = {
+    const toolOutput: EditKclCodeToolResultWithLocalPatch = {
       status_code: 200,
       type: 'edit_kcl_code',
       project_name: 'some-project',
@@ -310,7 +315,7 @@ describe('System IO Utils', () => {
   })
 
   it('does not allow Zookeeper to delete the project entrypoint', () => {
-    const toolOutput: EditKclCodeToolResultWithPatch = {
+    const toolOutput: EditKclCodeToolResultWithLocalPatch = {
       status_code: 200,
       type: 'edit_kcl_code',
       project_name: 'some-project',
@@ -353,7 +358,7 @@ describe('System IO Utils', () => {
   })
 
   it('falls back to the project entrypoint when Zookeeper deletes the focused file', () => {
-    const toolOutput: EditKclCodeToolResultWithPatch = {
+    const toolOutput: EditKclCodeToolResultWithLocalPatch = {
       status_code: 200,
       type: 'edit_kcl_code',
       project_name: 'some-project',

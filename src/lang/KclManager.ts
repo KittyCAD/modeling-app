@@ -1593,6 +1593,26 @@ export class KclManager extends File {
     1000
   )
 
+  private refreshRestoredEditorStateAfterFileSwitch(code: string) {
+    this._code.value = code
+    this._hasEditsSinceLastExecution.value = !isCodeTheSame(
+      code,
+      this.lastExecutedCode
+    )
+    this.persistRecoverySnapshot()
+    this.rustContext.sendUpdateFile(this.id, code).catch(reportRejection)
+
+    if (!this.engineCommandManager.connection?.connected) {
+      return
+    }
+
+    this.deferredExecution({
+      newCode: code,
+      shouldResetCamera: true,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+    })
+  }
+
   private writeToFileListener = EditorView.updateListener.of((update) => {
     const hasWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
@@ -1917,6 +1937,7 @@ export class KclManager extends File {
     if (savedEditorState && canRestoreEditorState) {
       providedEditor.editorView.setState(savedEditorState)
       providedEditor.updateHistoryDepth(savedEditorState)
+      providedEditor.refreshRestoredEditorStateAfterFileSwitch(initialCode)
     } else {
       providedEditor.editorStatesByPath.delete(file.path)
       providedEditor.updateCodeEditor(initialCode, {

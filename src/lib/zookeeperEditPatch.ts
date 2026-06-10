@@ -38,6 +38,11 @@ export type ZookeeperEditPatch = {
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
   { type: 'edit_kcl_code' }
+>
+
+type EditKclCodeToolResultWithLocalPatch = Omit<
+  EditKclCodeToolResultWithPatch,
+  'zookeeper_edit_patch'
 > & {
   zookeeper_edit_patch?: ZookeeperEditPatch | null
 }
@@ -50,7 +55,7 @@ export function getZookeeperEditPatchFromToolOutput(
   }
 
   return (
-    (toolOutput as EditKclCodeToolResultWithPatch).zookeeper_edit_patch ??
+    (toolOutput as EditKclCodeToolResultWithLocalPatch).zookeeper_edit_patch ??
     undefined
   )
 }
