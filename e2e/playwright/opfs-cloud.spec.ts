@@ -9,7 +9,7 @@ import {
   readOpfsTextFiles,
   routeCloudProjects,
   seedOpfsCloudState,
-} from '@e2e/playwright/fixtures/opfsCloud'
+} from '@e2e/playwright/lib/opfsCloudTestUtils'
 import { setup } from '@e2e/playwright/test-utils'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 

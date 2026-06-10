@@ -3,6 +3,11 @@ import JSZip from 'jszip'
 
 import { PROJECT_FOLDER } from '@src/lib/constants'
 
+// Test utilities for the OPFSCloud sync contract. These helpers are grouped
+// because the E2E scenarios need the local OPFS project tree, the OPFSCloud
+// IndexedDB sync metadata/outbox, and the cloud Projects API mock to agree
+// about the same project ids, revisions, manifests, and archive contents.
+
 export const PROJECT_DIR = `/documents/${PROJECT_FOLDER}`
 export const CLOUD_ENVIRONMENT = 'dev.zoo.dev'
 
@@ -30,6 +35,8 @@ type JsonRouteResponse = {
 }
 
 export function projectToml(title: string, cloudProjectId?: string) {
+  // Keep test projects in the same metadata shape the app writes: root title
+  // for display, and environment-scoped cloud id for cloud-backed projects.
   return [
     `title = ${JSON.stringify(title)}`,
     'default_file = "main.kcl"',
@@ -59,6 +66,8 @@ export async function projectTitles(page: Page) {
 }
 
 export function createRemoteListGate(initiallyReleased = false) {
+  // Lets tests force Home to render local OPFS projects first, then release the
+  // remote list later to assert that cloud hydration does not replace the list.
   let released = initiallyReleased
   const waiters: Array<() => void> = []
 
@@ -100,6 +109,10 @@ export async function routeCloudProjects(
     updateProject?: (request: ProjectRequest) => JsonRouteResponse | undefined
   }
 ) {
+  // Mock the subset of the Projects API that OPFSCloud uses: remote listing,
+  // project create/update metadata, and whole-project archive downloads.
+  // Tests inspect `calls` to verify that local-first sync queued the expected
+  // guarded cloud writes without relying on a real backend.
   const remoteArchives =
     options.remoteArchives ??
     new Map<string, Buffer>(
@@ -221,6 +234,10 @@ export async function seedOpfsCloudState(
     projectDirectory?: string
   }
 ) {
+  // Seed the browser-side local replica directly. OPFS holds project files,
+  // IndexedDB holds the last accepted cloud base manifest/revision and durable
+  // outbox entries. This gives tests precise clean, dirty, stale, and
+  // local-only starting states without going through app UI setup.
   await page.evaluate(
     async ({ projectDirectory, projects, metadata, outbox }) => {
       const encoder = new TextEncoder()
