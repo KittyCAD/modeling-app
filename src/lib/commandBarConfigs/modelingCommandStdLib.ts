@@ -192,6 +192,9 @@ export const modelingCommandStdLibDriftConfig = {
       geometries: 'objects',
     },
   },
+  Delete: {
+    stdLibName: 'delete',
+  },
   'Mirror 3D': {
     stdLibName: 'mirror3d',
   },
@@ -302,6 +305,24 @@ export const modelingCommandStdLibDriftConfig = {
 } as const satisfies Partial<
   Record<ModelingCommandName, StdLibCommandDriftConfig>
 >
+
+export function modelingStdLibCommandName<
+  CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
+>(
+  commandName: CommandName
+): (typeof modelingCommandStdLibDriftConfig)[CommandName]['stdLibName'] {
+  return modelingCommandStdLibDriftConfig[commandName].stdLibName
+}
+
+export function modelingStdLibCall(
+  commandName: keyof typeof modelingCommandStdLibDriftConfig
+): { name: string; path: string[] } {
+  const stdLibName = modelingStdLibCommandName(commandName)
+  const parts = stdLibName.split('::')
+  const name = parts.pop() ?? stdLibName
+
+  return { name, path: parts }
+}
 
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
   commandName: keyof typeof modelingCommandStdLibDriftConfig,
