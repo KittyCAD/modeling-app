@@ -248,6 +248,18 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         const shouldRecordZookeeperHistory = Boolean(
           project?.path && payload.zookeeperEditPatch?.changed_files?.length
         )
+        const activeFileOutput = payload.files.find(
+          (file) =>
+            normalizeKCLFileDeletePath(file.requestedFileName) ===
+            activeRelativePath
+        )
+        const shouldRefreshActiveEditorAfterPlainOutput = Boolean(
+          !shouldRecordZookeeperHistory &&
+            !activeFileDeleted &&
+            activeFileOutput &&
+            project?.name === payload.requestedProjectName &&
+            activeFilePath === kclManager.path
+        )
         if (shouldRecordZookeeperHistory) {
           beginPendingZookeeperHistoryWrite(exchangeId)
         }
@@ -299,6 +311,25 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                 })
               }
             },
+            ...(shouldRefreshActiveEditorAfterPlainOutput && activeFileOutput
+              ? {
+                  onSuccess: () => {
+                    if (kclManager.path !== activeFilePath) return
+                    if (kclManager.code === activeFileOutput.requestedCode)
+                      return
+                    kclManager.updateCodeEditor(
+                      activeFileOutput.requestedCode,
+                      {
+                        shouldAddToHistory: false,
+                        shouldClearHistory: true,
+                        shouldExecute: true,
+                        shouldResetCamera: true,
+                        shouldWriteToDisk: true,
+                      }
+                    )
+                  },
+                }
+              : {}),
           },
         })
       }
