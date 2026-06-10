@@ -1,6 +1,12 @@
-import type { StdLibCommandName } from '@rust/kcl-lib/bindings/StdLibCommands'
+import {
+  STD_LIB_COMMANDS,
+  type StdLibCommandArg,
+  type StdLibCommandName,
+} from '@rust/kcl-lib/bindings/StdLibCommands'
 
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { CommandArgumentConfig } from '@src/lib/commandTypes'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
 type ModelingCommandName = Extract<keyof ModelingCommandSchema, string>
 
@@ -20,6 +26,77 @@ export type StdLibCommandDriftConfig = {
    * argument name.
    */
   argAliases?: Readonly<Record<string, string>>
+}
+
+type StdLibCommandArgOverride = Partial<
+  CommandArgumentConfig<unknown, ModelingMachineContext>
+> &
+  Record<string, unknown>
+
+type StdLibCommandArgsOptions = {
+  omitted?: readonly string[]
+  argAliases?: Readonly<Record<string, string>>
+  overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
+}
+
+type CommandArgConfigs<CommandArgs extends object> = {
+  [ArgName in keyof CommandArgs]-?: CommandArgumentConfig<
+    CommandArgs[ArgName],
+    ModelingMachineContext
+  >
+}
+
+const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
+  if (ty === 'bool') {
+    return 'boolean'
+  }
+  if (ty === 'TagDecl') {
+    return 'tagDeclarator'
+  }
+  if (ty === 'Point2d') {
+    return 'vector2d'
+  }
+  if (ty === 'Point3d') {
+    return 'vector3d'
+  }
+  if (ty === 'string') {
+    return 'string'
+  }
+  return 'kcl'
+}
+
+const stdLibArgBaseConfig = (arg: StdLibCommandArg) => ({
+  inputType: stdLibArgInputType(arg.ty),
+  required: arg.required,
+  ...(arg.experimental ? ({ status: 'experimental' } as const) : {}),
+})
+
+export function stdLibCommandArgs<CommandArgs extends object>(
+  stdLibName: StdLibCommandName,
+  options: StdLibCommandArgsOptions = {}
+): CommandArgConfigs<CommandArgs> {
+  const omitted = new Set(options.omitted ?? [])
+  const args: Record<string, Record<string, unknown>> = Object.fromEntries(
+    STD_LIB_COMMANDS[stdLibName].args
+      .filter((arg) => arg.deprecatedSince === null)
+      .filter((arg) => !omitted.has(arg.name))
+      .map((arg) => {
+        const commandArgName = options.argAliases?.[arg.name] ?? arg.name
+        return [
+          commandArgName,
+          {
+            ...stdLibArgBaseConfig(arg),
+            ...(options.overrides?.[commandArgName] ?? {}),
+          },
+        ]
+      })
+  )
+
+  for (const [argName, override] of Object.entries(options.overrides ?? {})) {
+    args[argName] ??= override
+  }
+
+  return args as CommandArgConfigs<CommandArgs>
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -225,3 +302,30 @@ export const modelingCommandStdLibDriftConfig = {
 } as const satisfies Partial<
   Record<ModelingCommandName, StdLibCommandDriftConfig>
 >
+
+export function modelingStdLibCommandArgs<CommandArgs extends object>(
+  commandName: keyof typeof modelingCommandStdLibDriftConfig,
+  options: Pick<StdLibCommandArgsOptions, 'overrides'> = {}
+) {
+  const driftConfig = modelingCommandStdLibDriftConfig[
+    commandName
+  ] as StdLibCommandDriftConfig
+
+  return stdLibCommandArgs<CommandArgs>(driftConfig.stdLibName, {
+    omitted: driftConfig.omittedStdLibArgs,
+    argAliases: driftConfig.argAliases,
+    overrides: options.overrides,
+  })
+}
+
+export function modelingStdLibCommandStatus(
+  commandName: keyof typeof modelingCommandStdLibDriftConfig
+) {
+  const driftConfig = modelingCommandStdLibDriftConfig[
+    commandName
+  ] as StdLibCommandDriftConfig
+
+  return STD_LIB_COMMANDS[driftConfig.stdLibName].experimental
+    ? ('experimental' as const)
+    : undefined
+}

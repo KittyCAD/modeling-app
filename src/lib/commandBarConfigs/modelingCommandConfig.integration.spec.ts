@@ -2,12 +2,15 @@ import { STD_LIB_COMMANDS } from '@rust/kcl-lib/bindings/StdLibCommands'
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
 import {
+  type ModelingCommandSchema,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
   type StdLibCommandDriftConfig,
   modelingCommandStdLibDriftConfig,
+  modelingStdLibCommandArgs,
+  modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
@@ -78,6 +81,52 @@ describe('GDT tolerance defaults', () => {
 })
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
+
+describe('stdlib command arg derivation', () => {
+  it('derives base command-bar arg config from KCL stdlib metadata', () => {
+    const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
+      'Extrude',
+      {
+        overrides: {
+          sketches: {
+            inputType: 'selection',
+            selectionTypes: [],
+            multiple: true,
+          },
+        },
+      }
+    )
+
+    expect(args.sketches).toMatchObject({
+      inputType: 'selection',
+      required: true,
+    })
+    expect(args.length).toMatchObject({ inputType: 'kcl', required: false })
+    expect(args.symmetric).toMatchObject({
+      inputType: 'boolean',
+      required: false,
+    })
+    expect(args.tagStart).toMatchObject({
+      inputType: 'tagDeclarator',
+      required: false,
+    })
+    expect(args.draftAngle).toMatchObject({
+      inputType: 'kcl',
+      required: false,
+      status: 'experimental',
+    })
+    expect(args.twistCenter).toMatchObject({
+      inputType: 'vector2d',
+      required: false,
+    })
+    expect('direction' in args).toBe(false)
+  })
+
+  it('derives command status from KCL stdlib metadata', () => {
+    expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
+    expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
+  })
+})
 
 describe('modeling command stdlib drift', () => {
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {

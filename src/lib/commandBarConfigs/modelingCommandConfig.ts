@@ -9,6 +9,10 @@ import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import {
+  modelingStdLibCommandArgs,
+  modelingStdLibCommandStatus,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -302,8 +306,16 @@ const datumInputToKclArray = (value: string) => {
   return `[${datumRefs.map((datumRef) => JSON.stringify(datumRef)).join(', ')}]`
 }
 
-const summarizeDatumKclValue = (value?: KclCommandValue) =>
-  value
+const isKclCommandValue = (value: unknown): value is KclCommandValue =>
+  Boolean(
+    value &&
+      typeof value === 'object' &&
+      'valueText' in value &&
+      'valueCalculated' in value
+  )
+
+const summarizeDatumKclValue = (value: unknown) =>
+  isKclCommandValue(value)
     ? kclDatumArrayToInput(
         value.valueCalculated === 'NAN'
           ? value.valueText
@@ -321,8 +333,8 @@ export const getDefaultGdtTolerance = (
   return `${KCL_DEFAULT_TOLERANCE}${defaultLengthUnit}`
 }
 
-const summarizeGdtToleranceKclValue = (value?: KclCommandValue) =>
-  value?.valueText ?? ''
+const summarizeGdtToleranceKclValue = (value: unknown) =>
+  isKclCommandValue(value) ? value.valueText : ''
 
 const gdtToleranceProps = {
   inputType: 'kcl',
@@ -342,6 +354,30 @@ const datumsProps = {
   valueSummary: summarizeDatumKclValue,
   required: false,
 } satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
+
+const gdtFrameDisplayArgOverrides = {
+  framePosition: {
+    defaultValue: KCL_DEFAULT_ORIGIN_2D,
+  },
+  framePlane: {
+    inputType: 'options',
+    defaultValue: KCL_PLANE_XY,
+    options: FRAME_PLANE_OPTIONS,
+  },
+  leaderScale: {
+    defaultValue: KCL_DEFAULT_LEADER_SCALE,
+  },
+  fontSize: {
+    defaultValue: KCL_DEFAULT_FONT_SIZE,
+  },
+} as const
+
+const gdtFrameArgOverrides = {
+  precision: {
+    defaultValue: KCL_DEFAULT_PRECISION,
+  },
+  ...gdtFrameDisplayArgOverrides,
+} as const
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
@@ -618,90 +654,56 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      sketches: {
-        inputType: 'selection',
-        displayName: 'Profiles',
-        selectionTypes: [
-          'solid2d',
-          'segment',
-          'cap',
-          'wall',
-          'pathRegion',
-          'engineRegion',
-        ],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      length: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: false,
-        prepopulate: true,
-      },
-      to: {
-        inputType: 'selection',
-        // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
-        selectionTypes: ['cap', 'wall'],
-        clearSelectionFirst: true,
-        required: false,
-        multiple: false,
-        description: 'Only parallel faces are supported for now.',
-      },
-      symmetric: {
-        inputType: 'boolean',
-        required: false,
-      },
-      bidirectionalLength: {
-        inputType: 'kcl',
-        required: false,
-      },
-      tagStart: {
-        inputType: 'tagDeclarator',
-        required: false,
-        // TODO: add validation like for Clone command
-      },
-      tagEnd: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      draftAngle: {
-        inputType: 'kcl',
-        required: false,
-        status: 'experimental',
-      },
-      twistAngle: {
-        inputType: 'kcl',
-        required: false,
-      },
-      twistAngleStep: {
-        inputType: 'kcl',
-        required: false,
-      },
-      twistCenter: {
-        inputType: 'vector2d',
-        required: false,
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-      },
-      method: {
-        inputType: 'options',
-        required: false,
-        options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
-      },
-      hideSeams: {
-        inputType: 'boolean',
-        required: false,
-      },
-      bodyType: {
-        inputType: 'options',
-        required: false,
-        options: kclBodyTypeOptions,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
+      'Extrude',
+      {
+        overrides: {
+          sketches: {
+            inputType: 'selection',
+            displayName: 'Profiles',
+            selectionTypes: [
+              'solid2d',
+              'segment',
+              'cap',
+              'wall',
+              'pathRegion',
+              'engineRegion',
+            ],
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          length: {
+            defaultValue: KCL_DEFAULT_LENGTH,
+            prepopulate: true,
+          },
+          to: {
+            inputType: 'selection',
+            // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
+            selectionTypes: ['cap', 'wall'],
+            clearSelectionFirst: true,
+            multiple: false,
+            description: 'Only parallel faces are supported for now.',
+          },
+          tagStart: {
+            // TODO: add validation like for Clone command
+          },
+          twistCenter: {
+            defaultValue: KCL_DEFAULT_ORIGIN_2D,
+          },
+          method: {
+            inputType: 'options',
+            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
+              name: capitaliseFC(value.toLowerCase()),
+              value,
+            })),
+          },
+          bodyType: {
+            inputType: 'options',
+            options: kclBodyTypeOptions,
+          },
+        },
+      }
+    ),
   },
   Sweep: {
     description:
@@ -731,49 +733,35 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      sketches: {
-        inputType: 'selection',
-        displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Sweep']>('Sweep', {
+      overrides: {
+        sketches: {
+          inputType: 'selection',
+          displayName: 'Profiles',
+          selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        path: {
+          inputType: 'selection',
+          selectionTypes: ['segment', 'path', 'helix'],
+          clearSelectionFirst: true,
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        relativeTo: {
+          inputType: 'options',
+          options: [
+            { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
+            { name: 'Trajectory Curve', value: 'TRAJECTORY' },
+          ],
+        },
+        bodyType: {
+          inputType: 'options',
+          options: kclBodyTypeOptions,
+        },
       },
-      path: {
-        inputType: 'selection',
-        selectionTypes: ['segment', 'path', 'helix'],
-        clearSelectionFirst: true,
-        required: true,
-        multiple: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      sectional: {
-        inputType: 'boolean',
-        required: false,
-      },
-      relativeTo: {
-        inputType: 'options',
-        required: false,
-        options: [
-          { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
-          { name: 'Trajectory Curve', value: 'TRAJECTORY' },
-        ],
-      },
-      tagStart: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      tagEnd: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      bodyType: {
-        inputType: 'options',
-        required: false,
-        options: kclBodyTypeOptions,
-      },
-    },
+    }),
   },
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
@@ -802,41 +790,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      sketches: {
-        inputType: 'selection',
-        displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Loft']>('Loft', {
+      overrides: {
+        sketches: {
+          inputType: 'selection',
+          displayName: 'Profiles',
+          selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        bodyType: {
+          inputType: 'options',
+          options: kclBodyTypeOptions,
+        },
       },
-      vDegree: {
-        inputType: 'kcl',
-        required: false,
-      },
-      bezApproximateRational: {
-        inputType: 'boolean',
-        required: false,
-      },
-      baseCurveIndex: {
-        inputType: 'kcl',
-        required: false,
-      },
-      tagStart: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      tagEnd: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      bodyType: {
-        inputType: 'options',
-        required: false,
-        options: kclBodyTypeOptions,
-      },
-    },
+    }),
   },
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
@@ -865,75 +833,69 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      sketches: {
-        inputType: 'selection',
-        displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      axisOrEdge: {
-        inputType: 'options',
-        required: true,
-        defaultValue: 'Axis',
-        options: [
-          { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
-          { name: 'Edge', isCurrent: false, value: 'Edge' },
-        ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      axis: {
-        required: (context) =>
-          ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
-        inputType: 'options',
-        displayName: 'Sketch Axis',
-        options: [
-          { name: 'X Axis', isCurrent: true, value: 'X' },
-          { name: 'Y Axis', isCurrent: false, value: 'Y' },
-        ],
-        hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
-          !['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
-      },
-      edge: {
-        required: (context) =>
-          ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
-        inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
-        multiple: false,
-        hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
-          !['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
-      },
-      angle: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DEGREE,
-        required: true,
-      },
-      symmetric: {
-        inputType: 'boolean',
-        required: false,
-      },
-      bidirectionalAngle: {
-        inputType: 'kcl',
-        required: false,
-      },
-      tagStart: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      tagEnd: {
-        inputType: 'tagDeclarator',
-        required: false,
-      },
-      bodyType: {
-        inputType: 'options',
-        required: false,
-        options: kclBodyTypeOptions,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Revolve']>(
+      'Revolve',
+      {
+        overrides: {
+          sketches: {
+            inputType: 'selection',
+            displayName: 'Profiles',
+            selectionTypes: [
+              'solid2d',
+              'segment',
+              'pathRegion',
+              'engineRegion',
+            ],
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          axisOrEdge: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Axis',
+            options: [
+              { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
+              { name: 'Edge', isCurrent: false, value: 'Edge' },
+            ],
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          axis: {
+            required: (context) =>
+              ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
+            inputType: 'options',
+            displayName: 'Sketch Axis',
+            options: [
+              { name: 'X Axis', isCurrent: true, value: 'X' },
+              { name: 'Y Axis', isCurrent: false, value: 'Y' },
+            ],
+            hidden: (context) =>
+              Boolean(context.argumentsToSubmit.nodeToEdit) ||
+              !['Axis'].includes(
+                context.argumentsToSubmit.axisOrEdge as string
+              ),
+          },
+          edge: {
+            required: (context) =>
+              ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
+            inputType: 'selection',
+            selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+            multiple: false,
+            hidden: (context) =>
+              Boolean(context.argumentsToSubmit.nodeToEdit) ||
+              !['Edge'].includes(
+                context.argumentsToSubmit.axisOrEdge as string
+              ),
+          },
+          angle: {
+            defaultValue: KCL_DEFAULT_DEGREE,
+          },
+          bodyType: {
+            inputType: 'options',
+            options: kclBodyTypeOptions,
+          },
+        },
+      }
+    ),
   },
   Shell: {
     description: 'Hollow out a 3D solid.',
@@ -962,20 +924,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      faces: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Shell']>('Shell', {
+      overrides: {
+        faces: {
+          inputType: 'selection',
+          selectionTypes: ['cap', 'wall'],
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        thickness: {
+          defaultValue: KCL_DEFAULT_LENGTH,
+        },
       },
-      thickness: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
-      },
-    },
+    }),
   },
   Hole: {
     description: 'Standard holes that could be drilled or cut into a 3D solid.',
@@ -1006,123 +967,119 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      face: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
-        multiple: false,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Hole']>('Hole', {
+      overrides: {
+        face: {
+          inputType: 'selection',
+          selectionTypes: ['cap', 'wall', 'edgeCut'],
+          multiple: false,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        cutAt: {
+          defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        },
+        holeBody: {
+          inputType: 'options',
+          options: [{ name: 'Blind', isCurrent: true, value: 'blind' }],
+        },
+        blindDepth: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['blind'].includes(context.argumentsToSubmit.holeBody as string),
+          hidden: (context) =>
+            !['blind'].includes(context.argumentsToSubmit.holeBody as string),
+          defaultValue: '2',
+        },
+        blindDiameter: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['blind'].includes(context.argumentsToSubmit.holeBody as string),
+          hidden: (context) =>
+            !['blind'].includes(context.argumentsToSubmit.holeBody as string),
+          defaultValue: '1',
+        },
+        holeType: {
+          inputType: 'options',
+          options: [
+            { name: 'Simple', isCurrent: true, value: 'simple' },
+            { name: 'Counterbore', isCurrent: true, value: 'counterbore' },
+            { name: 'Countersink', isCurrent: true, value: 'countersink' },
+          ],
+        },
+        counterboreDepth: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['counterbore'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          hidden: (context) =>
+            !['counterbore'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          defaultValue: '1',
+        },
+        counterboreDiameter: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['counterbore'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          hidden: (context) =>
+            !['counterbore'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          defaultValue: '2',
+        },
+        countersinkAngle: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['countersink'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          hidden: (context) =>
+            !['countersink'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          defaultValue: '90deg',
+        },
+        countersinkDiameter: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['countersink'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          hidden: (context) =>
+            !['countersink'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          defaultValue: '2',
+        },
+        countersinkHeadClearance: {
+          inputType: 'kcl',
+          required: false,
+          hidden: (context) =>
+            !['countersink'].includes(
+              context.argumentsToSubmit.holeType as string
+            ),
+          defaultValue: '0',
+        },
+        holeBottom: {
+          inputType: 'options',
+          options: [
+            { name: 'Flat', isCurrent: true, value: 'flat' },
+            { name: 'Drill', isCurrent: false, value: 'drill' },
+          ],
+        },
+        drillPointAngle: {
+          inputType: 'kcl',
+          required: (context) =>
+            ['drill'].includes(context.argumentsToSubmit.holeBottom as string),
+          hidden: (context) =>
+            !['drill'].includes(context.argumentsToSubmit.holeBottom as string),
+          defaultValue: '110deg',
+        },
       },
-      cutAt: {
-        inputType: 'vector2d',
-        required: true,
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-      },
-      holeBody: {
-        inputType: 'options',
-        required: true,
-        options: [{ name: 'Blind', isCurrent: true, value: 'blind' }],
-      },
-      blindDepth: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        hidden: (context) =>
-          !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        defaultValue: '2',
-      },
-      blindDiameter: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        hidden: (context) =>
-          !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        defaultValue: '1',
-      },
-      holeType: {
-        inputType: 'options',
-        required: true,
-        options: [
-          { name: 'Simple', isCurrent: true, value: 'simple' },
-          { name: 'Counterbore', isCurrent: true, value: 'counterbore' },
-          { name: 'Countersink', isCurrent: true, value: 'countersink' },
-        ],
-      },
-      counterboreDepth: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['counterbore'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        hidden: (context) =>
-          !['counterbore'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        defaultValue: '1',
-      },
-      counterboreDiameter: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['counterbore'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        hidden: (context) =>
-          !['counterbore'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        defaultValue: '2',
-      },
-      countersinkAngle: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['countersink'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        hidden: (context) =>
-          !['countersink'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        defaultValue: '90deg',
-      },
-      countersinkDiameter: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['countersink'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        hidden: (context) =>
-          !['countersink'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        defaultValue: '2',
-      },
-      countersinkHeadClearance: {
-        inputType: 'kcl',
-        required: false,
-        hidden: (context) =>
-          !['countersink'].includes(
-            context.argumentsToSubmit.holeType as string
-          ),
-        defaultValue: '0',
-      },
-      holeBottom: {
-        inputType: 'options',
-        required: true,
-        options: [
-          { name: 'Flat', isCurrent: true, value: 'flat' },
-          { name: 'Drill', isCurrent: false, value: 'drill' },
-        ],
-      },
-      drillPointAngle: {
-        inputType: 'kcl',
-        required: (context) =>
-          ['drill'].includes(context.argumentsToSubmit.holeBottom as string),
-        hidden: (context) =>
-          !['drill'].includes(context.argumentsToSubmit.holeBottom as string),
-        defaultValue: '110deg',
-      },
-    },
+    }),
   },
   'Boolean Subtract': {
     description: 'Subtract one solid from another.',
@@ -1151,23 +1108,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      solids: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tools: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        clearSelectionFirst: true,
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Subtract']>(
+      'Boolean Subtract',
+      {
+        overrides: {
+          solids: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tools: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            clearSelectionFirst: true,
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+        },
+      }
+    ),
   },
   'Boolean Union': {
     description: 'Union multiple solids into a single solid.',
@@ -1196,16 +1156,20 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      solids: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Union']>(
+      'Boolean Union',
+      {
+        overrides: {
+          solids: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+            skip: false,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+        },
+      }
+    ),
   },
   'Boolean Intersect': {
     description: 'Create a solid from the intersection of two solids.',
@@ -1234,16 +1198,20 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      solids: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Intersect']>(
+      'Boolean Intersect',
+      {
+        overrides: {
+          solids: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+            skip: false,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+        },
+      }
+    ),
   },
   'Boolean Split': {
     description:
@@ -1273,31 +1241,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      targets: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tools: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        clearSelectionFirst: true,
-        multiple: true,
-        required: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      merge: {
-        inputType: 'boolean',
-        required: false,
-      },
-      keepTools: {
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Split']>(
+      'Boolean Split',
+      {
+        overrides: {
+          targets: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tools: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            clearSelectionFirst: true,
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+        },
+      }
+    ),
   },
   'Offset plane': {
     description: 'Offset a plane.',
@@ -1327,28 +1290,30 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      plane: {
-        inputType: 'selection',
-        selectionTypes: [
-          'plane',
-          'planeOfFace',
-          'cap',
-          'wall',
-          'edgeCut',
-          'enginePrimitiveFace',
-          'primitiveFace',
-        ],
-        multiple: false,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      offset: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Offset plane']>(
+      'Offset plane',
+      {
+        overrides: {
+          plane: {
+            inputType: 'selection',
+            selectionTypes: [
+              'plane',
+              'planeOfFace',
+              'cap',
+              'wall',
+              'edgeCut',
+              'enginePrimitiveFace',
+              'primitiveFace',
+            ],
+            multiple: false,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          offset: {
+            defaultValue: KCL_DEFAULT_LENGTH,
+          },
+        },
+      }
+    ),
   },
   Helix: {
     description: 'Create a helix or spiral in 3D about an axis.',
@@ -1377,87 +1342,81 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      mode: {
-        inputType: 'options',
-        required: true,
-        defaultValue: 'Axis',
-        options: [
-          { name: 'Axis', isCurrent: true, value: 'Axis' },
-          { name: 'Edge', isCurrent: false, value: 'Edge' },
-          { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
-        ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Helix']>('Helix', {
+      overrides: {
+        mode: {
+          inputType: 'options',
+          required: true,
+          defaultValue: 'Axis',
+          options: [
+            { name: 'Axis', isCurrent: true, value: 'Axis' },
+            { name: 'Edge', isCurrent: false, value: 'Edge' },
+            { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
+          ],
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        axis: {
+          inputType: 'options',
+          options: [
+            { name: 'X Axis', value: 'X' },
+            { name: 'Y Axis', value: 'Y' },
+            { name: 'Z Axis', value: 'Z' },
+          ],
+          required: (context) =>
+            ['Axis'].includes(context.argumentsToSubmit.mode as string),
+          hidden: (context) =>
+            !['Axis'].includes(context.argumentsToSubmit.mode as string),
+        },
+        edge: {
+          inputType: 'selection',
+          selectionTypes: ['segment', 'sweepEdge'],
+          multiple: false,
+          required: (context) =>
+            ['Edge'].includes(context.argumentsToSubmit.mode as string),
+          hidden: (context) =>
+            Boolean(context.argumentsToSubmit.nodeToEdit) ||
+            !['Edge'].includes(context.argumentsToSubmit.mode as string),
+        },
+        cylinder: {
+          ...objectsTypesAndFilters,
+          inputType: 'selection',
+          multiple: false,
+          required: (context) =>
+            ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+          hidden: (context) =>
+            Boolean(context.argumentsToSubmit.nodeToEdit) ||
+            !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+        },
+        revolutions: {
+          defaultValue: '1',
+        },
+        angleStart: {
+          defaultValue: KCL_DEFAULT_DEGREE,
+        },
+        radius: {
+          defaultValue: KCL_DEFAULT_LENGTH,
+          required: (context) =>
+            !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+          hidden: (context) =>
+            ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+        },
+        length: {
+          defaultValue: KCL_DEFAULT_LENGTH,
+          required: (commandContext) =>
+            ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
+          // No need for hidden here, as it works with all modes
+        },
+        ccw: {
+          displayName: 'CounterClockWise',
+        },
       },
-      axis: {
-        inputType: 'options',
-        options: [
-          { name: 'X Axis', value: 'X' },
-          { name: 'Y Axis', value: 'Y' },
-          { name: 'Z Axis', value: 'Z' },
-        ],
-        required: (context) =>
-          ['Axis'].includes(context.argumentsToSubmit.mode as string),
-        hidden: (context) =>
-          !['Axis'].includes(context.argumentsToSubmit.mode as string),
-      },
-      edge: {
-        inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
-        multiple: false,
-        required: (context) =>
-          ['Edge'].includes(context.argumentsToSubmit.mode as string),
-        hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
-          !['Edge'].includes(context.argumentsToSubmit.mode as string),
-      },
-      cylinder: {
-        ...objectsTypesAndFilters,
-        inputType: 'selection',
-        multiple: false,
-        required: (context) =>
-          ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
-        hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
-          !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
-      },
-      revolutions: {
-        inputType: 'kcl',
-        defaultValue: '1',
-        required: true,
-      },
-      angleStart: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DEGREE,
-        required: true,
-      },
-      radius: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: (context) =>
-          !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
-        hidden: (context) =>
-          ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
-      },
-      length: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: (commandContext) =>
-          ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
-        // No need for hidden here, as it works with all modes
-      },
-      ccw: {
-        displayName: 'CounterClockWise',
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    }),
   },
   'Helical Gear': {
     description: 'Create a helical gear.',
     icon: 'gear',
     needsReview: true,
-    status: 'experimental',
+    status: modelingStdLibCommandStatus('Helical Gear'),
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -1480,39 +1439,34 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      nTeeth: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '10',
-      },
-      module: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '2',
-      },
-      pressureAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '20deg',
-      },
-      helixAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '35deg',
-      },
-      gearHeight: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '7',
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Helical Gear']>(
+      'Helical Gear',
+      {
+        overrides: {
+          nTeeth: {
+            defaultValue: '10',
+          },
+          module: {
+            defaultValue: '2',
+          },
+          pressureAngle: {
+            defaultValue: '20deg',
+          },
+          helixAngle: {
+            defaultValue: '35deg',
+          },
+          gearHeight: {
+            defaultValue: '7',
+          },
+        },
+      }
+    ),
   },
   'Herringbone Gear': {
     description: 'Create a herringbone gear.',
     icon: 'gear',
     needsReview: true,
-    status: 'experimental',
+    status: modelingStdLibCommandStatus('Herringbone Gear'),
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -1535,39 +1489,34 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      nTeeth: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '10',
-      },
-      module: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '2',
-      },
-      pressureAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '20deg',
-      },
-      gearHeight: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '5',
-      },
-      helixAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '40deg',
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Herringbone Gear']>(
+      'Herringbone Gear',
+      {
+        overrides: {
+          nTeeth: {
+            defaultValue: '10',
+          },
+          module: {
+            defaultValue: '2',
+          },
+          pressureAngle: {
+            defaultValue: '20deg',
+          },
+          gearHeight: {
+            defaultValue: '5',
+          },
+          helixAngle: {
+            defaultValue: '40deg',
+          },
+        },
+      }
+    ),
   },
   'Spur Gear': {
     description: 'Create a spur gear.',
     icon: 'gear',
     needsReview: true,
-    status: 'experimental',
+    status: modelingStdLibCommandStatus('Spur Gear'),
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -1590,34 +1539,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      nTeeth: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '21',
-      },
-      module: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '1.5',
-      },
-      pressureAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '14deg',
-      },
-      gearHeight: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '6',
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Spur Gear']>(
+      'Spur Gear',
+      {
+        overrides: {
+          nTeeth: {
+            defaultValue: '21',
+          },
+          module: {
+            defaultValue: '1.5',
+          },
+          pressureAngle: {
+            defaultValue: '14deg',
+          },
+          gearHeight: {
+            defaultValue: '6',
+          },
+        },
+      }
+    ),
   },
   'Ring Gear': {
     description: 'Create a ring gear.',
     icon: 'gear',
     needsReview: true,
-    status: 'experimental',
+    status: modelingStdLibCommandStatus('Ring Gear'),
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -1640,33 +1586,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      nTeeth: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '40',
-      },
-      module: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '1.5',
-      },
-      pressureAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '14deg',
-      },
-      helixAngle: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '-25deg',
-      },
-      gearHeight: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: '5',
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Ring Gear']>(
+      'Ring Gear',
+      {
+        overrides: {
+          nTeeth: {
+            defaultValue: '40',
+          },
+          module: {
+            defaultValue: '1.5',
+          },
+          pressureAngle: {
+            defaultValue: '14deg',
+          },
+          helixAngle: {
+            defaultValue: '-25deg',
+          },
+          gearHeight: {
+            defaultValue: '5',
+          },
+        },
+      }
+    ),
   },
   Fillet: {
     description: 'Fillet edge',
@@ -1713,39 +1654,30 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      selection: {
-        inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
-        multiple: true,
-        required: true,
-        skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Fillet']>('Fillet', {
+      overrides: {
+        selection: {
+          inputType: 'selection',
+          selectionTypes: [
+            'segment',
+            'sweepEdge',
+            'primitiveEdge',
+            'enginePrimitiveEdge',
+          ],
+          multiple: true,
+          skip: false,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        radius: {
+          defaultValue: KCL_DEFAULT_LENGTH,
+        },
+        version: {
+          description:
+            'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+          defaultValue: '1',
+        },
       },
-      radius: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
-      },
-      tag: {
-        inputType: 'tagDeclarator',
-        required: false,
-        // TODO: add validation like for Clone command
-      },
-      version: {
-        inputType: 'kcl',
-        description:
-          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
-        defaultValue: '1',
-        required: false,
-        status: 'experimental',
-      },
-    },
+    }),
   },
   Chamfer: {
     description: 'Chamfer edge',
@@ -1792,49 +1724,39 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      selection: {
-        inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
-        multiple: true,
-        required: true,
-        skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      length: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
-      },
-      secondLength: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: false,
-      },
-      angle: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DEGREE,
-        required: false,
-      },
-      tag: {
-        inputType: 'tagDeclarator',
-        required: false,
-        // TODO: add validation like for Clone command
-      },
-      version: {
-        inputType: 'kcl',
-        description:
-          'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
-        defaultValue: '1',
-        required: false,
-        status: 'experimental',
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Chamfer']>(
+      'Chamfer',
+      {
+        overrides: {
+          selection: {
+            inputType: 'selection',
+            selectionTypes: [
+              'segment',
+              'sweepEdge',
+              'primitiveEdge',
+              'enginePrimitiveEdge',
+            ],
+            multiple: true,
+            skip: false,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          length: {
+            defaultValue: KCL_DEFAULT_LENGTH,
+          },
+          secondLength: {
+            defaultValue: KCL_DEFAULT_LENGTH,
+          },
+          angle: {
+            defaultValue: KCL_DEFAULT_DEGREE,
+          },
+          version: {
+            description:
+              'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+            defaultValue: '1',
+          },
+        },
+      }
+    ),
   },
   'Constrain length': {
     description: 'Constrain the length of one or more segments.',
@@ -1949,33 +1871,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        // selectionMixed allows for feature tree selection of module imports
-        inputType: 'selectionMixed',
-        selectionTypes: ['path', 'sweep', 'compositeSolid'],
-        selectionFilter: ['object'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      color: {
-        inputType: 'color',
-        required: true,
-      },
-      metalness: {
-        inputType: 'kcl',
-        required: false,
-      },
-      roughness: {
-        inputType: 'kcl',
-        required: false,
-      },
-      opacity: {
-        inputType: 'kcl',
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Appearance']>(
+      'Appearance',
+      {
+        overrides: {
+          objects: {
+            // selectionMixed allows for feature tree selection of module imports
+            inputType: 'selectionMixed',
+            selectionTypes: ['path', 'sweep', 'compositeSolid'],
+            selectionFilter: ['object'],
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          color: {
+            inputType: 'color',
+          },
+        },
+      }
+    ),
   },
   Delete: {
     description: 'Delete selected bodies from the scene.',
@@ -2058,34 +1971,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      x: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: false,
-      },
-      y: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: false,
-      },
-      z: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: false,
-      },
-      global: {
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Translate']>(
+      'Translate',
+      {
+        overrides: {
+          objects: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          x: {
+            defaultValue: KCL_DEFAULT_TRANSFORM,
+          },
+          y: {
+            defaultValue: KCL_DEFAULT_TRANSFORM,
+          },
+          z: {
+            defaultValue: KCL_DEFAULT_TRANSFORM,
+          },
+        },
+      }
+    ),
   },
   Rotate: {
     description: 'Set rotation on solid or sketch.',
@@ -2114,34 +2021,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
+      overrides: {
+        objects: {
+          ...objectsTypesAndFilters,
+          inputType: 'selectionMixed',
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        roll: {
+          defaultValue: KCL_DEFAULT_TRANSFORM,
+        },
+        pitch: {
+          defaultValue: KCL_DEFAULT_TRANSFORM,
+        },
+        yaw: {
+          defaultValue: KCL_DEFAULT_TRANSFORM,
+        },
       },
-      roll: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: false,
-      },
-      pitch: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: false,
-      },
-      yaw: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: false,
-      },
-      global: {
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    }),
   },
   Scale: {
     description: 'Set scale on solid or sketch.',
@@ -2170,39 +2068,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
+      overrides: {
+        objects: {
+          ...objectsTypesAndFilters,
+          inputType: 'selectionMixed',
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        x: {
+          defaultValue: KCL_DEFAULT_SCALE,
+        },
+        y: {
+          defaultValue: KCL_DEFAULT_SCALE,
+        },
+        z: {
+          defaultValue: KCL_DEFAULT_SCALE,
+        },
+        factor: {
+          defaultValue: KCL_DEFAULT_SCALE,
+        },
       },
-      x: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_SCALE,
-        required: false,
-      },
-      y: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_SCALE,
-        required: false,
-      },
-      z: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_SCALE,
-        required: false,
-      },
-      factor: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_SCALE,
-        required: false,
-      },
-      global: {
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    }),
   },
   Clone: {
     description: 'Clone a solid or sketch.',
@@ -2231,42 +2118,46 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: false, // only one object can be cloned at this time
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      variableName: {
-        inputType: 'string',
-        required: true,
-        defaultValue: (_, modelingContext) => {
-          if (!modelingContext) {
-            return KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
-          }
-          return findUniqueName(
-            modelingContext.kclManager.ast,
-            KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
-          )
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
+      overrides: {
+        objects: {
+          ...objectsTypesAndFilters,
+          inputType: 'selectionMixed',
+          multiple: false, // only one object can be cloned at this time
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
         },
-        validation: async ({ data, machineContext: modelingContext }) => {
-          if (!modelingContext) {
-            return 'Modeling context not found'
-          }
-          // Be conservative and error out if there is an item or module with the same name.
-          const variableExists =
-            modelingContext.kclManager.variables[data] ||
-            modelingContext.kclManager.variables['__mod_' + data]
-          if (variableExists) {
-            return 'This variable name is already in use.'
-          }
+        variableName: {
+          inputType: 'string',
+          required: true,
+          defaultValue: (
+            _: unknown,
+            modelingContext?: ModelingMachineContext
+          ) => {
+            if (!modelingContext) {
+              return KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+            }
+            return findUniqueName(
+              modelingContext.kclManager.ast,
+              KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+            )
+          },
+          validation: async ({ data, machineContext: modelingContext }) => {
+            if (!modelingContext) {
+              return 'Modeling context not found'
+            }
+            // Be conservative and error out if there is an item or module with the same name.
+            const variableExists =
+              modelingContext.kclManager.variables[data] ||
+              modelingContext.kclManager.variables['__mod_' + data]
+            if (variableExists) {
+              return 'This variable name is already in use.'
+            }
 
-          return true
+            return true
+          },
         },
       },
-    },
+    }),
   },
   'Mirror 3D': {
     description: 'Mirror solids across a plane or edge.',
@@ -2301,30 +2192,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         return execRes
       }
     },
-    args: {
-      bodies: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-      },
-      across: {
-        inputType: 'selection',
-        selectionTypes: [
-          'plane',
-          'cap',
-          'wall',
-          'edgeCut',
-          'enginePrimitiveFace',
-          'segment',
-          'sweepEdge',
-          'edgeCutEdge',
-        ],
-        clearSelectionFirst: true,
-        multiple: false,
-        required: true,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Mirror 3D']>(
+      'Mirror 3D',
+      {
+        overrides: {
+          bodies: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+          },
+          across: {
+            inputType: 'selection',
+            selectionTypes: [
+              'plane',
+              'cap',
+              'wall',
+              'edgeCut',
+              'enginePrimitiveFace',
+              'segment',
+              'sweepEdge',
+              'edgeCutEdge',
+            ],
+            clearSelectionFirst: true,
+            multiple: false,
+          },
+        },
+      }
+    ),
   },
   'Pattern Circular 3D': {
     description: 'Create a circular pattern of 3D solids around an axis.',
@@ -2353,48 +2247,36 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      solids: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<
+      ModelingCommandSchema['Pattern Circular 3D']
+    >('Pattern Circular 3D', {
+      overrides: {
+        solids: {
+          ...objectsTypesAndFilters,
+          inputType: 'selectionMixed',
+          multiple: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        instances: {
+          defaultValue: KCL_DEFAULT_INSTANCES,
+        },
+        axis: {
+          inputType: 'options',
+          defaultValue: KCL_AXIS_Z,
+          options: [
+            { name: 'X-axis', value: KCL_AXIS_X },
+            { name: 'Y-axis', value: KCL_AXIS_Y },
+            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
+          ],
+        },
+        center: {
+          defaultValue: KCL_DEFAULT_ORIGIN,
+        },
+        arcDegrees: {
+          defaultValue: KCL_DEFAULT_DEGREE,
+        },
       },
-      instances: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: KCL_DEFAULT_INSTANCES,
-      },
-      axis: {
-        inputType: 'options',
-        required: true,
-        defaultValue: KCL_AXIS_Z,
-        options: [
-          { name: 'X-axis', value: KCL_AXIS_X },
-          { name: 'Y-axis', value: KCL_AXIS_Y },
-          { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
-        ],
-      },
-      center: {
-        inputType: 'vector3d',
-        required: true,
-        defaultValue: KCL_DEFAULT_ORIGIN,
-      },
-      arcDegrees: {
-        inputType: 'kcl',
-        required: false,
-        defaultValue: KCL_DEFAULT_DEGREE,
-      },
-      rotateDuplicates: {
-        inputType: 'boolean',
-        required: false,
-      },
-      useOriginal: {
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    }),
   },
   'Pattern Linear 3D': {
     description: 'Create a linear pattern of 3D solids along an axis.',
@@ -2423,39 +2305,34 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      solids: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      instances: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: KCL_DEFAULT_INSTANCES,
-      },
-      distance: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue: KCL_DEFAULT_LENGTH,
-      },
-      axis: {
-        inputType: 'options',
-        required: true,
-        defaultValue: KCL_AXIS_X,
-        options: [
-          { name: 'X-axis', isCurrent: true, value: KCL_AXIS_X },
-          { name: 'Y-axis', value: KCL_AXIS_Y },
-          { name: 'Z-axis', value: KCL_AXIS_Z },
-        ],
-      },
-      useOriginal: {
-        inputType: 'boolean',
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Pattern Linear 3D']>(
+      'Pattern Linear 3D',
+      {
+        overrides: {
+          solids: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          instances: {
+            defaultValue: KCL_DEFAULT_INSTANCES,
+          },
+          distance: {
+            defaultValue: KCL_DEFAULT_LENGTH,
+          },
+          axis: {
+            inputType: 'options',
+            defaultValue: KCL_AXIS_X,
+            options: [
+              { name: 'X-axis', isCurrent: true, value: KCL_AXIS_X },
+              { name: 'Y-axis', value: KCL_AXIS_Y },
+              { name: 'Z-axis', value: KCL_AXIS_Z },
+            ],
+          },
+        },
+      }
+    ),
   },
   'GDT Flatness': {
     description:
@@ -2485,44 +2362,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      faces: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Flatness']>(
+      'GDT Flatness',
+      {
+        overrides: {
+          faces: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut'],
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Straightness': {
     description:
@@ -2552,44 +2406,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Straightness']>(
+      'GDT Straightness',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Circularity': {
     description:
@@ -2619,44 +2451,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Circularity']>(
+      'GDT Circularity',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Cylindricity': {
     description:
@@ -2686,44 +2496,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Cylindricity']>(
+      'GDT Cylindricity',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Datum': {
     description:
@@ -2753,44 +2541,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      faces: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
-        multiple: false,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      name: {
-        inputType: 'string',
-        defaultValue: (_, modelingContext) =>
-          modelingContext
-            ? getNextAvailableDatumName(modelingContext.kclManager.ast)
-            : 'A',
-        required: true,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Datum']>(
+      'GDT Datum',
+      {
+        overrides: {
+          faces: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut'],
+            multiple: false,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          name: {
+            defaultValue: (_, modelingContext) =>
+              modelingContext
+                ? getNextAvailableDatumName(modelingContext.kclManager.ast)
+                : 'A',
+          },
+          ...gdtFrameDisplayArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Position': {
     description:
@@ -2820,47 +2590,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      datums: {
-        ...datumsProps,
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Position']>(
+      'GDT Position',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          datums: datumsProps,
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Profile': {
     description:
@@ -2890,47 +2636,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      edges: {
-        inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      datums: {
-        ...datumsProps,
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Profile']>(
+      'GDT Profile',
+      {
+        overrides: {
+          edges: {
+            inputType: 'selection',
+            selectionTypes: ['segment', 'sweepEdge'],
+            multiple: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          datums: datumsProps,
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Distance': {
     description:
@@ -2964,44 +2685,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         return execRes
       }
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Distance']>(
+      'GDT Distance',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Perpendicularity': {
     description:
@@ -3031,47 +2730,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+    args: modelingStdLibCommandArgs<
+      ModelingCommandSchema['GDT Perpendicularity']
+    >('GDT Perpendicularity', {
+      overrides: {
+        objects: {
+          inputType: 'selection',
+          selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+          multiple: true,
+          required: true,
+          hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        },
+        datums: datumsProps,
+        tolerance: gdtToleranceProps,
+        ...gdtFrameArgOverrides,
       },
-      datums: {
-        ...datumsProps,
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    }),
   },
   'GDT Parallelism': {
     description:
@@ -3101,47 +2775,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      datums: {
-        ...datumsProps,
-      },
-      tolerance: {
-        ...gdtToleranceProps,
-      },
-      precision: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_PRECISION,
-        required: false,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Parallelism']>(
+      'GDT Parallelism',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          datums: datumsProps,
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
   },
   'GDT Annotation': {
     description: 'Add model-based definition annotation to faces and edges.',
@@ -3170,41 +2820,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      objects: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      annotation: {
-        inputType: 'text',
-        defaultValue: 'BREAK ALL SHARP EDGES',
-        required: true,
-      },
-      framePosition: {
-        inputType: 'vector2d',
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        required: false,
-      },
-      framePlane: {
-        inputType: 'options',
-        defaultValue: KCL_PLANE_XY,
-        options: FRAME_PLANE_OPTIONS,
-        required: false,
-      },
-      leaderScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LEADER_SCALE,
-        required: false,
-      },
-      fontSize: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SIZE,
-        required: false,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Annotation']>(
+      'GDT Annotation',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+          },
+          annotation: {
+            inputType: 'text',
+            defaultValue: 'BREAK ALL SHARP EDGES',
+          },
+          ...gdtFrameDisplayArgOverrides,
+        },
+      }
+    ),
   },
   'Flip Surface': {
     description:
@@ -3234,14 +2868,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      surface: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Flip Surface']>(
+      'Flip Surface',
+      {
+        overrides: {
+          surface: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+          },
+        },
+      }
+    ),
   },
   'Join Surfaces': {
     description: 'Join selected surfaces into one polysurface.',
@@ -3270,14 +2908,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      selection: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Join Surfaces']>(
+      'Join Surfaces',
+      {
+        overrides: {
+          selection: {
+            ...objectsTypesAndFilters,
+            inputType: 'selectionMixed',
+            multiple: true,
+          },
+        },
+      }
+    ),
   },
   'Delete Face': {
     description: 'Delete a face from a body, leaving an open surface.',
@@ -3307,14 +2949,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      faces: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
-        multiple: true,
-        required: true,
-      },
-    },
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete Face']>(
+      'Delete Face',
+      {
+        overrides: {
+          faces: {
+            inputType: 'selection',
+            selectionTypes: [
+              'cap',
+              'wall',
+              'primitiveFace',
+              'enginePrimitiveFace',
+            ],
+            multiple: true,
+            required: true,
+          },
+        },
+      }
+    ),
   },
   Blend: {
     description: 'Blend two selected surface edges into a new surface.',
@@ -3344,20 +2996,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    args: {
-      edges: {
-        inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'primitiveEdge',
-          'enginePrimitiveEdge',
-        ],
-        multiple: true,
-        required: true,
-        description: 'Only straight edges are supported now.',
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Blend']>('Blend', {
+      overrides: {
+        edges: {
+          inputType: 'selection',
+          selectionTypes: [
+            'segment',
+            'sweepEdge',
+            'primitiveEdge',
+            'enginePrimitiveEdge',
+          ],
+          multiple: true,
+          description: 'Only straight edges are supported now.',
+        },
       },
-    },
+    }),
   },
 }
 
