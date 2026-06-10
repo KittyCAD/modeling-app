@@ -9,7 +9,7 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { OpenedProject } from '@src/components/OpenedProject'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
@@ -39,8 +39,7 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 export const Router = () => {
   useSignals()
   const app = useApp()
-  const { executingEditor } = useSingletons()
-  const networkStatus = useNetworkStatus(executingEditor.engineCommandManager)
+  const networkStatus = useNetworkStatus(app.engineCommandManager)
   const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>

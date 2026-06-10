@@ -1,5 +1,9 @@
 import { type Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
-import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
+import { signal } from '@preact/signals-core'
+import {
+  type ExecutingEditor,
+  ExecutingEditor as ExecutingEditorClass,
+} from '@src/lang/ExecutingEditor'
 import { App } from '@src/lib/app'
 import { isArray } from '@src/lib/utils'
 import { loadWasm } from '@src/unitTestUtils'
@@ -13,7 +17,15 @@ export function createExecutingEditorTestHarness(initialCode = ''): {
   const app = App.fromProvided({
     wasmPromise,
   })
-  const { executingEditor } = app.singletons
+  const executingEditor = new ExecutingEditorClass('some-file', '', {
+    wasmInstancePromise: wasmPromise,
+    settings: app.settings.actor,
+    commandBar: app.commands.actor,
+    engineCommandManager: app.engineCommandManager,
+    rustContext: app.rustContext,
+    projectPath: signal('some-project'),
+  })
+  app.setExecutingEditor(executingEditor)
 
   if (executingEditor.code !== initialCode) {
     executingEditor.updateCodeEditor(initialCode, {

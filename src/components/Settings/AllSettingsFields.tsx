@@ -2,7 +2,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
@@ -40,7 +40,7 @@ export const AllSettingsFields = forwardRef(
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
     const { settings, layout, systemIOActor } = useApp()
-    const { executingEditor } = useSingletons()
+    const executingEditor = useExecutingEditor()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()

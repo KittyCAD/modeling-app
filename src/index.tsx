@@ -31,15 +31,15 @@ function launchApp(app: App) {
   mountAppToReact(app)
 }
 
-/** initialize behaviors that rely on singletons */
+/** initialize behaviors that rely on the app core */
 function initSingletonBehavior(app: App) {
-  const { singletons } = app
   markOnce('code/willAuth')
-  initializeWindowExceptionHandler(singletons.executingEditor)
+  initializeWindowExceptionHandler(
+    () => app.project?.executingEditor.value ?? undefined
+  )
 
-  // Don't start the app machine until all these singletons
-  // are initialized, and the wasm module is loaded.
-  singletons.executingEditor.wasmInstancePromise
+  // Application commands need the WASM module for file extension helpers.
+  app.wasmPromise
     .then((wasmInstance) => {
       // Application commands must be created after the initPromise because
       // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency

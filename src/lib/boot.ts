@@ -1,3 +1,5 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { App } from '@src/lib/app'
 import {
   StorageName,
@@ -5,6 +7,7 @@ import {
   moduleFsViaWindow,
 } from '@src/lib/fs-zds'
 import { isPlaywright } from '@src/lib/isPlaywright'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import React from 'react'
 
 // Earliest as possible point to configure the fs layer.
@@ -45,14 +48,14 @@ export const AppContext = React.createContext(app)
 window.app = app
 
 /**
- * Hook to gain access to the global app instance's singletons
- *
- * Alternatively, can use `useApp` and peel needed singletons off.
- * `useSingletons` will eventually be deprecated.
- */
-export const useSingletons = () => React.useContext(AppContext).singletons
-
-/**
  * Hook to get access to the app instance.
  */
 export const useApp = () => React.useContext(AppContext)
+
+export const useExecutingEditorService = () => {
+  useSignals()
+  return useApp().registry.signal(executingEditorService).value
+}
+
+export const useExecutingEditor = () =>
+  useExecutingEditorService()?.executingEditor as ExecutingEditor

@@ -1,5 +1,5 @@
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { useEffect, useRef, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -7,7 +7,7 @@ import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 
 export default function CubeGizmo() {
   const { settings } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
 

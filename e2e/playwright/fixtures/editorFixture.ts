@@ -193,7 +193,7 @@ export class EditorFixture {
     }
     await this.page.evaluate(
       ({ findCode, replaceCode }) => {
-        const editorView = window.app.singletons.executingEditor.editorView
+        const editorView = window.executingEditor.editorView
         const currentCode = editorView.state.doc.toString()
         const from = currentCode.indexOf(findCode)
         if (from === -1) {
@@ -232,7 +232,7 @@ export class EditorFixture {
     await expect(this.codeContent).not.toBeEmpty()
     return this.page.evaluate(
       (args: { text: string; placeCursor?: boolean }) => {
-        const editorView = window.app.singletons.executingEditor.editorView
+        const editorView = window.executingEditor.editorView
         const index = editorView.state.doc.toString().indexOf(args.text)
         editorView.focus()
         editorView.dispatch({

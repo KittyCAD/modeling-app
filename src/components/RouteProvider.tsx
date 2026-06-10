@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
@@ -16,7 +16,7 @@ export const RouteProviderContext = createContext({})
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
   const { settings, project } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const settingsActor = settings.actor
   useAuthNavigation()
   const loadedProject = project?.projectIORefSignal.value

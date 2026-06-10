@@ -27,7 +27,7 @@ import type {
 import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
@@ -73,7 +73,7 @@ type LspContext = {
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 

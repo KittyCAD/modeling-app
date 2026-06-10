@@ -6,14 +6,14 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { changeDefaultUnits } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 
 export function UnitsMenu() {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const wasmInstance = use(executingEditor.wasmInstancePromise)
   const [fileSettings, setFileSettings] = useState(executingEditor.fileSettings)
   const { state: modelingState } = useModelingContext()

@@ -134,7 +134,7 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set executingEditor'; data: ExecutingEditor }
+  | { type: 'Set executingEditor'; data: ExecutingEditor | undefined }
 
 export const commandBarMachine = setup({
   types: {
@@ -210,7 +210,7 @@ export const commandBarMachine = setup({
         const { selectedCommand } = context
         if (!(selectedCommand && selectedCommand.args)) return undefined
         const rejectedArg =
-          'data' in event && 'arg' in event.data && event.data.arg
+          'data' in event && event.data && 'arg' in event.data && event.data.arg
 
         // Find the first argument that is not to be skipped:
         // that is, the first argument that is not already in the argumentsToSubmit

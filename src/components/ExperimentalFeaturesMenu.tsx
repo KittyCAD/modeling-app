@@ -7,7 +7,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
@@ -16,7 +16,7 @@ import { warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
 
 export function ExperimentalFeaturesMenu() {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const currentLevel: WarningLevel =
     executingEditor.fileSettings.experimentalFeatures ??
     DEFAULT_EXPERIMENTAL_FEATURES

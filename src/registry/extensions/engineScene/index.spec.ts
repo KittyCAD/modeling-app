@@ -17,6 +17,7 @@ function createExecutingEditorService(
   showExperimentalFeaturesStatusBarItem = signal(true)
 ): ExecutingEditorService {
   return {
+    executingEditor: {} as ExecutingEditorService['executingEditor'],
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,

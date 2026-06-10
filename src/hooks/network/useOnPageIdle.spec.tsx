@@ -21,7 +21,7 @@ const hookMocks = vi.hoisted(() => {
         }),
       },
     }),
-    useSingletons: () => ({
+    useExecutingEditor: () => ({
       executingEditor: state.executingEditor,
     }),
     useModelingContext: () => ({
@@ -34,7 +34,7 @@ const hookMocks = vi.hoisted(() => {
 
 vi.mock('@src/lib/boot', () => ({
   useApp: hookMocks.useApp,
-  useSingletons: hookMocks.useSingletons,
+  useExecutingEditor: hookMocks.useExecutingEditor,
 }))
 
 vi.mock('@src/hooks/useModelingContext', () => ({

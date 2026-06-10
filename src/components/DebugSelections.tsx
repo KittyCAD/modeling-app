@@ -1,5 +1,6 @@
 import { EditorSelection } from '@codemirror/state'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
@@ -9,7 +10,7 @@ import {
   getOperationsForModule,
 } from '@src/lang/wasm'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import {
   filterOperations,
   groupOperationTypeStreaks,
@@ -22,7 +23,7 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useMemo, useState } from 'react'
 import { use } from 'react'
 
-type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'executingEditor'>
+type SingletonDeps = { executingEditor: ExecutingEditor }
 
 async function clearSceneSelection(deps: SingletonDeps) {
   await deps.executingEditor.engineCommandManager.sendSceneCommand({
@@ -261,7 +262,7 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const singletonDeps: SingletonDeps = useMemo(
     () => ({
       executingEditor,

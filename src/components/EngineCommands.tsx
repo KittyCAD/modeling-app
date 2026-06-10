@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 
 export function useEngineCommands(): [CommandLog[], () => void] {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const engineCommandManager = executingEditor.engineCommandManager
   const [engineCommands, setEngineCommands] = useState<CommandLog[]>(
     engineCommandManager.commandLogs
@@ -22,7 +22,7 @@ export function useEngineCommands(): [CommandLog[], () => void] {
 }
 
 export const EngineCommands = () => {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const engineCommandManager = executingEditor.engineCommandManager
   const [engineCommands, clearEngineCommands] = useEngineCommands()
   const [containsFilter, setContainsFilter] = useState('')

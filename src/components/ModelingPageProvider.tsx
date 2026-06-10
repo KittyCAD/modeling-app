@@ -11,7 +11,7 @@ import {
   updateOutsideEditorEvent,
 } from '@src/lang/ExecutingEditor'
 import { sourceRangeToUtf16 } from '@src/lang/errors'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
@@ -62,7 +62,7 @@ export const ModelingPageProvider = ({
 }) => {
   useSignals()
   const { auth, commands, settings, project, systemIOActor } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const wasmInstance = use(executingEditor.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()

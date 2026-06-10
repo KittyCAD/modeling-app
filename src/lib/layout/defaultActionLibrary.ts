@@ -1,6 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
@@ -10,7 +10,7 @@ import { layoutActionLibraryValueSpec } from '@src/registry/contracts/layout'
 export const useDefaultActionLibrary = () => {
   useSignals()
   const { commands, settings, registry } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const registeredActionLibrary = registry.signal(
     layoutActionLibraryValueSpec

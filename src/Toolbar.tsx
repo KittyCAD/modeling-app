@@ -18,7 +18,7 @@ import {
   getUnrenderedChangesDisabledReason,
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -76,7 +76,7 @@ const Toolbar_ = memo(
     const app = useApp()
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
-    const { executingEditor } = useSingletons()
+    const executingEditor = useExecutingEditor()
     const platform = usePlatform()
     const executionService = app.registry.signal(executingEditorService).value
     const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
@@ -1017,7 +1017,7 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const { settings } = useApp()
   const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()

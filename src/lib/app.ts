@@ -74,7 +74,6 @@ import {
   provideCommand,
 } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
@@ -139,10 +138,11 @@ function createAppRegistryItems({
   ]
 }
 
-// We set some of our singletons on the window for debugging and E2E tests
+// We set some app subsystems on the window for debugging and E2E tests.
 declare global {
   interface Window {
     app: App
+    executingEditor: ExecutingEditor
     engineCommandManager: ConnectionManager
     rustContext: RustContext
     engineDebugger: Debugger
@@ -219,7 +219,6 @@ export class App implements AppSubsystems {
   set project(newProject: ZDSProject | undefined) {
     this.projectSignal.value = newProject
   }
-  singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
    * - settings parse/unparse
@@ -297,7 +296,6 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
-    this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
@@ -551,31 +549,35 @@ export class App implements AppSubsystems {
   }
 
   async openProject(projectIORef: Project) {
+    if (this.project) {
+      this.closeProject()
+    }
+
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
     // This extension makes it possible to mark FS operations as un/redoable
-    effect(() => {
-      if (this.project?.executingEditor.value) {
-        buildFSHistoryExtension(
-          this.systemIOActor,
-          this.project.executingEditor.value
-        )
+    this.unsubscribeFromProjectFsHistory = effect(() => {
+      const executingEditor = this.project?.executingEditor.value
+      if (executingEditor) {
+        return buildFSHistoryExtension(this.systemIOActor, executingEditor)
       }
     })
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
+    this.unsubscribeFromSystemIO = this.systemIOActor.subscribe(
+      ({ context }) => {
+        const foundProject = (context.folders ?? []).find(
+          (p) =>
+            p.name === projectIORefSignal.value.name &&
+            p.path === projectIORefSignal.value.path
+        )
+        if (foundProject && projectIORefSignal.value !== foundProject) {
+          projectIORefSignal.value = foundProject
+        }
       }
-    })
+    )
 
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
@@ -584,10 +586,18 @@ export class App implements AppSubsystems {
     return this.project
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
+  private unsubscribeFromProjectFsHistory: ReturnType<typeof effect> | undefined
+  private unsubscribeFromSystemIO: Subscription | undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
+    this.unsubscribeFromSettings = undefined
+    this.unsubscribeFromProjectFsHistory?.()
+    this.unsubscribeFromProjectFsHistory = undefined
+    this.unsubscribeFromSystemIO?.unsubscribe()
+    this.unsubscribeFromSystemIO = undefined
     this.project?.close()
     this.project = undefined
+    this.clearExecutingEditor()
   }
 
   syncUserFeaturesFromAuth = (
@@ -651,22 +661,7 @@ export class App implements AppSubsystems {
     }
   }
 
-  /**
-   * Build the world!
-   */
-  buildSingletons() {
-    // TODO: Remove this and make the app handle no executing editor,
-    // so we don't need to stub with empty strings
-    const executingEditor = new ExecutingEditor('', '', {
-      settings: this.settings.actor,
-      wasmInstancePromise: this.wasmPromise,
-      commandBar: this.commands.actor,
-      projectPath: signal(''),
-      engineCommandManager: this.engineCommandManager,
-      rustContext: this.rustContext,
-      keymap: this.registry.get(keymapService),
-    })
-
+  setExecutingEditor(executingEditor: ExecutingEditor) {
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
         id: 'executing-editor-services',
@@ -681,8 +676,9 @@ export class App implements AppSubsystems {
 
     if (typeof window !== 'undefined') {
       // Accessible for tests mostly
-      window.engineCommandManager = executingEditor.engineCommandManager
-      window.rustContext = executingEditor.rustContext
+      window.engineCommandManager = this.engineCommandManager
+      window.executingEditor = executingEditor
+      window.rustContext = this.rustContext
       window.engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
         document.addEventListener('mousemove', (e) =>
@@ -692,7 +688,7 @@ export class App implements AppSubsystems {
         ;(window as any)._enableFillet = true
       }
       ;(window as any).zoomToFit = () =>
-        executingEditor.engineCommandManager.sendSceneCommand({
+        this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -708,9 +704,13 @@ export class App implements AppSubsystems {
       type: 'Set executingEditor',
       data: executingEditor,
     })
+  }
 
-    return {
-      executingEditor,
+  clearExecutingEditor() {
+    this.registry.reconfigure(appRegistryServicesSlot, [])
+    this.commands.actor.send({ type: 'Set executingEditor', data: undefined })
+    if (typeof window !== 'undefined') {
+      delete (window as Partial<Window>).executingEditor
     }
   }
 
@@ -722,10 +722,17 @@ export class App implements AppSubsystems {
     if (!this.project) {
       return // Everything in here only matters inside a project.
     }
+    const executingEditor = this.project.executingEditor.value
+    if (!executingEditor) {
+      this.lastSettings = getAllCurrentSettings(
+        getOnlySettingsFromContext(snapshot.context)
+      )
+      return
+    }
     const { context } = snapshot
 
     // Update line wrapping
-    this.singletons.executingEditor.setEditorLineWrapping(
+    executingEditor.setEditorLineWrapping(
       context.textEditor.textWrapping.current
     )
 
@@ -733,9 +740,9 @@ export class App implements AppSubsystems {
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.executingEditor.engineCommandManager.connection
+      executingEditor.engineCommandManager.connection
     ) {
-      this.singletons.executingEditor.engineCommandManager
+      executingEditor.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
     }
@@ -746,17 +753,16 @@ export class App implements AppSubsystems {
       '--cursor-color',
       newBlinking ? 'auto' : 'transparent'
     )
-    this.singletons.executingEditor.setCursorBlinking(newBlinking)
+    executingEditor.setCursorBlinking(newBlinking)
 
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
     Promise.all([
-      this.singletons.executingEditor.updateTheme(newTheme),
-      ...(this.singletons.executingEditor.engineCommandManager.connection
-        ?.connected
+      executingEditor.updateTheme(newTheme),
+      ...(executingEditor.engineCommandManager.connection?.connected
         ? [
-            this.singletons.executingEditor.engineCommandManager.setDefaultSystemProperties(
+            executingEditor.engineCommandManager.setDefaultSystemProperties(
               newBackfaceColor
             ),
           ]
@@ -782,29 +788,29 @@ export class App implements AppSubsystems {
       // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.executingEditor.engineCommandManager.connection
+        executingEditor.engineCommandManager.connection
       ) {
-        this.singletons.executingEditor.rustContext
+        executingEditor.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
-            this.singletons.executingEditor.path
+            executingEditor.path
           )
-          .then(() => this.singletons.executingEditor.executeCode())
+          .then(() => executingEditor.executeCode())
           .catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
     }
 
-    this.singletons.executingEditor.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+    executingEditor.sceneInfra.camControls._setting_allowOrbitInSketchMode =
       context.app.allowOrbitInSketchMode.current
 
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
-      this.singletons.executingEditor.sceneInfra.camControls &&
-      !this.singletons.executingEditor.modelingState?.matches('Sketch')
+      executingEditor.sceneInfra.camControls &&
+      !executingEditor.modelingState?.matches('Sketch')
     ) {
-      this.singletons.executingEditor.sceneInfra.camControls.engineCameraProjection =
+      executingEditor.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection
     }
 

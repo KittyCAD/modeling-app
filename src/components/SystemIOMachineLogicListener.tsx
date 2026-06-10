@@ -1,6 +1,6 @@
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
@@ -34,7 +34,7 @@ import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
   const { settings, systemIOActor } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()

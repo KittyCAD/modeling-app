@@ -1,3 +1,4 @@
+import { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { projectSkeletonCreate } from '@src/lang/project'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
@@ -58,8 +59,7 @@ export const baseLoader =
     }
 
     // Web, make a default project and redirect to it.
-    const wasmInstance =
-      await app.singletons.executingEditor.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
@@ -103,7 +103,6 @@ export const fileLoader =
     const {
       settings: { actor: settingsActor },
     } = app
-    const { executingEditor } = app.singletons
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -118,7 +117,7 @@ export const fileLoader =
       ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
       : undefined
 
-    const wasmInstance = await executingEditor.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     let settings = await loadAndValidateSettings(
       wasmInstance,
@@ -207,14 +206,19 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
+    const existingProjectRef =
+      app.project?.path === project.path ? app.project : undefined
+    if (existingProjectRef) {
+      existingProjectRef.projectIORefSignal.value = project
+    }
+    const projectRef = existingProjectRef ?? (await app.openProject(project))
     const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.executingEditor,
+      undefined,
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
       window.electron?.process.env.NODE_ENV === 'test'
-        ? executingEditor.localStoragePersistCode()
+        ? ExecutingEditor.localStoragePersistCode()
         : undefined
     )
 

@@ -6,7 +6,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import type {
   Command,
   StateMachineCommandSetConfig,
@@ -49,7 +49,7 @@ export default function useStateMachineCommands<
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
   const { commands, settings, userFeatures } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const showExperimentalCommands = userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false

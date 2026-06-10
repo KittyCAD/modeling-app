@@ -14,7 +14,7 @@ let initialized = false
  * within the error branch in the typescript to cover the application state.
  */
 export const initializeWindowExceptionHandler = (
-  executingEditor: ExecutingEditor
+  getExecutingEditor: () => ExecutingEditor | undefined
 ) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
@@ -26,6 +26,10 @@ export const initializeWindowExceptionHandler = (
           matchMemoryAccessOutOfBoundsErrorCrash(event.message) ||
           matchGenericWasmRuntimeHeuristicErrorCrash(event)
         ) {
+          const executingEditor = getExecutingEditor()
+          if (!executingEditor) {
+            return
+          }
           // do global singleton cleanup
           executingEditor.executeAstCleanUp()
           toast.error(

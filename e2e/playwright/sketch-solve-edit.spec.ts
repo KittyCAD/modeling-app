@@ -870,7 +870,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           addToHistory: unknown
         }> = []
         const updateCodeEditorCalls: string[] = []
-        const { executingEditor } = window.app.singletons
+        const { executingEditor } = window
 
         const originalSendModelingEvent =
           executingEditor.sendModelingEvent.bind(executingEditor)
@@ -986,7 +986,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Delay the next sketch execution and observe editor saves', async () => {
       await page.evaluate(() => {
         const writeToFileCalls: string[] = []
-        const { executingEditor } = window.app.singletons
+        const { executingEditor } = window
         const originalWriteToFile =
           executingEditor.writeToFile.bind(executingEditor)
         /*

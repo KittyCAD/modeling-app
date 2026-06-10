@@ -17,6 +17,7 @@ function createExecutingEditorService(
   isExecuting = signal(false)
 ): ExecutingEditorService {
   return {
+    executingEditor: {} as ExecutingEditorService['executingEditor'],
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,

@@ -4,7 +4,8 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -13,8 +14,6 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
-
-type Singletons = ReturnType<typeof useSingletons>
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -45,7 +44,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
     editorParent.current?.appendChild(executingEditor.editorView.dom)
@@ -62,9 +61,7 @@ export const KclEditorPaneContents = () => {
   )
 }
 
-function copyKclCodeToClipboard(
-  executingEditor: Singletons['executingEditor']
-) {
+function copyKclCodeToClipboard(executingEditor: ExecutingEditor) {
   if (!executingEditor.codeSignal.value) {
     toast.error('No code available to copy.')
     return
@@ -85,7 +82,7 @@ function copyKclCodeToClipboard(
 
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const platform = usePlatform()
   const settingsActor = settings.actor
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =

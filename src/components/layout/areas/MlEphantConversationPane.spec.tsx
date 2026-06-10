@@ -16,7 +16,7 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 
 vi.mock('@src/lib/boot', () => ({
-  useSingletons: () => ({
+  useExecutingEditor: () => ({
     executingEditor: {
       astSignal: { value: null },
     },

@@ -4,6 +4,7 @@ import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
@@ -16,7 +17,7 @@ import {
   emptyOperationsByModule,
   getAllOperations,
 } from '@src/lang/wasm'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import {
   type OperationTreeNode,
   buildOperationTree,
@@ -80,11 +81,10 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { useNavigate } from 'react-router-dom'
 
-type Singletons = ReturnType<typeof useSingletons>
-
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
 
-type SystemDeps = Pick<Singletons, 'executingEditor'> & {
+type SystemDeps = {
+  executingEditor: ExecutingEditor
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
@@ -142,7 +142,7 @@ export const FeatureTreePaneContents = memo(() => {
     UNRENDERED_EXECUTE_HOTKEY,
     platform
   )
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const executionService = app.registry.signal(executingEditorService).value
   const { engineCommandManager, rustContext } = executingEditor
   const {

@@ -4,7 +4,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { BillingTransition } from '@src/machines/billingMachine'
@@ -47,7 +47,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()

@@ -1,7 +1,7 @@
 import type { CompletionContext } from '@codemirror/autocomplete'
 
 import type { Program, VariableMap } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { usePreviousVariables } from '@src/lib/usePreviousVariables'
 import { use } from 'react'
 
@@ -12,8 +12,8 @@ export function usePreviousVarMentions(
   ast: Program,
   variables: VariableMap
 ) {
-  const { executingEditor } = useSingletons()
-  const wasmInstance = use(executingEditor.wasmInstancePromise)
+  const app = useApp()
+  const wasmInstance = use(app.wasmPromise)
   const previousVariables = usePreviousVariables({
     code: context.view?.state.doc.toString() || '',
     ast,

@@ -6,7 +6,7 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
@@ -32,7 +32,7 @@ import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project, systemIOActor, layout } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const wasmInstance = use(executingEditor.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()

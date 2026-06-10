@@ -13,7 +13,6 @@ import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -321,7 +320,6 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  executingEditor: ExecutingEditor
   systemIOActor: SystemIOActor
   settingsActor: SettingsActorType
   navigate: NavigateFunction

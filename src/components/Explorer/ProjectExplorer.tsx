@@ -17,7 +17,7 @@ import type {
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -177,7 +177,7 @@ export const ProjectExplorer = ({
 }) => {
   const { commands, registry, settings, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const errors = executingEditor.errorsSignal.value
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =

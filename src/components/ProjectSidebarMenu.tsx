@@ -12,7 +12,7 @@ import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
@@ -65,7 +65,7 @@ function AppLogoLink({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
@@ -107,7 +107,7 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { machineManager, commands, settings } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()

@@ -12,14 +12,14 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { VariableMap } from '@src/lang/wasm'
 import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { Suspense, use } from 'react'
 
 export const MemoryPaneMenu = () => {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const variables = executingEditor.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
@@ -73,7 +73,7 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 }
 
 export const MemoryPaneContents = () => {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const theme = useResolvedTheme()
   const variables = executingEditor.variablesSignal.value
   const { state } = useModelingContext()

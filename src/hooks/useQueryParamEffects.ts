@@ -3,7 +3,6 @@ import toast from 'react-hot-toast'
 import { useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
-import type { ExecutingEditor } from '@src/lang/ExecutingEditor'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -50,7 +49,7 @@ export type CreateFileSchemaMethodOptional = Omit<
  * `?createFile`
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
-export function useQueryParamEffects(executingEditor: ExecutingEditor) {
+export function useQueryParamEffects() {
   const app = useApp()
   const { auth, commands } = app
   const authState = auth.useAuthState()

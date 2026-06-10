@@ -34,7 +34,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -83,10 +83,9 @@ const Home = () => {
   useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
-  const { executingEditor } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
-  useQueryParamEffects(executingEditor)
+  useQueryParamEffects()
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -213,11 +212,9 @@ const Home = () => {
   }
   useMenuListener(cb)
 
-  // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-    executingEditor.cancelAllExecutions()
-  }, [executingEditor])
+  }, [])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -257,7 +254,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      executingEditor,
                       systemIOActor,
                       settingsActor,
                       executingPath,

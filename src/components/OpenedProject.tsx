@@ -22,7 +22,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import {
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
@@ -75,12 +75,12 @@ export function OpenedProject() {
   useSignals()
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
     useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(executingEditor)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -261,7 +261,6 @@ export function OpenedProject() {
           TutorialRequestToast({
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            executingEditor,
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,

@@ -149,11 +149,7 @@ describe('project system', () => {
           'publish.open',
         ])
       )
-      expect(
-        app.registry.get(executingEditorService).hasEditsSinceLastExecution
-          .value
-      ).toBe(false)
-      expect(app.registry.get(executingEditorService).code.value).toBe('')
+      expect(app.registry.signal(executingEditorService).value).toBeUndefined()
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,

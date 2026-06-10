@@ -6,13 +6,13 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { codeToIdSelections } from '@src/lib/selections'
 import { trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const wasmInstance = use(executingEditor.wasmInstancePromise)
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
@@ -101,7 +101,7 @@ function DisplayObj({
   node: any
 }) {
   const { send } = useModelingContext()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const ref = useRef<HTMLPreElement>(null)
   const [hasCursor, setHasCursor] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)

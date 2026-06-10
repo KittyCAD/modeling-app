@@ -377,10 +377,11 @@ export class ZDSProject {
       return
     }
     const found = foundPathSignal[1]
+    this.#executingPath.value = foundPathSignal[0]
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
+      this.app.setExecutingEditor(found)
     }
-    this.#executingPath.value = foundPathSignal[0]
   }
   findEditor(path: string) {
     return this.editors
@@ -408,6 +409,11 @@ export class ZDSProject {
     const found = foundEditor?.[1]
     if (found) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
+      if (isExecuting) {
+        this.executingPath = path
+        this.closeInactiveEditors(path)
+        this.executeEditorIfConnected(found)
+      }
       return found
     }
 
@@ -475,8 +481,37 @@ export class ZDSProject {
 
     if (isExecuting) {
       this.executingPath = path
+      this.closeInactiveEditors(path)
+      this.executeEditorIfConnected(newEditor)
     }
     return newEditor
+  }
+
+  private executeEditorIfConnected(editor: ExecutingEditor) {
+    if (!editor.engineCommandManager.connection?.connected) {
+      return
+    }
+
+    editor
+      .executeCode()
+      .then(() =>
+        resetCameraPosition({
+          sceneInfra: editor.sceneInfra,
+          engineCommandManager: editor.engineCommandManager,
+          settingsActor: this.app.settings.actor,
+        })
+      )
+      .catch(reportRejection)
+  }
+
+  private closeInactiveEditors(activePath: string) {
+    for (const [pathSignal, editor] of Array.from(this.editors.entries())) {
+      if (pathSignal.value === activePath) {
+        continue
+      }
+      editor.close()
+      this.editors.delete(pathSignal)
+    }
   }
 
   closeEditor(path: string) {
@@ -487,6 +522,10 @@ export class ZDSProject {
     }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
+    if (this.#executingPath.value === foundPathSignal[0]) {
+      this.#executingPath.value = null
+      this.app.clearExecutingEditor()
+    }
   }
 
   closeAllEditors() {
@@ -494,6 +533,7 @@ export class ZDSProject {
       editor.close()
     }
     this.editors.clear()
+    this.#executingPath.value = null
   }
 
   /** Handle updates from the disk representation of the project */
@@ -755,6 +795,7 @@ export class ExecutingEditor extends File {
   }
   get executingEditorService(): ExecutingEditorService {
     return {
+      executingEditor: this,
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
       isExecuting: this._isExecuting,
@@ -1917,8 +1958,10 @@ export class ExecutingEditor extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    this.cancelAllExecutions()
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    clearTimeout(this.executionTimeoutId)
     this.settingsSubscription?.unsubscribe()
     this.flushRecoverySnapshot()
     this.unwatch()
@@ -3043,6 +3086,9 @@ export class ExecutingEditor extends File {
     })
   }
   localStoragePersistCode(): string {
+    return ExecutingEditor.localStoragePersistCode()
+  }
+  static localStoragePersistCode(): string {
     return safeLSGetItem(PERSIST_CODE_KEY) || ''
   }
   /**

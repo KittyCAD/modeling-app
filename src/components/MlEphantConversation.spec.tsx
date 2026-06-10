@@ -21,9 +21,9 @@ vi.mock('@src/lib/desktop', () => ({
   DESKTOP_OS_INFO: null,
 }))
 
-// Mock useSingletons which requires heavy initialization
+// Mock useExecutingEditor which requires heavy initialization
 vi.mock('@src/lib/boot', () => ({
-  useSingletons: () => ({
+  useExecutingEditor: () => ({
     executingEditor: {
       astSignal: { value: null },
     },

@@ -5,7 +5,7 @@ import { type InstanceProps, create } from 'react-modal-promise'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { platform } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -30,7 +30,7 @@ export const SetVarNameModal = ({
   valueName,
   selectionRanges,
 }: SetVarNameModalProps) => {
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalculateKclExpression({
       value: '',

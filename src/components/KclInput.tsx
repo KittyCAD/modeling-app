@@ -7,7 +7,7 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { editorTheme } from '@src/editor/plugins/theme'
 import { parse, resultIsOk } from '@src/lang/wasm'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { DUMMY_VARIABLE_NAME } from '@src/lib/kclHelpers'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
@@ -24,7 +24,7 @@ export function KclInput(props: {
   style?: React.CSSProperties
 }) {
   const { settings: settingsSystem } = useApp()
-  const { executingEditor } = useSingletons()
+  const executingEditor = useExecutingEditor()
   const settings = settingsSystem.useSettings()
   const wasmInstance = use(executingEditor.rustContext.wasmInstancePromise)
 

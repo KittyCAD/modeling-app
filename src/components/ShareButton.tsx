@@ -70,12 +70,15 @@ function SharePopoverContent({
 }) {
   useSignals()
   const { auth, billing } = app
-  const { executingEditor } = app.singletons
   const token = auth.useToken()
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value
   const allowOrgRestrict = !!billingContext.isOrg
   const allowPassword = !!billingContext.hasSubscription
+  const executingEditor = app.projectSignal.value?.executingEditor.value
+  if (!executingEditor) {
+    return null
+  }
   const ast = executingEditor.astSignal.value
   const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
 

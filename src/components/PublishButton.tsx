@@ -56,10 +56,6 @@ function PublishPopoverContent({
 }) {
   useSignals()
   const { auth } = app
-  const { executingEditor } = app.singletons
-  const ast = executingEditor.astSignal.value
-  const kclEmpty = executingEditor.isAstBodyEmpty(ast)
-  const hasKclErrors = executingEditor.hasErrors()
   const authState = auth.useAuthState()
   const token = auth.useToken()
   const user = auth.useUser()
@@ -71,6 +67,13 @@ function PublishPopoverContent({
   const isCheckingUser = authState.matches('checkIfLoggedIn') && !!token
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
+  const executingEditor = app.projectSignal.value?.executingEditor.value
+  if (!executingEditor) {
+    return null
+  }
+  const ast = executingEditor.astSignal.value
+  const kclEmpty = executingEditor.isAstBodyEmpty(ast)
+  const hasKclErrors = executingEditor.hasErrors()
   const buttonDisabled = kclEmpty || hasKclErrors
 
   const fetchPublicationDetails = useCallback(async () => {
