@@ -284,6 +284,9 @@ async fn inner_mirror_2d(
                                 )));
                             }
                         }
+                        // Currently, frontend doesn't know if mirror2d will close the sketch or not.
+                        // Track that information.
+                        sketch.is_closed = crate::execution::ProfileClosed::Maybe;
                         Ok(())
                     })?;
             } else {
@@ -292,6 +295,14 @@ async fn inner_mirror_2d(
                     vec![args.source_range],
                 )));
             };
+        }
+        // EdgeSpecifier variant exists for revolve, but mirror2d doesn't support edge specifiers.
+        Axis2dOrEdgeReference::EdgeSpecifier(_) => {
+            debug_assert!(false, "mirror2d does not support EdgeSpecifier, only Axis or Edge");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "mirror2d does not support edge specifiers, only Axis or Edge".to_owned(),
+                vec![args.source_range],
+            )));
         }
     }
 
