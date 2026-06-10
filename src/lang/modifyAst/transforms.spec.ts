@@ -2,14 +2,21 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   addAppearance,
   addClone,
+  addDelete,
   addMirror3D,
   addRotate,
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
 import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { assertParse, recast } from '@src/lang/wasm'
-import type { Artifact, PathToNode, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  Artifact,
+  ArtifactGraph,
+  PathToNode,
+  VariableDeclaration,
+} from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -57,6 +64,220 @@ afterAll(() => {
 })
 
 describe('transforms.test.ts', () => {
+  describe('Testing addDelete', () => {
+    function getSweepFixture() {
+      const code = `extrude001 = extrude(profile001, length = 1)`
+      const ast = assertParse(code, instanceInThisFile)
+      const sourceRange: [number, number, number] = [0, code.length, 0]
+      const sourcePathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const sweep: Artifact = {
+        type: 'sweep',
+        id: 'sweep-id',
+        subType: 'extrusion',
+        pathId: 'path-id',
+        surfaceIds: [],
+        edgeIds: [],
+        codeRef: {
+          range: sourceRange,
+          pathToNode: sourcePathToNode,
+          nodePath: { steps: [] },
+        },
+        trajectoryId: null,
+        method: 'new',
+        consumed: false,
+      }
+      const artifactGraph: ArtifactGraph = new Map([[sweep.id, sweep]])
+
+      return {
+        artifactGraph,
+        ast,
+        code,
+        sourcePathToNode,
+        sourceRange,
+        sweep,
+      }
+    }
+
+    function getPatternFixture() {
+      const code = `extrude001 = 0
+pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0, 0, 1])`
+      const ast = assertParse(code, instanceInThisFile)
+      const patternRange: [number, number, number] = [
+        code.indexOf('patternLinear3d'),
+        code.length,
+        0,
+      ]
+      const patternPathToNode = getNodePathFromSourceRange(ast, patternRange)
+      const pattern: Artifact = {
+        type: 'pattern',
+        id: 'pattern-command-id',
+        subType: 'linear',
+        sourceId: 'source-body-id',
+        copyIds: ['copy-body-1', 'copy-body-2'],
+        copyFaceIds: [],
+        copyEdgeIds: [],
+        codeRef: {
+          range: patternRange,
+          pathToNode: patternPathToNode,
+          nodePath: { steps: [] },
+        },
+      }
+      const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+
+      return {
+        artifactGraph,
+        ast,
+        pattern,
+        patternPathToNode,
+        patternRange,
+      }
+    }
+
+    it('adds a delete call for a selected body', async () => {
+      const { artifactGraph, ast, code, sourcePathToNode, sourceRange, sweep } =
+        getSweepFixture()
+      const result = addDelete({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [
+            {
+              artifact: sweep,
+              codeRef: {
+                range: sourceRange,
+                pathToNode: sourcePathToNode,
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\ndelete(extrude001)`
+      )
+    })
+
+    it('adds an indexed delete call for one body from a multi-output extrude', async () => {
+      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -0.34mm, var 0.84mm], end = [var 0.26mm, var 0.84mm])
+  line2 = line(start = [var 0.26mm, var 0.84mm], end = [var 0.26mm, var -0.76mm])
+  line3 = line(start = [var 0.26mm, var -0.76mm], end = [var -0.34mm, var -0.76mm])
+  line4 = line(start = [var -0.34mm, var -0.76mm], end = [var -0.34mm, var 0.84mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  circle1 = circle(start = [var 0.46mm, var 0mm], center = [var 0mm, var 0.1mm])
+  vertical([circle1.center, ORIGIN])
+  horizontal([circle1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [-0.0524045mm, -0.3703336mm], sketch = sketch001)
+region002 = region(point = [-0.04mm, 0.8375mm], sketch = sketch001)
+extrude001 = extrude([region001, region002], length = 1)`
+      const ast = assertParse(code, instanceInThisFile)
+      const { artifactGraph } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const regions = [...artifactGraph.values()]
+        .filter(
+          (artifact): artifact is Extract<Artifact, { type: 'path' }> =>
+            artifact.type === 'path' && artifact.subType === 'region'
+        )
+        .sort((a, b) => a.codeRef.range[0] - b.codeRef.range[0])
+      const firstRegion = regions[0]
+      const secondRegion = regions[1]
+      expect(firstRegion).toBeDefined()
+      expect(secondRegion).toBeDefined()
+      const firstExtrudeOutput = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' &&
+          artifact.subType === 'extrusion' &&
+          artifact.pathId === firstRegion?.id
+      )
+      expect(firstExtrudeOutput).toBeDefined()
+
+      const result = addDelete({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts(
+          [firstExtrudeOutput!],
+          artifactGraph
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'delete(extrude001[0])'
+      )
+
+      const resultFromRegionSelection = addDelete({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([firstRegion], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(resultFromRegionSelection)) throw resultFromRegionSelection
+
+      expect(
+        recast(resultFromRegionSelection.modifiedAst, instanceInThisFile)
+      ).toContain('delete(extrude001[0])')
+
+      const resultFromSecondRegionSelection = addDelete({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([secondRegion], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(resultFromSecondRegionSelection))
+        throw resultFromSecondRegionSelection
+
+      expect(
+        recast(resultFromSecondRegionSelection.modifiedAst, instanceInThisFile)
+      ).toContain('delete(extrude001[1])')
+    })
+
+    it('adds delete calls with indexed pattern copy expressions', async () => {
+      const { artifactGraph, ast, pattern, patternPathToNode, patternRange } =
+        getPatternFixture()
+      const result = addDelete({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [
+            {
+              artifact: pattern,
+              codeRef: {
+                range: patternRange,
+                pathToNode: patternPathToNode,
+              },
+              engineEntityId: 'copy-body-1',
+              patternIndex: 1,
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'delete(pattern001[1])'
+      )
+    })
+  })
+
   describe('Testing addTranslate', () => {
     async function runAddTranslateTest(
       code: string,

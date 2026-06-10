@@ -66,6 +66,8 @@ export function setSelectionFilter({
   handleSelectionBatchFn?: typeof handleSelectionBatch
   wasmInstance: ModuleType
 }) {
+  kclManager.selectionFilter.value = filter
+
   const { engineEvents } =
     selectionsToRestore && handleSelectionBatchFn
       ? handleSelectionBatchFn({
@@ -95,14 +97,14 @@ export function setSelectionFilter({
   }
 
   const modelingCmd: ModelingCmdReq[] = []
-  engineEvents.forEach((event) => {
+  for (const event of engineEvents) {
     if (event.type === 'modeling_cmd_req') {
       modelingCmd.push({
         cmd_id: uuidv4(),
         cmd: event.cmd,
       })
     }
-  })
+  }
 
   // batch is needed other wise the selection flickers.
   engineCommandManager
@@ -122,4 +124,17 @@ export function setSelectionFilter({
       responses: false,
     })
     .catch((error) => console.error('Failed to set selection filter:', error))
+}
+
+/** Clear the engine scene selection */
+export async function clearSceneSelection(
+  engineCommandManager: ConnectionManager
+) {
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_clear',
+    },
+    cmd_id: uuidv4(),
+  })
 }

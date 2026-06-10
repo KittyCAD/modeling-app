@@ -290,8 +290,9 @@ mod tests {
             r#"extrude(
   @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   length?: number(Length),
-  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   symmetric?: bool,
+  direction?: Point3d | Edge | TaggedEdge | Segment,
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,

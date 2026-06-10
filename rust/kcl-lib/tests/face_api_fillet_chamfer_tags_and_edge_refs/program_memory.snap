@@ -1,0 +1,49 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing face_api_fillet_chamfer_tags_and_edge_refs.kcl
+---
+{
+  "body": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "XY",
+      "objectId": 0,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "capEnd001": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "capEnd001"
+  },
+  "e1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "e1"
+  }
+}

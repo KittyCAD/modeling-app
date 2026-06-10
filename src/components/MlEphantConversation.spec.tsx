@@ -56,12 +56,14 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
     label: 'Standard',
     description: 'Faster reasoning.',
     icon: 'stopwatch',
+    disabled: false,
   },
   {
     id: 'deep',
     label: 'Deep',
     description: 'More thorough reasoning.',
     icon: 'brain',
+    disabled: false,
   },
 ]
 
@@ -318,6 +320,96 @@ describe('MlEphantConversation', () => {
     expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
   })
 
+  test('keeps disabled mode options visible but unelectable with upgrade copy', () => {
+    const handleProcess = vi.fn()
+    const modeOptions: MlCopilotModeOption[] = [
+      { ...SERVER_MODE_OPTIONS[0], disabled: true },
+      SERVER_MODE_OPTIONS[1],
+    ]
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="deep"
+        modeOptions={modeOptions}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+
+    const disabledMode = screen.getByTestId('ml-copilot-effort-button-standard')
+    expect(disabledMode).toBeDisabled()
+    expect(disabledMode).toHaveTextContent('Upgrade your plan to use this mode')
+
+    fireEvent.click(disabledMode)
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Deep'
+    )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
+  test('falls back to an enabled mode when the initial mode is disabled', async () => {
+    const handleProcess = vi.fn()
+    const modeOptions: MlCopilotModeOption[] = [
+      { ...SERVER_MODE_OPTIONS[0], disabled: true },
+      SERVER_MODE_OPTIONS[1],
+    ]
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="standard"
+        modeOptions={modeOptions}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+        'Deep'
+      )
+    })
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
   test('does not render unknown response types', () => {
     const unknownResponseText = 'this should never be visible'
 
@@ -368,6 +460,73 @@ describe('MlEphantConversation', () => {
       screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
   })
+
+  test.each([
+    'Manual edits detected since the last Zookeeper state.',
+    'Transient model streaming error; retrying.',
+  ])(
+    'keeps reasoning expanded for non-terminal info notices: %s',
+    async (infoText) => {
+      const conversation: Conversation = {
+        exchanges: [
+          {
+            request: {
+              type: 'user',
+              content: 'Render a bracket',
+            },
+            responses: [
+              {
+                reasoning: {
+                  type: 'text',
+                  content: 'Checking the model stream...',
+                },
+              },
+              {
+                info: {
+                  text: infoText,
+                },
+              },
+            ],
+            deltasAggregated: '',
+          },
+        ],
+      }
+
+      render(
+        <MlEphantConversation
+          isLoading={false}
+          conversation={conversation}
+          onProcess={vi.fn()}
+          onClickClearChat={() => {}}
+          onReconnect={() => {}}
+          onCancel={() => {}}
+          needsReconnect={false}
+          disabled={false}
+          hasPromptCompleted={false}
+          contexts={[]}
+          isProcessing={true}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
+        />
+      )
+
+      expect(
+        screen.getByTestId('ml-response-info-chat-bubble')
+      ).toHaveTextContent(infoText)
+      expect(
+        screen.getByTestId('ml-response-chat-bubble-thinking')
+      ).toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('ml-response-thinking-view')
+        ).toBeInTheDocument()
+      })
+      expect(screen.getByText('Collapse')).toBeInTheDocument()
+      expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+    }
+  )
 
   test('hides the immediate thought when end_of_stream is followed by another response', () => {
     const finalResponse = 'Rendered.'
