@@ -167,6 +167,7 @@ export function addDeleteFace({
     {
       lastChildLookup: true,
       artifactTypeFilter: ['sweep', 'compositeSolid'],
+      resolveCompositeSolids: true,
     }
   )
   if (err(result)) {
@@ -965,8 +966,10 @@ export function getPlaneExprFromSelection({
 
 function getSolidSelectionsFromFaceSelections(
   faces: Selections,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  options: { resolveCompositeSolids?: boolean } = {}
 ): Selections {
+  const { resolveCompositeSolids = false } = options
   return {
     graphSelections: faces.graphSelections.flatMap((face) => {
       if (!face.artifact) {
@@ -980,12 +983,14 @@ function getSolidSelectionsFromFaceSelections(
         return []
       }
 
-      const compositeSolidSelection = getCompositeSolidSelectionFromSweep(
-        sweep,
-        artifactGraph
-      )
-      if (compositeSolidSelection) {
-        return compositeSolidSelection
+      if (resolveCompositeSolids) {
+        const compositeSolidSelection = getCompositeSolidSelectionFromSweep(
+          sweep,
+          artifactGraph
+        )
+        if (compositeSolidSelection) {
+          return compositeSolidSelection
+        }
       }
 
       return {
@@ -1311,11 +1316,18 @@ export function buildSolidsAndFacesExprs(
   options: {
     lastChildLookup?: boolean
     artifactTypeFilter?: Array<Artifact['type']>
+    resolveCompositeSolids?: boolean
   } = {}
 ) {
   let modifiedAst = structuredClone(ast)
-  const { lastChildLookup = true, artifactTypeFilter = ['sweep'] } = options
-  const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph)
+  const {
+    lastChildLookup = true,
+    artifactTypeFilter = ['sweep'],
+    resolveCompositeSolids = false,
+  } = options
+  const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph, {
+    resolveCompositeSolids,
+  })
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
     solids,
