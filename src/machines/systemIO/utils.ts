@@ -286,6 +286,13 @@ export const determineProjectFilePathFromPrompt = (
   return finalPath
 }
 
+const normalizeRelativePath = (filePath: string) => filePath.replace(/\\/g, '/')
+
+const normalizePathForComparison = (filePath: string) => {
+  const normalized = normalizeRelativePath(fsZds.resolve(filePath))
+  return fsZds.sep === '\\' ? normalized.toLowerCase() : normalized
+}
+
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
@@ -313,6 +320,23 @@ export const collectProjectFiles = async (args: {
   if (args.projectContext) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
+    const selectedAbsolutePath = args.selectedFilePath
+      ? normalizePathForComparison(args.selectedFilePath)
+      : undefined
+    const selectedRelativePath = args.selectedFilePath
+      ? normalizeRelativePath(
+          fsZds.relative(basePath, args.selectedFilePath) ?? ''
+        )
+      : undefined
+    const isSelectedFilePath = (absolutePath: string) => {
+      if (!args.selectedFilePath) return false
+
+      return (
+        normalizePathForComparison(absolutePath) === selectedAbsolutePath ||
+        normalizeRelativePath(fsZds.relative(basePath, absolutePath) ?? '') ===
+          selectedRelativePath
+      )
+    }
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
     const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
@@ -322,7 +346,7 @@ export const collectProjectFiles = async (args: {
       filePromises.push(
         Promise.resolve()
           .then(() =>
-            args.selectedFilePath === absolutePathToFileNameWithExtension
+            isSelectedFilePath(absolutePathToFileNameWithExtension)
               ? new TextEncoder().encode(args.selectedFileContents)
               : fsZds.readFile(absolutePathToFileNameWithExtension)
           )

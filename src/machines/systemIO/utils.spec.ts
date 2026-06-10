@@ -230,6 +230,54 @@ describe('System IO Utils', () => {
     }
   })
 
+  it('uses live editor contents for the selected project file after path normalization', async () => {
+    const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      mainPath,
+      new TextEncoder().encode('boxHeight = 50mm')
+    )
+
+    try {
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: 'boxHeight = 500mm',
+        selectedFilePath: `${projectPath}${fsZds.sep}.${fsZds.sep}main.kcl`,
+        fileNames: {
+          0: {
+            type: 'Local',
+            value: mainPath,
+            original_import_path: null,
+          },
+        },
+        projectContext: {
+          name: 'zookeeper-project',
+          path: projectPath,
+          children: [
+            {
+              name: 'main.kcl',
+              path: mainPath,
+              children: null,
+            },
+          ],
+          metadata: null,
+          kcl_file_count: 1,
+          directory_count: 0,
+          default_file: mainPath,
+          readWriteAccess: true,
+        },
+      })
+
+      const mainFile = projectFiles.find((file) => file.relPath === 'main.kcl')
+      expect(mainFile).toMatchObject({
+        type: 'kcl',
+        fileContents: 'boxHeight = 500mm',
+      })
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('keeps the currently focused file as the navigation target after project-wide edits', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
