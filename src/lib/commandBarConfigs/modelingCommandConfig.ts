@@ -745,6 +745,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           angle: {
             defaultValue: KCL_DEFAULT_DEGREE,
+            required: true,
           },
           bodyType: {
             inputType: 'options',

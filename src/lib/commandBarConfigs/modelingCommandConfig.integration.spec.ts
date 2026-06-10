@@ -148,19 +148,36 @@ describe('modeling command stdlib drift', () => {
       ).toBeDefined()
 
       const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+      const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
       const expectedArgs = uniqueSorted([
         ...stdLibCommand.args
           .filter((arg) => arg.deprecatedSince === null)
           .filter((arg) => !omittedStdLibArgs.has(arg.name))
           .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name),
         ...(driftConfig.uiOnlyArgs ?? []),
+        ...editFlowArgs,
       ])
-      const actualArgs = uniqueSorted(Object.keys(commandConfig.args ?? {}))
+      const actualArgOrder = Object.keys(commandConfig.args ?? {})
+      const actualArgs = uniqueSorted(actualArgOrder)
 
       expect(
         actualArgs,
         `${commandName} command args drifted from ${driftConfig.stdLibName}. Add a command arg, or document the intentional difference in modelingCommandStdLibDriftConfig.`
       ).toEqual(expectedArgs)
+
+      if (driftConfig.requiredArgOrder) {
+        const actualRequiredArgOrder = Object.entries(commandConfig.args ?? {})
+          .filter(([, arg]) => {
+            const { required } = arg as { required?: unknown }
+            return required === true || typeof required === 'function'
+          })
+          .map(([argName]) => argName)
+
+        expect(
+          actualRequiredArgOrder,
+          `${commandName} required command arg order drifted from the legacy command-bar order.`
+        ).toEqual(driftConfig.requiredArgOrder)
+      }
     }
   })
 })
