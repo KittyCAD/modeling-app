@@ -12,6 +12,7 @@ import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -257,7 +258,9 @@ function getProjectUpsertBody(
 }
 
 function getDefaultProjectTitle(project: Project) {
-  return project.name || getPathLeaf(project.path) || 'project'
+  return (
+    getProjectDisplayName(project) || getPathLeaf(project.path) || 'project'
+  )
 }
 
 function getRemoteProject({

@@ -1,0 +1,39 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing hide_offset_plane.kcl
+---
+@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  line1 = line(start = [var -50mm, var -50mm], end = [var 50mm, var -50mm])
+  line2 = line(start = [var 50mm, var -50mm], end = [var 50mm, var 50mm])
+  line3 = line(start = [var 50mm, var 50mm], end = [var -50mm, var 50mm])
+  line4 = line(start = [var -50mm, var 50mm], end = [var -50mm, var -50mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var -50mm, var -50mm], end = [var 50mm, var 50mm], construction = true)
+  line6 = line(start = [var 50mm, var -50mm], end = [var -50mm, var 50mm], construction = true)
+  coincident([line5.start, line1.start])
+  coincident([line5.end, line2.end])
+  coincident([line6.start, line1.end])
+  coincident([line6.end, line4.start])
+  coincident([point1, line5])
+  coincident([point1, line6])
+  equalLength([line5, line6])
+  coincident([point1, ORIGIN])
+  distance([line2.start, line2.end]) == 100
+  equalLength([line2, line3])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [0mm, -49.9975mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 100)
+plane001 = offsetPlane(YZ, offset = 500)
+mirror3d(extrude001, across = plane001)
+hide(plane001)

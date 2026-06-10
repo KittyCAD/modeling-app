@@ -125,3 +125,16 @@ export function setSelectionFilter({
     })
     .catch((error) => console.error('Failed to set selection filter:', error))
 }
+
+/** Clear the engine scene selection */
+export async function clearSceneSelection(
+  engineCommandManager: ConnectionManager
+) {
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_clear',
+    },
+    cmd_id: uuidv4(),
+  })
+}
