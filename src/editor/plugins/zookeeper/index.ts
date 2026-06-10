@@ -446,7 +446,12 @@ async function replayZookeeperEditPatch({
     return
   }
 
-  await kclManager.executeCode()
+  await kclManager.executeCode().catch((error: unknown) => {
+    console.error(
+      'Failed to execute after replaying Zookeeper edit patch.',
+      error
+    )
+  })
 }
 
 function getZookeeperPatchFileReplays({
@@ -799,6 +804,14 @@ function getReplayErrorMessage(error: unknown) {
     typeof error.message === 'string'
   ) {
     return error.message
+  }
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'msg' in error &&
+    typeof error.msg === 'string'
+  ) {
+    return error.msg
   }
 
   return 'Failed to replay Zookeeper edit patch.'

@@ -531,8 +531,12 @@ describe('Zookeeper project history integration', () => {
     await switchToFile(smallBoxPath)
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
-      onCurrentFileDelete: async () => switchToFile(mainPath),
-      onActiveFileRestore: switchToFile,
+      onCurrentFileDelete: async () => {
+        await harness.app.project?.openEditor(mainPath, harness.kclManager)
+      },
+      onActiveFileRestore: async (path) => {
+        await harness.app.project?.openEditor(path, harness.kclManager)
+      },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)
       },
@@ -574,6 +578,57 @@ describe('Zookeeper project history integration', () => {
       smallBefore
     )
     await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(mainBefore)
+
+    disposeHistory()
+  })
+
+  it('keeps a restored deleted file when the post-replay execution refresh fails', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+      'part.kcl': 'part = true\n',
+    })
+    const partPath = fsZds.join(harness.projectPath, 'part.kcl')
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => undefined,
+      onActiveFileRestore: async (path) => {
+        await harness.app.project?.openEditor(path, harness.kclManager)
+      },
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+    const executeCode = vi
+      .spyOn(harness.kclManager, 'executeCode')
+      .mockRejectedValue({ msg: 'No open project' })
+
+    await fsZds.rm(partPath)
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: fsZds.join(harness.projectPath, 'main.kcl'),
+        patch: {
+          run_id: 'delete-non-active-file',
+          changed_files: [
+            {
+              path: 'part.kcl',
+              status: 'deleted',
+              previous_contents: 'part = true\n',
+            },
+          ],
+        },
+      })
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(executeCode).toHaveBeenCalled()
+    expect(harness.kclManager.path).toBe(
+      fsZds.join(harness.projectPath, 'main.kcl')
+    )
+    await expect(fsZds.readFile(partPath, 'utf8')).resolves.toBe(
+      'part = true\n'
+    )
 
     disposeHistory()
   })
@@ -712,8 +767,12 @@ describe('Zookeeper project history integration', () => {
     await switchToFile(smallBoxPath)
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
-      onCurrentFileDelete: async () => switchToFile(mainPath),
-      onActiveFileRestore: switchToFile,
+      onCurrentFileDelete: async () => {
+        await harness.app.project?.openEditor(mainPath, harness.kclManager)
+      },
+      onActiveFileRestore: async (path) => {
+        await harness.app.project?.openEditor(path, harness.kclManager)
+      },
       onProjectFilesReplay: async (replayFiles) => {
         await harness.app.project?.syncReplayedFilesToRust(replayFiles)
       },

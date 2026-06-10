@@ -63,7 +63,6 @@ import {
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
@@ -592,15 +591,13 @@ export class App implements AppSubsystems {
                 )
               )
             }
-            await this.navigateToProjectFile(PROJECT_ENTRYPOINT)
+            await this.project.openEditor(entrypointPath, executingEditor)
           },
           onActiveFileRestore: async (restoredPath) => {
             if (!this.project) {
               return
             }
-            await this.navigateToProjectFile(
-              fsZds.relative(this.project.path, restoredPath)
-            )
+            await this.project.openEditor(restoredPath, executingEditor)
           },
           onProjectFilesReplay: async (replayFiles) => {
             await this.project?.syncReplayedFilesToRust(replayFiles)
@@ -634,22 +631,6 @@ export class App implements AppSubsystems {
     return this.project
   }
 
-  private navigateToProjectFile(requestedFileName: string) {
-    return new Promise<void>((resolve) => {
-      if (!this.project) {
-        resolve()
-        return
-      }
-      this.systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToFile,
-        data: {
-          requestedProjectName: this.project.name,
-          requestedFileName,
-          onNavigationComplete: resolve,
-        },
-      })
-    })
-  }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
