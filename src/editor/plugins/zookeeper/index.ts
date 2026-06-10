@@ -559,9 +559,23 @@ async function prepareZookeeperPatchReplay(
         )
       }
 
-      const nextContent = applyPatch(currentContent, replayFile.patch, {
+      let replayPreviousContent = currentContent
+      let nextContent = applyPatch(replayPreviousContent, replayFile.patch, {
         fuzzFactor: 0,
       })
+      if (
+        nextContent === false &&
+        diskContent !== null &&
+        !isCodeTheSame(replayPreviousContent, diskContent)
+      ) {
+        const diskNextContent = applyPatch(diskContent, replayFile.patch, {
+          fuzzFactor: 0,
+        })
+        if (diskNextContent !== false) {
+          replayPreviousContent = diskContent
+          nextContent = diskNextContent
+        }
+      }
       if (nextContent === false) {
         return Promise.reject(
           zookeeperPatchConflictError(replayFile.relativePath)
@@ -570,7 +584,7 @@ async function prepareZookeeperPatchReplay(
       preparedReplayFiles.push({
         relativePath: replayFile.relativePath,
         absolutePath: replayFile.absolutePath,
-        previousContent: currentContent,
+        previousContent: replayPreviousContent,
         nextContent,
       })
       continue

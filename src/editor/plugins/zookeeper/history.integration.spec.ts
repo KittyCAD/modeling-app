@@ -510,6 +510,74 @@ describe('Zookeeper project history integration', () => {
     disposeHistory()
   })
 
+  it('restores a streamed deleted file when a later output modifies the navigated file', async () => {
+    const mainBefore = 'import "smallBox.kcl" as smallBox\nsmallBox\n'
+    const mainAfter = 'largeBox\n'
+    const smallBefore = 'small = true\n'
+    const harness = await createProjectHarness({
+      'main.kcl': mainBefore,
+      'smallBox.kcl': smallBefore,
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const smallBoxPath = fsZds.join(harness.projectPath, 'smallBox.kcl')
+    const switchToFile = async (path: string) => {
+      await KclManager.fromFile(
+        new File(path),
+        harness.kclManager.systemDeps,
+        harness.kclManager
+      )
+    }
+
+    await switchToFile(smallBoxPath)
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => switchToFile(mainPath),
+      onActiveFileRestore: switchToFile,
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+    const mergedPatch = mergeZookeeperEditPatches(
+      {
+        run_id: 'streamed-delete-modify',
+        changed_files: [
+          {
+            path: 'smallBox.kcl',
+            status: 'deleted',
+            previous_contents: smallBefore,
+          },
+        ],
+      },
+      {
+        run_id: 'streamed-delete-modify',
+        changed_files: [modifiedFile('main.kcl', mainBefore, mainAfter)],
+      }
+    )
+
+    await fsZds.rm(smallBoxPath)
+    await switchToFile(mainPath)
+    expect(harness.kclManager.code).toBe(mainBefore)
+    await writeText(mainPath, mainAfter)
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: smallBoxPath,
+        patch: mergedPatch,
+      })
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(smallBoxPath)
+    expect(harness.kclManager.code).toBe(smallBefore)
+    await expect(fsZds.readFile(smallBoxPath, 'utf8')).resolves.toBe(
+      smallBefore
+    )
+    await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(mainBefore)
+
+    disposeHistory()
+  })
+
   it('removes a streamed created file when the aggregate patch omits contents', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'main = true\n',

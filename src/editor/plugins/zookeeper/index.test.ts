@@ -306,6 +306,47 @@ describe('Zookeeper history patch replay', () => {
     }
   })
 
+  it('falls back to disk when the open editor buffer is stale for a modified file', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const beforeZookeeperEdit = 'length = 10\n'
+    const afterZookeeperEdit = 'length = 20\n'
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      mainPath,
+      new TextEncoder().encode(afterZookeeperEdit)
+    )
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: {
+          run_id: 'run-stale-editor',
+          changed_files: [
+            {
+              path: 'main.kcl',
+              status: 'modified',
+              diff: unifiedDiff(
+                'main.kcl',
+                beforeZookeeperEdit,
+                afterZookeeperEdit
+              ),
+            },
+          ],
+        },
+        direction: 'undo',
+        fileContentOverrides: new Map([[mainPath, beforeZookeeperEdit]]),
+      })
+
+      await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(
+        beforeZookeeperEdit
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('ignores a stale editor buffer when recreating a deleted active file', async () => {
     const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
     const createdPath = fsZds.join(projectPath, 'created.kcl')
