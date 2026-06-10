@@ -12,20 +12,20 @@ describe('getAllowedExternalURL', () => {
   })
 
   it('rejects non-web URL schemes', () => {
-    expect(() => getAllowedExternalURL('file:///tmp/payload.exe')).toThrow(
-      'External URL protocol is not allowed: file:'
+    expect(getAllowedExternalURL('file:///tmp/payload.exe')).toEqual(
+      new Error('External URL protocol is not allowed: file:')
     )
-    expect(() =>
-      getAllowedExternalURL('data:text/html,<script></script>')
-    ).toThrow('External URL protocol is not allowed: data:')
+    expect(getAllowedExternalURL('data:text/html,<script></script>')).toEqual(
+      new Error('External URL protocol is not allowed: data:')
+    )
   })
 
   it('rejects non-string and relative URLs', () => {
-    expect(() => getAllowedExternalURL(undefined)).toThrow(
-      'External URL must be a string'
+    expect(getAllowedExternalURL(undefined)).toEqual(
+      new Error('External URL must be a string')
     )
-    expect(() => getAllowedExternalURL('/docs')).toThrow(
-      'External URL must be absolute'
+    expect(getAllowedExternalURL('/docs')).toEqual(
+      new Error('External URL must be absolute')
     )
   })
 })

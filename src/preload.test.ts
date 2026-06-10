@@ -14,6 +14,12 @@ const fsPromisesMock = vi.hoisted(() => ({
   constants: { R_OK: 4, W_OK: 2 },
 }))
 
+const ipcRendererMock = vi.hoisted(() => ({
+  on: vi.fn(),
+  invoke: vi.fn(),
+  removeListener: vi.fn(),
+}))
+
 vi.mock('node:fs/promises', () => ({
   default: fsPromisesMock,
 }))
@@ -22,11 +28,7 @@ vi.mock('electron', () => ({
   contextBridge: {
     exposeInMainWorld: vi.fn(),
   },
-  ipcRenderer: {
-    on: vi.fn(),
-    invoke: vi.fn(),
-    removeListener: vi.fn(),
-  },
+  ipcRenderer: ipcRendererMock,
 }))
 
 vi.mock('chokidar', () => ({
@@ -39,7 +41,6 @@ vi.mock('chokidar', () => ({
 }))
 
 import { move, openExternal } from '@src/preload'
-import { ipcRenderer } from 'electron'
 
 describe('move', () => {
   beforeEach(() => {
@@ -123,11 +124,11 @@ describe('openExternal', () => {
   })
 
   it('invokes the main process with normalized http URLs', async () => {
-    vi.mocked(ipcRenderer.invoke).mockResolvedValue(undefined)
+    ipcRendererMock.invoke.mockResolvedValue(undefined)
 
     await expect(openExternal('https://zoo.dev/docs')).resolves.toBeUndefined()
 
-    expect(ipcRenderer.invoke).toHaveBeenCalledWith(
+    expect(ipcRendererMock.invoke).toHaveBeenCalledWith(
       'shell.openExternal',
       'https://zoo.dev/docs'
     )
@@ -141,6 +142,6 @@ describe('openExternal', () => {
       'External URL protocol is not allowed: javascript:'
     )
 
-    expect(ipcRenderer.invoke).not.toHaveBeenCalled()
+    expect(ipcRendererMock.invoke).not.toHaveBeenCalled()
   })
 })

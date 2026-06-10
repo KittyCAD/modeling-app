@@ -23,11 +23,9 @@ const resizeWindow = (width: number, height: number) =>
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 export const openExternal = (url: unknown) => {
-  let allowedURL: string
-  try {
-    allowedURL = getAllowedExternalURL(url)
-  } catch (error) {
-    return Promise.reject(error)
+  const allowedURL = getAllowedExternalURL(url)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
   }
 
   return ipcRenderer.invoke('shell.openExternal', allowedURL)

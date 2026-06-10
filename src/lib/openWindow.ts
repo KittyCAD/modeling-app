@@ -40,6 +40,10 @@ export async function getExternalURLWithDocsFallback(
   url: string
 ): Promise<string> {
   const allowedURL = getAllowedExternalURL(url)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
   const parsedURL = new URL(allowedURL)
 
   if (parsedURL.href === docsFallbackURL || parsedURL.pathname !== '/docs') {

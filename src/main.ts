@@ -498,7 +498,12 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
 })
 
 ipcMain.handle('shell.openExternal', (_event, data) => {
-  return shell.openExternal(getAllowedExternalURL(data))
+  const allowedURL = getAllowedExternalURL(data)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
+  return shell.openExternal(allowedURL)
 })
 
 ipcMain.handle('openInNewWindow', (event, data) => {
@@ -583,9 +588,14 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
   }
 
   if (NODE_ENV !== 'test') {
-    shell
-      .openExternal(getAllowedExternalURL(deviceFlowSession.verificationUri))
-      .catch(reportRejection)
+    const verificationUri = getAllowedExternalURL(
+      deviceFlowSession.verificationUri
+    )
+    if (verificationUri instanceof Error) {
+      return Promise.reject(verificationUri)
+    }
+
+    shell.openExternal(verificationUri).catch(reportRejection)
   }
 
   // Wait for the user to login.
