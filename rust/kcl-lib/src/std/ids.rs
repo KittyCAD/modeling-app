@@ -11,9 +11,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::EdgeRefactorMeta;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
@@ -28,7 +26,6 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::std::Args;
 use crate::std::args::TyF64;
-#[cfg(feature = "artifact-graph")]
 use crate::std::edge;
 
 /// Translates face indices to face IDs.
@@ -177,7 +174,6 @@ async fn inner_edge_id(
         };
         let edge_id = inner_resp.edge_id;
 
-        #[cfg(feature = "artifact-graph")]
         if let Ok(face_ids) = edge::get_face_ids_for_edge(exec_state, body.id, edge_id, &args).await
             && let [a, b] = face_ids.as_slice()
         {

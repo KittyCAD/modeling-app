@@ -104,6 +104,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
     }
 }
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_chamfer(
     solid: Box<Solid>,
@@ -177,36 +178,33 @@ async fn inner_chamfer(
     };
 
     let mut solid = solid.clone();
-    #[cfg(feature = "artifact-graph")]
-    {
-        let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
-        for edge_ref in &tags {
-            let edge_id = match edge_ref {
-                EdgeReference::Uuid(u) => *u,
-                EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
+    let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
+    for edge_ref in &tags {
+        let edge_id = match edge_ref {
+            EdgeReference::Uuid(u) => *u,
+            EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
+        };
+        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            && let [a, b] = face_ids.as_slice()
+        {
+            let tag_identifier = match edge_ref {
+                EdgeReference::Tag(t) => t.value.clone(),
+                EdgeReference::Uuid(_) => String::new(),
             };
-            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
-                && let [a, b] = face_ids.as_slice()
-            {
-                let tag_identifier = match edge_ref {
-                    EdgeReference::Tag(t) => t.value.clone(),
-                    EdgeReference::Uuid(_) => String::new(),
-                };
-                if !tag_identifier.is_empty() {
-                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                        tag_identifier,
-                        edge_id,
-                        face_ids: [*a, *b],
-                    });
-                }
+            if !tag_identifier.is_empty() {
+                tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                    tag_identifier,
+                    edge_id,
+                    face_ids: [*a, *b],
+                });
             }
         }
-        if !tag_entries.is_empty() {
-            exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
-                call_source_range: args.source_range,
-                tags: tag_entries,
-            });
-        }
+    }
+    if !tag_entries.is_empty() {
+        exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
+            call_source_range: args.source_range,
+            tags: tag_entries,
+        });
     }
     for edge_tag in tags {
         let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
