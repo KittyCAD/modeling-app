@@ -46,6 +46,15 @@ describe('keymap contract', () => {
     ).toBe('d')
     expect(
       normalizeEventKey({
+        key: 'ß',
+        code: 'KeyS',
+        altKey: true,
+        ctrlKey: false,
+        metaKey: false,
+      })
+    ).toBe('s')
+    expect(
+      normalizeEventKey({
         key: '!',
         code: 'Digit1',
         altKey: false,
