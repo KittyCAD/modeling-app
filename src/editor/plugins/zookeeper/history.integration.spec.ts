@@ -578,6 +578,207 @@ describe('Zookeeper project history integration', () => {
     disposeHistory()
   })
 
+  it('restores a streamed deleted imported file with later sibling updates', async () => {
+    const mainBefore =
+      '// Stacked box assembly\n' +
+      '// Imports the three box parts and stacks them vertically from small to large.\n' +
+      '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n' +
+      '\n' +
+      'import "smallBox.kcl" as smallBox\n' +
+      'import smallBoxSize from "smallBox.kcl"\n' +
+      'import "mediumBox.kcl" as mediumBox\n' +
+      'import mediumBoxSize from "mediumBox.kcl"\n' +
+      'import "largeBox.kcl" as largeBox\n' +
+      'import largeBoxSize from "largeBox.kcl"\n' +
+      '\n' +
+      'smallBoxPlaced = smallBox\n' +
+      ' |> translate(z = smallBoxSize / 2, global = true)\n' +
+      '\n' +
+      'mediumBoxPlaced = mediumBox\n' +
+      ' |> translate(z = smallBoxSize + mediumBoxSize / 2, global = true)\n' +
+      '\n' +
+      'largeBoxPlaced = largeBox\n' +
+      ' |> translate(z = smallBoxSize + mediumBoxSize + largeBoxSize / 2, global = true)\n' +
+      '\n' +
+      'stackedBoxes = [\n' +
+      ' smallBoxPlaced,\n' +
+      ' mediumBoxPlaced,\n' +
+      ' largeBoxPlaced\n' +
+      ']\n' +
+      '\n' +
+      'stackedBoxes\n'
+    const mainAfter =
+      '// Stacked box assembly\n' +
+      '// Imports the box parts and stacks them vertically.\n' +
+      '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n' +
+      '\n' +
+      'import "mediumBox.kcl" as mediumBox\n' +
+      'import mediumBoxSize from "mediumBox.kcl"\n' +
+      'import "largeBox.kcl" as largeBox\n' +
+      'import largeBoxSize from "largeBox.kcl"\n' +
+      '\n' +
+      'mediumBoxPlaced = mediumBox\n' +
+      ' |> translate(z = mediumBoxSize / 2, global = true)\n' +
+      '\n' +
+      'largeBoxPlaced = largeBox\n' +
+      ' |> translate(z = mediumBoxSize + largeBoxSize / 2, global = true)\n' +
+      '\n' +
+      'stackedBoxes = [\n' +
+      ' mediumBoxPlaced,\n' +
+      ' largeBoxPlaced\n' +
+      ']\n' +
+      '\n' +
+      'stackedBoxes\n'
+    const smallBefore =
+      '// Small box part\n' +
+      '// Editable cube part with the size parameter at the top of the file.\n' +
+      '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n' +
+      '\n' +
+      'export smallBoxSize = 30mm\n' +
+      '\n' +
+      'import unitBoxBody as unitBox from "unitBox.kcl"\n' +
+      '\n' +
+      'export smallBoxBody = clone(unitBox)\n' +
+      ' |> scale(\n' +
+      ' x = smallBoxSize / 1mm,\n' +
+      ' y = smallBoxSize / 1mm,\n' +
+      ' z = smallBoxSize / 1mm,\n' +
+      ' global = true,\n' +
+      ' )\n' +
+      ' |> appearance(color = "#7cc6fe", metalness = 10, roughness = 70)\n' +
+      '\n' +
+      'smallBoxBody\n'
+    const mediumBefore =
+      '// Medium box part\n' +
+      '// Editable cube part with the size parameter at the top of the file.\n' +
+      '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n' +
+      '\n' +
+      'export mediumBoxSize = 50mm\n' +
+      '\n' +
+      'import unitBoxBody as unitBox from "unitBox.kcl"\n' +
+      '\n' +
+      'export mediumBoxBody = clone(unitBox)\n' +
+      ' |> scale(\n' +
+      ' x = mediumBoxSize / 1mm,\n' +
+      ' y = mediumBoxSize / 1mm,\n' +
+      ' z = mediumBoxSize / 1mm,\n' +
+      ' global = true,\n' +
+      ' )\n' +
+      ' |> appearance(color = "#8de18d", metalness = 10, roughness = 70)\n' +
+      '\n' +
+      'mediumBoxBody\n'
+    const mediumAfter = mediumBefore
+      .replace('import unitBoxBody as unitBox', 'import unitBoxBody')
+      .replace('clone(unitBox)', 'clone(unitBoxBody)')
+    const largeBefore =
+      '// Large box part\n' +
+      '// Editable cube part with the size parameter at the top of the file.\n' +
+      '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n' +
+      '\n' +
+      'export largeBoxSize = 70mm\n' +
+      '\n' +
+      'import unitBoxBody as unitBox from "unitBox.kcl"\n' +
+      '\n' +
+      'export largeBoxBody = clone(unitBox)\n' +
+      ' |> scale(\n' +
+      ' x = largeBoxSize / 1mm,\n' +
+      ' y = largeBoxSize / 1mm,\n' +
+      ' z = largeBoxSize / 1mm,\n' +
+      ' global = true,\n' +
+      ' )\n' +
+      ' |> appearance(color = "#f7b267", metalness = 10, roughness = 70)\n' +
+      '\n' +
+      'largeBoxBody\n'
+    const largeAfter = largeBefore
+      .replace('import unitBoxBody as unitBox', 'import unitBoxBody')
+      .replace('clone(unitBox)', 'clone(unitBoxBody)')
+    const harness = await createProjectHarness({
+      'main.kcl': mainBefore,
+      'smallBox.kcl': smallBefore,
+      'mediumBox.kcl': mediumBefore,
+      'largeBox.kcl': largeBefore,
+      'unitBox.kcl': 'unitBoxBody\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const smallBoxPath = fsZds.join(harness.projectPath, 'smallBox.kcl')
+    const switchToFile = async (path: string) => {
+      await KclManager.fromFile(
+        new File(path),
+        harness.kclManager.systemDeps,
+        harness.kclManager
+      )
+    }
+
+    await switchToFile(smallBoxPath)
+    const disposeHistory = buildZookeeperHistoryExtension({
+      kclManager: harness.kclManager,
+      onCurrentFileDelete: async () => switchToFile(mainPath),
+      onActiveFileRestore: switchToFile,
+      onProjectFilesReplay: async (replayFiles) => {
+        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+    const mergedPatch = [
+      {
+        run_id: 'streamed-delete-sibling-updates',
+        changed_files: [
+          {
+            path: 'smallBox.kcl',
+            status: 'deleted' as const,
+            previous_contents: smallBefore,
+          },
+        ],
+      },
+      {
+        run_id: 'streamed-delete-sibling-updates',
+        changed_files: [modifiedFile('main.kcl', mainBefore, mainAfter)],
+      },
+      {
+        run_id: 'streamed-delete-sibling-updates',
+        changed_files: [
+          modifiedFile('mediumBox.kcl', mediumBefore, mediumAfter),
+        ],
+      },
+      {
+        run_id: 'streamed-delete-sibling-updates',
+        changed_files: [modifiedFile('largeBox.kcl', largeBefore, largeAfter)],
+      },
+    ].reduce(mergeZookeeperEditPatches)
+
+    await writeText(mainPath, mainAfter)
+    await writeText(
+      fsZds.join(harness.projectPath, 'mediumBox.kcl'),
+      mediumAfter
+    )
+    await writeText(fsZds.join(harness.projectPath, 'largeBox.kcl'), largeAfter)
+    await fsZds.rm(smallBoxPath)
+    await switchToFile(mainPath)
+    harness.kclManager.addGlobalHistoryEvent(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: smallBoxPath,
+        patch: mergedPatch,
+      })
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(smallBoxPath)
+    expect(harness.kclManager.code).toBe(smallBefore)
+    await expect(fsZds.readFile(smallBoxPath, 'utf8')).resolves.toBe(
+      smallBefore
+    )
+    await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(mainBefore)
+    await expect(
+      fsZds.readFile(fsZds.join(harness.projectPath, 'mediumBox.kcl'), 'utf8')
+    ).resolves.toBe(mediumBefore)
+    await expect(
+      fsZds.readFile(fsZds.join(harness.projectPath, 'largeBox.kcl'), 'utf8')
+    ).resolves.toBe(largeBefore)
+
+    disposeHistory()
+  })
+
   it('removes a streamed created file when the aggregate patch omits contents', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'main = true\n',

@@ -786,6 +786,9 @@ function zookeeperPatchConflictError(path: string) {
 }
 
 function getReplayErrorMessage(error: unknown) {
+  if (typeof error === 'string') {
+    return error
+  }
   if (error instanceof Error) {
     return error.message
   }
