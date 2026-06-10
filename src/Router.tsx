@@ -15,7 +15,6 @@ import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import { routesValueSpec } from '@src/registry/contracts/routes'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
@@ -41,7 +40,6 @@ export const Router = () => {
   const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
-  const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>
       createRouter([
@@ -128,6 +126,15 @@ export const Router = () => {
                   path: makeUrlPathRelative(PATHS.SETTINGS),
                   element: <Settings />,
                 },
+                {
+                  id: PATHS.HOME + 'TELEMETRY',
+                  children: [
+                    {
+                      path: makeUrlPathRelative(PATHS.TELEMETRY),
+                      element: <Telemetry />,
+                    },
+                  ],
+                },
               ],
             },
             {
@@ -153,11 +160,10 @@ export const Router = () => {
                   },
                 ]
               : []),
-            ...routesProvidedByRegistry,
           ],
         },
       ]),
-    [app, routesProvidedByRegistry]
+    [app]
   )
 
   return (
