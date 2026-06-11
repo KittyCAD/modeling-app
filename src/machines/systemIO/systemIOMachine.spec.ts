@@ -5,6 +5,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  getCloudProjectFolderRenameName,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
@@ -54,7 +55,31 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
-  describe('project folder loading', () => {
+  describe('cloud-backed project folder names', () => {
+    it('uses a title-derived folder name when it is available', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [mockProject('Some demo 2')],
+        })
+      ).toBe('Some demo')
+    })
+
+    it('adds numeric suffixes when title-derived folder names already exist', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [
+            mockProject('Some demo'),
+            mockProject('Some demo-2'),
+            mockProject('Some demo 2'),
+          ],
+        })
+      ).toBe('Some demo-3')
+    })
+
     it('only emits folder read progress for initial loads', () => {
       expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
       expect(shouldSendProjectFolderReadProgress([])).toBe(true)
@@ -208,6 +233,133 @@ describe('systemIOMachine - XState', () => {
 
           await waitFor(actor, (state) =>
             state.matches(SystemIOMachineStates.creatingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project rename while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.renameProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.renameProject,
+            data: {
+              projectName: 'local-first-project',
+              requestedProjectName: 'renamed-local-first-project',
+              redirect: true,
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.renamingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project deletion while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.deleteProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.deleteProject,
+            data: {
+              requestedProjectName: 'local-first-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.deletingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept file rename while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.renameFile]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.renameFile,
+            data: {
+              requestedFileNameWithExtension: 'newFileName.kcl',
+              fileNameWithExtension: 'fileToRename.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.renamingFile)
           )
         } finally {
           actor.stop()
