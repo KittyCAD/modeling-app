@@ -1,3 +1,6 @@
+// Stator
+
+// Set units
 @settings(defaultLengthUnit = in)
 
 // Sketch the PCB profile

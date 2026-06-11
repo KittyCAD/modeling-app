@@ -1,6 +1,4 @@
-// Liquid Impeller
-// An open-style impeller for use with incompressible fluid in a centrifugal pump
-// Categories: Aerospace, Manufacturing
+// Impeller
 
 // Set units
 @settings(defaultLengthUnit = in, experimentalFeatures = allow)
