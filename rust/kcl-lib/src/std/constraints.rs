@@ -1458,7 +1458,6 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
         meta: vec![args.source_range.into()],
     };
 
-    #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
         let placeholder_control_ids = control_object_ids
             .iter()
@@ -1516,7 +1515,6 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
     };
     sketch_state.needed_by_engine.push(segment.clone());
 
-    #[cfg(feature = "artifact-graph")]
     sketch_state.solver_optional_constraints.extend(optional_constraints);
 
     let meta = segment.meta.clone();

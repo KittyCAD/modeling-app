@@ -28,6 +28,7 @@ layout: manual
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
   * [`slice`](/docs/kcl-std/functions/std-array-slice)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::angularity`](/docs/kcl-std/functions/std-gdt-angularity)
   * [`gdt::annotation`](/docs/kcl-std/functions/std-gdt-annotation)
   * [`gdt::circularity`](/docs/kcl-std/functions/std-gdt-circularity)
   * [`gdt::cylindricity`](/docs/kcl-std/functions/std-gdt-cylindricity)
