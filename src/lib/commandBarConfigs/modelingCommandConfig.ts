@@ -165,6 +165,7 @@ type EditableStdLibModelingCommandSchema = WithCommandBarEditFlowArgs<{
   'GDT Distance': StdLibCommandTypes.GdtDistanceCommandArgs
   'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
   'GDT Angularity': StdLibCommandTypes.GdtAngularityCommandArgs
+  'GDT Concentricity': StdLibCommandTypes.GdtConcentricityCommandArgs
   'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
   'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
   'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
@@ -1942,6 +1943,35 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           datums: datumsProps,
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
+  },
+  'GDT Concentricity': {
+    description:
+      'Add concentricity geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtConcentricity',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Concentricity']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Concentricity']>(
+      'GDT Concentricity',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: isEditingNodeSelection,
+          },
+          datums: {
+            ...datumsProps,
+            required: true,
+          },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
         },

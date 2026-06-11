@@ -422,6 +422,15 @@ export const modelingCommandStdLibDriftConfig = {
       edges: 'objects',
     },
   },
+  'GDT Concentricity': {
+    stdLibName: 'gdt::concentricity',
+    editFlow: true,
+    requiredArgOrder: ['objects', 'datums', 'tolerance'],
+    argAliases: {
+      faces: 'objects',
+      edges: 'objects',
+    },
+  },
   'GDT Parallelism': {
     stdLibName: 'gdt::parallelism',
     editFlow: true,

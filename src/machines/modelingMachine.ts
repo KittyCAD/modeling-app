@@ -569,6 +569,10 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['GDT Angularity']
     }
   | {
+      type: 'GDT Concentricity'
+      data: ModelingCommandSchema['GDT Concentricity']
+    }
+  | {
       type: 'GDT Parallelism'
       data: ModelingCommandSchema['GDT Parallelism']
     }
@@ -4396,6 +4400,9 @@ export const modelingMachine = setup({
     gdtAngularityAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Angularity'])
     ),
+    gdtConcentricityAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['GDT Concentricity'])
+    ),
     gdtParallelismAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Parallelism'])
     ),
@@ -4893,6 +4900,10 @@ export const modelingMachine = setup({
 
         'GDT Angularity': {
           target: 'Applying GDT Angularity',
+        },
+
+        'GDT Concentricity': {
+          target: 'Applying GDT Concentricity',
         },
 
         'GDT Parallelism': {
@@ -7154,6 +7165,26 @@ export const modelingMachine = setup({
         id: 'gdtAngularityAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Angularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Concentricity': {
+      invoke: {
+        src: 'gdtConcentricityAstMod',
+        id: 'gdtConcentricityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Concentricity') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
