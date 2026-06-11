@@ -425,19 +425,22 @@ fn remap_angle_for_representative_rays(
     ezpz::datatypes::Angle::from_radians(normalize_radians(representative_angle))
 }
 
-fn push_points_at_angle_for_lines(
-    sketch_block_state: &mut SketchBlockState,
-    sketch_var_ty: NumericType,
-    line0: &ConstrainableLine2d,
-    line1: &ConstrainableLine2d,
+struct PointsAtAngleLineData {
     initial_vertex: [f64; 2],
     representative_points: [DatumPoint; 2],
     angle_kind: ezpz::datatypes::AngleKind,
+}
+
+fn push_points_at_angle_for_lines(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    lines: [&ConstrainableLine2d; 2],
+    data: PointsAtAngleLineData,
     range: SourceRange,
 ) -> Result<(), KclError> {
-    let solver_line0 = datum_line_from_constrainable(line0, range)?;
-    let solver_line1 = datum_line_from_constrainable(line1, range)?;
-    let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, initial_vertex, range)?;
+    let solver_line0 = datum_line_from_constrainable(lines[0], range)?;
+    let solver_line1 = datum_line_from_constrainable(lines[1], range)?;
+    let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, data.initial_vertex, range)?;
 
     sketch_block_state
         .solver_constraints
@@ -447,9 +450,9 @@ fn push_points_at_angle_for_lines(
         .push(Constraint::PointLineDistance(vertex, solver_line1, 0.0));
     sketch_block_state.solver_constraints.push(Constraint::PointsAtAngle(
         vertex,
-        representative_points[0],
-        representative_points[1],
-        angle_kind,
+        data.representative_points[0],
+        data.representative_points[1],
+        data.angle_kind,
     ));
 
     Ok(())
@@ -3993,7 +3996,11 @@ impl Node<BinaryExpression> {
                                             [line0_direction, line1_direction],
                                             desired_angle,
                                         ));
-                                    Some((initial_vertex, [line0_representative, line1_representative], angle_kind))
+                                    Some(PointsAtAngleLineData {
+                                        initial_vertex,
+                                        representative_points: [line0_representative, line1_representative],
+                                        angle_kind,
+                                    })
                                 }
                             };
                             let sketch_var_ty = solver_numeric_type(exec_state);
@@ -4012,19 +4019,15 @@ impl Node<BinaryExpression> {
                                         ezpz::datatypes::AngleKind::Other(desired_angle),
                                     ));
                                 }
-                                (
-                                    AngleConstraintMode::PointsAtAngle { .. },
-                                    Some((initial_vertex, representative_points, angle_kind)),
-                                ) => push_points_at_angle_for_lines(
-                                    sketch_block_state,
-                                    sketch_var_ty,
-                                    line0,
-                                    line1,
-                                    initial_vertex,
-                                    representative_points,
-                                    angle_kind,
-                                    range,
-                                )?,
+                                (AngleConstraintMode::PointsAtAngle { .. }, Some(points_at_angle_data)) => {
+                                    push_points_at_angle_for_lines(
+                                        sketch_block_state,
+                                        sketch_var_ty,
+                                        [line0, line1],
+                                        points_at_angle_data,
+                                        range,
+                                    )?
+                                }
                                 _ => {
                                     let message = "Invalid angle constraint lowering state".to_owned();
                                     debug_assert!(false, "{}", &message);
