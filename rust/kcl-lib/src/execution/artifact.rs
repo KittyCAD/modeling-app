@@ -871,6 +871,37 @@ impl ArtifactGraph {
         self.map.insert(id, artifact);
     }
 
+    #[cfg(test)]
+    pub(crate) fn insert_path_for_test(
+        &mut self,
+        id: ArtifactId,
+        sweep_id: Option<ArtifactId>,
+        solid2d_id: Option<ArtifactId>,
+        composite_solid_id: Option<ArtifactId>,
+        code_ref: CodeRef,
+    ) {
+        self.map.insert(
+            id,
+            Artifact::Path(Path {
+                id,
+                sub_type: PathSubType::Region,
+                plane_id: ArtifactId::placeholder(),
+                seg_ids: Vec::new(),
+                consumed: true,
+                sweep_id,
+                trajectory_sweep_id: None,
+                solid2d_id,
+                code_ref,
+                composite_solid_id,
+                sketch_block_id: None,
+                origin_path_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+    }
+
     pub fn values(&self) -> impl Iterator<Item = &Artifact> {
         self.map.values()
     }

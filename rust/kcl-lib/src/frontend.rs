@@ -5201,13 +5201,36 @@ fn sketch_face_of_scene_object_ast_expr(
 
     match &on_object.kind {
         ObjectKind::Wall(_) => {
-            let [sweep_range, segment_range] = ranges.as_slice() else {
+            // Boolean-consumed walls carry both the final solid range and the
+            // original sweep range. Use the final solid for faceOf(), but keep
+            // the original sweep to derive region tag references.
+            let (solid_range, sweep_range, segment_range) = match ranges.as_slice() {
+                [sweep_range, segment_range] => (sweep_range, sweep_range, segment_range),
+                [solid_range, sweep_range, segment_range] => (solid_range, sweep_range, segment_range),
+                _ => {
+                    return Err(KclError::refactor(format!(
+                        "Expected wall source metadata to have 2 or 3 ranges, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    )));
+                }
+            };
+            let solid_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
+                    range: solid_range.0,
+                    node_path: solid_range.1.clone(),
+                },
+                "solid",
+                None,
+            )?;
+            let ast::Expr::Name(solid_name_expr) = solid_ref else {
                 return Err(KclError::refactor(format!(
-                    "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
-                    ranges.len(),
+                    "Could not resolve solid reference for selected wall: artifact_id={:?}",
                     on_object.artifact_id
                 )));
             };
+            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
             let sweep_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
@@ -5217,14 +5240,13 @@ fn sketch_face_of_scene_object_ast_expr(
                 "solid",
                 None,
             )?;
-            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+            let ast::Expr::Name(sweep_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve sweep reference for selected wall: artifact_id={:?}",
                     on_object.artifact_id
                 )));
             };
-            let solid_name = solid_name_expr.name.name.clone();
-            let solid_expr = ast_name_expr(solid_name.clone());
+            let sweep_name = sweep_name_expr.name.name.clone();
             let segment_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
@@ -5235,7 +5257,7 @@ fn sketch_face_of_scene_object_ast_expr(
                 None,
             )?;
 
-            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(KclError::refactor(format!(
                         "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
@@ -5293,18 +5315,12 @@ fn downstream_composite_code_ref_for_source(artifact_graph: &ArtifactGraph, sour
     let mut current_composite = None;
 
     loop {
-        let next_composite = artifact_graph.values().find_map(|artifact| {
-            let Artifact::CompositeSolid(composite) = artifact else {
-                return None;
-            };
-            if composite.solid_ids.contains(&current_id) {
-                Some(composite)
-            } else {
-                None
-            }
-        });
+        let next_composite_id = downstream_composite_id_for_solid_source(artifact_graph, current_id);
 
-        let Some(composite) = next_composite else {
+        let Some(composite_id) = next_composite_id else {
+            break;
+        };
+        let Some(Artifact::CompositeSolid(composite)) = artifact_graph.get(&composite_id) else {
             break;
         };
 
@@ -5317,6 +5333,49 @@ fn downstream_composite_code_ref_for_source(artifact_graph: &ArtifactGraph, sour
     }
 
     current_composite.map(|composite| &composite.code_ref)
+}
+
+fn downstream_composite_id_for_solid_source(
+    artifact_graph: &ArtifactGraph,
+    source_id: ArtifactId,
+) -> Option<ArtifactId> {
+    if let Some(Artifact::Path(path)) = artifact_graph.get(&source_id)
+        && let Some(composite_solid_id) = path.composite_solid_id
+        && let Some(composite_id) = composite_id_for_path(artifact_graph, path.id, path.solid2d_id, composite_solid_id)
+    {
+        return Some(composite_id);
+    }
+
+    for artifact in artifact_graph.values() {
+        if let Artifact::Path(path) = artifact
+            && path.sweep_id == Some(source_id)
+            && let Some(composite_solid_id) = path.composite_solid_id
+            && let Some(composite_id) =
+                composite_id_for_path(artifact_graph, path.id, path.solid2d_id, composite_solid_id)
+        {
+            return Some(composite_id);
+        }
+    }
+
+    artifact_graph.values().find_map(|artifact| {
+        let Artifact::CompositeSolid(composite) = artifact else {
+            return None;
+        };
+        composite.solid_ids.contains(&source_id).then_some(composite.id)
+    })
+}
+
+fn composite_id_for_path(
+    artifact_graph: &ArtifactGraph,
+    path_id: ArtifactId,
+    solid2d_id: Option<ArtifactId>,
+    composite_id: ArtifactId,
+) -> Option<ArtifactId> {
+    let Some(Artifact::CompositeSolid(composite)) = artifact_graph.get(&composite_id) else {
+        return None;
+    };
+    (composite.solid_ids.contains(&path_id) || solid2d_id.is_some_and(|id| composite.solid_ids.contains(&id)))
+        .then_some(composite_id)
 }
 
 fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
@@ -5344,6 +5403,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 }) else {
                     continue;
                 };
+                let solid_code_ref = downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id);
                 let source_segment = segment
                     .original_seg_id
                     .and_then(|original_seg_id| artifact_graph.get(&original_seg_id))
@@ -5360,13 +5420,18 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     comments: Default::default(),
                     artifact_id: wall.id,
                     source: SourceRef::BackTrace {
-                        ranges: vec![
-                            (sweep.code_ref.range, Some(sweep.code_ref.node_path.clone())),
-                            (
+                        ranges: {
+                            let mut ranges = Vec::new();
+                            if let Some(solid_code_ref) = solid_code_ref {
+                                ranges.push((solid_code_ref.range, Some(solid_code_ref.node_path.clone())));
+                            }
+                            ranges.push((sweep.code_ref.range, Some(sweep.code_ref.node_path.clone())));
+                            ranges.push((
                                 source_segment.code_ref.range,
                                 Some(source_segment.code_ref.node_path.clone()),
-                            ),
-                        ],
+                            ));
+                            ranges
+                        },
                     },
                 });
                 existing_artifact_ids.insert(wall.id);
@@ -5483,7 +5548,16 @@ fn get_or_insert_ast_reference(
     let command = AstMutateCommand::AddVariableDeclaration {
         prefix: prefix.to_owned(),
     };
-    let (_, ret) = mutate_ast_node_by_source_ref(ast, source_ref, command)?;
+    let ret = match mutate_ast_node_by_source_ref(ast, source_ref, command) {
+        Ok((_, ret)) => ret,
+        Err(err) => {
+            if let Some(var_name) = variable_name_containing_source_ref(ast, source_ref) {
+                AstMutateCommandReturn::Name(var_name)
+            } else {
+                return Err(err);
+            }
+        }
+    };
     let AstMutateCommandReturn::Name(var_name) = ret else {
         return Err(KclError::refactor(
             "Expected variable name returned from AddVariableDeclaration".to_owned(),
@@ -5496,6 +5570,28 @@ fn get_or_insert_ast_reference(
     };
 
     Ok(create_member_expression(var_expr, property))
+}
+
+fn variable_name_containing_source_ref(ast: &ast::Node<ast::Program>, source_ref: &SourceRef) -> Option<String> {
+    let source_range = match source_ref {
+        SourceRef::Simple { range, .. } => *range,
+        SourceRef::BackTrace { ranges } => {
+            let [range] = ranges.as_slice() else {
+                return None;
+            };
+            range.0
+        }
+    };
+    ast.body.iter().find_map(|item| {
+        let ast::BodyItem::VariableDeclaration(var_decl) = item else {
+            return None;
+        };
+        let init_range = SourceRange::from(&var_decl.declaration.init);
+        (init_range.module_id() == source_range.module_id()
+            && init_range.start() <= source_range.start()
+            && source_range.end() <= init_range.end())
+        .then(|| var_decl.name().to_owned())
+    })
 }
 
 fn mutate_ast_node_by_source_ref(
@@ -13755,6 +13851,57 @@ extrude001 = extrude(region001, length = 5)
     }
 
     #[test]
+    fn test_sketch_on_wall_codemod_uses_composite_solid() {
+        let source = "\
+boxProfile = sketch(on = XY) {
+  bottomEdge = line(start = [0, 0], end = [10, 0])
+}
+boxRegion = region(point = [5, 5], sketch = boxProfile)
+boxSolid = extrude(boxRegion, length = 10)
+part = subtract(boxSolid, tools = [cutSolid])
+  |> appearance(color = \"#8f96a3\")
+";
+        let mut ast = Program::parse(source).unwrap().0.unwrap().ast;
+        let part_call_start = source.find("subtract").unwrap();
+        let part_call_end = part_call_start + "subtract(boxSolid, tools = [cutSolid])".len();
+        let box_call_start = source.find("extrude").unwrap();
+        let box_call_end = box_call_start + "extrude(boxRegion, length = 10)".len();
+        let bottom_edge_call_start = source.find("line(start = [0, 0]").unwrap();
+        let bottom_edge_call_end = bottom_edge_call_start + "line(start = [0, 0], end = [10, 0])".len();
+        let wall_id = ObjectId(0);
+        let mut scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        scene_graph.objects.push(Object {
+            id: wall_id,
+            kind: ObjectKind::Wall(crate::frontend::api::Wall { id: wall_id }),
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::placeholder(),
+            source: SourceRef::BackTrace {
+                ranges: vec![
+                    ([part_call_start, part_call_end, 0].into(), None),
+                    ([box_call_start, box_call_end, 0].into(), None),
+                    ([bottom_edge_call_start, bottom_edge_call_end, 0].into(), None),
+                ],
+            },
+        });
+
+        let expr = sketch_on_ast_expr(&mut ast, &scene_graph, &Plane::Object(wall_id)).unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                face_decl,
+            ))));
+        let generated_source = source_from_ast(&ast);
+
+        assert!(generated_source.contains("face001 = faceOf(part, face = boxRegion.tags.bottomEdge)"));
+        assert!(!generated_source.contains("faceOf(boxSolid"));
+    }
+
+    #[test]
     fn test_downstream_composite_code_ref_for_source_prefers_boolean_result() {
         let source_id = ArtifactId::new(uuid::Uuid::new_v4());
         let tool_id = ArtifactId::new(uuid::Uuid::new_v4());
@@ -13784,10 +13931,44 @@ extrude001 = extrude(region001, length = 5)
                 pattern_ids: Vec::new(),
             }),
         );
+        let sweep_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let path_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let solid2d_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let path_composite_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let path_composite_code_ref = CodeRef {
+            range: [60, 90, 0].into(),
+            node_path: Default::default(),
+            path_to_node: Default::default(),
+        };
+        artifact_graph.insert_path_for_test(
+            path_id,
+            Some(sweep_id),
+            Some(solid2d_id),
+            Some(path_composite_id),
+            source_code_ref.clone(),
+        );
+        artifact_graph.insert_for_test(
+            path_composite_id,
+            Artifact::CompositeSolid(crate::execution::CompositeSolid {
+                id: path_composite_id,
+                consumed: false,
+                sub_type: crate::execution::CompositeSolidSubType::Subtract,
+                output_index: None,
+                solid_ids: vec![solid2d_id],
+                tool_ids: Vec::new(),
+                code_ref: path_composite_code_ref.clone(),
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
 
         assert_eq!(
             downstream_composite_code_ref_for_source(&artifact_graph, source_id),
             Some(&composite_code_ref)
+        );
+        assert_eq!(
+            downstream_composite_code_ref_for_source(&artifact_graph, sweep_id),
+            Some(&path_composite_code_ref)
         );
         assert_eq!(
             downstream_composite_code_ref_for_source(&artifact_graph, ArtifactId::new(uuid::Uuid::new_v4())),
@@ -13805,6 +13986,7 @@ extrude001 = extrude(region001, length = 5)
         let source = "\
 boxSolid = extrude(profile, length = 10)
 part = subtract(boxSolid, tools = [cutSolid])
+  |> appearance(color = \"#8f96a3\", roughness = 55, metalness = 8)
 ";
         let mut ast = Program::parse(source).unwrap().0.unwrap().ast;
         let part_call_start = source.find("subtract").unwrap();
@@ -13826,6 +14008,19 @@ part = subtract(boxSolid, tools = [cutSolid])
         });
 
         let expr = sketch_on_ast_expr(&mut ast, &scene_graph, &Plane::Object(cap_id)).unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", expr.clone()),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                face_decl,
+            ))));
+        let generated_source = source_from_ast(&ast);
+
+        assert!(generated_source.contains("face001 = faceOf(part, face = END)"));
+        assert!(!generated_source.contains("faceOf(boxSolid"));
         let ast::Expr::CallExpressionKw(call) = expr else {
             panic!("expected faceOf call");
         };
