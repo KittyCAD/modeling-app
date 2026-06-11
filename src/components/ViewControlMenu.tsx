@@ -9,7 +9,7 @@ import {
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
@@ -26,7 +26,7 @@ import toast from 'react-hot-toast'
 export function useViewControlMenuItems() {
   useSignals()
   const { settings, layout } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges

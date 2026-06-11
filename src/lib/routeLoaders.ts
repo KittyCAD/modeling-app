@@ -53,7 +53,7 @@ export const baseLoader =
     }
 
     // Web, make a default project and redirect to it.
-    const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 

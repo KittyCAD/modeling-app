@@ -1914,6 +1914,7 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    this.cancelAllExecutions()
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()

@@ -1,7 +1,7 @@
 import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -313,7 +313,7 @@ async function tryConnecting({
   return connection
 }
 export const useTryConnect = () => {
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   type TryConnectingArgs = Omit<

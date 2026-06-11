@@ -27,7 +27,7 @@ import type {
 import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
@@ -73,7 +73,7 @@ type LspContext = {
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useOptionalExecutingEditor()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -124,7 +124,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!window.electron && isKclLspReady && kclLspClient && kclManager.code) {
+    if (!window.electron && isKclLspReady && kclLspClient && kclManager?.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -134,7 +134,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     }
-  }, [kclLspClient, isKclLspReady, kclManager.code])
+  }, [kclLspClient, isKclLspReady, kclManager?.code])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -181,6 +181,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (kclLSP === null) {
       return
     }
+    if (!kclManager) {
+      return
+    }
     kclManager.editorView.dispatch({
       effects: kclLspCompartment.reconfigure(Prec.highest(kclLSP)),
     })
@@ -188,7 +191,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       kclManager.editorView.dispatch({
         effects: kclLspCompartment.reconfigure(Prec.highest([])),
       })
-  }, [kclLSP, kclManager.editorView])
+  }, [kclLSP, kclManager])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
@@ -233,7 +236,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspReady && copilotLspClient) {
+    if (isCopilotLspReady && copilotLspClient && kclManager) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin(
         {
@@ -278,7 +281,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     })
-    kclManager.clearGlobalHistory()
+    kclManager?.clearGlobalHistory()
 
     if (redirect) {
       void navigate(PATHS.HOME)

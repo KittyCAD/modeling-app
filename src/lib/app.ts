@@ -724,20 +724,22 @@ export class App implements AppSubsystems {
     if (!this.project) {
       return // Everything in here only matters inside a project.
     }
+    const kclManager = this.project.executingEditor.value
+    if (!kclManager) {
+      return
+    }
     const { context } = snapshot
 
     // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
+    kclManager.setEditorLineWrapping(context.textEditor.textWrapping.current)
 
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.kclManager.engineCommandManager.connection
+      kclManager.engineCommandManager.connection
     ) {
-      this.singletons.kclManager.engineCommandManager
+      kclManager.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
     }
@@ -748,16 +750,16 @@ export class App implements AppSubsystems {
       '--cursor-color',
       newBlinking ? 'auto' : 'transparent'
     )
-    this.singletons.kclManager.setCursorBlinking(newBlinking)
+    kclManager.setCursorBlinking(newBlinking)
 
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
     Promise.all([
-      this.singletons.kclManager.updateTheme(newTheme),
-      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
+      kclManager.updateTheme(newTheme),
+      ...(kclManager.engineCommandManager.connection?.connected
         ? [
-            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
+            kclManager.engineCommandManager.setDefaultSystemProperties(
               newBackfaceColor
             ),
           ]
@@ -783,29 +785,29 @@ export class App implements AppSubsystems {
       // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.kclManager.engineCommandManager.connection
+        kclManager.engineCommandManager.connection
       ) {
-        this.singletons.kclManager.rustContext
+        kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.path
+            kclManager.path
           )
-          .then(() => this.singletons.kclManager.executeCode())
+          .then(() => kclManager.executeCode())
           .catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
     }
 
-    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+    kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
       context.app.allowOrbitInSketchMode.current
 
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
-      this.singletons.kclManager.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch')
+      kclManager.sceneInfra.camControls &&
+      !kclManager.modelingState?.matches('Sketch')
     ) {
-      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
+      kclManager.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection
     }
 

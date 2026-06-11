@@ -16,7 +16,7 @@ import {
   emptyOperationsByModule,
   getAllOperations,
 } from '@src/lang/wasm'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import {
   type OperationTreeNode,
   buildOperationTree,
@@ -80,11 +80,12 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { useNavigate } from 'react-router-dom'
 
-type Singletons = ReturnType<typeof useSingletons>
+type ExecutingEditor = ReturnType<typeof useExecutingEditor>
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
 
-type SystemDeps = Pick<Singletons, 'kclManager'> & {
+type SystemDeps = {
+  kclManager: ExecutingEditor
   commandBarActor: CommandBarActorType
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
@@ -142,7 +143,7 @@ export const FeatureTreePaneContents = memo(() => {
     UNRENDERED_EXECUTE_HOTKEY,
     platform
   )
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const executionService = app.registry.signal(executingEditorService).value
   const { engineCommandManager, rustContext } = kclManager
   const {

@@ -1,6 +1,6 @@
 import { KclInput } from '@src/components/KclInput'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -15,9 +15,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const EditingConstraintInput = () => {
-  const {
-    kclManager: { sceneInfra, rustContext },
-  } = useSingletons()
+  const { sceneInfra, rustContext } = useExecutingEditor()
   const { state } = useModelingContext()
   const editingConstraintId = useSelector(
     state.children.sketchSolveMachine,

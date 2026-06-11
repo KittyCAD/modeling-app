@@ -13,7 +13,7 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -32,7 +32,7 @@ type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const execState = kclManager.execStateSignal.value
   const artifactGraph = execState.artifactGraph
   const operations = getAllOperations(execState.operations)
@@ -120,7 +120,7 @@ function BodyItem({
   patternIndex?: number
   showExperimentalPointAndClick?: boolean
 }) {
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const {
     actor: modelingActor,
     context: modelingContext,

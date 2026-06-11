@@ -15,7 +15,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -57,7 +57,7 @@ export const ModelingMachineProvider = ({
   useSignals()
   const { machineManager, commands, settings, layout, project, registry } =
     useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()

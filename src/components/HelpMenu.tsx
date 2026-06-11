@@ -4,7 +4,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -21,7 +21,6 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu() {
   const { settings, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
 
@@ -29,7 +28,6 @@ export function HelpMenu() {
     const props = {
       onboardingStatus: onboardingStartPath,
       navigate,
-      kclManager,
       systemIOActor,
       settingsActor: settings.actor,
       executingPath: filePath,

@@ -21,7 +21,7 @@ import {
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import { getAllOperations } from '@src/lang/wasm'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
@@ -43,7 +43,7 @@ export const ConnectionStream = (props: {
 }) => {
   const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)

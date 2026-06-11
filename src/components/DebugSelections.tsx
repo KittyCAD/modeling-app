@@ -9,7 +9,7 @@ import {
   getOperationsForModule,
 } from '@src/lang/wasm'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import {
   filterOperations,
   groupOperationTypeStreaks,
@@ -22,7 +22,9 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useMemo, useState } from 'react'
 import { use } from 'react'
 
-type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
+type SingletonDeps = {
+  kclManager: ReturnType<typeof useExecutingEditor>
+}
 
 async function clearSceneSelection(deps: SingletonDeps) {
   await deps.kclManager.engineCommandManager.sendSceneCommand({
@@ -258,7 +260,7 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const singletonDeps: SingletonDeps = useMemo(
     () => ({
       kclManager,
