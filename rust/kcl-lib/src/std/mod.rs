@@ -99,6 +99,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::cylindricity(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::cylindricity"),
         ),
+        ("gdt", "concentricity") => (
+            |e, a| Box::pin(crate::std::gdt::concentricity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::concentricity"),
+        ),
+        ("gdt", "angularity") => (
+            |e, a| Box::pin(crate::std::gdt::angularity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::angularity"),
+        ),
         ("gdt", "perpendicularity") => (
             |e, a| Box::pin(crate::std::gdt::perpendicularity(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::perpendicularity"),
