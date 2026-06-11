@@ -188,11 +188,40 @@ async fn inner_sweep(
         )));
     }
 
+    let version = version
+        .map(|v| {
+            u8::try_from(v).map_err(|_e| {
+                KclError::new_argument(KclErrorDetails::new(
+                    format!("Invalid version {}", v),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?;
+
     let trajectory = ModelingCmdId::from(match path {
         InnerSweepPath::Sketch(sketch) => sketch.id,
         InnerSweepPath::Helix(helix) => helix.value,
     });
+
     let profile_transform = match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {
+        // Default case when the user doesn't give any flags at all.
+        //
+        (None, None, None) => ProfileTransform::RelativeTo(match version {
+            // We default to algorithm v1 if no choice was made.
+            None | Some(1) => RelativeTo::TrajectoryCurve,
+            // 0 means "let engine choose". Engine currently chooses version 1.
+            Some(0) => RelativeTo::TrajectoryCurve,
+            // Algorithm version 2 defaults to SketchPlane.
+            Some(2) => RelativeTo::SketchPlane,
+            // Error on unknown algorithm.
+            Some(other) => {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    format!("Invalid version {}", other),
+                    vec![args.source_range],
+                )));
+            }
+        }),
         // If the "new" profile transformation args are set,
         (None, translate, orient) => ProfileTransform::SeparateFlags {
             translate_profile_to_path: translate.unwrap_or_default(),
@@ -218,8 +247,6 @@ async fn inner_sweep(
                 )));
         }
     };
-
-    let version = version.map(|v| u8::try_from(v).unwrap_or(u8::MAX));
 
     let mut solids = Vec::new();
     for sketch in &sketches {
