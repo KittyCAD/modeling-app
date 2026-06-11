@@ -411,6 +411,9 @@ export class ZDSProject {
       found &&
       (!providedEditor || found !== providedEditor || found.path === path)
     ) {
+      if (isExecuting) {
+        this.executingPath = path
+      }
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
     }

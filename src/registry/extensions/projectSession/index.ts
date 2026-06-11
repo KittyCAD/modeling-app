@@ -67,13 +67,6 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
   const openedProject =
     signal<ProjectSessionService['openedProject']['value']>(undefined)
 
-  const getApp = () => {
-    if (!app) {
-      throw new Error('Project session service has not been bound to App.')
-    }
-    return app
-  }
-
   const stopProjectEffects = () => {
     unsubscribeFromSettings?.unsubscribe()
     unsubscribeFromSettings = undefined
@@ -106,9 +99,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     }
   }
 
-  const syncProjectFromSystemIO = (projectIORefSignal: Signal<Project>) => {
-    const currentApp = getApp()
-
+  const syncProjectFromSystemIO = (
+    currentApp: App,
+    projectIORefSignal: Signal<Project>
+  ) => {
     unsubscribeFromSystemIO = currentApp.systemIOActor.subscribe(
       ({ context }) => {
         const foundProject = (context.folders ?? []).find(
@@ -123,9 +117,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     )
   }
 
-  const startProjectEffects = (projectIORefSignal: Signal<Project>) => {
-    const currentApp = getApp()
-
+  const startProjectEffects = (
+    currentApp: App,
+    projectIORefSignal: Signal<Project>
+  ) => {
     stopProjectEffects()
     stopFSHistoryEffect = effect(() => {
       const project = openedProject.value
@@ -176,14 +171,19 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
         disposeZookeeperHistory()
       }
     })
-    syncProjectFromSystemIO(projectIORefSignal)
+    syncProjectFromSystemIO(currentApp, projectIORefSignal)
     unsubscribeFromSettings = currentApp.settings.actor.subscribe(
       currentApp.onSettingsUpdate
     )
   }
 
   const openProject = async (project: Project) => {
-    const currentApp = getApp()
+    const currentApp = app
+    if (!currentApp) {
+      return Promise.reject(
+        new Error('Project session service has not been bound to App.')
+      )
+    }
     const currentProject = openedProject.peek()
 
     openedProjectHandle.value = {
@@ -210,7 +210,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     const projectIORefSignal = signal(project)
     const nextProject = await ZDSProject.open(projectIORefSignal, currentApp)
     openedProject.value = nextProject
-    startProjectEffects(projectIORefSignal)
+    startProjectEffects(currentApp, projectIORefSignal)
     return nextProject
   }
 
@@ -220,7 +220,9 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
   ) => {
     const currentProject = openedProject.peek()
     if (!currentProject) {
-      throw new Error('Cannot open an editor without an opened project.')
+      return Promise.reject(
+        new Error('Cannot open an editor without an opened project.')
+      )
     }
 
     executingEditorHandle.value = {
