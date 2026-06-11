@@ -9,10 +9,13 @@ import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { ZDSProject } from '@src/lang/KclManager'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
+import { getProjectInfo } from '@src/lib/desktop'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import {
+  type ExecutingEditorHandle,
   type OpenEditorOptions,
-  type OpenProjectEditorInput,
+  type OpenedProjectHandle,
   type ProjectSessionService,
   executingEditorHandleValueSpec,
   openedProjectHandleValueSpec,
@@ -22,7 +25,7 @@ import {
 import type { Subscription } from 'xstate'
 import { waitFor } from 'xstate'
 
-interface CloseProjectOptions {
+interface ClearProjectSessionOptions {
   clearHandles?: boolean
   clearProjectSettings?: boolean
 }
@@ -47,6 +50,27 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     return app
   }
 
+  const getProjectFromHandle = async ({
+    projectPath,
+  }: OpenedProjectHandle): Promise<Project> => {
+    const currentApp = getApp()
+    const wasmInstance = await currentApp.wasmPromise
+    const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
+
+    return (
+      maybeProjectInfo ?? {
+        name: getStringAfterLastSeparator(projectPath) || 'unnamed',
+        path: projectPath,
+        children: [],
+        kcl_file_count: 0,
+        directory_count: 0,
+        metadata: null,
+        default_file: projectPath,
+        readWriteAccess: true,
+      }
+    )
+  }
+
   const stopProjectEffects = () => {
     unsubscribeFromSettings?.unsubscribe()
     unsubscribeFromSettings = undefined
@@ -56,10 +80,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     stopFSHistoryEffect = undefined
   }
 
-  const closeProject = ({
+  const clearProjectSession = ({
     clearHandles = true,
     clearProjectSettings = true,
-  }: CloseProjectOptions = {}) => {
+  }: ClearProjectSessionOptions = {}) => {
     const currentApp = app
     const currentProject = openedProject.peek()
 
@@ -114,7 +138,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     )
   }
 
-  const openProject = async (project: Project) => {
+  const loadProjectFromInfo = async (project: Project) => {
     const currentApp = getApp()
     const currentProject = openedProject.peek()
 
@@ -124,7 +148,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     projectFsManager.dir = project.path
 
     if (currentProject && currentProject.path !== project.path) {
-      closeProject({ clearHandles: false, clearProjectSettings: false })
+      clearProjectSession({
+        clearHandles: false,
+        clearProjectSettings: false,
+      })
     }
 
     await waitFor(currentApp.settings.actor, (state) => state.matches('idle'))
@@ -146,7 +173,18 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     return nextProject
   }
 
-  const openEditor = async (
+  const setOpenedProjectHandle = async (
+    handle: OpenedProjectHandle | undefined
+  ) => {
+    if (!handle) {
+      clearProjectSession()
+      return undefined
+    }
+
+    return loadProjectFromInfo(await getProjectFromHandle(handle))
+  }
+
+  const loadEditorFromHandle = async (
     filePath: string,
     { providedEditor, providedCode, isExecuting = true }: OpenEditorOptions = {}
   ) => {
@@ -168,6 +206,33 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     )
   }
 
+  const setExecutingEditorHandle = async (
+    handle: ExecutingEditorHandle | undefined,
+    options: OpenEditorOptions = {}
+  ) => {
+    if (!handle) {
+      executingEditorHandle.value = undefined
+      return undefined
+    }
+
+    const currentApp = getApp()
+    const currentProject = openedProject.peek()
+    if (currentProject?.path !== handle.projectPath) {
+      await setOpenedProjectHandle({ projectPath: handle.projectPath })
+    }
+
+    return loadEditorFromHandle(handle.filePath, {
+      providedEditor:
+        options.providedEditor ?? currentApp.singletons.kclManager,
+      providedCode:
+        options.providedCode ??
+        (window.electron?.process.env.NODE_ENV === 'test'
+          ? currentApp.singletons.kclManager.localStoragePersistCode()
+          : undefined),
+      isExecuting: options.isExecuting,
+    })
+  }
+
   const serviceImpl: ProjectSessionService = {
     openedProjectHandle,
     executingEditorHandle,
@@ -175,24 +240,8 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     bindApp(boundApp) {
       app = boundApp
     },
-    openProject,
-    openEditor,
-    async openProjectEditor({
-      project,
-      filePath,
-      providedEditor,
-      providedCode,
-      isExecuting,
-    }: OpenProjectEditorInput) {
-      const opened = await openProject(project)
-      const editor = await openEditor(filePath, {
-        providedEditor,
-        providedCode,
-        isExecuting,
-      })
-      return { project: opened, editor }
-    },
-    closeProject: () => closeProject(),
+    setOpenedProjectHandle,
+    setExecutingEditorHandle,
   }
 
   return {
@@ -210,7 +259,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
         }),
       ],
       providesServices: [provideService(projectSessionService, serviceImpl)],
-      dispose: () => closeProject(),
+      dispose: () => clearProjectSession(),
     }),
   }
 }, 'project-session-extension')
