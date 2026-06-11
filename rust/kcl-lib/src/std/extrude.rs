@@ -18,12 +18,14 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::shared::Angle;
 use kittycad_modeling_cmds::shared::BodyType;
 use kittycad_modeling_cmds::shared::DirectionType;
+use kittycad_modeling_cmds::shared::EntityReference;
 use kittycad_modeling_cmds::shared::ExtrudeMethod;
 use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
 use super::DEFAULT_TOLERANCE_MM;
+use super::args::FromKclValue;
 use super::args::TyF64;
 use super::utils::point_to_mm;
 use crate::errors::KclError;
@@ -52,9 +54,9 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
-use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
 use crate::std::axis_or_reference::Point3dOrEdgeReference;
+use crate::std::edge::{self};
 use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
@@ -74,7 +76,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     )?;
 
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
-    let to = args.get_kw_arg_opt(
+    let to_raw = args.get_kw_arg_opt(
         "to",
         &RuntimeType::Union(vec![
             RuntimeType::point3d(),
@@ -86,9 +88,35 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             RuntimeType::Primitive(PrimitiveType::Solid),
             RuntimeType::tagged_edge(),
             RuntimeType::tagged_face(),
+            RuntimeType::Primitive(PrimitiveType::Any),
         ]),
         exec_state,
     )?;
+    let to = match to_raw {
+        None => None,
+        Some(v) => {
+            let inner = if let KclValue::Object { value: ref obj, .. } = v {
+                if edge::is_edge_specifier_object(&v) {
+                    Point3dAxis3dOrGeometryReference::EdgeToReference(edge::parse_edge_specifier_object(obj, &args)?)
+                } else {
+                    Point3dAxis3dOrGeometryReference::from_kcl_val(&v).ok_or_else(|| {
+                        KclError::new_type(KclErrorDetails::new(
+                            "Invalid value for `to`".to_owned(),
+                            vec![args.source_range],
+                        ))
+                    })?
+                }
+            } else {
+                Point3dAxis3dOrGeometryReference::from_kcl_val(&v).ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails::new(
+                        "Invalid value for `to`".to_owned(),
+                        vec![args.source_range],
+                    ))
+                })?
+            };
+            Some(inner)
+        }
+    };
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
@@ -590,6 +618,23 @@ async fn inner_extrude(
                             .build(),
                     )
                 }
+                Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
+                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, exec_state, &args).await?;
+                    ModelingCmd::from(
+                        mcmd::ExtrudeToReference::builder()
+                            .target(sketch_or_face_id.into())
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: None,
+                                entity_reference: Some(EntityReference::Edge {
+                                    inner,
+                                    topology_fallback: None,
+                                }),
+                            })
+                            .extrude_method(extrude_method)
+                            .body_type(body_type)
+                            .build(),
+                    )
+                }
             },
             (Some(_), _, _, None, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -984,6 +1029,7 @@ pub(crate) async fn do_post_extrude<'a>(
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
+        pending_edge_cut_ids: vec![],
     })
 }
 

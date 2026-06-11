@@ -287,6 +287,8 @@ const renderPane = ({
         }
         sendModeling={vi.fn() as any}
         sendBillingUpdate={vi.fn()}
+        sendBillingUsageStarted={vi.fn()}
+        sendBillingUsageEnded={vi.fn()}
         loaderFile={undefined}
         settings={
           {
@@ -453,6 +455,8 @@ describe('MlEphantConversationPane', () => {
           }
           sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
+          sendBillingUsageStarted={vi.fn()}
+          sendBillingUsageEnded={vi.fn()}
           loaderFile={undefined}
           settings={
             {

@@ -1,5 +1,7 @@
 //! Types for referencing an axis or edge.
 
+use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeSpecifier;
+
 use super::args::TyF64;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
@@ -17,8 +19,10 @@ use crate::std::sketch::FaceTag;
 pub enum Axis2dOrEdgeReference {
     /// 2D axis and origin.
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
-    /// Tagged edge.
+    /// Tagged edge
     Edge(EdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(ModelingEdgeSpecifier),
 }
 
 /// A 3D mirror target.
@@ -99,8 +103,10 @@ impl MirrorAcross3d {
 pub enum Axis3dOrEdgeReference {
     /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
-    /// Tagged edge.
+    /// Tagged edge
     Edge(EdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(ModelingEdgeSpecifier),
 }
 
 impl Axis3dOrEdgeReference {
@@ -236,4 +242,6 @@ pub enum Point3dAxis3dOrGeometryReference {
     Solid(Box<Solid>),
     /// Tagged edge or face.
     TaggedEdgeOrFace(TagIdentifier),
+    /// Extrude-to edge: `{ sideFaces = [...], endFaces = [...], index? }` (face tags or UUIDs).
+    EdgeToReference(super::edge::UnresolvedEdgeSpecifier),
 }

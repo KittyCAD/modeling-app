@@ -35,6 +35,7 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -56,7 +57,6 @@ import {
 } from '@src/machines/systemIO/hooks'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
-  NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
@@ -72,7 +72,6 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import type { ActorRefFrom } from 'xstate'
-import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -90,6 +89,7 @@ const Home = () => {
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
+  const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
@@ -105,6 +105,30 @@ const Home = () => {
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
+  useEffect(() => {
+    const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
+      navigate,
+      location,
+      ''
+    )
+
+    commands.send({
+      type: 'Add commands',
+      data: {
+        commands: [RouteTelemetryCommand, RouteSettingsCommand],
+      },
+    })
+
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
+      })
+    }
+  }, [navigate, location, commands])
+
   // Only create the native file menus on desktop
   useEffect(() => {
     if (window.electron) {
@@ -119,49 +143,11 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
-  const location = useLocation()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    let isCurrent = true
-    const requestedProjectDirectoryPath =
-      settingsValues.app?.projectDirectory?.current || NO_PROJECT_DIRECTORY
-
-    const setProjectDirectoryPath = () => {
-      if (!isCurrent) {
-        return
-      }
-
-      systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
-    }
-
-    setProjectDirectoryPath()
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    )
-      .then(() => {
-        setProjectDirectoryPath()
-      })
-      .catch((error) => {
-        if (isCurrent) {
-          reportRejection(error)
-        }
-      })
-
-    return () => {
-      isCurrent = false
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settingsValues.app?.projectDirectory?.current])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
