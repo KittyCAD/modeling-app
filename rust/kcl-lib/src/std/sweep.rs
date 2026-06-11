@@ -155,15 +155,6 @@ impl ProfileTransform {
     }
 }
 
-impl Default for ProfileTransform {
-    fn default() -> Self {
-        Self::SeparateFlags {
-            translate_profile_to_path: false,
-            orient_profile_perpendicular: false,
-        }
-    }
-}
-
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
     sketches: Vec<Sketch>,
