@@ -777,6 +777,66 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('should preserve the requested file when bulk editing without navigation', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+              [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => ({
+                  message: 'Updated',
+                  projectName: input.requestedProjectName,
+                  fileName: input.requestedFileNameWithExtension,
+                  subRoute: '',
+                  navigateToFile: input.navigateToFile ?? true,
+                })),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: 'demo-project',
+              requestedFileName: 'current.kcl',
+            },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: [],
+              filesToDelete: [{ requestedFileName: 'other.kcl' }],
+              requestedProjectName: 'demo-project',
+              requestedFileNameWithExtension: 'other.kcl',
+              navigateToFile: false,
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'demo-project',
+            file: 'current.kcl',
+            subRoute: undefined,
+          })
+          expect(actor.getSnapshot().context.lastOperation).toBe(
+            SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile
+          )
+        } finally {
+          actor.stop()
+        }
+      })
     })
     describe('when setting project directory path', () => {
       it('should set new project directory path', async () => {

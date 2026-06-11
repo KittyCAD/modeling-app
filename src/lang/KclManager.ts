@@ -933,6 +933,9 @@ export class KclManager extends File {
     if (this.writingPromise.value) {
       return
     }
+    if (_eventType === 'unlink') {
+      return
+    }
 
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).

@@ -9,6 +9,8 @@ import type { KclManager } from '@src/lang/KclManager'
 import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { PATHS, toProjectRelativePath } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
@@ -20,10 +22,13 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   SystemIOMachineEvents,
+  normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
+  waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
@@ -110,6 +115,7 @@ function MlEphantConversationPaneWithExecutingFile({
 }) {
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
+  const navigate = useNavigate()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
@@ -127,18 +133,45 @@ function MlEphantConversationPaneWithExecutingFile({
       const payload = prepareMlEphantNewFileRequest(requestProps)
 
       if (payload) {
-        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        const executingRelativePath =
+          project?.executingPath && project.path
+            ? normalizeKCLFileDeletePath(
+                toProjectRelativePath(project.path, project.executingPath)
+              )
+            : undefined
+        const deletesExecutingFile =
+          executingRelativePath !== undefined &&
+          payload.filesToDelete.some(
+            (file) =>
+              normalizeKCLFileDeletePath(file.requestedFileName) ===
+              executingRelativePath
+          )
+
+        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem =
+          !deletesExecutingFile
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
             files: payload.files,
             filesToDelete: payload.filesToDelete,
             override: true,
+            navigateToFile: false,
             requestedProjectName: payload.requestedProjectName,
             requestedFileNameWithExtension:
               payload.requestedFileNameWithExtension ?? '',
           },
         })
+
+        if (!deletesExecutingFile || !project) {
+          return
+        }
+
+        waitForIdleState({ systemIOActor })
+          .then(async () => {
+            await app.projectSession.setExecutingEditorHandle(undefined)
+            void navigate(`${PATHS.FILE}/${encodeURIComponent(project.path)}`)
+          })
+          .catch(reportRejection)
       }
     }
   )
