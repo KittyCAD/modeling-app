@@ -89,4 +89,32 @@ describe('ProjectCard', () => {
       )
     )
   })
+
+  test('eagerly shows cloud project rename modified time while sync continues', async () => {
+    const project = {
+      ...cloudProject,
+      metadata: {
+        ...cloudProject.metadata,
+        modified: 1,
+      },
+    }
+    const { handleRenameProject } = renderProjectCard({ project })
+    const previousEditedTime =
+      screen.getByTestId('project-edit-date').textContent
+
+    fireEvent.click(screen.getByText('Rename project').closest('button')!)
+    fireEvent.change(screen.getByTestId('project-rename-input'), {
+      target: { value: 'New cloud title' },
+    })
+    fireEvent.submit(
+      screen.getByTestId('project-rename-input').closest('form')!
+    )
+
+    await waitFor(() => expect(handleRenameProject).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(screen.getByTestId('project-edit-date')).not.toHaveTextContent(
+        previousEditedTime ?? ''
+      )
+    )
+  })
 })

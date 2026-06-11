@@ -1,7 +1,7 @@
 import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useState } from 'react'
+import type { Dispatch, FormEvent, HTMLProps, SetStateAction } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -40,6 +40,11 @@ import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConf
 import { opfsCloudSyncStatus } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  type OptimisticProjectRenames,
+  applyOptimisticProjectRenames,
+  pruneSettledOptimisticProjectRenames,
+} from '@src/lib/optimisticProjectRenames'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
@@ -102,11 +107,24 @@ const Home = () => {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
+  const [optimisticProjectRenames, setOptimisticProjectRenames] =
+    useState<OptimisticProjectRenames>({})
+  const optimisticProjects = useMemo(
+    () => applyOptimisticProjectRenames(projects, optimisticProjectRenames),
+    [projects, optimisticProjectRenames]
+  )
   const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, setQuery } = useProjectSearch(projects)
+  const { searchResults, query, setQuery } =
+    useProjectSearch(optimisticProjects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+
+  useEffect(() => {
+    setOptimisticProjectRenames((renames) =>
+      pruneSettledOptimisticProjectRenames(projects, renames)
+    )
+  }, [projects])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
@@ -451,10 +469,13 @@ const Home = () => {
         </aside>
         <ProjectGrid
           searchResults={searchResults ?? []}
-          projects={projects}
+          projects={optimisticProjects}
           query={query}
           sort={sort}
-          handleRenameProject={handleRenameProject(systemIOActor)}
+          handleRenameProject={handleRenameProject(
+            systemIOActor,
+            setOptimisticProjectRenames
+          )}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -666,7 +687,10 @@ function errorMessage(error: unknown): string {
 }
 
 function handleRenameProject(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  setOptimisticProjectRenames: Dispatch<
+    SetStateAction<OptimisticProjectRenames>
+  >
 ) {
   return async function (e: FormEvent<HTMLFormElement>, project: Project) {
     const { newProjectName } = Object.fromEntries(
@@ -683,6 +707,16 @@ function handleRenameProject(
     }
 
     if (newProjectName !== getProjectDisplayName(project)) {
+      if (project.cloudProjectId && typeof newProjectName === 'string') {
+        setOptimisticProjectRenames((renames) => ({
+          ...renames,
+          [project.cloudProjectId as string]: {
+            title: newProjectName,
+            modified: Date.now(),
+          },
+        }))
+      }
+
       systemIOActor.send({
         type: SystemIOMachineEvents.renameProject,
         data: {

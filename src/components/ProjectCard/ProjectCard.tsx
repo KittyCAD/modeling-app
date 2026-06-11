@@ -37,6 +37,7 @@ function ProjectCard({
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
     projectPath: string
     name: string
+    modified: number
   } | null>(null)
 
   let inputRef = useRef<HTMLInputElement>(null)
@@ -46,6 +47,15 @@ function ProjectCard({
       ? {
           ...project,
           title: optimisticProjectName.name,
+          metadata: project.metadata
+            ? {
+                ...project.metadata,
+                modified: Math.max(
+                  project.metadata.modified ?? Number.NEGATIVE_INFINITY,
+                  optimisticProjectName.modified
+                ),
+              }
+            : project.metadata,
         }
       : project
 
@@ -61,6 +71,7 @@ function ProjectCard({
       setOptimisticProjectName({
         projectPath: project.path,
         name: newProjectName,
+        modified: Date.now(),
       })
     }
 
@@ -207,8 +218,8 @@ function ProjectCard({
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
             <span data-testid="project-edit-date">
-              {project.metadata?.modified
-                ? getDisplayedTime(project.metadata.modified)
+              {displayedProject.metadata?.modified
+                ? getDisplayedTime(displayedProject.metadata.modified)
                 : 'never'}
             </span>
           </span>
