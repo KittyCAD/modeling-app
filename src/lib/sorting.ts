@@ -1,5 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 
 const DESC = ':desc'
 
@@ -27,23 +28,25 @@ export function getNextSearchParams(currentSort: string, newSort: string) {
 
 export function getSortFunction(sortBy: string) {
   const sortByName = (a: Project, b: Project) => {
-    if (a.name && b.name) {
-      return sortBy.includes('desc')
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    }
-    return 0
+    const aName = getProjectDisplayName(a)
+    const bName = getProjectDisplayName(b)
+    return sortBy.includes('desc')
+      ? aName.localeCompare(bName)
+      : bName.localeCompare(aName)
   }
 
   const sortByModified = (a: Project, b: Project) => {
-    if (a.metadata?.modified && b.metadata?.modified) {
-      const aDate = new Date(a.metadata.modified)
-      const bDate = new Date(b.metadata.modified)
-      return !sortBy || sortBy.includes('desc')
-        ? bDate.getTime() - aDate.getTime()
-        : aDate.getTime() - bDate.getTime()
+    const aModified = a.metadata?.modified ?? Number.NEGATIVE_INFINITY
+    const bModified = b.metadata?.modified ?? Number.NEGATIVE_INFINITY
+    const modifiedComparison =
+      !sortBy || sortBy.includes('desc')
+        ? bModified - aModified
+        : aModified - bModified
+    if (!Number.isNaN(modifiedComparison) && modifiedComparison !== 0) {
+      return modifiedComparison
     }
-    return 0
+
+    return getProjectDisplayName(a).localeCompare(getProjectDisplayName(b))
   }
 
   if (sortBy?.includes('name')) {

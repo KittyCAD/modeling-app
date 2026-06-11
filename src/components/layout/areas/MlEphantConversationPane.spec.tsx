@@ -287,6 +287,8 @@ const renderPane = ({
         }
         sendModeling={vi.fn() as any}
         sendBillingUpdate={vi.fn()}
+        sendBillingUsageStarted={vi.fn()}
+        sendBillingUsageEnded={vi.fn()}
         loaderFile={undefined}
         settings={
           {
@@ -354,12 +356,14 @@ describe('MlEphantConversationPane', () => {
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
+            disabled: false,
           },
           {
             id: 'deep',
             label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
+            disabled: false,
           },
         ],
       }),
@@ -381,12 +385,14 @@ describe('MlEphantConversationPane', () => {
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
+            disabled: false,
           },
           {
             id: 'deep',
             label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
+            disabled: false,
           },
         ],
       }),
@@ -449,6 +455,8 @@ describe('MlEphantConversationPane', () => {
           }
           sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
+          sendBillingUsageStarted={vi.fn()}
+          sendBillingUsageEnded={vi.fn()}
           loaderFile={undefined}
           settings={
             {
