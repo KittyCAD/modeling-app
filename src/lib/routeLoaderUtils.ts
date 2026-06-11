@@ -36,12 +36,6 @@ type HomeLoaderApp = {
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory
     }) => void
   }
-  closeProject: () => void
-  settings: {
-    actor: {
-      send: (event: { type: 'clear.project' }) => void
-    }
-  }
 }
 
 async function waitForWebHomeFeatureGate(app: WebHomeApp) {
@@ -94,13 +88,16 @@ export async function webHomeRouteEnabled(app: WebHomeApp) {
   )
 }
 
-export function loadHomeProjects(app: HomeLoaderApp) {
+export function loadHomeProjects({
+  app,
+  closeProject,
+}: {
+  app: HomeLoaderApp
+  closeProject: () => void
+}) {
   app.systemIOActor.send({
     type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
   })
-  app.closeProject()
-  app.settings.actor.send({
-    type: 'clear.project',
-  })
+  closeProject()
   return {}
 }

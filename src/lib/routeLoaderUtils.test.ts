@@ -75,7 +75,6 @@ function createAppWithWebHomeFeature(enabled: boolean) {
     systemIOActor: {
       send: vi.fn(),
     },
-    closeProject,
     settings: {
       actor: {
         send: vi.fn(),
@@ -111,16 +110,13 @@ describe('route loaders', () => {
   it('loads Home project state without touching the demo-project flow', () => {
     const { app, closeProject } = createAppWithWebHomeFeature(true)
 
-    const result = loadHomeProjects(app)
+    const result = loadHomeProjects({ app, closeProject })
 
     expect(result).toEqual({})
     expect(app.systemIOActor.send).toHaveBeenCalledWith({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
     expect(closeProject).toHaveBeenCalled()
-    expect(app.settings.actor.send).toHaveBeenCalledWith({
-      type: 'clear.project',
-    })
   })
 
   it('waits for user features before deciding whether web Home is enabled', async () => {

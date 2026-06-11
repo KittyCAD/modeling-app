@@ -8,8 +8,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
-import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -71,6 +70,10 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import {
+  type ProjectSessionService,
+  projectSessionService,
+} from '@src/registry/contracts/projectSession'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -240,6 +243,8 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
+  /** The currently-opened project and editor lifecycle system */
+  projectSession: ProjectSessionService
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -268,6 +273,9 @@ export class App implements AppSubsystems {
         app: this,
       },
     }).start()
+    this.projectSession = this.registry.get(projectSessionService)
+    this.projectSignal = this.projectSession.openedProject
+    this.projectSession.bindApp(this)
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -517,43 +525,10 @@ export class App implements AppSubsystems {
   }
 
   async openProject(projectIORef: Project) {
-    const projectIORefSignal = signal(projectIORef)
-    this.project = await ZDSProject.open(projectIORefSignal, this)
-
-    // This extension makes it possible to mark FS operations as un/redoable
-    effect(() => {
-      if (this.project?.executingEditor.value) {
-        buildFSHistoryExtension(
-          this.systemIOActor,
-          this.project.executingEditor.value
-        )
-      }
-    })
-
-    // TODO: Rework the systemIOActor to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
-      }
-    })
-
-    this.unsubscribeFromSettings = this.settings.actor.subscribe(
-      this.onSettingsUpdate
-    )
-
-    return this.project
+    return this.projectSession.openProject(projectIORef)
   }
-  private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
-    this.unsubscribeFromSettings?.unsubscribe()
-    this.project?.close()
-    this.project = undefined
+    this.projectSession.closeProject()
   }
 
   syncUserFeaturesFromAuth = (
