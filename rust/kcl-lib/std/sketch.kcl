@@ -807,6 +807,8 @@ export fn ellipse(
 /// extrude([originalSketch.line1, originalSketch.line2], length = -1, bodyType = SURFACE)
 /// ```
 /// ```kcl,sketchSolve
+/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+///
 /// // The direction parameter can apply to sketches or edges
 /// // Directions can be specified by an axis, a sketch segment, or a body's edge.
 /// sketch001 = sketch(on = XY) {
@@ -867,11 +869,12 @@ export fn extrude(
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
-  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
+  /// Experimental face API: edge specifier objects (`{ sideFaces = [faceTag1, faceTag2], endFaces? = [...], index? }`) are not ready for generated or user-facing KCL yet; prefer existing point, axis, plane, edge, face, sketch, solid, or tag forms until point-and-click and migration support ships.
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will extrude in this direction instead of the sketch plane normal
-  direction?: Point3d | Edge | TaggedEdge | Segment,
+  @(experimental = true) direction?: Point3d | Edge | TaggedEdge | Segment,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
   bidirectionalLength?: number(Length),
   /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
@@ -1187,8 +1190,10 @@ export fn extrude(
 export fn revolve(
   /// The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve.
   @sketches: [Sketch | Segment; 1+],
-  /// Axis of revolution.
-  axis: Axis2d | Edge | Segment,
+  /// Axis of revolution. Can be an Axis2d, an Edge, or a solved Segment.
+  /// Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis2d, Edge, or Segment until point-and-click and migration support ships.
+  @(includeInSnippet = true)
+  axis: Axis2d | Edge | Segment | any,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
@@ -1402,7 +1407,8 @@ export fn getBoundedEdge(
   /// The solid that the edge belongs to.
   @solid: Solid,
   /// The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`.
-  edge: Edge,
+  /// Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or `edgeId(...)` until point-and-click and migration support ships.
+  edge: Edge | any,
   /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
   lowerBound?: number(Count),
   /// A upper percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 1.
@@ -1917,32 +1923,32 @@ export fn sweep(
 ///   equalLength([line1, line2, line3, line4])
 ///   parallel([line1, line2])
 /// }
-/// 
+///
 /// circleSketch0 = sketch(on = offsetPlane(XY, offset = 2)) {
 ///   circle1 = circle(start = [var 2.28mm, var 2.99mm], center = [var 1.98mm, var 2.03mm])
 /// }
-/// 
+///
 /// squareRegion = region(point = [0.0002mm, 2.0095mm], sketch = squareSketch)
 /// circleRegion = region(point = [1.6807mm, 1.0724mm], sketch = circleSketch0)
-/// 
+///
 /// shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 /// ```
 /// ```kcl,sketchSolve
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
 /// @settings(defaultLengthUnit = mm, kclVersion = 1.0)
-/// 
+///
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
 /// }
 /// sketch003 = sketch(on = -XY) {
 ///   arc1 = arc(start = [var 2.03mm, var 3.05mm], end = [var -2.03mm, var 3.03mm], center = [var 0mm, var 2.94mm])
 /// }
-/// 
+///
 /// sketch001 = sketch(on = XZ) {
 ///   arc1 = arc(start = [var -2.03mm, var -0.13mm], end = [var 2.03mm, var -0.05mm], center = [var 0mm, var 0mm])
 ///   coincident([arc1.center, ORIGIN])
 /// }
-/// 
+///
 /// loft(
 ///   [
 ///     sketch003.arc1,

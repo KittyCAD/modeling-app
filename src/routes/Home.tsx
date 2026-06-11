@@ -35,6 +35,7 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -71,7 +72,6 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import type { ActorRefFrom } from 'xstate'
-import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -89,6 +89,7 @@ const Home = () => {
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
+  const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
@@ -104,6 +105,30 @@ const Home = () => {
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
+  useEffect(() => {
+    const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
+      navigate,
+      location,
+      ''
+    )
+
+    commands.send({
+      type: 'Add commands',
+      data: {
+        commands: [RouteTelemetryCommand, RouteSettingsCommand],
+      },
+    })
+
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
+      })
+    }
+  }, [navigate, location, commands])
+
   // Only create the native file menus on desktop
   useEffect(() => {
     if (window.electron) {
@@ -118,34 +143,11 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
-  const location = useLocation()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
-    })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
-        },
-      })
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settingsValues.app?.projectDirectory?.current])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -572,35 +574,50 @@ function ProjectGrid({
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
   const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ||
-      projects === undefined ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
-                <ProjectCard
-                  key={project.name}
-                  project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject(systemIOActor)}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {sortedSearchResults.map((project) => (
+                  <ProjectCard
+                    key={project.name}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject(systemIOActor)}
+                  />
+                ))}
+              </ul>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           ) : (
-            <p
-              data-testid="projects-none"
-              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-            >
-              No projects found
-              {projects !== undefined && projects.length === 0
-                ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
-            </p>
+            <>
+              <p
+                data-testid="projects-none"
+                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+              >
+                No projects found
+                {projects !== undefined && projects.length === 0
+                  ? ', ready to make your first one?'
+                  : ` with the search term "${query}"`}
+              </p>
+              {isReadingFolders && (
+                <div className="py-4">
+                  <Loading isDummy={true}>Loading more projects...</Loading>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

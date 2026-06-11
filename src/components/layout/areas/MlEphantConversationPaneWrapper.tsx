@@ -362,6 +362,16 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       apiToken: token,
     })
   }
+  const sendBillingUsageStarted = () => {
+    billing.send({
+      type: BillingTransition.UsageStarted,
+    })
+  }
+  const sendBillingUsageEnded = () => {
+    billing.send({
+      type: BillingTransition.UsageEnded,
+    })
+  }
 
   // During the makethon, this was set to the following:
   // !isPlaywright() &&
@@ -390,6 +400,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
           contextModeling,
           sendModeling,
           sendBillingUpdate,
+          sendBillingUsageStarted,
+          sendBillingUsageEnded,
           theProject: theProject.current,
           loaderFile,
           settings: settingsValues,

@@ -6,6 +6,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
+import { reportRejection } from '@src/lib/trap'
 import { useCallback } from 'react'
 
 type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'bodies'
@@ -83,6 +84,7 @@ export function SelectionFilterControls() {
       } else {
         kclManager.setSelectionFilterToDefault(wasmInstance)
       }
+      kclManager.clearSelection().catch(reportRejection)
     },
     [kclManager, wasmInstance]
   )
@@ -121,7 +123,7 @@ export function SelectionFilterControls() {
                     }}
                     className={`m-0 rounded border-none px-2 py-1 text-left text-xs ${
                       isActive
-                        ? 'bg-primary text-6'
+                        ? '!bg-primary text-6'
                         : 'bg-transparent text-2 hover:bg-2'
                     }`}
                   >

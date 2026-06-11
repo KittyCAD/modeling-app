@@ -132,7 +132,11 @@ const createFakeSystemIOActor = ({
   }
   let pendingSaveEvent: SaveConversationEvent | undefined
   const listeners = new Set<(next: typeof snapshot) => void>()
-  const notify = () => listeners.forEach((listener) => listener(snapshot))
+  const notify = () => {
+    for (const listener of listeners) {
+      listener(snapshot)
+    }
+  }
   const completeSave = () => {
     if (pendingSaveEvent === undefined) {
       return
@@ -241,7 +245,9 @@ const createStatefulClearChatActor = () => {
           conversationId: undefined,
         },
       }
-      listeners.forEach((listener) => listener(snapshot))
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
     }),
   }
 
@@ -294,6 +300,8 @@ const renderPane = ({
         }
         sendModeling={vi.fn() as any}
         sendBillingUpdate={vi.fn()}
+        sendBillingUsageStarted={vi.fn()}
+        sendBillingUsageEnded={vi.fn()}
         settings={
           {
             meta: {
@@ -368,12 +376,14 @@ describe('MlEphantConversationPane', () => {
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
+            disabled: false,
           },
           {
             id: 'deep',
             label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
+            disabled: false,
           },
         ],
       }),
@@ -395,12 +405,14 @@ describe('MlEphantConversationPane', () => {
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
+            disabled: false,
           },
           {
             id: 'deep',
             label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
+            disabled: false,
           },
         ],
       }),
@@ -535,6 +547,8 @@ describe('MlEphantConversationPane', () => {
           }
           sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
+          sendBillingUsageStarted={vi.fn()}
+          sendBillingUsageEnded={vi.fn()}
           loaderFile={undefined}
           settings={
             {

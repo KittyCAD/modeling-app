@@ -1,0 +1,13 @@
+@settings(kclVersion = 2.0)
+
+midPlane = offsetPlane(YZ, offset = 50)
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var 0.95mm, var 2.02mm], center = [var 0mm, var 1.38mm])
+  vertical([circle1.center, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [-0.9479266mm, 0.7413968mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10)
+doop = mirror3d(extrude001, across = midPlane)
+clone(doop)
+  |> translate(y = 12mm)

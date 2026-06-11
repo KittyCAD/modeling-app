@@ -96,16 +96,17 @@ describe('project system', () => {
     try {
       await waitForSettingsIdle(app)
 
-      const telemetryPlugin = app.registry
+      const pluginId = 'code-editor'
+      const plugin = app.registry
         .get(pluginsValueSpec)
-        .find((plugin) => plugin.id === 'telemetry')
-      expect(telemetryPlugin).toBeDefined()
+        .find((plugin) => plugin.id === pluginId)
+      expect(plugin).toBeDefined()
 
-      const telemetryToggle = app.registry.get(telemetryPlugin!.service)
-      expect(telemetryToggle.active.value).toBe(true)
+      const pluginToggle = app.registry.get(plugin!.service)
+      expect(pluginToggle.active.value).toBe(true)
 
       app.settings.actor.send({
-        type: 'set.plugins.telemetry',
+        type: `set.plugins.${pluginId}`,
         data: {
           level: 'user',
           value: false,
@@ -115,15 +116,15 @@ describe('project system', () => {
 
       await waitForSettingsIdle(app)
 
-      expect(telemetryToggle.active.value).toBe(false)
+      expect(pluginToggle.active.value).toBe(false)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toEqual({
-        telemetry: false,
+        [pluginId]: false,
       })
 
       app.settings.actor.send({
-        type: 'set.plugins.telemetry',
+        type: `set.plugins.${pluginId}`,
         data: {
           level: 'user',
           value: true,
@@ -133,9 +134,11 @@ describe('project system', () => {
 
       await waitForSettingsIdle(app)
 
-      expect(telemetryToggle.active.value).toBe(true)
+      expect(pluginToggle.active.value).toBe(true)
       expect(
-        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.telemetry
+        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.[
+          pluginId
+        ]
       ).toBeUndefined()
     } finally {
       disposeApp(app)
@@ -189,17 +192,18 @@ describe('project system', () => {
     try {
       await waitForSettingsIdle(app)
 
-      const telemetryPlugin = app.registry
+      const pluginId = 'code-editor'
+      const plugin = app.registry
         .get(pluginsValueSpec)
-        .find((plugin) => plugin.id === 'telemetry')
-      expect(telemetryPlugin).toBeDefined()
+        .find((plugin) => plugin.id === pluginId)
+      expect(plugin).toBeDefined()
 
       app.settings.actor.send({ type: 'reload.settings' } as never)
 
       await waitForSettingsIdle(app)
 
-      expect(app.settings.get().plugins.telemetry.current).toBe(true)
-      expect(app.registry.get(telemetryPlugin!.service).active.value).toBe(true)
+      expect(app.settings.get().plugins[pluginId].current).toBe(true)
+      expect(app.registry.get(plugin!.service).active.value).toBe(true)
     } finally {
       disposeApp(app)
     }

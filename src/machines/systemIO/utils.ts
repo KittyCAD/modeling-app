@@ -97,6 +97,7 @@ export enum SystemIOMachineEvents {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   done_readFoldersFromProjectDirectory = donePrefix +
     'read folders from project directory',
+  setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
   navigateToProject = 'navigate to project',
   navigateToFile = 'navigate to file',

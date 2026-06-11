@@ -34,8 +34,10 @@ type MlCopilotServerMessageEndOfStream = Extract<
   { end_of_stream: unknown }
 >
 
-const MANUAL_EDIT_INFO_TEXT =
-  'Manual edits detected since the last Zookeeper state.'
+const NON_TERMINAL_INFO_TEXTS = [
+  'Manual edits detected since the last Zookeeper state.',
+  'Transient model streaming error; retrying.',
+]
 
 const getEndOfStreamResponse = (
   responses?: MlCopilotServerMessage[]
@@ -45,15 +47,18 @@ const getEndOfStreamResponse = (
       'end_of_stream' in response
   )
 
-const isManualEditInfoResponse = (response: MlCopilotServerMessage): boolean =>
-  'info' in response && response.info.text.startsWith(MANUAL_EDIT_INFO_TEXT)
+const isNonTerminalInfoResponse = (response: MlCopilotServerMessage): boolean =>
+  'info' in response &&
+  NON_TERMINAL_INFO_TEXTS.some((infoText) =>
+    response.info.text.startsWith(infoText)
+  )
 
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
     (response) =>
       'end_of_stream' in response ||
       'error' in response ||
-      ('info' in response && !isManualEditInfoResponse(response))
+      ('info' in response && !isNonTerminalInfoResponse(response))
   ) ?? false
 
 export interface IButtonCopyProps {

@@ -66,8 +66,10 @@ import {
   addShell,
 } from '@src/lang/modifyAst/faces'
 import {
+  addAngularityGdt,
   addAnnotationGdt,
   addCircularityGdt,
+  addConcentricityGdt,
   addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
@@ -102,6 +104,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addDelete,
   addMirror3D,
   addRotate,
   addScale,
@@ -386,6 +389,9 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
+  Delete: {
+    objects: Selections
+  }
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
@@ -525,6 +531,28 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     objects: Selections
     datums?: KclCommandValue
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Angularity': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    datums?: KclCommandValue
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Concentricity': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    datums: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -2352,6 +2380,60 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Delete: {
+    description: 'Delete selected bodies from the scene.',
+    icon: 'trash',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+
+      let ast = kclManager.ast
+      if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+        const astWithExperimentalFeatures = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          await kclManager.wasmInstancePromise
+        )
+        if (err(astWithExperimentalFeatures)) {
+          return astWithExperimentalFeatures
+        }
+
+        ast = astWithExperimentalFeatures
+      }
+
+      const modRes = addDelete({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Delete']),
+        ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      objects: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+    },
+  },
   Translate: {
     description: 'Set translation on solid or sketch.',
     icon: 'move',
@@ -3407,6 +3489,153 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       datums: {
         ...datumsProps,
+      },
+      tolerance: {
+        ...gdtToleranceProps,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: FRAME_PLANE_OPTIONS,
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Angularity': {
+    description:
+      'Add angularity geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'angle',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addAngularityGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Angularity']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      datums: {
+        ...datumsProps,
+      },
+      tolerance: {
+        ...gdtToleranceProps,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: FRAME_PLANE_OPTIONS,
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Concentricity': {
+    description:
+      'Add concentricity geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtConcentricity',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addConcentricityGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Concentricity']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      datums: {
+        ...datumsProps,
+        required: true,
       },
       tolerance: {
         ...gdtToleranceProps,
