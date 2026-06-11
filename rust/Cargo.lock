@@ -6628,8 +6628,3 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "kittycad-modeling-cmds"
-version = "0.2.205"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=achalmers%2Fteleport#fa879728fc9d2911e19367af90ca17aeb84497cf"
