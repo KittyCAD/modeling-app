@@ -6,12 +6,19 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
+import {
+  combineProjectHandles,
+  combineProjects,
+  projectHandlesValueSpec,
+  projectsValueSpec,
+  systemIOService,
+} from '@src/registry/contracts/systemIO'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { listProjectHandlesFromProjectDirectory, systemIOExtension } from '.'
 
@@ -25,6 +32,20 @@ function createSettings(projectDirectory: string) {
       },
     },
   } as SettingsType
+}
+
+function createProject(path: string, name: string): Project {
+  return {
+    path,
+    name,
+    title: name,
+    metadata: null,
+    kcl_file_count: 1,
+    directory_count: 0,
+    default_file: fsZds.join(path, 'main.kcl'),
+    children: [],
+    readWriteAccess: true,
+  }
 }
 
 describe('systemIO extension', () => {
@@ -49,7 +70,46 @@ describe('systemIO extension', () => {
     const systemIO = registry.get(systemIOService)
 
     expect(systemIO.projectHandles.value).toEqual([])
+    expect(systemIO.projects.value).toBeUndefined()
+    expect(registry.get(projectHandlesValueSpec)).toEqual([])
+    expect(registry.get(projectsValueSpec)).toBeUndefined()
     await expect(systemIO.refreshProjectHandles()).resolves.toEqual([])
+  })
+
+  it('combines project handle contributions by path', () => {
+    expect(
+      combineProjectHandles([
+        [{ path: '/projects/alpha' }, { path: '/projects/beta' }],
+        [{ path: '/projects/beta' }, { path: '/projects/gamma' }],
+      ])
+    ).toEqual([
+      { path: '/projects/alpha' },
+      { path: '/projects/beta' },
+      { path: '/projects/gamma' },
+    ])
+  })
+
+  it('combines project contributions by path', () => {
+    expect(
+      combineProjects([
+        undefined,
+        [
+          createProject('/projects/alpha', 'alpha'),
+          createProject('/projects/beta', 'beta'),
+        ],
+        [
+          createProject('/projects/beta', 'beta duplicate'),
+          createProject('/projects/gamma', 'gamma'),
+        ],
+      ])?.map((project) => ({
+        path: project.path,
+        name: project.name,
+      }))
+    ).toEqual([
+      { path: '/projects/alpha', name: 'alpha' },
+      { path: '/projects/beta', name: 'beta' },
+      { path: '/projects/gamma', name: 'gamma' },
+    ])
   })
 
   it('lists immediate child directories from settings.app.projectDirectory', async () => {
@@ -105,6 +165,12 @@ describe('systemIO extension', () => {
     ])
     expect(
       systemIO.projectHandles.value.map((handle) => handle.path).sort()
+    ).toEqual([alphaProject, betaProject])
+    expect(
+      registry
+        .get(projectHandlesValueSpec)
+        .map((handle) => handle.path)
+        .sort()
     ).toEqual([alphaProject, betaProject])
   })
 })
