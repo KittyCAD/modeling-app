@@ -999,7 +999,10 @@ export class KclManager extends File {
 
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload it.
-        if (this.mlEphantManagerMachineBulkManipulatingFileSystem) {
+        if (
+          this.mlEphantManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperHistoryRecordingInProgress
+        ) {
           return
         }
 
@@ -1068,6 +1071,7 @@ export class KclManager extends File {
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  public zookeeperHistoryRecordingInProgress = false
   /**
     Indicator Promise that is pending while a live write is happening.
     If this value isn't `null`, don't watch for file system writes it was probably us!

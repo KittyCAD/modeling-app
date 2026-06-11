@@ -83,6 +83,12 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   const pendingZookeeperHistoryByExchange = useRef(
     new Map<number, PendingZookeeperHistory>()
   )
+  useEffect(() => {
+    return () => {
+      pendingZookeeperHistoryByExchange.current.clear()
+      kclManager.zookeeperHistoryRecordingInProgress = false
+    }
+  }, [kclManager])
   const recordZookeeperHistory = useCallback(
     ({
       activeFileDeleted,
@@ -159,17 +165,23 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       }
 
       pendingZookeeperHistoryByExchange.current.delete(exchangeId)
-      recordZookeeperHistory({
-        activeFileDeleted: pending.activeFileDeleted,
-        activeFilePath: pending.activeFilePath,
-        activeFileRequestedCode: pending.activeFileRequestedCode,
-        currentFilePath: pending.currentFilePath,
-        currentFileRequestedCode: pending.currentFileRequestedCode,
-        patch: pending.patch,
-        projectPath: pending.projectPath,
-      })
+      try {
+        recordZookeeperHistory({
+          activeFileDeleted: pending.activeFileDeleted,
+          activeFilePath: pending.activeFilePath,
+          activeFileRequestedCode: pending.activeFileRequestedCode,
+          currentFilePath: pending.currentFilePath,
+          currentFileRequestedCode: pending.currentFileRequestedCode,
+          patch: pending.patch,
+          projectPath: pending.projectPath,
+        })
+      } finally {
+        if (pendingZookeeperHistoryByExchange.current.size === 0) {
+          kclManager.zookeeperHistoryRecordingInProgress = false
+        }
+      }
     },
-    [recordZookeeperHistory]
+    [kclManager, recordZookeeperHistory]
   )
   const beginPendingZookeeperHistoryWrite = useCallback(
     (exchangeId: number) => {
@@ -178,8 +190,9 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         createPendingZookeeperHistory()
       pending.outstandingWrites += 1
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      kclManager.zookeeperHistoryRecordingInProgress = true
     },
-    []
+    [kclManager]
   )
   const completePendingZookeeperHistoryWrite = useCallback(
     ({

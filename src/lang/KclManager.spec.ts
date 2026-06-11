@@ -524,6 +524,31 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('from disk')
   })
 
+  it('does not reload active editor disk updates while Zookeeper history is pending', async () => {
+    const { kclManager } = createKclManagerTestHarness('from disk')
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+    const testInternals = kclManager as unknown as KclManager & {
+      markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
+    }
+
+    kclManager.path = '/tmp/kcl-manager-zookeeper-history-pending-test.kcl'
+    kclManager.zookeeperHistoryRecordingInProgress = true
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    testInternals.markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+    await flushPromises()
+
+    expect(updateCodeEditorSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('from disk')
+  })
+
   it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
     const { kclManager } = createKclManagerTestHarness('')
     const path = '/tmp/kcl-manager-watch-open-test.kcl'
