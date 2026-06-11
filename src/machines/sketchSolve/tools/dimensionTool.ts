@@ -33,6 +33,7 @@ import type {
   SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import toast from 'react-hot-toast'
 import { setup } from 'xstate'
 
 type DimensionToolContext = {
@@ -153,6 +154,7 @@ type DraftRuntime = {
 
 const LINE_INTERSECTION_EPSILON = 1e-8
 const SECTOR_EPSILON = 1e-9
+const ANGLE_SECTOR_PROMPT_TOAST_ID = 'dimension-tool-angle-sector-prompt'
 
 function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
   return baseUnitToNumericSuffix(
@@ -176,6 +178,21 @@ function createRuntime(): DraftRuntime {
     previewInFlight: false,
     queuedMousePoint: null,
   }
+}
+
+function showAngleSectorPrompt() {
+  toast('Choose angle sector, then click to place the label.', {
+    id: ANGLE_SECTOR_PROMPT_TOAST_ID,
+    duration: Number.POSITIVE_INFINITY,
+    position: 'top-center',
+    style: {
+      marginTop: '68px',
+    },
+  })
+}
+
+function dismissAngleSectorPrompt() {
+  toast.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
 }
 
 function getObjects(context: DimensionToolContext) {
@@ -823,6 +840,7 @@ async function commitDraftAngleConstraint(
 
     sendFinalResultToParent(self, result)
     sendParent(self, { type: 'clear draft entities' })
+    dismissAngleSectorPrompt()
     self.send({ type: 'done' })
   } catch (error) {
     toastSketchSolveError(error)
@@ -880,6 +898,7 @@ function addDimensionListener({
     if (angleContext) {
       runtime.firstSelection = firstSelection
       runtime.angleContext = angleContext
+      showAngleSectorPrompt()
       sendParent(self, {
         type: 'update selected ids',
         data: {
@@ -986,6 +1005,7 @@ function addDimensionListener({
 function removeDimensionListener({
   context,
 }: { context: DimensionToolContext }) {
+  dismissAngleSectorPrompt()
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
