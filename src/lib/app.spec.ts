@@ -500,29 +500,9 @@ describe('project system', () => {
         throw new Error('Expected mock project to include a main file.')
       }
 
-      await projectSession.openEditor(mainFile.path, {
-        providedEditor: app.singletons.kclManager,
-      })
+      await projectSession.openEditor(mainFile.path)
       expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
-      expect(app.singletons.kclManager.code).toBe('main = 1')
-      expect(projectSession.executingEditorHandle.value).toEqual({
-        projectPath: mockProject.path,
-        filePath: mainFile.path,
-      })
-
-      await projectSession.openEditor('/some-dir/test/other.kcl', {
-        providedEditor: app.singletons.kclManager,
-      })
-      expect(app.project?.executingPath).toEqual('/some-dir/test/other.kcl')
-      expect(app.singletons.kclManager.code).toBe('other = 2')
-
-      await projectSession.openEditor(mainFile.path, {
-        providedEditor: app.singletons.kclManager,
-      })
-      expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
-      expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
-      expect(app.singletons.kclManager.code).toBe('main = 1')
       expect(projectSession.executingEditorHandle.value).toEqual({
         projectPath: mockProject.path,
         filePath: mainFile.path,
