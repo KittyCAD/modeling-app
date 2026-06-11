@@ -487,6 +487,53 @@ describe('Zookeeper project history integration', () => {
     }
   })
 
+  it('redoes the original active file after undoing a multi-file Zookeeper edit and switching files', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = 1\n',
+      'second.kcl': 'second = 1\n',
+      'third.kcl': 'third = 1\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const secondPath = fsZds.join(harness.projectPath, 'second.kcl')
+    const thirdPath = fsZds.join(harness.projectPath, 'third.kcl')
+
+    await applyRecordedZookeeperAction(harness, {
+      currentBefore: 'main = 1\n',
+      currentAfter: 'main = 2\n',
+      patch: {
+        run_id: 'redo-after-switch',
+        changed_files: [
+          modifiedFile('main.kcl', 'main = 1\n', 'main = 2\n'),
+          modifiedFile('second.kcl', 'second = 1\n', 'second = 2\n'),
+          modifiedFile('third.kcl', 'third = 1\n', 'third = 2\n'),
+        ],
+      },
+    })
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe('main = 1\n')
+    await expect(fsZds.readFile(secondPath, 'utf8')).resolves.toBe(
+      'second = 1\n'
+    )
+    await expect(fsZds.readFile(thirdPath, 'utf8')).resolves.toBe('third = 1\n')
+
+    await KclManager.fromFile(
+      new File(thirdPath),
+      harness.kclManager.systemDeps,
+      harness.kclManager
+    )
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+
+    await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe('main = 2\n')
+    await expect(fsZds.readFile(secondPath, 'utf8')).resolves.toBe(
+      'second = 2\n'
+    )
+    expect(harness.kclManager.path).toBe(thirdPath)
+    expect(harness.kclManager.code).toBe('third = 2\n')
+  })
+
   it('abandons undone multi-file Zookeeper redo after a new manual edit', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'value = 0\n',
@@ -1110,16 +1157,10 @@ async function applyRecordedZookeeperAction(
     }
   }
 
-  const patchWithoutCurrentFile: ZookeeperEditPatch = {
-    ...patch,
-    changed_files: patch.changed_files?.filter(
-      (file) => file.path !== 'main.kcl'
-    ),
-  }
   harness.kclManager.addGlobalHistoryEventWithCodeChange(
     zookeeperEditPatchHistoryEvent({
       projectPath: harness.projectPath,
-      patch: patchWithoutCurrentFile,
+      patch,
     }),
     currentAfter
   )
@@ -1139,16 +1180,10 @@ async function applyDelayedActiveFileZookeeperAction(
 ) {
   expect(harness.kclManager.code).toBe(currentBefore)
   await writeText(fsZds.join(harness.projectPath, 'main.kcl'), currentAfter)
-  const patchWithoutCurrentFile: ZookeeperEditPatch = {
-    ...patch,
-    changed_files: patch.changed_files?.filter(
-      (file) => file.path !== 'main.kcl'
-    ),
-  }
   harness.kclManager.addGlobalHistoryEventWithCodeChange(
     zookeeperEditPatchHistoryEvent({
       projectPath: harness.projectPath,
-      patch: patchWithoutCurrentFile,
+      patch,
     }),
     currentAfter
   )
@@ -1198,17 +1233,11 @@ async function applyGlobalOnlyActiveFileZookeeperAction(
     shouldWriteToDisk: true,
   })
   await writeText(fsZds.join(harness.projectPath, 'main.kcl'), currentAfter)
-  const patchWithoutCurrentFile: ZookeeperEditPatch = {
-    ...patch,
-    changed_files: patch.changed_files?.filter(
-      (file) => file.path !== 'main.kcl'
-    ),
-  }
   harness.kclManager.addGlobalHistoryEventWithCodeChange(
     zookeeperEditPatchHistoryEvent({
       projectPath: harness.projectPath,
       activeFilePath: harness.kclManager.path,
-      patch: patchWithoutCurrentFile,
+      patch,
     }),
     currentAfter,
     currentBefore

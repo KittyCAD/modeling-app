@@ -177,14 +177,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         kclManager.addGlobalHistoryEventWithCodeChange(
           zookeeperEditPatchHistoryEvent({
             projectPath,
-            patch: {
-              ...patch,
-              changed_files: patch.changed_files?.filter(
-                (file) =>
-                  normalizeKCLFileDeletePath(file.path) !==
-                  codeChangeRelativePath
-              ),
-            },
+            patch,
             activeFilePath,
           }),
           codeChangeRequestedCode,
