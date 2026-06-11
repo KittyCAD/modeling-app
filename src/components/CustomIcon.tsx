@@ -1049,6 +1049,20 @@ const CustomIconMap = Object.freeze({
       <circle cx="10" cy="10" r="3.25" stroke="currentColor" fill="none" />
     </svg>
   ),
+  gdtSymmetry: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt symmetry"
+    >
+      <path d="M4 6H16" stroke="currentColor" />
+      <path d="M3 10H17" stroke="currentColor" />
+      <path d="M4 14H16" stroke="currentColor" />
+    </svg>
+  ),
   gdtCylindricity: (
     <svg
       width="20"
