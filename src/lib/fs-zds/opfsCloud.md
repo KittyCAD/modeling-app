@@ -80,6 +80,7 @@ flowchart TD
 - OPFS is the user-visible source of truth for reads, writes, and deletes.
 - Cloud sync must not block local reads, local writes, local project creation, or local project open.
 - Every local mutation that affects a project persists durable metadata and an outbox entry before cloud work runs.
+- Returning to a visible browser tab schedules an immediate remote-index check, bypassing the normal remote-index throttle.
 - Remote updates must send `expected_revision`; creates and deletes are the only unguarded remote writes.
 - A remote-only project discovered from the cloud index must be cloned into OPFS so later loads can hit local storage first.
 - Remote hydration may replace OPFS only when local is clean relative to the last synced base.

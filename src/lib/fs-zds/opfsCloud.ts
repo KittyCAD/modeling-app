@@ -92,6 +92,7 @@ let syncInProgress = false
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
 let pendingStatusSyncedAt: string | undefined
+let detachVisibilityChangeListener: (() => void) | undefined
 
 export const opfsCloudSyncStatus = signal<OPFSCloudSyncStatus>({
   enabled: false,
@@ -1397,6 +1398,33 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
   }, delay)
 }
 
+function scheduleRemoteIndexSync(delay = 0) {
+  lastRemoteIndexSyncAt = 0
+  scheduleSync(delay)
+}
+
+function attachVisibilityChangeListener() {
+  if (
+    detachVisibilityChangeListener ||
+    typeof document === 'undefined' ||
+    typeof document.addEventListener !== 'function'
+  ) {
+    return
+  }
+
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      scheduleRemoteIndexSync()
+    }
+  }
+
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  detachVisibilityChangeListener = () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+    detachVisibilityChangeListener = undefined
+  }
+}
+
 async function registerProjectMutation(
   projectPath: string,
   kind: OutboxEntry['kind'],
@@ -1515,6 +1543,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
       clearTimeout(syncTimer)
       syncTimer = undefined
     }
+    detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
     lastRemoteIndexSyncAt = 0
     updateStatus({
@@ -1525,6 +1554,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
     return
   }
 
+  attachVisibilityChangeListener()
   updateStatus({
     enabled: true,
     state: 'idle',
@@ -1534,7 +1564,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
 }
 
 export function retryOpfsCloudSync() {
-  scheduleSync(0)
+  scheduleRemoteIndexSync()
 }
 
 type ReadFileOptions = undefined | 'utf8' | { encoding: 'utf-8' }
