@@ -885,6 +885,8 @@ type CreateOnDragStartCallbackArgs = {
   getCurrentCommittedCheckpointId: () => number | null
   // Clears transient hover UI that should not remain visible during drag.
   dismissConstraintHoverPopup: () => void
+  getDraggedEntityId: () => number | null
+  onUpdateHoveredId: (hoveredId: number | null) => void
 }
 
 /**
@@ -903,6 +905,8 @@ export function createOnDragStartCallback({
   getCurrentSketchOutcome,
   getCurrentCommittedCheckpointId,
   dismissConstraintHoverPopup,
+  getDraggedEntityId,
+  onUpdateHoveredId,
 }: CreateOnDragStartCallbackArgs): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
@@ -912,9 +916,17 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     beginDragSession()
+    const currentSketchOutcome = getCurrentSketchOutcome()
+    const draggedConstraintLabelId = getConstraintLabelId(
+      getDraggedEntityId(),
+      currentSketchOutcome?.sceneGraphDelta
+    )
+    if (draggedConstraintLabelId !== null) {
+      onUpdateHoveredId(draggedConstraintLabelId)
+    }
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
     setLastGoodPreview(null)
-    setDragStartOutcome(getCurrentSketchOutcome())
+    setDragStartOutcome(currentSketchOutcome)
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
   }
 }
@@ -1237,6 +1249,7 @@ export function createOnDragCallback({
   getDefaultLengthUnit,
   getJsAppSettings,
   sceneInfra,
+  onClearDragSnapping,
   onUpdateDragSnapping,
   onPreviewSolveStarted,
   onPreviewSolveSettled,
@@ -1290,6 +1303,7 @@ export function createOnDragCallback({
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
   sceneInfra: SceneInfra
+  onClearDragSnapping: () => void
   onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
   onPreviewSolveStarted?: () => void
   onPreviewSolveSettled?: () => void
@@ -1355,7 +1369,7 @@ export function createOnDragCallback({
         })
 
         if (result && isActiveDragSession()) {
-          onUpdateDragSnapping(null)
+          onClearDragSnapping()
           onNewSketchOutcome({
             ...result,
             writeToDisk: false,
@@ -1852,6 +1866,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getCurrentCommittedCheckpointId: () =>
         context.kclManager.currentSketchCheckpointId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
+      getDraggedEntityId,
+      onUpdateHoveredId: sendHoveredState,
     }),
     onDragEnd: createOnDragEndCallback({
       getDraggedEntityId,
@@ -2345,6 +2361,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getJsAppSettings: async () =>
         jsAppSettings(context.rustContext.settingsActor),
       sceneInfra: context.sceneInfra,
+      onClearDragSnapping: clearDragSnappingState,
       onUpdateDragSnapping: updateDragSnappingState,
       onPreviewSolveStarted: markPreviewSolveStarted,
       onPreviewSolveSettled: markPreviewSolveSettled,

@@ -177,6 +177,7 @@ function createDragSnappingDeps() {
     getLastGoodPreview: vi.fn(() => null),
     setLastGoodPreview: vi.fn(),
     getDragStartOutcome: vi.fn(() => null),
+    onClearDragSnapping: vi.fn(),
   }
 }
 
@@ -498,6 +499,8 @@ describe('createOnDragStartCallback', () => {
     }))
     const getCurrentCommittedCheckpointId = vi.fn(() => 12)
     const dismissConstraintHoverPopup = vi.fn()
+    const getDraggedEntityId = vi.fn(() => null)
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
@@ -508,6 +511,8 @@ describe('createOnDragStartCallback', () => {
       getCurrentSketchOutcome,
       getCurrentCommittedCheckpointId,
       dismissConstraintHoverPopup,
+      getDraggedEntityId,
+      onUpdateHoveredId,
     })
 
     const intersectionPoint = {
@@ -3946,6 +3951,7 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
         onDragStart,
         onDrag,
         rustContext,
+        send,
       } = setUpMoveToolCallbacks({
         apiObjects: [constraint],
         hoveredId: constraint.id,
@@ -3964,6 +3970,11 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
         },
         mouseEvent: createTestMouseEvent(),
         intersects: [],
+      })
+
+      expect(send).toHaveBeenCalledWith({
+        type: 'update hovered id',
+        data: { hoveredId: constraint.id },
       })
 
       await onDrag({
@@ -3990,6 +4001,11 @@ describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () =
         undefined,
         false
       )
+
+      expect(send).not.toHaveBeenCalledWith({
+        type: 'update hovered id',
+        data: { hoveredId: null },
+      })
     }
   )
 })
