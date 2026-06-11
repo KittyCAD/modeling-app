@@ -59,16 +59,22 @@ where appropriate. ISO standards use the name coaxiality for this concept.
 @settings(kclVersion = 2.0)
 
 datumSketch = sketch(on = XY) {
-  perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
+  diameter = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
+  perimeter = arc(start = [var 6mm, var 0mm], end = [var -6mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([diameter.end, perimeter.start])
+  coincident([diameter.start, perimeter.end])
 }
 
-datumCylinder = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 10mm)
+datumCylinder = extrude(region(point = [0mm, 1mm], sketch = datumSketch), length = 10mm)
 
 controlledSketch = sketch(on = XY) {
-  perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+  diameter = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+  perimeter = arc(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([diameter.start, perimeter.start])
+  coincident([diameter.end, perimeter.end])
 }
 
-controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm)
+controlledCylinder = extrude(region(point = [0mm, -1mm], sketch = controlledSketch), length = 10mm)
 
 gdt::datum(
   face = datumCylinder.sketch.tags.perimeter,
