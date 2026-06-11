@@ -503,7 +503,7 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('external edit')
   })
 
-  it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
+  it('creates a fresh editor and arms its disk watcher for an opened file', async () => {
     const { kclManager } = createKclManagerTestHarness('')
     const path = '/tmp/kcl-manager-watch-open-test.kcl'
     const readSpy = vi
@@ -515,12 +515,12 @@ describe('KclManager diagnostics', () => {
 
     const opened = await KclManager.fromFile(
       new File(path, 101),
-      (kclManager as any).systemDeps,
-      kclManager
+      (kclManager as any).systemDeps
     )
 
-    expect(opened).toBe(kclManager)
-    expect(kclManager.watching).toBe(true)
+    expect(opened).not.toBe(kclManager)
+    expect(opened.path).toBe(path)
+    expect(opened.watching).toBe(true)
     expect(watchSpy).toHaveBeenCalledWith(
       path,
       expect.any(String),

@@ -17,7 +17,6 @@ export interface ExecutingEditorHandle {
 }
 
 export interface OpenEditorOptions {
-  providedEditor?: KclManager
   providedCode?: string
   isExecuting?: boolean
 }

@@ -7,7 +7,6 @@ export function useAbsoluteFilePath() {
   const executingPath = app.project?.executingPathSignal.value?.value
 
   if (!executingPath) {
-    console.warn('bug: executingPath undefined, not navigating')
     return
   }
 

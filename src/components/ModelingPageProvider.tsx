@@ -4,14 +4,16 @@ import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useSignals } from '@preact/signals-react/runtime'
+import Loading from '@src/components/Loading'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import {
+  type KclManager,
   type PendingFeatureTreeSourceSelection,
   updateOutsideEditorEvent,
 } from '@src/lang/KclManager'
 import { sourceRangeToUtf16 } from '@src/lang/errors'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
@@ -61,8 +63,32 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
+  const kclManager = useOptionalExecutingEditor()
+
+  if (!kclManager) {
+    return (
+      <div className="absolute inset-0 grid place-content-center">
+        <Loading>Loading Design Studio...</Loading>
+      </div>
+    )
+  }
+
+  return (
+    <ModelingPageProviderWithEditor kclManager={kclManager}>
+      {children}
+    </ModelingPageProviderWithEditor>
+  )
+}
+
+const ModelingPageProviderWithEditor = ({
+  children,
+  kclManager,
+}: {
+  children: React.ReactNode
+  kclManager: KclManager
+}) => {
+  useSignals()
   const { auth, commands, settings, project, systemIOActor } = useApp()
-  const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()

@@ -4,14 +4,16 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { type Signal, effect, signal } from '@preact/signals-core'
+import { type Signal, computed, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { ZDSProject } from '@src/lang/KclManager'
+import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type ExecutingEditorHandle,
   type OpenEditorOptions,
@@ -42,6 +44,9 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     signal<ProjectSessionService['executingEditorHandle']['value']>(undefined)
   const openedProject =
     signal<ProjectSessionService['openedProject']['value']>(undefined)
+  const executingEditor = computed(
+    () => openedProject.value?.executingEditor.value ?? undefined
+  )
 
   const getApp = () => {
     if (!app) {
@@ -88,6 +93,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     const currentProject = openedProject.peek()
 
     stopProjectEffects()
+    currentProject?.executingEditor.value?.cancelAllExecutions()
     currentProject?.close()
     openedProject.value = undefined
 
@@ -101,6 +107,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
         type: 'clear.project',
       })
     }
+    currentApp?.commands.actor.send({ type: 'Set kclManager', data: undefined })
   }
 
   const syncProjectFromSystemIO = (projectIORefSignal: Signal<Project>) => {
@@ -186,7 +193,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
 
   const loadEditorFromHandle = async (
     filePath: string,
-    { providedEditor, providedCode, isExecuting = true }: OpenEditorOptions = {}
+    { providedCode, isExecuting = true }: OpenEditorOptions = {}
   ) => {
     const currentProject = openedProject.peek()
     if (!currentProject) {
@@ -198,12 +205,31 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
       filePath,
     }
 
-    return currentProject.openEditor(
+    const previousExecutingPath = currentProject.executingPath
+    const previousExecutingEditor = currentProject.executingEditor.value
+    if (previousExecutingPath !== filePath) {
+      const existingTargetEditor = currentProject.findEditor(filePath)?.[1]
+      if (existingTargetEditor) {
+        currentProject.closeEditor(filePath)
+      }
+    }
+
+    const editor = await currentProject.openEditor(
       filePath,
-      providedEditor,
       providedCode,
       isExecuting
     )
+    if (
+      previousExecutingPath &&
+      previousExecutingPath !== filePath &&
+      previousExecutingEditor &&
+      previousExecutingEditor !== editor
+    ) {
+      previousExecutingEditor.cancelAllExecutions()
+      currentProject.closeEditor(previousExecutingPath)
+    }
+    getApp().commands.actor.send({ type: 'Set kclManager', data: editor })
+    return editor
   }
 
   const setExecutingEditorHandle = async (
@@ -212,6 +238,12 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
   ) => {
     if (!handle) {
       executingEditorHandle.value = undefined
+      const currentProject = openedProject.peek()
+      currentProject?.executingEditor.value?.cancelAllExecutions()
+      if (currentProject) {
+        currentProject.executingPath = null
+      }
+      getApp().commands.actor.send({ type: 'Set kclManager', data: undefined })
       return undefined
     }
 
@@ -222,15 +254,59 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     }
 
     return loadEditorFromHandle(handle.filePath, {
-      providedEditor:
-        options.providedEditor ?? currentApp.singletons.kclManager,
       providedCode:
         options.providedCode ??
         (window.electron?.process.env.NODE_ENV === 'test'
-          ? currentApp.singletons.kclManager.localStoragePersistCode()
+          ? KclManager.localStoragePersistCode()
           : undefined),
       isExecuting: options.isExecuting,
     })
+  }
+
+  const emptyCode = signal('')
+  const hasNoEditsSinceLastExecution = signal(false)
+  const isNotExecuting = signal(false)
+  const emptyExecutionElapsedMs = signal(0)
+  const noSelectionStatusLabel = signal('No selection')
+  const hideExperimentalFeaturesStatusBarItem = signal(false)
+
+  const executingEditorServiceImpl: ExecutingEditorService = {
+    editor: executingEditor,
+    code: computed(() => executingEditor.value?.codeSignal.value ?? ''),
+    hasEditsSinceLastExecution: computed(
+      () =>
+        executingEditor.value?.hasEditsSinceLastExecutionSignal.value ??
+        hasNoEditsSinceLastExecution.value
+    ),
+    isExecuting: computed(
+      () =>
+        executingEditor.value?.isExecutingSignal.value ?? isNotExecuting.value
+    ),
+    executionElapsedMs: computed(
+      () =>
+        executingEditor.value?.executingEditorService.executionElapsedMs
+          .value ?? emptyExecutionElapsedMs.value
+    ),
+    selectionStatusLabel: computed(
+      () =>
+        executingEditor.value?.executingEditorService.selectionStatusLabel
+          .value ?? noSelectionStatusLabel.value
+    ),
+    showExperimentalFeaturesStatusBarItem: computed(
+      () =>
+        executingEditor.value?.executingEditorService
+          .showExperimentalFeaturesStatusBarItem.value ??
+        hideExperimentalFeaturesStatusBarItem.value
+    ),
+    getPendingCommandCount: () =>
+      executingEditor.value?.executingEditorService.getPendingCommandCount() ??
+      0,
+    executeCode: async (code) => {
+      await executingEditor.value?.executeCode(code)
+    },
+    updateCode: (code, options) => {
+      executingEditor.value?.updateCodeEditor(code, options)
+    },
   }
 
   const serviceImpl: ProjectSessionService = {
@@ -258,7 +334,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
           key: 'project-session',
         }),
       ],
-      providesServices: [provideService(projectSessionService, serviceImpl)],
+      providesServices: [
+        provideService(projectSessionService, serviceImpl),
+        provideService(executingEditorService, executingEditorServiceImpl),
+      ],
       dispose: () => clearProjectSession(),
     }),
   }

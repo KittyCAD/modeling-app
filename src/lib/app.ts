@@ -8,7 +8,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
-import { KclManager, type ZDSProject } from '@src/lang/KclManager'
+import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -75,8 +75,6 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
@@ -660,34 +658,10 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    // TODO: Remove this and make the app handle no executing editor,
-    // so we don't need to stub with empty strings
-    const kclManager = new KclManager('', '', {
-      settings: this.settings.actor,
-      wasmInstancePromise: this.wasmPromise,
-      commandBar: this.commands.actor,
-      projectPath: signal(''),
-      engineCommandManager: this.engineCommandManager,
-      rustContext: this.rustContext,
-      keymap: this.registry.get(keymapService),
-    })
-
-    this.registry.reconfigure(appRegistryServicesSlot, [
-      defineRegistryItem({
-        id: 'executing-editor-services',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            kclManager.executingEditorService
-          ),
-        ],
-      }),
-    ])
-
     if (typeof window !== 'undefined') {
       // Accessible for tests mostly
-      window.engineCommandManager = kclManager.engineCommandManager
-      window.rustContext = kclManager.rustContext
+      window.engineCommandManager = this.engineCommandManager
+      window.rustContext = this.rustContext
       window.engineDebugger = EngineDebugger
       ;(window as any).enableMousePositionLogs = () =>
         document.addEventListener('mousemove', (e) =>
@@ -697,7 +671,7 @@ export class App implements AppSubsystems {
         ;(window as any)._enableFillet = true
       }
       ;(window as any).zoomToFit = () =>
-        kclManager.engineCommandManager.sendSceneCommand({
+        this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -709,10 +683,18 @@ export class App implements AppSubsystems {
         })
     }
 
-    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
-
+    const getExecutingEditor = (): KclManager => {
+      const editor =
+        this.projectSession.openedProject.value?.executingEditor.value
+      if (!editor) {
+        throw new Error('No executing editor is currently available.')
+      }
+      return editor
+    }
     return {
-      kclManager,
+      get kclManager() {
+        return getExecutingEditor()
+      },
     }
   }
 
@@ -721,23 +703,22 @@ export class App implements AppSubsystems {
    * as a dependency input, we must subscribe to updates from the outside.
    */
   onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    if (!this.project) {
+    const kclManager = this.project?.executingEditor.value
+    if (!kclManager) {
       return // Everything in here only matters inside a project.
     }
     const { context } = snapshot
 
     // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
+    kclManager.setEditorLineWrapping(context.textEditor.textWrapping.current)
 
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (
       newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.kclManager.engineCommandManager.connection
+      kclManager.engineCommandManager.connection
     ) {
-      this.singletons.kclManager.engineCommandManager
+      kclManager.engineCommandManager
         .setHighlightEdges(newHighlighting)
         .catch(reportRejection)
     }
@@ -748,16 +729,16 @@ export class App implements AppSubsystems {
       '--cursor-color',
       newBlinking ? 'auto' : 'transparent'
     )
-    this.singletons.kclManager.setCursorBlinking(newBlinking)
+    kclManager.setCursorBlinking(newBlinking)
 
     // Update theme
     const newTheme = context.app.theme.current
     const newBackfaceColor = context.modeling.backfaceColor.current
     Promise.all([
-      this.singletons.kclManager.updateTheme(newTheme),
-      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
+      kclManager.updateTheme(newTheme),
+      ...(kclManager.engineCommandManager.connection?.connected
         ? [
-            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
+            kclManager.engineCommandManager.setDefaultSystemProperties(
               newBackfaceColor
             ),
           ]
@@ -783,29 +764,29 @@ export class App implements AppSubsystems {
       // Relevant settings requiring a cleared scene and re-exec
       if (
         settingsIncludeNewRelevantValues &&
-        this.singletons.kclManager.engineCommandManager.connection
+        kclManager.engineCommandManager.connection
       ) {
-        this.singletons.kclManager.rustContext
+        kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.path
+            kclManager.path
           )
-          .then(() => this.singletons.kclManager.executeCode())
+          .then(() => kclManager.executeCode())
           .catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
     }
 
-    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
+    kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
       context.app.allowOrbitInSketchMode.current
 
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
-      this.singletons.kclManager.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch')
+      kclManager.sceneInfra.camControls &&
+      !kclManager.modelingState?.matches('Sketch')
     ) {
-      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
+      kclManager.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection
     }
 

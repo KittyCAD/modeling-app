@@ -5,6 +5,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
@@ -17,6 +18,7 @@ function createExecutingEditorService(
   isExecuting = signal(false)
 ): ExecutingEditorService {
   return {
+    editor: signal({} as KclManager),
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,

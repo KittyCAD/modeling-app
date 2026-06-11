@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
@@ -16,7 +16,7 @@ export const RouteProviderContext = createContext({})
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
   const { settings, project } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useOptionalExecutingEditor()
   const settingsActor = settings.actor
   useAuthNavigation()
   const loadedProject = project?.projectIORefSignal.value
@@ -53,6 +53,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
     async (eventType: string, path: string) => {
       // Only reload if there are changes. Ignore everything else.
       if (eventType !== 'change') {
+        return
+      }
+      if (!kclManager) {
         return
       }
 
@@ -106,7 +109,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
-    kclManager.livePathsToWatch.value
+    kclManager?.livePathsToWatch.value ?? []
   )
 
   useFileSystemWatcher(

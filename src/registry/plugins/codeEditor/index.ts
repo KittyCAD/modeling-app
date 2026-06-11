@@ -27,6 +27,7 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
     getAutomaticallyRenderEnabledFromSettings(state.context)
   )
   const executionService = app.registry.signal(executingEditorService).value
+  const executingEditor = executionService?.editor.value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
   const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)
@@ -45,14 +46,19 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
 
       toast.success('Your work is auto-saved in real-time.')
     },
-    app.singletons.kclManager,
+    executingEditor,
     {
-      enabled: !!currentProject,
-      registerToCodeMirror: !!currentProject,
+      enabled: !!currentProject && !!executingEditor,
+      registerToCodeMirror: !!currentProject && !!executingEditor,
     }
   )
 
-  if (!currentProject || automaticallyRenderEnabled || !executionService) {
+  if (
+    !currentProject ||
+    !executingEditor ||
+    automaticallyRenderEnabled ||
+    !executionService
+  ) {
     return null
   }
 

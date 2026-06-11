@@ -174,6 +174,7 @@ import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   type KeymapService,
+  keymapService,
 } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
 
@@ -323,7 +324,7 @@ export class ZDSProject {
   public executingEditor = computed(() =>
     this.#executingPath.value
       ? this.editors.get(this.#executingPath.value)
-      : null
+      : undefined
   )
   /** The currently-executing file's info as a FileEntry */
   executingFileEntry = computed<FileEntry>(() => ({
@@ -370,6 +371,7 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -394,10 +396,6 @@ export class ZDSProject {
 
   async openEditor(
     path: string,
-    /** TODO: Remove providedEditor, replace with options about if the editor is the executing one
-     * once the app can handle not having a KclManager.
-     */
-    providedEditor?: KclManager,
     /** TODO: Remove `providedCode` once no tests rely on initializing
      * editor state through localstorage.
      */
@@ -418,10 +416,7 @@ export class ZDSProject {
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       projectPath: computed(() => this.projectIORefSignal.value.path),
-    }
-
-    if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
+      keymap: this.app.registry.get(keymapService),
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
@@ -430,7 +425,6 @@ export class ZDSProject {
         ? this.files[foundFileIndex]
         : new File(path, this.nextFileId++),
       systemDeps,
-      providedEditor,
       providedCode
     )
 
@@ -487,6 +481,9 @@ export class ZDSProject {
     }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
+    if (this.#executingPath.value === foundPathSignal[0]) {
+      this.#executingPath.value = null
+    }
   }
 
   closeAllEditors() {
@@ -494,6 +491,7 @@ export class ZDSProject {
       editor.close()
     }
     this.editors.clear()
+    this.#executingPath.value = null
   }
 
   /** Handle updates from the disk representation of the project */
@@ -716,6 +714,7 @@ export class KclManager extends File {
    * The core state in KclManager are the code and the selection.
    * all other state should be derived from the code or selection in some way.
    */
+  private readonly _editor = signal<KclManager | undefined>(this)
   private _code = signal(bracket)
   private _hasEditsSinceLastExecution = signal(false)
   private _documentVersion = 0
@@ -755,6 +754,7 @@ export class KclManager extends File {
   }
   get executingEditorService(): ExecutingEditorService {
     return {
+      editor: this._editor,
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
       isExecuting: this._isExecuting,
@@ -1806,12 +1806,10 @@ export class KclManager extends File {
 
   /**
    * Upgrade a File to an Editor, reading its contents for the initial editor state.
-   * TODO: Remove providedEditor once the app can handle an undefined currently-executing editor.
    */
   static async fromFile(
     file: File,
     systemDeps: SystemDeps,
-    providedEditor?: KclManager,
     providedCode?: string
   ) {
     const diskCode = normalizeLineEndings(providedCode || (await file.read()))
@@ -1821,32 +1819,12 @@ export class KclManager extends File {
         ? normalizeLineEndings(recoverySnapshot.code)
         : diskCode
 
-    if (!providedEditor) {
-      const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
-      if (!isCodeTheSame(initialCode, diskCode)) {
-        editor.markFileCodeAsSynced(diskCode)
-      }
-      editor.watch()
-      return editor
+    const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
+    if (!isCodeTheSame(initialCode, diskCode)) {
+      editor.markFileCodeAsSynced(diskCode)
     }
-
-    // TODO: remove all this once the app can handle an undefined currently-executing editor
-    providedEditor.flushRecoverySnapshot()
-    providedEditor.path = file.path
-    providedEditor.id = file.id
-    providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
-    providedEditor.markFileCodeAsSynced(diskCode)
-    providedEditor.watch()
-    return providedEditor
+    editor.watch()
+    return editor
   }
 
   constructor(
@@ -1917,6 +1895,7 @@ export class KclManager extends File {
     this.settingsSubscription?.unsubscribe()
     this.flushRecoverySnapshot()
     this.unwatch()
+    this._editor.value = undefined
   }
 
   private markFileCodeAsSynced(code: string) {
@@ -3036,6 +3015,9 @@ export class KclManager extends File {
     })
   }
   localStoragePersistCode(): string {
+    return safeLSGetItem(PERSIST_CODE_KEY) || ''
+  }
+  static localStoragePersistCode(): string {
     return safeLSGetItem(PERSIST_CODE_KEY) || ''
   }
   /**

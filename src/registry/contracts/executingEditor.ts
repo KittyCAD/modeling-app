@@ -1,5 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
+import type { KclManager } from '@src/lang/KclManager'
 
 export interface ExecutingEditorUpdateOptions {
   shouldExecute?: boolean
@@ -10,6 +11,7 @@ export interface ExecutingEditorUpdateOptions {
 }
 
 export interface ExecutingEditorService {
+  readonly editor: ReadonlySignal<KclManager | undefined>
   readonly code: ReadonlySignal<string>
   readonly hasEditsSinceLastExecution: ReadonlySignal<boolean>
   readonly isExecuting: ReadonlySignal<boolean>

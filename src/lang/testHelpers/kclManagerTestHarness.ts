@@ -1,7 +1,9 @@
 import { type Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
-import type { KclManager } from '@src/lang/KclManager'
+import { signal } from '@preact/signals-core'
+import { KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { isArray } from '@src/lib/utils'
+import { keymapService } from '@src/registry/contracts/keymap'
 import { loadWasm } from '@src/unitTestUtils'
 
 const wasmPromise = loadWasm()
@@ -13,15 +15,15 @@ export function createKclManagerTestHarness(initialCode = ''): {
   const app = App.fromProvided({
     wasmPromise,
   })
-  const { kclManager } = app.singletons
-
-  if (kclManager.code !== initialCode) {
-    kclManager.updateCodeEditor(initialCode, {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-      shouldResetCamera: false,
-    })
-  }
+  const kclManager = new KclManager('', initialCode, {
+    settings: app.settings.actor,
+    wasmInstancePromise: app.wasmPromise,
+    commandBar: app.commands.actor,
+    projectPath: signal(''),
+    engineCommandManager: app.engineCommandManager,
+    rustContext: app.rustContext,
+    keymap: app.registry.get(keymapService),
+  })
 
   return { app, kclManager }
 }

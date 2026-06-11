@@ -5,9 +5,9 @@ import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnPageMounted', () => {
-  const singletons = App.fromProvided({
+  const app = App.fromProvided({
     wasmPromise: Promise.resolve({} as ModuleType),
-  }).singletons
+  })
 
   describe('on mounted', () => {
     test('should run once', () => {
@@ -21,9 +21,7 @@ describe('useOnPageMounted', () => {
       expect(callback).toHaveBeenCalledTimes(1)
 
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(app.engineCommandManager)
     })
     test('should reset with helper function', async () => {
       const callback_1 = vi.fn(() => 1)
@@ -35,17 +33,13 @@ describe('useOnPageMounted', () => {
           }),
         { initialProps: { callback: callback_1 } }
       )
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(app.engineCommandManager)
       rerender({ callback: callback_2 })
       unmount()
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(app.engineCommandManager)
     })
     test('should fail to call the callback again, did not reset', async () => {
       const callback_1 = vi.fn(() => 1)
@@ -62,9 +56,7 @@ describe('useOnPageMounted', () => {
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(0)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
-        singletons.kclManager.engineCommandManager
-      )
+      result.current.resetGlobalEngineCommandManager(app.engineCommandManager)
     })
   })
 })

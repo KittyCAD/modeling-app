@@ -4,6 +4,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { ShareDialog } from '@src/components/ShareDialog'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import type { KclManager } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { copyFileShareLink } from '@src/lib/links'
@@ -20,9 +21,25 @@ type ShareButtonProps = {
 export const ShareButton = memo(function ShareButton({
   app,
 }: ShareButtonProps) {
+  useSignals()
+  const kclManager =
+    app.projectSession.openedProject.value?.executingEditor.value
+
+  if (!kclManager) {
+    return null
+  }
+
+  return <ShareButtonWithEditor app={app} kclManager={kclManager} />
+})
+
+function ShareButtonWithEditor({
+  app,
+  kclManager,
+}: ShareButtonProps & {
+  kclManager: KclManager
+}) {
   const { billing } = app
   const platform = usePlatform()
-
   const billingContext = billing.useContext()
   const billingLoading = billingContext.hasSubscription === undefined
   const shareButtonRef = useRef<HTMLButtonElement>(null)
@@ -42,6 +59,7 @@ export const ShareButton = memo(function ShareButton({
           <SharePopoverContent
             billingLoading={billingLoading}
             app={app}
+            kclManager={kclManager}
             shareButtonRef={shareButtonRef}
             close={() => popover.close()}
             open={popover.open}
@@ -51,10 +69,11 @@ export const ShareButton = memo(function ShareButton({
       }}
     </Popover>
   )
-})
+}
 
 function SharePopoverContent({
   app,
+  kclManager,
   billingLoading,
   shareButtonRef,
   close,
@@ -62,6 +81,7 @@ function SharePopoverContent({
   platform,
 }: {
   app: App
+  kclManager: KclManager
   billingLoading: boolean
   shareButtonRef: RefObject<HTMLButtonElement | null>
   close: () => void
@@ -70,7 +90,6 @@ function SharePopoverContent({
 }) {
   useSignals()
   const { auth, billing } = app
-  const { kclManager } = app.singletons
   const token = auth.useToken()
   const billingContext = billing.useContext()
   const currentProject = app.projectSignal.value?.projectIORefSignal.value

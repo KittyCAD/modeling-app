@@ -13,7 +13,9 @@ let initialized = false
  * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
-export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
+export const initializeWindowExceptionHandler = (
+  getExecutingEditor: () => KclManager | undefined
+) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
@@ -24,6 +26,10 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
           matchMemoryAccessOutOfBoundsErrorCrash(event.message) ||
           matchGenericWasmRuntimeHeuristicErrorCrash(event)
         ) {
+          const kclManager = getExecutingEditor()
+          if (!kclManager) {
+            return
+          }
           // do global singleton cleanup
           kclManager.executeAstCleanUp()
           toast.error(

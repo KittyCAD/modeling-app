@@ -80,7 +80,7 @@ export function OpenedProject() {
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -253,7 +253,6 @@ export function OpenedProject() {
           TutorialRequestToast({
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,

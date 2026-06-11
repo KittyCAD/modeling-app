@@ -15,7 +15,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -26,6 +26,8 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import Loading from '@src/components/Loading'
+import type { KclManager } from '@src/lang/KclManager'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
@@ -55,9 +57,33 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
+  const kclManager = useOptionalExecutingEditor()
+
+  if (!kclManager) {
+    return (
+      <div className="absolute inset-0 grid place-content-center">
+        <Loading>Loading Design Studio...</Loading>
+      </div>
+    )
+  }
+
+  return (
+    <ModelingMachineProviderWithEditor kclManager={kclManager}>
+      {children}
+    </ModelingMachineProviderWithEditor>
+  )
+}
+
+const ModelingMachineProviderWithEditor = ({
+  children,
+  kclManager,
+}: {
+  children: React.ReactNode
+  kclManager: KclManager
+}) => {
+  useSignals()
   const { machineManager, commands, settings, layout, project, registry } =
     useApp()
-  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()

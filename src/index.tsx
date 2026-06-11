@@ -33,13 +33,13 @@ function launchApp(app: App) {
 
 /** initialize behaviors that rely on singletons */
 function initSingletonBehavior(app: App) {
-  const { singletons } = app
   markOnce('code/willAuth')
-  initializeWindowExceptionHandler(singletons.kclManager)
+  initializeWindowExceptionHandler(
+    () => app.projectSession.openedProject.value?.executingEditor.value
+  )
 
-  // Don't start the app machine until all these singletons
-  // are initialized, and the wasm module is loaded.
-  singletons.kclManager.wasmInstancePromise
+  // Application commands need WASM, so defer them until the module is loaded.
+  app.wasmPromise
     .then((wasmInstance) => {
       // Application commands must be created after the initPromise because
       // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency

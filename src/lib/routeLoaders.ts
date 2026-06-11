@@ -53,7 +53,7 @@ export const baseLoader =
     }
 
     // Web, make a default project and redirect to it.
-    const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
@@ -93,7 +93,6 @@ export const fileLoader =
     app: App
   }): LoaderFunction =>
   async (routerData): Promise<EmptyLoaderData | Response> => {
-    const { kclManager } = app.singletons
     const projectSession = app.registry.get(projectSessionService)
     const { params } = routerData
 
@@ -109,7 +108,7 @@ export const fileLoader =
       ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
       : undefined
 
-    const wasmInstance = await kclManager.wasmInstancePromise
+    const wasmInstance = await app.wasmPromise
 
     const settings = await loadAndValidateSettings(
       wasmInstance,
@@ -183,19 +182,12 @@ export const fileLoader =
 // and returns them to the Home route, along with any errors that occurred
 
 export const homeLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  (_input: { app: App }): LoaderFunction =>
   async (): Promise<EmptyLoaderData | Response> => {
     // If on web, bump out to root, which will redirect to a project.
     if (!window.electron) {
       return redirect(PATHS.INDEX)
     }
 
-    await app.registry
-      .get(projectSessionService)
-      .setOpenedProjectHandle(undefined)
     return {}
   }

@@ -34,7 +34,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -82,12 +82,18 @@ type ReadWriteProjectState = {
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   useSignals()
-  const { auth, billing, commands, settings, systemIOActor, registry } =
-    useApp()
-  const { kclManager } = useSingletons()
+  const {
+    auth,
+    billing,
+    commands,
+    settings,
+    systemIOActor,
+    registry,
+    projectSession,
+  } = useApp()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const navigate = useNavigate()
   const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -238,11 +244,10 @@ const Home = () => {
   }
   useMenuListener(cb)
 
-  // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-    kclManager.cancelAllExecutions()
-  }, [kclManager])
+    projectSession.setOpenedProjectHandle(undefined).catch(reportRejection)
+  }, [projectSession])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -282,7 +287,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      kclManager,
                       systemIOActor,
                       settingsActor,
                       executingPath,

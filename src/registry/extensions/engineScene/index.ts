@@ -61,7 +61,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
   const selectionStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value
+      executionService.value?.editor.value
         ? {
             id: 'selection',
             'data-testid': 'selection-status',
@@ -78,7 +78,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
   const selectionFilterStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value
+      executionService.value?.editor.value
         ? {
             id: 'selection-filter',
             component: EngineSceneSelectionFilterControls,
@@ -90,7 +90,8 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
   const experimentalFeaturesStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value?.showExperimentalFeaturesStatusBarItem.value
+      executionService.value?.editor.value &&
+        executionService.value.showExperimentalFeaturesStatusBarItem.value
         ? {
             id: 'experimental-features',
             component: EngineSceneExperimentalFeaturesMenu,
@@ -102,7 +103,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
   const unitsStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value
+      executionService.value?.editor.value
         ? {
             id: 'units',
             component: EngineSceneUnitsMenu,

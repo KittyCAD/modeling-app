@@ -21,7 +21,7 @@ const executionIndicatorStatusBarItem = defineRegistryItemFactory((ctx) => {
       (() => {
         const service = executionService.value
 
-        return service?.isExecuting.value
+        return service?.editor.value && service.isExecuting.value
           ? {
               id: EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID,
               'data-testid': 'engine-executing-status',
