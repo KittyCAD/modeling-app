@@ -71,7 +71,6 @@ import {
   addCircularityGdt,
   addConcentricityGdt,
   addCylindricityGdt,
-  addSymmetryGdt,
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
@@ -80,6 +79,7 @@ import {
   addPositionGdt,
   addProfileGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
 import {

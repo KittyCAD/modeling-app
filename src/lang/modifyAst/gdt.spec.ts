@@ -4,7 +4,6 @@ import {
   addAnnotationGdt,
   addCircularityGdt,
   addConcentricityGdt,
-  addSymmetryGdt,
   addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
@@ -14,6 +13,7 @@ import {
   addPositionGdt,
   addProfileGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
   getNextAvailableDatumName,
   getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'

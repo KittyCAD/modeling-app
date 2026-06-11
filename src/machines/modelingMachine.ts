@@ -127,7 +127,6 @@ import {
   addCircularityGdt,
   addConcentricityGdt,
   addCylindricityGdt,
-  addSymmetryGdt,
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
@@ -136,6 +135,7 @@ import {
   addPositionGdt,
   addProfileGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
