@@ -216,6 +216,8 @@ type DirectSketchHistoryMarker = {
   entryId: number
 }
 
+const APP_WRITE_WATCH_SUPPRESS_MS = 2_000
+
 type MinimalDocumentChange = {
   from: number
   to: number
@@ -370,6 +372,7 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -501,6 +504,9 @@ export class ZDSProject {
     }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
+    if (this.#executingPath.value === foundPathSignal[0]) {
+      this.#executingPath.value = null
+    }
   }
 
   closeAllEditors() {
@@ -508,6 +514,7 @@ export class ZDSProject {
       editor.close()
     }
     this.editors.clear()
+    this.#executingPath.value = null
   }
 
   /** Handle updates from the disk representation of the project */
@@ -916,15 +923,24 @@ export class KclManager extends File {
     ) {
       return
     }
+    if (this.writingPromise.value) {
+      return
+    }
+
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
     File.ioImplementations
       .read(path)
       .then((code) => {
+        const diskCode = normalizeLineEndings(code)
         if (requestedDocumentVersion !== this._documentVersion) {
           return
         }
+        if (this.shouldIgnoreRecentAppWriteWatchEvent(diskCode)) {
+          return
+        }
+
         const isInSketchMode =
           this.modelingState?.matches('Sketch') ||
           this.modelingState?.matches('sketchSolveMode')
@@ -998,6 +1014,7 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private suppressDiskReloadUntil = 0
   private settingsSubscription: Subscription | undefined = undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
@@ -1941,6 +1958,20 @@ export class KclManager extends File {
 
   private hasUnsavedLocalChanges() {
     return !isCodeTheSame(this.code, this._lastKnownFileCode)
+  }
+
+  private shouldIgnoreRecentAppWriteWatchEvent(diskCode: string) {
+    if (this.writingPromise.value) {
+      return true
+    }
+    if (Date.now() >= this.suppressDiskReloadUntil) {
+      return false
+    }
+
+    return (
+      isCodeTheSame(diskCode, this._lastKnownFileCode) ||
+      !this.hasUnsavedLocalChanges()
+    )
   }
 
   private persistRecoverySnapshot() {
@@ -3457,10 +3488,14 @@ export class KclManager extends File {
 
     this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
     this.unwatch()
+    this.suppressDiskReloadUntil = Date.now() + APP_WRITE_WATCH_SUPPRESS_MS
 
+    const writePromise = this.write(newCode)
+    this.writingPromise.value = writePromise
     try {
-      await this.write(newCode)
+      await writePromise
       this.markFileCodeAsSynced(newCode)
+      this.suppressDiskReloadUntil = Date.now() + APP_WRITE_WATCH_SUPPRESS_MS
 
       // After a cooldown, start watching this file again on disk.
       this.timeoutRewatch = setTimeout(() => {
@@ -3472,6 +3507,10 @@ export class KclManager extends File {
       console.warn('error saving file', err)
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
+    } finally {
+      if (this.writingPromise.value === writePromise) {
+        this.writingPromise.value = null
+      }
     }
   }
 

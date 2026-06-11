@@ -1,4 +1,5 @@
 import {
+  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
@@ -6,10 +7,9 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { ZDSProject } from '@src/lang/KclManager'
+import { type KclManager, ZDSProject } from '@src/lang/KclManager'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, readAppSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
@@ -20,7 +20,10 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import { reportRejection } from '@src/lib/trap'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type ExecutingEditorHandle,
   type OpenEditorOptions,
@@ -33,6 +36,7 @@ import {
   openedProjectValueSpec,
   projectSessionService,
 } from '@src/registry/contracts/projectSession'
+import { appRegistryServicesSlot } from '@src/registry/registry'
 import type { Subscription } from 'xstate'
 import { waitFor } from 'xstate'
 
@@ -46,6 +50,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
   let unsubscribeFromSettings: Subscription | undefined
   let unsubscribeFromSystemIO: Subscription | undefined
   let stopFSHistoryEffect: (() => void) | undefined
+  let stopExecutingEditorServiceEffect: (() => void) | undefined
 
   const openedProjectHandle =
     signal<ProjectSessionService['openedProjectHandle']['value']>(undefined)
@@ -56,6 +61,72 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
 
   const projectSessionUnboundError = () =>
     new Error('Project session service has not been bound to App.')
+
+  const isCurrentExecutingEditor = (
+    editor: KclManager,
+    handle: ExecutingEditorHandle
+  ) => {
+    const currentHandle = executingEditorHandle.peek()
+    return (
+      currentHandle?.projectPath === handle.projectPath &&
+      currentHandle.filePath === handle.filePath &&
+      openedProject.peek()?.executingEditor.value === editor
+    )
+  }
+
+  const executeSelectedEditor = async (
+    currentApp: App,
+    editor: KclManager,
+    handle: ExecutingEditorHandle
+  ) => {
+    if (!editor.engineCommandManager.started) {
+      return
+    }
+    if (!isCurrentExecutingEditor(editor, handle)) {
+      return
+    }
+    if (!editor.engineCommandManager.connection?.connected) {
+      return
+    }
+
+    await editor.executeCode()
+    if (!isCurrentExecutingEditor(editor, handle)) {
+      return
+    }
+
+    await resetCameraPosition({
+      sceneInfra: editor.sceneInfra,
+      engineCommandManager: editor.engineCommandManager,
+      settingsActor: currentApp.settings.actor,
+    })
+  }
+
+  const syncExecutingEditorService = (currentApp: App) => {
+    const editor = openedProject.value?.executingEditor.value
+    currentApp.registry.reconfigure(
+      appRegistryServicesSlot,
+      editor
+        ? [
+            defineRegistryItem({
+              id: 'executing-editor-services',
+              providesServices: [
+                provideService(
+                  executingEditorService,
+                  editor.executingEditorService
+                ),
+              ],
+            }),
+          ]
+        : []
+    )
+  }
+
+  const startExecutingEditorServiceEffect = (currentApp: App) => {
+    stopExecutingEditorServiceEffect?.()
+    stopExecutingEditorServiceEffect = effect(() => {
+      syncExecutingEditorService(currentApp)
+    })
+  }
 
   const getProjectFromHandle = async (
     currentApp: App,
@@ -101,6 +172,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     if (clearHandles) {
       openedProjectHandle.value = undefined
       executingEditorHandle.value = undefined
+      currentApp?.commands.actor.send({
+        type: 'Set kclManager',
+        data: undefined,
+      })
     }
 
     if (clearProjectSettings) {
@@ -216,12 +291,15 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
       filePath,
     }
 
-    return currentProject.openEditor(
+    const editor = await currentProject.openEditor(
       filePath,
       providedEditor,
       providedCode,
       isExecuting
     )
+
+    app?.commands.actor.send({ type: 'Set kclManager', data: editor })
+    return editor
   }
 
   const setExecutingEditorHandle = async (
@@ -229,7 +307,15 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     options: OpenEditorOptions = {}
   ) => {
     if (!handle) {
+      const currentProject = openedProject.peek()
+      if (currentProject?.executingPath) {
+        currentProject.closeEditor(currentProject.executingPath)
+      }
+      if (currentProject) {
+        currentProject.executingPath = null
+      }
       executingEditorHandle.value = undefined
+      app?.commands.actor.send({ type: 'Set kclManager', data: undefined })
       return undefined
     }
 
@@ -241,10 +327,16 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     if (currentProject?.path !== handle.projectPath) {
       await setOpenedProjectHandle({ projectPath: handle.projectPath })
     }
+    const targetProject = openedProject.peek()
+    const previousExecutingPath = targetProject?.executingPath ?? undefined
+    const shouldClosePreviousExecutingEditor =
+      previousExecutingPath !== undefined &&
+      previousExecutingPath !== handle.filePath
+    const shouldExecuteSelectedEditor =
+      options.isExecuting !== false && previousExecutingPath !== handle.filePath
 
-    return loadEditorFromHandle(handle.filePath, {
-      providedEditor:
-        options.providedEditor ?? currentApp.singletons.kclManager,
+    const nextEditor = await loadEditorFromHandle(handle.filePath, {
+      providedEditor: options.providedEditor,
       providedCode:
         options.providedCode ??
         (window.electron?.process.env.NODE_ENV === 'test'
@@ -252,6 +344,17 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
           : undefined),
       isExecuting: options.isExecuting,
     })
+
+    if (shouldClosePreviousExecutingEditor) {
+      targetProject?.closeEditor(previousExecutingPath)
+    }
+    if (shouldExecuteSelectedEditor) {
+      executeSelectedEditor(currentApp, nextEditor, handle).catch(
+        reportRejection
+      )
+    }
+
+    return nextEditor
   }
 
   const setProjectRouteHandles = async ({
@@ -275,7 +378,9 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     }
 
     const heuristicProjectFilePath = routeId
-      ? routeId.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
+      ? fsZds.extname(routeId) === '.kcl'
+        ? routeId.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
+        : routeId
       : undefined
 
     const wasmInstance = await currentApp.wasmPromise
@@ -297,52 +402,44 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
       )
     }
 
-    const { projectName, projectPath, currentFileName, currentFilePath } =
-      projectPathData
+    const { projectPath, currentFileName, currentFilePath } = projectPathData
 
     const urlObj = new URL(requestUrl)
+    const isSettingsRoute = urlObj.pathname.endsWith('/settings')
 
-    if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
+    await setOpenedProjectHandle({ projectPath })
+
+    if (!currentFileName || !currentFilePath) {
+      await setExecutingEditorHandle(undefined)
+      return {}
+    }
+
+    if (!isSettingsRoute) {
       let fileExists = true
-      if (currentFilePath && fileExists) {
-        try {
-          await fsZds.stat(currentFilePath)
-        } catch (e) {
-          if (e === 'ENOENT') {
-            fileExists = false
-          }
+      try {
+        await fsZds.stat(currentFilePath)
+      } catch (e) {
+        if (e === 'ENOENT') {
+          fileExists = false
         }
       }
 
-      if (projectPath && !currentFileName && fileExists && routeId) {
-        const encodedId = safeEncodeForRouterPaths(routeId)
-        return {
-          redirectTo: requestUrl.replace(
-            encodedId,
-            safeEncodeForRouterPaths(fallbackFile)
-          ),
-        }
-      }
-
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+      if (!fileExists) {
         const routerSearch = getRouterSearchFromRequestUrl(
           requestUrl,
           usesHashRouter
         )
         return {
           redirectTo: `${PATHS.FILE}/${encodeURIComponent(
-            fallbackFile
+            projectPath
           )}${routerSearch}`,
         }
       }
     }
 
-    await setOpenedProjectHandle({ projectPath })
     await setExecutingEditorHandle({
       projectPath,
-      filePath: currentFilePath || PROJECT_ENTRYPOINT,
+      filePath: currentFilePath,
     })
 
     return {}
@@ -354,6 +451,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     openedProject,
     bindApp(boundApp) {
       app = boundApp
+      startExecutingEditorServiceEffect(boundApp)
     },
     setOpenedProjectHandle,
     setExecutingEditorHandle,
@@ -375,7 +473,11 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
         }),
       ],
       providesServices: [provideService(projectSessionService, serviceImpl)],
-      dispose: () => clearProjectSession(),
+      dispose: () => {
+        stopExecutingEditorServiceEffect?.()
+        stopExecutingEditorServiceEffect = undefined
+        clearProjectSession()
+      },
     }),
   }
 }, 'project-session-extension')

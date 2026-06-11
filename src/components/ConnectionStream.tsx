@@ -1,6 +1,7 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
@@ -15,13 +16,14 @@ import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { KclManager } from '@src/lang/KclManager'
 import { findOperationForArtifact } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import { getAllOperations } from '@src/lang/wasm'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
@@ -41,9 +43,32 @@ export const ConnectionStream = (props: {
   authToken: string | undefined
   sketchSolveStreamDimming?: number
 }) => {
+  const kclManager = useOptionalExecutingEditor()
+  if (!kclManager) {
+    return (
+      <div
+        className="absolute inset-[-4px] z-0"
+        id="stream"
+        data-testid="stream"
+      >
+        <NoExecutingFileEmptyState />
+      </div>
+    )
+  }
+
+  return (
+    <ConnectionStreamWithExecutingFile {...props} kclManager={kclManager} />
+  )
+}
+
+const ConnectionStreamWithExecutingFile = (props: {
+  authToken: string | undefined
+  sketchSolveStreamDimming?: number
+  kclManager: KclManager
+}) => {
   const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
-  const kclManager = useExecutingEditor()
+  const { kclManager } = props
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)

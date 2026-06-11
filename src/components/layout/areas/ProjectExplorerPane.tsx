@@ -6,7 +6,7 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
@@ -16,9 +16,9 @@ import {
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 import {
+  PATHS,
   getEXTNoPeriod,
   isExtensionARelevantExtension,
-  parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
@@ -29,26 +29,36 @@ import {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor, layout } = useApp()
-  const kclManager = useExecutingEditor()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const {
+    commands,
+    project,
+    projectSession,
+    systemIOActor,
+    layout,
+    wasmPromise,
+  } = useApp()
+  const kclManager = useOptionalExecutingEditor()
+  const navigate = useNavigate()
+  const wasmInstance = use(wasmPromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
-  const file = project?.executingFileEntry.value
-  const {
-    state: modelingMachineState,
-    send: modelingSend,
-    actor: modelingActor,
-  } = useModelingContext()
+  const file = project?.executingPath
+    ? project.executingFileEntry.value
+    : undefined
+  const modelingContext = useModelingContext()
+  const modelingMachineState = modelingContext.state
+  const modelingSend = modelingContext.send
+  const modelingActor = modelingContext.actor
 
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
+    if (!project || !projects) {
       return
     }
 
@@ -72,7 +82,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     const duplicated = structuredClone(foundProject)
     addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
+  }, [projects, project, systemIOActor])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -119,11 +129,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   const onRowClicked = useCallback(
     (entry: FileExplorerEntry) => {
-      const requestedFileName = parentPathRelativeToProject(
-        entry.path,
-        projectDirectoryPath
-      )
-
       const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
       const isRelevantFile = (filename: string): boolean => {
         const extension = getEXTNoPeriod(filename)
@@ -139,22 +144,28 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       // Only open the file if it is a kcl file.
       if (
         projectRef.current?.value.name &&
+        projectRef.current.value.path &&
         entry.children == null &&
         entry.path.endsWith(FILE_EXT)
       ) {
-        const name = projectRef.current.value.name.slice()
-
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
-              requestedProjectName: name,
-              requestedFileName: requestedFileName,
-            },
-          })
+          const projectPath = projectRef.current?.value.path
+          if (!projectPath) {
+            return
+          }
+
+          projectSession
+            .setExecutingEditorHandle({
+              projectPath,
+              filePath: entry.path,
+            })
+            .then(() => {
+              void navigate(`${PATHS.FILE}/${encodeURIComponent(entry.path)}`)
+            })
+            .catch(reportRejection)
         }
 
-        if (modelingMachineState.matches('Sketch')) {
+        if (modelingMachineState?.matches('Sketch') && modelingActor) {
           modelingSend({ type: 'Cancel' })
           const waitForIdlePromise = new Promise((resolve) => {
             const subscription = modelingActor.subscribe((state) => {
@@ -171,7 +182,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
           // immediately navigate
           navigateHelper()
         }
-      } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
+      } else if (
+        kclManager &&
+        isRelevantFile(entry.path) &&
+        projectRef.current?.value.path
+      ) {
         // Allow insert if it is a importable file
         toast.custom(
           ToastInsert({
@@ -197,11 +212,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       commands,
+      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,
-      projectDirectoryPath,
-      systemIOActor,
+      navigate,
+      projectSession,
       wasmInstance,
     ]
   )
@@ -238,12 +254,13 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         }
         onClose={props.onClose}
       />
-      {theProject && file ? (
+      {theProject ? (
         <div className={'w-full h-full flex flex-col'}>
           <ProjectExplorer
             wasmInstance={wasmInstance}
             project={theProject}
             file={file}
+            executingFilePath={project?.executingPath ?? undefined}
             createFilePressed={createFilePressed}
             createFolderPressed={createFolderPressed}
             refreshExplorerPressed={refreshExplorerPressed}

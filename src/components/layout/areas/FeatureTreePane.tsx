@@ -16,7 +16,11 @@ import {
   emptyOperationsByModule,
   getAllOperations,
 } from '@src/lang/wasm'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import {
+  useApp,
+  useExecutingEditor,
+  useOptionalExecutingEditor,
+} from '@src/lib/boot'
 import {
   type OperationTreeNode,
   buildOperationTree,
@@ -46,6 +50,7 @@ import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
@@ -95,6 +100,8 @@ type SystemDeps = {
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
+  const kclManager = useOptionalExecutingEditor()
+
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -114,7 +121,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
           props.onClose?.('feature-tree')
         }}
       />
-      <FeatureTreePaneContents />
+      {kclManager ? <FeatureTreePaneContents /> : <NoExecutingFileEmptyState />}
     </LayoutPanel>
   )
 }

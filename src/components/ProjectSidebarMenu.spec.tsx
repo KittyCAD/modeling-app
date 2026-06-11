@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
@@ -105,6 +105,31 @@ describe('ProjectSidebarMenu tests', () => {
     expect(screen.getByTestId('app-header-file-name')).toHaveTextContent(
       'parts / generated / nested-part.kcl'
     )
+  })
+
+  test('Shows no executing file breadcrumb and menu options without a file', () => {
+    render(
+      <BrowserRouter>
+        <ProjectSidebarMenu
+          app={window.app}
+          enableMenu
+          project={projectWellFormed}
+        />
+      </BrowserRouter>
+    )
+
+    expect(screen.getByTestId('app-header-file-name')).toHaveTextContent(
+      'No executing file'
+    )
+
+    fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+
+    expect(
+      screen.getByRole('button', { name: 'Set executing file' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Clear executing file' })
+    ).toBeDisabled()
   })
 
   test('Shows the full breadcrumb tooltip when the path is truncated', async () => {

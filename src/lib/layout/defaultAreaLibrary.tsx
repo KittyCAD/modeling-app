@@ -3,6 +3,7 @@ import { Toolbar } from '@src/Toolbar'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
@@ -14,7 +15,7 @@ import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/Ml
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
@@ -23,6 +24,19 @@ import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
 function ModelingArea() {
+  const kclManager = useOptionalExecutingEditor()
+  if (!kclManager) {
+    return (
+      <div className="relative z-0 min-w-64 flex flex-col flex-1 overflow-hidden">
+        <NoExecutingFileEmptyState />
+      </div>
+    )
+  }
+
+  return <ModelingAreaWithExecutingFile />
+}
+
+function ModelingAreaWithExecutingFile() {
   const { auth } = useApp()
   const { state, send } = useModelingContext()
   const authToken = auth.useToken()
@@ -90,7 +104,7 @@ function ModelingArea() {
 export const useDefaultAreaLibrary = () => {
   useSignals()
   const { settings, layout, registry } = useApp()
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
   const getSettings = settings.get
   const registeredAreaLibrary = registry.signal(
     layoutAreaLibraryValueSpec
@@ -98,6 +112,9 @@ export const useDefaultAreaLibrary = () => {
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
+      if (!kclManager) {
+        return
+      }
       const rootLayout = structuredClone(layout.signal.value)
       layout.set(
         togglePaneLayoutNode({
@@ -141,6 +158,9 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + C',
           Component: KclEditorPane,
           useNotifications() {
+            if (!kclManager) {
+              return undefined
+            }
             const value = kclManager.diagnosticsSignal.value.filter(
               (diagnostic) => diagnostic.severity === 'error'
             ).length
@@ -158,6 +178,9 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + F',
           Component: ProjectExplorerPane,
           useNotifications() {
+            if (!kclManager) {
+              return undefined
+            }
             const title = 'Project files have runtime errors'
             // Only compute runtime errors! Compilation errors are not tracked here.
             const errors = kclErrorsByFilename(kclManager.errorsSignal.value)

@@ -2,6 +2,7 @@ import {
   Registry,
   defineRegistryItem,
   pluginsValueSpec,
+  provide,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -81,6 +82,27 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
     ).toEqual([['file'], ['file'], ['file'], ['file']])
+  })
+
+  it('omits executing-file status bar items without clearing unrelated local items', () => {
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'unrelated-local-status-bar-item',
+        provides: [
+          provide(statusBarLocalItemsValueSpec, {
+            id: 'unrelated',
+            element: 'text',
+            label: 'Unrelated',
+          }),
+        ],
+      }),
+      engineSceneExtension,
+    ])
+
+    expect(
+      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+    ).toEqual(['unrelated'])
   })
 
   it('hides the experimental features item when file settings deny it', () => {

@@ -1,10 +1,12 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import type { KclManager } from '@src/lang/KclManager'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { BillingTransition } from '@src/machines/billingMachine'
@@ -46,17 +48,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
 function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, project, systemIOActor } = app
-  const kclManager = useExecutingEditor()
-  const settingsValues = settings.useSettings()
-  const user = auth.useUser()
-  const token = auth.useToken()
-  const {
-    context: contextModeling,
-    send: sendModeling,
-    theProject,
-  } = useModelingContext()
-  const loaderFile = project?.executingFileEntry.value
+  const kclManager = useOptionalExecutingEditor()
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useEffect(() => {
@@ -71,6 +63,62 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
+
+  if (!kclManager) {
+    return <MlEphantConversationPaneWithoutExecutingFile {...props} />
+  }
+
+  return (
+    <MlEphantConversationPaneWithExecutingFile
+      {...props}
+      kclManager={kclManager}
+      mlEphantManagerActor={mlEphantManagerActor}
+    />
+  )
+}
+
+function MlEphantConversationPaneWithoutExecutingFile(
+  props: AreaTypeComponentProps
+) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="sparkles"
+        title="Zookeeper"
+        onClose={props.onClose}
+        Menu={MlEphantConversationMenu}
+      />
+      <NoExecutingFileEmptyState />
+    </LayoutPanel>
+  )
+}
+
+function MlEphantConversationPaneWithExecutingFile({
+  kclManager,
+  mlEphantManagerActor,
+  ...props
+}: AreaTypeComponentProps & {
+  kclManager: KclManager
+  mlEphantManagerActor: ReturnType<
+    typeof MlEphantManagerReactContext.useActorRef
+  >
+}) {
+  const app = useApp()
+  const { auth, billing, settings, project, systemIOActor } = app
+  const settingsValues = settings.useSettings()
+  const user = auth.useUser()
+  const token = auth.useToken()
+  const {
+    context: contextModeling,
+    send: sendModeling,
+    theProject,
+  } = useModelingContext()
+  const loaderFile = project?.executingFileEntry.value
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,

@@ -2,11 +2,12 @@ import path from 'node:path'
 import type { UserFeature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { File } from '@src/lang/KclManager'
+import { File, KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
@@ -16,6 +17,10 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { projectSessionService } from '@src/registry/contracts/projectSession'
 import { loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/resetCameraPosition', () => ({
+  resetCameraPosition: vi.fn().mockResolvedValue(undefined),
+}))
 
 const mockProjectDirectoryPath = path.join(
   process.cwd(),
@@ -58,6 +63,10 @@ beforeAll(async () => {
   await fsZds.rm(mockProjectDirectoryPath, { recursive: true, force: true })
   await fsZds.mkdir(mockProjectPath, { recursive: true })
   await fsZds.writeFile(mockProjectMainFilePath, new TextEncoder().encode(''))
+  await fsZds.writeFile(
+    `${mockProjectPath}/project.toml`,
+    new TextEncoder().encode('')
+  )
 })
 
 afterAll(async () => {
@@ -97,6 +106,28 @@ async function waitForAuthSettled(app: App) {
       resolve()
     })
   })
+}
+
+async function flushPromises(count = 2) {
+  for (let i = 0; i < count; i += 1) {
+    await Promise.resolve()
+  }
+}
+
+function setEngineConnectionReady(app: App) {
+  app.engineCommandManager.started = true
+  app.engineCommandManager.connection = {
+    deferredConnection: {
+      promise: Promise.resolve(),
+      resolve: vi.fn(),
+      reject: vi.fn(),
+    },
+    isUsingUnitTestingConnection: false,
+    connected: true,
+    websocket: {
+      readyState: WebSocket.OPEN,
+    },
+  } as never
 }
 
 async function disposeApp(app: App) {
@@ -300,11 +331,7 @@ describe('project system', () => {
           'publish.open',
         ])
       )
-      expect(
-        app.registry.get(executingEditorService).hasEditsSinceLastExecution
-          .value
-      ).toBe(false)
-      expect(app.registry.get(executingEditorService).code.value).toBe('')
+      expect(app.registry.optional(executingEditorService)).toBeUndefined()
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,
@@ -430,6 +457,7 @@ describe('project system', () => {
       ).toEqual(mockProjectDirectoryPath)
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
+      expect(app.registry.optional(executingEditorService)).toBeUndefined()
 
       const mainFile = mockProject.children?.[0]
       expect(mainFile).toBeDefined()
@@ -443,10 +471,21 @@ describe('project system', () => {
       })
       expect(app.project?.executingPath).toEqual(mockProjectMainFilePath)
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+      expect(app.registry.optional(executingEditorService)?.code.value).toBe('')
       expect(projectSession.executingEditorHandle.value).toEqual({
         projectPath: mockProject.path,
         filePath: mainFile.path,
       })
+
+      const mainEditor = app.project?.executingEditor.value
+      expect(mainEditor).toBeDefined()
+      if (!mainEditor) {
+        throw new Error('Expected main executing editor to be available.')
+      }
+      expect(app.commands.actor.getSnapshot().context.kclManager).toBe(
+        mainEditor
+      )
+      const closeMainEditor = vi.spyOn(mainEditor, 'close')
 
       const otherFilePath = `${mockProjectPath}/other.kcl`
       await projectSession.setExecutingEditorHandle({
@@ -454,6 +493,7 @@ describe('project system', () => {
         filePath: otherFilePath,
       })
       expect(app.project?.executingPath).toEqual(otherFilePath)
+      expect(closeMainEditor).toHaveBeenCalled()
 
       await projectSession.setExecutingEditorHandle({
         projectPath: mockProject.path,
@@ -466,11 +506,162 @@ describe('project system', () => {
         filePath: mainFile.path,
       })
 
+      const finalEditor = app.project?.executingEditor.value
+      expect(finalEditor).toBeDefined()
+      if (!finalEditor) {
+        throw new Error('Expected final executing editor to be available.')
+      }
+      const closeFinalEditor = vi.spyOn(finalEditor, 'close')
+
+      await projectSession.setExecutingEditorHandle(undefined)
+
+      expect(closeFinalEditor).toHaveBeenCalled()
+      expect(app.project?.executingPath).toBeNull()
+      expect(projectSession.executingEditorHandle.value).toBeUndefined()
+      expect(app.registry.optional(executingEditorService)).toBeUndefined()
+      expect(
+        app.commands.actor.getSnapshot().context.kclManager
+      ).toBeUndefined()
+
       await projectSession.setOpenedProjectHandle(undefined)
 
       expect(app.project).toBeUndefined()
       expect(projectSession.openedProjectHandle.value).toBeUndefined()
       expect(projectSession.executingEditorHandle.value).toBeUndefined()
+    } finally {
+      await disposeApp(app)
+    }
+  })
+
+  it('executes the selected editor when the executing file changes while the engine is started', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+    const otherFilePath = `${mockProjectPath}/other.kcl`
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockImplementation((path) =>
+        Promise.resolve(path === otherFilePath ? 'other code' : 'main code')
+      )
+    const resetCameraPositionSpy = vi.mocked(resetCameraPosition)
+    resetCameraPositionSpy.mockClear()
+    const executeCodeSpy = vi
+      .spyOn(KclManager.prototype, 'executeCode')
+      .mockResolvedValue(undefined)
+
+    try {
+      setEngineConnectionReady(app)
+      const projectSession = app.registry.get(projectSessionService)
+      await projectSession.setOpenedProjectHandle({
+        projectPath: mockProject.path,
+      })
+
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: mockProjectMainFilePath,
+      })
+      await flushPromises()
+
+      expect(executeCodeSpy).toHaveBeenCalledTimes(1)
+      expect(resetCameraPositionSpy).toHaveBeenCalledTimes(1)
+      expect(resetCameraPositionSpy).toHaveBeenLastCalledWith({
+        sceneInfra: expect.any(Object),
+        engineCommandManager: app.engineCommandManager,
+        settingsActor: app.settings.actor,
+      })
+
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: otherFilePath,
+      })
+      await flushPromises()
+
+      expect(executeCodeSpy).toHaveBeenCalledTimes(2)
+      expect(resetCameraPositionSpy).toHaveBeenCalledTimes(2)
+      expect(resetCameraPositionSpy).toHaveBeenLastCalledWith({
+        sceneInfra: expect.any(Object),
+        engineCommandManager: app.engineCommandManager,
+        settingsActor: app.settings.actor,
+      })
+    } finally {
+      readSpy.mockRestore()
+      resetCameraPositionSpy.mockClear()
+      executeCodeSpy.mockRestore()
+      await disposeApp(app)
+    }
+  })
+
+  it('leaves initial connection execution to the engine connection setup path', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockResolvedValue('main code')
+    const resetCameraPositionSpy = vi.mocked(resetCameraPosition)
+    resetCameraPositionSpy.mockClear()
+    const executeCodeSpy = vi
+      .spyOn(KclManager.prototype, 'executeCode')
+      .mockResolvedValue(undefined)
+    const websocket: { readyState: number } = {
+      readyState: WebSocket.CONNECTING,
+    }
+
+    try {
+      app.engineCommandManager.started = true
+      app.engineCommandManager.connection = {
+        deferredConnection: {
+          promise: new Promise(() => {}),
+          resolve: vi.fn(),
+          reject: vi.fn(),
+        },
+        isUsingUnitTestingConnection: false,
+        connected: false,
+        websocket,
+      } as never
+      const projectSession = app.registry.get(projectSessionService)
+      await projectSession.setOpenedProjectHandle({
+        projectPath: mockProject.path,
+      })
+
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: mockProjectMainFilePath,
+      })
+      await flushPromises()
+
+      expect(executeCodeSpy).not.toHaveBeenCalled()
+      expect(resetCameraPositionSpy).not.toHaveBeenCalled()
+    } finally {
+      readSpy.mockRestore()
+      resetCameraPositionSpy.mockClear()
+      executeCodeSpy.mockRestore()
+      await disposeApp(app)
+    }
+  })
+
+  it('accepts project-only route handles without opening a default file', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      const projectSession = app.registry.get(projectSessionService)
+      const result = await projectSession.setProjectRouteHandles({
+        routeId: mockProject.path,
+        requestUrl: `http://localhost/file/${encodeURIComponent(
+          mockProject.path
+        )}`,
+        usesHashRouter: false,
+      })
+
+      expect(result).toEqual({})
+      expect(projectSession.openedProjectHandle.value).toEqual({
+        projectPath: mockProject.path,
+      })
+      expect(projectSession.executingEditorHandle.value).toBeUndefined()
+      expect(app.project?.executingPath).toBeNull()
+      expect(app.registry.optional(executingEditorService)).toBeUndefined()
     } finally {
       await disposeApp(app)
     }

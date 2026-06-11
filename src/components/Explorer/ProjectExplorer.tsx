@@ -81,6 +81,18 @@ const handleExternalDragEvent = (e: React.DragEvent): boolean => {
   return true
 }
 
+const ExecutingFileStatus = () => {
+  return (
+    <span
+      aria-label="Executing file"
+      title="Executing file"
+      className="text-primary"
+    >
+      ●
+    </span>
+  )
+}
+
 const getDropTargetPath = (
   target: FileExplorerEntry | null,
   projectPath: string
@@ -168,6 +180,7 @@ export const ProjectExplorer = ({
   wasmInstance,
   project,
   file,
+  executingFilePath,
   createFilePressed,
   createFolderPressed,
   refreshExplorerPressed,
@@ -182,6 +195,7 @@ export const ProjectExplorer = ({
   wasmInstance: ModuleType
   project: Project
   file: FileEntry | undefined
+  executingFilePath?: string
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
@@ -1001,13 +1015,23 @@ export const ProjectExplorer = ({
         )
         const hasRuntimeError =
           runtimeErrors.has(child.path) || anyParentFolderHasError
+        const isExecutingFile = child.path === executingFilePath
+        const status =
+          hasRuntimeError || isExecutingFile ? (
+            <span className="flex items-center gap-1">
+              {hasRuntimeError ? StatusDot() : null}
+              {isExecutingFile ? <ExecutingFileStatus /> : null}
+            </span>
+          ) : (
+            <></>
+          )
 
         const row: FileExplorerRow = {
           // copy over all the other data that was built up to the DOM render row
           ...child,
           icon: icon,
           isFolder: !isFile,
-          status: hasRuntimeError ? StatusDot() : <></>,
+          status,
           isOpen,
           render: render,
           onClick: (domIndex: number) => {
