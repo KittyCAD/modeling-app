@@ -407,7 +407,9 @@ export class ZDSProject {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
     if (found) {
-      console.warn(`Attempted to overwrite editor with path "${path}"`)
+      if (isExecuting) {
+        this.executingPath = path
+      }
       return found
     }
 
