@@ -179,8 +179,8 @@ export fn atan(@num: number(Count)): number(rad) {}
 @(impl = std_rust, feature_tree = false)
 export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 
-/// Convert polar/sphere (azimuth, elevation, distance) coordinates to
-/// cartesian (x/y/z grid) coordinates.
+/// Convert polar (angle, distance) coordinates to cartesian (x/y grid)
+/// coordinates.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)

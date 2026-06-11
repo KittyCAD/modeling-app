@@ -1,11 +1,11 @@
 ---
 title: "polar"
 subtitle: "Function in std::math"
-excerpt: "Convert polar/sphere (azimuth, elevation, distance) coordinates to cartesian (x/y/z grid) coordinates."
+excerpt: "Convert polar (angle, distance) coordinates to cartesian (x/y grid) coordinates."
 layout: manual
 ---
 
-Convert polar/sphere (azimuth, elevation, distance) coordinates to cartesian (x/y/z grid) coordinates.
+Convert polar (angle, distance) coordinates to cartesian (x/y grid) coordinates.
 
 ```kcl
 polar(
