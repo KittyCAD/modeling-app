@@ -8,6 +8,10 @@ import type {
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
+import {
+  readLastBodyType,
+  writeLastBodyType,
+} from '@src/lib/modelingCommandPreferences'
 import { err } from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -149,6 +153,9 @@ export const commandBarMachine = setup({
         const [argName, argData] = Object.entries(event.output)[0]
         const { currentArgument } = context
         if (!currentArgument) return {}
+        if (argName === 'bodyType') {
+          writeLastBodyType(argData)
+        }
         return {
           ...context.argumentsToSubmit,
           [argName]: argData,
@@ -339,10 +346,13 @@ export const commandBarMachine = setup({
         if (!command?.args) return {}
         const args: { [x: string]: unknown } = {}
         for (const [argName, arg] of Object.entries(command.args)) {
-          args[argName] =
+          const hasEventDefault =
             event.data.argDefaultValues &&
             argName in event.data.argDefaultValues
-              ? event.data.argDefaultValues[argName]
+          args[argName] = hasEventDefault
+            ? event.data.argDefaultValues?.[argName]
+            : argName === 'bodyType'
+              ? readLastBodyType()
               : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
                 ? arg.defaultValue
                 : undefined
