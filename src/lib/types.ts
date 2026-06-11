@@ -1,19 +1,3 @@
-import type { FileEntry, Project } from '@src/lib/project'
-
-export type IndexLoaderData = {
-  code: string | null
-  project?: Project
-  file?: FileEntry
-}
-
-export type FileLoaderData = {
-  code: string | null
-  project?: FileEntry | Project
-  file?: FileEntry
-}
-
-export type HomeLoaderData = Record<string, never>
-
 // From the very helpful @jcalz on StackOverflow: https://stackoverflow.com/a/58436959/22753272
 type Join<K, P> = K extends string | number
   ? P extends string | number
@@ -97,17 +81,16 @@ export type DeepPartial<T> = {
 /**
  * Replace a function's return type with another type.
  */
-export type WithReturnType<F extends (...args: any[]) => any, NewReturn> = (
+type AnyFunction = (...args: never[]) => unknown
+
+export type WithReturnType<F extends AnyFunction, NewReturn> = (
   ...args: Parameters<F>
 ) => NewReturn
 
 /**
  * Assert that a function type is async, preserving its parameter types.
  */
-export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
-  F,
-  Promise<unknown>
->
+export type AsyncFn<F extends AnyFunction> = WithReturnType<F, Promise<unknown>>
 
 export type FileMeta =
   | {
@@ -138,7 +121,5 @@ type PromisifyFn<F> = F extends (...args: infer A) => infer R
   : F
 /** Promisify only function properties, leave others unchanged */
 export type PromisifyProps<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any
-    ? PromisifyFn<T[K]>
-    : T[K]
+  [K in keyof T]: T[K] extends AnyFunction ? PromisifyFn<T[K]> : T[K]
 }

@@ -17,7 +17,6 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -115,8 +114,8 @@ function AppLogoLink({
   onProjectClose,
   onHomeNavigate,
 }: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
   enabled: boolean
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
@@ -163,8 +162,8 @@ function ProjectMenuPopover({
   onHomeNavigate,
 }: {
   app: App
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
   filePath?: string
   homeNavigationEnabled: boolean
   onProjectClose: ProjectCloseHandler
@@ -394,8 +393,8 @@ export function ProjectBreadcrumbButton({
   project,
   file,
 }: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
 }) {
   // Breadcrumb for project and project-relative file path
   const relativeFilePath = getProjectRelativeFilePath(project, file)
