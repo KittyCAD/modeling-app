@@ -2966,11 +2966,22 @@ export class KclManager extends File {
   }
   addGlobalHistoryEventWithCodeChange(
     spec: TransactionSpecNoChanges,
-    code: string
+    code: string,
+    previousCode?: string
   ) {
     if (code === this.code) {
-      this.addGlobalHistoryEvent(spec)
-      return
+      if (previousCode !== undefined && !isCodeTheSame(previousCode, code)) {
+        this.updateCodeEditor(previousCode, {
+          shouldAddToHistory: false,
+          shouldClearHistory: false,
+          shouldExecute: false,
+          shouldResetCamera: false,
+          shouldWriteToDisk: false,
+        })
+      } else {
+        this.addGlobalHistoryEvent(spec)
+        return
+      }
     }
 
     const globalHistoryEffect =

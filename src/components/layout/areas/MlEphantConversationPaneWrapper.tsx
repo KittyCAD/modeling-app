@@ -11,6 +11,7 @@ import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   type ZookeeperEditPatch,
+  type ZookeeperEditPatchFile,
   mergeZookeeperEditPatches,
 } from '@src/lib/zookeeperEditPatch'
 import { BillingTransition } from '@src/machines/billingMachine'
@@ -29,10 +30,55 @@ import {
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
+
+function getZookeeperPatchPreviousCode(
+  patch: ZookeeperEditPatch,
+  relativePath: string | undefined,
+  currentCode: string
+): string | undefined {
+  if (relativePath === undefined) {
+    return
+  }
+
+  const changedFile = patch.changed_files?.find(
+    (file) => normalizeKCLFileDeletePath(file.path) === relativePath
+  )
+  if (changedFile === undefined) {
+    return
+  }
+
+  return getZookeeperChangedFilePreviousCode(changedFile, currentCode)
+}
+
+function getZookeeperChangedFilePreviousCode(
+  changedFile: ZookeeperEditPatchFile,
+  currentCode: string
+): string | undefined {
+  if (changedFile.status === 'deleted') {
+    return changedFile.previous_contents ?? undefined
+  }
+  if (changedFile.status === 'created') {
+    return ''
+  }
+  if (!changedFile.diff) {
+    return
+  }
+
+  const parsedPatch = parsePatch(changedFile.diff)[0]
+  if (!parsedPatch) {
+    return
+  }
+
+  const previousCode = applyPatch(currentCode, reversePatch(parsedPatch), {
+    fuzzFactor: 0,
+  })
+  return previousCode === false ? undefined : previousCode
+}
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const { auth } = useApp()
@@ -84,8 +130,9 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     new Map<number, PendingZookeeperHistory>()
   )
   useEffect(() => {
+    const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
     return () => {
-      pendingZookeeperHistoryByExchange.current.clear()
+      pendingZookeeperHistories.clear()
       kclManager.zookeeperHistoryRecordingInProgress = false
     }
   }, [kclManager])
@@ -120,9 +167,13 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         codeChangeFilePath &&
         patchChangesCodeChangeFile &&
         codeChangeRequestedCode !== undefined &&
-        kclManager.path === codeChangeFilePath &&
-        kclManager.code !== codeChangeRequestedCode
+        kclManager.path === codeChangeFilePath
       ) {
+        const codeChangePreviousCode = getZookeeperPatchPreviousCode(
+          patch,
+          codeChangeRelativePath,
+          codeChangeRequestedCode
+        )
         kclManager.addGlobalHistoryEventWithCodeChange(
           zookeeperEditPatchHistoryEvent({
             projectPath,
@@ -136,7 +187,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             },
             activeFilePath,
           }),
-          codeChangeRequestedCode
+          codeChangeRequestedCode,
+          codeChangePreviousCode
         )
         return
       }

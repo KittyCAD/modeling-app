@@ -364,6 +364,129 @@ describe('Zookeeper project history integration', () => {
     )
   })
 
+  it('keeps earlier manual edits undoable after global-only active-file Zookeeper edits', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'height = 10\nwidth = 10\ndepth = 10\n',
+    })
+
+    addManualEdit(harness.kclManager, 'height = 10\nwidth = 100\ndepth = 10\n')
+    await applyGlobalOnlyActiveFileZookeeperAction(harness, {
+      currentBefore: 'height = 10\nwidth = 100\ndepth = 10\n',
+      currentAfter: 'height = 20\nwidth = 100\ndepth = 10\n',
+      patch: {
+        run_id: 'global-only-after-manual-1',
+        changed_files: [
+          modifiedFile(
+            'main.kcl',
+            'height = 10\nwidth = 100\ndepth = 10\n',
+            'height = 20\nwidth = 100\ndepth = 10\n'
+          ),
+        ],
+      },
+    })
+    await applyGlobalOnlyActiveFileZookeeperAction(harness, {
+      currentBefore: 'height = 20\nwidth = 100\ndepth = 10\n',
+      currentAfter: 'height = 20\nwidth = 100\ndepth = 800\n',
+      patch: {
+        run_id: 'global-only-after-manual-2',
+        changed_files: [
+          modifiedFile(
+            'main.kcl',
+            'height = 20\nwidth = 100\ndepth = 10\n',
+            'height = 20\nwidth = 100\ndepth = 800\n'
+          ),
+        ],
+      },
+    })
+    addManualEdit(harness.kclManager, 'height = 20\nwidth = 200\ndepth = 800\n')
+    addManualEdit(harness.kclManager, 'height = 20\nwidth = 200\ndepth = 900\n')
+
+    const expectedStates = [
+      'height = 20\nwidth = 200\ndepth = 800\n',
+      'height = 20\nwidth = 100\ndepth = 800\n',
+      'height = 20\nwidth = 100\ndepth = 10\n',
+      'height = 10\nwidth = 100\ndepth = 10\n',
+      'height = 10\nwidth = 10\ndepth = 10\n',
+    ]
+    for (const expectedState of expectedStates) {
+      harness.kclManager.undo()
+      await waitForHistoryIdle(harness.kclManager)
+      expect(harness.kclManager.code).toBe(expectedState)
+    }
+  })
+
+  it('keeps manual edits undoable after local undo and redo before a later Zookeeper edit', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'height = 10\nwidth = 10\ndepth = 10\n',
+    })
+
+    await applyUnfilteredActiveFileZookeeperAction(harness, {
+      currentBefore: 'height = 10\nwidth = 10\ndepth = 10\n',
+      currentAfter: 'height = 20\nwidth = 10\ndepth = 10\n',
+      patch: {
+        run_id: 'local-redo-before-zk-1',
+        changed_files: [
+          modifiedFile(
+            'main.kcl',
+            'height = 10\nwidth = 10\ndepth = 10\n',
+            'height = 20\nwidth = 10\ndepth = 10\n'
+          ),
+        ],
+      },
+    })
+    addManualEdit(harness.kclManager, 'height = 20\nwidth = 100\ndepth = 10\n')
+    addManualEdit(harness.kclManager, 'height = 20\nwidth = 100\ndepth = 800\n')
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'height = 20\nwidth = 100\ndepth = 800\n'
+    )
+
+    await applyUnfilteredActiveFileZookeeperAction(harness, {
+      currentBefore: 'height = 20\nwidth = 100\ndepth = 800\n',
+      currentAfter: 'height = 6000\nwidth = 100\ndepth = 800\n',
+      patch: {
+        run_id: 'local-redo-before-zk-2',
+        changed_files: [
+          modifiedFile(
+            'main.kcl',
+            'height = 20\nwidth = 100\ndepth = 800\n',
+            'height = 6000\nwidth = 100\ndepth = 800\n'
+          ),
+        ],
+      },
+    })
+    addManualEdit(
+      harness.kclManager,
+      'height = 6000\nwidth = 200\ndepth = 800\n'
+    )
+    addManualEdit(
+      harness.kclManager,
+      'height = 6000\nwidth = 200\ndepth = 900\n'
+    )
+
+    const expectedStates = [
+      'height = 6000\nwidth = 200\ndepth = 800\n',
+      'height = 6000\nwidth = 100\ndepth = 800\n',
+      'height = 20\nwidth = 100\ndepth = 800\n',
+      'height = 20\nwidth = 100\ndepth = 10\n',
+      'height = 20\nwidth = 10\ndepth = 10\n',
+      'height = 10\nwidth = 10\ndepth = 10\n',
+    ]
+    for (const expectedState of expectedStates) {
+      harness.kclManager.undo()
+      await waitForHistoryIdle(harness.kclManager)
+      expect(harness.kclManager.code).toBe(expectedState)
+    }
+  })
+
   it('abandons undone multi-file Zookeeper redo after a new manual edit', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'value = 0\n',
@@ -1051,6 +1174,44 @@ async function applyUnfilteredActiveFileZookeeperAction(
       patch,
     }),
     currentAfter
+  )
+}
+
+async function applyGlobalOnlyActiveFileZookeeperAction(
+  harness: Awaited<ReturnType<typeof createProjectHarness>>,
+  {
+    currentBefore,
+    currentAfter,
+    patch,
+  }: {
+    currentBefore: string
+    currentAfter: string
+    patch: ZookeeperEditPatch
+  }
+) {
+  expect(harness.kclManager.code).toBe(currentBefore)
+  harness.kclManager.updateCodeEditor(currentAfter, {
+    shouldAddToHistory: false,
+    shouldClearHistory: false,
+    shouldExecute: true,
+    shouldResetCamera: false,
+    shouldWriteToDisk: true,
+  })
+  await writeText(fsZds.join(harness.projectPath, 'main.kcl'), currentAfter)
+  const patchWithoutCurrentFile: ZookeeperEditPatch = {
+    ...patch,
+    changed_files: patch.changed_files?.filter(
+      (file) => file.path !== 'main.kcl'
+    ),
+  }
+  harness.kclManager.addGlobalHistoryEventWithCodeChange(
+    zookeeperEditPatchHistoryEvent({
+      projectPath: harness.projectPath,
+      activeFilePath: harness.kclManager.path,
+      patch: patchWithoutCurrentFile,
+    }),
+    currentAfter,
+    currentBefore
   )
 }
 

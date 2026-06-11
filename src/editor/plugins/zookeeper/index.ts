@@ -446,6 +446,20 @@ async function prepareZookeeperPatchReplay(
           })
           continue
         }
+        if (
+          patchTargetLinesAlreadyPresent(
+            replayPreviousContent,
+            replayFile.patch
+          )
+        ) {
+          preparedReplayFiles.push({
+            relativePath: replayFile.relativePath,
+            absolutePath: replayFile.absolutePath,
+            previousContent: replayPreviousContent,
+            nextContent: replayPreviousContent,
+          })
+          continue
+        }
       }
       if (
         nextContent === false &&
@@ -509,6 +523,54 @@ function validateExpectedContent(
   ) {
     return zookeeperPatchConflictError(replayFile.relativePath)
   }
+}
+
+function patchTargetLinesAlreadyPresent(
+  currentContent: string,
+  patch: StructuredPatch
+) {
+  const currentLineCounts = countLines(currentContent.split(/\r?\n/))
+  const removedLineCounts = new Map<string, number>()
+  const addedLineCounts = new Map<string, number>()
+
+  for (const hunk of patch.hunks) {
+    for (const line of hunk.lines) {
+      if (line.startsWith('\\')) {
+        continue
+      }
+      const prefix = line[0]
+      const content = line.slice(1)
+      if (prefix === '-') {
+        removedLineCounts.set(
+          content,
+          (removedLineCounts.get(content) ?? 0) + 1
+        )
+      } else if (prefix === '+') {
+        addedLineCounts.set(content, (addedLineCounts.get(content) ?? 0) + 1)
+      }
+    }
+  }
+
+  for (const [line, count] of addedLineCounts) {
+    if ((currentLineCounts.get(line) ?? 0) < count) {
+      return false
+    }
+  }
+  for (const [line, count] of removedLineCounts) {
+    if ((currentLineCounts.get(line) ?? 0) >= count) {
+      return false
+    }
+  }
+
+  return addedLineCounts.size > 0
+}
+
+function countLines(lines: string[]) {
+  const counts = new Map<string, number>()
+  for (const line of lines) {
+    counts.set(line, (counts.get(line) ?? 0) + 1)
+  }
+  return counts
 }
 
 async function writeZookeeperPatchReplay(

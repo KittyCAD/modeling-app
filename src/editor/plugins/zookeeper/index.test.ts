@@ -306,6 +306,48 @@ describe('Zookeeper history patch replay', () => {
     }
   })
 
+  it('treats an active-file patch as already replayed when only context lines drifted', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const beforeZookeeperEdit = 'height = 10\nwidth = 10\ndepth = 10\n'
+    const afterZookeeperEdit = 'height = 20\nwidth = 10\ndepth = 10\n'
+    const currentEditorContent = 'height = 10\nwidth = 100\ndepth = 10\n'
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      mainPath,
+      new TextEncoder().encode(currentEditorContent)
+    )
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: {
+          run_id: 'run-active-context-drift',
+          changed_files: [
+            {
+              path: 'main.kcl',
+              status: 'modified',
+              diff: unifiedDiff(
+                'main.kcl',
+                beforeZookeeperEdit,
+                afterZookeeperEdit
+              ),
+            },
+          ],
+        },
+        direction: 'undo',
+        fileContentOverrides: new Map([[mainPath, currentEditorContent]]),
+      })
+
+      await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(
+        currentEditorContent
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('falls back to disk when the open editor buffer is stale for a modified file', async () => {
     const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
