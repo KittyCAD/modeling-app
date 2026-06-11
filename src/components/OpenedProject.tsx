@@ -102,6 +102,10 @@ export function OpenedProject() {
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
+    if (systemIOState !== SystemIOMachineStates.idle) {
+      return
+    }
+
     if (
       projects &&
       projects.length > 0 &&
@@ -119,7 +123,7 @@ export function OpenedProject() {
       void navigate(PATHS.HOME)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation])
+  }, [projects, lastOperation, systemIOState])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
