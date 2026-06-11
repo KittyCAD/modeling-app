@@ -19,7 +19,9 @@ use crate::SegmentDragAnchor;
 use crate::collections::AhashIndexSet;
 use crate::execution::Artifact;
 use crate::execution::ArtifactGraph;
+use crate::execution::ArtifactId;
 use crate::execution::CapSubType;
+use crate::execution::CodeRef;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::annotations::WarningLevel;
@@ -5286,6 +5288,37 @@ fn sketch_face_of_scene_object_ast_expr(
     }
 }
 
+fn downstream_composite_code_ref_for_source(artifact_graph: &ArtifactGraph, source_id: ArtifactId) -> Option<&CodeRef> {
+    let mut current_id = source_id;
+    let mut current_composite = None;
+
+    loop {
+        let next_composite = artifact_graph.values().find_map(|artifact| {
+            let Artifact::CompositeSolid(composite) = artifact else {
+                return None;
+            };
+            if composite.solid_ids.contains(&current_id) {
+                Some(composite)
+            } else {
+                None
+            }
+        });
+
+        let Some(composite) = next_composite else {
+            break;
+        };
+
+        current_id = composite.id;
+        current_composite = Some(composite);
+
+        if !composite.consumed {
+            break;
+        }
+    }
+
+    current_composite.map(|composite| &composite.code_ref)
+}
+
 fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
     let mut existing_artifact_ids = scene_objects
         .iter()
@@ -5354,6 +5387,8 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     CapSubType::Start => crate::frontend::api::CapKind::Start,
                     CapSubType::End => crate::frontend::api::CapKind::End,
                 };
+                let solid_code_ref =
+                    downstream_composite_code_ref_for_source(artifact_graph, cap.sweep_id).unwrap_or(&sweep.code_ref);
                 scene_objects.push(crate::front::Object {
                     id,
                     kind: ObjectKind::Cap(crate::frontend::api::Cap { id, kind }),
@@ -5361,7 +5396,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     comments: Default::default(),
                     artifact_id: cap.id,
                     source: SourceRef::BackTrace {
-                        ranges: vec![(sweep.code_ref.range, Some(sweep.code_ref.node_path.clone()))],
+                        ranges: vec![(solid_code_ref.range, Some(solid_code_ref.node_path.clone()))],
                     },
                 });
                 existing_artifact_ids.insert(cap.id);
@@ -13717,6 +13752,92 @@ extrude001 = extrude(region001, length = 5)
         assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
 
         ctx.close().await;
+    }
+
+    #[test]
+    fn test_downstream_composite_code_ref_for_source_prefers_boolean_result() {
+        let source_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let tool_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let composite_id = ArtifactId::new(uuid::Uuid::new_v4());
+        let source_code_ref = CodeRef {
+            range: [0, 10, 0].into(),
+            node_path: Default::default(),
+            path_to_node: Default::default(),
+        };
+        let composite_code_ref = CodeRef {
+            range: [20, 50, 0].into(),
+            node_path: Default::default(),
+            path_to_node: Default::default(),
+        };
+        let mut artifact_graph = ArtifactGraph::default();
+        artifact_graph.insert_for_test(
+            composite_id,
+            Artifact::CompositeSolid(crate::execution::CompositeSolid {
+                id: composite_id,
+                consumed: false,
+                sub_type: crate::execution::CompositeSolidSubType::Subtract,
+                output_index: None,
+                solid_ids: vec![source_id],
+                tool_ids: vec![tool_id],
+                code_ref: composite_code_ref.clone(),
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+
+        assert_eq!(
+            downstream_composite_code_ref_for_source(&artifact_graph, source_id),
+            Some(&composite_code_ref)
+        );
+        assert_eq!(
+            downstream_composite_code_ref_for_source(&artifact_graph, ArtifactId::new(uuid::Uuid::new_v4())),
+            None
+        );
+        assert_eq!(downstream_composite_code_ref_for_source(&artifact_graph, tool_id), None);
+        assert_ne!(
+            downstream_composite_code_ref_for_source(&artifact_graph, source_id),
+            Some(&source_code_ref)
+        );
+    }
+
+    #[test]
+    fn test_sketch_on_cap_backtraced_to_composite_uses_composite_solid() {
+        let source = "\
+boxSolid = extrude(profile, length = 10)
+part = subtract(boxSolid, tools = [cutSolid])
+";
+        let mut ast = Program::parse(source).unwrap().0.unwrap().ast;
+        let part_call_start = source.find("subtract").unwrap();
+        let part_call_end = part_call_start + "subtract(boxSolid, tools = [cutSolid])".len();
+        let cap_id = ObjectId(0);
+        let mut scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        scene_graph.objects.push(Object {
+            id: cap_id,
+            kind: ObjectKind::Cap(crate::frontend::api::Cap {
+                id: cap_id,
+                kind: crate::frontend::api::CapKind::End,
+            }),
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::placeholder(),
+            source: SourceRef::BackTrace {
+                ranges: vec![([part_call_start, part_call_end, 0].into(), None)],
+            },
+        });
+
+        let expr = sketch_on_ast_expr(&mut ast, &scene_graph, &Plane::Object(cap_id)).unwrap();
+        let ast::Expr::CallExpressionKw(call) = expr else {
+            panic!("expected faceOf call");
+        };
+        assert_eq!(call.callee.name.name, "faceOf");
+        let ast::Expr::Name(solid_name) = call.unlabeled.as_ref().unwrap() else {
+            panic!("expected solid name");
+        };
+        assert_eq!(solid_name.name.name, "part");
+        let ast::Expr::Name(face_name) = &call.arguments[0].arg else {
+            panic!("expected face name");
+        };
+        assert_eq!(face_name.name.name, "END");
     }
 
     #[tokio::test(flavor = "multi_thread")]

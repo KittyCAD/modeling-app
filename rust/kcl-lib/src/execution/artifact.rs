@@ -866,6 +866,11 @@ impl ArtifactGraph {
         self.map.iter()
     }
 
+    #[cfg(test)]
+    pub(crate) fn insert_for_test(&mut self, id: ArtifactId, artifact: Artifact) {
+        self.map.insert(id, artifact);
+    }
+
     pub fn values(&self) -> impl Iterator<Item = &Artifact> {
         self.map.values()
     }
