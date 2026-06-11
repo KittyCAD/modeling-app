@@ -18,7 +18,6 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import {
-  buildAngleConstraintInput,
   buildCircularSizeDimensionConstraintInput,
   isArcSegment,
   isCircleSegment,
@@ -457,6 +456,7 @@ export const sketchSolveMachine = setup({
     }),
     'clear selection': assign({
       selectedIds: [],
+      selectionClickPoints: {},
       duringAreaSelectIds: [],
     }),
     'toggle non-visual constraints': assign(({ context }) => ({
@@ -507,6 +507,7 @@ export const sketchSolveMachine = setup({
     return {
       sketchSolveToolName: null,
       selectedIds: [],
+      selectionClickPoints: {},
       duringAreaSelectIds: [],
       hoveredId: null,
       constraintHoverPopups: [],
@@ -616,22 +617,12 @@ export const sketchSolveMachine = setup({
                 isLineSegment(firstObject) &&
                 isLineSegment(secondObject)
               ) {
-                const angleConstraint = buildAngleConstraintInput(
-                  firstObject,
-                  secondObject,
-                  objects
-                )
-                if (angleConstraint) {
-                  const result = await context.rustContext.addConstraint(
-                    0,
-                    context.sketchId,
-                    angleConstraint,
-                    jsAppSettings(context.kclManager.systemDeps.settings),
-                    true
-                  )
-                  sendToolbarConstraintOutcome(self, result, keepSelection)
-                  return
-                }
+                sendToActorIfActive(self, {
+                  type: 'equip tool',
+                  data: { tool: 'dimensionTool' },
+                  keepSelection,
+                })
+                return
               } else if (
                 isPointSegment(firstObject) &&
                 isPointSegment(secondObject)
@@ -1047,6 +1038,14 @@ export const sketchSolveMachine = setup({
               )
             },
             actions: 'apply current selection with equipped constraint tool',
+          },
+          {
+            guard: ({ event }) => {
+              assertEvent(event, 'equip tool')
+              return event.data.tool === 'dimensionTool'
+            },
+            target: 'using tool',
+            actions: 'store pending tool',
           },
           {
             guard: ({ event }) => {

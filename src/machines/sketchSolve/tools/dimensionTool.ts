@@ -28,7 +28,10 @@ import {
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
-import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type {
+  SelectionClickPoints,
+  SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import { setup } from 'xstate'
 
@@ -37,6 +40,8 @@ type DimensionToolContext = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  initialSelectionIds: SketchSolveSelectionId[]
+  initialSelectionClickPoints: SelectionClickPoints
   initialObjects: ApiObject[]
 }
 
@@ -46,6 +51,7 @@ type DimensionToolInput = {
   kclManager: KclManager
   sketchId: number
   initialSelectionIds?: SketchSolveSelectionId[]
+  initialSelectionClickPoints?: SelectionClickPoints
   initialObjects?: ApiObject[]
   sceneGraphDelta?: SceneGraphDelta
 }
@@ -63,6 +69,7 @@ type ParentSketchSolveEvent =
         selectedIds?: SketchSolveSelectionId[]
         duringAreaSelectIds?: number[]
         replaceExistingSelection?: boolean
+        selectionClickPoints?: SelectionClickPoints
       }
     }
   | {
@@ -273,6 +280,55 @@ function getDimensionAngleContext(
     getClickedRayKey(1, line1Ray)
   )
   return angleContext
+}
+
+function getFarthestLinePointFromVertex(
+  linePoints: readonly [Coords2d, Coords2d],
+  vertex: Coords2d
+): Coords2d {
+  return length2d(subVec(linePoints[1], vertex)) >=
+    length2d(subVec(linePoints[0], vertex))
+    ? linePoints[1]
+    : linePoints[0]
+}
+
+function getInitialAngleLineSelections(
+  selectionIds: readonly SketchSolveSelectionId[],
+  selectionClickPoints: SelectionClickPoints,
+  objects: ApiObject[]
+): [LineSelection, LineSelection] | null {
+  const lineIds = selectionIds.filter(
+    (id): id is number => typeof id === 'number'
+  )
+  if (lineIds.length !== 2) {
+    return null
+  }
+
+  const line0Points = getLinePoints(objects[lineIds[0]], objects)
+  const line1Points = getLinePoints(objects[lineIds[1]], objects)
+  if (!line0Points || !line1Points) {
+    return null
+  }
+
+  const vertex = getLineIntersection(line0Points, line1Points)
+  if (!vertex) {
+    return null
+  }
+
+  return [
+    {
+      id: lineIds[0],
+      clickPoint:
+        selectionClickPoints[lineIds[0]] ??
+        getFarthestLinePointFromVertex(line0Points, vertex),
+    },
+    {
+      id: lineIds[1],
+      clickPoint:
+        selectionClickPoints[lineIds[1]] ??
+        getFarthestLinePointFromVertex(line1Points, vertex),
+    },
+  ]
 }
 
 function normalizeAngle(angle: number) {
@@ -809,6 +865,34 @@ function addDimensionListener({
   }
 }) {
   const runtime = createRuntime()
+  const initialLineSelections = getInitialAngleLineSelections(
+    context.initialSelectionIds,
+    context.initialSelectionClickPoints,
+    getObjects(context)
+  )
+  if (initialLineSelections) {
+    const [firstSelection, secondSelection] = initialLineSelections
+    const angleContext = getDimensionAngleContext(
+      firstSelection,
+      secondSelection,
+      getObjects(context)
+    )
+    if (angleContext) {
+      runtime.firstSelection = firstSelection
+      runtime.angleContext = angleContext
+      sendParent(self, {
+        type: 'update selected ids',
+        data: {
+          selectedIds: [firstSelection.id, secondSelection.id],
+          replaceExistingSelection: true,
+          selectionClickPoints: {
+            [firstSelection.id]: firstSelection.clickPoint,
+            [secondSelection.id]: secondSelection.clickPoint,
+          },
+        },
+      })
+    }
+  }
 
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
@@ -839,6 +923,9 @@ function addDimensionListener({
           data: {
             selectedIds: [lineSelection.id],
             replaceExistingSelection: true,
+            selectionClickPoints: {
+              [lineSelection.id]: lineSelection.clickPoint,
+            },
           },
         })
         return
@@ -863,6 +950,10 @@ function addDimensionListener({
         data: {
           selectedIds: [runtime.firstSelection.id, lineSelection.id],
           replaceExistingSelection: true,
+          selectionClickPoints: {
+            [runtime.firstSelection.id]: runtime.firstSelection.clickPoint,
+            [lineSelection.id]: lineSelection.clickPoint,
+          },
         },
       })
       requestDraftPreview(runtime, context, self, mousePoint)
@@ -927,6 +1018,8 @@ export const machine = setup({
     rustContext: input.rustContext,
     kclManager: input.kclManager,
     sketchId: input.sketchId,
+    initialSelectionIds: input.initialSelectionIds ?? [],
+    initialSelectionClickPoints: input.initialSelectionClickPoints ?? {},
     initialObjects:
       input.initialObjects ?? input.sceneGraphDelta?.new_graph.objects ?? [],
   }),

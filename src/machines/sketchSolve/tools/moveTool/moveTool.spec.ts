@@ -3670,6 +3670,9 @@ describe('createOnClickCallback', () => {
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [5],
       duringAreaSelectIds: [],
+      selectionClickPoints: {
+        5: [20, 0],
+      },
     })
   })
 
@@ -3704,6 +3707,9 @@ describe('createOnClickCallback', () => {
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [11],
       duringAreaSelectIds: [],
+      selectionClickPoints: {
+        11: [5, 10],
+      },
     })
   })
 

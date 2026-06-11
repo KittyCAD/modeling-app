@@ -3,6 +3,10 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
+import type {
+  SelectionClickPoints,
+  SketchSolveSelectionId,
+} from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   type DimensionAngleDraftContext,
   buildDimensionAngleConstraint,
@@ -72,7 +76,13 @@ function createMouseEvent(point: Coords2d) {
   }
 }
 
-function createParentHarness(objects: ApiObject[]) {
+function createParentHarness(
+  objects: ApiObject[],
+  options: {
+    initialSelectionIds?: SketchSolveSelectionId[]
+    initialSelectionClickPoints?: SelectionClickPoints
+  } = {}
+) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
   const kclManager = createMockKclManager()
@@ -154,6 +164,8 @@ function createParentHarness(objects: ApiObject[]) {
             rustContext,
             kclManager,
             sketchId: 0,
+            initialSelectionIds: options.initialSelectionIds,
+            initialSelectionClickPoints: options.initialSelectionClickPoints,
             initialObjects: sceneGraphDelta.new_graph.objects,
           },
         },
@@ -296,6 +308,68 @@ describe('dimensionTool', () => {
       source: {
         expr: '60deg',
         is_literal: true,
+      },
+    })
+    expect(events).toContainEqual({
+      type: 'set draft entities',
+      data: {
+        segmentIds: [],
+        constraintIds: [30],
+      },
+    })
+  })
+
+  it('starts sector selection when initialized with two selected lines', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const line0End = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line1End = createPointApiObject({
+      id: 3,
+      x: 5,
+      y: 8.660254037844386,
+    })
+    const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const line1 = createLineApiObject({ id: 11, start: 1, end: 3 })
+    const objects = [sketch, origin, line0End, line1End, line0, line1]
+    const { actor, sceneInfra, rustContext, events } = createParentHarness(
+      objects,
+      {
+        initialSelectionIds: [10, 11],
+      }
+    )
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onMove(createMouseEvent([-1, -0.6]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toEqual({
+      type: 'Angle',
+      lines: [10, 11],
+      angle: { value: 300, units: 'Deg' },
+      sector: 1,
+      reflex: true,
+      labelPosition: {
+        x: { value: -1, units: 'Mm' },
+        y: { value: -0.6, units: 'Mm' },
+      },
+      source: {
+        expr: '300deg',
+        is_literal: true,
+      },
+    })
+    expect(events).toContainEqual({
+      type: 'update selected ids',
+      data: {
+        selectedIds: [10, 11],
+        replaceExistingSelection: true,
+        selectionClickPoints: {
+          10: [10, 0],
+          11: [5, 8.660254037844386],
+        },
       },
     })
     expect(events).toContainEqual({

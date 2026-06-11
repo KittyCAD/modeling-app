@@ -24,6 +24,7 @@ import {
 } from '@src/machines/sketchSolve/segments'
 import {
   ORIGIN_TARGET,
+  type SelectionClickPoints,
   type SketchSolveSelectionId,
   getObjectSelectionIds,
   isObjectSelectionId,
@@ -91,6 +92,7 @@ export {
   getObjectSelectionIds,
   isObjectSelectionId,
   ORIGIN_TARGET,
+  type SelectionClickPoints,
   type SketchSolveSelectionId,
   type SketchSpecialTarget,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
@@ -132,6 +134,7 @@ export type SketchSolveMachineEvent =
         selectedIds?: Array<SketchSolveSelectionId>
         duringAreaSelectIds?: Array<number>
         replaceExistingSelection?: boolean
+        selectionClickPoints?: SelectionClickPoints
       }
     }
   | {
@@ -227,6 +230,7 @@ export type SketchSolveContext = {
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
   selectedIds: Array<SketchSolveSelectionId>
+  selectionClickPoints: SelectionClickPoints
   duringAreaSelectIds: Array<number>
   hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
@@ -776,6 +780,25 @@ export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
   disposeGroupChildren(sketchSegments)
 }
 
+function getSelectionClickPointsForIds(
+  selectedIds: readonly SketchSolveSelectionId[],
+  selectionClickPoints: SelectionClickPoints
+): SelectionClickPoints {
+  const nextSelectionClickPoints: SelectionClickPoints = {}
+  for (const selectedId of selectedIds) {
+    if (typeof selectedId !== 'number') {
+      continue
+    }
+
+    const clickPoint = selectionClickPoints[selectedId]
+    if (clickPoint) {
+      nextSelectionClickPoints[selectedId] = clickPoint
+    }
+  }
+
+  return nextSelectionClickPoints
+}
+
 export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update selected ids')
 
@@ -788,11 +811,21 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
 
   // Handle regular selectedIds update (for click selection, etc.)
   if (event.data.selectedIds !== undefined) {
+    const selectionClickPoints = {
+      ...context.selectionClickPoints,
+      ...(event.data.selectionClickPoints ?? {}),
+    }
+
     // If empty array is provided, clear the selection
     if (event.data.selectedIds.length === 0) {
       updates.selectedIds = []
+      updates.selectionClickPoints = {}
     } else if (event.data.replaceExistingSelection) {
       updates.selectedIds = event.data.selectedIds
+      updates.selectionClickPoints = getSelectionClickPointsForIds(
+        event.data.selectedIds,
+        selectionClickPoints
+      )
     } else {
       const first = event.data.selectedIds[0]
       if (
@@ -801,13 +834,22 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
         context.selectedIds.includes(first)
       ) {
         // If only one ID is selected and it's already in the selection, remove only it from the selection
-        updates.selectedIds = context.selectedIds.filter((id) => id !== first)
+        const nextSelectedIds = context.selectedIds.filter((id) => id !== first)
+        updates.selectedIds = nextSelectedIds
+        updates.selectionClickPoints = getSelectionClickPointsForIds(
+          nextSelectedIds,
+          context.selectionClickPoints
+        )
       } else {
         // Merge new IDs with existing selection
         const result = Array.from(
           new Set([...context.selectedIds, ...event.data.selectedIds])
         )
         updates.selectedIds = result
+        updates.selectionClickPoints = getSelectionClickPointsForIds(
+          result,
+          selectionClickPoints
+        )
       }
     }
   }
@@ -825,6 +867,7 @@ export function updateSelectedIdsFromCodeSelection({
   if (!objects) {
     return {
       selectedIds: [],
+      selectionClickPoints: {},
       duringAreaSelectIds: [],
     }
   }
@@ -834,6 +877,7 @@ export function updateSelectedIdsFromCodeSelection({
       getCurrentSketchObjectsById(objects, context.sketchId),
       event.data.ranges
     ),
+    selectionClickPoints: {},
     duringAreaSelectIds: [],
   }
 }
@@ -1557,6 +1601,7 @@ export function spawnTool(
       kclManager: context.kclManager,
       sketchId: context.sketchId,
       initialSelectionIds: context.selectedIds,
+      initialSelectionClickPoints: context.selectionClickPoints,
       initialObjects:
         context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
@@ -1597,6 +1642,7 @@ export type ToolInput = {
   kclManager: KclManager
   sketchId: number
   initialSelectionIds?: SketchSolveSelectionId[]
+  initialSelectionClickPoints?: SelectionClickPoints
   initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
