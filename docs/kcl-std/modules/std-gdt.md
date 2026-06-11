@@ -25,4 +25,5 @@ Functions for working with geometric dimensioning and tolerancing (GD&T). This c
 * [`gdt::position`](/docs/kcl-std/functions/std-gdt-position)
 * [`gdt::profile`](/docs/kcl-std/functions/std-gdt-profile)
 * [`gdt::straightness`](/docs/kcl-std/functions/std-gdt-straightness)
+* [`gdt::symmetry`](/docs/kcl-std/functions/std-gdt-symmetry)
 
