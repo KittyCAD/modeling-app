@@ -22,6 +22,16 @@ export interface OpenEditorOptions {
   isExecuting?: boolean
 }
 
+export interface ProjectRouteHandlesOptions {
+  routeId?: string
+  requestUrl: string
+  usesHashRouter?: boolean
+}
+
+export interface ProjectRouteHandlesResult {
+  redirectTo?: string
+}
+
 export interface ProjectSessionService {
   readonly openedProjectHandle: Signal<OpenedProjectHandle | undefined>
   readonly executingEditorHandle: Signal<ExecutingEditorHandle | undefined>
@@ -34,6 +44,9 @@ export interface ProjectSessionService {
     handle: ExecutingEditorHandle | undefined,
     options?: OpenEditorOptions
   ): Promise<KclManager | undefined>
+  setProjectRouteHandles(
+    options: ProjectRouteHandlesOptions
+  ): Promise<ProjectRouteHandlesResult>
 }
 
 export const projectSessionContract = defineContract({

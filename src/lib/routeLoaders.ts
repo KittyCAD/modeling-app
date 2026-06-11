@@ -1,18 +1,9 @@
 import { projectSkeletonCreate } from '@src/lang/project'
 import type { App } from '@src/lib/app'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  PROJECT_ENTRYPOINT,
-} from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
-import { readAppSettingsFile } from '@src/lib/desktop'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { getInitialDefaultDir } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import {
-  PATHS,
-  getProjectMetaByRouteId,
-  getRouterSearchFromRequestUrl,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
+import { PATHS, getRouterSearchFromRequestUrl } from '@src/lib/paths'
 import { webHomeRouteEnabled } from '@src/lib/routeLoaderUtils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -98,88 +89,16 @@ export const fileLoader =
     app: App
   }): LoaderFunction =>
   async (routerData): Promise<EmptyLoaderData | Response> => {
-    const { kclManager } = app.singletons
     const projectSession = app.registry.get(projectSessionService)
-    const { params } = routerData
-
-    // Must basically remain for all eternity, until the last person
-    // who's ever used ZDS on web before this point has died.
-    if (params.id?.startsWith('/browser')) {
-      // Pop us back home, which will cause a default project to be
-      // created.
-      return redirect(PATHS.HOME)
-    }
-
-    const heuristicProjectFilePath = params.id
-      ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
-      : undefined
-
-    const wasmInstance = await kclManager.wasmInstancePromise
-
-    const settings = await loadAndValidateSettings(
-      wasmInstance,
-      heuristicProjectFilePath
-    )
-
-    const projectPathData = await getProjectMetaByRouteId(
-      readAppSettingsFile,
-      wasmInstance,
-      params.id,
-      settings.configuration
-    )
-
-    if (!projectPathData) {
-      return Promise.reject(
-        new Error('bug: projectPathData undefined, early return')
-      )
-    }
-
-    const { projectName, projectPath, currentFileName, currentFilePath } =
-      projectPathData
-
-    const urlObj = new URL(routerData.request.url)
-
-    if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
-      let fileExists = true
-      if (currentFilePath && fileExists) {
-        try {
-          await fsZds.stat(currentFilePath)
-        } catch (e) {
-          if (e === 'ENOENT') {
-            fileExists = false
-          }
-        }
-      }
-
-      // If we are navigating to the project and want to navigate to its
-      // default file, redirect to it keeping everything else in the URL the same.
-      if (projectPath && !currentFileName && fileExists && params.id) {
-        const encodedId = safeEncodeForRouterPaths(params.id)
-        const requestUrlWithDefaultFile = routerData.request.url.replace(
-          encodedId,
-          safeEncodeForRouterPaths(fallbackFile)
-        )
-        return redirect(requestUrlWithDefaultFile)
-      }
-
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
-        const routerSearch = getRouterSearchFromRequestUrl(
-          routerData.request.url,
-          Boolean(window.electron)
-        )
-        return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
-        )
-      }
-    }
-
-    await projectSession.setOpenedProjectHandle({ projectPath })
-    await projectSession.setExecutingEditorHandle({
-      projectPath,
-      filePath: currentFilePath || PROJECT_ENTRYPOINT,
+    const result = await projectSession.setProjectRouteHandles({
+      routeId: routerData.params.id,
+      requestUrl: routerData.request.url,
+      usesHashRouter: Boolean(window.electron),
     })
+
+    if (result.redirectTo) {
+      return redirect(result.redirectTo)
+    }
 
     return {}
   }
