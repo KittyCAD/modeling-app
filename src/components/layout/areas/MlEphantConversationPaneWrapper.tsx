@@ -74,8 +74,6 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billing.actor,
-    token,
     kclManager.engineCommandManager,
     (requestProps) => {
       const payload = prepareMlEphantNewFileRequest(requestProps)
