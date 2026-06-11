@@ -2430,7 +2430,6 @@ fn max_f64(a: f64, b: f64) -> f64 {
 pub enum Arch {
 	Scalar = 0,
 
-	RelaxedSimd(RelaxedSimd),
 	Simd128(Simd128),
 }
 
@@ -2438,9 +2437,6 @@ impl Arch {
 	/// Detects the best available instruction set.
 	#[inline]
 	pub fn new() -> Self {
-		if let Some(simd) = RelaxedSimd::try_new() {
-			return Self::RelaxedSimd(simd);
-		}
 		if let Some(simd) = Simd128::try_new() {
 			return Self::Simd128(simd);
 		}
@@ -2451,7 +2447,6 @@ impl Arch {
 	#[inline(always)]
 	pub fn dispatch<Op: WithSimd>(self, op: Op) -> Op::Output {
 		match self {
-			Arch::RelaxedSimd(simd) => Simd::vectorize(simd, op),
 			Arch::Simd128(simd) => Simd::vectorize(simd, op),
 
 			Arch::Scalar => Simd::vectorize(Scalar, op),
