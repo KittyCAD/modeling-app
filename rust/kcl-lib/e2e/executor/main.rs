@@ -2147,3 +2147,21 @@ async fn kcl_test_deleting_twice_is_an_error() {
         _ => panic!(),
     };
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cannot_give_old_and_new_sweep_args() {
+    // If you give both `relativeTo` and `translateProfileToPath`,
+    // that's an error.
+    let code = kcl_input!("old_and_new_sweep_args");
+    let result = execute_and_snapshot(code, None).await;
+
+    let error_msg = match result.err() {
+        Some(ExecError::Kcl(error)) => error.error.message().to_owned(),
+        _ => panic!(),
+    };
+    // Let's not assert on the specific error message, but we know the error message should at least
+    // talk about these arguments, because they're incompatible.
+    assert!(error_msg.contains("relativeTo"));
+    assert!(error_msg.contains("translateProfileToPath"));
+    assert!(error_msg.contains("orientProfilePerpendicular"));
+}

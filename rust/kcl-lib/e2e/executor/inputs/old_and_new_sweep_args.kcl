@@ -1,0 +1,31 @@
+@settings(kclVersion = 2.0)
+
+// Sketch a square
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -1.69mm, var -1.5mm], end = [var -1.29mm, var -1.5mm])
+  line2 = line(start = [var -1.29mm, var -1.5mm], end = [var -1.29mm, var -1.92mm])
+  line3 = line(start = [var -1.29mm, var -1.92mm], end = [var -1.69mm, var -1.92mm])
+  line4 = line(start = [var -1.69mm, var -1.92mm], end = [var -1.69mm, var -1.5mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+profile = region(point = [-1.49mm, -1.5025mm], sketch = sketch001)
+
+// Sketch a path.
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [var -4.95mm, var 1.22mm], end = [var -4.87mm, var 5.57mm])
+  arc1 = arc(start = [var -2.5mm, var 8.02mm], end = [var -4.87mm, var 5.57mm], center = [var -2.37mm, var 5.52mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}
+path = [sketch002.line1, sketch002.arc1]
+
+// Sweep the square along the path.
+// This should cause an error.
+sweep(path, profile, version = 2, translateProfileToPath = true, relativeTo = sweep::TRAJECTORY)
