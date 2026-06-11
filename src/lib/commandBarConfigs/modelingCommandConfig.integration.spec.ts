@@ -50,6 +50,7 @@ describe('GDT tolerance defaults', () => {
       'GDT Distance',
       'GDT Perpendicularity',
       'GDT Angularity',
+      'GDT Concentricity',
       'GDT Parallelism',
     ] as const
 
@@ -70,5 +71,17 @@ describe('GDT tolerance defaults', () => {
         } as KclCommandValue)
       ).toBe('0.1in')
     }
+  })
+
+  it('requires datums for concentricity', () => {
+    const commandConfig = modelingMachineCommandConfig['GDT Concentricity']
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('GDT Concentricity should have a single command config')
+    }
+
+    expect(commandConfig.args?.datums).toMatchObject({
+      inputType: 'kcl',
+      required: true,
+    })
   })
 })
