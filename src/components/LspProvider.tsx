@@ -303,7 +303,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     })
-    kclManager?.clearGlobalHistory()
+    kclManager?.clearProjectHistory()
 
     if (redirect) {
       void navigate(PATHS.HOME)

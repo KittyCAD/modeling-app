@@ -1,7 +1,9 @@
 import path from 'node:path'
+import { undoDepth } from '@codemirror/commands'
 import type { UserFeature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { fsArchiveFile } from '@src/editor/plugins/fs'
 import { File, KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -587,6 +589,68 @@ describe('project system', () => {
       readSpy.mockRestore()
       resetCameraPositionSpy.mockClear()
       executeCodeSpy.mockRestore()
+      await disposeApp(app)
+    }
+  })
+
+  it('keeps project history when replacing executing editor instances', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+    const otherFilePath = `${mockProjectPath}/other.kcl`
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockImplementation((path) =>
+        Promise.resolve(path === otherFilePath ? 'other code' : 'main code')
+      )
+
+    try {
+      const projectSession = app.registry.get(projectSessionService)
+      await projectSession.setOpenedProjectHandle({
+        projectPath: mockProject.path,
+      })
+
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: mockProjectMainFilePath,
+      })
+
+      const project = app.project
+      const firstEditor = project?.executingEditor.value
+      expect(project).toBeDefined()
+      expect(firstEditor).toBeDefined()
+      if (!project || !firstEditor) {
+        throw new Error(
+          'Expected project and executing editor to be available.'
+        )
+      }
+
+      const projectHistory = project.projectHistory
+      const closeFirstEditor = vi.spyOn(firstEditor, 'close')
+      firstEditor.addProjectHistoryEvent(
+        fsArchiveFile({
+          src: `${mockProjectPath}/old.kcl`,
+          target: `${mockProjectPath}/.trash/old.kcl`,
+          requestedProjectName: mockProject.name,
+        })
+      )
+
+      expect(firstEditor.projectHistory).toBe(projectHistory)
+      expect(undoDepth(projectHistory.state)).toBe(1)
+
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: otherFilePath,
+      })
+
+      const secondEditor = project.executingEditor.value
+      expect(closeFirstEditor).toHaveBeenCalled()
+      expect(secondEditor).toBeDefined()
+      expect(secondEditor).not.toBe(firstEditor)
+      expect(secondEditor?.projectHistory).toBe(projectHistory)
+      expect(undoDepth(projectHistory.state)).toBe(1)
+    } finally {
+      readSpy.mockRestore()
       await disposeApp(app)
     }
   })

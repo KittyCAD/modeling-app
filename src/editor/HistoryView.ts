@@ -78,11 +78,24 @@ export class HistoryView {
       effects: [
         globalHistory.reconfigure([this.buildForwardingExtension(target)]),
       ],
-      annotations: [HistoryView.doNotForward.of(true)],
+      annotations: [
+        HistoryView.doNotForward.of(true),
+        Transaction.addToHistory.of(false),
+      ],
     })
     target.dispatch({
       effects: [localHistoryTarget.reconfigure(this.localHistoryExtension())],
       annotations: [Transaction.addToHistory.of(false)],
+    })
+  }
+
+  clearLocalHistoryTarget() {
+    this.editorView.dispatch({
+      effects: [globalHistory.reconfigure([])],
+      annotations: [
+        HistoryView.doNotForward.of(true),
+        Transaction.addToHistory.of(false),
+      ],
     })
   }
 

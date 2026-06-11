@@ -1078,7 +1078,7 @@ export const ProjectExplorer = ({
                       requestedProjectName: project.name,
                     },
                   })
-                  kclManager?.addGlobalHistoryEvent(
+                  kclManager?.addProjectHistoryEvent(
                     fsArchiveFile({
                       src,
                       target,
@@ -1106,7 +1106,7 @@ export const ProjectExplorer = ({
                       successMessage: 'Archived successfully',
                     },
                   })
-                  kclManager?.addGlobalHistoryEvent(
+                  kclManager?.addProjectHistoryEvent(
                     fsArchiveFile({
                       src,
                       target,
@@ -1184,7 +1184,7 @@ export const ProjectExplorer = ({
                     target,
                   },
                 })
-                kclManager?.addGlobalHistoryEvent(
+                kclManager?.addProjectHistoryEvent(
                   fsMoveFile({
                     src,
                     target,

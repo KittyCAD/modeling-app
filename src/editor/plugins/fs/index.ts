@@ -82,8 +82,8 @@ export function buildFSHistoryExtension(
   })
 
   // Note that the FS history extension is not on the EditorView for the code editor itself,
-  // but rather the globalHistoryView.
-  kclManager.globalHistoryView.dispatch(
+  // but rather the project history view.
+  kclManager.projectHistory.dispatch(
     {
       effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
     },
@@ -92,7 +92,7 @@ export function buildFSHistoryExtension(
   )
   // Teardown
   return () => {
-    kclManager.globalHistoryView.dispatch(
+    kclManager.projectHistory.dispatch(
       {
         effects: [fsEffectCompartment.reconfigure([])],
       },
