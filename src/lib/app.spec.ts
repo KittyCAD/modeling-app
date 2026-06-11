@@ -502,6 +502,17 @@ describe('project system', () => {
         filePath: mainFile.path,
       })
 
+      await projectSession.openEditor('/some-dir/test/other.kcl')
+      expect(app.project?.executingPath).toEqual('/some-dir/test/other.kcl')
+
+      await projectSession.openEditor(mainFile.path)
+      expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+      expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+      expect(projectSession.executingEditorHandle.value).toEqual({
+        projectPath: mockProject.path,
+        filePath: mainFile.path,
+      })
+
       projectSession.closeProject()
 
       expect(app.project).toBeUndefined()
