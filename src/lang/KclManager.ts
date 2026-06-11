@@ -997,14 +997,19 @@ export class KclManager extends File {
           return
         }
 
+        // Zookeeper history needs to record the active-file edit against the
+        // editor's pre-write text, so don't let the watcher preemptively reload it.
+        if (this.mlEphantManagerMachineBulkManipulatingFileSystem) {
+          return
+        }
+
         if (!isCodeTheSame(code, this.code)) {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
           // -> this must be an external change -> re-execute.
           this.updateCodeEditor(code, {
             shouldExecute: !isInSketchMode,
             shouldResetCamera: !isInSketchMode,
-            shouldAddToHistory:
-              !this.mlEphantManagerMachineBulkManipulatingFileSystem,
+            shouldAddToHistory: true,
             // We explicitly do not write to the file here since we are loading from
             // the file system and not the editor.
             shouldWriteToDisk: false,

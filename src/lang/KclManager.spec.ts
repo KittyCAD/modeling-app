@@ -503,7 +503,7 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('external edit')
   })
 
-  it('does not add Zookeeper disk watcher reloads to local editor history', async () => {
+  it('does not reload Zookeeper disk watcher updates into the active editor', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
 
@@ -520,14 +520,8 @@ describe('KclManager diagnostics', () => {
     watchHandler?.('change', kclManager.path)
     await flushPromises()
 
-    expect(updateCodeEditorSpy).toHaveBeenCalledWith(
-      'zookeeper edit',
-      expect.objectContaining({
-        shouldAddToHistory: false,
-        shouldWriteToDisk: false,
-      })
-    )
-    expect(kclManager.code).toBe('zookeeper edit')
+    expect(updateCodeEditorSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('from disk')
   })
 
   it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
