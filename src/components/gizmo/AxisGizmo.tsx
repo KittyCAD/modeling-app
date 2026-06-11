@@ -1,4 +1,4 @@
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 
@@ -27,7 +27,7 @@ import {
 
 export default function AxisGizmo() {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const { state: modelingState } = useModelingContext()
   const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement | null>(null)

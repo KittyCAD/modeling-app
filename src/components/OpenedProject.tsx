@@ -23,7 +23,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
@@ -78,12 +78,12 @@ export function OpenedProject() {
   useSignals()
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
     useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -296,7 +296,6 @@ export function OpenedProject() {
           TutorialRequestToast({
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,

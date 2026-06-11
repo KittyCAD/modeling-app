@@ -14,7 +14,7 @@ import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/Ml
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
@@ -90,7 +90,7 @@ function ModelingArea() {
 export const useDefaultAreaLibrary = () => {
   useSignals()
   const { settings, layout, registry } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const getSettings = settings.get
   const registeredAreaLibrary = registry.signal(
     layoutAreaLibraryValueSpec

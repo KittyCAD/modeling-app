@@ -4,7 +4,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -14,7 +14,7 @@ import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 
-type Singletons = ReturnType<typeof useSingletons>
+type ExecutingEditor = ReturnType<typeof useExecutingEditor>
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -45,7 +45,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const editorParent = useRef<HTMLDivElement>(null)
   useEffect(() => {
     editorParent.current?.appendChild(kclManager.editorView.dom)
@@ -62,7 +62,7 @@ export const KclEditorPaneContents = () => {
   )
 }
 
-function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
+function copyKclCodeToClipboard(kclManager: ExecutingEditor) {
   if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy.')
     return
@@ -83,7 +83,7 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const platform = usePlatform()
   const settingsActor = settings.actor
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =

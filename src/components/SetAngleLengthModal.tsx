@@ -10,7 +10,7 @@ import {
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
@@ -46,7 +46,7 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
     initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
