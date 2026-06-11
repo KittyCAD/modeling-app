@@ -69,11 +69,18 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     )?;
     let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
     let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    // Replaced by 2 args below.
+    let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
+    // Replaces `relative_to`.
+    let translate_profile_to_path: Option<bool> =
+        args.get_kw_arg_opt("translateProfileToPath", &RuntimeType::bool(), exec_state)?;
+    let orient_profile_perpendicular: Option<bool> =
+        args.get_kw_arg_opt("orientProfilePerpendicular", &RuntimeType::bool(), exec_state)?;
+
     let path = match path {
         SweepPath::Segments(segments) => InnerSweepPath::Sketch(
             build_segment_surface_sketch(segments, exec_state, &args.ctx, args.source_range).await?,
@@ -99,6 +106,8 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         sectional,
         tolerance,
         relative_to,
+        translate_profile_to_path,
+        orient_profile_perpendicular,
         tag_start,
         tag_end,
         body_type,
@@ -110,6 +119,42 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     Ok(value.into())
 }
 
+enum ProfileTransform {
+    RelativeTo(RelativeTo),
+    SeparateFlags {
+        translate_profile_to_path: bool,
+        orient_profile_perpendicular: bool,
+    },
+}
+
+impl ProfileTransform {
+    fn relative_to(&self) -> Option<RelativeTo> {
+        match self {
+            ProfileTransform::RelativeTo(relative_to) => Some(*relative_to),
+            ProfileTransform::SeparateFlags { .. } => None,
+        }
+    }
+
+    fn translate_profile_to_path(&self) -> Option<bool> {
+        match self {
+            ProfileTransform::RelativeTo(..) => None,
+            ProfileTransform::SeparateFlags {
+                translate_profile_to_path,
+                ..
+            } => Some(*translate_profile_to_path),
+        }
+    }
+    fn orient_profile_perpendicular(&self) -> Option<bool> {
+        match self {
+            ProfileTransform::RelativeTo(..) => None,
+            ProfileTransform::SeparateFlags {
+                orient_profile_perpendicular,
+                ..
+            } => Some(*orient_profile_perpendicular),
+        }
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
     sketches: Vec<Sketch>,
@@ -117,6 +162,8 @@ async fn inner_sweep(
     sectional: Option<bool>,
     tolerance: Option<TyF64>,
     relative_to: Option<String>,
+    translate_profile_to_path: Option<bool>,
+    orient_profile_perpendicular: Option<bool>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     body_type: Option<BodyType>,
@@ -132,22 +179,67 @@ async fn inner_sweep(
         )));
     }
 
+    let version = version
+        .map(|v| {
+            u8::try_from(v).map_err(|_e| {
+                KclError::new_argument(KclErrorDetails::new(
+                    format!("Invalid version {}", v),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?;
+
     let trajectory = ModelingCmdId::from(match path {
         InnerSweepPath::Sketch(sketch) => sketch.id,
         InnerSweepPath::Helix(helix) => helix.value,
     });
-    let relative_to = match relative_to.as_deref() {
-        Some("sketchPlane") => RelativeTo::SketchPlane,
-        Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,
-        Some(_) => {
-            return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
-                "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
-                vec![args.source_range],
-            )));
+
+    let profile_transform = match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {
+        // Default case when the user doesn't give any flags at all.
+        (None, None, None) => ProfileTransform::RelativeTo(match version {
+            // We default to algorithm v1 if no choice was made.
+            None | Some(1) => RelativeTo::TrajectoryCurve,
+            // 0 means "let engine choose". Engine currently chooses version 1.
+            Some(0) => RelativeTo::TrajectoryCurve,
+            // Algorithm version 2 defaults to SketchPlane.
+            Some(2) => RelativeTo::SketchPlane,
+            // Error on unknown algorithm.
+            Some(other) => {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    format!("Invalid version {}", other),
+                    vec![args.source_range],
+                )));
+            }
+        }),
+
+        // If the "new" profile transformation args are set.
+        (None, translate, orient) => ProfileTransform::SeparateFlags {
+            translate_profile_to_path: translate.unwrap_or_default(),
+            orient_profile_perpendicular: orient.unwrap_or_default(),
+        },
+
+        // RelativeTo was set, but none of its replacements were.
+        (Some(relative_to), None, None) => ProfileTransform::RelativeTo(match relative_to.as_str() {
+            "sketchPlane" => RelativeTo::SketchPlane,
+            "trajectoryCurve" => RelativeTo::TrajectoryCurve,
+            _ => {
+                return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
+                    "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+        }),
+
+        // RelativeTo was set, but also one of its replacements was.
+        // This is an error.
+        (Some(_relative_to), _, _) => {
+            return Err(KclError::new_argument(crate::errors::KclErrorDetails::new(
+                    "If you provide 'relativeTo', you cannot provide 'translateProfileToPath' or 'orientProfilePerpendicular'. Those arguments replace 'relativeTo', please use them instead.".to_owned(),
+                    vec![args.source_range],
+                )));
         }
     };
-
-    let version = version.map(|v| u8::try_from(v).unwrap_or(u8::MAX));
 
     let mut solids = Vec::new();
     for sketch in &sketches {
@@ -163,7 +255,9 @@ async fn inner_sweep(
                         .tolerance(LengthUnit(
                             tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                         ))
-                        .relative_to(relative_to)
+                        .maybe_relative_to(profile_transform.relative_to())
+                        .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
+                        .maybe_translate_profile_to_path(profile_transform.translate_profile_to_path())
                         .body_type(body_type)
                         .maybe_version(version)
                         .build(),
