@@ -20,6 +20,7 @@ import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { projectSessionService } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -297,8 +298,11 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Expected ${pluginId} plugin to be registered.`)
+      }
 
-      const pluginToggle = app.registry.get(plugin!.service)
+      const pluginToggle = app.registry.get(plugin.service)
       expect(pluginToggle.active.value).toBe(true)
       expect(syncActivePlugins).toHaveBeenCalledWith(
         expect.arrayContaining([pluginId])
@@ -450,13 +454,16 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Expected ${pluginId} plugin to be registered.`)
+      }
 
       app.settings.actor.send({ type: 'reload.settings' } as never)
 
       await waitForSettingsIdle(app)
 
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
-      expect(app.registry.get(plugin!.service).active.value).toBe(true)
+      expect(app.registry.get(plugin.service).active.value).toBe(true)
     } finally {
       app.dispose()
     }
@@ -539,19 +546,37 @@ describe('project system', () => {
     const app = createAppForTest()
 
     try {
-      const project = await app.openProject(mockProject)
+      const projectSession = app.registry.get(projectSessionService)
+      const project = await projectSession.openProject(mockProject)
 
       expect(app.project).toBeDefined()
+      expect(app.project).toBe(project)
+      expect(projectSession.openedProject.value).toBe(project)
+      expect(projectSession.openedProjectHandle.value).toEqual({
+        projectPath: mockProject.path,
+      })
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
 
-      await project.openEditor(mockProject.children![0].path)
+      const mainFile = mockProject.children?.[0]
+      expect(mainFile).toBeDefined()
+      if (!mainFile) {
+        throw new Error('Expected mock project to include a main file.')
+      }
+
+      await projectSession.openEditor(mainFile.path)
       expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+      expect(projectSession.executingEditorHandle.value).toEqual({
+        projectPath: mockProject.path,
+        filePath: mainFile.path,
+      })
 
-      app.closeProject()
+      projectSession.closeProject()
 
       expect(app.project).toBeUndefined()
+      expect(projectSession.openedProjectHandle.value).toBeUndefined()
+      expect(projectSession.executingEditorHandle.value).toBeUndefined()
     } finally {
       app.dispose()
     }

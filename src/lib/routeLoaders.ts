@@ -1,5 +1,4 @@
 import { projectSkeletonCreate } from '@src/lang/project'
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -26,9 +25,9 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectSessionService } from '@src/registry/contracts/projectSession'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -98,10 +97,8 @@ export const baseLoader =
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
-    const {
-      settings: { actor: settingsActor },
-    } = app
     const { kclManager } = app.singletons
+    const projectSession = app.registry.get(projectSessionService)
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -177,10 +174,6 @@ export const fileLoader =
       }
     }
 
-    // Set the file system manager to the project path
-    // So that WASM gets an updated path for operations
-    projectFsManager.dir = projectPath
-
     const defaultProjectData = {
       name: projectName || 'unnamed',
       path: projectPath,
@@ -196,25 +189,17 @@ export const fileLoader =
 
     const project = maybeProjectInfo ?? defaultProjectData
 
-    // Fire off the event to load the project settings
-    // once we know it's idle.
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-    settingsActor.send({
-      type: 'load.project',
+    const { editor } = await projectSession.openProjectEditor({
       project,
-    })
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
+      filePath: currentFilePath || PROJECT_ENTRYPOINT,
+      providedEditor: app.singletons.kclManager,
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined
-    )
+      providedCode:
+        window.electron?.process.env.NODE_ENV === 'test'
+          ? kclManager.localStoragePersistCode()
+          : undefined,
+    })
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
@@ -260,5 +245,9 @@ export const homeLoader =
       return redirect(PATHS.INDEX)
     }
 
-    return loadHomeProjects(app)
+    return loadHomeProjects({
+      app,
+      closeProject: () =>
+        app.registry.get(projectSessionService).closeProject(),
+    })
   }
