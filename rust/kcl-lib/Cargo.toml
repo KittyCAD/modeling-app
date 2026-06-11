@@ -27,6 +27,8 @@ bench = false
 
 [features]
 default = ["cli", "engine", "artifact-graph"]
+# This is a legacy feature that has no effect. It has been replaced with a
+# runtime flag of execution. See `skip_artifact_graph`.
 artifact-graph = []
 benchmark-execution = []
 cli = ["dep:clap", "kittycad/clap"]
