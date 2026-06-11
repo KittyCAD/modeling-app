@@ -23,7 +23,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import type { IndexLoaderData } from '@src/lib/types'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -130,8 +129,8 @@ function AppLogoLink({
   onProjectClose,
   onHomeNavigate,
 }: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
   enabled: boolean
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
@@ -178,8 +177,8 @@ function ProjectMenuPopover({
   onHomeNavigate,
 }: {
   app: App
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
   filePath?: string
   homeNavigationEnabled: boolean
   onProjectClose: ProjectCloseHandler
@@ -501,8 +500,8 @@ export function ProjectBreadcrumbButton({
   file,
   hasCloudConflict = false,
 }: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
   hasCloudConflict?: boolean
 }) {
   // Breadcrumb for project and project-relative file path

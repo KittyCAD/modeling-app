@@ -9,27 +9,20 @@ import { readAppSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
   PATHS,
-  getParentAbsolutePath,
   getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import {
-  loadHomeProjects,
-  webHomeRouteEnabled,
-} from '@src/lib/routeLoaderUtils'
+import { webHomeRouteEnabled } from '@src/lib/routeLoaderUtils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import type {
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSessionService } from '@src/registry/contracts/projectSession'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+
+type EmptyLoaderData = Record<string, never>
 
 /**
  * The base loader is used to reroute `/` root path requests,
@@ -104,7 +97,7 @@ export const fileLoader =
   }: {
     app: App
   }): LoaderFunction =>
-  async (routerData): Promise<FileLoaderData | Response> => {
+  async (routerData): Promise<EmptyLoaderData | Response> => {
     const { kclManager } = app.singletons
     const projectSession = app.registry.get(projectSessionService)
     const { params } = routerData
@@ -182,84 +175,32 @@ export const fileLoader =
       }
     }
 
-    const defaultProjectData = {
-      name: projectName || 'unnamed',
-      path: projectPath,
-      children: [],
-      kcl_file_count: 0,
-      directory_count: 0,
-      metadata: null,
-      default_file: projectPath,
-      readWriteAccess: true,
-    }
-
-    const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
-
-    const project = maybeProjectInfo ?? defaultProjectData
-
-    const { editor } = await projectSession.openProjectEditor({
-      project,
+    await projectSession.setOpenedProjectHandle({ projectPath })
+    await projectSession.setExecutingEditorHandle({
+      projectPath,
       filePath: currentFilePath || PROJECT_ENTRYPOINT,
-      providedEditor: app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      providedCode:
-        window.electron?.process.env.NODE_ENV === 'test'
-          ? kclManager.localStoragePersistCode()
-          : undefined,
     })
 
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
-
-    const projectData: IndexLoaderData = {
-      code: editor.code,
-      project,
-      file: {
-        name: currentFileName || '',
-        path: currentFilePath || '',
-        children: [],
-      },
-    }
-
-    return {
-      ...projectData,
-    }
+    return {}
   }
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
   ({
     app,
   }: {
     app: App
   }): LoaderFunction =>
-  async (): Promise<HomeLoaderData | Response> => {
+  async (): Promise<EmptyLoaderData | Response> => {
     // If on unflagged web, bump out to root, which will redirect to a project.
     if (!window.electron && !(await webHomeRouteEnabled(app))) {
       return redirect(PATHS.INDEX)
     }
 
-    return loadHomeProjects({
-      app,
-      closeProject: () =>
-        app.registry.get(projectSessionService).closeProject(),
-    })
+    await app.registry
+      .get(projectSessionService)
+      .setOpenedProjectHandle(undefined)
+    return {}
   }

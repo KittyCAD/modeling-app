@@ -6,7 +6,6 @@ import {
 import type { Signal } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
-import type { Project } from '@src/lib/project'
 
 export interface OpenedProjectHandle {
   projectPath: string
@@ -23,23 +22,18 @@ export interface OpenEditorOptions {
   isExecuting?: boolean
 }
 
-export interface OpenProjectEditorInput extends OpenEditorOptions {
-  project: Project
-  filePath: string
-}
-
 export interface ProjectSessionService {
   readonly openedProjectHandle: Signal<OpenedProjectHandle | undefined>
   readonly executingEditorHandle: Signal<ExecutingEditorHandle | undefined>
   readonly openedProject: Signal<ZDSProject | undefined>
   bindApp(app: App): void
-  openProject(project: Project): Promise<ZDSProject>
-  openEditor(filePath: string, options?: OpenEditorOptions): Promise<KclManager>
-  openProjectEditor(input: OpenProjectEditorInput): Promise<{
-    project: ZDSProject
-    editor: KclManager
-  }>
-  closeProject(): void
+  setOpenedProjectHandle(
+    handle: OpenedProjectHandle | undefined
+  ): Promise<ZDSProject | undefined>
+  setExecutingEditorHandle(
+    handle: ExecutingEditorHandle | undefined,
+    options?: OpenEditorOptions
+  ): Promise<KclManager | undefined>
 }
 
 export const projectSessionContract = defineContract({
