@@ -28,6 +28,7 @@ export const DEFAULT_KCL_VERSION = '2.0'
 export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
   'sketch_experimental_features'
+export const OPFS_CLOUD_FEATURE_FLAG: UserFeature = 'web_app_file_browser'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */

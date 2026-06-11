@@ -3730,8 +3730,7 @@ dependencies = [
 [[package]]
 name = "pulp"
 version = "0.22.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e205bb30d5b916c55e584c22201771bcf2bad9aabd5d4127f38387140c38632"
+source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
 dependencies = [
  "bytemuck",
  "cfg-if",
@@ -3747,8 +3746,7 @@ dependencies = [
 [[package]]
 name = "pulp-wasm-simd-flag"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40e24eee682d89fb193496edf918a7f407d30175b2e785fe057e4392dfd182e0"
+source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
 
 [[package]]
 name = "pxfm"
@@ -6628,8 +6626,3 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "kittycad-modeling-cmds"
-version = "0.2.205"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=achalmers%2Fteleport#fa879728fc9d2911e19367af90ca17aeb84497cf"

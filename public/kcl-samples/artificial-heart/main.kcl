@@ -1,0 +1,12 @@
+// Artificial Heart
+// A model of a permanent electromagnetic blood pump
+// Categories: Medical
+
+// Define units
+@settings(defaultLengthUnit = mm)
+
+// Import all components
+import "housing.kcl" as housing
+import "stator.kcl" as stator
+import "impeller.kcl" as impeller
+import "plumbing.kcl" as plumbing

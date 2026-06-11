@@ -9,6 +9,7 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -20,11 +21,17 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
+  getOpfsCloudProjectMetadataIndex,
+  getOpfsCloudProjectModifiedTime,
+} from '@src/lib/fs-zds/opfsCloud'
+import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { sanitizeProjectName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -112,6 +119,10 @@ export function sortProjectDirectoryEntriesByModifiedDesc(
   return entries.toSorted(
     (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
   )
+}
+
+function normalizeProjectPathForCloudMetadata(projectPath: string) {
+  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
 const prepareBulkProjectWrite = async ({
@@ -356,6 +367,35 @@ const sharedBulkDeleteWorkflow = async ({
   return totalDeleted
 }
 
+export function getCloudProjectFolderRenameName({
+  title,
+  currentName,
+  folders,
+}: {
+  title: string
+  currentName: string
+  folders: Project[]
+}) {
+  const baseName = sanitizeProjectName(title, currentName)
+  const existingNames = new Set(
+    folders
+      .filter((folder) => folder.name !== currentName)
+      .map((folder) => folder.name.toLowerCase())
+  )
+  if (!existingNames.has(baseName.toLowerCase())) {
+    return baseName
+  }
+
+  let index = 2
+  let candidate = `${baseName}-${index}`
+  while (existingNames.has(candidate.toLowerCase())) {
+    index += 1
+    candidate = `${baseName}-${index}`
+  }
+
+  return candidate
+}
+
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -380,6 +420,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
+        const cloudProjectMetadataByPath =
+          await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries: ProjectDirectoryEntry[] = []
         for (const entry of await fsZds.readdir(projectDirectoryPath)) {
@@ -401,7 +443,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           entries.push({
             name: entry,
             path: projectPath,
-            modified: stat.mtimeMs,
+            modified:
+              getOpfsCloudProjectModifiedTime(
+                cloudProjectMetadataByPath.get(
+                  normalizeProjectPathForCloudMetadata(projectPath)
+                ),
+                stat.mtimeMs
+              ) ?? stat.mtimeMs,
           })
         }
         const { value: canReadWriteProjectDirectory } =
@@ -417,6 +465,16 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             entry.path,
             await context.wasmInstancePromise
           )
+          const cloudMetadata = cloudProjectMetadataByPath.get(
+            normalizeProjectPathForCloudMetadata(entry.path)
+          )
+          project.cloudProjectId ??= cloudMetadata?.remoteProjectId
+          if (project.metadata) {
+            project.metadata.modified = getOpfsCloudProjectModifiedTime(
+              cloudMetadata,
+              project.metadata.modified
+            )
+          }
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
@@ -485,6 +543,42 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
         const requestedProjectName = input.requestedProjectName
         const projectName = input.projectName
+        const project = folders.find((p) => p.name === projectName)
+        const existingDisplayName = project
+          ? getProjectDisplayName(project)
+          : projectName
+        if (project?.cloudProjectId) {
+          const currentProjectPath = fsZds.join(
+            input.context.projectDirectoryPath,
+            projectName
+          )
+          await writeProjectTitleToProjectToml(
+            currentProjectPath,
+            requestedProjectName
+          )
+
+          const newProjectName = getCloudProjectFolderRenameName({
+            title: requestedProjectName,
+            currentName: projectName,
+            folders,
+          })
+          let renamedProjectName = projectName
+          if (newProjectName !== projectName) {
+            await renameProjectDirectory(currentProjectPath, newProjectName)
+              .then(() => {
+                renamedProjectName = newProjectName
+              })
+              .catch(() => undefined)
+          }
+
+          return {
+            message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
+            oldName: projectName,
+            newName: renamedProjectName,
+            redirect: input.redirect,
+          }
+        }
+
         let newProjectName: string = requestedProjectName
         if (doesProjectNameNeedInterpolated(requestedProjectName)) {
           const nextIndex = getNextProjectIndex(requestedProjectName, folders)
@@ -507,7 +601,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         )
 
         return {
-          message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
+          message: `Successfully renamed "${existingDisplayName}" to "${newProjectName}"`,
           oldName: projectName,
           newName: newProjectName,
           redirect: input.redirect,
