@@ -205,9 +205,7 @@ export class ToolbarFixture {
    * TODO folders, in expect state
    */
   expectFileTreeState = async (expected: string[]) => {
-    await expect
-      .poll(this._serialiseFileTree, { timeout: 30_000 })
-      .toEqual(expected)
+    await expect.poll(this._serialiseFileTree).toEqual(expected)
   }
   createFile = async (args: {
     fileName: string
@@ -225,13 +223,10 @@ export class ToolbarFixture {
    * Opens file by it's name
    */
   openFile = async (fileName: string) => {
-    const filePaneScroll = this.page.getByTestId('file-pane-scroll-container')
-    await expect(filePaneScroll).toBeVisible()
-    const fileTreeItem = filePaneScroll.getByRole('treeitem', {
-      name: fileName,
-      exact: true,
-    })
-    await expect(fileTreeItem).toBeVisible({ timeout: 30_000 })
+    const fileTreeItem = this.page
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: fileName, exact: true })
+    await expect(fileTreeItem).toBeVisible()
     await fileTreeItem.click()
   }
   ensureFolderOpen = async (folder: Locator, open: boolean) => {
