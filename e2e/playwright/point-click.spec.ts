@@ -2637,8 +2637,7 @@ sketch001 = sketch(on = XZ) {
   line2 = line(start = [var 4.67mm, var 10.74mm], end = [var 7.24mm, var 0mm])
   coincident([line1.end, line2.start])
 }
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
+extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = SURFACE)`
     const flipSurfaceDeclaration = `surface001 = flipSurface(extrude001)`
 
     await test.step('Settle the scene', async () => {
@@ -2685,7 +2684,7 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Surface: '1 sweep',
+          Surface: '1 path',
         },
         commandName: 'Flip Surface',
       })
