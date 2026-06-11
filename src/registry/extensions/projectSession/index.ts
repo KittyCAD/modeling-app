@@ -13,14 +13,25 @@ import {
 import { ZDSProject } from '@src/lang/KclManager'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import { getProjectInfo } from '@src/lib/desktop'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { getProjectInfo, readAppSettingsFile } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import {
+  PATHS,
+  getProjectMetaByRouteId,
+  getRouterSearchFromRequestUrl,
+  getStringAfterLastSeparator,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   type ExecutingEditorHandle,
   type OpenEditorOptions,
   type OpenedProjectHandle,
+  type ProjectRouteHandlesOptions,
+  type ProjectRouteHandlesResult,
   type ProjectSessionService,
   executingEditorHandleValueSpec,
   openedProjectHandleValueSpec,
@@ -311,6 +322,100 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     })
   }
 
+  const setProjectRouteHandles = async ({
+    routeId,
+    requestUrl,
+    usesHashRouter = Boolean(window.electron),
+  }: ProjectRouteHandlesOptions): Promise<ProjectRouteHandlesResult> => {
+    if (routeId?.startsWith('/browser')) {
+      return { redirectTo: PATHS.HOME }
+    }
+
+    if (!routeId) {
+      return Promise.reject(
+        new Error('bug: projectPathData undefined, early return')
+      )
+    }
+
+    const currentApp = app
+    if (!currentApp) {
+      return Promise.reject(projectSessionUnboundError())
+    }
+
+    const heuristicProjectFilePath = routeId
+      ? routeId.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
+      : undefined
+
+    const wasmInstance = await currentApp.wasmPromise
+    const settings = await loadAndValidateSettings(
+      wasmInstance,
+      heuristicProjectFilePath
+    )
+
+    const projectPathData = await getProjectMetaByRouteId(
+      readAppSettingsFile,
+      wasmInstance,
+      routeId,
+      settings.configuration
+    )
+
+    if (!projectPathData) {
+      return Promise.reject(
+        new Error('bug: projectPathData undefined, early return')
+      )
+    }
+
+    const { projectName, projectPath, currentFileName, currentFilePath } =
+      projectPathData
+
+    const urlObj = new URL(requestUrl)
+
+    if (!urlObj.pathname.endsWith('/settings')) {
+      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
+        .default_file
+      let fileExists = true
+      if (currentFilePath && fileExists) {
+        try {
+          await fsZds.stat(currentFilePath)
+        } catch (e) {
+          if (e === 'ENOENT') {
+            fileExists = false
+          }
+        }
+      }
+
+      if (projectPath && !currentFileName && fileExists && routeId) {
+        const encodedId = safeEncodeForRouterPaths(routeId)
+        return {
+          redirectTo: requestUrl.replace(
+            encodedId,
+            safeEncodeForRouterPaths(fallbackFile)
+          ),
+        }
+      }
+
+      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+        const routerSearch = getRouterSearchFromRequestUrl(
+          requestUrl,
+          usesHashRouter
+        )
+        return {
+          redirectTo: `${PATHS.FILE}/${encodeURIComponent(
+            fallbackFile
+          )}${routerSearch}`,
+        }
+      }
+    }
+
+    await setOpenedProjectHandle({ projectPath })
+    await setExecutingEditorHandle({
+      projectPath,
+      filePath: currentFilePath || PROJECT_ENTRYPOINT,
+    })
+
+    return {}
+  }
+
   const serviceImpl: ProjectSessionService = {
     openedProjectHandle,
     executingEditorHandle,
@@ -320,6 +425,7 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     },
     setOpenedProjectHandle,
     setExecutingEditorHandle,
+    setProjectRouteHandles,
   }
 
   return {
