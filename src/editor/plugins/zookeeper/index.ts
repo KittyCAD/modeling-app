@@ -427,6 +427,26 @@ async function prepareZookeeperPatchReplay(
       let nextContent = applyPatch(replayPreviousContent, replayFile.patch, {
         fuzzFactor: 0,
       })
+      if (nextContent === false) {
+        // Active-file Zookeeper edits may already be applied by local editor
+        // history before the project-level patch replays.
+        const alreadyAppliedPreviousContent = applyPatch(
+          replayPreviousContent,
+          reversePatch(replayFile.patch),
+          {
+            fuzzFactor: 0,
+          }
+        )
+        if (alreadyAppliedPreviousContent !== false) {
+          preparedReplayFiles.push({
+            relativePath: replayFile.relativePath,
+            absolutePath: replayFile.absolutePath,
+            previousContent: replayPreviousContent,
+            nextContent: replayPreviousContent,
+          })
+          continue
+        }
+      }
       if (
         nextContent === false &&
         diskContent !== null &&

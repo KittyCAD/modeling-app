@@ -27,7 +27,9 @@ beforeAll(async () => {
 
 afterEach(async () => {
   vi.restoreAllMocks()
-  for (const app of apps.splice(0)) await disposeApp(app)
+  for (const app of apps.splice(0)) {
+    await disposeApp(app)
+  }
 })
 
 describe('Zookeeper project history integration', () => {
@@ -272,6 +274,64 @@ describe('Zookeeper project history integration', () => {
       currentAfter: 'height = 6000\nwidth = 100\ndepth = 800\n',
       patch: {
         run_id: 'global-only-zk-2',
+        changed_files: [
+          modifiedFile(
+            'main.kcl',
+            'height = 20\nwidth = 100\ndepth = 800\n',
+            'height = 6000\nwidth = 100\ndepth = 800\n'
+          ),
+        ],
+      },
+    })
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'height = 20\nwidth = 100\ndepth = 800\n'
+    )
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'height = 20\nwidth = 100\ndepth = 10\n'
+    )
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'height = 20\nwidth = 10\ndepth = 10\n'
+    )
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'height = 10\nwidth = 10\ndepth = 10\n'
+    )
+  })
+
+  it('keeps manual edits undoable when active-file Zookeeper diffs are already applied locally', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'height = 10\nwidth = 10\ndepth = 10\n',
+    })
+
+    await applyUnfilteredActiveFileZookeeperAction(harness, {
+      currentBefore: 'height = 10\nwidth = 10\ndepth = 10\n',
+      currentAfter: 'height = 20\nwidth = 10\ndepth = 10\n',
+      patch: {
+        run_id: 'unfiltered-zk-1',
+        changed_files: [
+          modifiedFile(
+            'main.kcl',
+            'height = 10\nwidth = 10\ndepth = 10\n',
+            'height = 20\nwidth = 10\ndepth = 10\n'
+          ),
+        ],
+      },
+    })
+    addManualEdit(harness.kclManager, 'height = 20\nwidth = 100\ndepth = 10\n')
+    addManualEdit(harness.kclManager, 'height = 20\nwidth = 100\ndepth = 800\n')
+    await applyUnfilteredActiveFileZookeeperAction(harness, {
+      currentBefore: 'height = 20\nwidth = 100\ndepth = 800\n',
+      currentAfter: 'height = 6000\nwidth = 100\ndepth = 800\n',
+      patch: {
+        run_id: 'unfiltered-zk-2',
         changed_files: [
           modifiedFile(
             'main.kcl',
@@ -971,6 +1031,29 @@ async function applyDelayedActiveFileZookeeperAction(
   )
 }
 
+async function applyUnfilteredActiveFileZookeeperAction(
+  harness: Awaited<ReturnType<typeof createProjectHarness>>,
+  {
+    currentBefore,
+    currentAfter,
+    patch,
+  }: {
+    currentBefore: string
+    currentAfter: string
+    patch: ZookeeperEditPatch
+  }
+) {
+  expect(harness.kclManager.code).toBe(currentBefore)
+  await writeText(fsZds.join(harness.projectPath, 'main.kcl'), currentAfter)
+  harness.kclManager.addGlobalHistoryEventWithCodeChange(
+    zookeeperEditPatchHistoryEvent({
+      projectPath: harness.projectPath,
+      patch,
+    }),
+    currentAfter
+  )
+}
+
 function addManualEdit(kclManager: KclManager, code: string) {
   kclManager.updateCodeEditor(
     code,
@@ -999,7 +1082,9 @@ async function assertProjectState(
 ) {
   expect(harness.kclManager.code).toBe(expected.main)
   for (const [name, contents] of Object.entries(expected)) {
-    if (name === 'main') continue
+    if (name === 'main') {
+      continue
+    }
     const path = fsZds.join(harness.projectPath, `${name}.kcl`)
     if (contents === null) {
       await expect(fsZds.readFile(path, 'utf8')).rejects.toThrow()
@@ -1016,7 +1101,9 @@ async function writeText(path: string, contents: string) {
 
 async function waitForHistoryIdle(kclManager: KclManager) {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    if (!kclManager.historyOperationInProgress.value) return
+    if (!kclManager.historyOperationInProgress.value) {
+      return
+    }
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
   throw new Error('History operation did not settle')
