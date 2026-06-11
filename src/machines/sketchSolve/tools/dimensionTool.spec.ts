@@ -317,6 +317,24 @@ describe('dimensionTool', () => {
         constraintIds: [30],
       },
     })
+    callbacks.onClick(createMouseEvent([4, 3]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 2
+    )
+
+    expect(events).toContainEqual({
+      type: 'update selected ids',
+      data: {
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+    })
+    expect(events).toContainEqual({
+      type: 'update hovered id',
+      data: { hoveredId: 31 },
+    })
   })
 
   it('starts sector selection when initialized with two selected lines', async () => {

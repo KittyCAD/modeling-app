@@ -838,8 +838,17 @@ async function commitDraftAngleConstraint(
       true
     )
 
+    const constraintId = getConstraintIdFromResult(result)
     sendFinalResultToParent(self, result)
     sendParent(self, { type: 'clear draft entities' })
+    sendParent(self, {
+      type: 'update selected ids',
+      data: { selectedIds: [], duringAreaSelectIds: [] },
+    })
+    sendParent(self, {
+      type: 'update hovered id',
+      data: { hoveredId: constraintId },
+    })
     dismissAngleSectorPrompt()
     self.send({ type: 'done' })
   } catch (error) {
@@ -899,6 +908,10 @@ function addDimensionListener({
       runtime.firstSelection = firstSelection
       runtime.angleContext = angleContext
       showAngleSectorPrompt()
+      sendParent(self, {
+        type: 'update hovered id',
+        data: { hoveredId: null },
+      })
       sendParent(self, {
         type: 'update selected ids',
         data: {
@@ -964,6 +977,10 @@ function addDimensionListener({
       }
 
       runtime.angleContext = angleContext
+      sendParent(self, {
+        type: 'update hovered id',
+        data: { hoveredId: null },
+      })
       sendParent(self, {
         type: 'update selected ids',
         data: {
