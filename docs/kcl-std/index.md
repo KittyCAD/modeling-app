@@ -31,6 +31,7 @@ layout: manual
   * [`gdt::angularity`](/docs/kcl-std/functions/std-gdt-angularity)
   * [`gdt::annotation`](/docs/kcl-std/functions/std-gdt-annotation)
   * [`gdt::circularity`](/docs/kcl-std/functions/std-gdt-circularity)
+  * [`gdt::concentricity`](/docs/kcl-std/functions/std-gdt-concentricity)
   * [`gdt::cylindricity`](/docs/kcl-std/functions/std-gdt-cylindricity)
   * [`gdt::datum`](/docs/kcl-std/functions/std-gdt-datum)
   * [`gdt::distance`](/docs/kcl-std/functions/std-gdt-distance)
