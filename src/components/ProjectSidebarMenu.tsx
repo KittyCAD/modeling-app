@@ -19,7 +19,6 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -62,8 +61,8 @@ function AppLogoLink({
   project,
   file,
 }: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
 }) {
   const { kclManager } = useSingletons()
   const { onProjectClose } = useLspContext()
@@ -103,8 +102,8 @@ function ProjectMenuPopover({
   project,
   file,
 }: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
+  project?: Project
+  file?: FileEntry
 }) {
   const { machineManager, commands, settings } = useApp()
   const { kclManager } = useSingletons()
