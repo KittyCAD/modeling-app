@@ -206,7 +206,6 @@ async fn inner_sweep(
 
     let profile_transform = match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {
         // Default case when the user doesn't give any flags at all.
-        //
         (None, None, None) => ProfileTransform::RelativeTo(match version {
             // We default to algorithm v1 if no choice was made.
             None | Some(1) => RelativeTo::TrajectoryCurve,
@@ -222,7 +221,8 @@ async fn inner_sweep(
                 )));
             }
         }),
-        // If the "new" profile transformation args are set,
+
+        // If the "new" profile transformation args are set.
         (None, translate, orient) => ProfileTransform::SeparateFlags {
             translate_profile_to_path: translate.unwrap_or_default(),
             orient_profile_perpendicular: orient.unwrap_or_default(),
@@ -239,7 +239,9 @@ async fn inner_sweep(
                 )));
             }
         }),
+
         // RelativeTo was set, but also one of its replacements was.
+        // This is an error.
         (Some(_relative_to), _, _) => {
             return Err(KclError::new_argument(crate::errors::KclErrorDetails::new(
                     "If you provide 'relativeTo', you cannot provide 'translateProfileToPath' or 'orientProfilePerpendicular'. Those arguments replace 'relativeTo', please use them instead.".to_owned(),
