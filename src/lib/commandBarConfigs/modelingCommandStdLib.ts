@@ -333,7 +333,7 @@ export const modelingCommandStdLibDriftConfig = {
   'Pattern Circular 3D': {
     stdLibName: 'patternCircular3d',
     editFlow: true,
-    requiredArgOrder: ['solids', 'instances', 'axis'],
+    requiredArgOrder: ['solids', 'instances', 'axis', 'center'],
   },
   'Pattern Linear 3D': {
     stdLibName: 'patternLinear3d',

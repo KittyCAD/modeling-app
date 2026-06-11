@@ -805,6 +805,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           hidden: isEditingNodeSelection,
         },
         cutAt: {
+          inputType: 'vector2d', // TODO: see if we can make the KCL arg Point2d
           defaultValue: KCL_DEFAULT_ORIGIN_2D,
         },
         holeBody: {
@@ -1647,6 +1648,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ],
         },
         center: {
+          required: true, // TODO: not true in KCL, we should fix the e2e test to match
           defaultValue: KCL_DEFAULT_ORIGIN,
         },
         arcDegrees: {
