@@ -9,10 +9,6 @@ pub use artifact::ArtifactCommand;
 pub use artifact::ArtifactGraph;
 pub use artifact::CapSubType;
 pub use artifact::CodeRef;
-#[cfg(test)]
-pub(crate) use artifact::CompositeSolid;
-#[cfg(test)]
-pub(crate) use artifact::CompositeSolidSubType;
 pub use artifact::GdtAnnotationArtifact;
 pub use artifact::SketchBlock;
 pub use artifact::SketchBlockConstraint;

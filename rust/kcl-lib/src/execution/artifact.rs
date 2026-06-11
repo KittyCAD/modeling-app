@@ -867,12 +867,33 @@ impl ArtifactGraph {
     }
 
     #[cfg(test)]
-    pub(crate) fn insert_for_test(&mut self, id: ArtifactId, artifact: Artifact) {
-        self.map.insert(id, artifact);
+    pub(crate) fn insert_subtract_composite_for_test(
+        &mut self,
+        id: ArtifactId,
+        consumed: bool,
+        solid_ids: Vec<ArtifactId>,
+        tool_ids: Vec<ArtifactId>,
+        code_ref: CodeRef,
+        composite_solid_id: Option<ArtifactId>,
+    ) {
+        self.map.insert(
+            id,
+            Artifact::CompositeSolid(CompositeSolid {
+                id,
+                consumed,
+                sub_type: CompositeSolidSubType::Subtract,
+                output_index: None,
+                solid_ids,
+                tool_ids,
+                code_ref,
+                composite_solid_id,
+                pattern_ids: Vec::new(),
+            }),
+        );
     }
 
     #[cfg(test)]
-    pub(crate) fn insert_path_for_test(
+    pub(crate) fn insert_region_path_for_test(
         &mut self,
         id: ArtifactId,
         sweep_id: Option<ArtifactId>,
@@ -898,6 +919,41 @@ impl ArtifactGraph {
                 inner_path_id: None,
                 outer_path_id: None,
                 pattern_ids: Vec::new(),
+            }),
+        );
+    }
+
+    #[cfg(test)]
+    pub(crate) fn insert_sweep_for_test(&mut self, id: ArtifactId, path_id: ArtifactId, code_ref: CodeRef) {
+        self.map.insert(
+            id,
+            Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Extrusion,
+                path_id,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                trajectory_id: None,
+                method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+                consumed: true,
+                pattern_ids: Vec::new(),
+            }),
+        );
+    }
+
+    #[cfg(test)]
+    pub(crate) fn insert_cap_for_test(&mut self, id: ArtifactId, sweep_id: ArtifactId, sub_type: CapSubType) {
+        self.map.insert(
+            id,
+            Artifact::Cap(Cap {
+                id,
+                sub_type,
+                edge_cut_edge_ids: Vec::new(),
+                sweep_id,
+                path_ids: Vec::new(),
+                face_code_ref: CodeRef::placeholder([0, 0, 0].into()),
+                cmd_id: uuid::Uuid::nil(),
             }),
         );
     }
