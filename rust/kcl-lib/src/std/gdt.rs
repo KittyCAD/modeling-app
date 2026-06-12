@@ -114,6 +114,8 @@ enum GdtFeatureControlKind {
     Straightness,
     Circularity,
     Cylindricity,
+    Concentricity,
+    Runout,
     Profile,
     Position,
     Angularity,
@@ -140,6 +142,8 @@ impl GdtFeatureControlKind {
             Self::Straightness => "Straightness",
             Self::Circularity => "Circularity",
             Self::Cylindricity => "Cylindricity",
+            Self::Concentricity => "Concentricity",
+            Self::Runout => "Runout",
             Self::Profile => "Profile",
             Self::Position => "Position",
             Self::Angularity => "Angularity",
@@ -154,12 +158,25 @@ impl GdtFeatureControlKind {
             Self::Straightness => MbdSymbol::Straightness,
             Self::Circularity => MbdSymbol::Roundness,
             Self::Cylindricity => MbdSymbol::Cylindricity,
+            Self::Concentricity => MbdSymbol::Concentricity,
+            Self::Runout => MbdSymbol::Runout,
             Self::Profile => MbdSymbol::ProfileOfLine,
             Self::Position => MbdSymbol::Position,
             Self::Angularity => MbdSymbol::Angularity,
             Self::Perpendicularity => MbdSymbol::Perpendicularity,
             Self::Parallelism => MbdSymbol::Parallelism,
         }
+    }
+
+    fn diameter_symbol(self) -> Option<MbdSymbol> {
+        match self {
+            Self::Concentricity => Some(MbdSymbol::Diameter),
+            _ => None,
+        }
+    }
+
+    fn requires_datums(self) -> bool {
+        matches!(self, Self::Concentricity | Self::Runout)
     }
 }
 
@@ -450,6 +467,94 @@ pub async fn cylindricity(exec_state: &mut ExecState, args: Args) -> Result<KclV
             faces: faces.unwrap_or_default(),
             edges: edges.unwrap_or_default(),
             datums: None,
+            tolerance,
+            precision,
+            frame_position,
+            frame_plane,
+            leader_scale,
+            font_size,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn concentricity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Vec<String> = args.get_kw_arg(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = create_feature_control_annotations(
+        GdtFeatureControlKind::Concentricity,
+        GdtFeatureControlParams {
+            faces: faces.unwrap_or_default(),
+            edges: edges.unwrap_or_default(),
+            datums: Some(datums),
+            tolerance,
+            precision,
+            frame_position,
+            frame_plane,
+            leader_scale,
+            font_size,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Vec<String> = args.get_kw_arg(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = create_feature_control_annotations(
+        GdtFeatureControlKind::Runout,
+        GdtFeatureControlParams {
+            faces: faces.unwrap_or_default(),
+            edges: edges.unwrap_or_default(),
+            datums: Some(datums),
             tolerance,
             precision,
             frame_position,
@@ -1043,8 +1148,15 @@ async fn create_feature_control_annotations(
 
     let precision = resolve_precision(precision, args)?;
     let datums = resolve_datums(datums, args, kind.label())?;
+    if kind.requires_datums() && datums.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{} requires at least one datum.", kind.label()),
+            vec![args.source_range],
+        )));
+    }
     let frame_plane = resolve_gdt_frame_plane(frame_plane, exec_state, args).await?;
     let symbol = kind.symbol();
+    let diameter_symbol = kind.diameter_symbol();
 
     let mut annotations = Vec::with_capacity(faces.len() + edges.len());
     for face in &faces {
@@ -1052,6 +1164,7 @@ async fn create_feature_control_annotations(
         create_feature_control_annotation(
             face_id,
             symbol,
+            diameter_symbol,
             &tolerance,
             &datums,
             precision,
@@ -1070,6 +1183,7 @@ async fn create_feature_control_annotations(
         create_feature_control_annotation(
             edge_id,
             symbol,
+            diameter_symbol,
             &tolerance,
             &datums,
             precision,
@@ -1091,6 +1205,7 @@ async fn create_feature_control_annotations(
 async fn create_feature_control_annotation(
     entity_id: uuid::Uuid,
     symbol: MbdSymbol,
+    diameter_symbol: Option<MbdSymbol>,
     tolerance: &TyF64,
     datums: &[char],
     precision: u32,
@@ -1105,7 +1220,12 @@ async fn create_feature_control_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let display_units = exec_state.length_unit();
-    let control_frame = gdt_control_frame(symbol, tolerance.to_length_units(display_units), datums);
+    let control_frame = gdt_control_frame(
+        symbol,
+        diameter_symbol,
+        tolerance.to_length_units(display_units),
+        datums,
+    );
     let feature_control = AnnotationFeatureControl::builder()
         .entity_id(entity_id)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
@@ -1146,25 +1266,34 @@ async fn create_feature_control_annotation(
     Ok(())
 }
 
-fn gdt_control_frame(symbol: MbdSymbol, tolerance: f64, datums: &[char]) -> AnnotationMbdControlFrame {
+fn gdt_control_frame(
+    symbol: MbdSymbol,
+    diameter_symbol: Option<MbdSymbol>,
+    tolerance: f64,
+    datums: &[char],
+) -> AnnotationMbdControlFrame {
     match datums {
         [] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .build(),
         [primary] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .primary_datum(*primary)
             .build(),
         [primary, secondary] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .primary_datum(*primary)
             .secondary_datum(*secondary)
             .build(),
         [primary, secondary, tertiary] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .primary_datum(*primary)
             .secondary_datum(*secondary)
@@ -1957,6 +2086,181 @@ gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm,
             assert_close(control_frame.tolerance, expected_tolerance);
             // Cylindricity is a form tolerance and never references datums.
             assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    // Uses the GD&T Basics stepped-shaft example: reference feature B is
+    // controlled relative to datum feature A. Runs in mock mode, so it validates
+    // parsing, name resolution, and that the control frame uses the
+    // Concentricity symbol with a diameter tolerance zone and datum reference.
+    const GDT_CONCENTRICITY_REFERENCE_FEATURE_B_FACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+datumASketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumA = extrude(region(point = datumASketch.perimeter.center, sketch = datumASketch), length = 16mm)
+
+referenceFeatureBSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm)
+  |> translate(z = -12mm)
+
+gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
+gdt::concentricity(faces = [referenceFeatureB.sketch.tags.perimeter], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
+"#;
+
+    const GDT_CONCENTRICITY_REFERENCE_FEATURE_B_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+datumASketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumA = extrude(region(point = datumASketch.perimeter.center, sketch = datumASketch), length = 16mm)
+
+referenceFeatureBSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm, tagEnd = $endB)
+  |> translate(z = -12mm)
+endEdgeB = getCommonEdge(faces = [referenceFeatureB.sketch.tags.perimeter, endB])
+
+gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
+gdt::concentricity(edges = [endEdgeB], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_concentricity_uses_concentricity_symbol_with_diameter_zone_and_datums() -> Result<(), KclError> {
+        let cases = [
+            (
+                "reference feature B face",
+                GDT_CONCENTRICITY_REFERENCE_FEATURE_B_FACE_KCL,
+                0.2,
+            ),
+            (
+                "reference feature B edge",
+                GDT_CONCENTRICITY_REFERENCE_FEATURE_B_EDGE_KCL,
+                0.2,
+            ),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::Concentricity)?;
+
+            assert_eq!(
+                control_frame.diameter_symbol,
+                Some(MbdSymbol::Diameter),
+                "case: {label}"
+            );
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    // Covers the gdt::runout doc example plus a face-based variant. Runs in mock mode, so it validates
+    // parsing, name resolution, and that the control frame uses the Runout
+    // symbol with a datum reference and no diameter symbol.
+    const GDT_RUNOUT_STEPPED_SHAFT_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+annotationPlane = offsetPlane(XZ, offset = 24mm)
+
+controlledSketch = sketch(on = YZ) {
+  upperPerimeter = arc(start = [var 10mm, var 0mm], end = [var -10mm, var 0mm], center = [var 0mm, var 0mm])
+  lowerPerimeter = arc(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([upperPerimeter.end, lowerPerimeter.start])
+  coincident([lowerPerimeter.end, upperPerimeter.start])
+}
+
+controlledShaft = extrude(
+  region(point = [0mm, 1mm], sketch = controlledSketch),
+  length = -58mm,
+  tagStart = $controlledShoulder,
+  tagEnd = $controlledFreeEnd
+)
+
+controlledUpperShoulderEdge = getCommonEdge(faces = [
+  controlledShaft.sketch.tags.upperPerimeter,
+  controlledShoulder
+])
+
+datumSketch = sketch(on = YZ) {
+  perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumShaft = extrude(
+  region(point = datumSketch.perimeter.center, sketch = datumSketch),
+  length = 36mm,
+  tagEnd = $datumEnd
+)
+
+gdt::datum(
+  face = datumShaft.sketch.tags.perimeter,
+  name = "A",
+  framePosition = [18mm, -28mm],
+  framePlane = annotationPlane,
+  leaderScale = 1.15,
+  fontSize = 6mm
+)
+
+gdt::runout(
+  edges = [controlledUpperShoulderEdge],
+  tolerance = 0.2mm,
+  datums = ["A"],
+  precision = 1,
+  framePosition = [12mm, 48mm],
+  framePlane = annotationPlane,
+  leaderScale = 1.15,
+  fontSize = 6mm
+)
+"#;
+
+    const GDT_RUNOUT_FACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+datumSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumShaft = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 18mm)
+
+controlledSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+controlledShaft = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 16mm)
+  |> translate(z = -16mm)
+
+gdt::datum(face = datumShaft.sketch.tags.perimeter, name = "A", framePosition = [12mm, -14mm], framePlane = XZ)
+gdt::runout(faces = [controlledShaft.sketch.tags.perimeter], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_runout_uses_runout_symbol_with_axis_datum() -> Result<(), KclError> {
+        let cases = [
+            ("stepped shaft", GDT_RUNOUT_STEPPED_SHAFT_KCL, 0.2),
+            ("controlled face", GDT_RUNOUT_FACE_KCL, 0.2),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::Runout)?;
+
+            assert!(control_frame.diameter_symbol.is_none(), "case: {label}");
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
             assert!(control_frame.secondary_datum.is_none(), "case: {label}");
             assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
         }

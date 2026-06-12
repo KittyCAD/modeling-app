@@ -41,6 +41,7 @@ import {
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -496,8 +497,13 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
   return shell.showItemInFolder(data)
 })
 
-ipcMain.handle('shell.openExternal', (event, data) => {
-  return shell.openExternal(data)
+ipcMain.handle('shell.openExternal', (_event, data) => {
+  const allowedURL = getAllowedExternalURL(data)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
+  return shell.openExternal(allowedURL)
 })
 
 ipcMain.handle('openInNewWindow', (event, data) => {
@@ -582,7 +588,14 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
   }
 
   if (NODE_ENV !== 'test') {
-    shell.openExternal(deviceFlowSession.verificationUri).catch(reportRejection)
+    const verificationUri = getAllowedExternalURL(
+      deviceFlowSession.verificationUri
+    )
+    if (verificationUri instanceof Error) {
+      return Promise.reject(verificationUri)
+    }
+
+    shell.openExternal(verificationUri).catch(reportRejection)
   }
 
   // Wait for the user to login.
