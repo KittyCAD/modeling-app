@@ -17,29 +17,31 @@ export function DownloadDesktopApp() {
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )
-  const showBrowserStorageWarning = !hasOpfsCloudFeature
-  const [showWarning, setShowWarning] = useState(true)
+  const shouldShowBrowserStorageWarning = !hasOpfsCloudFeature
+  const [showingWarning, setShowingWarning] = useState(
+    shouldShowBrowserStorageWarning
+  )
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!showBrowserStorageWarning || !showWarning) return
+    if (!shouldShowBrowserStorageWarning || !showingWarning) return
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target as Node)
       ) {
-        setShowWarning(false)
+        setShowingWarning(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showBrowserStorageWarning, showWarning])
+  }, [shouldShowBrowserStorageWarning, showingWarning])
 
   useEffect(() => {
-    if (!showBrowserStorageWarning || !showWarning) return
-    const timeout = setTimeout(() => setShowWarning(false), 8_000)
+    if (!shouldShowBrowserStorageWarning || !showingWarning) return
+    const timeout = setTimeout(() => setShowingWarning(false), 8_000)
     return () => clearTimeout(timeout)
-  }, [showBrowserStorageWarning, showWarning])
+  }, [shouldShowBrowserStorageWarning, showingWarning])
 
   const href = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
   const warningContent = (
@@ -54,8 +56,8 @@ export function DownloadDesktopApp() {
       ref={wrapperRef}
       className="relative flex items-stretch"
       onMouseEnter={() => {
-        if (showBrowserStorageWarning) {
-          setShowWarning(true)
+        if (shouldShowBrowserStorageWarning) {
+          setShowingWarning(true)
         }
       }}
     >
@@ -70,7 +72,7 @@ export function DownloadDesktopApp() {
         />
         <span>Install desktop app</span>
       </a>
-      {showBrowserStorageWarning && showWarning && (
+      {shouldShowBrowserStorageWarning && showingWarning && (
         <div
           role="tooltip"
           className="absolute left-0 bottom-full mb-1 z-50 w-72 rounded-lg border border-chalkboard-20 dark:border-chalkboard-90 bg-chalkboard-10 dark:bg-chalkboard-90 p-3 text-sm text-chalkboard-110 dark:text-chalkboard-20 shadow-lg"

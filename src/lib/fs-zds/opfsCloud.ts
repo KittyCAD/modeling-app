@@ -192,6 +192,10 @@ function getRemoteUpdatedAt(project: RemoteProject | undefined) {
   return project.updated_at
 }
 
+function localProjectNameForRemoteProject(remoteProject: RemoteProject) {
+  return sanitizeProjectName(remoteProject.id, 'cloud-project')
+}
+
 function remoteSyncMetadata(
   project: RemoteProject | undefined,
   options: { useNowAsUpdatedAtFallback?: boolean } = {}
@@ -437,10 +441,7 @@ async function cloneRemoteProjectToLocal(
   preferredProjectPath?: string
 ): Promise<OpfsCloudLocalProject> {
   await localFs.mkdir(projectDirectory, { recursive: true })
-  const projectName = sanitizeProjectName(
-    remoteProject.title || 'cloud-project',
-    'cloud-project'
-  )
+  const projectName = localProjectNameForRemoteProject(remoteProject)
   const projectPath =
     preferredProjectPath && !(await exists(preferredProjectPath))
       ? preferredProjectPath
@@ -505,10 +506,7 @@ export async function ensureOpfsCloudProjectLocallySynced(
   }
 
   const remoteProject = await getRemoteProject(config, projectId)
-  const projectName = sanitizeProjectName(
-    remoteProject.title || 'cloud-project',
-    'cloud-project'
-  )
+  const projectName = localProjectNameForRemoteProject(remoteProject)
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
@@ -1199,10 +1197,7 @@ async function syncRemoteIndex() {
         continue
       }
 
-      const projectName = sanitizeProjectName(
-        remoteProject.title || 'cloud-project',
-        'cloud-project'
-      )
+      const projectName = localProjectNameForRemoteProject(remoteProject)
       const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
         projectDirectory,
         remoteProject.id,
