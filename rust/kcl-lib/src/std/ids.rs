@@ -236,6 +236,18 @@ async fn inner_edge_id_by_point(
                 vec![args.source_range],
             )));
         };
+
+        if let Ok(face_ids) = edge::get_face_ids_for_edge(exec_state, body.id, edge_id, &args).await
+            && let [a, b] = face_ids.as_slice()
+        {
+            exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+                edge_id,
+                face_ids: [*a, *b],
+                source_range: args.source_range,
+                stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
+            });
+        }
+
         edge_id
     };
     Ok(KclValue::Uuid {

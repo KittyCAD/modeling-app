@@ -352,8 +352,8 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
-/** Mixed: one deprecated call with metadata + one deprecated call without refactor metadata. */
-const KCL_MIXED_DEPRECATED_AND_UNTRACKED_EDGE_ID = `body = startSketchOn(XY)
+/** Mixed: one adjacent-edge helper + one edgeId closestTo helper. */
+const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
   |> line(endAbsolute = [10, 10])
@@ -492,6 +492,44 @@ describe('refactorZ0006Unified', () => {
       expect(toFix.length).toBeGreaterThanOrEqual(1)
       expect(toFix[0]?.faceIds).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('does not partially refactor a fillet tags array when one element has no metadata', () => {
+      const code = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeId(body, closestTo = [0, 0, 5])])
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getOppositeEdge',
+        },
+      ]
+
+      const result = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No Z0006 fixes to apply')
     })
   })
 
@@ -1013,11 +1051,11 @@ describe('refactorZ0006Unified', () => {
     )
 
     it(
-      'does not drop unconverted tags when a fillet tags array has only partial refactor metadata',
+      'refactors mixed getOppositeEdge and edgeId closestTo tags when both have metadata',
       { timeout: 30_000 },
       async () => {
         const ast = assertParse(
-          KCL_MIXED_DEPRECATED_AND_UNTRACKED_EDGE_ID,
+          KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO,
           instanceInThisFile
         )
         await kclManagerInThisFile.executeAst({ ast })
@@ -1031,7 +1069,7 @@ describe('refactorZ0006Unified', () => {
           execState.edgeRefactorMetadata?.some(
             (meta) => meta.stdlibFn === 'edgeId'
           )
-        ).toBe(false)
+        ).toBe(true)
 
         const refactored = refactorZ0006Unified(
           ast,
@@ -1041,13 +1079,17 @@ describe('refactorZ0006Unified', () => {
           instanceInThisFile
         )
 
-        expect(err(refactored)).toBe(true)
-        if (!err(refactored)) {
-          expect(norm(refactored)).toContain(
-            'tags = [getOppositeEdge(e1), edgeId(body, closestTo = [0, 0, 5])]'
-          )
-          expect(norm(refactored)).not.toContain('edges = [')
-        }
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toContain('fillet(radius = 1, edges = [')
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
+          .length
+        expect(sideFaceCount).toBe(2)
+        expect(n).not.toContain('tags = [')
+        expect(n).not.toContain('edgeId(body, closestTo')
       }
     )
   })
