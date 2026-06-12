@@ -4,10 +4,14 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getMillisecondsUntilEstimatedBillingBalanceIsZero } from '@src/lib/billingEstimate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { BillingTransition } from '@src/machines/billingMachine'
+import {
+  BILLING_UPDATE_RATE_LIMIT_MS,
+  BillingTransition,
+} from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
@@ -21,10 +25,12 @@ import {
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
+
+const MAX_SET_TIMEOUT_MS = 2_147_483_647
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const { auth } = useApp()
@@ -51,6 +57,11 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
+  const billingContext = billing.useContext()
+  const hasSentZeroBalanceBillingUpdate = useRef(false)
+  const zeroBalanceBillingUpdateLastFetch = useRef<number | undefined>(
+    undefined
+  )
   const {
     context: contextModeling,
     send: sendModeling,
@@ -104,22 +115,81 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     settingsValues
   )
 
-  const sendBillingUpdate = () => {
+  const sendBillingUpdate = useCallback(() => {
     billing.send({
       type: BillingTransition.Update,
       apiToken: token,
     })
-  }
-  const sendBillingUsageStarted = () => {
+  }, [billing, token])
+  const sendBillingUsageStarted = useCallback(() => {
     billing.send({
       type: BillingTransition.UsageStarted,
     })
-  }
-  const sendBillingUsageEnded = () => {
+  }, [billing])
+  const sendBillingUsageEnded = useCallback(() => {
     billing.send({
       type: BillingTransition.UsageEnded,
     })
-  }
+  }, [billing])
+
+  useEffect(() => {
+    if (billingContext.usageStartedAt === undefined) {
+      hasSentZeroBalanceBillingUpdate.current = false
+      zeroBalanceBillingUpdateLastFetch.current = undefined
+      return
+    }
+
+    const lastFetchTime = billingContext.lastFetch?.getTime()
+
+    if (hasSentZeroBalanceBillingUpdate.current) {
+      if (
+        typeof billingContext.balance === 'number' &&
+        billingContext.balance > 0 &&
+        lastFetchTime !== zeroBalanceBillingUpdateLastFetch.current
+      ) {
+        hasSentZeroBalanceBillingUpdate.current = false
+        zeroBalanceBillingUpdateLastFetch.current = undefined
+      } else {
+        return
+      }
+    }
+
+    const millisecondsUntilZero =
+      getMillisecondsUntilEstimatedBillingBalanceIsZero(billingContext)
+
+    if (millisecondsUntilZero === undefined) {
+      return
+    }
+
+    const billingUpdateRateLimitRemainingMs =
+      billingContext.lastFetch === undefined
+        ? 0
+        : Math.max(
+            0,
+            BILLING_UPDATE_RATE_LIMIT_MS -
+              (Date.now() - billingContext.lastFetch.getTime())
+          )
+    const millisecondsUntilBillingUpdateRateLimitEnds =
+      billingUpdateRateLimitRemainingMs === 0
+        ? 0
+        : billingUpdateRateLimitRemainingMs + 1
+    const delay = Math.min(
+      Math.max(
+        millisecondsUntilZero,
+        millisecondsUntilBillingUpdateRateLimitEnds
+      ),
+      MAX_SET_TIMEOUT_MS
+    )
+    const timeout = setTimeout(() => {
+      hasSentZeroBalanceBillingUpdate.current = true
+      zeroBalanceBillingUpdateLastFetch.current = lastFetchTime
+      sendBillingUpdate()
+    }, delay)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [billingContext, sendBillingUpdate])
 
   // During the makethon, this was set to the following:
   // !isPlaywright() &&

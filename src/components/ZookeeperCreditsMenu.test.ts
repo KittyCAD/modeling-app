@@ -1,6 +1,9 @@
 import { expect, test } from 'vitest'
 
-import { getEstimatedBillingBalance } from '@src/lib/billingEstimate'
+import {
+  getEstimatedBillingBalance,
+  getMillisecondsUntilEstimatedBillingBalanceIsZero,
+} from '@src/lib/billingEstimate'
 import type { BillingContext } from '@src/machines/billingMachine'
 
 const BILLING_CONTEXT_DEFAULTS: BillingContext = {
@@ -92,4 +95,46 @@ test('does not show negative estimated balances', () => {
       })
     )
   ).toBe(0)
+})
+
+test('returns milliseconds until active usage reaches zero balance', () => {
+  const usageStartedAt = new Date('2026-06-08T12:00:00.000Z')
+
+  expect(
+    getMillisecondsUntilEstimatedBillingBalanceIsZero(
+      createBillingContext({
+        balance: 2,
+        payAsYouGoApiCreditPrice: 0.0083,
+        usageStartedAt,
+      }),
+      usageStartedAt.getTime() + 30_000
+    )
+  ).toBe(90_000)
+})
+
+test('returns zero milliseconds when active usage has already exhausted balance', () => {
+  const usageStartedAt = new Date('2026-06-08T12:00:00.000Z')
+
+  expect(
+    getMillisecondsUntilEstimatedBillingBalanceIsZero(
+      createBillingContext({
+        balance: 1,
+        payAsYouGoApiCreditPrice: 0.0083,
+        usageStartedAt,
+      }),
+      usageStartedAt.getTime() + 90_000
+    )
+  ).toBe(0)
+})
+
+test('does not return a zero-balance timer when usage is not active', () => {
+  expect(
+    getMillisecondsUntilEstimatedBillingBalanceIsZero(
+      createBillingContext({
+        balance: 1,
+        payAsYouGoApiCreditPrice: 0.0083,
+        usageAccumulatedMs: 90_000,
+      })
+    )
+  ).toBeUndefined()
 })

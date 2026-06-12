@@ -3,6 +3,20 @@ import type { BillingContext } from '@src/machines/billingMachine'
 const MILLISECONDS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
 
+function canEstimateFiniteBillingBalance(
+  billingContext: BillingContext
+): billingContext is BillingContext & {
+  balance: number
+  payAsYouGoApiCreditPrice: number
+} {
+  return (
+    typeof billingContext.balance === 'number' &&
+    Number.isFinite(billingContext.balance) &&
+    billingContext.payAsYouGoApiCreditPrice !== undefined &&
+    billingContext.payAsYouGoApiCreditPrice > 0
+  )
+}
+
 function getUsageElapsedMs(billingContext: BillingContext, now: number) {
   const activeUsageElapsedMs =
     billingContext.usageStartedAt === undefined
@@ -26,12 +40,7 @@ export function getEstimatedBillingBalance(
   billingContext: BillingContext,
   now = Date.now()
 ) {
-  if (
-    typeof billingContext.balance !== 'number' ||
-    billingContext.balance === Number.POSITIVE_INFINITY ||
-    billingContext.payAsYouGoApiCreditPrice === undefined ||
-    billingContext.payAsYouGoApiCreditPrice <= 0
-  ) {
+  if (!canEstimateFiniteBillingBalance(billingContext)) {
     return billingContext.balance
   }
 
@@ -48,4 +57,23 @@ export function getEstimatedBillingBalance(
         billingContext.payAsYouGoApiCreditPrice
       )
   )
+}
+
+export function getMillisecondsUntilEstimatedBillingBalanceIsZero(
+  billingContext: BillingContext,
+  now = Date.now()
+) {
+  if (
+    !canEstimateFiniteBillingBalance(billingContext) ||
+    billingContext.usageStartedAt === undefined
+  ) {
+    return undefined
+  }
+
+  const elapsedMs = getUsageElapsedMs(billingContext, now)
+  const remainingMs =
+    billingContext.balance * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND -
+    elapsedMs
+
+  return Math.max(0, Math.ceil(remainingMs))
 }

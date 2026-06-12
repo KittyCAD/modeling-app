@@ -7,7 +7,7 @@ import { createKCClient } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 
-const _TIME_1_SECOND = 1000
+export const BILLING_UPDATE_RATE_LIMIT_MS = 1000
 
 export enum BillingState {
   Updating = 'updating',
@@ -104,7 +104,8 @@ export const billingMachine = setup({
         // Rate limit on the client side to 1 request per second.
         if (
           input.context.lastFetch &&
-          Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
+          Date.now() - input.context.lastFetch.getTime() <
+            BILLING_UPDATE_RATE_LIMIT_MS
         ) {
           console.log(
             'BillingTransition.Update was skipped as it was recently fetched'
