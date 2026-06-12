@@ -771,19 +771,34 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
-    let mut extrusion_info_edge_id = any_edge_id;
-    if sketch.clone.is_some() && clone_id_map.is_some() {
-        extrusion_info_edge_id = if let Some(clone_map) = clone_id_map {
-            if let Some(new_edge_id) = clone_map.get(&extrusion_info_edge_id) {
-                *new_edge_id
+    // So let's find an edge of the old body.
+    let extrusion_info_edge_id = if sketch.clone.is_some() && clone_id_map.is_some() {
+        if let Some(clone_map) = clone_id_map {
+            // clone_map maps old IDs -> new IDs.
+            // If the `any_edge_id` is an ID of the OLD body
+            // (we know this if it's a _key_ of the map)
+            // we should use it (because that's the old body we're querying).
+            if clone_map.contains_key(&any_edge_id) {
+                any_edge_id
+                // Otherwise, if the `any_edge_id` is an ID of the NEW body
+                // (we know this if it's a _value_ of the map),
+                // we should query the corresponding ID in the OLD body.
+                // i.e. if it's a hashmap value, find the corresponding key.
+            } else if let Some((old_edge_id, _)) =
+                clone_map.iter().find(|(_, new_edge_id)| **new_edge_id == any_edge_id)
+            {
+                *old_edge_id
             } else {
-                extrusion_info_edge_id
+                any_edge_id
             }
         } else {
             any_edge_id
-        };
-    }
-
+        }
+    // If this isn't a clone, there's no old/new body distinction.
+    // So just use the edge.
+    } else {
+        any_edge_id
+    };
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
@@ -871,8 +886,8 @@ pub(crate) async fn do_post_extrude<'a>(
                     ModelingCmdMeta::from_args(exec_state, args),
                     ModelingCmd::from(
                         mcmd::Solid3dGetAdjacencyInfo::builder()
-                            .object_id(sketch.id)
-                            .edge_id(any_edge_id)
+                            .object_id(sketch_id)
+                            .edge_id(extrusion_info_edge_id)
                             .build(),
                     ),
                 )
@@ -1033,7 +1048,7 @@ pub(crate) async fn do_post_extrude<'a>(
     })
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 struct Faces {
     /// Maps curve ID to face ID for each side.
     sides: HashMap<Uuid, Option<Uuid>>,
