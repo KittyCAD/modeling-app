@@ -180,15 +180,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   value,
 }))
 
-const bodyTypeArg = {
-  inputType: 'options',
-  required: false,
-  options: kclBodyTypeOptions,
-} satisfies CommandArgumentConfig<
-  KclPreludeBodyType | undefined,
-  ModelingMachineContext
->
-
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
 ): true | Error => {
@@ -1064,7 +1055,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bodyType: {
-        ...bodyTypeArg,
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -1137,7 +1130,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bodyType: {
-        ...bodyTypeArg,
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -1201,7 +1196,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bodyType: {
-        ...bodyTypeArg,
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -1299,7 +1296,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bodyType: {
-        ...bodyTypeArg,
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },

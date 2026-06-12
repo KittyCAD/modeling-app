@@ -8,10 +8,6 @@ import type {
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  readLastBodyType,
-  writeLastBodyType,
-} from '@src/lib/modelingCommandPreferences'
 import { err } from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -54,34 +50,6 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
 
   if (result instanceof Error) {
     toast.error(result.message)
-  }
-}
-
-const PROFILE_ARG_NAME_FOR_BODY_TYPE = 'sketches'
-
-function shouldRestoreRememberedBodyType(
-  command: Command | undefined,
-  argumentsToSubmit: Record<string, unknown>
-): boolean {
-  return Boolean(
-    command?.args &&
-      'bodyType' in command.args &&
-      command.args[PROFILE_ARG_NAME_FOR_BODY_TYPE]?.inputType === 'selection' &&
-      argumentsToSubmit[PROFILE_ARG_NAME_FOR_BODY_TYPE] !== undefined
-  )
-}
-
-function maybeRestoreRememberedBodyType(
-  command: Command | undefined,
-  argumentsToSubmit: Record<string, unknown>
-) {
-  if (!shouldRestoreRememberedBodyType(command, argumentsToSubmit)) {
-    return argumentsToSubmit
-  }
-
-  return {
-    ...argumentsToSubmit,
-    bodyType: readLastBodyType(),
   }
 }
 
@@ -181,23 +149,10 @@ export const commandBarMachine = setup({
         const [argName, argData] = Object.entries(event.output)[0]
         const { currentArgument } = context
         if (!currentArgument) return {}
-        if (argName === 'bodyType') {
-          writeLastBodyType(argData)
-        }
-        const argumentsToSubmit = {
+        return {
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-        if (
-          argName !== PROFILE_ARG_NAME_FOR_BODY_TYPE ||
-          argumentsToSubmit.bodyType !== undefined
-        ) {
-          return argumentsToSubmit
-        }
-        return maybeRestoreRememberedBodyType(
-          context.selectedCommand,
-          argumentsToSubmit
-        )
       },
     }),
     'Set kclManager': assign({
@@ -384,18 +339,10 @@ export const commandBarMachine = setup({
         if (!command?.args) return {}
         const args: { [x: string]: unknown } = {}
         for (const [argName, arg] of Object.entries(command.args)) {
-          const hasEventDefault =
+          args[argName] =
             event.data.argDefaultValues &&
             argName in event.data.argDefaultValues
-          args[argName] = hasEventDefault
-            ? event.data.argDefaultValues?.[argName]
-            : argName === 'bodyType'
-              ? shouldRestoreRememberedBodyType(
-                  command,
-                  event.data.argDefaultValues ?? {}
-                )
-                ? readLastBodyType()
-                : undefined
+              ? event.data.argDefaultValues[argName]
               : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
                 ? arg.defaultValue
                 : undefined

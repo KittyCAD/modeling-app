@@ -4,7 +4,6 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AnyStateMachine, StateFrom } from 'xstate'
 
-import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type {
@@ -40,17 +39,13 @@ function CommandArgOptionInput({
     [argName, arg, commandBarState.context, actorContext]
   )
   // The initial current option is either an already-input value or the configured default
-  const currentOption = useMemo(() => {
-    const { value } = evaluateCommandBarArg(
-      argName,
-      arg,
-      commandBarState.context
-    )
-    return (
-      resolvedOptions.find((o) => o.value === value) ||
-      resolvedOptions.find((o) => o.isCurrent)
-    )
-  }, [arg, commandBarState.context, argName, resolvedOptions])
+  const currentOption = useMemo(
+    () =>
+      resolvedOptions.find(
+        (o) => o.value === commandBarState.context.argumentsToSubmit[argName]
+      ) || resolvedOptions.find((o) => o.isCurrent),
+    [commandBarState.context.argumentsToSubmit, argName, resolvedOptions]
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const shouldSubmitOnChange = useRef(false)

@@ -213,7 +213,7 @@ async fn coerce_extrude_targets(
     if !segments.is_empty() {
         if !matches!(body_type, BodyType::Surface) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Selected sketch edges can only be extruded as a surface. To make a solid, select a closed sketch region instead. To extrude these edges, set `bodyType = SURFACE`."
+                "Sketch edges create surface extrudes. For a solid, select a closed sketch region instead. To extrude these edges, set `bodyType = SURFACE`."
                     .to_owned(),
                 vec![source_range],
             )));
