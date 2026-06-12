@@ -1,5 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
+import type { UserFeature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
@@ -19,7 +20,7 @@ import type {
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
-import { jsAppSettings, userHasFeature } from '@src/lib/settings/settingsUtils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
@@ -28,6 +29,16 @@ export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
 
 const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
+
+async function userHasFeature(
+  featureFlagId: string,
+  defaultValue: boolean
+): Promise<boolean> {
+  return (
+    window.app?.userFeatures.has(featureFlagId as UserFeature, defaultValue) ??
+    defaultValue
+  )
+}
 
 interface ExecutionResult {
   logs: string[]

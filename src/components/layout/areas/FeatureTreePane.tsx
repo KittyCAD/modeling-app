@@ -935,12 +935,12 @@ const OperationItem = ({
             const applied =
               await systemDeps.kclManager.applyZ0006FixBeforeEdit()
             if (applied) {
-              const nextOp =
-                systemDeps.kclManager.lastSuccessfulOperations.find(
-                  (candidate: Operation) =>
-                    candidate.type === 'StdLibCall' &&
-                    candidate.name === op.name
-                )
+              const nextOp = getAllOperations(
+                systemDeps.kclManager.lastSuccessfulOperations
+              ).find(
+                (candidate: Operation) =>
+                  candidate.type === 'StdLibCall' && candidate.name === op.name
+              )
               if (nextOp) {
                 operationToEdit = nextOp
               }
