@@ -289,6 +289,7 @@ describe('Zookeeper project history integration', () => {
     expect(harness.kclManager.code).toBe(
       'height = 20\nwidth = 100\ndepth = 800\n'
     )
+    expect(harness.kclManager.undoDepth.value).toBeGreaterThan(0)
     harness.kclManager.undo()
     await waitForHistoryIdle(harness.kclManager)
     expect(harness.kclManager.code).toBe(

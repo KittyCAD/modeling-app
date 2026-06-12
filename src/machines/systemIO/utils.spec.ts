@@ -300,6 +300,23 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.requestedFileNameWithExtension).toBe('newFile.kcl')
   })
 
+  it('falls back to the active editor file as the navigation target', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fallbackFilePath: '/projects/some-project/main.kcl',
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'height = 400',
+        },
+      },
+    })
+
+    expect(preparedPayload?.requestedFileNameWithExtension).toBe('main.kcl')
+  })
+
   it('carries only explicit Zookeeper delete signals into edit requests', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',

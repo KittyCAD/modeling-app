@@ -463,11 +463,12 @@ export const mlConversationsToJson = (
 }
 
 export const prepareMlEphantNewFileRequest = ({
+  fallbackFilePath,
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
   filesToDelete = [],
-}: MlEphantNewFileRequestProps) => {
+}: MlEphantNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
     toolOutput.type !== 'edit_kcl_code'
@@ -491,7 +492,7 @@ export const prepareMlEphantNewFileRequest = ({
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
   // project-relative, matching what the field name promises.
   const rawRelativePath = getFilePathRelativeToProject(
-    fileFocusedOnInEditor?.path || '',
+    fileFocusedOnInEditor?.path || fallbackFilePath || '',
     projectNameCurrentlyOpened
   )
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)

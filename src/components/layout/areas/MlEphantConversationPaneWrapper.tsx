@@ -283,13 +283,16 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     token,
     kclManager.engineCommandManager,
     (requestProps) => {
-      const payload = prepareMlEphantNewFileRequest(requestProps)
+      const activeFilePath =
+        requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
+      const payload = prepareMlEphantNewFileRequest({
+        ...requestProps,
+        fallbackFilePath: activeFilePath,
+      })
 
       if (payload) {
         let historyRecorded = false
         const exchangeId = requestProps.exchangeId ?? 0
-        const activeFilePath =
-          requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
         const activeRelativePath =
           project?.path && activeFilePath
             ? normalizeKCLFileDeletePath(
