@@ -1099,10 +1099,15 @@ test(
 
     await u.openFilePanel()
 
-    // Find the current file.
+    // Find the current file
     const filesPane = page.locator('#files-pane')
     // Open the directory
-    await page.getByText('nested').click()
+    const nestedFolder = filesPane
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: 'nested', exact: true })
+    if ((await nestedFolder.getAttribute('aria-expanded')) !== 'true') {
+      await nestedFolder.click()
+    }
     // See the bracket
     await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
 
