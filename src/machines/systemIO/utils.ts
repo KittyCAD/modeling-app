@@ -145,6 +145,7 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  lastRecursiveMoveTarget?: string
   lastOperation: any
 
   // A mapping between project id and conversation ids.

@@ -40,7 +40,9 @@ layout: manual
   * [`gdt::perpendicularity`](/docs/kcl-std/functions/std-gdt-perpendicularity)
   * [`gdt::position`](/docs/kcl-std/functions/std-gdt-position)
   * [`gdt::profile`](/docs/kcl-std/functions/std-gdt-profile)
+  * [`gdt::runout`](/docs/kcl-std/functions/std-gdt-runout)
   * [`gdt::straightness`](/docs/kcl-std/functions/std-gdt-straightness)
+  * [`gdt::symmetry`](/docs/kcl-std/functions/std-gdt-symmetry)
 * [**std::gear**](/docs/kcl-std/modules/std-gear) Experimental
   * [`gear::helical`](/docs/kcl-std/functions/std-gear-helical) Experimental
   * [`gear::herringbone`](/docs/kcl-std/functions/std-gear-herringbone) Experimental

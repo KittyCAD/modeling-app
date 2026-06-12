@@ -1516,6 +1516,54 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-symmetry',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Symmetry',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Symmetry',
+              icon: 'gdtSymmetry',
+              description:
+                'Controls how closely median points align with a datum center plane.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-symmetry'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-runout',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Runout',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Runout',
+              icon: 'gdtRunout',
+              description:
+                'Controls how much a round feature may vary as it rotates around a datum axis.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-runout'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-angularity',
               onClick: () =>
                 commands.send({
