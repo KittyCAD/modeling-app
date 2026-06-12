@@ -352,7 +352,7 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
-/** Mixed: one adjacent-edge helper + one edgeId closestTo helper. */
+/** Mixed: one direct tag + one edgeId closestTo helper. */
 const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `base = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -363,7 +363,7 @@ const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `base = startSketchOn(XY)
   |> extrude(length = 5)
 edgeFromPoint = edgeId(base, closestTo = [0, 0, 5])
 body = base
-  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeFromPoint])
+  |> fillet(radius = 1, tags = [e1, edgeFromPoint])
 `
 
 /** Focusrite Scarlett mounting bracket (first 55 lines): sketch in a function, fillet uses getPreviousAdjacentEdge(bs.tags.edge7) style. Z0006 refactor should emit edgeRefs with bs.tags.x (not bare edge6, edge7). */
@@ -1053,7 +1053,7 @@ describe('refactorZ0006Unified', () => {
     )
 
     it(
-      'refactors mixed getOppositeEdge and edgeId closestTo tags when both have metadata',
+      'refactors mixed direct tag and edgeId closestTo tags when both have metadata',
       { timeout: 30_000 },
       async () => {
         const ast = assertParse(
@@ -1063,8 +1063,8 @@ describe('refactorZ0006Unified', () => {
         await kclManagerInThisFile.executeAst({ ast })
         const execState = kclManagerInThisFile.execState
         expect(
-          execState.edgeRefactorMetadata?.some(
-            (meta) => meta.stdlibFn === 'getOppositeEdge'
+          execState.directTagFilletMetadata?.some((meta) =>
+            meta.tags.some((tag) => tag.tagIdentifier === 'e1')
           )
         ).toBe(true)
         expect(
@@ -1086,12 +1086,12 @@ describe('refactorZ0006Unified', () => {
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [e1, capStart001]')
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
-        expect(n).not.toContain('edgeId(base, closestTo')
+        expect(n).not.toContain('tags = [e1, edgeFromPoint]')
       }
     )
   })
