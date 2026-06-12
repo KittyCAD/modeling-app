@@ -1,0 +1,71 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing beam_sweeps.kcl
+---
+@settings(kclVersion = 2.0, defaultLengthUnit = in)
+
+// Parameters to define the ring profile.
+ringDiameter = 32in // diameter
+ringThickness = 0.5in // thickness of the ring profile
+
+
+fn makeTubeSection(path) {
+  ringProfile = sketch(on = XY) {
+    circle1 = circle(start = [var 1in, var 0in], center = [var 0in, var 0in])
+    coincident([circle1.center, ORIGIN])
+    horizontal([circle1.start, ORIGIN])
+    diameter(circle1) == ringDiameter
+    circle2 = circle(start = [var 1in, var 0in], center = [var 0in, var 0in])
+    coincident([circle2.center, ORIGIN])
+    horizontal([circle2.start, ORIGIN])
+    diameter(circle2) == ringDiameter - (ringThickness * 2)
+  }
+  tubeRegion = region(
+    point = [
+      ringDiameter / 2 - (ringThickness / 2),
+      0
+    ],
+    sketch = ringProfile,
+  )
+  hide(ringProfile)
+  return sweep(
+    tubeRegion,
+    path,
+    translateProfileToPath = true,
+    orientProfilePerpendicular = true,
+    version = 2,
+  )
+}
+
+// Params to define the specific tubes we're arranging.
+leftBeamLength = 100
+distanceBetweenTubes = 200
+
+// Sketch some lines in 1D.
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 0in, var 100in])
+  coincident([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  distance([line1.start, line1.end]) == leftBeamLength
+  line2 = line(start = [var 200in, var 100in], end = [var 200in, var 0in])
+  horizontal([line2.end, ORIGIN])
+  parallel([line1, line2])
+  distance([line2, line1]) == distanceBetweenTubes
+  equalLength([line2, line1])
+  line3 = line(start = [var 0in, var 0in], end = [var 200in, var 0in])
+  coincident([line3.start, line1.start])
+  coincident([line3.end, line2.end])
+  line4 = line(start = [var 0in, var 100in], end = [var 200in, var 100in])
+  coincident([line4.start, line1.end])
+  coincident([line4.end, line2.start])
+  line5 = line(start = [var 0in, var 100in], end = [var 200in, var 0in])
+  coincident([line5.start, line4.start])
+  coincident([line5.end, line3.end])
+}
+
+// For each line, make a tube along it.
+makeTubeSection(path = sketch001.line1)
+makeTubeSection(path = sketch001.line2)
+makeTubeSection(path = sketch001.line3)
+makeTubeSection(path = sketch001.line4)
+makeTubeSection(path = sketch001.line5)
