@@ -112,7 +112,7 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 type OutputFormat = OutputFormat3d
@@ -181,6 +181,41 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
+
+function isSelections(value: unknown): value is Selections {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'graphSelections' in value &&
+    isArray(value.graphSelections) &&
+    'otherSelections' in value &&
+    isArray(value.otherSelections)
+  )
+}
+
+function isKclCommandValue(value: unknown): value is KclCommandValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'valueAst' in value &&
+    'valueText' in value &&
+    'valueCalculated' in value
+  )
+}
+
+export function extrudeSelectionRequiresBodyType({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  const sketches = argumentsToSubmit.sketches
+  if (!isSelections(sketches)) return false
+  if (!isKclCommandValue(argumentsToSubmit.length)) return false
+
+  return sketches.graphSelections.some(
+    (selection) => !selection.artifact || selection.artifact.type === 'segment'
+  )
+}
 
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
@@ -1080,7 +1115,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: extrudeSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },

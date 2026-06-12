@@ -1,14 +1,37 @@
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
+import type { Artifact } from '@src/lang/wasm'
 import {
+  extrudeSelectionRequiresBodyType,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
+
+function selectionsForArtifact(artifact?: Artifact): Selections {
+  return {
+    graphSelections: [
+      {
+        artifact,
+        codeRef: { range: [0, 1], pathToNode: [] },
+      },
+    ],
+    otherSelections: [],
+  }
+}
+
+function parsedLength(value = '5'): KclCommandValue {
+  return {
+    valueAst: {},
+    valueText: value,
+    valueCalculated: value,
+  } as KclCommandValue
+}
 
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
@@ -91,5 +114,74 @@ describe('GDT tolerance defaults', () => {
         required: true,
       })
     }
+  })
+})
+
+describe('Extrude bodyType argument', () => {
+  it('requires bodyType when extruding sketch segments after length is confirmed', () => {
+    const commandConfig = modelingMachineCommandConfig.Extrude
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Extrude should have a single command config')
+    }
+
+    const bodyTypeArg = commandConfig.args?.bodyType
+    if (!bodyTypeArg) throw new Error('Extrude should expose bodyType')
+
+    const required =
+      typeof bodyTypeArg.required === 'function'
+        ? bodyTypeArg.required({
+            argumentsToSubmit: {
+              sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+              length: parsedLength(),
+            },
+          })
+        : bodyTypeArg.required
+
+    expect(required).toBe(true)
+  })
+
+  it('keeps bodyType optional for sketch segments before length is confirmed', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+          length: '5',
+        },
+      })
+    ).toBe(false)
+  })
+
+  it('keeps bodyType optional for closed extrude profiles and regions', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(false)
+
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({
+            type: 'path',
+            subType: 'region',
+          } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(false)
+  })
+
+  it('requires bodyType for valid segment selections before artifact data is available', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact(),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
   })
 })
