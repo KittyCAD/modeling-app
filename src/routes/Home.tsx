@@ -1,6 +1,7 @@
+import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useState } from 'react'
+import type { Dispatch, FormEvent, HTMLProps, SetStateAction } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -10,7 +11,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-import { BillingDialog } from '@kittycad/react-shared'
+import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
@@ -35,11 +36,19 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { opfsCloudSyncStatus } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  type OptimisticProjectRenames,
+  applyOptimisticProjectRenames,
+  pruneSettledOptimisticProjectRenames,
+} from '@src/lib/optimisticProjectRenames'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
@@ -70,8 +79,7 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import type { ActorRefFrom } from 'xstate'
-import { waitFor } from 'xstate'
+import { type ActorRefFrom, waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -89,19 +97,58 @@ const Home = () => {
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
+  const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
+  const [optimisticProjectRenames, setOptimisticProjectRenames] =
+    useState<OptimisticProjectRenames>({})
+  const optimisticProjects = useMemo(
+    () => applyOptimisticProjectRenames(projects, optimisticProjectRenames),
+    [projects, optimisticProjectRenames]
+  )
   const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, setQuery } = useProjectSearch(projects)
+  const { searchResults, query, setQuery } =
+    useProjectSearch(optimisticProjects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+
+  useEffect(() => {
+    setOptimisticProjectRenames((renames) =>
+      pruneSettledOptimisticProjectRenames(projects, renames)
+    )
+  }, [projects])
+
+  useEffect(() => {
+    const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
+      navigate,
+      location,
+      ''
+    )
+
+    commands.send({
+      type: 'Add commands',
+      data: {
+        commands: [RouteTelemetryCommand, RouteSettingsCommand],
+      },
+    })
+
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
+      })
+    }
+  }, [navigate, location, commands])
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -117,7 +164,6 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
-  const location = useLocation()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
@@ -125,26 +171,35 @@ const Home = () => {
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
+    let disposed = false
+    let lastHandledSyncedAt: string | undefined
+
+    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
+      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
+        return
+      }
+
+      lastHandledSyncedAt = syncedAt
+      void waitFor(systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+        .then(() => {
+          if (disposed || lastHandledSyncedAt !== syncedAt) {
+            return
+          }
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        })
+        .catch(reportRejection)
     })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
-        },
-      })
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settingsValues.app?.projectDirectory?.current])
+
+    return () => {
+      disposed = true
+      disposeCloudSyncRefreshEffect()
+    }
+  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -363,10 +418,12 @@ const Home = () => {
                 <div className="my-2">
                   <BillingDialog
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openExternalBrowserIfDesktop()}
+                    accountHref={withSiteBaseURL('/account/billing')}
+                    billingClick={openBillingLinkExternally}
                     error={billingContext.error}
                     balance={billingContext.balance}
                     allowance={billingContext.allowance}
+                    userPaymentBalance={billingContext.userPaymentBalance}
                   />
                 </div>
               </li>
@@ -412,10 +469,13 @@ const Home = () => {
         </aside>
         <ProjectGrid
           searchResults={searchResults ?? []}
-          projects={projects}
+          projects={optimisticProjects}
           query={query}
           sort={sort}
-          handleRenameProject={handleRenameProject(systemIOActor)}
+          handleRenameProject={handleRenameProject(
+            systemIOActor,
+            setOptimisticProjectRenames
+          )}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -569,17 +629,23 @@ function ProjectGrid({
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
   const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
+  const loadingMore = isReadingFolders ? (
+    <div className="py-4">
+      <Loading isDummy={true}>Loading more projects...</Loading>
+    </div>
+  ) : null
 
   return (
     <section data-testid="home-section" {...rest}>
-      {state.matches(SystemIOMachineStates.readingFolders) ||
-      projects === undefined ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
+              {sortedSearchResults.map((project) => (
                 <ProjectCard
                   key={project.name}
                   project={project}
@@ -599,6 +665,7 @@ function ProjectGrid({
                 : ` with the search term "${query}"`}
             </p>
           )}
+          {loadingMore}
         </>
       )}
     </section>
@@ -620,19 +687,36 @@ function errorMessage(error: unknown): string {
 }
 
 function handleRenameProject(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  setOptimisticProjectRenames: Dispatch<
+    SetStateAction<OptimisticProjectRenames>
+  >
 ) {
   return async function (e: FormEvent<HTMLFormElement>, project: Project) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
 
-    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+    if (
+      !project.cloudProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName.startsWith('.')
+    ) {
       toast.error('Project names cannot start with a period.')
       return
     }
 
-    if (newProjectName !== project.name) {
+    if (newProjectName !== getProjectDisplayName(project)) {
+      if (project.cloudProjectId && typeof newProjectName === 'string') {
+        setOptimisticProjectRenames((renames) => ({
+          ...renames,
+          [project.cloudProjectId as string]: {
+            title: newProjectName,
+            modified: Date.now(),
+          },
+        }))
+      }
+
       systemIOActor.send({
         type: SystemIOMachineEvents.renameProject,
         data: {

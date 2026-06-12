@@ -15,8 +15,10 @@ import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -78,6 +80,7 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import {
@@ -104,9 +107,11 @@ function isPlaywrightRuntime() {
 function createAppRegistryItems({
   wasmPromise,
   machineManager,
+  userFeatures,
 }: {
   wasmPromise: Promise<ModuleType>
   machineManager: MachineManager
+  userFeatures?: AppUserFeaturesSystem
 }): RegistryItem[] {
   return [
     defineRegistryItem({
@@ -117,6 +122,19 @@ function createAppRegistryItems({
       id: 'app.machine-manager',
       providesServices: [provideService(machineManagerService, machineManager)],
     }),
+    ...(userFeatures
+      ? [
+          defineRegistryItem({
+            id: 'app.user-features',
+            providesServices: [
+              provideService(userFeaturesService, {
+                context: userFeatures.contextSignal,
+                has: userFeatures.has,
+              }),
+            ],
+          }),
+        ]
+      : []),
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
     ...coreRegistryItems,
@@ -159,6 +177,7 @@ export type AppBillingSystem = {
 export type AppUserFeaturesSystem = UserFeaturesService & {
   actor: UserFeaturesActorRef
   send: UserFeaturesActorRef['send']
+  contextSignal: Signal<UserFeaturesContext>
   useContext: () => UserFeaturesContext
   useHas: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
 }
@@ -260,25 +279,18 @@ export class App implements AppSubsystems {
       },
     }).start()
 
-    this.registry.reconfigure(appCommandsSlot, [
-      defineRegistryItem({
-        id: 'app.global-commands',
-        provides: [
-          ...createAuthCommands({ authActor: this.auth.actor }).map(
-            provideCommand
-          ),
-          ...createProjectCommands({ systemIOActor: this.systemIOActor }).map(
-            provideCommand
-          ),
-        ],
-      }),
-    ])
+    this.syncAppCommands()
     this.commands.actor.send({
       type: 'Set userFeatures',
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
+    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
+    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
+    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
+    this.syncOpfsCloudBacking()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -360,9 +372,16 @@ export class App implements AppSubsystems {
     }
 
     const userFeaturesActor = createActor(userFeaturesMachine).start()
+    const userFeaturesContextSignal = signal<UserFeaturesContext>(
+      userFeaturesActor.getSnapshot().context
+    )
+    userFeaturesActor.subscribe((snapshot) => {
+      userFeaturesContextSignal.value = snapshot.context
+    })
     const userFeatures: AppUserFeaturesSystem = {
       actor: userFeaturesActor,
       send: userFeaturesActor.send.bind(App),
+      contextSignal: userFeaturesContextSignal,
       has: (featureFlagId, defaultValue) =>
         userFeaturesContextHas(
           userFeaturesActor.getSnapshot().context,
@@ -407,7 +426,7 @@ export class App implements AppSubsystems {
       ),
     }
     appRegistry.configure([
-      ...createAppRegistryItems({ wasmPromise, machineManager }),
+      ...createAppRegistryItems({ wasmPromise, machineManager, userFeatures }),
       createLayoutServiceRegistryItem(layoutService),
     ])
 
@@ -580,6 +599,57 @@ export class App implements AppSubsystems {
     if (snapshot.matches('loggedOut')) {
       this.userFeatures.send({ type: UserFeaturesTransition.Clear })
     }
+  }
+
+  syncOpfsCloudBacking = () => {
+    if (typeof window === 'undefined' || window.electron) {
+      return
+    }
+
+    const authSnapshot = this.auth.actor.getSnapshot()
+    const token = authSnapshot.matches('loggedIn')
+      ? authSnapshot.context.token
+      : undefined
+    const enabled =
+      Boolean(token) &&
+      userFeaturesContextHas(
+        this.userFeatures.actor.getSnapshot().context,
+        OPFS_CLOUD_FEATURE_FLAG,
+        false
+      )
+
+    configureOpfsCloudSync({
+      enabled,
+      token,
+      projectDirectoryPath:
+        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+    })
+  }
+
+  syncAppCommands = () => {
+    const enableProjectDirectoryCommands =
+      typeof window !== 'undefined' &&
+      (Boolean(window.electron) ||
+        userFeaturesContextHas(
+          this.userFeatures.actor.getSnapshot().context,
+          OPFS_CLOUD_FEATURE_FLAG,
+          false
+        ))
+
+    this.registry.reconfigure(appCommandsSlot, [
+      defineRegistryItem({
+        id: 'app.global-commands',
+        provides: [
+          ...createAuthCommands({ authActor: this.auth.actor }).map(
+            provideCommand
+          ),
+          ...createProjectCommands({
+            systemIOActor: this.systemIOActor,
+            enableProjectDirectoryCommands,
+          }).map(provideCommand),
+        ],
+      }),
+    ])
   }
 
   /**

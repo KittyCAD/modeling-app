@@ -4,7 +4,12 @@ import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
+import {
+  getCloudProjectFolderRenameName,
+  shouldSendProjectFolderReadProgress,
+  sortProjectDirectoryEntriesByModifiedDesc,
+  systemIOMachineImpl,
+} from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
@@ -17,6 +22,19 @@ import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
+
+function mockProject(name: string): Project {
+  return {
+    metadata: null,
+    kcl_file_count: 0,
+    directory_count: 0,
+    default_file: `/${name}/main.kcl`,
+    path: `/${name}`,
+    name,
+    children: [],
+    readWriteAccess: true,
+  }
+}
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -37,6 +55,50 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
+  describe('cloud-backed project folder names', () => {
+    it('uses a title-derived folder name when it is available', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [mockProject('Some demo 2')],
+        })
+      ).toBe('Some demo')
+    })
+
+    it('adds numeric suffixes when title-derived folder names already exist', () => {
+      expect(
+        getCloudProjectFolderRenameName({
+          title: 'Some demo',
+          currentName: 'Some demo 2',
+          folders: [
+            mockProject('Some demo'),
+            mockProject('Some demo-2'),
+            mockProject('Some demo 2'),
+          ],
+        })
+      ).toBe('Some demo-3')
+    })
+
+    it('only emits folder read progress for initial loads', () => {
+      expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
+      expect(shouldSendProjectFolderReadProgress([])).toBe(true)
+      expect(
+        shouldSendProjectFolderReadProgress([mockProject('local-project')])
+      ).toBe(false)
+    })
+
+    it('orders folder read progress by newest project directory first', () => {
+      expect(
+        sortProjectDirectoryEntriesByModifiedDesc([
+          { name: 'alpha', path: '/projects/alpha', modified: 10 },
+          { name: 'charlie', path: '/projects/charlie', modified: 30 },
+          { name: 'bravo', path: '/projects/bravo', modified: 30 },
+        ]).map((entry) => entry.name)
+      ).toEqual(['bravo', 'charlie', 'alpha'])
+    })
+  })
+
   describe('desktop', () => {
     describe('when initialized', () => {
       it('should contain the default context values', () => {
@@ -131,6 +193,434 @@ describe('systemIOMachine - XState', () => {
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
             )
           )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project creation while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.createProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: 'local-first-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.creatingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project rename while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.renameProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.renameProject,
+            data: {
+              projectName: 'local-first-project',
+              requestedProjectName: 'renamed-local-first-project',
+              redirect: true,
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.renamingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project deletion while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.deleteProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.deleteProject,
+            data: {
+              requestedProjectName: 'local-first-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.deletingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept file rename while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.renameFile]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.renameFile,
+            data: {
+              requestedFileNameWithExtension: 'newFileName.kcl',
+              fileNameWithExtension: 'fileToRename.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.renamingFile)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should restart folder loading when project directory changes while reading folders', async () => {
+        const readProjectDirectoryPaths: string[] = []
+        const readSignals: AbortSignal[] = []
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async ({ input, signal }) => {
+                  readProjectDirectoryPaths.push(input.projectDirectoryPath)
+                  readSignals.push(signal)
+                  return new Promise<Project[]>(() => {})
+                }),
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async (): Promise<{ value: boolean; error: unknown }> => ({
+                  value: true,
+                  error: undefined,
+                })
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: '/projects',
+            },
+          })
+
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.readingFolders) &&
+              state.context.projectDirectoryPath === '/projects' &&
+              readProjectDirectoryPaths.length === 2
+          )
+
+          expect(readProjectDirectoryPaths).toStrictEqual([
+            NO_PROJECT_DIRECTORY,
+            '/projects',
+          ])
+          expect(readSignals[0].aborted).toBe(true)
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should restart read/write checks when project directory changes while checking read/write access', async () => {
+        const checkProjectDirectoryPaths: string[] = []
+        const checkSignals: AbortSignal[] = []
+        const readProjectDirectoryPaths: string[] = []
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async ({ input, signal }) => {
+                  checkProjectDirectoryPaths.push(
+                    input.requestedProjectDirectoryPath
+                  )
+                  checkSignals.push(signal)
+                  if (checkProjectDirectoryPaths.length === 1) {
+                    return new Promise<{ value: boolean; error: unknown }>(
+                      () => {}
+                    )
+                  }
+
+                  return { value: true, error: undefined }
+                }
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async ({ input }) => {
+                  readProjectDirectoryPaths.push(input.projectDirectoryPath)
+                  return new Promise<Project[]>(() => {})
+                }),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: '/stale-projects',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: '/projects',
+            },
+          })
+
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.readingFolders) &&
+              state.context.projectDirectoryPath === '/projects' &&
+              readProjectDirectoryPaths.includes('/projects')
+          )
+
+          expect(checkProjectDirectoryPaths).toStrictEqual([
+            '/stale-projects',
+            '/projects',
+          ])
+          expect(checkSignals[0].aborted).toBe(true)
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should leave a terminal folders value when reading folders fails', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async (): Promise<Project[]> => {
+                  throw new Error('Failed to read projects')
+                }),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.folders !== undefined
+          )
+
+          expect(actor.getSnapshot().context.folders).toStrictEqual([])
+          expect(actor.getSnapshot().context.hasListedProjects).toBe(true)
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should update folders incrementally while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          const folders = [mockProject('bravo'), mockProject('alpha')]
+          actor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: { folders },
+          })
+
+          await waitFor(
+            actor,
+            (state) => state.context.folders?.length === folders.length
+          )
+
+          expect(actor.getSnapshot().context.folders).toStrictEqual(folders)
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.readingFolders,
+          })
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept file navigation while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: 'bracket',
+              requestedFileName: 'empty.kcl',
+            },
+          })
+
+          await waitFor(
+            actor,
+            (state) => state.context.requestedFileName.file === 'empty.kcl'
+          )
+
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'bracket',
+            file: 'empty.kcl',
+            subRoute: undefined,
+          })
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.readingFolders,
+          })
         } finally {
           actor.stop()
         }
@@ -255,6 +745,104 @@ describe('systemIOMachine - XState', () => {
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
             )
           )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept project creation while checking read/write access', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+              [SystemIOMachineActors.createProject]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: 'public/kcl-samples',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: 'local-first-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.creatingProject)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept file navigation while checking read/write access', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: 'public/kcl-samples',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: 'bracket',
+              requestedFileName: 'empty.kcl',
+            },
+          })
+
+          await waitFor(
+            actor,
+            (state) => state.context.requestedFileName.file === 'empty.kcl'
+          )
+
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'bracket',
+            file: 'empty.kcl',
+            subRoute: undefined,
+          })
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.checkingReadWrite,
+          })
         } finally {
           actor.stop()
         }

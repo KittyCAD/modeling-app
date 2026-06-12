@@ -11,6 +11,7 @@ import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
@@ -33,14 +34,53 @@ function ProjectCard({
   const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
   const [imageUrl, setImageUrl] = useState('')
+  const [optimisticProjectName, setOptimisticProjectName] = useState<{
+    projectPath: string
+    name: string
+    modified: number
+  } | null>(null)
 
   let inputRef = useRef<HTMLInputElement>(null)
+  const projectDisplayName = getProjectDisplayName(project)
+  const displayedProject =
+    optimisticProjectName?.projectPath === project.path
+      ? {
+          ...project,
+          title: optimisticProjectName.name,
+          metadata: project.metadata
+            ? {
+                ...project.metadata,
+                modified: Math.max(
+                  project.metadata.modified ?? Number.NEGATIVE_INFINITY,
+                  optimisticProjectName.modified
+                ),
+              }
+            : project.metadata,
+        }
+      : project
 
   function handleSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const newProjectName = new FormData(e.currentTarget).get('newProjectName')
+
+    if (
+      project.cloudProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName !== projectDisplayName
+    ) {
+      setOptimisticProjectName({
+        projectPath: project.path,
+        name: newProjectName,
+        modified: Date.now(),
+      })
+    }
+
     handleRenameProject(e, project)
       .then(() => setIsEditing(false))
-      .catch(reportRejection)
+      .catch((error) => {
+        setOptimisticProjectName(null)
+        reportRejection(error)
+      })
   }
 
   function getDisplayedTime(dateTimeMs: number) {
@@ -93,7 +133,26 @@ function ProjectCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isEditing, inputRef.current])
 
-  const projectName = project.name?.replace(FILE_EXT, '')
+  useEffect(() => {
+    setOptimisticProjectName((optimisticName) => {
+      if (!optimisticName) {
+        return null
+      }
+      if (
+        !project.cloudProjectId ||
+        optimisticName.projectPath !== project.path ||
+        optimisticName.name === projectDisplayName
+      ) {
+        return null
+      }
+      return optimisticName
+    })
+  }, [project.cloudProjectId, project.path, projectDisplayName])
+
+  const projectName = getProjectDisplayName(displayedProject).replace(
+    FILE_EXT,
+    ''
+  )
 
   return (
     <li
@@ -128,7 +187,7 @@ function ProjectCard({
               onSubmit={handleSave}
               className="flex items-center gap-2 p-2"
               onClick={(e) => e.stopPropagation()}
-              project={project}
+              project={displayedProject}
               onDismiss={() => setIsEditing(false)}
               ref={inputRef}
             />
@@ -159,8 +218,8 @@ function ProjectCard({
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
             <span data-testid="project-edit-date">
-              {project.metadata?.modified
-                ? getDisplayedTime(project.metadata.modified)
+              {displayedProject.metadata?.modified
+                ? getDisplayedTime(displayedProject.metadata.modified)
                 : 'never'}
             </span>
           </span>
@@ -217,11 +276,11 @@ function ProjectCard({
           onDismiss={() => setIsConfirmingDelete(false)}
         >
           <p className="my-4 text-wrap break-words">
-            This will permanently delete "{project.name || 'this file'}
+            This will permanently delete "{projectName || 'this file'}
             ".
           </p>
           <p className="my-4 text-wrap break-words">
-            Are you sure you want to delete "{project.name || 'this file'}
+            Are you sure you want to delete "{projectName || 'this file'}
             "? This action cannot be undone.
           </p>
         </DeleteConfirmationDialog>

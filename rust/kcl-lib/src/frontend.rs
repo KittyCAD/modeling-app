@@ -2556,8 +2556,6 @@ impl FrontendState {
                 "Source range of controlPointSpline not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = spline_node_ref;
 
         self.program = new_program.clone();
 
@@ -2572,9 +2570,6 @@ impl FrontendState {
             )
             .await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());

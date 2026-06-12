@@ -28,8 +28,11 @@ layout: manual
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
   * [`slice`](/docs/kcl-std/functions/std-array-slice)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::angularity`](/docs/kcl-std/functions/std-gdt-angularity)
   * [`gdt::annotation`](/docs/kcl-std/functions/std-gdt-annotation)
   * [`gdt::circularity`](/docs/kcl-std/functions/std-gdt-circularity)
+  * [`gdt::concentricity`](/docs/kcl-std/functions/std-gdt-concentricity)
+  * [`gdt::cylindricity`](/docs/kcl-std/functions/std-gdt-cylindricity)
   * [`gdt::datum`](/docs/kcl-std/functions/std-gdt-datum)
   * [`gdt::distance`](/docs/kcl-std/functions/std-gdt-distance)
   * [`gdt::flatness`](/docs/kcl-std/functions/std-gdt-flatness)
@@ -37,6 +40,7 @@ layout: manual
   * [`gdt::perpendicularity`](/docs/kcl-std/functions/std-gdt-perpendicularity)
   * [`gdt::position`](/docs/kcl-std/functions/std-gdt-position)
   * [`gdt::profile`](/docs/kcl-std/functions/std-gdt-profile)
+  * [`gdt::runout`](/docs/kcl-std/functions/std-gdt-runout)
   * [`gdt::straightness`](/docs/kcl-std/functions/std-gdt-straightness)
 * [**std::gear**](/docs/kcl-std/modules/std-gear) Experimental
   * [`gear::helical`](/docs/kcl-std/functions/std-gear-helical) Experimental

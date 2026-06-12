@@ -12,6 +12,8 @@ describe('FileExplorer', () => {
           contextMenuRow={null}
           isRenaming={false}
           isCopying={false}
+          isDeleting={false}
+          onDeleteEnd={() => {}}
         />
       )
       const container = screen.getByTestId('file-explorer')

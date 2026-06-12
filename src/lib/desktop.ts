@@ -37,6 +37,11 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
+import {
+  getCloudProjectIdFromProjectTomlContents,
+  getProjectTitleFromProjectTomlContents,
+  setProjectTitleInProjectTomlContents,
+} from '@src/lib/projectTomlMetadata'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase, isArray } from '@src/lib/utils'
@@ -76,6 +81,24 @@ const convertIStatToFileMetadata = (
     type: null,
     size: stats.size,
     permission: null,
+  }
+}
+
+async function readProjectTomlMetadata(projectPath: string) {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  try {
+    const projectToml = await fsZds.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+    return {
+      title: getProjectTitleFromProjectTomlContents(projectToml),
+      cloudProjectId: getCloudProjectIdFromProjectTomlContents(projectToml),
+    }
+  } catch {
+    return {
+      title: undefined,
+      cloudProjectId: undefined,
+    }
   }
 }
 
@@ -532,9 +555,13 @@ export async function getProjectInfo(
       wasmInstance
     )
   }
+  const projectTomlMetadata = canReadWriteProjectPath
+    ? await readProjectTomlMetadata(projectPath)
+    : { title: undefined, cloudProjectId: undefined }
 
   let project = {
     ...walked,
+    ...projectTomlMetadata,
     metadata: convertIStatToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
@@ -561,6 +588,32 @@ export async function writeProjectSettingsFile(
   return fsZds.writeFile(
     projectSettingsFilePath,
     new TextEncoder().encode(tomlStr)
+  )
+}
+
+export async function writeProjectTitleToProjectToml(
+  projectPath: string,
+  title: string
+): Promise<void> {
+  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  let projectToml = ''
+  try {
+    projectToml = await fsZds.readFile(projectSettingsFilePath, {
+      encoding: 'utf-8',
+    })
+  } catch (error) {
+    if (error !== 'ENOENT') {
+      return Promise.reject(error)
+    }
+  }
+
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    projectToml,
+    title
+  )
+  await fsZds.writeFile(
+    projectSettingsFilePath,
+    new TextEncoder().encode(nextProjectToml)
   )
 }
 

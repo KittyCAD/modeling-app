@@ -15,7 +15,6 @@ import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import type { Dispatch } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const StatusDot = () => {
@@ -67,18 +66,22 @@ export const FileExplorer = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isDeleting,
   isCopying,
   isExternalDragOver,
   highlightedEntry,
+  onDeleteEnd,
   onExternalDragOverRow,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isDeleting: boolean
   isCopying: boolean
   isExternalDragOver?: boolean
   highlightedEntry?: FileExplorerEntry | null
+  onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   return (
@@ -103,9 +106,11 @@ export const FileExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isDeleting={isDeleting}
             isCopying={isCopying}
             isExternalDragHighlighted={isHighlighted}
             isExternalDragOver={isExternalDragOver}
+            onDeleteEnd={onDeleteEnd}
             onExternalDragOverRow={onExternalDragOverRow}
           />
         )
@@ -218,18 +223,18 @@ function RenameForm({
 
 function DeleteFileTreeItemDialog({
   row,
-  setIsOpen,
+  onDismiss,
 }: {
   row: FileExplorerRender
-  setIsOpen: Dispatch<React.SetStateAction<boolean>>
+  onDismiss: () => void
 }) {
   return (
     <DeleteConfirmationDialog
       title={`Delete ${row.isFolder ? 'folder' : 'file'}`}
-      onDismiss={() => setIsOpen(false)}
+      onDismiss={onDismiss}
       onConfirm={() => {
         row.onDelete()
-        setIsOpen(false)
+        onDismiss()
       }}
     >
       <p className="my-4">
@@ -253,18 +258,22 @@ export const FileExplorerRowElement = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isDeleting,
   isCopying,
   isExternalDragHighlighted,
   isExternalDragOver,
+  onDeleteEnd,
   onExternalDragOverRow,
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isDeleting: boolean
   isCopying: boolean
   isExternalDragHighlighted?: boolean
   isExternalDragOver?: boolean
+  onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   const dragPreviewId = `drag-preview-${row.name}`
@@ -327,6 +336,7 @@ export const FileExplorerRowElement = ({
   const isIndexActive = row.domIndex === row.activeIndex
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
+  const isMyRowDeleting = isContextMenuRow && isDeleting
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
@@ -338,6 +348,10 @@ export const FileExplorerRowElement = ({
   const externalHighlightCSS = isExternalDragHighlighted
     ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/10'
     : ''
+  const handleDeleteDismiss = useCallback(() => {
+    setIsConfirmingDelete(false)
+    onDeleteEnd()
+  }, [onDeleteEnd])
 
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
@@ -470,8 +484,8 @@ export const FileExplorerRowElement = ({
       )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
-      {isConfirmingDelete && (
-        <DeleteFileTreeItemDialog row={row} setIsOpen={setIsConfirmingDelete} />
+      {(isConfirmingDelete || isMyRowDeleting) && (
+        <DeleteFileTreeItemDialog row={row} onDismiss={handleDeleteDismiss} />
       )}
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
