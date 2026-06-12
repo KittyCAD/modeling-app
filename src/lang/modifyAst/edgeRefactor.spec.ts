@@ -1085,7 +1085,7 @@ describe('refactorZ0006Unified', () => {
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
-        expect(n).toContain('fillet(radius = 1, edges = [')
+        expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
         expect(n).toContain('sideFaces = [e1, capStart001]')
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
