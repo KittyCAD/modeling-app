@@ -302,7 +302,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_moveRecursiveAndNavigate
-          output: { requestedProjectName: string }
+          output: { requestedProjectName: string; target: string }
         }
       | {
           type: SystemIOMachineEvents.getMlEphantConversations
@@ -768,6 +768,7 @@ export const systemIOMachine = setup({
           message: '',
           requestedAbsolutePath: '',
           requestedProjectName: '',
+          target: input.target,
         }
       }
     ),
@@ -837,6 +838,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    lastRecursiveMoveTarget: undefined,
     lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
@@ -1587,7 +1589,14 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            assign({
+              lastRecursiveMoveTarget: ({ event }) => {
+                return (event as { output: { target?: string } }).output.target
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
@@ -1896,6 +1905,9 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastRecursiveMoveTarget: ({ event }) => {
+                return (event as { output: { target?: string } }).output.target
+              },
               requestedProjectName: ({ event }) => {
                 assertEvent(
                   event,

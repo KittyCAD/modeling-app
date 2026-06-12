@@ -202,6 +202,10 @@ export const ProjectExplorer = ({
       state.matches(fileTreeMutationState)
     )
   )
+  const lastRecursiveMoveTarget = useSelector(
+    systemIOActor,
+    (state) => state.context.lastRecursiveMoveTarget
+  )
   const errors = kclManager.errorsSignal.value
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
@@ -271,6 +275,9 @@ export const ProjectExplorer = ({
   })
   const previousProject = useRef(project)
   const lastSyncedFilePathRef = useRef<string | undefined>(undefined)
+  const lastRevealedRecursiveMoveTargetRef = useRef<string | undefined>(
+    undefined
+  )
 
   onRowEnterRef.current = onRowEnter
   const isFileTreeInteractionDisabled =
@@ -897,6 +904,25 @@ export const ProjectExplorer = ({
         openedRowsForRender[key] = true
         pathIterator.pop()
       }
+    }
+    const shouldRevealRecursiveMoveTarget =
+      !!lastRecursiveMoveTarget &&
+      lastRecursiveMoveTarget !== lastRevealedRecursiveMoveTargetRef.current &&
+      (lastRecursiveMoveTarget === project.path ||
+        lastRecursiveMoveTarget.startsWith(`${project.path}${fsZds.sep}`))
+    if (shouldRevealRecursiveMoveTarget) {
+      const moveTargetKey = parentPathRelativeToApplicationDirectory(
+        lastRecursiveMoveTarget,
+        overrideApplicationProjectDirectory || applicationProjectDirectory
+      )
+      const pathIterator = desktopSafePathSplit(moveTargetKey)
+      while (pathIterator.length > 0) {
+        const key = desktopSafePathJoin(pathIterator)
+        openedRowsChanged = openedRowsChanged || !openedRowsForRender[key]
+        openedRowsForRender[key] = true
+        pathIterator.pop()
+      }
+      lastRevealedRecursiveMoveTargetRef.current = lastRecursiveMoveTarget
     }
 
     const copyEntryToTarget = (src: FileEntry, target: FileEntry) => {
