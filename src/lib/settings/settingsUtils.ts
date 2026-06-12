@@ -540,6 +540,10 @@ const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'app', field: 'allowOrbitInSketchMode' },
       'allow_orbit_in_sketch_mode'
     ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'showAllFiles' },
+      'show_all_files'
+    ),
   ]),
   defineAppOnlySection('debug', [
     defineBooleanAppOnlyField(

@@ -302,7 +302,6 @@ function createCoreSettings() {
       }),
       showAllFiles: new Setting<boolean>({
         defaultValue: false,
-        hideOnLevel: 'project',
         description:
           'Show all project files in the file pane, including dotfiles and configuration files.',
         validate: (v) => typeof v === 'boolean',
