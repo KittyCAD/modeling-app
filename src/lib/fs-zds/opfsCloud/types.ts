@@ -35,6 +35,12 @@ export type ProjectMetadata = {
     conflictProjectPath: string
     createdAt: string
   }
+  syncExcluded?: {
+    reason: 'conflict-artifact'
+    sourceProjectPath?: string
+    remoteProjectId?: string
+    createdAt: string
+  }
   lastFailure?: {
     message: string
     at: string

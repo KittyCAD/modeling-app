@@ -2,11 +2,14 @@ import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   type ProjectArchiveFile,
   type ProjectManifest,
+  getOpfsCloudConflictArtifactCleanupPlan,
+  getOpfsCloudInitialLocalProjectSyncAction,
   getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
   getOpfsCloudProjectSyncPreflightAction,
   getOpfsCloudRemoteArchiveReconciliationAction,
   getOpfsCloudRemoteIndexAction,
+  isOpfsCloudConflictArtifactProjectName,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/fs-zds/opfsCloud'
@@ -174,6 +177,90 @@ describe('opfsCloud sync helpers', () => {
         hasMatchingLocalProject: true,
       })
     ).toBe('adopt-matching-local')
+  })
+
+  it('skips sync-excluded conflict artifacts during the initial local scan', () => {
+    expect(
+      getOpfsCloudInitialLocalProjectSyncAction({
+        hasBaseManifest: false,
+        tombstone: false,
+        syncExcluded: true,
+      })
+    ).toBe('skip')
+  })
+
+  it('still queues unsynced normal projects during the initial local scan', () => {
+    expect(
+      getOpfsCloudInitialLocalProjectSyncAction({
+        hasBaseManifest: false,
+        tombstone: false,
+        syncExcluded: false,
+      })
+    ).toBe('enqueue')
+  })
+
+  it('detects conflict artifact project folder names', () => {
+    expect(
+      isOpfsCloudConflictArtifactProjectName(
+        'demo-project (cloud conflict 20260612T001401)'
+      )
+    ).toBe(true)
+    expect(
+      isOpfsCloudConflictArtifactProjectName(
+        'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
+      )
+    ).toBe(true)
+    expect(isOpfsCloudConflictArtifactProjectName('demo-project')).toBe(false)
+  })
+
+  it('marks existing conflict artifacts as excluded and deletes exact duplicate copies', () => {
+    const originalManifest: ProjectManifest = {
+      files: {
+        'main.kcl': { byteSize: 10, sha256: 'a' },
+      },
+    }
+    const changedManifest: ProjectManifest = {
+      files: {
+        'main.kcl': { byteSize: 11, sha256: 'b' },
+      },
+    }
+    const cleanupPlan = getOpfsCloudConflictArtifactCleanupPlan([
+      {
+        projectPath: '/projects/demo-project',
+        projectName: 'demo-project',
+        remoteProjectId: 'project-123',
+        manifest: originalManifest,
+      },
+      {
+        projectPath: '/projects/demo-project (cloud conflict 20260612T001401)',
+        projectName: 'demo-project (cloud conflict 20260612T001401)',
+        remoteProjectId: 'project-123',
+        manifest: originalManifest,
+      },
+      {
+        projectPath:
+          '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+        projectName:
+          'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+        remoteProjectId: 'project-123',
+        manifest: originalManifest,
+      },
+      {
+        projectPath: '/projects/demo-project (cloud conflict 20260612T151955)',
+        projectName: 'demo-project (cloud conflict 20260612T151955)',
+        remoteProjectId: 'project-123',
+        manifest: changedManifest,
+      },
+    ])
+
+    expect(cleanupPlan.excludeProjectPaths).toEqual([
+      '/projects/demo-project (cloud conflict 20260612T001401)',
+      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+      '/projects/demo-project (cloud conflict 20260612T151955)',
+    ])
+    expect(cleanupPlan.deleteProjectPaths).toEqual([
+      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+    ])
   })
 
   it('pushes local edits only when the remote revision is still the synced base', () => {
