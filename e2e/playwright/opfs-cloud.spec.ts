@@ -87,10 +87,10 @@ test(
       .toBe('Remote empty one')
 
     const localFiles = await readOpfsTextFiles(page, {
-      remoteOne: `${PROJECT_DIR}/Remote empty one/main.kcl`,
-      remoteOneToml: `${PROJECT_DIR}/Remote empty one/project.toml`,
-      remoteTwo: `${PROJECT_DIR}/Remote empty two/main.kcl`,
-      remoteThree: `${PROJECT_DIR}/Remote empty three/main.kcl`,
+      remoteOne: `${PROJECT_DIR}/remote-empty-one/main.kcl`,
+      remoteOneToml: `${PROJECT_DIR}/remote-empty-one/project.toml`,
+      remoteTwo: `${PROJECT_DIR}/remote-empty-two/main.kcl`,
+      remoteThree: `${PROJECT_DIR}/remote-empty-three/main.kcl`,
     })
 
     expect(localFiles.remoteOne).toContain('remoteEmptyOne = 1')
@@ -345,8 +345,8 @@ test(
     // newer remote contents, local-only projects are created remotely and get a
     // cloud project id, and stale dirty projects keep their local dirty file.
     const localFiles = await readOpfsTextFiles(page, {
-      remoteOnly: `${PROJECT_DIR}/Remote only project/main.kcl`,
-      remoteOnlyToml: `${PROJECT_DIR}/Remote only project/project.toml`,
+      remoteOnly: `${PROJECT_DIR}/remote-only-project/main.kcl`,
+      remoteOnlyToml: `${PROJECT_DIR}/remote-only-project/project.toml`,
       cleanSynced: `${PROJECT_DIR}/clean-synced-project/main.kcl`,
       cleanSyncedToml: `${PROJECT_DIR}/clean-synced-project/project.toml`,
       localOnly: `${PROJECT_DIR}/local-only-project/main.kcl`,
@@ -398,12 +398,12 @@ test(
       const projects = await documents.getDirectoryHandle(
         'zoo-design-studio-projects'
       )
-      await projects.removeEntry('Remote only project', { recursive: true })
+      await projects.removeEntry('remote-only-project', { recursive: true })
     })
     const remoteOnlyExistsAfterManualRemoval = await page.evaluate(
       async ({ projectDirectory }) => {
         try {
-          await window.fsZds.stat(`${projectDirectory}/Remote only project`)
+          await window.fsZds.stat(`${projectDirectory}/remote-only-project`)
           return true
         } catch {
           return false
@@ -428,7 +428,7 @@ test(
         page.evaluate(
           ({ projectDirectory }) =>
             window.fsZds.readFile(
-              `${projectDirectory}/Remote only project/main.kcl`,
+              `${projectDirectory}/remote-only-project/main.kcl`,
               { encoding: 'utf-8' }
             ),
           { projectDirectory: PROJECT_DIR }
