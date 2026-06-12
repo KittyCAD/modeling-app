@@ -109,7 +109,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_chamfer(
     solid: Box<Solid>,
     length: TyF64,
-    tags: Vec<EdgeReference>,
+    tags: Vec<(EdgeReference, crate::SourceRange)>,
     second_length: Option<TyF64>,
     angle: Option<TyF64>,
     custom_profile: Option<Sketch>,
@@ -179,7 +179,7 @@ async fn inner_chamfer(
 
     let mut solid = solid.clone();
     let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
-    for edge_ref in &tags {
+    for (edge_ref, source_range) in &tags {
         let edge_id = match edge_ref {
             EdgeReference::Uuid(u) => *u,
             EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
@@ -197,6 +197,8 @@ async fn inner_chamfer(
                     edge_id,
                     face_ids: [*a, *b],
                 });
+            } else {
+                exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
             }
         }
     }
@@ -206,7 +208,7 @@ async fn inner_chamfer(
             tags: tag_entries,
         });
     }
-    for edge_tag in tags {
+    for (edge_tag, _) in tags {
         let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
         for edge_id in edge_ids {
             let id = exec_state.next_uuid();

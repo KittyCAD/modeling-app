@@ -21,6 +21,7 @@ use crate::execution::ExtrudeSurface;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::PendingEdgeRefactorMeta;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
@@ -97,6 +98,50 @@ pub(crate) async fn get_face_ids_for_edge(
     Ok(info.faces.clone())
 }
 
+async fn record_edge_refactor_meta_from_edge_faces(
+    exec_state: &mut ExecState,
+    object_id: Uuid,
+    edge_id: Uuid,
+    known_adjacent_face_id: Uuid,
+    stdlib_fn: EdgeRefactorStdlibFn,
+    args: &Args,
+) -> bool {
+    let Ok(face_ids) = get_face_ids_for_edge(exec_state, object_id, edge_id, args).await else {
+        return false;
+    };
+
+    let face_pair = match face_ids.as_slice() {
+        [a, b] => Some([*a, *b]),
+        [face_id] if *face_id != known_adjacent_face_id => Some([known_adjacent_face_id, *face_id]),
+        _ => None,
+    };
+
+    if let Some(face_ids) = face_pair {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            source_range: args.source_range,
+            stdlib_fn,
+        });
+        return true;
+    }
+
+    false
+}
+
+fn record_pending_edge_refactor_meta(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    stdlib_fn: EdgeRefactorStdlibFn,
+    args: &Args,
+) {
+    exec_state.record_pending_edge_refactor_meta(PendingEdgeRefactorMeta {
+        edge_id,
+        source_range: args.source_range,
+        stdlib_fn,
+    });
+}
+
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
 pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
     let all_infos = tag.get_all_cur_info();
@@ -163,15 +208,17 @@ async fn inner_get_opposite_edge(
 
     let edge_id = opposite_edge.edge;
 
-    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
-        && let [a, b] = face_ids.as_slice()
+    if !record_edge_refactor_meta_from_edge_faces(
+        exec_state,
+        sketch_id,
+        edge_id,
+        face_id,
+        EdgeRefactorStdlibFn::GetOppositeEdge,
+        &args,
+    )
+    .await
     {
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
-            edge_id,
-            face_ids: [*a, *b],
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::GetOppositeEdge,
-        });
+        record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetOppositeEdge, &args);
     }
     Ok(edge_id)
 }
@@ -232,15 +279,17 @@ async fn inner_get_next_adjacent_edge(
         ))
     })?;
 
-    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
-        && let [a, b] = face_ids.as_slice()
+    if !record_edge_refactor_meta_from_edge_faces(
+        exec_state,
+        sketch_id,
+        edge_id,
+        face_id,
+        EdgeRefactorStdlibFn::GetNextAdjacentEdge,
+        &args,
+    )
+    .await
     {
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
-            edge_id,
-            face_ids: [*a, *b],
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::GetNextAdjacentEdge,
-        });
+        record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetNextAdjacentEdge, &args);
     }
     Ok(edge_id)
 }
@@ -300,15 +349,22 @@ async fn inner_get_previous_adjacent_edge(
         ))
     })?;
 
-    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
-        && let [a, b] = face_ids.as_slice()
+    if !record_edge_refactor_meta_from_edge_faces(
+        exec_state,
+        sketch_id,
+        edge_id,
+        face_id,
+        EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+        &args,
+    )
+    .await
     {
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        record_pending_edge_refactor_meta(
+            exec_state,
             edge_id,
-            face_ids: [*a, *b],
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
-        });
+            EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+            &args,
+        );
     }
     Ok(edge_id)
 }
