@@ -1331,6 +1331,7 @@ function findFilletChamferCallsToFixUnified(
     const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
     const orderedPayloads: FilletEdgeRefPayload[] = []
     let tagsBaseExpr: Expr | null = null
+    let hasUnconvertedTagsElement = false
 
     if (elements?.length) {
       for (const el of elements) {
@@ -1350,7 +1351,11 @@ function findFilletChamferCallsToFixUnified(
                 side_faces: meta.faceIds,
                 end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
               })
+            } else {
+              hasUnconvertedTagsElement = true
             }
+          } else {
+            hasUnconvertedTagsElement = true
           }
         } else if (el.type === 'Name') {
           const tagName = el.name.name
@@ -1388,13 +1393,23 @@ function findFilletChamferCallsToFixUnified(
                 side_faces: meta.faceIds,
                 end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
               })
+            } else {
+              hasUnconvertedTagsElement = true
             }
+          } else {
+            hasUnconvertedTagsElement = true
           }
+        } else {
+          hasUnconvertedTagsElement = true
         }
       }
     }
 
-    if (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0) {
+    if (
+      elements?.length &&
+      !hasUnconvertedTagsElement &&
+      (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0)
+    ) {
       const moduleId = call.moduleId
       results.push({
         range: [call.start, call.end, moduleId],
@@ -1666,24 +1681,30 @@ export function refactorZ0006Unified(
     hasExistingEdgeRefs,
     tagsBaseExpr,
   } of toFixFilletChamfer) {
-    const path = getNodePathFromSourceRange(modifiedAst, range)
+    let nextAst = structuredClone(modifiedAst)
+    const path = getNodePathFromSourceRange(nextAst, range)
     const edgeRefExprs: Expr[] = []
+    let failedToCreateEdgeRef = false
     for (const payload of orderedPayloads) {
       const result = createEdgeRefObjectExpression(
         payload,
         wasmInstance,
-        modifiedAst,
+        nextAst,
         artifactGraph,
         undefined,
         undefined,
         tagsBaseExpr
       )
-      if (err(result)) continue
+      if (err(result)) {
+        failedToCreateEdgeRef = true
+        break
+      }
       edgeRefExprs.push(result.expr)
-      modifiedAst = result.modifiedAst
+      nextAst = result.modifiedAst
     }
+    if (failedToCreateEdgeRef) continue
     const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
-      modifiedAst,
+      nextAst,
       path,
       wasmInstance,
       ['CallExpressionKw']
@@ -1702,6 +1723,7 @@ export function refactorZ0006Unified(
     )
     newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
     callNode.arguments = newArgs
+    modifiedAst = nextAst
   }
 
   modifiedAst = refactorRevolveHelixAxisToEdgeRefInPlace(
