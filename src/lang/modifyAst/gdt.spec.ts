@@ -12,6 +12,7 @@ import {
   addPerpendicularityGdt,
   addPositionGdt,
   addProfileGdt,
+  addRunoutGdt,
   addStraightnessGdt,
   getNextAvailableDatumName,
   getUsedDatumNames,
@@ -1513,6 +1514,60 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       }
 
       expect(newCode).toContain('gdt::concentricity(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addRunoutGdt', () => {
+    it('should add runout annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const datums = await getKclCommandValue(
+        '["A"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addRunoutGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::runout(')
       expect(newCode).toContain('faces = [')
       expect(newCode).toContain('edges = [')
       expect(newCode).toContain('datums = ["A"]')

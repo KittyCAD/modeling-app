@@ -51,6 +51,7 @@ describe('GDT tolerance defaults', () => {
       'GDT Perpendicularity',
       'GDT Angularity',
       'GDT Concentricity',
+      'GDT Runout',
       'GDT Parallelism',
     ] as const
 
@@ -73,15 +74,17 @@ describe('GDT tolerance defaults', () => {
     }
   })
 
-  it('requires datums for concentricity', () => {
-    const commandConfig = modelingMachineCommandConfig['GDT Concentricity']
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('GDT Concentricity should have a single command config')
-    }
+  it('requires datums for datum-axis GD&T commands', () => {
+    for (const commandName of ['GDT Concentricity', 'GDT Runout'] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
 
-    expect(commandConfig.args?.datums).toMatchObject({
-      inputType: 'kcl',
-      required: true,
-    })
+      expect(commandConfig.args?.datums).toMatchObject({
+        inputType: 'kcl',
+        required: true,
+      })
+    }
   })
 })
