@@ -36,13 +36,17 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import {
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
+import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FocusEvent as ReactFocusEvent } from 'react'
 import toast from 'react-hot-toast'
@@ -53,6 +57,18 @@ const isFileExplorerEntryOpened = (
 ): boolean => {
   return rows[entry.key]
 }
+
+const FILE_TREE_MUTATION_STATES = [
+  SystemIOMachineStates.renamingFolder,
+  SystemIOMachineStates.renamingFile,
+  SystemIOMachineStates.deletingFileOrFolder,
+  SystemIOMachineStates.renamingFileAndNavigateToFile,
+  SystemIOMachineStates.renamingFolderAndNavigateToFile,
+  SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+  SystemIOMachineStates.copyingRecursive,
+  SystemIOMachineStates.movingRecursive,
+  SystemIOMachineStates.movingRecursiveAndNavigate,
+] as const
 
 const handleExternalDragEvent = (e: React.DragEvent): boolean => {
   if (!isExternalFileDrag(e)) {
@@ -178,6 +194,14 @@ export const ProjectExplorer = ({
   const { commands, registry, settings, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
+  const isSystemIOIdle = useSelector(systemIOActor, (state) =>
+    state.matches(SystemIOMachineStates.idle)
+  )
+  const isSystemIOFileTreeMutation = useSelector(systemIOActor, (state) =>
+    FILE_TREE_MUTATION_STATES.some((fileTreeMutationState) =>
+      state.matches(fileTreeMutationState)
+    )
+  )
   const errors = kclManager.errorsSignal.value
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
@@ -213,6 +237,8 @@ export const ProjectExplorer = ({
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [isCopying, setIsCopying] = useState<boolean>(false)
+  const [isFileTreeMutationPending, setIsFileTreeMutationPending] =
+    useState<boolean>(false)
   const lastIndexBeforeNothing = useRef<number>(-2)
 
   // Store a path to copy and paste! Works for folders and files
@@ -231,6 +257,7 @@ export const ProjectExplorer = ({
   const activeIndexRef = useRef(activeIndex)
   const selectedRowRef = useRef(selectedRow)
   const onRowEnterRef = useRef(onRowEnter)
+  const isFileTreeInteractionDisabledRef = useRef(false)
   const projectExplorerCommandHandlersRef = useRef({
     arrowLeft: () => {},
     arrowRight: () => {},
@@ -246,6 +273,28 @@ export const ProjectExplorer = ({
   const lastSyncedFilePathRef = useRef<string | undefined>(undefined)
 
   onRowEnterRef.current = onRowEnter
+  const isFileTreeInteractionDisabled =
+    isFileTreeMutationPending || isSystemIOFileTreeMutation
+  isFileTreeInteractionDisabledRef.current = isFileTreeInteractionDisabled
+
+  const setFileTreeMutationPending = useCallback((isPending: boolean) => {
+    isFileTreeInteractionDisabledRef.current = isPending
+    setIsFileTreeMutationPending(isPending)
+  }, [])
+
+  const sendFileTreeMutationEvent = useCallback(
+    (event: Parameters<typeof systemIOActor.send>[0]) => {
+      setFileTreeMutationPending(true)
+      systemIOActor.send(event)
+    },
+    [setFileTreeMutationPending, systemIOActor]
+  )
+
+  useEffect(() => {
+    if (isSystemIOIdle && isFileTreeMutationPending) {
+      setFileTreeMutationPending(false)
+    }
+  }, [isFileTreeMutationPending, isSystemIOIdle, setFileTreeMutationPending])
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -258,7 +307,11 @@ export const ProjectExplorer = ({
    * If code wants to externall trigger creating a file pass in a new timestamp.
    */
   useEffect(() => {
-    if (createFilePressed <= 0 || readOnly) {
+    if (
+      createFilePressed <= 0 ||
+      readOnly ||
+      isFileTreeInteractionDisabledRef.current
+    ) {
       return
     }
 
@@ -277,7 +330,11 @@ export const ProjectExplorer = ({
   }, [createFilePressed])
 
   useEffect(() => {
-    if (createFolderPressed <= 0 || readOnly) {
+    if (
+      createFolderPressed <= 0 ||
+      readOnly ||
+      isFileTreeInteractionDisabledRef.current
+    ) {
       return
     }
     const row =
@@ -359,7 +416,10 @@ export const ProjectExplorer = ({
   )
 
   const handleArrowLeftCommand = useCallback(() => {
-    if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
+    if (
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current === CONTAINER_IS_SELECTED
+    ) {
       return
     }
 
@@ -392,7 +452,10 @@ export const ProjectExplorer = ({
   }, [onRowClickCallback, setOpenedRowsWrapper])
 
   const handleArrowRightCommand = useCallback(() => {
-    if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
+    if (
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current === CONTAINER_IS_SELECTED
+    ) {
       return
     }
 
@@ -412,6 +475,10 @@ export const ProjectExplorer = ({
   }, [setOpenedRowsWrapper])
 
   const handleArrowUpCommand = useCallback(() => {
+    if (isFileTreeInteractionDisabledRef.current) {
+      return
+    }
+
     setActiveIndex((previous) => {
       const next =
         previous === NOTHING_IS_SELECTED
@@ -423,6 +490,10 @@ export const ProjectExplorer = ({
   }, [])
 
   const handleArrowDownCommand = useCallback(() => {
+    if (isFileTreeInteractionDisabledRef.current) {
+      return
+    }
+
     const lastRowIndex = rowsToRenderRef.current.length - 1
     if (lastRowIndex < STARTING_INDEX_TO_SELECT) {
       return
@@ -439,7 +510,10 @@ export const ProjectExplorer = ({
   }, [])
 
   const handleEnterCommand = useCallback(() => {
-    if (activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+    if (
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current < STARTING_INDEX_TO_SELECT
+    ) {
       return
     }
 
@@ -457,7 +531,11 @@ export const ProjectExplorer = ({
   }, [setOpenedRowsWrapper])
 
   const handleRenameCommand = useCallback(() => {
-    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+    if (
+      readOnly ||
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current < STARTING_INDEX_TO_SELECT
+    ) {
       return
     }
 
@@ -471,7 +549,11 @@ export const ProjectExplorer = ({
   }, [readOnly])
 
   const handleDeleteCommand = useCallback(() => {
-    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+    if (
+      readOnly ||
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current < STARTING_INDEX_TO_SELECT
+    ) {
       return
     }
 
@@ -485,7 +567,10 @@ export const ProjectExplorer = ({
   }, [readOnly])
 
   const handleCopyCommand = useCallback(() => {
-    if (activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+    if (
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current < STARTING_INDEX_TO_SELECT
+    ) {
       return
     }
 
@@ -498,7 +583,11 @@ export const ProjectExplorer = ({
   }, [])
 
   const handlePasteCommand = useCallback(() => {
-    if (readOnly || activeIndexRef.current < STARTING_INDEX_TO_SELECT) {
+    if (
+      readOnly ||
+      isFileTreeInteractionDisabledRef.current ||
+      activeIndexRef.current < STARTING_INDEX_TO_SELECT
+    ) {
       return
     }
 
@@ -630,7 +719,7 @@ export const ProjectExplorer = ({
 
   const handleExternalFileDrop = useCallback(
     async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
-      if (readOnly) {
+      if (readOnly || isFileTreeInteractionDisabledRef.current) {
         return
       }
 
@@ -686,6 +775,7 @@ export const ProjectExplorer = ({
 
       // Copy supported files to the target directory
       if (supportedFiles.length > 0) {
+        setFileTreeMutationPending(true)
         const targetPath = getDropTargetPath(target, project.path)
         const createdDirs = new Set<string>()
 
@@ -733,7 +823,13 @@ export const ProjectExplorer = ({
         )
       }
     },
-    [readOnly, project.path, wasmInstance, systemIOActor]
+    [
+      readOnly,
+      project.path,
+      wasmInstance,
+      systemIOActor,
+      setFileTreeMutationPending,
+    ]
   )
 
   const handleDragOverTarget = useCallback(
@@ -817,7 +913,7 @@ export const ProjectExplorer = ({
         '-copy-'
       )
       if (result && result.src && result.target) {
-        systemIOActor.send({
+        sendFileTreeMutationEvent({
           type: SystemIOMachineEvents.copyRecursive,
           data: {
             src: result.src,
@@ -904,7 +1000,7 @@ export const ProjectExplorer = ({
           isFake: false,
           activeIndex: activeIndex,
           onDelete: () => {
-            if (readOnly) {
+            if (readOnly || isFileTreeInteractionDisabledRef.current) {
               return
             }
 
@@ -913,9 +1009,10 @@ export const ProjectExplorer = ({
 
             if (shouldWeNavigate && file && file.path) {
               const src = child.path
+              setFileTreeMutationPending(true)
               toArchivePath(src)
                 .then((target) => {
-                  systemIOActor.send({
+                  sendFileTreeMutationEvent({
                     type: SystemIOMachineEvents.moveRecursiveAndNavigate,
                     data: {
                       src,
@@ -933,6 +1030,7 @@ export const ProjectExplorer = ({
                   )
                 })
                 .catch((e) => {
+                  setFileTreeMutationPending(false)
                   console.error(e)
                   console.warn(
                     `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
@@ -940,9 +1038,10 @@ export const ProjectExplorer = ({
                 })
             } else {
               const src = child.path
+              setFileTreeMutationPending(true)
               toArchivePath(src)
                 .then((target) => {
-                  systemIOActor.send({
+                  sendFileTreeMutationEvent({
                     type: SystemIOMachineEvents.moveRecursive,
                     data: {
                       src,
@@ -959,6 +1058,7 @@ export const ProjectExplorer = ({
                   )
                 })
                 .catch((e) => {
+                  setFileTreeMutationPending(false)
                   console.error(e)
                   console.warn(
                     `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
@@ -1020,7 +1120,7 @@ export const ProjectExplorer = ({
               )
               if (result && result.src && result.target) {
                 const { src, target } = result
-                systemIOActor.send({
+                sendFileTreeMutationEvent({
                   type: SystemIOMachineEvents.moveRecursive,
                   data: {
                     src,
@@ -1071,7 +1171,7 @@ export const ProjectExplorer = ({
               if (requestedName !== name) {
                 if (row.isFake) {
                   // create
-                  systemIOActor.send({
+                  sendFileTreeMutationEvent({
                     type: SystemIOMachineEvents.createBlankFolder,
                     data: {
                       requestedAbsolutePath: joinOSPaths(
@@ -1105,7 +1205,7 @@ export const ProjectExplorer = ({
                         overrideApplicationProjectDirectory ||
                           applicationProjectDirectory
                       )
-                    systemIOActor.send({
+                    sendFileTreeMutationEvent({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
                       data: {
                         requestedFolderName: requestedName,
@@ -1116,7 +1216,7 @@ export const ProjectExplorer = ({
                       },
                     })
                   } else {
-                    systemIOActor.send({
+                    sendFileTreeMutationEvent({
                       type: SystemIOMachineEvents.renameFolder,
                       data: {
                         requestedFolderName: requestedName,
@@ -1163,7 +1263,7 @@ export const ProjectExplorer = ({
               if (row.isFake) {
                 // create a file if it is fake and navigate to that file!
                 if (file && canNavigate) {
-                  systemIOActor.send({
+                  sendFileTreeMutationEvent({
                     type: SystemIOMachineEvents.importFileFromURL,
                     data: {
                       requestedCode: '',
@@ -1176,7 +1276,7 @@ export const ProjectExplorer = ({
                     getParentAbsolutePath(row.path),
                     fileNameForcedWithOriginalExt
                   )
-                  systemIOActor.send({
+                  sendFileTreeMutationEvent({
                     type: SystemIOMachineEvents.createBlankFile,
                     data: {
                       requestedAbsolutePath,
@@ -1193,7 +1293,7 @@ export const ProjectExplorer = ({
                 const shouldWeNavigate =
                   requestedAbsoluteFilePathWithExtension === file?.path &&
                   canNavigate
-                systemIOActor.send({
+                sendFileTreeMutationEvent({
                   type: shouldWeNavigate
                     ? SystemIOMachineEvents.renameFileAndNavigateToFile
                     : SystemIOMachineEvents.renameFile,
@@ -1391,6 +1491,9 @@ export const ProjectExplorer = ({
         onFocus={handleExplorerFocus}
         onBlur={handleExplorerBlur}
         onClick={(event) => {
+          if (isFileTreeInteractionDisabled) {
+            return
+          }
           if (event.target === fileExplorerContainer.current) {
             focusProjectExplorer()
             setActiveIndexWrapper(CONTAINER_IS_SELECTED)
@@ -1398,17 +1501,26 @@ export const ProjectExplorer = ({
           }
         }}
         onDragEnter={(e) => {
+          if (isFileTreeInteractionDisabled) {
+            return
+          }
           if (handleExternalDragEvent(e)) {
             externalDragCounter.current++
             setIsExternalDragOver(true)
           }
         }}
         onDragOver={(e) => {
+          if (isFileTreeInteractionDisabled) {
+            return
+          }
           if (handleExternalDragEvent(e)) {
             e.dataTransfer.dropEffect = 'copy'
           }
         }}
         onDragLeave={(e) => {
+          if (isFileTreeInteractionDisabled) {
+            return
+          }
           if (handleExternalDragEvent(e)) {
             externalDragCounter.current--
             if (externalDragCounter.current <= 0) {
@@ -1419,6 +1531,9 @@ export const ProjectExplorer = ({
           }
         }}
         onDrop={(e) => {
+          if (isFileTreeInteractionDisabled) {
+            return
+          }
           if (handleExternalDragEvent(e)) {
             externalDragCounter.current = 0
             setIsExternalDragOver(false)
@@ -1437,6 +1552,7 @@ export const ProjectExplorer = ({
             isRenaming={isRenaming}
             isDeleting={isDeleting}
             isCopying={isCopying}
+            isInteractionDisabled={isFileTreeInteractionDisabled}
             isExternalDragOver={isExternalDragOver}
             highlightedEntry={highlightedEntry}
             onDeleteEnd={() => {
