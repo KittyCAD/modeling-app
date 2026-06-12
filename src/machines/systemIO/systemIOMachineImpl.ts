@@ -69,6 +69,58 @@ async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   }
 }
 
+function isPathNotFoundError(error: unknown) {
+  return (
+    error === 'ENOENT' ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'ENOENT')
+  )
+}
+
+async function pathExists(targetPath: string) {
+  try {
+    await fsZds.stat(targetPath)
+    return true
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      return false
+    }
+    return Promise.reject(error)
+  }
+}
+
+async function moveRecursivePath({
+  src,
+  target,
+}: {
+  src: string
+  target: string
+}) {
+  const statRes = await fsZds.stat(src)
+  const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
+  const targetAlreadyExists = await pathExists(target)
+
+  if (!targetAlreadyExists) {
+    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
+    try {
+      await fsZds.rename(src, target)
+      return
+    } catch {
+      // Fall back to copy/remove for cases like cross-device moves.
+    }
+  }
+
+  if (isDirectory) {
+    await fsZds.mkdir(target, { recursive: true })
+  } else {
+    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
+  }
+  await fsZds.cp(src, target, { recursive: true })
+  await fsZds.rm(src, { recursive: true })
+}
+
 async function getUniqueProjectNameForCreate({
   context,
   requestedProjectName,
@@ -1131,32 +1183,19 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string
         }
       }) => {
-        try {
-          // TODO: this force deletion behavior assumes this move is only
-          // really used in our archive/restore workflow. We should make
-          // dedicated archive/restore code paths for that if we need cases
-          // where we want to check with the user before going through with forcing.
-          const statRes = await fsZds.stat(input.src)
-          const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
-
-          if (isDirectory) {
-            await fsZds.mkdir(input.target, { recursive: true })
-            await fsZds.cp(input.src, input.target, { recursive: true })
-          } else {
-            const targetWithoutBasename = fsZds.dirname(input.target)
-            await fsZds.mkdir(targetWithoutBasename, { recursive: true })
-            await fsZds.cp(input.src, input.target, {
-              recursive: true,
-            })
-          }
-          await fsZds.rm(input.src, { recursive: true })
-        } catch (e: unknown) {
-          console.log(e)
-        }
+        // TODO: this force deletion behavior assumes this move is only
+        // really used in our archive/restore workflow. We should make
+        // dedicated archive/restore code paths for that if we need cases
+        // where we want to check with the user before going through with forcing.
+        await moveRecursivePath({
+          src: input.src,
+          target: input.target,
+        })
         return {
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',
           requestedProjectName: input.requestedProjectName || '',
+          target: input.target,
         }
       }
     ),
