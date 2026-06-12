@@ -44,6 +44,7 @@ type DimensionToolContext = {
   initialSelectionIds: SketchSolveSelectionId[]
   initialSelectionClickPoints: SelectionClickPoints
   initialObjects: ApiObject[]
+  runtime: DraftRuntime
 }
 
 type DimensionToolInput = {
@@ -150,6 +151,8 @@ type DraftRuntime = {
   lastDraftKey: string | null
   previewInFlight: boolean
   queuedMousePoint: Coords2d | null
+  // Used by async api calls in case tool got deactivated since
+  active: boolean
 }
 
 const LINE_INTERSECTION_EPSILON = 1e-8
@@ -177,7 +180,13 @@ function createRuntime(): DraftRuntime {
     lastDraftKey: null,
     previewInFlight: false,
     queuedMousePoint: null,
+    active: true,
   }
+}
+
+function deactivateRuntime(runtime: DraftRuntime) {
+  runtime.active = false
+  runtime.queuedMousePoint = null
 }
 
 function showAngleSectorPrompt() {
@@ -691,6 +700,20 @@ async function deleteDraftConstraint(
   runtime.draftConstraintId = null
 }
 
+async function deleteInactivePreviewConstraint(
+  context: DimensionToolContext,
+  constraintId: number
+) {
+  await context.rustContext.deleteObjects(
+    SKETCH_FILE_VERSION,
+    context.sketchId,
+    [constraintId],
+    [],
+    jsAppSettings(context.rustContext.settingsActor),
+    false
+  )
+}
+
 function sendPreviewResultToParent(
   self: { _parent?: { send: (event: unknown) => void } },
   result: {
@@ -736,7 +759,7 @@ async function replaceDraftAngleConstraint(
   self: { _parent?: { send: (event: unknown) => void } },
   mousePoint: Coords2d
 ) {
-  if (!runtime.angleContext) {
+  if (!runtime.active || !runtime.angleContext) {
     return
   }
 
@@ -751,6 +774,9 @@ async function replaceDraftAngleConstraint(
   }
 
   await deleteDraftConstraint(runtime, context)
+  if (!runtime.active) {
+    return
+  }
 
   const result = await context.rustContext.addConstraint(
     SKETCH_FILE_VERSION,
@@ -761,6 +787,10 @@ async function replaceDraftAngleConstraint(
   )
   const constraintId = getConstraintIdFromResult(result)
   if (constraintId === null) {
+    return
+  }
+  if (!runtime.active) {
+    await deleteInactivePreviewConstraint(context, constraintId)
     return
   }
 
@@ -783,6 +813,10 @@ function requestDraftPreview(
   self: { _parent?: { send: (event: unknown) => void } },
   mousePoint: Coords2d
 ) {
+  if (!runtime.active) {
+    return
+  }
+
   runtime.queuedMousePoint = mousePoint
   if (runtime.previewInFlight) {
     return
@@ -791,7 +825,7 @@ function requestDraftPreview(
   runtime.previewInFlight = true
   void (async () => {
     try {
-      while (runtime.queuedMousePoint) {
+      while (runtime.active && runtime.queuedMousePoint) {
         const nextMousePoint = runtime.queuedMousePoint
         runtime.queuedMousePoint = null
         await replaceDraftAngleConstraint(
@@ -818,7 +852,7 @@ async function commitDraftAngleConstraint(
   },
   mousePoint: Coords2d
 ) {
-  if (!runtime.angleContext) {
+  if (!runtime.active || !runtime.angleContext) {
     return
   }
 
@@ -829,6 +863,7 @@ async function commitDraftAngleConstraint(
   )
 
   try {
+    deactivateRuntime(runtime)
     await deleteDraftConstraint(runtime, context)
     const result = await context.rustContext.addConstraint(
       SKETCH_FILE_VERSION,
@@ -891,7 +926,8 @@ function addDimensionListener({
     send: (event: DimensionToolEvent) => void
   }
 }) {
-  const runtime = createRuntime()
+  const runtime = context.runtime
+  runtime.active = true
   const initialLineSelections = getInitialAngleLineSelections(
     context.initialSelectionIds,
     context.initialSelectionClickPoints,
@@ -1022,6 +1058,7 @@ function addDimensionListener({
 function removeDimensionListener({
   context,
 }: { context: DimensionToolContext }) {
+  deactivateRuntime(context.runtime)
   dismissAngleSectorPrompt()
   context.sceneInfra.setCallbacks({
     onClick: () => {},
@@ -1059,6 +1096,7 @@ export const machine = setup({
     initialSelectionClickPoints: input.initialSelectionClickPoints ?? {},
     initialObjects:
       input.initialObjects ?? input.sceneGraphDelta?.new_graph.objects ?? [],
+    runtime: createRuntime(),
   }),
   id: 'Dimension tool',
   initial: 'selecting lines',
