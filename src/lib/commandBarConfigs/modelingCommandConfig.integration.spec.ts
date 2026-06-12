@@ -18,7 +18,7 @@ function selectionsForArtifact(artifact?: Artifact): Selections {
     graphSelections: [
       {
         artifact,
-        codeRef: { range: [0, 1], pathToNode: [] },
+        codeRef: { range: [0, 1, 0], pathToNode: [] },
       },
     ],
     otherSelections: [],
