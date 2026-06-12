@@ -47,6 +47,7 @@ type GdtCommandData =
   | ModelingCommandSchema['GDT Distance']
   | ModelingCommandSchema['GDT Perpendicularity']
   | ModelingCommandSchema['GDT Angularity']
+  | ModelingCommandSchema['GDT Concentricity']
   | ModelingCommandSchema['GDT Parallelism']
   | ModelingCommandSchema['GDT Annotation']
 

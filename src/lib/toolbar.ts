@@ -1492,6 +1492,30 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-concentricity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Concentricity',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Concentricity',
+              icon: 'gdtConcentricity',
+              description:
+                'Controls how closely a feature axis aligns with a datum axis.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-concentricity'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-angularity',
               onClick: () =>
                 commands.send({
