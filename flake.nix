@@ -112,7 +112,12 @@
 
           src = ./rust;
 
-          cargoLock.lockFile = ./rust/Cargo.lock;
+          cargoLock = {
+            lockFile = ./rust/Cargo.lock;
+            outputHashes = {
+              "pulp-0.22.2" = "sha256-a8tyjfmJ8Ys5nf5CamLkEFEmJBd0u0P4sYMOu1gAcK8=";
+            };
+          };
           cargoBuildFlags = [
             "-p"
             "kcl-language-server"
