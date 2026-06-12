@@ -352,6 +352,18 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
+/** Mixed: one deprecated call with metadata + one deprecated call without refactor metadata. */
+const KCL_MIXED_DEPRECATED_AND_UNTRACKED_EDGE_ID = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeId(body, closestTo = [0, 0, 5])])
+`
+
 /** Focusrite Scarlett mounting bracket (first 55 lines): sketch in a function, fillet uses getPreviousAdjacentEdge(bs.tags.edge7) style. Z0006 refactor should emit edgeRefs with bs.tags.x (not bare edge6, edge7). */
 const KCL_FOCUSRITE_BRACKET = `// Mounting bracket for the Focusrite Scarlett Solo audio interface
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
@@ -997,6 +1009,45 @@ describe('refactorZ0006Unified', () => {
         // TODO: Decide whether to (1) keep seg01 in same fillet and only convert getOppositeEdge to edgeRefs,
         // or (2) split into two separate fillet calls. For now we just assert no crash.
         expect(refactored).toContain('fillet')
+      }
+    )
+
+    it(
+      'does not drop unconverted tags when a fillet tags array has only partial refactor metadata',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_MIXED_DEPRECATED_AND_UNTRACKED_EDGE_ID,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.edgeRefactorMetadata?.some(
+            (meta) => meta.stdlibFn === 'getOppositeEdge'
+          )
+        ).toBe(true)
+        expect(
+          execState.edgeRefactorMetadata?.some(
+            (meta) => meta.stdlibFn === 'edgeId'
+          )
+        ).toBe(false)
+
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+
+        expect(err(refactored)).toBe(true)
+        if (!err(refactored)) {
+          expect(norm(refactored)).toContain(
+            'tags = [getOppositeEdge(e1), edgeId(body, closestTo = [0, 0, 5])]'
+          )
+          expect(norm(refactored)).not.toContain('edges = [')
+        }
       }
     )
   })
