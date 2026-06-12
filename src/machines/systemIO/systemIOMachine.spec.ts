@@ -794,6 +794,53 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('should accept file imports while checking read/write access', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+              [SystemIOMachineActors.createKCLFile]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: 'public/kcl-samples',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.importFileFromURL,
+            data: {
+              requestedProjectName: 'bracket',
+              requestedFileNameWithExtension: 'lego.kcl',
+              requestedCode: 'circle',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.importFileFromURL)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
       it('should accept file navigation while checking read/write access', async () => {
         const actor = createActor(
           systemIOMachine.provide({
