@@ -6,6 +6,7 @@ import type { SnapshotFrom } from 'xstate'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
+import { CloudProjectConflictIndicator } from '@src/components/CloudProjectConflictDialog'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
@@ -17,6 +18,7 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -102,6 +104,15 @@ const ProjectSidebarMenu = ({
         >
           {project?.name ? project.name : APP_NAME}
         </span>
+      )}
+      {project?.path && (
+        <div className="self-center">
+          <CloudProjectConflictIndicator
+            projectPath={project.path}
+            projectName={getProjectDisplayName(project)}
+            variant="sidebar"
+          />
+        </div>
       )}
       {children}
     </div>

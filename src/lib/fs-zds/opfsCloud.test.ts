@@ -2,6 +2,7 @@ import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   type ProjectArchiveFile,
   type ProjectManifest,
+  getOpfsCloudConflictFileChanges,
   getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
   getOpfsCloudProjectSyncPreflightAction,
@@ -222,6 +223,61 @@ describe('opfsCloud sync helpers', () => {
         localClean: false,
       })
     ).toBe('mark-conflict')
+  })
+
+  it('classifies project conflict paths against the last synced base', () => {
+    const baseManifest: ProjectManifest = {
+      files: {
+        'remote-safe.kcl': { byteSize: 1, sha256: 'base' },
+        'local-only.kcl': { byteSize: 1, sha256: 'base' },
+        'same.kcl': { byteSize: 1, sha256: 'base' },
+        'different.kcl': { byteSize: 1, sha256: 'base' },
+        'delete-conflict.kcl': { byteSize: 1, sha256: 'base' },
+        'binary.bin': { byteSize: 1, sha256: 'base' },
+      },
+    }
+    const localManifest: ProjectManifest = {
+      files: {
+        'remote-safe.kcl': { byteSize: 1, sha256: 'base' },
+        'local-only.kcl': { byteSize: 2, sha256: 'local' },
+        'same.kcl': { byteSize: 2, sha256: 'same' },
+        'different.kcl': { byteSize: 2, sha256: 'local' },
+        'binary.bin': { byteSize: 2, sha256: 'local' },
+      },
+    }
+    const remoteManifest: ProjectManifest = {
+      files: {
+        'remote-safe.kcl': { byteSize: 2, sha256: 'remote' },
+        'local-only.kcl': { byteSize: 1, sha256: 'base' },
+        'same.kcl': { byteSize: 2, sha256: 'same' },
+        'different.kcl': { byteSize: 2, sha256: 'remote' },
+        'delete-conflict.kcl': { byteSize: 2, sha256: 'remote' },
+        'binary.bin': { byteSize: 2, sha256: 'remote' },
+      },
+    }
+
+    expect(
+      getOpfsCloudConflictFileChanges({
+        baseManifest,
+        localManifest,
+        remoteManifest,
+        localFiles: [
+          projectFile('different.kcl', 'local = 1'),
+          projectFile('binary.bin', '\u0000local'),
+        ],
+        remoteFiles: [
+          projectFile('different.kcl', 'remote = 1'),
+          projectFile('binary.bin', '\u0000remote'),
+        ],
+      }).map(({ relativePath, status }) => [relativePath, status])
+    ).toEqual([
+      ['binary.bin', 'binary-conflict'],
+      ['delete-conflict.kcl', 'add-delete-conflict'],
+      ['different.kcl', 'both-changed-differently'],
+      ['local-only.kcl', 'local-changed'],
+      ['remote-safe.kcl', 'remote-changed'],
+      ['same.kcl', 'both-changed-identically'],
+    ])
   })
 
   it('uses remote updated_at for clean cloud projects and local mtime for pending edits', () => {

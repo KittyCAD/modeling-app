@@ -4,6 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { Link } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { CloudProjectConflictIndicator } from '@src/components/CloudProjectConflictDialog'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
@@ -160,6 +161,13 @@ function ProjectCard({
       {...props}
       className="group relative flex flex-col rounded-sm border border-chalkboard-50 dark:border-chalkboard-80 hover:!border-primary"
     >
+      <div className="absolute left-2 top-2 z-10">
+        <CloudProjectConflictIndicator
+          projectPath={project.path}
+          projectName={projectName}
+          variant="card"
+        />
+      </div>
       <Link
         data-testid="project-link"
         to={

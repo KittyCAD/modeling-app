@@ -44,7 +44,10 @@ import type {
   OpfsCloudProjectMetadataIndexEntry,
   OutboxEntry,
   ProjectArchiveFile,
+  ProjectConflict,
+  ProjectConflictFileChange,
   ProjectManifest,
+  ProjectManifestEntry,
   ProjectMetadata,
   RemoteProject,
   Revision,
@@ -65,6 +68,9 @@ export type {
   OpfsCloudLocalProject,
   OpfsCloudProjectMetadataIndexEntry,
   ProjectArchiveFile,
+  ProjectConflict,
+  ProjectConflictFileChange,
+  ProjectConflictFileStatus,
   ProjectManifest,
   ProjectMetadata,
 } from '@src/lib/fs-zds/opfsCloud/types'
@@ -220,6 +226,114 @@ export function getOpfsCloudProjectModifiedTime(
   }
 
   return localModified ?? null
+}
+
+function manifestEntryEqual(
+  left: ProjectManifestEntry | undefined,
+  right: ProjectManifestEntry | undefined
+) {
+  if (!left || !right) {
+    return left === right
+  }
+
+  return left.byteSize === right.byteSize && left.sha256 === right.sha256
+}
+
+function manifestEntryChangedFromBase(
+  entry: ProjectManifestEntry | undefined,
+  baseEntry: ProjectManifestEntry | undefined
+) {
+  return !manifestEntryEqual(entry, baseEntry)
+}
+
+function fileMap(files: ProjectArchiveFile[]) {
+  return new Map(
+    files.map((file) => [normalizeRelativePath(file.relativePath), file])
+  )
+}
+
+function isTextProjectFile(file: ProjectArchiveFile | undefined) {
+  if (!file) {
+    return true
+  }
+  try {
+    const text = new TextDecoder('utf-8', { fatal: true }).decode(file.data)
+    return !text.includes('\u0000')
+  } catch {
+    return false
+  }
+}
+
+function hasStoredProjectConflict(
+  conflict: ProjectMetadata['conflict'] | undefined
+): conflict is ProjectConflict {
+  return Boolean(conflict && 'remoteFiles' in conflict)
+}
+
+export function getOpfsCloudConflictFileChanges({
+  baseManifest,
+  localManifest,
+  remoteManifest,
+  localFiles,
+  remoteFiles,
+}: {
+  baseManifest: ProjectManifest | undefined
+  localManifest: ProjectManifest
+  remoteManifest: ProjectManifest
+  localFiles: ProjectArchiveFile[]
+  remoteFiles: ProjectArchiveFile[]
+}): ProjectConflictFileChange[] {
+  const baseFiles = baseManifest?.files ?? {}
+  const localFileEntries = localManifest.files
+  const remoteFileEntries = remoteManifest.files
+  const localFileMap = fileMap(localFiles)
+  const remoteFileMap = fileMap(remoteFiles)
+  const allPaths = new Set([
+    ...Object.keys(baseFiles),
+    ...Object.keys(localFileEntries),
+    ...Object.keys(remoteFileEntries),
+  ])
+
+  return Array.from(allPaths)
+    .toSorted((left, right) => left.localeCompare(right))
+    .flatMap((relativePath): ProjectConflictFileChange[] => {
+      const baseEntry = baseFiles[relativePath]
+      const localEntry = localFileEntries[relativePath]
+      const remoteEntry = remoteFileEntries[relativePath]
+      const localChanged = manifestEntryChangedFromBase(localEntry, baseEntry)
+      const remoteChanged = manifestEntryChangedFromBase(remoteEntry, baseEntry)
+
+      if (!localChanged && !remoteChanged) {
+        return []
+      }
+
+      let status: ProjectConflictFileChange['status']
+      if (localChanged && !remoteChanged) {
+        status = 'local-changed'
+      } else if (!localChanged && remoteChanged) {
+        status = 'remote-changed'
+      } else if (manifestEntryEqual(localEntry, remoteEntry)) {
+        status = 'both-changed-identically'
+      } else if (baseEntry && (!localEntry || !remoteEntry)) {
+        status = 'add-delete-conflict'
+      } else if (
+        !isTextProjectFile(localFileMap.get(relativePath)) ||
+        !isTextProjectFile(remoteFileMap.get(relativePath))
+      ) {
+        status = 'binary-conflict'
+      } else {
+        status = 'both-changed-differently'
+      }
+
+      return [
+        {
+          relativePath,
+          status,
+          localExists: Boolean(localEntry),
+          remoteExists: Boolean(remoteEntry),
+        },
+      ]
+    })
 }
 
 async function writeLocalProjectTitle(projectPath: string, title: string) {
@@ -726,40 +840,135 @@ async function hydrateCleanLocalProjectTitle(
 async function markProjectConflict(
   metadata: ProjectMetadata,
   remoteRevision: Revision | undefined,
+  localFiles: ProjectArchiveFile[],
+  localManifest: ProjectManifest,
   remoteFiles: ProjectArchiveFile[],
+  remoteManifest: ProjectManifest,
   remoteTitle?: string
 ) {
-  const parentDirectory = localFs.dirname(metadata.localProjectPath)
-  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)
-  const conflictName = `${metadata.projectName} (cloud conflict ${stamp})`
-  const conflictProjectPath = await uniqueProjectPath(
-    parentDirectory,
-    conflictName
-  )
-
-  await replaceLocalProjectWithFiles(
-    conflictProjectPath,
-    withProjectTitleInArchiveFiles(remoteFiles, remoteTitle)
+  const createdAt = nowIso()
+  const titledRemoteFiles = withProjectTitleInArchiveFiles(
+    remoteFiles,
+    remoteTitle
   )
 
   await putProjectMetadata({
     ...metadata,
     conflict: {
       remoteRevision,
-      conflictProjectPath,
-      createdAt: nowIso(),
+      remoteFiles: titledRemoteFiles,
+      remoteManifest,
+      localManifest,
+      fileChanges: getOpfsCloudConflictFileChanges({
+        baseManifest: metadata.baseManifest,
+        localManifest,
+        remoteManifest,
+        localFiles,
+        remoteFiles: titledRemoteFiles,
+      }),
+      createdAt,
     },
     lastFailure: {
       message: 'Cloud sync conflict: local and remote both changed.',
-      at: nowIso(),
+      at: createdAt,
     },
   })
   updateStatus({
     state: 'conflict',
     activeProjectPath: metadata.localProjectPath,
     lastFailure: 'Cloud sync conflict: local and remote both changed.',
-    lastFailureAt: nowIso(),
+    lastFailureAt: createdAt,
   })
+}
+
+export type OpfsCloudConflictResolution = 'accept-remote' | 'keep-local'
+
+export type OpfsCloudProjectConflictDetail = {
+  projectPath: string
+  projectName: string
+  remoteProjectId?: string
+  remoteRevision?: Revision
+  createdAt: string
+  localFiles: ProjectArchiveFile[]
+  remoteFiles: ProjectArchiveFile[]
+  fileChanges: ProjectConflictFileChange[]
+}
+
+export async function getOpfsCloudProjectConflict(
+  projectPath: string
+): Promise<OpfsCloudProjectConflictDetail | undefined> {
+  const metadata = await getProjectMetadata(projectPath)
+  if (!metadata || !hasStoredProjectConflict(metadata.conflict)) {
+    return undefined
+  }
+
+  const localFiles = (await exists(metadata.localProjectPath))
+    ? await collectLocalProjectFiles(metadata.localProjectPath)
+    : []
+  const localManifest = await projectManifestFromFiles(localFiles)
+  const remoteFiles = metadata.conflict.remoteFiles
+  const remoteManifest = metadata.conflict.remoteManifest
+
+  return {
+    projectPath: metadata.localProjectPath,
+    projectName: metadata.projectName,
+    remoteProjectId: metadata.remoteProjectId,
+    remoteRevision: metadata.conflict.remoteRevision,
+    createdAt: metadata.conflict.createdAt,
+    localFiles,
+    remoteFiles,
+    fileChanges: getOpfsCloudConflictFileChanges({
+      baseManifest: metadata.baseManifest,
+      localManifest,
+      remoteManifest,
+      localFiles,
+      remoteFiles,
+    }),
+  }
+}
+
+export async function resolveOpfsCloudProjectConflict(
+  projectPath: string,
+  resolution: OpfsCloudConflictResolution
+) {
+  const metadata = await getProjectMetadata(projectPath)
+  if (!metadata || !hasStoredProjectConflict(metadata.conflict)) {
+    return
+  }
+
+  if (resolution === 'accept-remote') {
+    await replaceLocalProjectWithFiles(
+      metadata.localProjectPath,
+      metadata.conflict.remoteFiles
+    )
+    await clearOutboxEntriesForProject(metadata.localProjectPath)
+    await markProjectSynced(metadata, metadata.conflict.remoteManifest, {
+      revision: metadata.conflict.remoteRevision,
+      updatedAt: metadata.remoteUpdatedAt,
+    })
+    return
+  }
+
+  if (!metadata.remoteProjectId) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud conflict resolution expected a remote project id.')
+  }
+
+  const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
+  const localManifest = await projectManifestFromFiles(localFiles)
+  const updated = await updateRemoteProject({
+    config,
+    projectPath: metadata.localProjectPath,
+    projectId: metadata.remoteProjectId,
+    files: localFiles,
+    expectedRevision: metadata.conflict.remoteRevision,
+  })
+  await clearOutboxEntriesForProject(metadata.localProjectPath)
+  await markProjectSynced(
+    metadata,
+    localManifest,
+    remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
+  )
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -909,6 +1118,16 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       return
     }
 
+    if (hasStoredProjectConflict(metadata.conflict)) {
+      updateStatus({
+        state: 'conflict',
+        activeProjectPath: metadata.localProjectPath,
+        lastFailure: 'Cloud sync conflict: local and remote both changed.',
+        lastFailureAt: metadata.conflict.createdAt,
+      })
+      return
+    }
+
     metadata = await bindRemoteProjectIdFromToml(metadata)
     if (metadata.remoteProjectId) {
       await writeLocalProjectCloudProjectId(
@@ -1055,7 +1274,10 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     await markProjectConflict(
       metadata,
       remoteRevision,
+      localFiles,
+      localManifest,
       remoteFiles,
+      remoteManifest,
       remoteProject?.title
     )
   } catch (error) {

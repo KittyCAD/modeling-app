@@ -20,6 +20,33 @@ export type ProjectArchiveFile = {
   data: Uint8Array
 }
 
+/** How one path differs across the last synced base, local OPFS, and remote. */
+export type ProjectConflictFileStatus =
+  | 'remote-changed'
+  | 'local-changed'
+  | 'both-changed-identically'
+  | 'both-changed-differently'
+  | 'add-delete-conflict'
+  | 'binary-conflict'
+
+/** Per-file conflict summary used by sync logic and review UI. */
+export type ProjectConflictFileChange = {
+  relativePath: string
+  status: ProjectConflictFileStatus
+  localExists: boolean
+  remoteExists: boolean
+}
+
+/** Durable remote archive snapshot retained while a conflict awaits review. */
+export type ProjectConflict = {
+  remoteRevision?: Revision
+  remoteFiles: ProjectArchiveFile[]
+  remoteManifest: ProjectManifest
+  localManifest: ProjectManifest
+  fileChanges: ProjectConflictFileChange[]
+  createdAt: string
+}
+
 /** Durable per-project sync metadata stored locally in the OPFSCloud sync DB. */
 export type ProjectMetadata = {
   schemaVersion: 1
@@ -30,11 +57,7 @@ export type ProjectMetadata = {
   remoteUpdatedAt?: string
   baseManifest?: ProjectManifest
   tombstone?: boolean
-  conflict?: {
-    remoteRevision?: Revision
-    conflictProjectPath: string
-    createdAt: string
-  }
+  conflict?: ProjectConflict
   lastFailure?: {
     message: string
     at: string

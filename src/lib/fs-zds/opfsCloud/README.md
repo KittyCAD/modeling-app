@@ -51,7 +51,7 @@ flowchart TD
   CompareBase -->|"Local changed, remote unchanged"| PushGuarded["Upload with expected_revision"]
   CompareBase -->|"Local clean, remote changed"| PullRemote["Hydrate OPFS from remote archive"]
   CompareBase -->|"Both unchanged or manifests equal"| MarkSynced["Clear outbox and update base"]
-  CompareBase -->|"Both changed differently"| Conflict["Keep local primary and write conflict copy"]
+  CompareBase -->|"Both changed differently"| Conflict["Keep local primary and store remote conflict archive"]
   DeleteRemote --> Done["Done"]
   ForgetLocal --> Done
   CreateRemote --> MarkSynced
@@ -84,7 +84,7 @@ flowchart TD
 - Remote updates must send `expected_revision`; creates and deletes are the only unguarded remote writes.
 - A remote-only project discovered from the cloud index must be cloned into OPFS so later loads can hit local storage first.
 - Remote hydration may replace OPFS only when local is clean relative to the last synced base.
-- If local and remote both changed differently, local remains primary and the remote archive is written as a conflict copy.
+- If local and remote both changed differently, local remains primary and the remote archive is retained in sync metadata for explicit user review.
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
 
@@ -97,7 +97,7 @@ Cloud sync state is stored outside React state so it can survive page reloads an
 - `ProjectMetadata.remoteUpdatedAt` stores the cloud project's last updated timestamp for Home sorting while the local cache is clean.
 - `ProjectMetadata.baseManifest` stores the last cloud-acknowledged local file manifest.
 - `ProjectMetadata.tombstone` records an explicit local project delete.
-- `ProjectMetadata.conflict` records a blocked sync and the local path of the remote conflict copy.
+- `ProjectMetadata.conflict` records a blocked sync, the reviewed remote archive, and per-file conflict classifications.
 - `ProjectMetadata.lastFailure` records the latest sync error without clearing dirty state.
 - The outbox records durable `upsert` and `delete` work by project path.
 
@@ -115,7 +115,7 @@ Remote creates do not have an expected revision because there is no remote base 
 
 Remote deletes are intentionally not revision-guarded. A project-root `rm` records an explicit tombstone, then the sync worker deletes the remote project if it exists and ignores missing remote projects. Missing local directories are not treated as destructive cloud deletes unless there is a tombstone or queued delete.
 
-Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when an unknown remote project is being cloned into a new local path. If both local and remote changed since the base, the local project remains primary and the remote archive is written to a conflict project.
+Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when an unknown remote project is being cloned into a new local path. If both local and remote changed since the base, the local project remains primary and the remote archive is stored in sync metadata. The user can then accept the remote archive into OPFS or keep local and push it with `expected_revision` set to the reviewed remote revision.
 
 This implementation is whole-project archive based. It does not attempt file-level merging because the cloud API does not expose file-level revisions. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
 
