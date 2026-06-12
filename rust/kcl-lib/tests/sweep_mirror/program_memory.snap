@@ -6,8 +6,8 @@ description: Variables in memory after executing sweep_mirror.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing sweep_mirror.kcl
   "__sketch_46_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -76,7 +76,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -150,8 +150,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+                  "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                   "kind": "Custom",
                   "objectId": 45,
                   "origin": {
@@ -180,7 +180,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -196,7 +196,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
                 "objectId": 53,
                 "kind": {
                   "arc": {
@@ -302,8 +302,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+                  "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                   "kind": "Custom",
                   "objectId": 45,
                   "origin": {
@@ -332,7 +332,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -348,11 +348,11 @@ description: Variables in memory after executing sweep_mirror.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
             "sourceRange": []
           },
           "from": [
@@ -376,7 +376,7 @@ description: Variables in memory after executing sweep_mirror.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
             "sourceRange": []
           },
           "from": [
@@ -400,7 +400,7 @@ description: Variables in memory after executing sweep_mirror.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
             "sourceRange": []
           },
           "from": [
@@ -424,7 +424,7 @@ description: Variables in memory after executing sweep_mirror.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
             "sourceRange": []
           },
           "from": [
@@ -448,8 +448,8 @@ description: Variables in memory after executing sweep_mirror.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -490,7 +490,7 @@ description: Variables in memory after executing sweep_mirror.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "sourceRange": []
         }
       },
@@ -512,9 +512,9 @@ description: Variables in memory after executing sweep_mirror.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "originalId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "units": "mm"
     }
   },
@@ -527,7 +527,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -601,8 +601,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -631,7 +631,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -647,7 +647,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -721,8 +721,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -751,7 +751,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -767,7 +767,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -841,8 +841,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -871,7 +871,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -887,7 +887,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -961,8 +961,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -991,7 +991,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1007,7 +1007,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -1082,8 +1082,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1112,7 +1112,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1128,7 +1128,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -1203,8 +1203,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1233,7 +1233,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1249,7 +1249,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -1324,8 +1324,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1354,7 +1354,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1370,7 +1370,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -1445,8 +1445,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1475,7 +1475,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -1492,11 +1492,11 @@ description: Variables in memory after executing sweep_mirror.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1520,7 +1520,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1544,7 +1544,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1568,7 +1568,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1592,8 +1592,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1634,7 +1634,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "sourceRange": []
                 }
               },
@@ -1656,8 +1656,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1677,7 +1677,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
                 "objectId": 53,
                 "kind": {
                   "arc": {
@@ -1783,8 +1783,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+                  "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                   "kind": "Custom",
                   "objectId": 45,
                   "origin": {
@@ -1813,7 +1813,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -1829,7 +1829,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -1903,8 +1903,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+                  "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                   "kind": "Custom",
                   "objectId": 45,
                   "origin": {
@@ -1933,7 +1933,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1950,11 +1950,11 @@ description: Variables in memory after executing sweep_mirror.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                     "sourceRange": []
                   },
                   "from": [
@@ -1978,7 +1978,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2008,8 +2008,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+                "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "kind": "Custom",
                 "objectId": 45,
                 "origin": {
@@ -2050,7 +2050,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                   "sourceRange": []
                 }
               },
@@ -2064,8 +2064,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "originalId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "units": "mm",
               "isClosed": "no"
             }

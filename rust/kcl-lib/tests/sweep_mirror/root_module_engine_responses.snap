@@ -1,0 +1,1344 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Root module engine responses sweep_mirror.kcl
+---
+{
+  "0917d07d-5996-5994-8a06-602d43e2b6f3": {
+    "success": true,
+    "request_id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "start_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0": {
+    "success": true,
+    "request_id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "1144ecbd-366d-5a7a-bb6c-2e169ba3c205": {
+    "success": true,
+    "request_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "14d4f28b-98bf-5f5d-9542-446598cbea13": {
+    "success": true,
+    "request_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "solid3d_get_adjacency_info",
+          "data": {
+            "edges": []
+          }
+        }
+      }
+    }
+  },
+  "1a0ade6f-d355-5121-9adb-351976a78284": {
+    "success": true,
+    "request_id": "1a0ade6f-d355-5121-9adb-351976a78284",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_bring_to_front",
+          "data": {}
+        }
+      }
+    }
+  },
+  "1cca8d80-f404-5b33-b6e0-cca169c4da48": {
+    "success": true,
+    "request_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "solid3d_get_extrusion_face_info",
+          "data": {
+            "faces": [
+              {
+                "curve_id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
+                "face_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7",
+                "cap": "none"
+              },
+              {
+                "curve_id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
+                "face_id": "f858b0f4-ee1c-59f8-9496-132f50940789",
+                "cap": "none"
+              },
+              {
+                "curve_id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+                "face_id": "449c687a-df26-5b11-8002-8ee5f79dfafa",
+                "cap": "none"
+              },
+              {
+                "curve_id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+                "face_id": "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                "cap": "none"
+              },
+              {
+                "curve_id": null,
+                "face_id": "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                "cap": "bottom"
+              },
+              {
+                "curve_id": null,
+                "face_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                "cap": "top"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "1ced8650-d7f2-4177-a1ec-cf305dee38b9": {
+    "success": true,
+    "request_id": "1ced8650-d7f2-4177-a1ec-cf305dee38b9",
+    "resp": {
+      "type": "modeling_batch",
+      "data": {
+        "responses": {
+          "25999981-b7b8-57e2-8ac5-655907dfffdc": {
+            "response": {
+              "type": "enable_sketch_mode",
+              "data": {}
+            }
+          },
+          "5173c024-ac32-59f6-acbe-69ddbf68893d": {
+            "response": {
+              "type": "start_path",
+              "data": {}
+            }
+          },
+          "663fe57f-e0fe-5661-bf24-d25b7a92874c": {
+            "response": {
+              "type": "move_path_pen",
+              "data": {}
+            }
+          },
+          "8868de97-0e2a-52f7-8e1a-8f0671a194e3": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "91226189-7e64-5690-9203-67ee33a6eb03": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7": {
+            "response": {
+              "type": "sketch_mode_disable",
+              "data": {}
+            }
+          },
+          "efd1e3b2-5268-50fd-858e-26540f8146e5": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "f0c740f1-5055-5cce-95b9-6f1fba47290d": {
+            "response": {
+              "type": "create_region_from_query_point",
+              "data": {
+                "region_mapping": {
+                  "1c6f50c3-356c-5146-a59c-e8fc7a45aaae": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                  "78381d13-7a14-5ace-94e1-c47514f4e59d": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                  "8079d1db-0c1a-5aab-864c-4ec7cf2863f9": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                  "87827096-4712-5c7e-9fa8-0c088ec65a03": "91226189-7e64-5690-9203-67ee33a6eb03"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "20dfacb2-a19d-5f06-80d9-1dae939bbd58": {
+    "success": true,
+    "request_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "2269b169-b2b2-5ec2-a665-24cb3822e91f": {
+    "success": true,
+    "request_id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_bring_to_front",
+          "data": {}
+        }
+      }
+    }
+  },
+  "226ae769-fcaa-56af-ac65-5807ed297dad": {
+    "success": true,
+    "request_id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "sweep",
+          "data": {}
+        }
+      }
+    }
+  },
+  "25709434-cd20-5165-8714-70fc4f8f96fc": {
+    "success": true,
+    "request_id": "25709434-cd20-5165-8714-70fc4f8f96fc",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "set_default_system_properties",
+          "data": {}
+        }
+      }
+    }
+  },
+  "25999981-b7b8-57e2-8ac5-655907dfffdc": {
+    "success": true,
+    "request_id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "enable_sketch_mode",
+          "data": {}
+        }
+      }
+    }
+  },
+  "351bce6c-68e1-5a92-a1c1-c31042ebba32": {
+    "success": true,
+    "request_id": "351bce6c-68e1-5a92-a1c1-c31042ebba32",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "edge_lines_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b": {
+    "success": true,
+    "request_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "move_path_pen",
+          "data": {}
+        }
+      }
+    }
+  },
+  "4482cd0e-0ba6-5706-bd3a-a7e479e352c8": {
+    "success": true,
+    "request_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "enable_sketch_mode",
+          "data": {}
+        }
+      }
+    }
+  },
+  "4593843c-7d41-5ede-b7fa-ab9201f55957": {
+    "success": true,
+    "request_id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "entity_mirror_across",
+          "data": {
+            "entity_face_edge_ids": [
+              {
+                "object_id": "1a7f14db-73e1-570f-8036-01896cb924ab",
+                "faces": [
+                  "a214e45c-e54b-523b-9cd3-f0369f5b11e6",
+                  "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
+                  "c47991dd-7f66-5740-9d3d-66ebf5ec7ca9",
+                  "858236f5-9969-54e7-a6ec-13d8139c4bfe",
+                  "864b0e13-21a1-5e76-8d2c-44df754e635f",
+                  "d102e79b-106f-5dea-9c64-58ecbfd9efaa"
+                ],
+                "edges": [
+                  "eb9d3280-e4c3-551f-ad28-3bfd93acc2fc",
+                  "749d3e98-3061-5730-90b9-784607aeecf4",
+                  "0b77af05-b15c-5d76-8041-c54efb758dd8",
+                  "bc2d79c7-ab42-5ba0-a809-65d14ac7dd6d",
+                  "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+                  "af1277f8-50f3-5277-8c02-10cc8a86ae47",
+                  "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+                  "33346c34-105a-5565-bd45-e6c0c90963ba",
+                  "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+                  "e2519722-c4a6-5a76-b0ab-8c108bce687d",
+                  "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
+                  "70b5e5bb-ded3-5952-8380-c3d419e937ba"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "468f6520-a683-5392-9492-de009fdcddef": {
+    "success": true,
+    "request_id": "468f6520-a683-5392-9492-de009fdcddef",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "4da16780-5d2e-5aa7-9a9e-c4891160dc60": {
+    "success": true,
+    "request_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "sketch_mode_disable",
+          "data": {}
+        }
+      }
+    }
+  },
+  "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289": {
+    "success": true,
+    "request_id": "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153": {
+    "success": true,
+    "request_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "5173c024-ac32-59f6-acbe-69ddbf68893d": {
+    "success": true,
+    "request_id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "start_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "5506219b-c737-4170-9e5f-038cc3bd33ff": {
+    "success": true,
+    "request_id": "5506219b-c737-4170-9e5f-038cc3bd33ff",
+    "resp": {
+      "type": "modeling_batch",
+      "data": {
+        "responses": {
+          "14d4f28b-98bf-5f5d-9542-446598cbea13": {
+            "response": {
+              "type": "solid3d_get_adjacency_info",
+              "data": {
+                "edges": []
+              }
+            }
+          },
+          "468f6520-a683-5392-9492-de009fdcddef": {
+            "response": {
+              "type": "object_visible",
+              "data": {}
+            }
+          },
+          "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19": {
+            "response": {
+              "type": "object_visible",
+              "data": {}
+            }
+          },
+          "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d": {
+            "response": {
+              "type": "object_visible",
+              "data": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "5e6084f3-764e-5b58-a4dc-67fee9e0cfef": {
+    "success": true,
+    "request_id": "5e6084f3-764e-5b58-a4dc-67fee9e0cfef",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "5f65350e-7a7d-5c6d-8c8c-58382da58899": {
+    "success": true,
+    "request_id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "entity_get_all_child_uuids",
+          "data": {
+            "entity_ids": [
+              "a214e45c-e54b-523b-9cd3-f0369f5b11e6",
+              "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
+              "c47991dd-7f66-5740-9d3d-66ebf5ec7ca9",
+              "858236f5-9969-54e7-a6ec-13d8139c4bfe",
+              "864b0e13-21a1-5e76-8d2c-44df754e635f",
+              "d102e79b-106f-5dea-9c64-58ecbfd9efaa",
+              "eb9d3280-e4c3-551f-ad28-3bfd93acc2fc",
+              "749d3e98-3061-5730-90b9-784607aeecf4",
+              "0b77af05-b15c-5d76-8041-c54efb758dd8",
+              "bc2d79c7-ab42-5ba0-a809-65d14ac7dd6d",
+              "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+              "af1277f8-50f3-5277-8c02-10cc8a86ae47",
+              "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+              "33346c34-105a-5565-bd45-e6c0c90963ba",
+              "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+              "e2519722-c4a6-5a76-b0ab-8c108bce687d",
+              "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
+              "70b5e5bb-ded3-5952-8380-c3d419e937ba",
+              "20c548cd-fec2-57a8-8f05-cc872e54b67f",
+              "cf1165d3-ff10-5a2a-a907-7481ce9614bf",
+              "8e9381b7-8074-5384-8e72-b41ec6499a0a",
+              "46781404-ca48-5e2f-815f-819b6959e96b",
+              "a89079a7-b512-522b-801d-db5076bba0eb",
+              "680d8dcc-80d3-575f-8a83-671eeae5295a",
+              "d47408cc-330b-59ea-9675-89b8fd0b97f5",
+              "76e97e85-e537-578b-ac43-e32d1b685418"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "6017d8cf-00f1-589a-82b7-0cc09717f0ab": {
+    "success": true,
+    "request_id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "entity_get_all_child_uuids",
+          "data": {
+            "entity_ids": [
+              "086bca0d-88a5-53e8-8bef-a2a8c35f17a7",
+              "f858b0f4-ee1c-59f8-9496-132f50940789",
+              "449c687a-df26-5b11-8002-8ee5f79dfafa",
+              "3ec3901f-e043-5dab-b99a-4563417d71cf",
+              "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+              "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+              "0a2fc9e1-8dae-5729-b118-aaf23b38c1ee",
+              "6b995208-9cd1-5c01-a730-cb3b289ee1dc",
+              "5c997b1c-30eb-553a-82e8-f827225f3212",
+              "ab9401f1-4f04-5047-ac41-8164231e0bf5",
+              "96db2ce0-0804-575a-a59a-6e1f087bc10e",
+              "f71761c9-6953-5b43-b67e-a12f69300953",
+              "5d46da7b-e30e-54df-b48a-63ad8a198ef5",
+              "42075b2d-2f35-5ea1-8b98-37386653584d",
+              "78381d13-7a14-5ace-94e1-c47514f4e59d",
+              "87827096-4712-5c7e-9fa8-0c088ec65a03",
+              "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+              "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+              "4cdd7a21-5c74-5c2c-8156-88296e47d543",
+              "14aa04e6-93c1-5d43-9d42-89ba1278654b",
+              "7732a359-8658-5f34-8591-7d83d9310501",
+              "4cb02b26-137b-5339-8840-f65819fcbdd8",
+              "398a976f-912c-56d0-92bc-df2e3d72592e",
+              "c5fc6fc5-f2b3-5ae1-abd7-bdd3d741632d",
+              "3b0aa862-de7b-5bd0-9cdb-f6213be518b5",
+              "9b090b71-4f72-5fe6-b0fd-a299f67a4d05"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "62f92a38-07e6-5321-9e56-be9dd50f1d7b": {
+    "success": true,
+    "request_id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "solid3d_get_extrusion_face_info",
+          "data": {
+            "faces": [
+              {
+                "curve_id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
+                "face_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7",
+                "cap": "none"
+              },
+              {
+                "curve_id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
+                "face_id": "f858b0f4-ee1c-59f8-9496-132f50940789",
+                "cap": "none"
+              },
+              {
+                "curve_id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+                "face_id": "449c687a-df26-5b11-8002-8ee5f79dfafa",
+                "cap": "none"
+              },
+              {
+                "curve_id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+                "face_id": "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                "cap": "none"
+              },
+              {
+                "curve_id": null,
+                "face_id": "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                "cap": "bottom"
+              },
+              {
+                "curve_id": null,
+                "face_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                "cap": "top"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "663fe57f-e0fe-5661-bf24-d25b7a92874c": {
+    "success": true,
+    "request_id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "move_path_pen",
+          "data": {}
+        }
+      }
+    }
+  },
+  "6c096663-896a-5f49-b4a0-b5621e2f3b74": {
+    "success": true,
+    "request_id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "set_object_transform",
+          "data": {}
+        }
+      }
+    }
+  },
+  "77ccd959-6fcd-463c-8206-2e094ffc2cf6": {
+    "success": true,
+    "request_id": "77ccd959-6fcd-463c-8206-2e094ffc2cf6",
+    "resp": {
+      "type": "modeling_batch",
+      "data": {
+        "responses": {
+          "1a0ade6f-d355-5121-9adb-351976a78284": {
+            "response": {
+              "type": "object_bring_to_front",
+              "data": {}
+            }
+          },
+          "1cca8d80-f404-5b33-b6e0-cca169c4da48": {
+            "response": {
+              "type": "solid3d_get_extrusion_face_info",
+              "data": {
+                "faces": [
+                  {
+                    "curve_id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
+                    "face_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
+                    "face_id": "f858b0f4-ee1c-59f8-9496-132f50940789",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+                    "face_id": "449c687a-df26-5b11-8002-8ee5f79dfafa",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+                    "face_id": "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": null,
+                    "face_id": "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                    "cap": "bottom"
+                  },
+                  {
+                    "curve_id": null,
+                    "face_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                    "cap": "top"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "7d4c814d-f292-503d-a012-68ab58c77524": {
+    "success": true,
+    "request_id": "7d4c814d-f292-503d-a012-68ab58c77524",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "make_plane",
+          "data": {}
+        }
+      }
+    }
+  },
+  "82295fd4-30e7-52f8-bbfa-45b71b8986dd": {
+    "success": true,
+    "request_id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "solid3d_get_adjacency_info",
+          "data": {
+            "edges": [
+              {
+                "original_info": {
+                  "edge_id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
+                  "faces": [
+                    "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                    "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                  ]
+                },
+                "opposite_info": {
+                  "edge_id": "96db2ce0-0804-575a-a59a-6e1f087bc10e",
+                  "faces": [
+                    "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                    "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                  ]
+                },
+                "adjacent_info": {
+                  "edge_id": "ab9401f1-4f04-5047-ac41-8164231e0bf5",
+                  "faces": [
+                    "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                    "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                  ]
+                }
+              },
+              {
+                "original_info": {
+                  "edge_id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
+                  "faces": [
+                    "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                    "f858b0f4-ee1c-59f8-9496-132f50940789"
+                  ]
+                },
+                "opposite_info": {
+                  "edge_id": "f71761c9-6953-5b43-b67e-a12f69300953",
+                  "faces": [
+                    "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                    "f858b0f4-ee1c-59f8-9496-132f50940789"
+                  ]
+                },
+                "adjacent_info": {
+                  "edge_id": "0a2fc9e1-8dae-5729-b118-aaf23b38c1ee",
+                  "faces": [
+                    "f858b0f4-ee1c-59f8-9496-132f50940789",
+                    "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                  ]
+                }
+              },
+              {
+                "original_info": {
+                  "edge_id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+                  "faces": [
+                    "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                    "449c687a-df26-5b11-8002-8ee5f79dfafa"
+                  ]
+                },
+                "opposite_info": {
+                  "edge_id": "5d46da7b-e30e-54df-b48a-63ad8a198ef5",
+                  "faces": [
+                    "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                    "449c687a-df26-5b11-8002-8ee5f79dfafa"
+                  ]
+                },
+                "adjacent_info": {
+                  "edge_id": "6b995208-9cd1-5c01-a730-cb3b289ee1dc",
+                  "faces": [
+                    "449c687a-df26-5b11-8002-8ee5f79dfafa",
+                    "f858b0f4-ee1c-59f8-9496-132f50940789"
+                  ]
+                }
+              },
+              {
+                "original_info": {
+                  "edge_id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+                  "faces": [
+                    "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                    "3ec3901f-e043-5dab-b99a-4563417d71cf"
+                  ]
+                },
+                "opposite_info": {
+                  "edge_id": "42075b2d-2f35-5ea1-8b98-37386653584d",
+                  "faces": [
+                    "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                    "3ec3901f-e043-5dab-b99a-4563417d71cf"
+                  ]
+                },
+                "adjacent_info": {
+                  "edge_id": "5c997b1c-30eb-553a-82e8-f827225f3212",
+                  "faces": [
+                    "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                    "449c687a-df26-5b11-8002-8ee5f79dfafa"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "8868de97-0e2a-52f7-8e1a-8f0671a194e3": {
+    "success": true,
+    "request_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "91226189-7e64-5690-9203-67ee33a6eb03": {
+    "success": true,
+    "request_id": "91226189-7e64-5690-9203-67ee33a6eb03",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "97f9aac6-7586-4658-8100-3b546dcbdbf1": {
+    "success": true,
+    "request_id": "97f9aac6-7586-4658-8100-3b546dcbdbf1",
+    "resp": {
+      "type": "modeling_batch",
+      "data": {
+        "responses": {
+          "25709434-cd20-5165-8714-70fc4f8f96fc": {
+            "response": {
+              "type": "set_default_system_properties",
+              "data": {}
+            }
+          },
+          "351bce6c-68e1-5a92-a1c1-c31042ebba32": {
+            "response": {
+              "type": "edge_lines_visible",
+              "data": {}
+            }
+          },
+          "4ee5c8fa-4b86-5fbf-b7bd-a115c55d5289": {
+            "response": {
+              "type": "object_visible",
+              "data": {}
+            }
+          },
+          "5e6084f3-764e-5b58-a4dc-67fee9e0cfef": {
+            "response": {
+              "type": "object_visible",
+              "data": {}
+            }
+          },
+          "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce": {
+            "response": {
+              "type": "set_grid_scale",
+              "data": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "bb8e67a9-47d3-4227-b91b-3a53d3476cda": {
+    "success": true,
+    "request_id": "bb8e67a9-47d3-4227-b91b-3a53d3476cda",
+    "resp": {
+      "type": "modeling_batch",
+      "data": {
+        "responses": {
+          "0917d07d-5996-5994-8a06-602d43e2b6f3": {
+            "response": {
+              "type": "start_path",
+              "data": {}
+            }
+          },
+          "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "1144ecbd-366d-5a7a-bb6c-2e169ba3c205": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "2269b169-b2b2-5ec2-a665-24cb3822e91f": {
+            "response": {
+              "type": "object_bring_to_front",
+              "data": {}
+            }
+          },
+          "226ae769-fcaa-56af-ac65-5807ed297dad": {
+            "response": {
+              "type": "sweep",
+              "data": {}
+            }
+          },
+          "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b": {
+            "response": {
+              "type": "move_path_pen",
+              "data": {}
+            }
+          },
+          "4482cd0e-0ba6-5706-bd3a-a7e479e352c8": {
+            "response": {
+              "type": "enable_sketch_mode",
+              "data": {}
+            }
+          },
+          "4da16780-5d2e-5aa7-9a9e-c4891160dc60": {
+            "response": {
+              "type": "sketch_mode_disable",
+              "data": {}
+            }
+          },
+          "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "62f92a38-07e6-5321-9e56-be9dd50f1d7b": {
+            "response": {
+              "type": "solid3d_get_extrusion_face_info",
+              "data": {
+                "faces": [
+                  {
+                    "curve_id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
+                    "face_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
+                    "face_id": "f858b0f4-ee1c-59f8-9496-132f50940789",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+                    "face_id": "449c687a-df26-5b11-8002-8ee5f79dfafa",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+                    "face_id": "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                    "cap": "none"
+                  },
+                  {
+                    "curve_id": null,
+                    "face_id": "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                    "cap": "bottom"
+                  },
+                  {
+                    "curve_id": null,
+                    "face_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                    "cap": "top"
+                  }
+                ]
+              }
+            }
+          },
+          "7d4c814d-f292-503d-a012-68ab58c77524": {
+            "response": {
+              "type": "make_plane",
+              "data": {}
+            }
+          },
+          "bbcacf2c-f132-502a-87e1-0b0ffa846931": {
+            "response": {
+              "type": "extend_path",
+              "data": {}
+            }
+          },
+          "bf36bb46-40a6-5ff3-9663-2020512db63c": {
+            "response": {
+              "type": "start_path",
+              "data": {}
+            }
+          },
+          "c5b43f3a-de89-5e69-93ff-c926dbe3c139": {
+            "response": {
+              "type": "enable_sketch_mode",
+              "data": {}
+            }
+          },
+          "da6695c0-7255-5538-b0f4-c4ea3977fe7d": {
+            "response": {
+              "type": "move_path_pen",
+              "data": {}
+            }
+          },
+          "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71": {
+            "response": {
+              "type": "sketch_mode_disable",
+              "data": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "bbcacf2c-f132-502a-87e1-0b0ffa846931": {
+    "success": true,
+    "request_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53": {
+    "success": true,
+    "request_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19": {
+    "success": true,
+    "request_id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d": {
+    "success": true,
+    "request_id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "object_visible",
+          "data": {}
+        }
+      }
+    }
+  },
+  "bf36bb46-40a6-5ff3-9663-2020512db63c": {
+    "success": true,
+    "request_id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "start_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce": {
+    "success": true,
+    "request_id": "bfd6e010-ac40-5cde-b8f1-65dd5ecc18ce",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "set_grid_scale",
+          "data": {}
+        }
+      }
+    }
+  },
+  "c5b43f3a-de89-5e69-93ff-c926dbe3c139": {
+    "success": true,
+    "request_id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "enable_sketch_mode",
+          "data": {}
+        }
+      }
+    }
+  },
+  "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7": {
+    "success": true,
+    "request_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "sketch_mode_disable",
+          "data": {}
+        }
+      }
+    }
+  },
+  "da6695c0-7255-5538-b0f4-c4ea3977fe7d": {
+    "success": true,
+    "request_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "move_path_pen",
+          "data": {}
+        }
+      }
+    }
+  },
+  "ec50dfc5-8660-5f82-906a-6429c34099eb": {
+    "success": true,
+    "request_id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "make_plane",
+          "data": {}
+        }
+      }
+    }
+  },
+  "ed11a40c-1005-472a-bc62-587c74b31873": {
+    "success": true,
+    "request_id": "ed11a40c-1005-472a-bc62-587c74b31873",
+    "resp": {
+      "type": "modeling_batch",
+      "data": {
+        "responses": {
+          "20dfacb2-a19d-5f06-80d9-1dae939bbd58": {
+            "response": {
+              "type": "object_visible",
+              "data": {}
+            }
+          },
+          "4593843c-7d41-5ede-b7fa-ab9201f55957": {
+            "response": {
+              "type": "entity_mirror_across",
+              "data": {
+                "entity_face_edge_ids": [
+                  {
+                    "object_id": "1a7f14db-73e1-570f-8036-01896cb924ab",
+                    "faces": [
+                      "a214e45c-e54b-523b-9cd3-f0369f5b11e6",
+                      "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
+                      "c47991dd-7f66-5740-9d3d-66ebf5ec7ca9",
+                      "858236f5-9969-54e7-a6ec-13d8139c4bfe",
+                      "864b0e13-21a1-5e76-8d2c-44df754e635f",
+                      "d102e79b-106f-5dea-9c64-58ecbfd9efaa"
+                    ],
+                    "edges": [
+                      "eb9d3280-e4c3-551f-ad28-3bfd93acc2fc",
+                      "749d3e98-3061-5730-90b9-784607aeecf4",
+                      "0b77af05-b15c-5d76-8041-c54efb758dd8",
+                      "bc2d79c7-ab42-5ba0-a809-65d14ac7dd6d",
+                      "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+                      "af1277f8-50f3-5277-8c02-10cc8a86ae47",
+                      "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+                      "33346c34-105a-5565-bd45-e6c0c90963ba",
+                      "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+                      "e2519722-c4a6-5a76-b0ab-8c108bce687d",
+                      "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
+                      "70b5e5bb-ded3-5952-8380-c3d419e937ba"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "6c096663-896a-5f49-b4a0-b5621e2f3b74": {
+            "response": {
+              "type": "set_object_transform",
+              "data": {}
+            }
+          },
+          "82295fd4-30e7-52f8-bbfa-45b71b8986dd": {
+            "response": {
+              "type": "solid3d_get_adjacency_info",
+              "data": {
+                "edges": [
+                  {
+                    "original_info": {
+                      "edge_id": "78381d13-7a14-5ace-94e1-c47514f4e59d",
+                      "faces": [
+                        "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                        "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                      ]
+                    },
+                    "opposite_info": {
+                      "edge_id": "96db2ce0-0804-575a-a59a-6e1f087bc10e",
+                      "faces": [
+                        "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                        "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                      ]
+                    },
+                    "adjacent_info": {
+                      "edge_id": "ab9401f1-4f04-5047-ac41-8164231e0bf5",
+                      "faces": [
+                        "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                        "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                      ]
+                    }
+                  },
+                  {
+                    "original_info": {
+                      "edge_id": "87827096-4712-5c7e-9fa8-0c088ec65a03",
+                      "faces": [
+                        "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                        "f858b0f4-ee1c-59f8-9496-132f50940789"
+                      ]
+                    },
+                    "opposite_info": {
+                      "edge_id": "f71761c9-6953-5b43-b67e-a12f69300953",
+                      "faces": [
+                        "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                        "f858b0f4-ee1c-59f8-9496-132f50940789"
+                      ]
+                    },
+                    "adjacent_info": {
+                      "edge_id": "0a2fc9e1-8dae-5729-b118-aaf23b38c1ee",
+                      "faces": [
+                        "f858b0f4-ee1c-59f8-9496-132f50940789",
+                        "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+                      ]
+                    }
+                  },
+                  {
+                    "original_info": {
+                      "edge_id": "8079d1db-0c1a-5aab-864c-4ec7cf2863f9",
+                      "faces": [
+                        "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                        "449c687a-df26-5b11-8002-8ee5f79dfafa"
+                      ]
+                    },
+                    "opposite_info": {
+                      "edge_id": "5d46da7b-e30e-54df-b48a-63ad8a198ef5",
+                      "faces": [
+                        "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                        "449c687a-df26-5b11-8002-8ee5f79dfafa"
+                      ]
+                    },
+                    "adjacent_info": {
+                      "edge_id": "6b995208-9cd1-5c01-a730-cb3b289ee1dc",
+                      "faces": [
+                        "449c687a-df26-5b11-8002-8ee5f79dfafa",
+                        "f858b0f4-ee1c-59f8-9496-132f50940789"
+                      ]
+                    }
+                  },
+                  {
+                    "original_info": {
+                      "edge_id": "1c6f50c3-356c-5146-a59c-e8fc7a45aaae",
+                      "faces": [
+                        "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+                        "3ec3901f-e043-5dab-b99a-4563417d71cf"
+                      ]
+                    },
+                    "opposite_info": {
+                      "edge_id": "42075b2d-2f35-5ea1-8b98-37386653584d",
+                      "faces": [
+                        "13c1e1ff-d338-58a4-87a5-93e9f8bce318",
+                        "3ec3901f-e043-5dab-b99a-4563417d71cf"
+                      ]
+                    },
+                    "adjacent_info": {
+                      "edge_id": "5c997b1c-30eb-553a-82e8-f827225f3212",
+                      "faces": [
+                        "3ec3901f-e043-5dab-b99a-4563417d71cf",
+                        "449c687a-df26-5b11-8002-8ee5f79dfafa"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ec50dfc5-8660-5f82-906a-6429c34099eb": {
+            "response": {
+              "type": "make_plane",
+              "data": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "efd1e3b2-5268-50fd-858e-26540f8146e5": {
+    "success": true,
+    "request_id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "extend_path",
+          "data": {}
+        }
+      }
+    }
+  },
+  "f0c740f1-5055-5cce-95b9-6f1fba47290d": {
+    "success": true,
+    "request_id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "create_region_from_query_point",
+          "data": {
+            "region_mapping": {
+              "1c6f50c3-356c-5146-a59c-e8fc7a45aaae": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "78381d13-7a14-5ace-94e1-c47514f4e59d": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+              "8079d1db-0c1a-5aab-864c-4ec7cf2863f9": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+              "87827096-4712-5c7e-9fa8-0c088ec65a03": "91226189-7e64-5690-9203-67ee33a6eb03"
+            }
+          }
+        }
+      }
+    }
+  },
+  "f7696437-0c54-515c-9a57-315967ca9a9d": {
+    "success": true,
+    "request_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "make_plane",
+          "data": {}
+        }
+      }
+    }
+  },
+  "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71": {
+    "success": true,
+    "request_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+    "resp": {
+      "type": "modeling",
+      "data": {
+        "modeling_response": {
+          "type": "sketch_mode_disable",
+          "data": {}
+        }
+      }
+    }
+  }
+}

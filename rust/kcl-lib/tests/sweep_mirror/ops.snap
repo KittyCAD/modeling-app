@@ -1647,35 +1647,35 @@ description: Operations executed sweep_mirror.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "19fe8534-2bed-5e2a-afe9-63f57b621004"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
               },
               "meta": {
                 "type": "Object",
@@ -1683,7 +1683,7 @@ description: Operations executed sweep_mirror.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
                     }
                   }
                 }
@@ -2093,7 +2093,7 @@ description: Operations executed sweep_mirror.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -2105,11 +2105,11 @@ description: Operations executed sweep_mirror.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
               }
             ]
           },
@@ -2151,7 +2151,7 @@ description: Operations executed sweep_mirror.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -2218,7 +2218,7 @@ description: Operations executed sweep_mirror.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -2227,7 +2227,7 @@ description: Operations executed sweep_mirror.kcl
         "across": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
           },
           "sourceRange": []
         }
