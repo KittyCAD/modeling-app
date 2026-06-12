@@ -368,8 +368,11 @@ describe('Zookeeper project history integration', () => {
     const harness = await createProjectHarness({
       'main.kcl': 'height = 10\nwidth = 10\ndepth = 10\n',
     })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     addManualEdit(harness.kclManager, 'height = 10\nwidth = 100\ndepth = 10\n')
+    await writeText(mainPath, 'height = 10\nwidth = 100\ndepth = 10\n')
     await applyGlobalOnlyActiveFileZookeeperAction(harness, {
       currentBefore: 'height = 10\nwidth = 100\ndepth = 10\n',
       currentAfter: 'height = 20\nwidth = 100\ndepth = 10\n',
@@ -399,7 +402,9 @@ describe('Zookeeper project history integration', () => {
       },
     })
     addManualEdit(harness.kclManager, 'height = 20\nwidth = 200\ndepth = 800\n')
+    await writeText(mainPath, 'height = 20\nwidth = 200\ndepth = 800\n')
     addManualEdit(harness.kclManager, 'height = 20\nwidth = 200\ndepth = 900\n')
+    await writeText(mainPath, 'height = 20\nwidth = 200\ndepth = 900\n')
 
     const expectedStates = [
       'height = 20\nwidth = 200\ndepth = 800\n',
@@ -413,6 +418,11 @@ describe('Zookeeper project history integration', () => {
       await waitForHistoryIdle(harness.kclManager)
       expect(harness.kclManager.code).toBe(expectedState)
     }
+    expect(consoleError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining('changed since the edit was recorded'),
+      })
+    )
   })
 
   it('keeps manual edits undoable after local undo and redo before a later Zookeeper edit', async () => {

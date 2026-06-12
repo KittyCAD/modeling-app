@@ -82,6 +82,7 @@ export type PreparedZookeeperPatchFileReplay = {
 
 type ZookeeperPatchReplayOptions = {
   fileContentOverrides?: Map<string, string>
+  alreadyReplayedFilePaths?: Set<string>
 }
 
 type ZookeeperHistoryExtensionDependencies = {
@@ -216,6 +217,7 @@ export async function applyZookeeperEditPatch({
   patch,
   direction,
   fileContentOverrides,
+  alreadyReplayedFilePaths,
 }: ZookeeperPatchEffectProps & ZookeeperPatchReplayOptions) {
   const replayFiles = getZookeeperPatchFileReplays({
     projectPath,
@@ -227,7 +229,10 @@ export async function applyZookeeperEditPatch({
   }
 
   await writeZookeeperPatchReplay(
-    await prepareZookeeperPatchReplay(replayFiles, { fileContentOverrides })
+    await prepareZookeeperPatchReplay(replayFiles, {
+      alreadyReplayedFilePaths,
+      fileContentOverrides,
+    })
   )
 }
 
@@ -249,7 +254,12 @@ async function replayZookeeperEditPatch({
   if (isErr(replayFiles)) {
     return Promise.reject(replayFiles)
   }
+  const alreadyReplayedFilePaths = new Set<string>()
+  if (effectProps.activeFilePath === kclManager.path) {
+    alreadyReplayedFilePaths.add(kclManager.path)
+  }
   const preparedReplayFiles = await prepareZookeeperPatchReplay(replayFiles, {
+    alreadyReplayedFilePaths,
     fileContentOverrides: new Map([[kclManager.path, kclManager.code]]),
   })
   const currentFileReplay = preparedReplayFiles.find(
@@ -405,7 +415,10 @@ function getZookeeperPatchReplayContents(
 
 async function prepareZookeeperPatchReplay(
   replayFiles: ZookeeperPatchReplay[],
-  { fileContentOverrides }: ZookeeperPatchReplayOptions = {}
+  {
+    alreadyReplayedFilePaths,
+    fileContentOverrides,
+  }: ZookeeperPatchReplayOptions = {}
 ): Promise<PreparedZookeeperPatchFileReplay[]> {
   const preparedReplayFiles: PreparedZookeeperPatchFileReplay[] = []
 
@@ -473,6 +486,20 @@ async function prepareZookeeperPatchReplay(
           replayPreviousContent = diskContent
           nextContent = diskNextContent
         }
+      }
+      if (
+        nextContent === false &&
+        alreadyReplayedFilePaths?.has(replayFile.absolutePath)
+      ) {
+        // The active editor's local history already moved this file; keep
+        // sibling-file replay strict while treating this file as a no-op.
+        preparedReplayFiles.push({
+          relativePath: replayFile.relativePath,
+          absolutePath: replayFile.absolutePath,
+          previousContent: replayPreviousContent,
+          nextContent: replayPreviousContent,
+        })
+        continue
       }
       if (nextContent === false) {
         return Promise.reject(

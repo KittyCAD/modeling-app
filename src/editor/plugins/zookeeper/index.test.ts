@@ -348,6 +348,52 @@ describe('Zookeeper history patch replay', () => {
     }
   })
 
+  it('treats an active-file patch as already replayed when removed lines still exist elsewhere', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const beforeZookeeperEdit =
+      'boxHeight = 60mm\nboxHeight = 600mm\nboxWidth = 100mm\n'
+    const afterZookeeperEdit =
+      'boxHeight = 600mm\nboxHeight = 600mm\nboxWidth = 100mm\n'
+    const currentEditorContent =
+      'boxHeight = 60mm\nboxHeight = 600mm\nboxWidth = 1000mm\n'
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      mainPath,
+      new TextEncoder().encode(currentEditorContent)
+    )
+
+    try {
+      await applyZookeeperEditPatch({
+        projectPath,
+        patch: {
+          run_id: 'run-active-duplicate-lines',
+          changed_files: [
+            {
+              path: 'main.kcl',
+              status: 'modified',
+              diff: unifiedDiff(
+                'main.kcl',
+                beforeZookeeperEdit,
+                afterZookeeperEdit
+              ),
+            },
+          ],
+        },
+        direction: 'undo',
+        alreadyReplayedFilePaths: new Set([mainPath]),
+        fileContentOverrides: new Map([[mainPath, currentEditorContent]]),
+      })
+
+      await expect(fsZds.readFile(mainPath, 'utf8')).resolves.toBe(
+        currentEditorContent
+      )
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('falls back to disk when the open editor buffer is stale for a modified file', async () => {
     const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
