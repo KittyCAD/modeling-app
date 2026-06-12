@@ -2701,6 +2701,14 @@ export class KclManager extends File {
   get editorState(): EditorState {
     return this._editorView.state
   }
+  captureEditorHistoryState(): EditorState {
+    return this._editorView.state
+  }
+  restoreEditorHistoryState(state: EditorState) {
+    this._editorView.setState(state)
+    this.updateHistoryDepth(state)
+    this.refreshRestoredEditorStateAfterFileSwitch(state.doc.toString())
+  }
   get state() {
     return this.editorState
   }

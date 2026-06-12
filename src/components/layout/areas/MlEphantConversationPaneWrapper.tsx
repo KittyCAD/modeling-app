@@ -1,3 +1,4 @@
+import type { EditorState } from '@codemirror/state'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -7,6 +8,7 @@ import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { isCodeTheSame } from '@src/lib/codeEditor'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
@@ -140,6 +142,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     ({
       activeFileDeleted,
       activeFilePath,
+      activeEditorState,
       activeFileRequestedCode,
       currentFilePath,
       currentFileRequestedCode,
@@ -174,6 +177,21 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
           codeChangeRelativePath,
           codeChangeRequestedCode
         )
+        // Project refreshes may reload the active editor before Zookeeper
+        // history is recorded. Put the captured pre-write state back first so
+        // the Zookeeper change lands on top of the user's local undo stack.
+        if (
+          activeEditorState &&
+          codeChangePreviousCode !== undefined &&
+          isCodeTheSame(
+            activeEditorState.doc.toString(),
+            codeChangePreviousCode
+          ) &&
+          (isCodeTheSame(kclManager.code, codeChangePreviousCode) ||
+            isCodeTheSame(kclManager.code, codeChangeRequestedCode))
+        ) {
+          kclManager.restoreEditorHistoryState(activeEditorState)
+        }
         kclManager.addGlobalHistoryEventWithCodeChange(
           zookeeperEditPatchHistoryEvent({
             projectPath,
@@ -214,6 +232,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         recordZookeeperHistory({
           activeFileDeleted: pending.activeFileDeleted,
           activeFilePath: pending.activeFilePath,
+          activeEditorState: pending.activeEditorState,
           activeFileRequestedCode: pending.activeFileRequestedCode,
           currentFilePath: pending.currentFilePath,
           currentFileRequestedCode: pending.currentFileRequestedCode,
@@ -229,11 +248,18 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     [kclManager, recordZookeeperHistory]
   )
   const beginPendingZookeeperHistoryWrite = useCallback(
-    (exchangeId: number) => {
+    (exchangeId: number, activeFilePath?: string) => {
       const pending =
         pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
         createPendingZookeeperHistory()
       pending.outstandingWrites += 1
+      if (
+        !pending.activeEditorState &&
+        activeFilePath &&
+        activeFilePath === kclManager.path
+      ) {
+        pending.activeEditorState = kclManager.captureEditorHistoryState()
+      }
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
       kclManager.zookeeperHistoryRecordingInProgress = true
     },
@@ -322,7 +348,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             activeFilePath === kclManager.path
         )
         if (shouldRecordZookeeperHistory) {
-          beginPendingZookeeperHistoryWrite(exchangeId)
+          beginPendingZookeeperHistoryWrite(exchangeId, activeFilePath)
         }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
@@ -469,6 +495,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
 type PendingZookeeperHistory = {
   activeFileDeleted: boolean
+  activeEditorState?: EditorState
   activeFilePath?: string
   activeFileRequestedCode?: string
   currentFilePath?: string
@@ -481,6 +508,7 @@ type PendingZookeeperHistory = {
 
 type ReadyPendingZookeeperHistory = {
   activeFileDeleted: boolean
+  activeEditorState?: EditorState
   activeFilePath: string
   activeFileRequestedCode?: string
   currentFilePath?: string

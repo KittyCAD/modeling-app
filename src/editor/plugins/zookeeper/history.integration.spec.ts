@@ -365,6 +365,64 @@ describe('Zookeeper project history integration', () => {
     )
   })
 
+  it('restores captured manual history if active-file Zookeeper recording follows an editor reload', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'boxLength = 20\nboxWidth = 30\nboxHeight = 40\n',
+    })
+    const currentBefore = 'boxLength = 200\nboxWidth = 300\nboxHeight = 40\n'
+    const currentAfter = 'boxLength = 200\nboxWidth = 300\nboxHeight = 400\n'
+
+    dispatchEditorEdit(
+      harness.kclManager,
+      'boxLength = 200\nboxWidth = 30\nboxHeight = 40\n'
+    )
+    dispatchEditorEdit(
+      harness.kclManager,
+      'boxLength = 200\nboxWidth = 300\nboxHeight = 40\n'
+    )
+    const capturedEditorState = harness.kclManager.captureEditorHistoryState()
+    harness.kclManager.updateCodeEditor(currentAfter, {
+      shouldAddToHistory: false,
+      shouldClearHistory: true,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    expect(harness.kclManager.undoDepth.value).toBe(0)
+    harness.kclManager.restoreEditorHistoryState(capturedEditorState)
+    harness.kclManager.addGlobalHistoryEventWithCodeChange(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: harness.kclManager.path,
+        patch: {
+          run_id: 'restored-manual-history-before-zk',
+          changed_files: [
+            modifiedFile('main.kcl', currentBefore, currentAfter),
+          ],
+        },
+      }),
+      currentAfter,
+      currentBefore
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'boxLength = 200\nboxWidth = 300\nboxHeight = 40\n'
+    )
+    expect(harness.kclManager.undoDepth.value).toBeGreaterThan(0)
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'boxLength = 200\nboxWidth = 30\nboxHeight = 40\n'
+    )
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(
+      'boxLength = 20\nboxWidth = 30\nboxHeight = 40\n'
+    )
+  })
+
   it('keeps earlier manual edits undoable after global-only active-file Zookeeper edits', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'height = 10\nwidth = 10\ndepth = 10\n',
@@ -1267,6 +1325,18 @@ function addManualEdit(kclManager: KclManager, code: string) {
     },
     { annotations: [isolateHistory.of('full')] }
   )
+}
+
+function dispatchEditorEdit(kclManager: KclManager, code: string) {
+  const currentCode = kclManager.code
+  kclManager.editorView.dispatch({
+    changes: {
+      from: 0,
+      to: currentCode.length,
+      insert: code,
+    },
+    annotations: [isolateHistory.of('full')],
+  })
 }
 
 function modifiedFile(path: string, before: string, after: string) {
