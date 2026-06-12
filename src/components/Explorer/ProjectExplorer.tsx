@@ -905,16 +905,21 @@ export const ProjectExplorer = ({
         pathIterator.pop()
       }
     }
+    const recursiveMoveTargetRow = lastRecursiveMoveTarget
+      ? flattenedData.find(
+          (child) =>
+            child.path === lastRecursiveMoveTarget &&
+            rowPathMatchesTreeParent(child, project)
+        )
+      : undefined
     const shouldRevealRecursiveMoveTarget =
-      !!lastRecursiveMoveTarget &&
-      lastRecursiveMoveTarget !== lastRevealedRecursiveMoveTargetRef.current &&
-      (lastRecursiveMoveTarget === project.path ||
-        lastRecursiveMoveTarget.startsWith(`${project.path}${fsZds.sep}`))
+      !!recursiveMoveTargetRow &&
+      lastRecursiveMoveTarget !== lastRevealedRecursiveMoveTargetRef.current
     if (shouldRevealRecursiveMoveTarget) {
-      const moveTargetKey = parentPathRelativeToApplicationDirectory(
-        lastRecursiveMoveTarget,
-        overrideApplicationProjectDirectory || applicationProjectDirectory
-      )
+      const moveTargetKey =
+        recursiveMoveTargetRow.children === null
+          ? recursiveMoveTargetRow.parentPath
+          : recursiveMoveTargetRow.key
       const pathIterator = desktopSafePathSplit(moveTargetKey)
       while (pathIterator.length > 0) {
         const key = desktopSafePathJoin(pathIterator)
