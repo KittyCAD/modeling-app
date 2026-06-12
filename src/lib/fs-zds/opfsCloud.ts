@@ -49,6 +49,13 @@ import type {
   RemoteProject,
   Revision,
 } from '@src/lib/fs-zds/opfsCloud/types'
+import {
+  type GitignoreStackEntry,
+  appendGitignoreForDirectoryWithFs,
+  createGitignoreStackFromFiles,
+  createInitialGitignoreStackWithFs,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import {
@@ -241,6 +248,28 @@ export function getOpfsCloudConflictArtifactCleanupPlan(
   }
 }
 
+export function filterOpfsCloudProjectFilesForSync(
+  files: ProjectArchiveFile[]
+) {
+  const normalizedFiles = files.map((file) => ({
+    ...file,
+    relativePath: normalizeRelativePath(file.relativePath),
+  }))
+  const gitignoreStack = createGitignoreStackFromFiles(
+    normalizedFiles
+      .filter((file) => projectNameFromPath(file.relativePath) === '.gitignore')
+      .map((file) => ({
+        relativePath: file.relativePath,
+        contents: new TextDecoder().decode(file.data),
+      }))
+  )
+
+  return normalizedFiles.filter(
+    (file) =>
+      !isPathIgnoredByGitignore(gitignoreStack, file.relativePath, false)
+  )
+}
+
 function isInternalOpfsPath(targetPath: string) {
   return webSafePathSplit(normalizePathForSync(targetPath)).includes(
     INTERNAL_OPFS_META_FILE
@@ -428,7 +457,10 @@ function statIsDirectory(stat: IStat) {
 async function collectLocalProjectFiles(projectRoot: string) {
   const files: ProjectArchiveFile[] = []
 
-  const walk = async (currentPath: string) => {
+  const walk = async (
+    currentPath: string,
+    gitignoreStack: GitignoreStackEntry[]
+  ) => {
     const entries = await localFs.readdir(currentPath)
     for (const entry of entries) {
       if (entry === INTERNAL_OPFS_META_FILE) {
@@ -437,22 +469,38 @@ async function collectLocalProjectFiles(projectRoot: string) {
 
       const absolutePath = localFs.join(currentPath, entry)
       const stat = await localFs.stat(absolutePath)
+      const relativePath = normalizeRelativePath(
+        localFs.relative(projectRoot, absolutePath)
+      )
+      const isDirectory = statIsDirectory(stat)
+      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+        continue
+      }
+
       if (statIsDirectory(stat)) {
-        await walk(absolutePath)
+        const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
+          localFs,
+          gitignoreStack,
+          absolutePath,
+          projectRoot
+        )
+        await walk(absolutePath, childGitignoreStack)
         continue
       }
 
       const data = await localFs.readFile(absolutePath)
       files.push({
-        relativePath: normalizeRelativePath(
-          localFs.relative(projectRoot, absolutePath)
-        ),
+        relativePath,
         data: Uint8Array.from(data),
       })
     }
   }
 
-  await walk(projectRoot)
+  const gitignoreStack = await createInitialGitignoreStackWithFs(
+    localFs,
+    projectRoot
+  )
+  await walk(projectRoot, gitignoreStack)
   return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))
 }
 
@@ -565,11 +613,13 @@ async function cloneRemoteProjectToLocal(
       ? preferredProjectPath
       : await uniqueProjectPath(projectDirectory, projectName)
   const archive = await downloadRemoteProjectArchive(config, remoteProject.id)
-  const files = withRemoteProjectMetadataInArchiveFiles(
-    await parseProjectArchive(archive),
-    remoteProject.title,
-    remoteProject.id,
-    getEnvironmentName()
+  const files = filterOpfsCloudProjectFilesForSync(
+    withRemoteProjectMetadataInArchiveFiles(
+      await parseProjectArchive(archive),
+      remoteProject.title,
+      remoteProject.id,
+      getEnvironmentName()
+    )
   )
   const nextMetadata = {
     ...metadataForProject(projectPath),
@@ -1264,11 +1314,13 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       config,
       remoteProjectId
     )
-    const remoteFiles = withRemoteProjectMetadataInArchiveFiles(
-      await parseProjectArchive(remoteArchive),
-      remoteProject.title,
-      remoteProjectId,
-      getEnvironmentName()
+    const remoteFiles = filterOpfsCloudProjectFilesForSync(
+      withRemoteProjectMetadataInArchiveFiles(
+        await parseProjectArchive(remoteArchive),
+        remoteProject.title,
+        remoteProjectId,
+        getEnvironmentName()
+      )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
 

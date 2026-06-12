@@ -1,7 +1,12 @@
-import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import {
   type ProjectArchiveFile,
   type ProjectManifest,
+  filterOpfsCloudProjectFilesForSync,
   getOpfsCloudConflictArtifactCleanupPlan,
   getOpfsCloudInitialLocalProjectSyncAction,
   getOpfsCloudProjectModifiedTime,
@@ -112,6 +117,25 @@ describe('opfsCloud sync helpers', () => {
         )?.data
       )
     ).toBe('default_file = "main.kcl"\n')
+  })
+
+  it('excludes files ignored by project .gitignore from cloud sync manifests and uploads', () => {
+    const files = filterOpfsCloudProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile('.gitignore', `${PROJECT_IMAGE_NAME}\ndist/\n`),
+      projectFile(PROJECT_IMAGE_NAME, 'generated image'),
+      projectFile('dist/generated.kcl', 'ignored = 1'),
+      projectFile('nested/.gitignore', 'local.txt\n'),
+      projectFile('nested/local.txt', 'ignored nested note'),
+      projectFile('nested/part.kcl', 'part = 1'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual([
+      'main.kcl',
+      '.gitignore',
+      'nested/.gitignore',
+      'nested/part.kcl',
+    ])
   })
 
   it('includes expected revisions in guarded project update uploads', () => {
