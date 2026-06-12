@@ -979,9 +979,54 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.renameProject]: [
+          {
+            target: SystemIOMachineStates.renamingProject,
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.deleteProject]: {
+          target: SystemIOMachineStates.deletingProject,
+        },
         [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
           target:
             SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolder]: {
+          target: SystemIOMachineStates.renamingFolder,
+        },
+        [SystemIOMachineEvents.renameFile]: {
+          target: SystemIOMachineStates.renamingFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolder]: {
+          target: SystemIOMachineStates.deletingFileOrFolder,
+        },
+        [SystemIOMachineEvents.createBlankFile]: {
+          target: SystemIOMachineStates.creatingBlankFile,
+        },
+        [SystemIOMachineEvents.createBlankFolder]: {
+          target: SystemIOMachineStates.creatingBlankFolder,
+        },
+        [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFileAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
+          target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.copyRecursive]: {
+          target: SystemIOMachineStates.copyingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursive]: {
+          target: SystemIOMachineStates.movingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
+          target: SystemIOMachineStates.movingRecursiveAndNavigate,
         },
       },
       invoke: {

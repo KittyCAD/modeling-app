@@ -107,6 +107,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::symmetry(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::symmetry"),
         ),
+        ("gdt", "runout") => (
+            |e, a| Box::pin(crate::std::gdt::runout(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::runout"),
+        ),
         ("gdt", "angularity") => (
             |e, a| Box::pin(crate::std::gdt::angularity(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::angularity"),

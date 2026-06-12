@@ -15,8 +15,10 @@ import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -277,25 +279,18 @@ export class App implements AppSubsystems {
       },
     }).start()
 
-    this.registry.reconfigure(appCommandsSlot, [
-      defineRegistryItem({
-        id: 'app.global-commands',
-        provides: [
-          ...createAuthCommands({ authActor: this.auth.actor }).map(
-            provideCommand
-          ),
-          ...createProjectCommands({ systemIOActor: this.systemIOActor }).map(
-            provideCommand
-          ),
-        ],
-      }),
-    ])
+    this.syncAppCommands()
     this.commands.actor.send({
       type: 'Set userFeatures',
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
+    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
+    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
+    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
+    this.syncOpfsCloudBacking()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -604,6 +599,57 @@ export class App implements AppSubsystems {
     if (snapshot.matches('loggedOut')) {
       this.userFeatures.send({ type: UserFeaturesTransition.Clear })
     }
+  }
+
+  syncOpfsCloudBacking = () => {
+    if (typeof window === 'undefined' || window.electron) {
+      return
+    }
+
+    const authSnapshot = this.auth.actor.getSnapshot()
+    const token = authSnapshot.matches('loggedIn')
+      ? authSnapshot.context.token
+      : undefined
+    const enabled =
+      Boolean(token) &&
+      userFeaturesContextHas(
+        this.userFeatures.actor.getSnapshot().context,
+        OPFS_CLOUD_FEATURE_FLAG,
+        false
+      )
+
+    configureOpfsCloudSync({
+      enabled,
+      token,
+      projectDirectoryPath:
+        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+    })
+  }
+
+  syncAppCommands = () => {
+    const enableProjectDirectoryCommands =
+      typeof window !== 'undefined' &&
+      (Boolean(window.electron) ||
+        userFeaturesContextHas(
+          this.userFeatures.actor.getSnapshot().context,
+          OPFS_CLOUD_FEATURE_FLAG,
+          false
+        ))
+
+    this.registry.reconfigure(appCommandsSlot, [
+      defineRegistryItem({
+        id: 'app.global-commands',
+        provides: [
+          ...createAuthCommands({ authActor: this.auth.actor }).map(
+            provideCommand
+          ),
+          ...createProjectCommands({
+            systemIOActor: this.systemIOActor,
+            enableProjectDirectoryCommands,
+          }).map(provideCommand),
+        ],
+      }),
+    ])
   }
 
   /**
