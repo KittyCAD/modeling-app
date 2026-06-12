@@ -57,6 +57,34 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
   }
 }
 
+const PROFILE_ARG_NAME_FOR_BODY_TYPE = 'sketches'
+
+function shouldRestoreRememberedBodyType(
+  command: Command | undefined,
+  argumentsToSubmit: Record<string, unknown>
+): boolean {
+  return Boolean(
+    command?.args &&
+      'bodyType' in command.args &&
+      command.args[PROFILE_ARG_NAME_FOR_BODY_TYPE]?.inputType === 'selection' &&
+      argumentsToSubmit[PROFILE_ARG_NAME_FOR_BODY_TYPE] !== undefined
+  )
+}
+
+function maybeRestoreRememberedBodyType(
+  command: Command | undefined,
+  argumentsToSubmit: Record<string, unknown>
+) {
+  if (!shouldRestoreRememberedBodyType(command, argumentsToSubmit)) {
+    return argumentsToSubmit
+  }
+
+  return {
+    ...argumentsToSubmit,
+    bodyType: readLastBodyType(),
+  }
+}
+
 export type CommandBarInput = {
   commands: Command[]
   wasmInstancePromise: Promise<ModuleType>
@@ -156,10 +184,20 @@ export const commandBarMachine = setup({
         if (argName === 'bodyType') {
           writeLastBodyType(argData)
         }
-        return {
+        const argumentsToSubmit = {
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
+        if (
+          argName !== PROFILE_ARG_NAME_FOR_BODY_TYPE ||
+          argumentsToSubmit.bodyType !== undefined
+        ) {
+          return argumentsToSubmit
+        }
+        return maybeRestoreRememberedBodyType(
+          context.selectedCommand,
+          argumentsToSubmit
+        )
       },
     }),
     'Set kclManager': assign({
@@ -352,7 +390,12 @@ export const commandBarMachine = setup({
           args[argName] = hasEventDefault
             ? event.data.argDefaultValues?.[argName]
             : argName === 'bodyType'
-              ? readLastBodyType()
+              ? shouldRestoreRememberedBodyType(
+                  command,
+                  event.data.argDefaultValues ?? {}
+                )
+                ? readLastBodyType()
+                : undefined
               : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
                 ? arg.defaultValue
                 : undefined
