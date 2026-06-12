@@ -353,7 +353,7 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
 `
 
 /** Mixed: one adjacent-edge helper + one edgeId closestTo helper. */
-const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `body = startSketchOn(XY)
+const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `base = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
   |> line(endAbsolute = [10, 10])
@@ -361,7 +361,9 @@ const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `body = startSketchOn(XY)
   |> line(endAbsolute = [0, 0])
   |> close()
   |> extrude(length = 5)
-  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeId(body, closestTo = [0, 0, 5])])
+edgeFromPoint = edgeId(base, closestTo = [0, 0, 5])
+body = base
+  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeFromPoint])
 `
 
 /** Focusrite Scarlett mounting bracket (first 55 lines): sketch in a function, fillet uses getPreviousAdjacentEdge(bs.tags.edge7) style. Z0006 refactor should emit edgeRefs with bs.tags.x (not bare edge6, edge7). */
@@ -1089,7 +1091,7 @@ describe('refactorZ0006Unified', () => {
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
-        expect(n).not.toContain('edgeId(body, closestTo')
+        expect(n).not.toContain('edgeId(base, closestTo')
       }
     )
   })
