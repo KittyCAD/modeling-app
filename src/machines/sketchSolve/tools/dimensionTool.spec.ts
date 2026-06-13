@@ -88,25 +88,49 @@ function createParentHarness(
   const kclManager = createMockKclManager()
   const events: Array<{ type: string; data?: unknown }> = []
   let nextConstraintId = 30
+  let currentObjects = [...objects]
 
   rustContext.addConstraint = vi.fn(async (_version, _sketchId, constraint) => {
     const constraintId = nextConstraintId++
-    const resultObjects = [
-      ...objects,
+    currentObjects = [
+      ...currentObjects,
       createAngleConstraintObject({ id: constraintId, constraint }),
     ]
 
     return {
       kclSource: { text: '' },
-      sceneGraphDelta: createSceneGraphDelta(resultObjects, [constraintId]),
+      sceneGraphDelta: createSceneGraphDelta(currentObjects, [constraintId]),
       checkpointId: null,
     }
   }) as typeof rustContext.addConstraint
-  rustContext.deleteObjects = vi.fn(async () => ({
-    kclSource: { text: '' },
-    sceneGraphDelta: createSceneGraphDelta(objects),
-    checkpointId: null,
-  })) as typeof rustContext.deleteObjects
+  rustContext.editAngleConstraint = vi.fn(
+    async (_version, _sketchId, constraintId, constraint) => {
+      currentObjects = currentObjects.map((object) =>
+        object.id === constraintId
+          ? createAngleConstraintObject({ id: constraintId, constraint })
+          : object
+      )
+
+      return {
+        kclSource: { text: '' },
+        sceneGraphDelta: createSceneGraphDelta(currentObjects),
+        checkpointId: null,
+      }
+    }
+  ) as typeof rustContext.editAngleConstraint
+  rustContext.deleteObjects = vi.fn(
+    async (_version, _sketchId, constraintIds) => {
+      currentObjects = currentObjects.filter(
+        (object) => !constraintIds.includes(object.id)
+      )
+
+      return {
+        kclSource: { text: '' },
+        sceneGraphDelta: createSceneGraphDelta(currentObjects),
+        checkpointId: null,
+      }
+    }
+  ) as typeof rustContext.deleteObjects
 
   const sceneGraphDelta = createSceneGraphDelta(objects)
   const parentMachine = setup({
@@ -335,6 +359,59 @@ describe('dimensionTool', () => {
       type: 'update hovered id',
       data: { hoveredId: 31 },
     })
+  })
+
+  it('edits the existing draft angle constraint while moving the cursor', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const line0End = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line1End = createPointApiObject({
+      id: 3,
+      x: 5,
+      y: 8.660254037844386,
+    })
+    const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const line1 = createLineApiObject({ id: 11, start: 1, end: 3 })
+    const objects = [sketch, origin, line0End, line1End, line0, line1]
+    const { actor, sceneInfra, rustContext } = createParentHarness(objects)
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([8, 0]))
+    callbacks.onClick(createMouseEvent([5, 8.660254037844386]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    callbacks.onMove(createMouseEvent([0, 10]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.editAngleConstraint as any).mock.calls.length === 1
+    )
+
+    expect((rustContext.addConstraint as any).mock.calls).toHaveLength(1)
+    expect((rustContext.deleteObjects as any).mock.calls).toHaveLength(0)
+    const editCall = (rustContext.editAngleConstraint as any).mock.calls[0]
+    expect(editCall[2]).toBe(30)
+    expect(editCall[3]).toEqual({
+      type: 'Angle',
+      lines: [10, 11],
+      angle: { value: 120, units: 'Deg' },
+      sector: 2,
+      reflex: false,
+      labelPosition: {
+        x: { value: 0, units: 'Mm' },
+        y: { value: 10, units: 'Mm' },
+      },
+      source: {
+        expr: '120deg',
+        is_literal: true,
+      },
+    })
+    expect(editCall[5]).toBe(false)
+    expect(editCall[6]).toBe(false)
   })
 
   it('starts sector selection when initialized with two selected lines', async () => {

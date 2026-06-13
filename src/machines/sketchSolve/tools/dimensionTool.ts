@@ -155,6 +155,8 @@ type DraftRuntime = {
   active: boolean
 }
 
+type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
+
 const LINE_INTERSECTION_EPSILON = 1e-8
 const SECTOR_EPSILON = 1e-9
 const ANGLE_SECTOR_PROMPT_TOAST_ID = 'dimension-tool-angle-sector-prompt'
@@ -631,7 +633,7 @@ export function buildDimensionAngleConstraint(
   angleContext: DimensionAngleDraftContext,
   mousePoint: Coords2d,
   units: NumericSuffix
-): ApiConstraint {
+): ApiAngleConstraint {
   const selection = getDimensionAngleSelection(mousePoint, angleContext)
   const angle = getDimensionAngleDegrees(angleContext, selection)
 
@@ -666,11 +668,7 @@ function getConstraintIdFromResult(result: {
   )
 }
 
-function getDraftKey(constraint: ApiConstraint) {
-  if (constraint.type !== 'Angle') {
-    return ''
-  }
-
+function getDraftKey(constraint: ApiAngleConstraint) {
   return [
     constraint.lines.join(','),
     constraint.angle.value,
@@ -773,24 +771,35 @@ async function replaceDraftAngleConstraint(
     return
   }
 
-  await deleteDraftConstraint(runtime, context)
-  if (!runtime.active) {
-    return
-  }
+  const settings = jsAppSettings(context.rustContext.settingsActor)
+  const existingConstraintId = runtime.draftConstraintId
+  const result =
+    existingConstraintId === null
+      ? await context.rustContext.addConstraint(
+          SKETCH_FILE_VERSION,
+          context.sketchId,
+          constraint,
+          settings,
+          false
+        )
+      : await context.rustContext.editAngleConstraint(
+          SKETCH_FILE_VERSION,
+          context.sketchId,
+          existingConstraintId,
+          constraint,
+          settings,
+          false,
+          false
+        )
 
-  const result = await context.rustContext.addConstraint(
-    SKETCH_FILE_VERSION,
-    context.sketchId,
-    constraint,
-    jsAppSettings(context.rustContext.settingsActor),
-    false
-  )
-  const constraintId = getConstraintIdFromResult(result)
+  const constraintId = existingConstraintId ?? getConstraintIdFromResult(result)
   if (constraintId === null) {
     return
   }
   if (!runtime.active) {
-    await deleteInactivePreviewConstraint(context, constraintId)
+    if (existingConstraintId === null) {
+      await deleteInactivePreviewConstraint(context, constraintId)
+    }
     return
   }
 
@@ -798,13 +807,15 @@ async function replaceDraftAngleConstraint(
   runtime.lastDraftKey = draftKey
 
   sendPreviewResultToParent(self, result)
-  sendParent(self, {
-    type: 'set draft entities',
-    data: {
-      segmentIds: [],
-      constraintIds: [constraintId],
-    },
-  })
+  if (existingConstraintId === null) {
+    sendParent(self, {
+      type: 'set draft entities',
+      data: {
+        segmentIds: [],
+        constraintIds: [constraintId],
+      },
+    })
+  }
 }
 
 function requestDraftPreview(
