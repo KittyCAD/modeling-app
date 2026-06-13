@@ -390,6 +390,14 @@ export class ZDSProject {
       .find(([p]) => p.value === path)
   }
 
+  private deleteEditorReferences(editor: KclManager, exceptPath?: string) {
+    for (const [pathSignal, foundEditor] of this.editors.entries()) {
+      if (foundEditor === editor && pathSignal.value !== exceptPath) {
+        this.editors.delete(pathSignal)
+      }
+    }
+  }
+
   // Saving some keystrokes
   private set = this.editors.set.bind(this.editors)
 
@@ -407,15 +415,15 @@ export class ZDSProject {
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
-    if (
-      found &&
-      (!providedEditor || found !== providedEditor || found.path === path)
-    ) {
+    if (found && found.path === path) {
       if (isExecuting) {
         this.executingPath = path
       }
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
+    }
+    if (foundEditor) {
+      this.editors.delete(foundEditor[0])
     }
 
     const systemDeps: SystemDeps = {
@@ -463,6 +471,7 @@ export class ZDSProject {
     if (newEditor.path !== path) {
       newEditor.path = path
     }
+    this.deleteEditorReferences(newEditor, path)
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
