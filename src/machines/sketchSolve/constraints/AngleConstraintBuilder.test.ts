@@ -94,35 +94,35 @@ describe('calculateArcRenderInput', () => {
   it('renders sector 1 from line0 forward to line1 forward', () => {
     const { angleConstraint, objects } = createSectorTestObjects(1)
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.line1).toEqual([
+    expect(arcInput?.line1).toEqual([
       [0, 0],
       [10, 0],
     ])
-    expect(renderInput?.line2).toEqual([
+    expect(arcInput?.line2).toEqual([
       [0, 0],
       [5, 5 * Math.sqrt(3)],
     ])
-    expect(renderInput?.startAngle).toBeCloseTo(0)
-    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.startAngle).toBeCloseTo(0)
+    expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
   it('renders a reflex angle as the inverse of the selected sector', () => {
     const { angleConstraint, objects } = createSectorTestObjects(1, 300, true)
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.line1).toEqual([
+    expect(arcInput?.line1).toEqual([
       [0, 0],
       [5, 5 * Math.sqrt(3)],
     ])
-    expect(renderInput?.line2).toEqual([
+    expect(arcInput?.line2).toEqual([
       [0, 0],
       [10, 0],
     ])
-    expect(renderInput?.startAngle).toBeCloseTo(Math.PI / 3)
-    expect(renderInput?.sweepAngle).toBeCloseTo((5 * Math.PI) / 3)
+    expect(arcInput?.startAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.sweepAngle).toBeCloseTo((5 * Math.PI) / 3)
   })
 
   it('uses explicit label position for sector angle rendering', () => {
@@ -136,81 +136,81 @@ describe('calculateArcRenderInput', () => {
     })
     objects[20] = angleConstraint
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.labelPosition).toEqual([20, 30])
-    expect(renderInput?.labelAngle).toBeCloseTo(Math.atan2(30, 20))
-    expect(renderInput?.radius).toBeCloseTo(Math.hypot(20, 30))
-    expect(renderInput?.startAngle).toBeCloseTo(0)
-    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.labelPosition).toEqual([20, 30])
+    expect(arcInput?.labelAngle).toBeCloseTo(Math.atan2(30, 20))
+    expect(arcInput?.radius).toBeCloseTo(Math.hypot(20, 30))
+    expect(arcInput?.startAngle).toBeCloseTo(0)
+    expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
   it('does not infer reflex rendering from a major angle value', () => {
     const { angleConstraint, objects } = createSectorTestObjects(1, 300)
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.line1).toEqual([
+    expect(arcInput?.line1).toEqual([
       [0, 0],
       [10, 0],
     ])
-    expect(renderInput?.line2).toEqual([
+    expect(arcInput?.line2).toEqual([
       [0, 0],
       [5, 5 * Math.sqrt(3)],
     ])
-    expect(renderInput?.startAngle).toBeCloseTo(0)
-    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.startAngle).toBeCloseTo(0)
+    expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
   it('renders sector 2 from line1 forward to line0 reverse', () => {
     const { angleConstraint, objects } = createSectorTestObjects(2, 120)
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.line1).toEqual([
+    expect(arcInput?.line1).toEqual([
       [0, 0],
       [5, 5 * Math.sqrt(3)],
     ])
-    expect(renderInput?.line2).toEqual([
+    expect(arcInput?.line2).toEqual([
       [0, 0],
       [10, 0],
     ])
-    expect(renderInput?.startAngle).toBeCloseTo(Math.PI / 3)
-    expect(renderInput?.sweepAngle).toBeCloseTo((2 * Math.PI) / 3)
+    expect(arcInput?.startAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.sweepAngle).toBeCloseTo((2 * Math.PI) / 3)
   })
 
   it('renders sector 3 from line0 reverse to line1 reverse', () => {
     const { angleConstraint, objects } = createSectorTestObjects(3)
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.line1).toEqual([
+    expect(arcInput?.line1).toEqual([
       [0, 0],
       [10, 0],
     ])
-    expect(renderInput?.line2).toEqual([
+    expect(arcInput?.line2).toEqual([
       [0, 0],
       [5, 5 * Math.sqrt(3)],
     ])
-    expect(renderInput?.startAngle).toBeCloseTo(-Math.PI)
-    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.startAngle).toBeCloseTo(-Math.PI)
+    expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
   it('renders sector 4 from line1 reverse to line0 forward', () => {
     const { angleConstraint, objects } = createSectorTestObjects(4, 120)
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.line1).toEqual([
+    expect(arcInput?.line1).toEqual([
       [0, 0],
       [5, 5 * Math.sqrt(3)],
     ])
-    expect(renderInput?.line2).toEqual([
+    expect(arcInput?.line2).toEqual([
       [0, 0],
       [10, 0],
     ])
-    expect(renderInput?.startAngle).toBeCloseTo((-2 * Math.PI) / 3)
-    expect(renderInput?.sweepAngle).toBeCloseTo((2 * Math.PI) / 3)
+    expect(arcInput?.startAngle).toBeCloseTo((-2 * Math.PI) / 3)
+    expect(arcInput?.sweepAngle).toBeCloseTo((2 * Math.PI) / 3)
   })
 
   it('uses the legacy heuristic when sector metadata is absent', () => {
@@ -222,10 +222,10 @@ describe('calculateArcRenderInput', () => {
       delete angleConstraint.kind.constraint.sector
     }
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.startAngle).toBeCloseTo(0)
-    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.startAngle).toBeCloseTo(0)
+    expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
   it('uses explicit label position for legacy angle rendering', () => {
@@ -238,12 +238,12 @@ describe('calculateArcRenderInput', () => {
     })
     objects[20] = angleConstraint
 
-    const renderInput = calculateArcRenderInput(angleConstraint, objects, 1)
+    const arcInput = calculateArcRenderInput(angleConstraint, objects, 1)
 
-    expect(renderInput?.labelPosition).toEqual([21, 31])
-    expect(renderInput?.labelAngle).toBeCloseTo(Math.atan2(31, 21))
-    expect(renderInput?.radius).toBeCloseTo(Math.hypot(21, 31))
-    expect(renderInput?.startAngle).toBeCloseTo(0)
-    expect(renderInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
+    expect(arcInput?.labelPosition).toEqual([21, 31])
+    expect(arcInput?.labelAngle).toBeCloseTo(Math.atan2(31, 21))
+    expect(arcInput?.radius).toBeCloseTo(Math.hypot(21, 31))
+    expect(arcInput?.startAngle).toBeCloseTo(0)
+    expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 })
