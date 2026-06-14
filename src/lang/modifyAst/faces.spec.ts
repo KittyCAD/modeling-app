@@ -1,3 +1,4 @@
+import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -13,7 +14,13 @@ import {
 } from '@src/lang/modifyAst/faces'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { type PlaneArtifact, getAllOperations, recast } from '@src/lang/wasm'
+import {
+  type Artifact,
+  type CodeRef,
+  type PlaneArtifact,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { bracket } from '@src/lib/exampleKcl'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -1019,6 +1026,87 @@ hole002 = hole::hole(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a simple hole call on the last cap of a chained solid with an existing hole', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 5, tag = $seg04)
+  |> xLine(length = 5, tag = $seg02)
+  |> yLine(length = -5, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg03)
+  |> close()
+extrude001 = extrude(profile001, length = 2)
+sketch002 = startSketchOn(extrude001, face = END)
+profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)
+extrude002 = extrude(profile002, length = 1)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 2.5)
+fillet002 = fillet(extrude001, tags = getCommonEdge(faces = [seg03, seg04]), radius = 2.5)
+chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg03, seg01]), length = 1)
+hole001 = hole::hole(
+  extrude002,
+  face = END,
+  cutAt = [2, 2],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::simple(),
+)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const endCap = [...artifactGraph.values()]
+        .filter(
+          (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+        )
+        .at(-1)
+      if (!endCap) {
+        throw new Error('Could not find expected end cap selection')
+      }
+      const face = createSelectionFromArtifacts([endCap], artifactGraph)
+
+      const cutAt = (await stringToKclExpression(
+        '[3, 3]',
+        rustContextInThisFile,
+        { allowArrays: true }
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `hole002 = hole::hole(
+  hole001,
+  face = capEnd001,
+  cutAt = [3, 3],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::simple(),
+)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a counterbore hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
@@ -1438,6 +1526,94 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       expect(selections.faces.graphSelections).toHaveLength(2)
       expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
       expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
+    })
+
+    it('should find the solid and face of a chained hole edit', () => {
+      const codeRef: CodeRef = {
+        range: [0, 0, 0],
+        pathToNode: [['body', 'Program']],
+        nodePath: { steps: [] },
+      }
+      const artifactGraph = new Map<string, Artifact>()
+      const path: Artifact = {
+        type: 'path',
+        id: 'path-1',
+        subType: 'sketch',
+        planeId: 'plane-1',
+        segIds: [],
+        consumed: true,
+        sweepId: 'sweep-1',
+        trajectorySweepId: null,
+        codeRef,
+      }
+      const sweep: Artifact = {
+        type: 'sweep',
+        id: 'sweep-1',
+        subType: 'extrusion',
+        pathId: path.id,
+        surfaceIds: ['cap-end-1'],
+        edgeIds: [],
+        codeRef,
+        trajectoryId: null,
+        method: 'merge',
+        consumed: true,
+      }
+      const capEnd001: Artifact = {
+        type: 'cap',
+        id: 'cap-end-1',
+        subType: 'end',
+        edgeCutEdgeIds: [],
+        sweepId: sweep.id,
+        pathIds: [],
+        faceCodeRef: codeRef,
+        cmdId: 'cmd-1',
+      }
+      const hole001: Artifact = {
+        type: 'compositeSolid',
+        id: 'hole-1',
+        consumed: true,
+        subType: 'subtract',
+        solidIds: [sweep.id],
+        toolIds: [],
+        codeRef,
+        compositeSolidId: 'hole-2',
+      }
+
+      artifactGraph.set(path.id, path)
+      artifactGraph.set(sweep.id, sweep)
+      artifactGraph.set(capEnd001.id, capEnd001)
+      artifactGraph.set(hole001.id, hole001)
+
+      const solidsArg: OpArg = {
+        value: { type: 'Solid', value: { artifactId: hole001.id } },
+        sourceRange: [0, 0, 0],
+      }
+      const faceArg: OpArg = {
+        value: {
+          type: 'TagIdentifier',
+          value: 'capEnd001',
+          artifact_id: capEnd001.id,
+        },
+        sourceRange: [0, 0, 0],
+      }
+
+      const selections = retrieveFaceSelectionsFromOpArgs(
+        solidsArg,
+        faceArg,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.solids.graphSelections).toHaveLength(1)
+      expect(selections.solids.graphSelections[0].artifact!.type).toEqual(
+        'compositeSolid'
+      )
+      expect(selections.faces.graphSelections).toHaveLength(1)
+      const face = selections.faces.graphSelections[0]
+      if (!face.artifact || face.artifact.type !== 'cap') {
+        throw new Error('Artifact not found in the selection')
+      }
+      expect(face.artifact.subType).toEqual('end')
     })
   })
 

@@ -963,6 +963,8 @@ pub(super) fn build_artifact_graph(
     let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
+    let mut plane_to_face_id_map: FnvHashMap<ArtifactId, ArtifactId> = FnvHashMap::default();
+    let start_sketch_plane_to_face_id_map = start_sketch_plane_to_face_id_map(exec_artifacts);
     let mut current_plane_id = None;
     let import_code_refs = import_statement_code_refs(ast, module_infos, programs, item_count);
     let flattened_responses = flatten_modeling_command_responses(responses);
@@ -992,6 +994,9 @@ pub(super) fn build_artifact_graph(
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
         }
+        if let ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) = artifact_command.command {
+            plane_to_face_id_map.insert(artifact_command.cmd_id.into(), object_id.into());
+        }
 
         let artifact_updates = artifacts_to_update(
             &map,
@@ -999,6 +1004,8 @@ pub(super) fn build_artifact_graph(
             &flattened_responses,
             &entity_clone_id_maps,
             &path_to_plane_id_map,
+            &plane_to_face_id_map,
+            &start_sketch_plane_to_face_id_map,
             programs,
             item_count,
             exec_artifacts,
@@ -1216,6 +1223,71 @@ fn merge_ids(base: &mut Vec<ArtifactId>, new: Vec<ArtifactId>) {
 fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     // Always use the new one, even if it clears it.
     *base = new;
+}
+
+fn start_sketch_plane_to_face_id_map(
+    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+) -> FnvHashMap<ArtifactId, ArtifactId> {
+    let mut map = FnvHashMap::default();
+    for artifact in exec_artifacts.values() {
+        let Artifact::StartSketchOnPlane(start_sketch_on_plane) = artifact else {
+            continue;
+        };
+        if let Some(face_id) = exec_artifacts.values().find_map(|a| match a {
+            Artifact::StartSketchOnFace(start_sketch_on_face)
+                if start_sketch_on_face.code_ref.range == start_sketch_on_plane.code_ref.range =>
+            {
+                Some(start_sketch_on_face.face_id)
+            }
+            _ => None,
+        }) {
+            map.insert(start_sketch_on_plane.plane_id, face_id);
+        }
+    }
+    map
+}
+
+fn path_ids_for_plane(
+    plane_id: ArtifactId,
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    plane_to_face_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
+    start_sketch_plane_to_face_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
+) -> Vec<ArtifactId> {
+    let mut path_ids = Vec::new();
+    for artifact in artifacts.values().chain(exec_artifacts.values()) {
+        if let Artifact::Path(path) = artifact
+            && (path.plane_id == plane_id
+                || start_sketch_plane_to_face_id_map
+                    .get(&path.plane_id)
+                    .is_some_and(|face_id| *face_id == plane_id)
+                || plane_to_face_id_map
+                    .get(&path.plane_id)
+                    .is_some_and(|face_id| *face_id == plane_id)
+                || face_id_for_plane_from_matching_code_ref(path.plane_id, artifacts)
+                    .is_some_and(|face_id| face_id == plane_id))
+            && !path_ids.contains(&path.id)
+        {
+            path_ids.push(path.id);
+        }
+    }
+    path_ids
+}
+
+fn face_id_for_plane_from_matching_code_ref(
+    plane_id: ArtifactId,
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+) -> Option<ArtifactId> {
+    let plane_code_ref = match artifacts.get(&plane_id) {
+        Some(Artifact::Plane(plane)) => plane.code_ref.range,
+        _ => return None,
+    };
+    artifacts.values().find_map(|artifact| match artifact {
+        Artifact::PlaneOfFace(plane_of_face) if plane_of_face.code_ref.range == plane_code_ref => {
+            Some(plane_of_face.face_id)
+        }
+        _ => None,
+    })
 }
 
 fn remap_id_for_clone(id: ArtifactId, entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>) -> ArtifactId {
@@ -1725,6 +1797,8 @@ fn artifacts_to_update(
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     entity_clone_id_maps: &FnvHashMap<Uuid, FnvHashMap<ArtifactId, ArtifactId>>,
     path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
+    plane_to_face_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
+    start_sketch_plane_to_face_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -1880,6 +1954,36 @@ fn artifacts_to_update(
                     face_code_ref: cap.face_code_ref.clone(),
                     cmd_id: artifact_command.cmd_id,
                 }));
+            }
+            let current_plane_artifact_id = ArtifactId::new(*current_plane_id);
+            let linked_face_id = plane_to_face_id_map
+                .get(&current_plane_artifact_id)
+                .or_else(|| start_sketch_plane_to_face_id_map.get(&current_plane_artifact_id))
+                .copied()
+                .or_else(|| face_id_for_plane_from_matching_code_ref(current_plane_artifact_id, artifacts));
+            if let Some(face_id) = linked_face_id {
+                if let Some(Artifact::Wall(wall)) = artifacts.get(&face_id) {
+                    return_arr.push(Artifact::Wall(Wall {
+                        id: wall.id,
+                        seg_id: wall.seg_id,
+                        edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
+                        sweep_id: wall.sweep_id,
+                        path_ids: vec![id],
+                        face_code_ref: wall.face_code_ref.clone(),
+                        cmd_id: artifact_command.cmd_id,
+                    }));
+                }
+                if let Some(Artifact::Cap(cap)) = artifacts.get(&face_id) {
+                    return_arr.push(Artifact::Cap(Cap {
+                        id: cap.id,
+                        sub_type: cap.sub_type,
+                        edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                        sweep_id: cap.sweep_id,
+                        path_ids: vec![id],
+                        face_code_ref: cap.face_code_ref.clone(),
+                        cmd_id: artifact_command.cmd_id,
+                    }));
+                }
             }
             return Ok(return_arr);
         }
@@ -2418,13 +2522,20 @@ fn artifacts_to_update(
                     })
                     // TODO: If we didn't find it, it's probably a bug.
                     .unwrap_or_default();
+                let path_ids = path_ids_for_plane(
+                    face_id,
+                    artifacts,
+                    exec_artifacts,
+                    plane_to_face_id_map,
+                    start_sketch_plane_to_face_id_map,
+                );
 
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
                     seg_id: curve_id,
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
-                    path_ids: Vec::new(),
+                    path_ids,
                     face_code_ref: sketch_on_face_code_ref,
                     cmd_id: artifact_command.cmd_id,
                 }));
@@ -2481,12 +2592,19 @@ fn artifacts_to_update(
                         })
                         // TODO: If we didn't find it, it's probably a bug.
                         .unwrap_or_default();
+                    let path_ids = path_ids_for_plane(
+                        face_id,
+                        artifacts,
+                        exec_artifacts,
+                        plane_to_face_id_map,
+                        start_sketch_plane_to_face_id_map,
+                    );
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
                         sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
-                        path_ids: Vec::new(),
+                        path_ids,
                         face_code_ref: sketch_on_face_code_ref,
                         cmd_id: artifact_command.cmd_id,
                     }));
