@@ -143,7 +143,7 @@ const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
 const ANGLE_LINES_PARAM: &str = "lines";
 const ANGLE_SECTOR_PARAM: &str = "sector";
-const ANGLE_REFLEX_PARAM: &str = "reflex";
+const ANGLE_INVERSE_PARAM: &str = "inverse";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -3840,7 +3840,7 @@ impl FrontendState {
             non_code_meta: Default::default(),
         })));
 
-        let has_explicit_angle_mode = angle.sector.is_some() || angle.reflex.is_some();
+        let has_explicit_angle_mode = angle.sector.is_some() || angle.inverse.is_some();
         let mut arguments = if has_explicit_angle_mode {
             vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_LINES_PARAM)),
@@ -3864,12 +3864,12 @@ impl FrontendState {
             });
         }
 
-        if let Some(reflex) = angle.reflex {
+        if let Some(inverse) = angle.inverse {
             arguments.push(ast::LabeledArg {
-                label: Some(ast::Identifier::new(ANGLE_REFLEX_PARAM)),
+                label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
                 arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                    value: ast::LiteralValue::Bool(reflex),
-                    raw: reflex.to_string(),
+                    value: ast::LiteralValue::Bool(inverse),
+                    raw: inverse.to_string(),
                     digest: None,
                 }))),
             });
@@ -10955,7 +10955,7 @@ sketch(on = XY) {
                         units: NumericSuffix::Deg,
                     },
                     sector: Some(3),
-                    reflex: Some(false),
+                    inverse: Some(false),
                     label_position: Some(label_position.clone()),
                     source: Default::default(),
                 },
@@ -10974,7 +10974,7 @@ sketch(on = XY) {
   angle(
   lines = [line2, line1],
   sector = 3,
-  reflex = false,
+  inverse = false,
   labelPosition = [10mm, 11mm],
 ) == 60deg
 }
@@ -10990,7 +10990,7 @@ sketch(on = XY) {
         };
         assert_eq!(angle.lines, vec![line2_id, line1_id]);
         assert_eq!(angle.sector, Some(3));
-        assert_eq!(angle.reflex, Some(false));
+        assert_eq!(angle.inverse, Some(false));
         assert_eq!(angle.label_position, Some(label_position));
 
         mock_ctx.close().await;
@@ -12741,7 +12741,7 @@ splineSketch = sketch(on = XY) {
                 units: NumericSuffix::Deg,
             },
             sector: None,
-            reflex: None,
+            inverse: None,
             label_position: None,
             source: Default::default(),
         });
@@ -13465,7 +13465,7 @@ sketch(on = XY) {
                 units: NumericSuffix::Deg,
             },
             sector: None,
-            reflex: None,
+            inverse: None,
             label_position: None,
             source: Default::default(),
         });
@@ -13527,7 +13527,7 @@ sketch(on = XY) {
                 units: NumericSuffix::Deg,
             },
             sector: Some(1),
-            reflex: Some(true),
+            inverse: Some(true),
             label_position: Some(Point2d {
                 x: Number {
                     value: -0.73,
@@ -13553,7 +13553,7 @@ sketch(on = XY) {
   angle(
   lines = [line1, line2],
   sector = 1,
-  reflex = true,
+  inverse = true,
   labelPosition = [-0.73mm, 0.75mm],
 ) == 270deg
 }

@@ -222,23 +222,23 @@ describe('dimensionTool angle selection', () => {
   it('maps cursor sectors relative to the clicked rays', () => {
     expect(getDimensionAngleSelection([1, 0.25], angleContext)).toEqual({
       sector: 1,
-      reflex: false,
+      inverse: false,
     })
     expect(getDimensionAngleSelection([0, 10], angleContext)).toEqual({
       sector: 2,
-      reflex: false,
+      inverse: false,
     })
     expect(getDimensionAngleSelection([1, -1], angleContext)).toEqual({
       sector: 4,
-      reflex: false,
+      inverse: false,
     })
     expect(getDimensionAngleSelection([-1, -0.6], angleContext)).toEqual({
       sector: 1,
-      reflex: true,
+      inverse: true,
     })
   })
 
-  it('uses reflex when the visual wedge is opposite the directed KCL sector', () => {
+  it('uses inverse when the visual wedge is opposite the directed KCL sector', () => {
     const clockwiseContext: DimensionAngleDraftContext = {
       line0Id: 10,
       line1Id: 11,
@@ -253,23 +253,23 @@ describe('dimensionTool angle selection', () => {
 
     expect(getDimensionAngleSelection([1, 0.25], clockwiseContext)).toEqual({
       sector: 1,
-      reflex: true,
+      inverse: true,
     })
     expect(getDimensionAngleSelection([0, 10], clockwiseContext)).toEqual({
       sector: 4,
-      reflex: true,
+      inverse: true,
     })
     expect(getDimensionAngleSelection([1, -1], clockwiseContext)).toEqual({
       sector: 2,
-      reflex: true,
+      inverse: true,
     })
     expect(getDimensionAngleSelection([-1, -0.3], clockwiseContext)).toEqual({
       sector: 1,
-      reflex: false,
+      inverse: false,
     })
   })
 
-  it('builds the labelled angle constraint with sector, reflex, and label position', () => {
+  it('builds the labelled angle constraint with sector, inverse, and label position', () => {
     const constraint = buildDimensionAngleConstraint(
       angleContext,
       [-1, -0.6],
@@ -281,7 +281,7 @@ describe('dimensionTool angle selection', () => {
       lines: [10, 11],
       angle: { value: 300, units: 'Deg' },
       sector: 1,
-      reflex: true,
+      inverse: true,
       labelPosition: {
         x: { value: -1, units: 'Mm' },
         y: { value: -0.6, units: 'Mm' },
@@ -324,7 +324,7 @@ describe('dimensionTool', () => {
       lines: [10, 11],
       angle: { value: 60, units: 'Deg' },
       sector: 1,
-      reflex: false,
+      inverse: false,
       labelPosition: {
         x: { value: 5, units: 'Mm' },
         y: { value: 8.66, units: 'Mm' },
@@ -400,7 +400,7 @@ describe('dimensionTool', () => {
       lines: [10, 11],
       angle: { value: 120, units: 'Deg' },
       sector: 2,
-      reflex: false,
+      inverse: false,
       labelPosition: {
         x: { value: 0, units: 'Mm' },
         y: { value: 10, units: 'Mm' },
@@ -446,7 +446,7 @@ describe('dimensionTool', () => {
       lines: [10, 11],
       angle: { value: 300, units: 'Deg' },
       sector: 1,
-      reflex: true,
+      inverse: true,
       labelPosition: {
         x: { value: -1, units: 'Mm' },
         y: { value: -0.6, units: 'Mm' },

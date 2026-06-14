@@ -130,7 +130,7 @@ export type DimensionAngleDraftContext = {
 
 type DimensionAngleSelection = {
   sector: AngleSector
-  reflex: boolean
+  inverse: boolean
 }
 
 type AngleRay = {
@@ -479,14 +479,14 @@ function getSelectionForWedge(startKey: AngleRayKey, endKey: AngleRayKey) {
     if (boundary.startKey === startKey && boundary.endKey === endKey) {
       return {
         sector: boundary.sector,
-        reflex: false,
+        inverse: false,
       }
     }
 
     if (boundary.startKey === endKey && boundary.endKey === startKey) {
       return {
         sector: boundary.sector,
-        reflex: true,
+        inverse: true,
       }
     }
   }
@@ -565,7 +565,7 @@ function invertAngleSelection(
 ): DimensionAngleSelection {
   return {
     sector: selection.sector,
-    reflex: !selection.reflex,
+    inverse: !selection.inverse,
   }
 }
 
@@ -606,7 +606,7 @@ export function getDimensionAngleSelection(
 
   return {
     sector: 1,
-    reflex: false,
+    inverse: false,
   }
 }
 
@@ -615,7 +615,7 @@ function getDimensionAngleDegrees(
   selection: DimensionAngleSelection
 ) {
   let [start, end] = getAngleSectorRays(angleContext, selection.sector)
-  if (selection.reflex) {
+  if (selection.inverse) {
     ;[start, end] = [end, start]
   }
 
@@ -642,7 +642,7 @@ export function buildDimensionAngleConstraint(
     lines: [angleContext.line0Id, angleContext.line1Id],
     angle: { value: angle, units: 'Deg' },
     sector: selection.sector,
-    reflex: selection.reflex,
+    inverse: selection.inverse,
     labelPosition: {
       x: toNumber(mousePoint[0], units),
       y: toNumber(mousePoint[1], units),
@@ -673,7 +673,7 @@ function getDraftKey(constraint: ApiAngleConstraint) {
     constraint.lines.join(','),
     constraint.angle.value,
     constraint.sector ?? '',
-    constraint.reflex === true ? 'reflex' : 'direct',
+    constraint.inverse === true ? 'inverse' : 'direct',
     constraint.labelPosition?.x.value ?? '',
     constraint.labelPosition?.y.value ?? '',
   ].join(':')

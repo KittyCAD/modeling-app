@@ -575,7 +575,7 @@ pub struct Angle {
     pub sector: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
-    pub reflex: Option<bool>,
+    pub inverse: Option<bool>,
     #[serde(rename = "labelPosition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(rename = "labelPosition")]

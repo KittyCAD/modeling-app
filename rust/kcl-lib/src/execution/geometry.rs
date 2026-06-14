@@ -2414,7 +2414,7 @@ pub enum AngleSector {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AngleConstraintMode {
     LinesAtAngle,
-    PointsAtAngle { sector: AngleSector, reflex: bool },
+    PointsAtAngle { sector: AngleSector, inverse: bool },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

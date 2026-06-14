@@ -295,7 +295,7 @@ struct AngleSectorRay {
     direction: AngleRayDirection,
 }
 
-fn angle_sector_rays(sector: AngleSector, is_reflex: bool) -> [AngleSectorRay; 2] {
+fn angle_sector_rays(sector: AngleSector, is_inverse: bool) -> [AngleSectorRay; 2] {
     let rays = match sector {
         AngleSector::One => [
             AngleSectorRay {
@@ -338,7 +338,7 @@ fn angle_sector_rays(sector: AngleSector, is_reflex: bool) -> [AngleSectorRay; 2
             },
         ],
     };
-    if is_reflex { [rays[1], rays[0]] } else { rays }
+    if is_inverse { [rays[1], rays[0]] } else { rays }
 }
 
 fn normalize_radians(angle: f64) -> f64 {
@@ -3956,7 +3956,7 @@ impl Node<BinaryExpression> {
                             };
                             let points_at_angle_data = match *mode {
                                 AngleConstraintMode::LinesAtAngle => None,
-                                AngleConstraintMode::PointsAtAngle { sector, reflex } => {
+                                AngleConstraintMode::PointsAtAngle { sector, inverse } => {
                                     let sketch_vars = exec_state
                                         .mod_local
                                         .sketch_block
@@ -3989,7 +3989,7 @@ impl Node<BinaryExpression> {
                                         representative_angle_endpoint(line0, initial_line0, initial_vertex, range)?;
                                     let (line1_representative, line1_direction) =
                                         representative_angle_endpoint(line1, initial_line1, initial_vertex, range)?;
-                                    let sector_rays = angle_sector_rays(sector, reflex);
+                                    let sector_rays = angle_sector_rays(sector, inverse);
                                     let angle_kind =
                                         ezpz::datatypes::AngleKind::Other(remap_angle_for_representative_rays(
                                             sector_rays,
@@ -4046,10 +4046,10 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let (sector, reflex) = match *mode {
+                            let (sector, inverse) = match *mode {
                                 AngleConstraintMode::LinesAtAngle => (None, None),
-                                AngleConstraintMode::PointsAtAngle { sector, reflex } => {
-                                    (Some(front_angle_sector(sector)), Some(reflex))
+                                AngleConstraintMode::PointsAtAngle { sector, inverse } => {
+                                    (Some(front_angle_sector(sector)), Some(inverse))
                                 }
                             };
                             let sketch_constraint = crate::front::Constraint::Angle(Angle {
@@ -4058,7 +4058,7 @@ impl Node<BinaryExpression> {
                                     internal_err("Failed to convert angle units numeric suffix:", range)
                                 })?,
                                 sector,
-                                reflex,
+                                inverse,
                                 label_position: label_position.clone(),
                                 source,
                             });
@@ -6185,7 +6185,7 @@ sketch(on = XY) {
             })
             .unwrap();
         assert_eq!(angle.sector, Some(1));
-        assert_eq!(angle.reflex, Some(false));
+        assert_eq!(angle.inverse, Some(false));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6238,13 +6238,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_accepts_reflex_angle_for_sector() {
+    async fn angle_labelled_lines_accepts_inverse_angle_for_sector() {
         let result = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(lines = [line1, line2], sector = 1, reflex = true) == 360deg - 60deg
+  angle(lines = [line1, line2], sector = 1, inverse = true) == 360deg - 60deg
 }
 "#,
         )
@@ -6264,7 +6264,7 @@ sketch(on = XY) {
             })
             .unwrap();
         assert_eq!(angle.sector, Some(1));
-        assert_eq!(angle.reflex, Some(true));
+        assert_eq!(angle.inverse, Some(true));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -6346,7 +6346,7 @@ sketch(on = XY) {
 
         assert!(
             err.to_string()
-                .contains("angle() sector and reflex require the labelled lines argument"),
+                .contains("angle() sector and inverse require the labelled lines argument"),
             "unexpected error: {err:?}"
         );
     }

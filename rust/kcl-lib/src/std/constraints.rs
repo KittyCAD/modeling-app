@@ -5148,14 +5148,14 @@ pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             let sector = args
                 .get_kw_arg_opt::<TyF64>("sector", &sector_ty, exec_state)?
                 .unwrap_or_else(|| TyF64::count(1.0));
-            let reflex = args
-                .get_kw_arg_opt::<bool>("reflex", &RuntimeType::bool(), exec_state)?
+            let inverse = args
+                .get_kw_arg_opt::<bool>("inverse", &RuntimeType::bool(), exec_state)?
                 .unwrap_or(false);
             (
                 lines,
                 AngleConstraintMode::PointsAtAngle {
                     sector: angle_sector(sector, args.source_range)?,
-                    reflex,
+                    inverse,
                 },
             )
         } else {
@@ -5163,11 +5163,11 @@ pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                 .get_kw_arg_opt::<TyF64>("sector", &sector_ty, exec_state)?
                 .is_some()
                 || args
-                    .get_kw_arg_opt::<bool>("reflex", &RuntimeType::bool(), exec_state)?
+                    .get_kw_arg_opt::<bool>("inverse", &RuntimeType::bool(), exec_state)?
                     .is_some()
             {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "angle() sector and reflex require the labelled lines argument".to_owned(),
+                    "angle() sector and inverse require the labelled lines argument".to_owned(),
                     vec![args.source_range],
                 )));
             }

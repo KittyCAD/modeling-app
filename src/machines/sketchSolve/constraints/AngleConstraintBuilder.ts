@@ -230,7 +230,7 @@ function calculateExplicitArcRenderInput(
     line2Dir
   )
   const [start, end] =
-    obj.kind.constraint.reflex === true
+    obj.kind.constraint.inverse === true
       ? [sectorBoundaries[1], sectorBoundaries[0]]
       : sectorBoundaries
   const explicitLabelPosition = getAngleLabelPosition(obj)

@@ -19,14 +19,14 @@ function createAngleConstraintApiObject({
   lines,
   angle,
   sector,
-  reflex,
+  inverse,
   labelPosition,
 }: {
   id: number
   lines: [number, number]
   angle: number
   sector?: 1 | 2 | 3 | 4
-  reflex?: boolean
+  inverse?: boolean
   labelPosition?: [number, number]
 }): ApiObject {
   return {
@@ -38,7 +38,7 @@ function createAngleConstraintApiObject({
         lines,
         angle: { value: angle, units: 'Deg' },
         sector,
-        reflex,
+        inverse,
         labelPosition: labelPosition
           ? {
               x: { value: labelPosition[0], units: 'Mm' },
@@ -58,7 +58,7 @@ function createAngleConstraintApiObject({
 function createSectorTestObjects(
   sector: 1 | 2 | 3 | 4,
   angle = 60,
-  reflex = false
+  inverse = false
 ) {
   const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
   const east = createPointApiObject({ id: 2, x: 10, y: 0 })
@@ -74,7 +74,7 @@ function createSectorTestObjects(
     lines: [10, 11],
     angle,
     sector,
-    reflex,
+    inverse,
   })
 
   return {
@@ -108,7 +108,7 @@ describe('calculateArcRenderInput', () => {
     expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
-  it('renders a reflex angle as the inverse of the selected sector', () => {
+  it('renders the inverse sweep of the selected sector', () => {
     const { angleConstraint, objects } = createSectorTestObjects(1, 300, true)
 
     const arcInput = calculateArcInput(angleConstraint, objects, 1)
@@ -145,7 +145,7 @@ describe('calculateArcRenderInput', () => {
     expect(arcInput?.sweepAngle).toBeCloseTo(Math.PI / 3)
   })
 
-  it('does not infer reflex rendering from a major angle value', () => {
+  it('does not infer inverse sweep from a major angle value', () => {
     const { angleConstraint, objects } = createSectorTestObjects(1, 300)
 
     const arcInput = calculateArcInput(angleConstraint, objects, 1)

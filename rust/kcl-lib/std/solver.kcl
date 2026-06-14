@@ -450,8 +450,8 @@ export fn angle(
   lines?: [Segment; 2],
   /// Which of the four angle sectors to constrain, numbered around the line intersection.
   sector?: number(Count) = 1,
-  /// Whether to constrain the reflex complement of the selected sector.
-  reflex?: bool = false,
+  /// Whether to constrain the inverse of the selected sector.
+  inverse?: bool = false,
   /// The desired position of the constraint label.
   labelPosition?: Point2d,
 ) {}
