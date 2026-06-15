@@ -5853,6 +5853,17 @@ fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path
     }
 }
 
+fn constraint_supports_label_position(part: &ast::BinaryPart) -> bool {
+    matches!(
+        part,
+        ast::BinaryPart::CallExpressionKw(call)
+            if matches!(
+                call.callee.name.name.as_str(),
+                DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
+            )
+    )
+}
+
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
     match &ctx.command {
         AstMutateCommand::AddSketchBlockExprStmt { expr } => {
@@ -6174,29 +6185,47 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
         }
         AstMutateCommand::EditAngleConstraint { call, value } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
-                let ast::BinaryPart::CallExpressionKw(existing_call) = &binary_expr.left else {
-                    return TraversalReturn::new_continue(());
-                };
-                if existing_call.callee.name.name != ANGLE_FN {
-                    return TraversalReturn::new_continue(());
+                let left_is_angle = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if existing_call.callee.name.name == ANGLE_FN
+                );
+                let right_is_angle = matches!(
+                    &binary_expr.right,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if existing_call.callee.name.name == ANGLE_FN
+                );
+
+                match (left_is_angle, right_is_angle) {
+                    (true, _) => {
+                        binary_expr.left = call.clone();
+                        binary_expr.right = value.clone();
+                    }
+                    (false, true) => {
+                        binary_expr.left = value.clone();
+                        binary_expr.right = call.clone();
+                    }
+                    (false, false) => return TraversalReturn::new_continue(()),
                 }
 
-                binary_expr.left = call.clone();
-                binary_expr.right = value.clone();
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
         AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
-                let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
+                let call = if constraint_supports_label_position(&binary_expr.left) {
+                    let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
+                        unreachable!("constraint_supports_label_position already matched");
+                    };
+                    call
+                } else if constraint_supports_label_position(&binary_expr.right) {
+                    let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.right else {
+                        unreachable!("constraint_supports_label_position already matched");
+                    };
+                    call
+                } else {
                     return TraversalReturn::new_continue(());
                 };
-                if !matches!(
-                    call.callee.name.name.as_str(),
-                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
-                ) {
-                    return TraversalReturn::new_continue(());
-                }
 
                 if let Some(label_arg) = call
                     .arguments
@@ -10908,6 +10937,73 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_label_position_with_call_on_right() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angle(lines = [line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  60deg == angle(lines = [line1, line2], labelPosition = [10mm, 11mm])
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_angle_constraint() {
         let initial_source = "\
 sketch(on = XY) {
@@ -10992,6 +11088,68 @@ sketch(on = XY) {
         assert_eq!(angle.sector, Some(3));
         assert_eq!(angle.inverse, Some(false));
         assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_with_call_on_right() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angle([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let (src_delta, _) = frontend
+            .edit_angle_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Angle {
+                    lines: vec![line2_id, line1_id],
+                    angle: Number {
+                        value: 60.0,
+                        units: NumericSuffix::Deg,
+                    },
+                    sector: Some(3),
+                    inverse: Some(false),
+                    label_position: None,
+                    source: Default::default(),
+                },
+                EditAngleConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angle(lines = [line2, line1], sector = 3, inverse = false)
+}
+"
+        );
 
         mock_ctx.close().await;
     }
