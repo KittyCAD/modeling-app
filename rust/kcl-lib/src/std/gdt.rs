@@ -117,7 +117,8 @@ enum GdtFeatureControlKind {
     Concentricity,
     Symmetry,
     Runout,
-    Profile,
+    ProfileLine,
+    ProfileSurface,
     Position,
     Angularity,
     Perpendicularity,
@@ -127,6 +128,16 @@ enum GdtFeatureControlKind {
 struct GdtFeatureControlParams {
     faces: Vec<TagIdentifier>,
     edges: Vec<EdgeReference>,
+    datums: Option<Vec<String>>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+}
+
+struct GdtProfileCommonParams {
     datums: Option<Vec<String>>,
     tolerance: TyF64,
     precision: Option<TyF64>,
@@ -146,7 +157,8 @@ impl GdtFeatureControlKind {
             Self::Concentricity => "Concentricity",
             Self::Symmetry => "Symmetry",
             Self::Runout => "Runout",
-            Self::Profile => "Profile",
+            Self::ProfileLine => "Profile line",
+            Self::ProfileSurface => "Profile surface",
             Self::Position => "Position",
             Self::Angularity => "Angularity",
             Self::Perpendicularity => "Perpendicularity",
@@ -163,7 +175,8 @@ impl GdtFeatureControlKind {
             Self::Concentricity => MbdSymbol::Concentricity,
             Self::Symmetry => MbdSymbol::Symmetry,
             Self::Runout => MbdSymbol::Runout,
-            Self::Profile => MbdSymbol::ProfileOfLine,
+            Self::ProfileLine => MbdSymbol::ProfileOfLine,
+            Self::ProfileSurface => MbdSymbol::SurfaceProfile,
             Self::Position => MbdSymbol::Position,
             Self::Angularity => MbdSymbol::Angularity,
             Self::Perpendicularity => MbdSymbol::Perpendicularity,
@@ -616,12 +629,75 @@ pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     Ok(annotations.into())
 }
 
-pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn profile_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let edges: Vec<EdgeReference> = args.get_kw_arg(
         "edges",
         &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
+    let params = profile_common_params(&args, exec_state)?;
+
+    let annotations = inner_profile_line(edges, params, exec_state, &args).await?;
+    Ok(annotations.into())
+}
+
+pub async fn profile_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Vec<TagIdentifier> = args.get_kw_arg(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let params = profile_common_params(&args, exec_state)?;
+
+    let annotations = inner_profile_surface(faces, params, exec_state, &args).await?;
+    Ok(annotations.into())
+}
+
+/// Backwards-compatible implementation for the historical `gdt::profile` KCL function.
+///
+/// New KCL should call `gdt::profileLine` for edges or `gdt::profileSurface` for faces.
+/// Keep the dispatch explicit so invalid combinations produce semantic KCL errors
+/// instead of silently choosing one entity type.
+pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+
+    let annotations = match (edges, faces) {
+        (Some(edges), None) => {
+            let params = profile_common_params(&args, exec_state)?;
+            inner_profile_line(edges, params, exec_state, &args).await?
+        }
+        (None, Some(faces)) => {
+            let params = profile_common_params(&args, exec_state)?;
+            inner_profile_surface(faces, params, exec_state, &args).await?
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Profile cannot combine `edges` and `faces`. Use `profileLine` for edges or `profileSurface` for faces."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Profile requires either `edges` for `profileLine` or `faces` for `profileSurface`.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+    };
+
+    Ok(annotations.into())
+}
+
+fn profile_common_params(args: &Args, exec_state: &mut ExecState) -> Result<GdtProfileCommonParams, KclError> {
     let datums: Option<Vec<String>> = args.get_kw_arg_opt(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -635,24 +711,65 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
     let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
-    let annotations = create_feature_control_annotations(
-        GdtFeatureControlKind::Profile,
+    Ok(GdtProfileCommonParams {
+        datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+    })
+}
+
+async fn inner_profile_line(
+    edges: Vec<EdgeReference>,
+    params: GdtProfileCommonParams,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    create_feature_control_annotations(
+        GdtFeatureControlKind::ProfileLine,
         GdtFeatureControlParams {
             faces: Vec::new(),
             edges,
-            datums,
-            tolerance,
-            precision,
-            frame_position,
-            frame_plane,
-            leader_scale,
-            font_size,
+            datums: params.datums,
+            tolerance: params.tolerance,
+            precision: params.precision,
+            frame_position: params.frame_position,
+            frame_plane: params.frame_plane,
+            leader_scale: params.leader_scale,
+            font_size: params.font_size,
         },
         exec_state,
-        &args,
+        args,
     )
-    .await?;
-    Ok(annotations.into())
+    .await
+}
+
+async fn inner_profile_surface(
+    faces: Vec<TagIdentifier>,
+    params: GdtProfileCommonParams,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    create_feature_control_annotations(
+        GdtFeatureControlKind::ProfileSurface,
+        GdtFeatureControlParams {
+            faces,
+            edges: Vec::new(),
+            datums: params.datums,
+            tolerance: params.tolerance,
+            precision: params.precision,
+            frame_position: params.frame_position,
+            frame_plane: params.frame_plane,
+            leader_scale: params.leader_scale,
+            font_size: params.font_size,
+        },
+        exec_state,
+        args,
+    )
+    .await
 }
 
 pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1997,6 +2114,160 @@ gdt::angularity(edges = [stampedRegion.tags.controlledSurface], tolerance = 0.1m
             assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
         }
         Ok(())
+    }
+
+    const GDT_PROFILE_LINE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_GENERIC_LINE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::profile(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_SURFACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+gdt::profileSurface(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_GENERIC_SURFACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+gdt::profile(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_BOTH_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::profile(edges = [profileEdge], faces = [top], tolerance = 0.05mm)
+"#;
+
+    const GDT_PROFILE_MISSING_ENTITIES_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+gdt::profile(tolerance = 0.05mm)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_line_uses_profile_of_line_symbol() -> Result<(), KclError> {
+        let cases = [
+            ("specific profileLine", GDT_PROFILE_LINE_KCL),
+            ("generic profile with edges", GDT_PROFILE_GENERIC_LINE_KCL),
+        ];
+
+        for (label, code) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::ProfileOfLine)?;
+
+            assert_close(control_frame.tolerance, 0.05);
+            assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_surface_uses_surface_profile_symbol() -> Result<(), KclError> {
+        let cases = [
+            ("specific profileSurface", GDT_PROFILE_SURFACE_KCL),
+            ("generic profile with faces", GDT_PROFILE_GENERIC_SURFACE_KCL),
+        ];
+
+        for (label, code) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::SurfaceProfile)?;
+
+            assert_close(control_frame.tolerance, 0.05);
+            assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_requires_edges_or_faces() {
+        assert_eq!(
+            parse_execute(GDT_PROFILE_MISSING_ENTITIES_KCL)
+                .await
+                .unwrap_err()
+                .message(),
+            "Profile requires either `edges` for `profileLine` or `faces` for `profileSurface`.",
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_rejects_combined_edges_and_faces() {
+        assert_eq!(
+            parse_execute(GDT_PROFILE_BOTH_KCL).await.unwrap_err().message(),
+            "Profile cannot combine `edges` and `faces`. Use `profileLine` for edges or `profileSurface` for faces.",
+        );
     }
 
     // Mirrors the gdt::circularity doc examples: annotate a cylinder's circular
