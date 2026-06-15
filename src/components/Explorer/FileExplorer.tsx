@@ -68,6 +68,7 @@ export const FileExplorer = ({
   isRenaming,
   isDeleting,
   isCopying,
+  isInteractionDisabled,
   isExternalDragOver,
   highlightedEntry,
   onDeleteEnd,
@@ -79,6 +80,7 @@ export const FileExplorer = ({
   isRenaming: boolean
   isDeleting: boolean
   isCopying: boolean
+  isInteractionDisabled: boolean
   isExternalDragOver?: boolean
   highlightedEntry?: FileExplorerEntry | null
   onDeleteEnd: () => void
@@ -108,6 +110,7 @@ export const FileExplorer = ({
             isRenaming={isRenaming}
             isDeleting={isDeleting}
             isCopying={isCopying}
+            isInteractionDisabled={isInteractionDisabled}
             isExternalDragHighlighted={isHighlighted}
             isExternalDragOver={isExternalDragOver}
             onDeleteEnd={onDeleteEnd}
@@ -260,6 +263,7 @@ export const FileExplorerRowElement = ({
   isRenaming,
   isDeleting,
   isCopying,
+  isInteractionDisabled,
   isExternalDragHighlighted,
   isExternalDragOver,
   onDeleteEnd,
@@ -271,6 +275,7 @@ export const FileExplorerRowElement = ({
   isRenaming: boolean
   isDeleting: boolean
   isCopying: boolean
+  isInteractionDisabled: boolean
   isExternalDragHighlighted?: boolean
   isExternalDragOver?: boolean
   onDeleteEnd: () => void
@@ -348,6 +353,9 @@ export const FileExplorerRowElement = ({
   const externalHighlightCSS = isExternalDragHighlighted
     ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/10'
     : ''
+  const interactionCSS = isInteractionDisabled
+    ? 'cursor-wait opacity-70'
+    : 'cursor-pointer hover:outline hover:outline-1 hover:bg-gray-300/50'
   const handleDeleteDismiss = useCallback(() => {
     setIsConfirmingDelete(false)
     onDeleteEnd()
@@ -360,10 +368,11 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
+      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
+      aria-disabled={isInteractionDisabled}
       aria-setsize={row.setSize}
       aria-posinset={row.positionInSet}
       aria-label={row.name}
@@ -371,18 +380,27 @@ export const FileExplorerRowElement = ({
       aria-level={row.level + 1}
       aria-expanded={row.isFolder && row.isOpen}
       onClick={() => {
+        if (isInteractionDisabled) {
+          return
+        }
         row.onClick(row.domIndex)
       }}
       onDoubleClick={
         row.onDoubleClick
           ? (event) => {
+              if (isInteractionDisabled) {
+                return
+              }
               event.preventDefault()
               row.onDoubleClick?.(row.domIndex)
             }
           : undefined
       }
-      draggable="true"
+      draggable={!isInteractionDisabled}
       onDragOver={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -402,6 +420,9 @@ export const FileExplorerRowElement = ({
         }
       }}
       onDragLeave={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -416,6 +437,10 @@ export const FileExplorerRowElement = ({
         }
       }}
       onDragStart={(event) => {
+        if (isInteractionDisabled) {
+          event.preventDefault()
+          return
+        }
         event.dataTransfer.effectAllowed = 'move'
         event.dataTransfer.setData(
           'json',
@@ -435,6 +460,9 @@ export const FileExplorerRowElement = ({
         removeDragPreviewElem()
       }}
       onDrop={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -487,28 +515,30 @@ export const FileExplorerRowElement = ({
       {(isConfirmingDelete || isMyRowDeleting) && (
         <DeleteFileTreeItemDialog row={row} onDismiss={handleDeleteDismiss} />
       )}
-      <FileExplorerRowContextMenu
-        itemRef={rowElementRef}
-        onRename={() => {
-          row.onRenameStart()
-        }}
-        onDelete={() => {
-          setIsConfirmingDelete(true)
-        }}
-        onOpenInNewWindow={() => {
-          row.onOpenInNewWindow()
-        }}
-        onCopy={() => {
-          row.onCopy()
-        }}
-        callback={() => {
-          row.onContextMenuOpen(row.domIndex)
-        }}
-        onPaste={() => {
-          row.onPaste()
-        }}
-        isCopying={isCopying}
-      />
+      {!isInteractionDisabled && (
+        <FileExplorerRowContextMenu
+          itemRef={rowElementRef}
+          onRename={() => {
+            row.onRenameStart()
+          }}
+          onDelete={() => {
+            setIsConfirmingDelete(true)
+          }}
+          onOpenInNewWindow={() => {
+            row.onOpenInNewWindow()
+          }}
+          onCopy={() => {
+            row.onCopy()
+          }}
+          callback={() => {
+            row.onContextMenuOpen(row.domIndex)
+          }}
+          onPaste={() => {
+            row.onPaste()
+          }}
+          isCopying={isCopying}
+        />
+      )}
     </div>
   )
 }
