@@ -1695,7 +1695,7 @@ async function runCloudSync() {
 
   try {
     await repairExistingConflictArtifacts()
-    
+
     let entries = await getAllOutboxEntries()
     let syncScopePlan = getOpfsCloudSyncScopePlan(entries, scopedProjectPath)
     if (syncScopePlan.shouldSyncRemoteIndex) {
