@@ -60,7 +60,6 @@ convert_case = "0.11.0"
 csscolorparser = "0.8.3"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
-fnv = "1.0.7"
 form_urlencoded = "1.2.2"
 futures = { version = "0.3.32" }
 git_rev = "0.1.0"
