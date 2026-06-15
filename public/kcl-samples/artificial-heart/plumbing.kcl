@@ -1,0 +1,114 @@
+// Plumbing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Draw the sweep path for the aorta and pulmonary artery
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var -1.17in, var 1.17in], construction = true)
+  coincident([line1.start, ORIGIN])
+  arc1 = arc(start = [var -1.17in, var 1.17in], end = [var -3.68in, var -0.77in], center = [var -2.3in, var 0.04in])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var -3.68in, var -0.77in], end = [var -2.09in, var -3.51in])
+  coincident([line2.start, arc1.end])
+  tangent([line2, arc1])
+  line3 = line(start = [var 0in, var 0in], end = [var -1.72in, var 0in], construction = true)
+  coincident([line3.start, line1.start])
+  horizontal([line3.end, ORIGIN])
+  horizontal(line3)
+  angle([line1, line3]) == 45
+  distance([line1.start, line1.end]) == 1.65in
+  radius(arc1) == 3.2 / 2
+  circle1 = circle(start = [var 1.18in, var 0.93in], center = [var 0in, var 0in], construction = true)
+  coincident([circle1.center, line3.start])
+  radius(circle1) == 3 / 2
+}
+
+// Draw the tube profiles for the aorta and pulmonary artery
+sketch003 = sketch(on = offsetPlane(-YZ, offset = 1.65)) {
+  line1 = line(start = [var 0in, var 0in], end = [var -0.3in, var -0.1in], construction = true)
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 0in, var 0in], end = [var 0.3in, var 0.1in], construction = true)
+  coincident([line2.start, line1.start])
+  coincident([line2, line1])
+  equalLength([line2, line1])
+  circle1 = circle(start = [var 0.44in, var 0.03in], center = [var 0.3in, var 0.1in])
+  coincident([circle1.center, line2.end])
+  circle2 = circle(start = [var -0.15in, var -0.15in], center = [var -0.3in, var -0.1in])
+  coincident([circle2.center, line1.end])
+  circle3 = circle(start = [var -0.17in, var -0.14in], center = [var -0.3in, var -0.1in])
+  coincident([circle3.center, line1.end])
+  circle4 = circle(start = [var 0.3in, var -0.04in], center = [var 0.3in, var 0.1in])
+  coincident([circle4.center, line2.end])
+  equalRadius([circle2, circle1])
+  equalRadius([circle4, circle3])
+  radius(circle1) == .25
+  radius(circle4) == .17
+  horizontalDistance([circle3.center, circle4.center]) == .75
+  verticalDistance([circle3.center, circle4.center]) == .2
+}
+hide(sketch003)
+
+// Sweep the pulmonary artery
+region003 = region(point = [-0.5707679in, -0.0595579in], sketch = sketch003)
+  |> rotate(pitch = 45, global = true)
+  |> sweep(path = clone(sketch002))
+  |> appearance(color = "#0e23be")
+
+// Sweep the aorta
+region004 = region(point = [0.2134512in, 0.2177397in], sketch = sketch003)
+  |> rotate(pitch = 45, global = true)
+  |> sweep(path = sketch002)
+  |> appearance(color = "#a60c0c")
+
+// Model the sweep path for the pulmonary vein and the superior vena cava
+sketch009 = sketch(on = XZ) {
+  line1 = line(start = [var 0.8in, var 0in], end = [var 0.85in, var 0in])
+  horizontal([line1.start, ORIGIN])
+  horizontal([line1.end, ORIGIN])
+  arc1 = arc(start = [var 1.77in, var -0.57in], end = [var 0.85in, var 0in], center = [var 0.85in, var -1.02in])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  arc2 = arc(start = [var 1.77in, var -0.57in], end = [var 2.72in, var -2.27in], center = [var 18.45in, var 7.67in])
+  coincident([arc1.start, arc2.start])
+  tangent([arc1, arc2])
+  distance([line1.start, line1.end]) == .05
+  horizontalDistance([ORIGIN, line1.start]) == .8
+}
+
+// Sketch the tube profile for the pulmonary vein, then sweep
+sketch010 = sketch(on = offsetPlane(YZ, offset = 0.8)) {
+  circle1 = circle(start = [var -0.92in, var -0.08in], center = [var -1.1in, var 0in])
+  horizontal([circle1.center, ORIGIN])
+  circle2 = circle(start = [var -0.9in, var -0.15in], center = [var -1.1in, var 0in])
+  coincident([circle2.center, circle1.center])
+  radius(circle2) == .25
+  radius(circle1) == 0.2in
+}
+hide(sketch010)
+region007 = region(point = [-1.3010016in, 0.1495594in], sketch = sketch010)
+sweep003 = sweep(region007, path = clone(sketch009))
+  // Move the vein into position at the inlet bung
+  |> rotate(pitch = 80)
+  |> rotate(roll = 4, yaw = 2)
+  |> translate(y = -.027, z = .08)
+  |> appearance(color = "#a60c0c")
+
+// Sketch the tube profile of the superior vena cava, then sweep
+sketch011 = sketch(on = offsetPlane(YZ, offset = 0.8)) {
+  circle1 = circle(start = [var 0.92in, var -0.08in], center = [var 1.1in, var 0in])
+  horizontal([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 0.9in, var -0.15in], center = [var 1.1in, var 0in])
+  coincident([circle2.center, circle1.center])
+  radius(circle2) == .25
+  radius(circle1) == 0.2in
+}
+hide(sketch011)
+region0011 = region(point = [1.3010016in, 0.1495594in], sketch = sketch011)
+sweep004 = sweep(region0011, path = sketch009)
+  // Move it into position at the inlet bung
+  |> rotate(pitch = 75)
+  |> rotate(roll = -4, yaw = -4)
+  |> translate(x = -.11, y = 0.17, z = .1)
+  |> appearance(color = "#0e23be")

@@ -99,6 +99,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::cylindricity(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::cylindricity"),
         ),
+        ("gdt", "concentricity") => (
+            |e, a| Box::pin(crate::std::gdt::concentricity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::concentricity"),
+        ),
+        ("gdt", "symmetry") => (
+            |e, a| Box::pin(crate::std::gdt::symmetry(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::symmetry"),
+        ),
+        ("gdt", "runout") => (
+            |e, a| Box::pin(crate::std::gdt::runout(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::runout"),
+        ),
         ("gdt", "angularity") => (
             |e, a| Box::pin(crate::std::gdt::angularity(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::angularity"),
@@ -122,6 +134,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("gdt", "profile") => (
             |e, a| Box::pin(crate::std::gdt::profile(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::profile"),
+        ),
+        ("gdt", "profileLine") => (
+            |e, a| Box::pin(crate::std::gdt::profile_line(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::profileLine"),
+        ),
+        ("gdt", "profileSurface") => (
+            |e, a| Box::pin(crate::std::gdt::profile_surface(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::profileSurface"),
         ),
         ("gdt", "position") => (
             |e, a| Box::pin(crate::std::gdt::position(e, a).map(|r| r.map(KclValue::continue_))),

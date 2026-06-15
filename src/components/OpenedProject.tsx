@@ -27,6 +27,7 @@ import {
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
+import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -100,8 +101,20 @@ export function OpenedProject() {
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
+  useEffect(() => {
+    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+
+    return () => {
+      setOpfsCloudSyncProjectScope(undefined)
+    }
+  }, [projectPath])
+
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
+    if (systemIOState !== SystemIOMachineStates.idle) {
+      return
+    }
+
     if (
       projects &&
       projects.length > 0 &&
@@ -119,7 +132,7 @@ export function OpenedProject() {
       void navigate(PATHS.HOME)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation])
+  }, [projects, lastOperation, systemIOState])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
