@@ -679,25 +679,6 @@ function getDraftKey(constraint: ApiAngleConstraint) {
   ].join(':')
 }
 
-async function deleteDraftConstraint(
-  runtime: DraftRuntime,
-  context: DimensionToolContext
-) {
-  if (runtime.draftConstraintId === null) {
-    return
-  }
-
-  await context.rustContext.deleteObjects(
-    SKETCH_FILE_VERSION,
-    context.sketchId,
-    [runtime.draftConstraintId],
-    [],
-    jsAppSettings(context.rustContext.settingsActor),
-    false
-  )
-  runtime.draftConstraintId = null
-}
-
 async function deleteInactivePreviewConstraint(
   context: DimensionToolContext,
   constraintId: number
@@ -875,16 +856,33 @@ async function commitDraftAngleConstraint(
 
   try {
     deactivateRuntime(runtime)
-    await deleteDraftConstraint(runtime, context)
-    const result = await context.rustContext.addConstraint(
-      SKETCH_FILE_VERSION,
-      context.sketchId,
-      constraint,
-      jsAppSettings(context.rustContext.settingsActor),
-      true
-    )
+    const settings = jsAppSettings(context.rustContext.settingsActor)
+    // This is normally never null, except for edge cases:
+    // - click is faster than draft preview creation
+    // - draft preview creation failed
+    const existingConstraintId = runtime.draftConstraintId
+    const result =
+      existingConstraintId === null
+        ? await context.rustContext.addConstraint(
+            SKETCH_FILE_VERSION,
+            context.sketchId,
+            constraint,
+            settings,
+            true
+          )
+        : await context.rustContext.editAngleConstraint(
+            SKETCH_FILE_VERSION,
+            context.sketchId,
+            existingConstraintId,
+            constraint,
+            settings,
+            true,
+            true
+          )
 
-    const constraintId = getConstraintIdFromResult(result)
+    const constraintId =
+      existingConstraintId ?? getConstraintIdFromResult(result)
+    runtime.draftConstraintId = null
     sendFinalResultToParent(self, result)
     sendParent(self, { type: 'clear draft entities' })
     sendParent(self, {
@@ -898,6 +896,7 @@ async function commitDraftAngleConstraint(
     dismissAngleSectorPrompt()
     self.send({ type: 'done' })
   } catch (error) {
+    runtime.active = true
     toastSketchSolveError(error)
   }
 }

@@ -345,9 +345,33 @@ describe('dimensionTool', () => {
 
     await waitFor(
       actor,
-      () => (rustContext.addConstraint as any).mock.calls.length === 2
+      () => (rustContext.editAngleConstraint as any).mock.calls.length === 1
     )
 
+    expect((rustContext.addConstraint as any).mock.calls).toHaveLength(1)
+    expect((rustContext.editAngleConstraint as any).mock.calls[0]).toEqual([
+      0,
+      0,
+      30,
+      {
+        type: 'Angle',
+        lines: [10, 11],
+        angle: { value: 60, units: 'Deg' },
+        sector: 1,
+        inverse: false,
+        labelPosition: {
+          x: { value: 4, units: 'Mm' },
+          y: { value: 3, units: 'Mm' },
+        },
+        source: {
+          expr: '60deg',
+          is_literal: true,
+        },
+      },
+      expect.any(Object),
+      true,
+      true,
+    ])
     expect(events).toContainEqual({
       type: 'update selected ids',
       data: {
@@ -357,7 +381,7 @@ describe('dimensionTool', () => {
     })
     expect(events).toContainEqual({
       type: 'update hovered id',
-      data: { hoveredId: 31 },
+      data: { hoveredId: 30 },
     })
   })
 
