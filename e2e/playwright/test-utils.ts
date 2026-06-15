@@ -962,6 +962,8 @@ export async function setup(
     })
   })
 
+  await installSlowFsForPlaywright(page)
+
   await page.addInitScript(
     async ({
       token,
@@ -1022,6 +1024,119 @@ export async function setup(
 
   // Trigger a navigation, since loading file:// doesn't.
   await page.reload()
+}
+
+const slowFsMethodNames = [
+  'access',
+  'cp',
+  'getPath',
+  'mkdir',
+  'readFile',
+  'readdir',
+  'rename',
+  'rm',
+  'stat',
+  'writeFile',
+] as const
+
+function readNonNegativeIntEnv(name: string) {
+  const value = process.env[name]
+  if (!value) return 0
+
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0
+
+  return Math.floor(parsed)
+}
+
+async function installSlowFsForPlaywright(page: Page) {
+  const delayMs = readNonNegativeIntEnv('E2E_SLOW_FS_MS')
+  if (delayMs === 0) return
+
+  const jitterMs = readNonNegativeIntEnv('E2E_SLOW_FS_JITTER_MS')
+
+  await page.addInitScript(
+    ({ delayMs, jitterMs, slowFsMethodNames }) => {
+      const globalObject = window as any
+      const installedKey = '__zooPlaywrightSlowFsInstalled'
+      if (globalObject[installedKey]) return
+
+      globalObject[installedKey] = true
+
+      const wrappedKey = Symbol.for('zoo.playwrightSlowFsWrapped')
+      const methods = new Set(slowFsMethodNames)
+
+      const delay = () => {
+        const jitter =
+          jitterMs > 0 ? Math.floor(Math.random() * (jitterMs + 1)) : 0
+        return new Promise((resolve) => setTimeout(resolve, delayMs + jitter))
+      }
+
+      const looksLikeFsZds = (value: unknown) => {
+        if (!value || typeof value !== 'object') return false
+
+        return slowFsMethodNames.every(
+          (methodName) => typeof (value as any)[methodName] === 'function'
+        )
+      }
+
+      const wrapFsZds = <T>(value: T): T => {
+        if (!looksLikeFsZds(value)) return value
+        if ((value as any)[wrappedKey]) return value
+
+        Object.defineProperty(value, wrappedKey, {
+          configurable: false,
+          enumerable: false,
+          value: true,
+        })
+
+        for (const methodName of methods) {
+          const original = (value as any)[methodName]
+          if (typeof original !== 'function') continue
+          ;(value as any)[methodName] = async function (...args: unknown[]) {
+            await delay()
+            return original.apply(this, args)
+          }
+        }
+
+        return value
+      }
+
+      const originalAssign = Object.assign
+      Object.assign = function (target: any, ...sources: any[]) {
+        const result = originalAssign.call(Object, target, ...sources)
+
+        if (
+          looksLikeFsZds(result) ||
+          sources.some((source) => looksLikeFsZds(source))
+        ) {
+          wrapFsZds(result)
+        }
+
+        return result
+      }
+
+      let currentFsZds = wrapFsZds(globalObject.fsZds)
+      const currentDescriptor = Object.getOwnPropertyDescriptor(
+        globalObject,
+        'fsZds'
+      )
+
+      if (!currentDescriptor || currentDescriptor.configurable) {
+        Object.defineProperty(globalObject, 'fsZds', {
+          configurable: true,
+          enumerable: true,
+          get() {
+            return currentFsZds
+          },
+          set(value) {
+            currentFsZds = wrapFsZds(value)
+          },
+        })
+      }
+    },
+    { delayMs, jitterMs, slowFsMethodNames }
+  )
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {

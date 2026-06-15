@@ -573,6 +573,14 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['GDT Concentricity']
     }
   | {
+      type: 'GDT Symmetry'
+      data: ModelingCommandSchema['GDT Symmetry']
+    }
+  | {
+      type: 'GDT Runout'
+      data: ModelingCommandSchema['GDT Runout']
+    }
+  | {
       type: 'GDT Parallelism'
       data: ModelingCommandSchema['GDT Parallelism']
     }
@@ -4403,6 +4411,12 @@ export const modelingMachine = setup({
     gdtConcentricityAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Concentricity'])
     ),
+    gdtSymmetryAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['GDT Symmetry'])
+    ),
+    gdtRunoutAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['GDT Runout'])
+    ),
     gdtParallelismAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Parallelism'])
     ),
@@ -4904,6 +4918,14 @@ export const modelingMachine = setup({
 
         'GDT Concentricity': {
           target: 'Applying GDT Concentricity',
+        },
+
+        'GDT Symmetry': {
+          target: 'Applying GDT Symmetry',
+        },
+
+        'GDT Runout': {
+          target: 'Applying GDT Runout',
         },
 
         'GDT Parallelism': {
@@ -7185,6 +7207,46 @@ export const modelingMachine = setup({
         id: 'gdtConcentricityAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Concentricity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Symmetry': {
+      invoke: {
+        src: 'gdtSymmetryAstMod',
+        id: 'gdtSymmetryAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Symmetry') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Runout': {
+      invoke: {
+        src: 'gdtRunoutAstMod',
+        id: 'gdtRunoutAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Runout') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

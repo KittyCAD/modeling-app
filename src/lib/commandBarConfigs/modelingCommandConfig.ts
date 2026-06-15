@@ -56,7 +56,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type * as StdLibCommandTypes from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -115,6 +115,45 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   value,
 }))
 
+function isSelections(value: unknown): value is Selections {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'graphSelections' in value &&
+    isArray(value.graphSelections) &&
+    'otherSelections' in value &&
+    isArray(value.otherSelections)
+  )
+}
+
+function isExtrudeRequirementKclCommandValue(
+  value: unknown
+): value is KclCommandValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'valueAst' in value &&
+    'valueText' in value &&
+    'valueCalculated' in value
+  )
+}
+
+export function extrudeSelectionRequiresBodyType({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  const sketches = argumentsToSubmit.sketches
+  if (!isSelections(sketches)) return false
+  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+    return false
+  }
+
+  return sketches.graphSelections.some(
+    (selection) => !selection.artifact || selection.artifact.type === 'segment'
+  )
+}
+
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
 type CommandBarEditFlowArgs = {
   nodeToEdit?: PathToNode
@@ -166,6 +205,8 @@ type EditableStdLibModelingCommandSchema = WithCommandBarEditFlowArgs<{
   'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
   'GDT Angularity': StdLibCommandTypes.GdtAngularityCommandArgs
   'GDT Concentricity': StdLibCommandTypes.GdtConcentricityCommandArgs
+  'GDT Symmetry': StdLibCommandTypes.GdtSymmetryCommandArgs
+  'GDT Runout': StdLibCommandTypes.GdtRunoutCommandArgs
   'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
   'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
   'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
@@ -628,6 +669,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           bodyType: {
             inputType: 'options',
+            required: extrudeSelectionRequiresBodyType,
             options: kclBodyTypeOptions,
           },
         },
@@ -1864,6 +1906,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: ['segment', 'sweepEdge'],
             multiple: true,
+            required: true,
             hidden: isEditingNodeSelection,
           },
           datums: datumsProps,
@@ -1959,6 +2002,64 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Concentricity']>(
       'GDT Concentricity',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: isEditingNodeSelection,
+          },
+          datums: {
+            ...datumsProps,
+            required: true,
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
+  },
+  'GDT Symmetry': {
+    description:
+      'Add symmetry geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtSymmetry',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Symmetry']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Symmetry']>(
+      'GDT Symmetry',
+      {
+        overrides: {
+          objects: {
+            inputType: 'selection',
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            multiple: true,
+            required: true,
+            hidden: isEditingNodeSelection,
+          },
+          datums: {
+            ...datumsProps,
+            required: true,
+          },
+          tolerance: gdtToleranceProps,
+          ...gdtFrameArgOverrides,
+        },
+      }
+    ),
+  },
+  'GDT Runout': {
+    description:
+      'Add runout geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtRunout',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Runout']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Runout']>(
+      'GDT Runout',
       {
         overrides: {
           objects: {

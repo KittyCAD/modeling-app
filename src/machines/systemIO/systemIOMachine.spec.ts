@@ -36,6 +36,60 @@ function mockProject(name: string): Project {
   }
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void
+  const promise = new Promise<T>((res) => {
+    resolve = res
+  })
+  return { promise, resolve }
+}
+
+const fileTreeMutationCases = [
+  {
+    actorName: SystemIOMachineActors.renameFolder,
+    expectedState: SystemIOMachineStates.renamingFolder,
+    event: {
+      type: SystemIOMachineEvents.renameFolder,
+      data: {
+        requestedFolderName: 'renamed-folder',
+        folderName: 'folderToRename',
+        absolutePathToParentDirectory: '/Test Project',
+      },
+    },
+  },
+  {
+    actorName: SystemIOMachineActors.createBlankFile,
+    expectedState: SystemIOMachineStates.creatingBlankFile,
+    event: {
+      type: SystemIOMachineEvents.createBlankFile,
+      data: {
+        requestedAbsolutePath: '/Test Project/new-file.kcl',
+      },
+    },
+  },
+  {
+    actorName: SystemIOMachineActors.deleteFileOrFolder,
+    expectedState: SystemIOMachineStates.deletingFileOrFolder,
+    event: {
+      type: SystemIOMachineEvents.deleteFileOrFolder,
+      data: {
+        requestedPath: '/Test Project/delete-me.kcl',
+      },
+    },
+  },
+  {
+    actorName: SystemIOMachineActors.moveRecursive,
+    expectedState: SystemIOMachineStates.movingRecursive,
+    event: {
+      type: SystemIOMachineEvents.moveRecursive,
+      data: {
+        src: '/Test Project/source.kcl',
+        target: '/Test Project/target.kcl',
+      },
+    },
+  },
+] as const
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -363,6 +417,44 @@ describe('systemIOMachine - XState', () => {
           )
         } finally {
           actor.stop()
+        }
+      })
+      it('should accept file-tree mutations while reading folders', async () => {
+        for (const testCase of fileTreeMutationCases) {
+          const actor = createActor(
+            systemIOMachine.provide({
+              actors: {
+                [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                  fromPromise(async () => new Promise(() => {})),
+                [testCase.actorName]: fromPromise(
+                  async () => new Promise(() => {})
+                ),
+              },
+            }),
+            {
+              input: {
+                wasmInstancePromise: Promise.resolve(instanceInThisFile),
+                app: appInstanceInThisFile,
+              },
+            }
+          ).start()
+
+          try {
+            actor.send({
+              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+            })
+            await waitFor(actor, (state) =>
+              state.matches(SystemIOMachineStates.readingFolders)
+            )
+
+            actor.send(testCase.event)
+
+            await waitFor(actor, (state) =>
+              state.matches(testCase.expectedState)
+            )
+          } finally {
+            actor.stop()
+          }
         }
       })
       it('should restart folder loading when project directory changes while reading folders', async () => {
@@ -702,13 +794,16 @@ describe('systemIOMachine - XState', () => {
         let context = actor.getSnapshot().context
         expect(context.projectDirectoryPath).toBe(kclSamplesPath)
       })
-      it('should accept project imports while checking read/write access', async () => {
+      it('should defer project imports while checking read/write access', async () => {
+        const checkReadWrite = deferred<{ value: boolean; error: unknown }>()
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
               [SystemIOMachineActors.checkReadWrite]: fromPromise(
-                async () => new Promise(() => {})
+                async () => checkReadWrite.promise
               ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
               [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
                 fromPromise(async () => new Promise(() => {})),
             },
@@ -740,6 +835,17 @@ describe('systemIOMachine - XState', () => {
             },
           })
 
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.checkingReadWrite,
+          })
+          expect(
+            actor.getSnapshot().context.deferredSystemIOEvent
+          ).toMatchObject({
+            type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
+          })
+
+          checkReadWrite.resolve({ value: true, error: undefined })
+
           await waitFor(actor, (state) =>
             state.matches(
               SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
@@ -749,13 +855,16 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
-      it('should accept project creation while checking read/write access', async () => {
+      it('should defer project creation while checking read/write access', async () => {
+        const checkReadWrite = deferred<{ value: boolean; error: unknown }>()
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
               [SystemIOMachineActors.checkReadWrite]: fromPromise(
-                async () => new Promise(() => {})
+                async () => checkReadWrite.promise
               ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
               [SystemIOMachineActors.createProject]: fromPromise(
                 async () => new Promise(() => {})
               ),
@@ -787,11 +896,125 @@ describe('systemIOMachine - XState', () => {
             },
           })
 
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.checkingReadWrite,
+          })
+          expect(
+            actor.getSnapshot().context.deferredSystemIOEvent
+          ).toMatchObject({
+            type: SystemIOMachineEvents.createProject,
+          })
+
+          checkReadWrite.resolve({ value: true, error: undefined })
+
           await waitFor(actor, (state) =>
             state.matches(SystemIOMachineStates.creatingProject)
           )
         } finally {
           actor.stop()
+        }
+      })
+      it('should defer file imports while checking read/write access', async () => {
+        const checkReadWrite = deferred<{ value: boolean; error: unknown }>()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => checkReadWrite.promise
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.createKCLFile]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: 'public/kcl-samples',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.importFileFromURL,
+            data: {
+              requestedProjectName: 'bracket',
+              requestedFileNameWithExtension: 'lego.kcl',
+              requestedCode: 'circle',
+            },
+          })
+
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.checkingReadWrite,
+          })
+          expect(
+            actor.getSnapshot().context.deferredSystemIOEvent
+          ).toMatchObject({
+            type: SystemIOMachineEvents.importFileFromURL,
+          })
+
+          checkReadWrite.resolve({ value: true, error: undefined })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.importFileFromURL)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should accept absolute-path file-tree mutations while checking read/write access', async () => {
+        for (const testCase of fileTreeMutationCases) {
+          const actor = createActor(
+            systemIOMachine.provide({
+              actors: {
+                [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                  async () => new Promise(() => {})
+                ),
+                [testCase.actorName]: fromPromise(
+                  async () => new Promise(() => {})
+                ),
+              },
+            }),
+            {
+              input: {
+                wasmInstancePromise: Promise.resolve(instanceInThisFile),
+                app: appInstanceInThisFile,
+              },
+            }
+          ).start()
+
+          try {
+            actor.send({
+              type: SystemIOMachineEvents.setProjectDirectoryPath,
+              data: {
+                requestedProjectDirectoryPath: 'public/kcl-samples',
+              },
+            })
+            await waitFor(actor, (state) =>
+              state.matches(SystemIOMachineStates.checkingReadWrite)
+            )
+
+            actor.send(testCase.event)
+
+            await waitFor(actor, (state) =>
+              state.matches(testCase.expectedState)
+            )
+          } finally {
+            actor.stop()
+          }
         }
       })
       it('should accept file navigation while checking read/write access', async () => {

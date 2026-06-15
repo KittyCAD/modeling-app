@@ -26,7 +26,9 @@ import {
   addPerpendicularityGdt,
   addPositionGdt,
   addProfileGdt,
+  addRunoutGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
@@ -107,6 +109,8 @@ type ModelingCommandCodemodName =
   | 'GDT Perpendicularity'
   | 'GDT Angularity'
   | 'GDT Concentricity'
+  | 'GDT Symmetry'
+  | 'GDT Runout'
   | 'GDT Parallelism'
   | 'GDT Annotation'
   | 'GDT Datum'
@@ -290,6 +294,8 @@ export const modelingCommandCodemods = {
   'GDT Angularity': withGdtDefaults<'GDT Angularity'>(addAngularityGdt),
   'GDT Concentricity':
     withGdtDefaults<'GDT Concentricity'>(addConcentricityGdt),
+  'GDT Symmetry': withGdtDefaults<'GDT Symmetry'>(addSymmetryGdt),
+  'GDT Runout': withGdtDefaults<'GDT Runout'>(addRunoutGdt),
   'GDT Parallelism': withGdtDefaults<'GDT Parallelism'>(addParallelismGdt),
   'GDT Annotation': withGdtDefaults<'GDT Annotation'>(addAnnotationGdt),
   'GDT Datum': withGdtDefaults<'GDT Datum'>(addDatumGdt),

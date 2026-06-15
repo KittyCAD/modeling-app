@@ -155,7 +155,7 @@ export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
-    requiredArgOrder: ['sketches'],
+    requiredArgOrder: ['sketches', 'bodyType'],
     omittedStdLibArgs: ['direction'],
   },
   Sweep: {
@@ -393,6 +393,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::profile',
     editFlow: true,
     requiredArgOrder: ['edges', 'tolerance'],
+    omittedStdLibArgs: ['faces'],
   },
   'GDT Distance': {
     stdLibName: 'gdt::distance',
@@ -424,6 +425,24 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'GDT Concentricity': {
     stdLibName: 'gdt::concentricity',
+    editFlow: true,
+    requiredArgOrder: ['objects', 'datums', 'tolerance'],
+    argAliases: {
+      faces: 'objects',
+      edges: 'objects',
+    },
+  },
+  'GDT Symmetry': {
+    stdLibName: 'gdt::symmetry',
+    editFlow: true,
+    requiredArgOrder: ['objects', 'datums', 'tolerance'],
+    argAliases: {
+      faces: 'objects',
+      edges: 'objects',
+    },
+  },
+  'GDT Runout': {
+    stdLibName: 'gdt::runout',
     editFlow: true,
     requiredArgOrder: ['objects', 'datums', 'tolerance'],
     argAliases: {

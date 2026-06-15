@@ -201,8 +201,8 @@ export type GdtCylindricityCommandArgs =
   GdtObjectsCommandArgs<'gdt::cylindricity'>
 export type GdtPositionCommandArgs = GdtObjectsCommandArgs<'gdt::position'>
 export type GdtProfileCommandArgs = Override<
-  StdLibCommandArgs<'gdt::profile'>,
-  GdtFrameArgs
+  Omit<StdLibCommandArgs<'gdt::profile'>, 'faces'>,
+  { edges: Selections } & GdtFrameArgs
 >
 export type GdtDistanceCommandArgs = Override<
   Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
@@ -213,6 +213,8 @@ export type GdtPerpendicularityCommandArgs =
 export type GdtAngularityCommandArgs = GdtObjectsCommandArgs<'gdt::angularity'>
 export type GdtConcentricityCommandArgs =
   GdtObjectsCommandArgs<'gdt::concentricity'>
+export type GdtSymmetryCommandArgs = GdtObjectsCommandArgs<'gdt::symmetry'>
+export type GdtRunoutCommandArgs = GdtObjectsCommandArgs<'gdt::runout'>
 export type GdtParallelismCommandArgs =
   GdtObjectsCommandArgs<'gdt::parallelism'>
 export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'gdt::annotation'>
