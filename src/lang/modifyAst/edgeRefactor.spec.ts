@@ -34,9 +34,13 @@ import {
   findExtrudeToCallsToFix,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
-import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  defaultArtifactGraph,
+} from '@src/lang/std/artifactGraph'
 import { assertParse } from '@src/lang/wasm'
 import type {
+  Artifact,
   ArtifactGraph,
   DirectTagFilletMeta,
   EdgeRefactorMeta,
@@ -109,6 +113,86 @@ function sourceRangeForCall(
 
 function facePair(a: string, b: string): [string, string] {
   return [a, b]
+}
+
+function sourceRangeForSnippet(
+  code: string,
+  snippet: string
+): [number, number, number] {
+  const start = code.indexOf(snippet)
+  if (start < 0) throw new Error(`Could not find snippet: ${snippet}`)
+  return [start, start + snippet.length, 0]
+}
+
+function createTaggedCapGraph(
+  ast: ReturnType<typeof assertParse>,
+  code: string,
+  sweepConfigs: Array<{
+    pathId: string
+    sweepId: string
+    extrudeSnippet: string
+    capStartId: string
+    capEndId: string
+  }>
+): ArtifactGraph {
+  const graph = defaultArtifactGraph()
+
+  for (const config of sweepConfigs) {
+    const codeRef = codeRefFromRange(
+      sourceRangeForSnippet(code, config.extrudeSnippet),
+      ast
+    )
+    const path: Artifact = {
+      type: 'path',
+      id: config.pathId,
+      subType: 'sketch',
+      codeRef,
+      planeId: 'plane-1',
+      segIds: [],
+      sweepId: config.sweepId,
+      trajectorySweepId: null,
+      consumed: true,
+    }
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: config.sweepId,
+      codeRef,
+      pathId: config.pathId,
+      subType: 'extrusion',
+      surfaceIds: [config.capStartId, config.capEndId],
+      edgeIds: [],
+      method: 'new',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const capStart: Artifact = {
+      type: 'cap',
+      id: config.capStartId,
+      subType: 'start',
+      edgeCutEdgeIds: [],
+      sweepId: config.sweepId,
+      pathIds: [],
+      faceCodeRef: codeRef,
+      cmdId: `${config.capStartId}-cmd`,
+    }
+    const capEnd: Artifact = {
+      type: 'cap',
+      id: config.capEndId,
+      subType: 'end',
+      edgeCutEdgeIds: [],
+      sweepId: config.sweepId,
+      pathIds: [],
+      faceCodeRef: codeRef,
+      cmdId: `${config.capEndId}-cmd`,
+    }
+
+    graph.set(path.id, path)
+    graph.set(sweep.id, sweep)
+    graph.set(capStart.id, capStart)
+    graph.set(capEnd.id, capEnd)
+  }
+
+  return graph
 }
 
 const SAMPLE_KCL = `body = startSketchOn(XY)
@@ -366,6 +450,34 @@ body = base
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeFromPoint])
 `
 
+const KCL_SHADOWED_EDGE_HELPER_VARIABLE = `globalBody = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagStart = $globalStart, tagEnd = $globalEnd)
+edgeFromPoint = edgeId(globalBody, closestTo = [5, 0, 0])
+
+fn makePart() {
+  base = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(endAbsolute = [10, 0])
+    |> line(endAbsolute = [10, 10])
+    |> line(endAbsolute = [0, 10])
+    |> line(endAbsolute = [0, 0])
+    |> close()
+    |> extrude(length = 5, tagStart = $localStart, tagEnd = $localEnd)
+  edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])
+  body = base
+    |> fillet(radius = 1, tags = [edgeFromPoint])
+  return body
+}
+
+part = makePart()
+`
+
 /** Focusrite Scarlett mounting bracket (first 55 lines): sketch in a function, fillet uses getPreviousAdjacentEdge(bs.tags.edge7) style. Z0006 refactor should emit edgeRefs with bs.tags.x (not bare edge6, edge7). */
 const KCL_FOCUSRITE_BRACKET = `// Mounting bracket for the Focusrite Scarlett Solo audio interface
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
@@ -518,6 +630,61 @@ describe('refactorZ0006Unified', () => {
             '00000000-0000-0000-0000-000000000002'
           ),
           stdlibFn: 'getOppositeEdge',
+        },
+      ]
+
+      const result = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No Z0006 fixes to apply')
+    })
+
+    it('does not migrate a nested fillet tag variable using a shadowed top-level edge helper', () => {
+      const code = KCL_SHADOWED_EDGE_HELPER_VARIABLE
+      const ast = assertParse(code, wasmInstance)
+      const graph = createTaggedCapGraph(ast, code, [
+        {
+          pathId: 'global-path',
+          sweepId: 'global-sweep',
+          extrudeSnippet:
+            'extrude(length = 5, tagStart = $globalStart, tagEnd = $globalEnd)',
+          capStartId: 'global-start-cap',
+          capEndId: 'global-end-cap',
+        },
+        {
+          pathId: 'local-path',
+          sweepId: 'local-sweep',
+          extrudeSnippet:
+            'extrude(length = 5, tagStart = $localStart, tagEnd = $localEnd)',
+          capStartId: 'local-start-cap',
+          capEndId: 'local-end-cap',
+        },
+      ])
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'global-edge',
+          sourceRange: sourceRangeForSnippet(
+            code,
+            'edgeId(globalBody, closestTo = [5, 0, 0])'
+          ),
+          faceIds: facePair('global-start-cap', 'global-end-cap'),
+          stdlibFn: 'edgeId',
+        },
+        {
+          edgeId: 'local-edge',
+          sourceRange: sourceRangeForSnippet(
+            code,
+            'edgeId(base, closestTo = [5, 0, 0])'
+          ),
+          faceIds: facePair('local-start-cap', 'local-end-cap'),
+          stdlibFn: 'edgeId',
         },
       ]
 
