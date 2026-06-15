@@ -819,16 +819,6 @@ export exported = 2`,
 
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-    })
-
-    await cmdBar.clickOptionalArgument('bodyType')
-    await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
       currentArgKey: 'bodyType',
@@ -840,14 +830,15 @@ export exported = 2`,
       },
       highlightedHeaderArg: 'bodyType',
     })
-    await cmdBar.selectOption({ name: 'Solid' }).click()
+
+    await cmdBar.selectOption({ name: 'Surface' }).click()
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
     })
 
@@ -860,7 +851,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
         Method: '',
       },
       highlightedHeaderArg: 'method',
@@ -876,7 +867,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
       highlightedHeaderArg: 'bodyType',
     })
@@ -890,7 +881,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
       highlightedHeaderArg: 'length',
     })
@@ -904,7 +895,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
       highlightedHeaderArg: 'Profiles',
     })

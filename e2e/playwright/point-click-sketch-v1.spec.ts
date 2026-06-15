@@ -164,10 +164,24 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await page.keyboard.insertText('4')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'bodyType',
+          currentArgValue: '',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 edge',
+            BodyType: '',
+          },
+          highlightedHeaderArg: 'bodyType',
+          commandName: 'Extrude',
+        })
+        await cmdBar.selectOption({ name: 'Surface' }).click()
+        await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
             Length: '4',
             Profiles: '1 edge',
+            BodyType: 'SURFACE',
           },
           commandName: 'Extrude',
         })
@@ -181,6 +195,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           headerArguments: {
             Length: '4',
             Profiles: '1 edge',
+            BodyType: 'SURFACE',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -193,6 +208,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           headerArguments: {
             Length: '4',
             Profiles: '1 edge',
+            BodyType: 'SURFACE',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -200,9 +216,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       })
       await test.step('Submit and verify', async () => {
         await cmdBar.submit()
-        await editor.expectEditor.toContain(
-          'extrude(profile001, length = 4, tagEnd = $myEndTag)'
-        )
+        await editor.expectEditor.toContain('extrude(')
+        await editor.expectEditor.toContain('profile001')
+        await editor.expectEditor.toContain('length = 4')
+        await editor.expectEditor.toContain('tagEnd = $myEndTag')
+        await editor.expectEditor.toContain('bodyType = SURFACE')
       })
     })
 
@@ -218,6 +236,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           currentArgValue: '4',
           headerArguments: {
             Length: '4',
+            BodyType: 'SURFACE',
             TagEnd: 'myEndTag',
           },
           highlightedHeaderArg: 'length',
@@ -229,6 +248,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           stage: 'review',
           headerArguments: {
             Length: '3',
+            BodyType: 'SURFACE',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -236,9 +256,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       })
       await test.step('Submit and verify', async () => {
         await cmdBar.submit()
-        await editor.expectEditor.toContain(
-          'extrude(profile001, length = 3, tagEnd = $myEndTag)'
-        )
+        await editor.expectEditor.toContain('extrude(')
+        await editor.expectEditor.toContain('profile001')
+        await editor.expectEditor.toContain('length = 3')
+        await editor.expectEditor.toContain('tagEnd = $myEndTag')
+        await editor.expectEditor.toContain('bodyType = SURFACE')
       })
     })
   })
