@@ -138,10 +138,13 @@ function createTaggedCapGraph(
   const graph = defaultArtifactGraph()
 
   for (const config of sweepConfigs) {
-    const codeRef = codeRefFromRange(
-      sourceRangeForSnippet(code, config.extrudeSnippet),
-      ast
-    )
+    const codeRef = {
+      ...codeRefFromRange(
+        sourceRangeForSnippet(code, config.extrudeSnippet),
+        ast
+      ),
+      nodePath: { steps: [] },
+    }
     const path: Artifact = {
       type: 'path',
       id: config.pathId,

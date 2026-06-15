@@ -1139,10 +1139,28 @@ function getTagsBaseFromTagElement(el: Expr): Expr | null {
   return innerMember.object
 }
 
+function isNestedScopePath(pathToNode: PathToNode): boolean {
+  return pathToNode.some(
+    ([, owner]) =>
+      owner === 'FunctionExpression' ||
+      owner === 'SketchBlock' ||
+      owner === 'Block' ||
+      owner === 'IfExpression'
+  )
+}
+
 function findDeprecatedEdgeStdlibCallForVariable(
   program: Program,
-  variableName: string
+  variableName: string,
+  referencePath: PathToNode
 ): { call: Node<CallExpressionKw>; tagsBaseExpr: Expr | null } | null {
+  // Variable lookup is currently top-level only. In nested scopes, a local
+  // binding may shadow a top-level helper, so skip instead of risking an
+  // incorrect migration.
+  if (isNestedScopePath(referencePath)) {
+    return null
+  }
+
   for (const item of program.body ?? []) {
     if (item.type !== 'VariableDeclaration') continue
     if (item.declaration.id?.name !== variableName) continue
@@ -1204,7 +1222,7 @@ function findFilletChamferCallsToFixUnified(
   const results: UnifiedCallToFix[] = []
 
   traverse(program, {
-    enter(node) {
+    enter(node, pathToNode) {
       if (node.type !== 'CallExpressionKw') return
 
       const call = node
@@ -1257,7 +1275,8 @@ function findFilletChamferCallsToFixUnified(
 
             const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
               program,
-              tagName
+              tagName,
+              pathToNode
             )
             if (deprecatedCall) {
               if (tagsBaseExpr === null && deprecatedCall.tagsBaseExpr) {
