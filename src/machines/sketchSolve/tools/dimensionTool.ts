@@ -985,61 +985,58 @@ function addDimensionListener({
       }
 
       const mousePoint: Coords2d = [twoD.x, twoD.y]
-      if (runtime.angleContext) {
-        void commitDraftAngleConstraint(runtime, context, self, mousePoint)
-        return
-      }
-
-      const lineSelection = getClosestLineSelection(mousePoint, context)
-      if (!lineSelection) {
-        return
-      }
-
       if (!runtime.firstSelection) {
-        runtime.firstSelection = lineSelection
-        sendParent(self, {
-          type: 'update selected ids',
-          data: {
-            selectedIds: [lineSelection.id],
-            replaceExistingSelection: true,
-            selectionClickPoints: {
-              [lineSelection.id]: lineSelection.clickPoint,
+        // First click: choose the first line and remember which side was clicked.
+        const lineSelection = getClosestLineSelection(mousePoint, context)
+        if (lineSelection) {
+          runtime.firstSelection = lineSelection
+          sendParent(self, {
+            type: 'update selected ids',
+            data: {
+              selectedIds: [lineSelection.id],
+              replaceExistingSelection: true,
+              selectionClickPoints: {
+                [lineSelection.id]: lineSelection.clickPoint,
+              },
             },
-          },
-        })
-        return
-      }
+          })
+        }
+      } else if (!runtime.angleContext) {
+        // Second click: choose the second line and enter sector/label placement.
+        const lineSelection = getClosestLineSelection(mousePoint, context)
+        if (lineSelection && lineSelection.id !== runtime.firstSelection.id) {
+          const angleContext = getDimensionAngleContext(
+            runtime.firstSelection,
+            lineSelection,
+            getObjects(context)
+          )
 
-      if (lineSelection.id === runtime.firstSelection.id) {
-        return
+          if (angleContext) {
+            runtime.angleContext = angleContext
+            sendParent(self, {
+              type: 'update hovered id',
+              data: { hoveredId: null },
+            })
+            sendParent(self, {
+              type: 'update selected ids',
+              data: {
+                selectedIds: [runtime.firstSelection.id, lineSelection.id],
+                replaceExistingSelection: true,
+                selectionClickPoints: {
+                  [runtime.firstSelection.id]:
+                    runtime.firstSelection.clickPoint,
+                  [lineSelection.id]: lineSelection.clickPoint,
+                },
+              },
+            })
+            requestDraftPreview(runtime, context, self, mousePoint)
+          }
+        }
+      } else {
+        // Third click: place the label and commit the draft angle constraint.
+        // If 2 lines were already selected when equipping, this is the first click.
+        void commitDraftAngleConstraint(runtime, context, self, mousePoint)
       }
-
-      const angleContext = getDimensionAngleContext(
-        runtime.firstSelection,
-        lineSelection,
-        getObjects(context)
-      )
-      if (!angleContext) {
-        return
-      }
-
-      runtime.angleContext = angleContext
-      sendParent(self, {
-        type: 'update hovered id',
-        data: { hoveredId: null },
-      })
-      sendParent(self, {
-        type: 'update selected ids',
-        data: {
-          selectedIds: [runtime.firstSelection.id, lineSelection.id],
-          replaceExistingSelection: true,
-          selectionClickPoints: {
-            [runtime.firstSelection.id]: runtime.firstSelection.clickPoint,
-            [lineSelection.id]: lineSelection.clickPoint,
-          },
-        },
-      })
-      requestDraftPreview(runtime, context, self, mousePoint)
     },
     onMove: (args) => {
       const twoD = args?.intersectionPoint?.twoD
