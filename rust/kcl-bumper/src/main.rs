@@ -115,18 +115,21 @@ fn update_dependency_version(cargo_dot_toml: &mut DocumentMut, dependency: &str,
         return false;
     };
 
-    let version_string = version.to_string();
+    // kcl crates don't use SemVer, so we don't allow kcl-lib 0.2.0 to work with
+    // kcl-error 0.2.1. The versions should match exactly, not be merely
+    // SemVer-compatible.
+    let version_constraint = format!("={version}");
     match dependency_item {
         Item::Value(Value::String(_)) => {
-            *dependency_item = value(version_string);
+            *dependency_item = value(version_constraint);
             true
         }
         Item::Value(Value::InlineTable(inline_table)) => {
-            inline_table.insert("version", Value::from(version_string));
+            inline_table.insert("version", Value::from(version_constraint));
             true
         }
         Item::Table(table) => {
-            table["version"] = value(version_string);
+            table["version"] = value(version_constraint);
             true
         }
         _ => false,
