@@ -203,18 +203,29 @@ function isKclCommandValue(value: unknown): value is KclCommandValue {
   )
 }
 
-export function extrudeSelectionRequiresBodyType({
+export function profileSelectionRequiresBodyType({
   argumentsToSubmit,
 }: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
   const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
-  if (!isKclCommandValue(argumentsToSubmit.length)) return false
+  if (!isSelections(sketches)) {
+    return false
+  }
 
   return sketches.graphSelections.some(
     (selection) => !selection.artifact || selection.artifact.type === 'segment'
   )
+}
+
+export function extrudeSelectionRequiresBodyType(context: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  if (!isKclCommandValue(context.argumentsToSubmit.length)) {
+    return false
+  }
+
+  return profileSelectionRequiresBodyType(context)
 }
 
 const hasEngineConnection = (
@@ -1190,7 +1201,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },
@@ -1256,7 +1267,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },
@@ -1356,7 +1367,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },
