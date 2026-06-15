@@ -31,6 +31,7 @@ import {
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
+  traverse,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -1187,119 +1188,6 @@ function sourceRangeMatch(
   return metaModuleId === moduleId && metaStart === start && metaEnd === end
 }
 
-interface ExprWalkOptions {
-  resolveWrappedCalls?: boolean
-  includeCallUnlabeled?: boolean
-}
-
-type ExprVisitor = (
-  expr: Expr,
-  pathPrefix: PathToNode | undefined,
-  walk: (expr: Expr, pathPrefix?: PathToNode) => void
-) => void
-
-function visitExpr(
-  expr: Expr,
-  visitor: ExprVisitor,
-  options: ExprWalkOptions,
-  pathPrefix?: PathToNode
-): void {
-  const walk = (nextExpr: Expr, nextPathPrefix = pathPrefix) =>
-    walkExpr(nextExpr, visitor, options, nextPathPrefix)
-  visitor(expr, pathPrefix, walk)
-}
-
-function walkExpr(
-  expr: Expr,
-  visitor: ExprVisitor,
-  options: ExprWalkOptions,
-  pathPrefix?: PathToNode
-): void {
-  if (!expr || typeof expr !== 'object') return
-
-  if (expr.type === 'PipeExpression') {
-    for (const bodyExpr of expr.body ?? []) {
-      visitExpr(bodyExpr, visitor, options, pathPrefix)
-    }
-    return
-  }
-
-  const callExpr = options.resolveWrappedCalls
-    ? getCallFromExpr(expr)
-    : expr.type === 'CallExpressionKw'
-      ? expr
-      : null
-  if (callExpr) {
-    if (options.includeCallUnlabeled && callExpr.unlabeled) {
-      visitExpr(callExpr.unlabeled, visitor, options, pathPrefix)
-    }
-    for (const arg of callExpr.arguments ?? []) {
-      visitExpr(arg.arg, visitor, options, pathPrefix)
-    }
-    return
-  }
-
-  if (expr.type === 'BinaryExpression') {
-    if (expr.left) walkExpr(expr.left, visitor, options, pathPrefix)
-    if (expr.right) walkExpr(expr.right, visitor, options, pathPrefix)
-    return
-  }
-  if (expr.type === 'ArrayExpression') {
-    for (const element of expr.elements ?? []) {
-      walkExpr(element, visitor, options, pathPrefix)
-    }
-    return
-  }
-  if (expr.type === 'ObjectExpression') {
-    for (const property of expr.properties ?? []) {
-      walkExpr(property.value, visitor, options, pathPrefix)
-    }
-    return
-  }
-  if (expr.type === 'LabelledExpression') {
-    visitExpr(expr.expr, visitor, options, pathPrefix)
-  } else if (expr.type === 'AscribedExpression') {
-    visitExpr(expr.expr, visitor, options, pathPrefix)
-  } else if (expr.type === 'UnaryExpression') {
-    walkExpr(expr.argument, visitor, options, pathPrefix)
-  } else if (expr.type === 'MemberExpression') {
-    walkExpr(expr.object, visitor, options, pathPrefix)
-    walkExpr(expr.property, visitor, options, pathPrefix)
-  }
-}
-
-function visitProgramExpressions(
-  program: Program,
-  visitor: ExprVisitor,
-  options: ExprWalkOptions
-): void {
-  const body = program.body ?? []
-  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
-    const item = body[statementIndex]
-    const pathPrefix: PathToNode = [
-      ['body', ''],
-      [statementIndex, 'index'],
-    ]
-    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init, visitor, options, [
-        ...pathPrefix,
-        ['declaration', 'VariableDeclaration'],
-        ['init', ''],
-      ])
-    } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression, visitor, options, [
-        ...pathPrefix,
-        ['expression', 'ExpressionStatement'],
-      ])
-    } else if (item.type === 'ReturnStatement' && item.argument) {
-      visitExpr(item.argument, visitor, options, [
-        ...pathPrefix,
-        ['argument', 'ReturnStatement'],
-      ])
-    }
-  }
-}
-
 interface UnifiedCallToFix {
   range: [number, number, number]
   orderedPayloads: FilletEdgeRefPayload[]
@@ -1308,121 +1196,113 @@ interface UnifiedCallToFix {
 }
 
 function findFilletChamferCallsToFixUnified(
-  program: Program,
+  program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
   directTagFilletMetadata: DirectTagFilletMeta[],
   artifactGraph: ArtifactGraph
 ): UnifiedCallToFix[] {
   const results: UnifiedCallToFix[] = []
 
-  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
-    if (expr.type !== 'CallExpressionKw') {
-      walk(expr)
-      return
-    }
-    const call = expr
-    const calleeName = getCalleeName(call)
-    if (!calleeName || !isFilletOrChamfer(calleeName)) {
-      walk(expr)
-      return
-    }
+  traverse(program, {
+    enter(node) {
+      if (node.type !== 'CallExpressionKw') return
 
-    const elements = getTagsElementsFromCall(call)
-    const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
-    const orderedPayloads: FilletEdgeRefPayload[] = []
-    let tagsBaseExpr: Expr | null = null
-    let hasUnconvertedTagsElement = false
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (!calleeName || !isFilletOrChamfer(calleeName)) return
 
-    if (elements?.length) {
-      for (const el of elements) {
-        if (tagsBaseExpr === null) {
-          tagsBaseExpr = getTagsBaseFromTagElement(el)
-        }
+      const elements = getTagsElementsFromCall(call)
+      const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
+      const orderedPayloads: FilletEdgeRefPayload[] = []
+      let tagsBaseExpr: Expr | null = null
+      let hasUnconvertedTagsElement = false
 
-        const inner = getCallFromExpr(el)
-        if (inner) {
-          const innerCallee = getCalleeName(inner)
-          if (isDeprecatedEdgeStdlib(innerCallee)) {
-            const meta = edgeRefactorMetadata.find((m) =>
-              sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
-            )
-            if (meta) {
-              orderedPayloads.push({
-                side_faces: meta.faceIds,
-                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
-              })
-            } else {
-              hasUnconvertedTagsElement = true
-            }
-          } else {
-            hasUnconvertedTagsElement = true
-          }
-        } else if (el.type === 'Name') {
-          const tagName = el.name.name
-          const moduleId = call.moduleId
-          const directMeta = directTagFilletMetadata.find((m) =>
-            callSourceRangeMatches(m, call.start, call.end, moduleId)
-          )
-          const tagEntry = directMeta?.tags?.find(
-            (t) => t.tagIdentifier === tagName
-          )
-          if (tagEntry) {
-            orderedPayloads.push({ side_faces: tagEntry.faceIds })
-            continue
+      if (elements?.length) {
+        for (const el of elements) {
+          if (tagsBaseExpr === null) {
+            tagsBaseExpr = getTagsBaseFromTagElement(el)
           }
 
-          const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
-            program,
-            tagName
-          )
-          if (deprecatedCall) {
-            if (tagsBaseExpr === null && deprecatedCall.tagsBaseExpr) {
-              tagsBaseExpr = deprecatedCall.tagsBaseExpr
-            }
-
-            const meta = edgeRefactorMetadata.find((m) =>
-              sourceRangeMatch(
-                m,
-                deprecatedCall.call.start,
-                deprecatedCall.call.end,
-                deprecatedCall.call.moduleId
+          const inner = getCallFromExpr(el)
+          if (inner) {
+            const innerCallee = getCalleeName(inner)
+            if (isDeprecatedEdgeStdlib(innerCallee)) {
+              const meta = edgeRefactorMetadata.find((m) =>
+                sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
+              if (meta) {
+                orderedPayloads.push({
+                  side_faces: meta.faceIds,
+                  end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+                })
+              } else {
+                hasUnconvertedTagsElement = true
+              }
+            } else {
+              hasUnconvertedTagsElement = true
+            }
+          } else if (el.type === 'Name') {
+            const tagName = el.name.name
+            const moduleId = call.moduleId
+            const directMeta = directTagFilletMetadata.find((m) =>
+              callSourceRangeMatches(m, call.start, call.end, moduleId)
             )
-            if (meta) {
-              orderedPayloads.push({
-                side_faces: meta.faceIds,
-                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
-              })
+            const tagEntry = directMeta?.tags?.find(
+              (t) => t.tagIdentifier === tagName
+            )
+            if (tagEntry) {
+              orderedPayloads.push({ side_faces: tagEntry.faceIds })
+              continue
+            }
+
+            const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
+              program,
+              tagName
+            )
+            if (deprecatedCall) {
+              if (tagsBaseExpr === null && deprecatedCall.tagsBaseExpr) {
+                tagsBaseExpr = deprecatedCall.tagsBaseExpr
+              }
+
+              const meta = edgeRefactorMetadata.find((m) =>
+                sourceRangeMatch(
+                  m,
+                  deprecatedCall.call.start,
+                  deprecatedCall.call.end,
+                  deprecatedCall.call.moduleId
+                )
+              )
+              if (meta) {
+                orderedPayloads.push({
+                  side_faces: meta.faceIds,
+                  end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+                })
+              } else {
+                hasUnconvertedTagsElement = true
+              }
             } else {
               hasUnconvertedTagsElement = true
             }
           } else {
             hasUnconvertedTagsElement = true
           }
-        } else {
-          hasUnconvertedTagsElement = true
         }
       }
-    }
-
-    if (
-      elements?.length &&
-      !hasUnconvertedTagsElement &&
-      (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0)
-    ) {
-      const moduleId = call.moduleId
-      results.push({
-        range: [call.start, call.end, moduleId],
-        orderedPayloads,
-        hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
-        tagsBaseExpr: tagsBaseExpr ?? undefined,
-      })
-    }
-
-    walk(expr)
-  }
-
-  visitProgramExpressions(program, processExpr, { includeCallUnlabeled: true })
+      if (
+        elements?.length &&
+        !hasUnconvertedTagsElement &&
+        (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0)
+      ) {
+        const moduleId = call.moduleId
+        results.push({
+          range: [call.start, call.end, moduleId],
+          orderedPayloads,
+          hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
+          tagsBaseExpr: tagsBaseExpr ?? undefined,
+        })
+      }
+    },
+  })
 
   return results
 }
@@ -1445,69 +1325,44 @@ function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
   return null
 }
 
-function getCallPathFromExpr(
-  expr: Expr,
-  pathPrefix?: PathToNode
-): PathToNode | undefined {
-  if (!pathPrefix?.length) return undefined
-  if (expr.type === 'CallExpressionKw') return [...pathPrefix]
-  return undefined
-}
-
 export function findRevolveHelixCallsToFix(
-  program: Program,
+  program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[]
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
 
-  const processExpr: ExprVisitor = (expr, pathPrefix, walk) => {
-    const call = getCallFromExpr(expr)
-    if (!call) {
-      walk(expr)
-      return
-    }
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
 
-    const callPath = getCallPathFromExpr(expr, pathPrefix)
-    const calleeName = getCalleeName(call)
-    if (!calleeName || !isRevolveOrHelix(calleeName)) {
-      walk(expr)
-      return
-    }
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (!calleeName || !isRevolveOrHelix(calleeName)) return
 
-    const axisArg = findKwArg('axis', call)
-    const inner = axisArg ? getCallFromExpr(axisArg) : null
-    if (!inner) {
-      walk(expr)
-      return
-    }
-    const innerCallee = getCalleeName(inner)
-    if (!isDeprecatedEdgeStdlib(innerCallee)) {
-      walk(expr)
-      return
-    }
+      const axisArg = findKwArg('axis', call)
+      const inner = axisArg ? getCallFromExpr(axisArg) : null
+      if (!inner) return
 
-    const innerStart = inner.start
-    const innerEnd = inner.end
-    const innerModuleId = inner.moduleId
-    const meta = edgeRefactorMetadata.find((m) =>
-      sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
-    )
-    const moduleId = call.moduleId
-    const callStart = call.start
-    const callEnd = call.end
-    if (meta) {
-      results.push({
-        range: [callStart, callEnd, moduleId],
-        faceIds: [meta.faceIds[0], meta.faceIds[1]],
-        pathToCall: callPath,
-      })
-    }
-    walk(expr)
-  }
+      const innerCallee = getCalleeName(inner)
+      if (!isDeprecatedEdgeStdlib(innerCallee)) return
 
-  visitProgramExpressions(program, processExpr, {
-    resolveWrappedCalls: true,
-    includeCallUnlabeled: true,
+      const innerStart = inner.start
+      const innerEnd = inner.end
+      const innerModuleId = inner.moduleId
+      const meta = edgeRefactorMetadata.find((m) =>
+        sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
+      )
+      const moduleId = call.moduleId
+      const callStart = call.start
+      const callEnd = call.end
+      if (meta) {
+        results.push({
+          range: [callStart, callEnd, moduleId],
+          faceIds: [meta.faceIds[0], meta.faceIds[1]],
+          pathToCall: pathToNode,
+        })
+      }
+    },
   })
 
   return results
@@ -1519,57 +1374,43 @@ function findToArg(call: Node<CallExpressionKw>): Expr | null {
 }
 
 export function findExtrudeToCallsToFix(
-  program: Program,
+  program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[]
 ): ExtrudeToCallToFix[] {
   const results: ExtrudeToCallToFix[] = []
 
-  const processExpr: ExprVisitor = (expr, pathPrefix, walk) => {
-    const call = getCallFromExpr(expr)
-    if (!call) {
-      walk(expr)
-      return
-    }
-    const callPath = getCallPathFromExpr(expr, pathPrefix)
-    const calleeName = getCalleeName(call)
-    if (!calleeName || !isExtrude(calleeName)) {
-      walk(expr)
-      return
-    }
-    const toArg = findToArg(call)
-    const inner = toArg ? getCallFromExpr(toArg) : null
-    if (!inner) {
-      walk(expr)
-      return
-    }
-    const innerCallee = getCalleeName(inner)
-    if (!isDeprecatedEdgeStdlib(innerCallee)) {
-      walk(expr)
-      return
-    }
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
 
-    const innerStart = inner.start
-    const innerEnd = inner.end
-    const innerModuleId = inner.moduleId
-    const meta = edgeRefactorMetadata.find((m) =>
-      sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
-    )
-    const moduleId = call.moduleId
-    const callStart = call.start
-    const callEnd = call.end
-    if (meta) {
-      results.push({
-        range: [callStart, callEnd, moduleId],
-        faceIds: [meta.faceIds[0], meta.faceIds[1]],
-        pathToCall: callPath,
-      })
-    }
-    walk(expr)
-  }
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (!calleeName || !isExtrude(calleeName)) return
 
-  visitProgramExpressions(program, processExpr, {
-    resolveWrappedCalls: true,
-    includeCallUnlabeled: true,
+      const toArg = findToArg(call)
+      const inner = toArg ? getCallFromExpr(toArg) : null
+      if (!inner) return
+
+      const innerCallee = getCalleeName(inner)
+      if (!isDeprecatedEdgeStdlib(innerCallee)) return
+
+      const innerStart = inner.start
+      const innerEnd = inner.end
+      const innerModuleId = inner.moduleId
+      const meta = edgeRefactorMetadata.find((m) =>
+        sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
+      )
+      const moduleId = call.moduleId
+      const callStart = call.start
+      const callEnd = call.end
+      if (meta) {
+        results.push({
+          range: [callStart, callEnd, moduleId],
+          faceIds: [meta.faceIds[0], meta.faceIds[1]],
+          pathToCall: pathToNode,
+        })
+      }
+    },
   })
 
   return results
