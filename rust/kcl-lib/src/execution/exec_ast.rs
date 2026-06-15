@@ -1827,7 +1827,8 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
-                let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                let outcome: Solved = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+
                 if !outcome.converged {
                     exec_state.warn(
                         CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),

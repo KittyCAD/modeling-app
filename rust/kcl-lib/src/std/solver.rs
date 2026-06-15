@@ -297,6 +297,14 @@ pub(crate) async fn create_segments_in_engine(
                     SegmentTraversal::Forward => end.clone(),
                     SegmentTraversal::Reverse => start.clone(),
                 };
+                let from = match traversal {
+                    SegmentTraversal::Forward => start.clone(),
+                    SegmentTraversal::Reverse => end.clone(),
+                };
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(
+                    &format!("l {:?} {:?}, {:?} {:?}", to[0].n, to[1].n, from[0].n, from[1].n).into(),
+                );
                 let sketch = straight_line(
                     segment.id,
                     StraightLineParams::absolute(to, sketch.clone(), tag),
@@ -352,6 +360,8 @@ pub(crate) async fn create_segments_in_engine(
                     }
                 }
                 let radius_in_center_unit = distance(center, start_in_center_unit);
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("3pa {:?}, {:?}, {:?}", start, center, end).into());
                 let sketch = relative_arc(
                     segment.id,
                     exec_state,
@@ -394,6 +404,8 @@ pub(crate) async fn create_segments_in_engine(
 
                 let id = segment.id;
 
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("c {:?}, {:?}", start, center).into());
                 exec_state
                     .batch_modeling_cmd(
                         ModelingCmdMeta::with_id(exec_state, ctx, range, id),
