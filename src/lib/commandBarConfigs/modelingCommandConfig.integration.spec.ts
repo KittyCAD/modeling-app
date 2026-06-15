@@ -7,6 +7,7 @@ import {
   extrudeSelectionRequiresBodyType,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
+  profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
   type StdLibCommandDriftConfig,
@@ -39,6 +40,25 @@ function parsedLength(value = '5'): KclCommandValue {
     valueText: value,
     valueCalculated: value,
   } as KclCommandValue
+}
+
+function bodyTypeRequiredForCommand(
+  commandName: 'Extrude' | 'Sweep' | 'Loft' | 'Revolve',
+  argumentsToSubmit: Record<string, unknown>
+): boolean {
+  const commandConfig = modelingMachineCommandConfig[commandName]
+  if (!commandConfig || isArray(commandConfig)) {
+    throw new Error(`${commandName} should have a single command config`)
+  }
+
+  const bodyTypeArg = commandConfig.args?.bodyType
+  if (!bodyTypeArg) {
+    throw new Error(`${commandName} should expose bodyType`)
+  }
+
+  return typeof bodyTypeArg.required === 'function'
+    ? bodyTypeArg.required({ argumentsToSubmit })
+    : bodyTypeArg.required
 }
 
 describe('GDT Datum Default Name', () => {
@@ -127,25 +147,12 @@ describe('GDT tolerance defaults', () => {
 
 describe('Extrude bodyType argument', () => {
   it('requires bodyType when extruding sketch segments after length is confirmed', () => {
-    const commandConfig = modelingMachineCommandConfig.Extrude
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('Extrude should have a single command config')
-    }
-
-    const bodyTypeArg = commandConfig.args?.bodyType
-    if (!bodyTypeArg) throw new Error('Extrude should expose bodyType')
-
-    const required =
-      typeof bodyTypeArg.required === 'function'
-        ? bodyTypeArg.required({
-            argumentsToSubmit: {
-              sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
-              length: parsedLength(),
-            },
-          })
-        : bodyTypeArg.required
-
-    expect(required).toBe(true)
+    expect(
+      bodyTypeRequiredForCommand('Extrude', {
+        sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+        length: parsedLength(),
+      })
+    ).toBe(true)
   })
 
   it('keeps bodyType optional for sketch segments before length is confirmed', () => {
@@ -191,6 +198,51 @@ describe('Extrude bodyType argument', () => {
         },
       })
     ).toBe(true)
+  })
+})
+
+describe('Sweep-like bodyType argument', () => {
+  it('requires bodyType for sweep segment profiles after the path is selected', () => {
+    expect(
+      bodyTypeRequiredForCommand('Sweep', {
+        sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+        path: selectionsForArtifact({ type: 'path' } as Artifact),
+      })
+    ).toBe(true)
+  })
+
+  it('checks sweep profiles without treating the path segment as a surface profile', () => {
+    expect(
+      bodyTypeRequiredForCommand('Sweep', {
+        sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+        path: selectionsForArtifact({ type: 'segment' } as Artifact),
+      })
+    ).toBe(false)
+  })
+
+  it('requires bodyType for loft and revolve segment profiles', () => {
+    for (const commandName of ['Loft', 'Revolve'] as const) {
+      expect(
+        bodyTypeRequiredForCommand(commandName, {
+          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+        })
+      ).toBe(true)
+    }
+  })
+
+  it('keeps bodyType optional for closed profiles and regions', () => {
+    for (const artifact of [
+      { type: 'solid2d' },
+      { type: 'path', subType: 'region' },
+    ] as Artifact[]) {
+      expect(
+        profileSelectionRequiresBodyType({
+          argumentsToSubmit: {
+            sketches: selectionsForArtifact(artifact),
+          },
+        })
+      ).toBe(false)
+    }
   })
 })
 
