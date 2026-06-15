@@ -28,8 +28,6 @@ export const ProjectCardRenameForm = forwardRef(
           onClickCapture={(e) => e.preventDefault()}
           name="newProjectName"
           required
-          autoCorrect="off"
-          autoCapitalize="off"
           defaultValue={getProjectDisplayName(project)}
           ref={ref}
           onKeyDown={(e) => {
