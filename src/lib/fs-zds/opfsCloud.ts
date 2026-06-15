@@ -64,6 +64,7 @@ export type {
   OPFSCloudSyncStatus,
   OpfsCloudLocalProject,
   OpfsCloudProjectMetadataIndexEntry,
+  OutboxEntry,
   ProjectArchiveFile,
   ProjectManifest,
   ProjectMetadata,
@@ -93,6 +94,7 @@ let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
+let syncScopeProjectPath: string | undefined
 
 export const opfsCloudSyncStatus = signal<OPFSCloudSyncStatus>({
   enabled: false,
@@ -155,6 +157,65 @@ function isConfiguredForCloud() {
   return config.enabled === true
 }
 
+function getSyncScopeProjectPath(projectPath: string | undefined) {
+  if (!projectPath) {
+    return undefined
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  return isProjectPathInDirectory(
+    normalizedProjectPath,
+    getConfiguredProjectDirectoryPath()
+  )
+    ? normalizedProjectPath
+    : undefined
+}
+
+function projectPathMatchesSyncScope(projectPath: string) {
+  return (
+    !syncScopeProjectPath ||
+    normalizePathForSync(projectPath) === syncScopeProjectPath
+  )
+}
+
+function outboxEntriesForProject(entries: OutboxEntry[], projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  return entries.filter(
+    (entry) => normalizePathForSync(entry.projectPath) === normalizedProjectPath
+  )
+}
+
+export type OpfsCloudSyncScopePlan = {
+  shouldSyncRemoteIndex: boolean
+  projectPaths: string[]
+  pendingCount: number
+}
+
+export function getOpfsCloudSyncScopePlan(
+  entries: OutboxEntry[],
+  scopeProjectPath?: string
+): OpfsCloudSyncScopePlan {
+  const normalizedScopeProjectPath = scopeProjectPath
+    ? normalizePathForSync(scopeProjectPath)
+    : undefined
+  if (normalizedScopeProjectPath) {
+    return {
+      shouldSyncRemoteIndex: false,
+      projectPaths: [normalizedScopeProjectPath],
+      pendingCount: outboxEntriesForProject(entries, normalizedScopeProjectPath)
+        .length,
+    }
+  }
+
+  return {
+    shouldSyncRemoteIndex: true,
+    projectPaths: Array.from(
+      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
+    ),
+    pendingCount: entries.length,
+  }
+}
+
 function getEnvironmentName() {
   if (config.environmentName) {
     return config.environmentName
@@ -190,6 +251,10 @@ function getRemoteUpdatedAt(project: RemoteProject | undefined) {
   }
 
   return project.updated_at
+}
+
+function localProjectNameForRemoteProject(remoteProject: RemoteProject) {
+  return sanitizeProjectName(remoteProject.id, 'cloud-project')
 }
 
 function remoteSyncMetadata(
@@ -284,7 +349,10 @@ async function clearOutboxEntriesForProject(projectPath: string) {
 async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
-    updateStatus({ pendingCount: entries.length })
+    updateStatus({
+      pendingCount: getOpfsCloudSyncScopePlan(entries, syncScopeProjectPath)
+        .pendingCount,
+    })
   } catch {
     updateStatus({ pendingCount: 0 })
   }
@@ -437,10 +505,7 @@ async function cloneRemoteProjectToLocal(
   preferredProjectPath?: string
 ): Promise<OpfsCloudLocalProject> {
   await localFs.mkdir(projectDirectory, { recursive: true })
-  const projectName = sanitizeProjectName(
-    remoteProject.title || 'cloud-project',
-    'cloud-project'
-  )
+  const projectName = localProjectNameForRemoteProject(remoteProject)
   const projectPath =
     preferredProjectPath && !(await exists(preferredProjectPath))
       ? preferredProjectPath
@@ -505,10 +570,7 @@ export async function ensureOpfsCloudProjectLocallySynced(
   }
 
   const remoteProject = await getRemoteProject(config, projectId)
-  const projectName = sanitizeProjectName(
-    remoteProject.title || 'cloud-project',
-    'cloud-project'
-  )
+  const projectName = localProjectNameForRemoteProject(remoteProject)
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
@@ -618,11 +680,14 @@ async function markProjectFailure(
     },
   }
   await putProjectMetadata(next)
-  updateStatus({
-    state: 'failed',
-    lastFailure: message,
-    lastFailureAt: next.lastFailure.at,
-  })
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'failed',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: message,
+      lastFailureAt: next.lastFailure.at,
+    })
+  }
 }
 
 function markCloudMetadataFailure(error: unknown) {
@@ -659,6 +724,10 @@ async function markProjectSynced(
     lastFailure: undefined,
     lastSyncedAt: syncedAt,
   })
+  if (!projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    return
+  }
+
   if (syncInProgress) {
     pendingStatusSyncedAt = syncedAt
     updateStatus({
@@ -756,12 +825,14 @@ async function markProjectConflict(
       at: nowIso(),
     },
   })
-  updateStatus({
-    state: 'conflict',
-    activeProjectPath: metadata.localProjectPath,
-    lastFailure: 'Cloud sync conflict: local and remote both changed.',
-    lastFailureAt: nowIso(),
-  })
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'conflict',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: 'Cloud sync conflict: local and remote both changed.',
+      lastFailureAt: nowIso(),
+    })
+  }
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -884,10 +955,12 @@ async function syncDeletedProject(metadata: ProjectMetadata) {
 
 async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   let metadata = await getOrCreateProjectMetadata(projectPath)
-  updateStatus({
-    state: 'syncing',
-    activeProjectPath: metadata.localProjectPath,
-  })
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'syncing',
+      activeProjectPath: metadata.localProjectPath,
+    })
+  }
 
   try {
     const latestKind = latestOutboxKind(entries)
@@ -1199,10 +1272,7 @@ async function syncRemoteIndex() {
         continue
       }
 
-      const projectName = sanitizeProjectName(
-        remoteProject.title || 'cloud-project',
-        'cloud-project'
-      )
+      const projectName = localProjectNameForRemoteProject(remoteProject)
       const existingProjectPath = await findLocalProjectPathByRemoteProjectId(
         projectDirectory,
         remoteProject.id,
@@ -1305,31 +1375,34 @@ async function runCloudSync() {
   syncInProgress = true
   pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true, state: 'syncing' })
+  const scopedProjectPath = syncScopeProjectPath
   let remoteIndexFailed = false
   let remoteIndexFailureMessage: string | undefined
 
   try {
-    await enqueueExistingLocalProjectsForInitialSync()
-    await syncRemoteIndex().catch((error) => {
-      remoteIndexFailed = true
-      remoteIndexFailureMessage = errorMessage(error)
-      updateStatus({
-        state: 'failed',
-        lastFailure: remoteIndexFailureMessage,
-        lastFailureAt: nowIso(),
+    let entries = await getAllOutboxEntries()
+    let syncScopePlan = getOpfsCloudSyncScopePlan(entries, scopedProjectPath)
+    if (syncScopePlan.shouldSyncRemoteIndex) {
+      await enqueueExistingLocalProjectsForInitialSync()
+      await syncRemoteIndex().catch((error) => {
+        remoteIndexFailed = true
+        remoteIndexFailureMessage = errorMessage(error)
+        updateStatus({
+          state: 'failed',
+          lastFailure: remoteIndexFailureMessage,
+          lastFailureAt: nowIso(),
+        })
       })
-    })
 
-    const entries = await getAllOutboxEntries()
-    const projectPaths = Array.from(
-      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
-    )
+      entries = await getAllOutboxEntries()
+      syncScopePlan = getOpfsCloudSyncScopePlan(entries, scopedProjectPath)
+    }
 
-    for (const projectPath of projectPaths) {
-      const projectEntries = entries.filter(
-        (entry) => normalizePathForSync(entry.projectPath) === projectPath
+    for (const projectPath of syncScopePlan.projectPaths) {
+      await syncProject(
+        projectPath,
+        outboxEntriesForProject(entries, projectPath)
       )
-      await syncProject(projectPath, projectEntries)
     }
 
     await refreshPendingCount()
@@ -1368,7 +1441,7 @@ async function runCloudSync() {
       state: 'failed',
       lastFailure: errorMessage(error),
       lastFailureAt: nowIso(),
-      activeProjectPath: undefined,
+      activeProjectPath: scopedProjectPath,
       ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
     })
     scheduleSync(SYNC_RETRY_MS)
@@ -1401,6 +1474,36 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
 function scheduleRemoteIndexSync(delay = 0) {
   lastRemoteIndexSyncAt = 0
   scheduleSync(delay)
+}
+
+// Home syncs the full cloud index; file routes narrow status and retries to
+// the open project so unrelated project conflicts do not pollute the editor UI.
+export function setOpfsCloudSyncProjectScope(projectPath?: string) {
+  const nextSyncScopeProjectPath = getSyncScopeProjectPath(projectPath)
+  if (syncScopeProjectPath === nextSyncScopeProjectPath) {
+    return
+  }
+
+  syncScopeProjectPath = nextSyncScopeProjectPath
+  void refreshPendingCount()
+
+  const statusProjectPath = opfsCloudSyncStatus.value.activeProjectPath
+    ? normalizePathForSync(opfsCloudSyncStatus.value.activeProjectPath)
+    : undefined
+  if (
+    nextSyncScopeProjectPath &&
+    opfsCloudSyncStatus.value.state !== 'disabled' &&
+    statusProjectPath !== nextSyncScopeProjectPath
+  ) {
+    updateStatus({
+      state: 'idle',
+      activeProjectPath: undefined,
+      lastFailure: undefined,
+      lastFailureAt: undefined,
+    })
+  }
+
+  scheduleSync(0)
 }
 
 function attachVisibilityChangeListener() {
@@ -1564,6 +1667,11 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
 }
 
 export function retryOpfsCloudSync() {
+  if (syncScopeProjectPath) {
+    scheduleSync(0)
+    return
+  }
+
   scheduleRemoteIndexSync()
 }
 

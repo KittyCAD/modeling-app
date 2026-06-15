@@ -212,8 +212,13 @@ async fn coerce_extrude_targets(
 
     if !segments.is_empty() {
         if !matches!(body_type, BodyType::Surface) {
+            let kind_of_extrude = match body_type {
+                BodyType::Solid => "solid extrude",
+                BodyType::Surface => "surface extrude",
+                _ => "non-surface extrude",
+            };
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Extruding sketch segments is only supported for surface extrudes. Set `bodyType = SURFACE`."
+                format!("You're trying to perform a {kind_of_extrude} on an edge, but edges can only be extruded with surface extrudes. To do a solid extrude, select a closed sketch region instead. To extrude these edges, do a surface extrude by using `bodyType = SURFACE` instead.")
                     .to_owned(),
                 vec![source_range],
             )));

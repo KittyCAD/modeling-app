@@ -5,8 +5,8 @@ use std::panic::catch_unwind;
 use std::path::Path;
 use std::path::PathBuf;
 
+use ahash::AHashSet;
 use anyhow::Result;
-use fnv::FnvHashSet;
 use serde::Deserialize;
 use serde::Serialize;
 use walkdir::WalkDir;
@@ -85,7 +85,7 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
     let expected_outputs = kcl_samples_outputs();
 
     // Ensure that inputs aren't missing.
-    let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
+    let input_names = AHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
     let missing = expected_outputs
         .into_iter()
         .filter(|name| !input_names.contains(name))
