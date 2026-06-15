@@ -4,6 +4,7 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import {
+  type OutboxEntry,
   type ProjectArchiveFile,
   type ProjectManifest,
   filterOpfsCloudProjectFilesForSync,
@@ -15,6 +16,7 @@ import {
   getOpfsCloudRemoteArchiveReconciliationAction,
   getOpfsCloudRemoteIndexAction,
   isOpfsCloudConflictArtifactProjectName,
+  getOpfsCloudSyncScopePlan,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/fs-zds/opfsCloud'
@@ -354,5 +356,42 @@ describe('opfsCloud sync helpers', () => {
         100
       )
     ).toBe(100)
+  })
+
+  it('plans full cloud sync on Home and scoped sync on file routes', () => {
+    const entries: OutboxEntry[] = [
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/main.kcl',
+        createdAt: '2026-06-12T00:00:00.000Z',
+      },
+      {
+        projectPath: '/projects/conflicted',
+        kind: 'upsert',
+        targetPath: '/projects/conflicted/main.kcl',
+        createdAt: '2026-06-12T00:00:01.000Z',
+      },
+    ]
+
+    expect(getOpfsCloudSyncScopePlan(entries)).toEqual({
+      shouldSyncRemoteIndex: true,
+      projectPaths: ['/projects/current', '/projects/conflicted'],
+      pendingCount: 2,
+    })
+
+    expect(getOpfsCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 1,
+    })
+  })
+
+  it('keeps syncing the open project even when it has no queued local edits', () => {
+    expect(getOpfsCloudSyncScopePlan([], '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 0,
+    })
   })
 })
