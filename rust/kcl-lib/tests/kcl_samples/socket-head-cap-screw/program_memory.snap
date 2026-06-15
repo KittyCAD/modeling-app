@@ -56,6 +56,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
           "[uuid]"
         ]
@@ -84,6 +86,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
           "[uuid]"
         ]
@@ -169,6 +173,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]"
             ]
@@ -1013,6 +1019,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]"
             ]
@@ -1243,6 +1251,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]"
           ]
@@ -1399,6 +1409,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1514,6 +1526,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1629,6 +1643,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1744,6 +1760,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1859,6 +1877,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1974,6 +1994,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -2164,6 +2186,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
                     "[uuid]"
                   ]
@@ -2281,6 +2305,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]"
           ]
@@ -2417,6 +2443,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -2493,6 +2521,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
                     "[uuid]"
                   ]

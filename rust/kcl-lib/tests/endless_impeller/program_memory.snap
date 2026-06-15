@@ -23,7 +23,9 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -48,7 +50,9 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -73,7 +77,9 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -98,7 +104,9 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -123,7 +131,9 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -148,7 +158,9 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -449,7 +461,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -615,7 +629,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -781,7 +797,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -947,7 +965,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1113,7 +1133,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1279,7 +1301,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1750,7 +1774,9 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -1984,7 +2010,9 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2218,7 +2246,9 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2452,7 +2482,9 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2686,7 +2718,9 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2920,7 +2954,9 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },

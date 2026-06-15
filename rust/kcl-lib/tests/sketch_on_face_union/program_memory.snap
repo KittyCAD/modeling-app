@@ -375,7 +375,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
         },
@@ -425,7 +427,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }
@@ -524,7 +528,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
       },

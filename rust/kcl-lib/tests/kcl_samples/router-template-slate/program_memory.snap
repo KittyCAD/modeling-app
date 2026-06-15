@@ -55,7 +55,9 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -80,7 +82,9 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -878,7 +882,9 @@ description: Variables in memory after executing router-template-slate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -1112,7 +1118,9 @@ description: Variables in memory after executing router-template-slate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -1720,7 +1728,9 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1886,7 +1896,9 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -3966,7 +3978,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4078,7 +4092,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4190,7 +4206,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4302,7 +4320,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4441,7 +4461,9 @@ description: Variables in memory after executing router-template-slate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -4592,7 +4614,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4704,7 +4728,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4816,7 +4842,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4928,7 +4956,9 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -5067,7 +5097,9 @@ description: Variables in memory after executing router-template-slate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },

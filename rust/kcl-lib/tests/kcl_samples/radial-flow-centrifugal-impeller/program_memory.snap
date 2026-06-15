@@ -122,7 +122,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -4204,7 +4206,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -4342,7 +4346,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -4415,7 +4421,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -4491,7 +4499,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -4573,7 +4583,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -5731,7 +5743,9 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },

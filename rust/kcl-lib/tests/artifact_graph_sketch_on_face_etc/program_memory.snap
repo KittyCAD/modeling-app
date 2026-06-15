@@ -271,7 +271,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -420,7 +422,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -561,7 +565,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -801,7 +807,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -910,7 +918,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1018,7 +1028,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },

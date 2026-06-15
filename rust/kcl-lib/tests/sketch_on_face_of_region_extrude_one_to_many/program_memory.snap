@@ -23,7 +23,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -495,7 +497,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -564,7 +568,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -873,7 +879,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1591,7 +1599,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -1703,7 +1713,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -1815,7 +1827,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -1927,7 +1941,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -2066,7 +2082,9 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },

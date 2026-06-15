@@ -24,6 +24,8 @@ description: Variables in memory after executing enclosure.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
           "[uuid]",
           "[uuid]",
@@ -1535,6 +1537,8 @@ description: Variables in memory after executing enclosure.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]",
               "[uuid]",
@@ -1813,6 +1817,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]",
@@ -1980,6 +1986,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2098,6 +2106,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2216,6 +2226,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2334,6 +2346,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2453,6 +2467,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2572,6 +2588,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2691,6 +2709,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2810,6 +2830,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -2929,6 +2951,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3048,6 +3072,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3167,6 +3193,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3286,6 +3314,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3404,6 +3434,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3522,6 +3554,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3640,6 +3674,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -3758,6 +3794,8 @@ description: Variables in memory after executing enclosure.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]",
@@ -4091,6 +4129,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
                     "[uuid]",
                     "[uuid]",

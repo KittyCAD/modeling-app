@@ -122,7 +122,9 @@ description: Variables in memory after executing utility-sink.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -179,7 +181,9 @@ description: Variables in memory after executing utility-sink.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -15812,7 +15816,9 @@ description: Variables in memory after executing utility-sink.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -16046,7 +16052,9 @@ description: Variables in memory after executing utility-sink.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -16214,7 +16222,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -16327,7 +16337,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -16439,7 +16451,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -16578,7 +16592,9 @@ description: Variables in memory after executing utility-sink.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -16724,7 +16740,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -16836,7 +16854,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -16948,7 +16968,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -17087,7 +17109,9 @@ description: Variables in memory after executing utility-sink.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -17259,7 +17283,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -17372,7 +17398,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -17484,7 +17512,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -17623,7 +17653,9 @@ description: Variables in memory after executing utility-sink.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -17769,7 +17801,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -17881,7 +17915,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -17993,7 +18029,9 @@ description: Variables in memory after executing utility-sink.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -18132,7 +18170,9 @@ description: Variables in memory after executing utility-sink.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -18196,7 +18236,9 @@ description: Variables in memory after executing utility-sink.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -18221,7 +18263,9 @@ description: Variables in memory after executing utility-sink.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }

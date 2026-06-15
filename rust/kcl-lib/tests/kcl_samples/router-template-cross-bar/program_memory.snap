@@ -23,7 +23,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -48,7 +50,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -73,7 +77,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]"
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -1239,7 +1245,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -1473,7 +1481,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -1707,7 +1717,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]"
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2530,7 +2542,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -2696,7 +2710,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -2862,7 +2878,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]"
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -6126,7 +6144,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -6238,7 +6258,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -6350,7 +6372,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -6462,7 +6486,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -6601,7 +6627,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -6752,7 +6780,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -6864,7 +6894,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -6976,7 +7008,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -7088,7 +7122,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -7227,7 +7263,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -7378,7 +7416,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -7490,7 +7530,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -7602,7 +7644,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -7714,7 +7758,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]"
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -7853,7 +7899,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]"
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
