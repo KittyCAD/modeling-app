@@ -807,7 +807,6 @@ pub struct FaceParentSolid {
     /// ID of the sketch which created this solid, if any.
     pub creator_sketch_id: Option<Uuid>,
     /// Has the creator sketch been closed? This is only relevant if `creator_sketch_id` is Some, and we cannot infer the closed status otherwise.
-    #[ts(skip)]
     pub creator_sketch_is_closed: Option<ProfileClosed>,
     /// Pending edge cut IDs that may need to be flushed before referencing the face.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
