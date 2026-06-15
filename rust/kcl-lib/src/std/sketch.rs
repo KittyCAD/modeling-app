@@ -14,8 +14,7 @@ use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
-use kittycad_modeling_cmds::shared::RegionVersion;
+use kittycad_modeling_cmds::shared::{PathSegment,RefsSeed,RegionVersion};
 use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -2976,28 +2975,33 @@ async fn inner_region(
             let (sketch, pt) = region_from_point(point, sketch, &args)?;
 
             let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
-            let response = exec_state
-                .send_modeling_cmd(
+            let object_id = sketch.sketch()?.id;
+            exec_state
+                .batch_modeling_cmd(
                     meta,
                     ModelingCmd::from(
                         mcmd::CreateRegionFromQueryPoint::builder()
-                            .object_id(sketch.sketch()?.id)
+                            .object_id(object_id)
+                            .sketch_path_ids(sketch.sketch()?.paths.clone().into_iter().map(|v| v.get_id()).collect())
                             .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
                             .version(region_version)
+                            .refs_seed(RefsSeed(object_id))
                             .build(),
                     ),
                 )
                 .await?;
 
-            let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
-                modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
-            } = response
-            {
-                data.region_mapping
-            } else {
-                Default::default()
-            };
-
+            // Assign deterministic references / UUIDs to our region map. The server
+            // will have also iterated over these in this order. As a consequence,
+            // some UUIDs may not point to anything (just like regular pointer behavior).
+            // Thus you MUST check what lies behind the pointers before using them.
+            let mut region_mapping: HashMap<Uuid, Uuid> = HashMap::new();
+            for (index, path) in sketch.sketch()?.paths.iter().enumerate() {
+              // TODO: If needed, optimize to add the index instead to the resulting bytes of `object_id`.
+              // Will avoid allocating a bunch of tiny strings.
+              region_mapping.insert(kcmc::id::client_ref_from((object_id, &index.to_string())), path.get_id());
+            }
+            
             (sketch, region_mapping)
         }
         (None, Some(segments)) => {

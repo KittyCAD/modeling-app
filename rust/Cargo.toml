@@ -96,3 +96,7 @@ pulp = { git = "https://github.com/KittyCAD/pulp.git", branch = "modeling-app" }
 # ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "david/circle-circle-tangent" }
 # kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
+[patch.crates-io]
+# ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "david/circle-circle-tangent" }
+# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
+kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }

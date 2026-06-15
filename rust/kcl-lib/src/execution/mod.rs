@@ -138,7 +138,7 @@ pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
 mod geometry;
-mod id_generator;
+pub mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;

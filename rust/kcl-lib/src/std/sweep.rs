@@ -256,8 +256,6 @@ async fn inner_sweep(
                             tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                         ))
                         .maybe_relative_to(profile_transform.relative_to())
-                        .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
-                        .maybe_translate_profile_to_path(profile_transform.translate_profile_to_path())
                         .body_type(body_type)
                         .maybe_version(version)
                         .build(),
