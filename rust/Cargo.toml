@@ -94,5 +94,5 @@ debug = "line-tables-only"
 [patch.crates-io]
 pulp = { git = "https://github.com/KittyCAD/pulp.git", branch = "modeling-app" }
 # ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "david/circle-circle-tangent" }
-# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "achalmers/mbd-feature-edge-specifier" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
