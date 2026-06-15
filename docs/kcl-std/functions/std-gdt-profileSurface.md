@@ -1,17 +1,16 @@
 ---
-title: "gdt::profile"
+title: "gdt::profileSurface"
 subtitle: "Function in std::gdt"
-excerpt: "GD&T profile annotation specifying how much edges or faces may deviate from their ideal shape."
+excerpt: "GD&T profile-of-a-surface annotation specifying how much faces may deviate from their ideal shape."
 layout: manual
 ---
 
-GD&T profile annotation specifying how much edges or faces may deviate from their ideal shape.
+GD&T profile-of-a-surface annotation specifying how much faces may deviate from their ideal shape.
 
 ```kcl
-gdt::profile(
+gdt::profileSurface(
+  faces: [TaggedFace; 1+],
   tolerance: number(Length),
-  edges?: [Edge; 1+],
-  faces?: [TaggedFace; 1+],
   datums?: [string; 1+],
   precision?: number(_),
   framePosition?: Point2d,
@@ -23,21 +22,14 @@ gdt::profile(
 
 This is part of model-based definition (MBD).
 
-`gdt::profile` is kept for backwards compatibility with existing KCL programs.
-For new code, prefer `gdt::profileLine` when annotating edges and
-`gdt::profileSurface` when annotating faces.
-
-Provide exactly one of `edges` or `faces`. Passing `edges` delegates to
-`profileLine`; passing `faces` delegates to `profileSurface`. Passing both,
-or neither, is a KCL error.
+Profile of a surface is a three-dimensional tolerance zone that applies across the whole annotated surface.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount of deviation from an ideal profile that is acceptable. | Yes |
-| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both. | No |
-| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated with profile of a surface. Provide either `edges` or `faces`, but not both. | No |
 | `datums` | [[`string`](/docs/kcl-std/types/std-types-string); 1+] | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
@@ -53,37 +45,12 @@ or neither, is a KCL error.
 ### Examples
 
 ```kcl
-startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $side1)
-  |> line(end = [0, 10], tag = $side2)
-  |> line(end = [-10, 0])
-  |> line(end = [0, -10])
-  |> close()
-  |> extrude(length = 5, tagEnd = $top)
-
-profileEdge = getCommonEdge(faces = [side1, top])
-
-gdt::profile(
-  edges = [profileEdge],
-  tolerance = 0.1mm,
-  datums = ["A"],
-  framePosition = [10mm, 20mm],
-  framePlane = XZ,
-)
-
-```
-
-
-![Rendered example of gdt::profile 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-profile0.png)
-
-```kcl
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-gdt::profile(
+gdt::profileSurface(
   faces = [top],
   tolerance = 0.05mm,
   framePosition = [12mm, 8mm],
@@ -93,6 +60,6 @@ gdt::profile(
 ```
 
 
-![Rendered example of gdt::profile 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-profile1.png)
+![Rendered example of gdt::profileSurface 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-profileSurface0.png)
 
 
