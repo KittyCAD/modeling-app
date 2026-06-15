@@ -251,13 +251,13 @@ kcl-error = { version = "0.1", path = "../kcl-error" }
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-error"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
     }
 
@@ -282,7 +282,7 @@ kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
         let dependencies = cargo_dot_toml["dependencies"]
             .as_table_like()
@@ -312,13 +312,13 @@ kcl-error = "0.1"
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-error"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
     }
 
@@ -343,7 +343,7 @@ kcl-lib = { version = "0.1", path = "../kcl-lib" }
             cargo_dot_toml["dependencies"]["kcl-lib"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
     }
 }
