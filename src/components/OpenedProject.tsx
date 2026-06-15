@@ -17,6 +17,7 @@ import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectU
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
@@ -24,6 +25,7 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
+  CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
@@ -180,6 +182,34 @@ export function OpenedProject() {
     ['file']
   )
   const authToken = auth.useToken()
+  const currentProject = project?.projectIORefSignal.value
+  const projectStatus = useProjectStatus(
+    currentProject?.cloudProjectId,
+    authToken
+  )
+  const hasChangesRequested =
+    projectStatus?.publicationStatus === 'changes_requested'
+
+  useEffect(() => {
+    if (!hasChangesRequested) {
+      return
+    }
+
+    const message = projectStatus?.feedback
+      ? `Changes requested: ${projectStatus.feedback}. Republishing will put it back into the review queue.`
+      : 'Your Aquarium submission was reviewed and changes were requested. Republishing will put it back into the review queue.'
+
+    toast(message, {
+      id: CHANGES_REQUESTED_TOAST_ID,
+      duration: Number.POSITIVE_INFINITY,
+      icon: '⚠️',
+    })
+
+    return () => {
+      toast.dismiss(CHANGES_REQUESTED_TOAST_ID)
+    }
+  }, [hasChangesRequested, projectStatus?.feedback])
+
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default

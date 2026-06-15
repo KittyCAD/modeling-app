@@ -21,7 +21,7 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { SketchSolveAnnouncement } from '@src/components/SketchSolveAnnouncements'
+import { Announcements } from '@src/components/SketchSolveAnnouncements'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -30,6 +30,10 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import {
+  type ProjectStatus,
+  useProjectStatuses,
+} from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
@@ -107,6 +111,7 @@ const Home = () => {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
+  const projectStatuses = useProjectStatuses(projects, apiToken)
   const [optimisticProjectRenames, setOptimisticProjectRenames] =
     useState<OptimisticProjectRenames>({})
   const optimisticProjects = useMemo(
@@ -428,11 +433,9 @@ const Home = () => {
                 </div>
               </li>
             )}
-            {settingsValues.modeling.useSketchSolveMode.current && (
-              <li className="contents">
-                <SketchSolveAnnouncement />
-              </li>
-            )}
+            <li className="contents">
+              <Announcements token={apiToken} />
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -472,6 +475,7 @@ const Home = () => {
           projects={optimisticProjects}
           query={query}
           sort={sort}
+          projectStatuses={projectStatuses}
           handleRenameProject={handleRenameProject(
             systemIOActor,
             setOptimisticProjectRenames
@@ -613,6 +617,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projects: Project[] | undefined
   query: string
   sort: string
+  projectStatuses: Map<string, ProjectStatus>
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
     project: Project
@@ -624,6 +629,7 @@ function ProjectGrid({
   projects,
   query,
   sort,
+  projectStatuses,
   handleRenameProject,
   ...rest
 }: ProjectGridProps) {
@@ -649,6 +655,11 @@ function ProjectGrid({
                 <ProjectCard
                   key={project.name}
                   project={project}
+                  projectStatus={
+                    project.cloudProjectId
+                      ? projectStatuses.get(project.cloudProjectId)
+                      : undefined
+                  }
                   handleRenameProject={handleRenameProject}
                   handleDeleteProject={handleDeleteProject(systemIOActor)}
                 />
