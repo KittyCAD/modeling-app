@@ -56,6 +56,10 @@ export type Project = {
    */
   title?: string
   /**
+   * Cloud project id when this local project is bound to a remote project.
+   */
+  cloudProjectId?: string
+  /**
    * Absolute path most likely to main.kcl within the project
    */
   default_file: string

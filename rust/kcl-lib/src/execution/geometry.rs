@@ -51,6 +51,7 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
 use crate::util::MathExt;
@@ -820,14 +821,19 @@ impl FaceParentSolid {
 }
 
 /// A bounded edge.
+/// Carries either `edge_id` (resolved) or `edge_specifier` (payload passed through for resolution in blend).
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BoundedEdge {
     /// The id of the face this edge belongs to.
     pub face_id: uuid::Uuid,
-    /// The id of the edge.
-    pub edge_id: uuid::Uuid,
+    /// The id of the edge (when resolved from a tag or UUID). Mutually exclusive with `edge_specifier`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge_id: Option<uuid::Uuid>,
+    /// Edge specifier payload (sideFaces, endFaces, index) when not resolved. Resolved in blend().
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge_specifier: Option<UnresolvedEdgeSpecifier>,
     /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
     /// Range (0, 1)
     pub lower_bound: f32,
@@ -1209,6 +1215,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1268,7 +1278,10 @@ impl Solid {
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
-        self.edge_cuts.iter().map(|foc| foc.id())
+        self.edge_cuts
+            .iter()
+            .map(|foc| foc.id())
+            .chain(self.pending_edge_cut_ids.iter().copied())
     }
 }
 
