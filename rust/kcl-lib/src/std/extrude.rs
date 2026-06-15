@@ -218,8 +218,9 @@ async fn coerce_extrude_targets(
                 _ => "non-surface extrude",
             };
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("You're trying to perform a {kind_of_extrude} on an edge, but edges can only be extruded with surface extrudes. To do a solid extrude, select a closed sketch region instead. To extrude these edges, do a surface extrude by using `bodyType = SURFACE` instead.")
-                    .to_owned(),
+                format!(
+                    "You're trying to perform a {kind_of_extrude} on an edge, but edges can only be extruded with surface extrudes. To do a solid extrude, select a closed sketch region instead. To extrude these edges, do a surface extrude by using `bodyType = SURFACE` instead."
+                ),
                 vec![source_range],
             )));
         }
