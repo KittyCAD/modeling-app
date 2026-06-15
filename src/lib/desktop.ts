@@ -90,9 +90,17 @@ async function readProjectTomlMetadata(projectPath: string) {
     const projectToml = await fsZds.readFile(projectTomlPath, {
       encoding: 'utf-8',
     })
+    const environmentName =
+      env().VITE_ZOO_BASE_DOMAIN ||
+      (env().VITE_ZOO_API_BASE_URL
+        ? new URL(env().VITE_ZOO_API_BASE_URL!).hostname.replace(/^api\./, '')
+        : undefined)
     return {
       title: getProjectTitleFromProjectTomlContents(projectToml),
-      cloudProjectId: getCloudProjectIdFromProjectTomlContents(projectToml),
+      cloudProjectId: getCloudProjectIdFromProjectTomlContents(
+        projectToml,
+        environmentName
+      ),
     }
   } catch {
     return {
