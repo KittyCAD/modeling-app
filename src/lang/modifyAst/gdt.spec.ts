@@ -1131,7 +1131,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         throw newCode
       }
 
-      expect(newCode).toContain('gdt::profile(')
+      expect(newCode).toContain('gdt::profileLine(')
       expect(newCode).toMatch(
         /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
       )

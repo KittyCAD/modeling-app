@@ -203,7 +203,7 @@ export type GdtCylindricityCommandArgs =
   GdtObjectsCommandArgs<'gdt::cylindricity'>
 export type GdtPositionCommandArgs = GdtObjectsCommandArgs<'gdt::position'>
 export type GdtProfileCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::profile'>, 'faces'>,
+  StdLibCommandArgs<'gdt::profileLine'>,
   { edges: Selections } & GdtFrameArgs
 >
 export type GdtDistanceCommandArgs = Override<

@@ -202,6 +202,27 @@ describe('Extrude bodyType argument', () => {
 })
 
 describe('Sweep-like bodyType argument', () => {
+  it('allows sweep profiles to be selected from sketches, segments, regions, and faces', () => {
+    const commandConfig = modelingMachineCommandConfig.Sweep
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(commandConfig.args?.sketches).toMatchObject({
+      inputType: 'selection',
+      selectionTypes: [
+        'solid2d',
+        'segment',
+        'pathRegion',
+        'engineRegion',
+        'cap',
+        'wall',
+        'primitiveFace',
+        'enginePrimitiveFace',
+      ],
+    })
+  })
+
   it('requires bodyType for sweep segment profiles after the path is selected', () => {
     expect(
       bodyTypeRequiredForCommand('Sweep', {

@@ -1861,7 +1861,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Profile': {
     description:
       'Add profile geometric dimensioning & tolerancing annotation to edges.',
-    icon: 'gdtFlatness',
+    icon: 'gdtProfile',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['GDT Profile']

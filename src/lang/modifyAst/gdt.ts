@@ -1086,7 +1086,7 @@ export function addProfileGdt({
   }
 
   if (!lastPathToNode) {
-    return new Error('Failed to create any gdt::profile calls')
+    return new Error(`Failed to create any gdt::${stdLibCall.name} calls`)
   }
 
   return {
