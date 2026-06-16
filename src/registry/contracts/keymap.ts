@@ -139,13 +139,13 @@ export function normalizeEventKey(event: KeyboardEventKeyInput) {
 }
 
 function normalizeEventKeyValue(key: string) {
-  if (key.length === 1) {
-    return key.toLowerCase()
-  }
-
   const normalized = key.toLowerCase()
   if (normalized === ' ') {
     return 'space'
+  }
+
+  if (normalized.length === 1) {
+    return normalized
   }
 
   return normalized
