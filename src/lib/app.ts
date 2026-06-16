@@ -35,10 +35,6 @@ import {
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
-import {
-  type SettingsType,
-  createSettings,
-} from '@src/lib/settings/initialSettings'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -54,11 +50,7 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
-import {
-  type SettingsActorType,
-  getOnlySettingsFromContext,
-  settingsMachine,
-} from '@src/machines/settingsMachine'
+import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import {
@@ -79,7 +71,10 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import {
+  type SettingsRegistryService,
+  settingsService,
+} from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
@@ -161,12 +156,7 @@ export type AppAuthSystem = {
 
 export type AppCommandSystem = CommandSystemService
 
-export type AppSettingsSystem = {
-  actor: SettingsActorType
-  send: SettingsActorType['send']
-  get: () => SettingsType
-  useSettings: () => SettingsType
-}
+export type AppSettingsSystem = SettingsRegistryService
 
 export type AppBillingSystem = {
   actor: ActorRefFrom<typeof billingMachine>
@@ -329,27 +319,8 @@ export class App implements AppSubsystems {
       createAppRegistryItems({ wasmPromise, machineManager })
     )
     const commands = appRegistry.get(commandSystemService)
-    const extensionSettings = appRegistry.get(settingsValueSpec)
-
-    const settingsActor = createActor(settingsMachine, {
-      input: {
-        ...createSettings(extensionSettings),
-        commandBarActor: commands.actor,
-        extensionSettings,
-        wasmInstancePromise: wasmPromise,
-      },
-    }).start()
-    const settings: AppSettingsSystem = {
-      actor: settingsActor,
-      send: settingsActor.send.bind(App),
-      get: () =>
-        getOnlySettingsFromContext(settingsActor.getSnapshot().context),
-      useSettings: () =>
-        useSelector(settingsActor, (state) => {
-          // We have to peel everything that isn't settings off
-          return getOnlySettingsFromContext(state.context)
-        }),
-    }
+    const settings = appRegistry.get(settingsService)
+    const settingsActor = settings.actor
     const engineCommandManager = new ConnectionManager({
       settingsActor,
     })
@@ -715,7 +686,7 @@ export class App implements AppSubsystems {
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
-        id: 'executing-editor-services',
+        id: 'app.runtime-services',
         providesServices: [
           provideService(
             executingEditorService,
