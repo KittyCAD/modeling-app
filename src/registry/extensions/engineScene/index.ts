@@ -4,32 +4,79 @@ import {
   provide,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
-import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
-import { SelectionReferencesPopover } from '@src/components/SelectionReferencesPopover'
-import { SelectionStatusBarItem } from '@src/components/SelectionStatusBarItem'
-import { UnitsMenu } from '@src/components/UnitsMenu'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { SelectionFilterControls } from '@src/registry/extensions/engineScene/SelectionFilterControls'
-import { createElement } from 'react'
+import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 
-const EngineSceneUnitsMenu = () => createElement(UnitsMenu)
+// Registry extension entrypoints are imported eagerly while App is still
+// initializing. These status bar components can reach boot.ts, so keep them
+// behind lazy imports to avoid an App <-> boot cycle.
+const SelectionFilterControls = lazy(async () => {
+  const { SelectionFilterControls } = await import('./SelectionFilterControls')
+  return { default: SelectionFilterControls }
+})
+
+const UnitsMenu = lazy(async () => {
+  const { UnitsMenu } = await import('@src/components/UnitsMenu')
+  return { default: UnitsMenu }
+})
+
+const ExperimentalFeaturesMenu = lazy(async () => {
+  const { ExperimentalFeaturesMenu } = await import(
+    '@src/components/ExperimentalFeaturesMenu'
+  )
+  return { default: ExperimentalFeaturesMenu }
+})
+
+const SelectionStatusBarItem = lazy(async () => {
+  const { SelectionStatusBarItem } = await import(
+    '@src/components/SelectionStatusBarItem'
+  )
+  return { default: SelectionStatusBarItem }
+})
+
+const SelectionReferencesPopover = lazy(async () => {
+  const { SelectionReferencesPopover } = await import(
+    '@src/components/SelectionReferencesPopover'
+  )
+  return { default: SelectionReferencesPopover }
+})
+
+const EngineSceneUnitsMenu = () =>
+  createElement(Suspense, { fallback: null }, createElement(UnitsMenu))
+
 const EngineSceneExperimentalFeaturesMenu = () =>
-  createElement(ExperimentalFeaturesMenu)
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(ExperimentalFeaturesMenu)
+  )
+
 const EngineSceneSelectionStatusBarItem = ({ label }: { label: string }) =>
-  createElement(SelectionStatusBarItem, {
-    label,
-    popoverSections: [
-      {
-        id: 'selection-references',
-        component: SelectionReferencesPopover,
-      },
-    ],
-  })
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionStatusBarItem, {
+      label,
+      popoverSections: [
+        {
+          id: 'selection-references',
+          component: SelectionReferencesPopover,
+        },
+      ],
+    })
+  )
+
+const EngineSceneSelectionFilterControls = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionFilterControls)
+  )
 
 /**
  * Engine scene extension.
@@ -61,7 +108,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       executionService.value
         ? {
             id: 'selection-filter',
-            component: SelectionFilterControls,
+            component: EngineSceneSelectionFilterControls,
             order: 11,
             scopes: ['file'],
           }
