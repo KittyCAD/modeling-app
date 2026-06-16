@@ -40,7 +40,7 @@ test('decrements finite balance by active Zookeeper usage time', () => {
       }),
       usageStartedAt.getTime() + 90_000
     )
-  ).toBeCloseTo(18.5)
+  ).toBe(18.5)
 })
 
 test('keeps completed usage applied while waiting for a server refresh', () => {
@@ -52,10 +52,10 @@ test('keeps completed usage applied while waiting for a server refresh', () => {
         usageAccumulatedMs: 120_000,
       })
     )
-  ).toBeCloseTo(18)
+  ).toBe(18)
 })
 
-test('does not estimate without a pay as you go price ratio', () => {
+test('leaves balance unchanged without a pay as you go price', () => {
   expect(
     getEstimatedBillingBalance(
       createBillingContext({

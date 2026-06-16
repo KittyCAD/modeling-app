@@ -74,8 +74,6 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billing.actor,
-    token,
     kclManager.engineCommandManager,
     (requestProps) => {
       const payload = prepareMlEphantNewFileRequest(requestProps)
@@ -104,23 +102,6 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     settingsValues
   )
 
-  const sendBillingUpdate = () => {
-    billing.send({
-      type: BillingTransition.Update,
-      apiToken: token,
-    })
-  }
-  const sendBillingUsageStarted = () => {
-    billing.send({
-      type: BillingTransition.UsageStarted,
-    })
-  }
-  const sendBillingUsageEnded = () => {
-    billing.send({
-      type: BillingTransition.UsageEnded,
-    })
-  }
-
   // During the makethon, this was set to the following:
   // !isPlaywright() &&
   // !location.pathname.includes(String(PATHS.ONBOARDING)) &&
@@ -147,9 +128,22 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
           kclManager,
           contextModeling,
           sendModeling,
-          sendBillingUpdate,
-          sendBillingUsageStarted,
-          sendBillingUsageEnded,
+          sendBillingUpdate: () => {
+            billing.send({
+              type: BillingTransition.Update,
+              apiToken: token,
+            })
+          },
+          sendBillingUsageStarted: () => {
+            billing.send({
+              type: BillingTransition.UsageStarted,
+            })
+          },
+          sendBillingUsageEnded: () => {
+            billing.send({
+              type: BillingTransition.UsageEnded,
+            })
+          },
           theProject: theProject.current,
           loaderFile,
           settings: settingsValues,

@@ -7,6 +7,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
+import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS } from '@src/lib/paths'
@@ -17,11 +18,13 @@ import { toSync } from '@src/lib/utils'
 
 function ProjectCard({
   project,
+  projectStatus,
   handleRenameProject,
   handleDeleteProject,
   ...props
 }: {
   project: Project
+  projectStatus?: ProjectStatus
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
     f: Project
@@ -31,6 +34,8 @@ function ProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const hasChangesRequested =
+    projectStatus?.publicationStatus === 'changes_requested'
   const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
   const [imageUrl, setImageUrl] = useState('')
@@ -180,6 +185,14 @@ function ProjectCard({
               alt=""
               className="h-full w-full transition-transform group-hover:scale-105 object-cover"
             />
+          )}
+          {hasChangesRequested && (
+            <span
+              className="absolute top-2 left-2 z-10 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10 pointer-events-none"
+              data-testid="changes-requested-badge"
+            >
+              Changes requested
+            </span>
           )}
         </div>
         <div className="pb-2 flex flex-col flex-grow flex-auto gap-2 rounded-b-sm">

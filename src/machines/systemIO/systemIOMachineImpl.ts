@@ -23,6 +23,7 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   getOpfsCloudProjectMetadataIndex,
   getOpfsCloudProjectModifiedTime,
+  opfsCloudSyncStatus,
 } from '@src/lib/fs-zds/opfsCloud'
 import {
   getProjectDirectoryFromKCLFilePath,
@@ -472,8 +473,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
-        const cloudProjectMetadataByPath =
-          await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
+        const cloudProjectMetadataByPath = opfsCloudSyncStatus.value.enabled
+          ? await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
+          : new Map()
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries: ProjectDirectoryEntry[] = []
         for (const entry of await fsZds.readdir(projectDirectoryPath)) {

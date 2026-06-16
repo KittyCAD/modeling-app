@@ -9,7 +9,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
-import env from '@src/env'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
@@ -90,9 +90,13 @@ async function readProjectTomlMetadata(projectPath: string) {
     const projectToml = await fsZds.readFile(projectTomlPath, {
       encoding: 'utf-8',
     })
+    const environmentName = getEnvironmentNameFromEnv(env())
     return {
       title: getProjectTitleFromProjectTomlContents(projectToml),
-      cloudProjectId: getCloudProjectIdFromProjectTomlContents(projectToml),
+      cloudProjectId: getCloudProjectIdFromProjectTomlContents(
+        projectToml,
+        environmentName
+      ),
     }
   } catch {
     return {

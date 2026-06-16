@@ -74,9 +74,9 @@ build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vit
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifdef WINDOWS
-	npm run build:wasm:dev:windows
+	npm run build:wasm:windows
 else
-	npm run build:wasm:dev
+	npm run build:wasm
 endif
 
 public/kcl-samples/manifest.json: $(KCL_SOURCES)

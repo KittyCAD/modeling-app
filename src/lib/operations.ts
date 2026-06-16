@@ -77,6 +77,9 @@ type ExecuteCommandEvent = CommandBarMachineEvent & {
 }
 type ExecuteCommandEventPayload = ExecuteCommandEvent['data']
 type PrepareToEditFailurePayload = { reason: string }
+type ProfileGdtFunction = NonNullable<
+  ModelingCommandSchema['GDT Profile']['profileFunction']
+>
 type PrepareToEditCallback = (
   props: Omit<EnterEditFlowProps, 'commandBarSend'>
 ) =>
@@ -96,6 +99,21 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+}
+
+function getProfileFunctionFromOperationName(
+  operationName: string
+): ProfileGdtFunction | undefined {
+  switch (operationName) {
+    case 'gdt::profile':
+      return 'profile'
+    case 'gdt::profileLine':
+      return 'profileLine'
+    case 'gdt::profileSurface':
+      return 'profileSurface'
+    default:
+      return undefined
+  }
 }
 
 // Helper functions for argument extraction
@@ -2349,11 +2367,31 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 
   const edgesArg = operation.labeledArgs?.['edges']
-  if (!edgesArg || !edgesArg.sourceRange) {
-    return { reason: 'Missing or invalid edges argument' }
+  const facesArg = operation.labeledArgs?.['faces']
+  if (edgesArg && facesArg) {
+    return { reason: 'Profile operation has both edges and faces arguments' }
+  }
+  if (!edgesArg && !facesArg) {
+    return { reason: 'Missing or invalid profile target argument' }
   }
 
-  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  let objects: Selections
+  if (edgesArg) {
+    if (!edgesArg.sourceRange) {
+      return { reason: 'Missing or invalid edges argument' }
+    }
+    objects = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  } else {
+    if (!facesArg?.sourceRange) {
+      return { reason: 'Missing or invalid faces argument' }
+    }
+    const graphSelections = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in graphSelections) {
+      return { reason: graphSelections.error }
+    }
+    objects = { graphSelections, otherSelections: [] }
+  }
+
   const tolerance = await extractKclArgument(
     code,
     operation,
@@ -2387,7 +2425,8 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
-    edges,
+    objects,
+    profileFunction: getProfileFunctionFromOperationName(operation.name),
     datums,
     tolerance,
     precision,
@@ -3282,6 +3321,16 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   'gdt::profile': {
     label: 'Profile',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileLine': {
+    label: 'Profile Line',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileSurface': {
+    label: 'Profile Surface',
     icon: 'gdtProfile',
     prepareToEdit: prepareToEditGdtProfile,
   },
