@@ -423,7 +423,7 @@ function NewKeybindingRow({
 
     onSave({
       command: command.trim(),
-      title: title.trim() || command.trim(),
+      title: title.trim() || undefined,
       keystrokes,
       arguments: parsedArguments,
       scopes: serializeKeymapScopes(scopes),
