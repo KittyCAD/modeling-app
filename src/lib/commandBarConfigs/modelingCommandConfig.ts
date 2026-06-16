@@ -55,7 +55,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import type * as StdLibCommandTypes from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { capitaliseFC, isArray } from '@src/lib/utils'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -180,46 +180,6 @@ const isEditingNodeSelection = (context: {
 }) =>
   isEditingNode(context) && context.selectedCommand?.useModelingDialog !== true
 
-type EditableStdLibModelingCommandSchema = WithCommandBarEditFlowArgs<{
-  Extrude: StdLibCommandTypes.ExtrudeCommandArgs
-  Sweep: StdLibCommandTypes.SweepCommandArgs
-  Loft: StdLibCommandTypes.LoftCommandArgs
-  Revolve: StdLibCommandTypes.RevolveCommandArgs
-  Shell: StdLibCommandTypes.ShellCommandArgs
-  Hole: StdLibCommandTypes.HoleCommandArgs
-  Fillet: StdLibCommandTypes.FilletCommandArgs
-  Chamfer: StdLibCommandTypes.ChamferCommandArgs
-  'Offset plane': StdLibCommandTypes.OffsetPlaneCommandArgs
-  Helix: StdLibCommandTypes.HelixCommandArgs
-  'Helical Gear': StdLibCommandTypes.HelicalGearCommandArgs
-  'Herringbone Gear': StdLibCommandTypes.HerringboneGearCommandArgs
-  'Spur Gear': StdLibCommandTypes.SpurGearCommandArgs
-  'Ring Gear': StdLibCommandTypes.RingGearCommandArgs
-  Appearance: StdLibCommandTypes.AppearanceCommandArgs
-  Translate: StdLibCommandTypes.TranslateCommandArgs
-  Rotate: StdLibCommandTypes.RotateCommandArgs
-  Scale: StdLibCommandTypes.ScaleCommandArgs
-  Clone: StdLibCommandTypes.CloneCommandArgs
-  'Pattern Circular 3D': StdLibCommandTypes.PatternCircular3DCommandArgs
-  'Pattern Linear 3D': StdLibCommandTypes.PatternLinear3DCommandArgs
-  'GDT Flatness': StdLibCommandTypes.GdtFlatnessCommandArgs
-  'GDT Straightness': StdLibCommandTypes.GdtStraightnessCommandArgs
-  'GDT Circularity': StdLibCommandTypes.GdtCircularityCommandArgs
-  'GDT Cylindricity': StdLibCommandTypes.GdtCylindricityCommandArgs
-  'GDT Position': StdLibCommandTypes.GdtPositionCommandArgs
-  'GDT Profile': StdLibCommandTypes.GdtProfileCommandArgs
-  'GDT Distance': StdLibCommandTypes.GdtDistanceCommandArgs
-  'GDT Perpendicularity': StdLibCommandTypes.GdtPerpendicularityCommandArgs
-  'GDT Angularity': StdLibCommandTypes.GdtAngularityCommandArgs
-  'GDT Concentricity': StdLibCommandTypes.GdtConcentricityCommandArgs
-  'GDT Symmetry': StdLibCommandTypes.GdtSymmetryCommandArgs
-  'GDT Runout': StdLibCommandTypes.GdtRunoutCommandArgs
-  'GDT Parallelism': StdLibCommandTypes.GdtParallelismCommandArgs
-  'GDT Annotation': StdLibCommandTypes.GdtAnnotationCommandArgs
-  'GDT Datum': StdLibCommandTypes.GdtDatumCommandArgs
-  'Boolean Split': StdLibCommandTypes.BooleanSplitCommandArgs
-}>
-
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
@@ -250,21 +210,10 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
-  Delete: {
-    objects: Selections
-  }
   // TODO: {} means any non-nullish value. This is probably not what we want.
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
-  'Mirror 3D': StdLibCommandTypes.Mirror3DCommandArgs
-  'Boolean Subtract': StdLibCommandTypes.BooleanSubtractCommandArgs
-  'Boolean Union': StdLibCommandTypes.BooleanUnionCommandArgs
-  'Boolean Intersect': StdLibCommandTypes.BooleanIntersectCommandArgs
-  'Flip Surface': StdLibCommandTypes.FlipSurfaceCommandArgs
-  'Delete Face': StdLibCommandTypes.DeleteFaceCommandArgs
-  Blend: StdLibCommandTypes.BlendCommandArgs
-  'Join Surfaces': StdLibCommandTypes.JoinSurfacesCommandArgs
-} & EditableStdLibModelingCommandSchema
+} & WithCommandBarEditFlowArgs<StdLibModelingCommandSchema>
 
 const kclDatumArrayToInput = (value: string) => {
   const trimmed = value.trim()

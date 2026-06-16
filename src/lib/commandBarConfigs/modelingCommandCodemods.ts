@@ -62,41 +62,53 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
-import type { ArtifactGraph, Program, VariableMap } from '@src/lang/wasm'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type {
+  ArtifactGraph,
+  PathToNode,
+  Program,
+  VariableMap,
+} from '@src/lang/wasm'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
+type ModelingCodemodCommandSchema = {
+  [CommandName in keyof StdLibModelingCommandSchema]: StdLibModelingCommandSchema[CommandName] & {
+    nodeToEdit?: PathToNode
+  }
+}
+
 type ModelingCommandCodemodConfig<
-  CommandName extends keyof ModelingCommandSchema,
-> = ModelingCodemod<ModelingCommandSchema[CommandName]>
+  CommandName extends keyof ModelingCodemodCommandSchema,
+> = ModelingCodemod<ModelingCodemodCommandSchema[CommandName]>
 
 type ModelingCommandCodemods = Partial<{
-  [CommandName in keyof ModelingCommandSchema]: ModelingCommandCodemodConfig<CommandName>
+  [CommandName in keyof ModelingCodemodCommandSchema]: ModelingCommandCodemodConfig<CommandName>
 }>
 
 type AddCodemodArgs<
-  CommandName extends keyof ModelingCommandSchema,
+  CommandName extends keyof ModelingCodemodCommandSchema,
   ExtraContext extends object = object,
-> = ModelingCommandSchema[CommandName] &
+> = ModelingCodemodCommandSchema[CommandName] &
   ExtraContext & {
     ast: Node<Program>
     wasmInstance: ModuleType
   }
 
 type AddCodemod<
-  CommandName extends keyof ModelingCommandSchema,
+  CommandName extends keyof ModelingCodemodCommandSchema,
   ExtraContext extends object = object,
 > = (args: AddCodemodArgs<CommandName, ExtraContext>) => ModelingCodemodResult
 
-type ModelingCodemodOptions<CommandName extends keyof ModelingCommandSchema> =
-  Omit<ModelingCommandCodemodConfig<CommandName>, 'run'>
+type ModelingCodemodOptions<
+  CommandName extends keyof ModelingCodemodCommandSchema,
+> = Omit<ModelingCommandCodemodConfig<CommandName>, 'run'>
 
 const addCodemodArgs = <
-  CommandName extends keyof ModelingCommandSchema,
+  CommandName extends keyof ModelingCodemodCommandSchema,
   ExtraContext extends object = object,
 >(
-  args: ModelingCommandSchema[CommandName],
+  args: ModelingCodemodCommandSchema[CommandName],
   context: ExtraContext & {
     ast: Node<Program>
     wasmInstance: ModuleType
@@ -106,11 +118,11 @@ const addCodemodArgs = <
   ...context,
 })
 
-const withAst = <CommandName extends keyof ModelingCommandSchema>(
+const withAst = <CommandName extends keyof ModelingCodemodCommandSchema>(
   add: AddCodemod<CommandName>,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCommandSchema[CommandName]>({
+  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
     ...options,
     run: ({ args, ast, wasmInstance }) =>
       add({
@@ -120,11 +132,13 @@ const withAst = <CommandName extends keyof ModelingCommandSchema>(
       }),
   })
 
-const withArtifactGraph = <CommandName extends keyof ModelingCommandSchema>(
+const withArtifactGraph = <
+  CommandName extends keyof ModelingCodemodCommandSchema,
+>(
   add: AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCommandSchema[CommandName]>({
+  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
     ...options,
     run: ({ args, ast, kclManager, wasmInstance }) =>
       add(
@@ -137,7 +151,7 @@ const withArtifactGraph = <CommandName extends keyof ModelingCommandSchema>(
   })
 
 const withArtifactGraphAndVariables = <
-  CommandName extends keyof ModelingCommandSchema,
+  CommandName extends keyof ModelingCodemodCommandSchema,
 >(
   add: AddCodemod<
     CommandName,
@@ -145,7 +159,7 @@ const withArtifactGraphAndVariables = <
   >,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCommandSchema[CommandName]>({
+  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
     ...options,
     run: ({ args, ast, kclManager, wasmInstance }) =>
       add(
@@ -160,11 +174,13 @@ const withArtifactGraphAndVariables = <
 
 type GdtCommandData = Parameters<typeof withDefaultGdtFrameDefaults>[0]['data']
 
-const withGdtDefaults = <CommandName extends keyof ModelingCommandSchema>(
+const withGdtDefaults = <
+  CommandName extends keyof ModelingCodemodCommandSchema,
+>(
   add: AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCommandSchema[CommandName]>({
+  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
     ...options,
     run: async ({ args, ast, kclManager, wasmInstance }) => {
       const data = await withDefaultGdtFrameDefaults({
@@ -177,7 +193,7 @@ const withGdtDefaults = <CommandName extends keyof ModelingCommandSchema>(
       })
 
       return add(
-        addCodemodArgs(data as ModelingCommandSchema[CommandName], {
+        addCodemodArgs(data as ModelingCodemodCommandSchema[CommandName], {
           ast,
           artifactGraph: kclManager.artifactGraph,
           wasmInstance,

@@ -157,6 +157,8 @@ export type AppearanceCommandArgs = Override<
   }
 >
 
+export type DeleteCommandArgs = StdLibCommandArgs<'delete'>
+
 export type TranslateCommandArgs = Omit<StdLibCommandArgs<'translate'>, 'xyz'>
 
 export type RotateCommandArgs = Omit<
@@ -249,3 +251,52 @@ export type JoinSurfacesCommandArgs = Omit<
   StdLibCommandArgs<'joinSurfaces'>,
   'tolerance'
 >
+
+export type StdLibModelingCommandSchema = {
+  Extrude: ExtrudeCommandArgs
+  Sweep: SweepCommandArgs
+  Loft: LoftCommandArgs
+  Revolve: RevolveCommandArgs
+  Shell: ShellCommandArgs
+  Hole: HoleCommandArgs
+  Fillet: FilletCommandArgs
+  Chamfer: ChamferCommandArgs
+  'Offset plane': OffsetPlaneCommandArgs
+  Helix: HelixCommandArgs
+  'Helical Gear': HelicalGearCommandArgs
+  'Herringbone Gear': HerringboneGearCommandArgs
+  'Spur Gear': SpurGearCommandArgs
+  'Ring Gear': RingGearCommandArgs
+  Appearance: AppearanceCommandArgs
+  Delete: DeleteCommandArgs
+  Translate: TranslateCommandArgs
+  Rotate: RotateCommandArgs
+  Scale: ScaleCommandArgs
+  Clone: CloneCommandArgs
+  'Mirror 3D': Mirror3DCommandArgs
+  'Pattern Circular 3D': PatternCircular3DCommandArgs
+  'Pattern Linear 3D': PatternLinear3DCommandArgs
+  'GDT Flatness': GdtFlatnessCommandArgs
+  'GDT Straightness': GdtStraightnessCommandArgs
+  'GDT Circularity': GdtCircularityCommandArgs
+  'GDT Cylindricity': GdtCylindricityCommandArgs
+  'GDT Position': GdtPositionCommandArgs
+  'GDT Profile': GdtProfileCommandArgs
+  'GDT Distance': GdtDistanceCommandArgs
+  'GDT Perpendicularity': GdtPerpendicularityCommandArgs
+  'GDT Angularity': GdtAngularityCommandArgs
+  'GDT Concentricity': GdtConcentricityCommandArgs
+  'GDT Symmetry': GdtSymmetryCommandArgs
+  'GDT Runout': GdtRunoutCommandArgs
+  'GDT Parallelism': GdtParallelismCommandArgs
+  'GDT Annotation': GdtAnnotationCommandArgs
+  'GDT Datum': GdtDatumCommandArgs
+  'Boolean Subtract': BooleanSubtractCommandArgs
+  'Boolean Union': BooleanUnionCommandArgs
+  'Boolean Intersect': BooleanIntersectCommandArgs
+  'Boolean Split': BooleanSplitCommandArgs
+  'Flip Surface': FlipSurfaceCommandArgs
+  'Delete Face': DeleteFaceCommandArgs
+  Blend: BlendCommandArgs
+  'Join Surfaces': JoinSurfacesCommandArgs
+}
