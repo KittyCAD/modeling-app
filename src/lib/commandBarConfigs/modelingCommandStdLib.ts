@@ -31,10 +31,12 @@ export type StdLibCommandDriftConfig = {
    */
   editFlow?: boolean
   /**
-   * Required command-bar argument key order from the legacy handwritten config.
-   * This keeps prompt/test behavior stable when stdlib order differs.
+   * Command-bar flow argument order from the legacy handwritten config.
+   * This keeps prompt/test behavior stable when stdlib order differs. Flow
+   * arguments are required, conditionally required, prepopulated, or otherwise
+   * forced into the point-and-click flow.
    */
-  requiredArgOrder?: readonly string[]
+  flowArgOrder?: readonly string[]
 }
 
 type StdLibCommandArgOverride = Partial<
@@ -47,7 +49,7 @@ type StdLibCommandArgsOptions = {
   argAliases?: Readonly<Record<string, string>>
   overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
   includeEditFlowArgs?: boolean
-  requiredArgOrder?: readonly string[]
+  flowArgOrder?: readonly string[]
 }
 
 type CommandArgConfigs<CommandArgs extends object> = {
@@ -92,16 +94,16 @@ const commandBarEditFlowArgs: Record<string, StdLibCommandArgOverride> = {
   },
 }
 
-function orderRequiredCommandArgs(
+function orderCommandArgs(
   args: Record<string, Record<string, unknown>>,
-  requiredArgOrder: readonly string[] = []
+  flowArgOrder: readonly string[] = []
 ) {
-  if (requiredArgOrder.length === 0) {
+  if (flowArgOrder.length === 0) {
     return args
   }
 
   const orderedArgs: Record<string, Record<string, unknown>> = {}
-  for (const argName of requiredArgOrder) {
+  for (const argName of flowArgOrder) {
     if (argName in args) {
       orderedArgs[argName] = args[argName]
     }
@@ -145,9 +147,9 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     }
   }
 
-  return orderRequiredCommandArgs(
+  return orderCommandArgs(
     args,
-    options.requiredArgOrder
+    options.flowArgOrder
   ) as CommandArgConfigs<CommandArgs>
 }
 
@@ -155,25 +157,25 @@ export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
-    requiredArgOrder: ['sketches', 'bodyType'],
+    flowArgOrder: ['sketches', 'length', 'bodyType'],
     omittedStdLibArgs: ['direction'],
   },
   Sweep: {
     stdLibName: 'sweep',
     editFlow: true,
-    requiredArgOrder: ['sketches', 'path', 'bodyType'],
+    flowArgOrder: ['sketches', 'path', 'bodyType'],
     omittedStdLibArgs: ['tolerance', 'version'],
   },
   Loft: {
     stdLibName: 'loft',
     editFlow: true,
-    requiredArgOrder: ['sketches', 'bodyType'],
+    flowArgOrder: ['sketches', 'bodyType'],
     omittedStdLibArgs: ['tolerance'],
   },
   Revolve: {
     stdLibName: 'revolve',
     editFlow: true,
-    requiredArgOrder: [
+    flowArgOrder: [
       'sketches',
       'axisOrEdge',
       'axis',
@@ -187,13 +189,13 @@ export const modelingCommandStdLibDriftConfig = {
   Shell: {
     stdLibName: 'shell',
     editFlow: true,
-    requiredArgOrder: ['faces', 'thickness'],
+    flowArgOrder: ['faces', 'thickness'],
     omittedStdLibArgs: ['solids'],
   },
   Hole: {
     stdLibName: 'hole::hole',
     editFlow: true,
-    requiredArgOrder: [
+    flowArgOrder: [
       'face',
       'cutAt',
       'holeBody',
@@ -222,7 +224,7 @@ export const modelingCommandStdLibDriftConfig = {
   Fillet: {
     stdLibName: 'fillet',
     editFlow: true,
-    requiredArgOrder: ['selection', 'radius'],
+    flowArgOrder: ['selection', 'radius'],
     omittedStdLibArgs: ['solid', 'tolerance'],
     argAliases: {
       tags: 'selection',
@@ -231,7 +233,7 @@ export const modelingCommandStdLibDriftConfig = {
   Chamfer: {
     stdLibName: 'chamfer',
     editFlow: true,
-    requiredArgOrder: ['selection', 'length'],
+    flowArgOrder: ['selection', 'length'],
     omittedStdLibArgs: ['solid'],
     argAliases: {
       tags: 'selection',
@@ -240,12 +242,12 @@ export const modelingCommandStdLibDriftConfig = {
   'Offset plane': {
     stdLibName: 'offsetPlane',
     editFlow: true,
-    requiredArgOrder: ['plane', 'offset'],
+    flowArgOrder: ['plane', 'offset'],
   },
   Helix: {
     stdLibName: 'helix',
     editFlow: true,
-    requiredArgOrder: [
+    flowArgOrder: [
       'mode',
       'axis',
       'edge',
@@ -260,7 +262,7 @@ export const modelingCommandStdLibDriftConfig = {
   'Helical Gear': {
     stdLibName: 'gear::helical',
     editFlow: true,
-    requiredArgOrder: [
+    flowArgOrder: [
       'nTeeth',
       'module',
       'pressureAngle',
@@ -271,7 +273,7 @@ export const modelingCommandStdLibDriftConfig = {
   'Herringbone Gear': {
     stdLibName: 'gear::herringbone',
     editFlow: true,
-    requiredArgOrder: [
+    flowArgOrder: [
       'nTeeth',
       'module',
       'pressureAngle',
@@ -282,12 +284,12 @@ export const modelingCommandStdLibDriftConfig = {
   'Spur Gear': {
     stdLibName: 'gear::spur',
     editFlow: true,
-    requiredArgOrder: ['nTeeth', 'module', 'pressureAngle', 'gearHeight'],
+    flowArgOrder: ['nTeeth', 'module', 'pressureAngle', 'gearHeight'],
   },
   'Ring Gear': {
     stdLibName: 'gear::ring',
     editFlow: true,
-    requiredArgOrder: [
+    flowArgOrder: [
       'nTeeth',
       'module',
       'pressureAngle',
@@ -298,7 +300,7 @@ export const modelingCommandStdLibDriftConfig = {
   Appearance: {
     stdLibName: 'appearance',
     editFlow: true,
-    requiredArgOrder: ['objects', 'color'],
+    flowArgOrder: ['objects', 'color'],
     argAliases: {
       solids: 'objects',
     },
@@ -306,24 +308,24 @@ export const modelingCommandStdLibDriftConfig = {
   Translate: {
     stdLibName: 'translate',
     editFlow: true,
-    requiredArgOrder: ['objects'],
+    flowArgOrder: ['objects'],
     omittedStdLibArgs: ['xyz'],
   },
   Rotate: {
     stdLibName: 'rotate',
     editFlow: true,
-    requiredArgOrder: ['objects'],
+    flowArgOrder: ['objects'],
     omittedStdLibArgs: ['axis', 'angle'],
   },
   Scale: {
     stdLibName: 'scale',
     editFlow: true,
-    requiredArgOrder: ['objects'],
+    flowArgOrder: ['objects'],
   },
   Clone: {
     stdLibName: 'clone',
     editFlow: true,
-    requiredArgOrder: ['objects', 'variableName'],
+    flowArgOrder: ['objects', 'variableName'],
     uiOnlyArgs: ['variableName'],
     argAliases: {
       geometries: 'objects',
@@ -331,31 +333,31 @@ export const modelingCommandStdLibDriftConfig = {
   },
   Delete: {
     stdLibName: 'delete',
-    requiredArgOrder: ['objects'],
+    flowArgOrder: ['objects'],
   },
   'Mirror 3D': {
     stdLibName: 'mirror3d',
-    requiredArgOrder: ['bodies', 'across'],
+    flowArgOrder: ['bodies', 'across'],
   },
   'Pattern Circular 3D': {
     stdLibName: 'patternCircular3d',
     editFlow: true,
-    requiredArgOrder: ['solids', 'instances', 'axis', 'center'],
+    flowArgOrder: ['solids', 'instances', 'axis', 'center'],
   },
   'Pattern Linear 3D': {
     stdLibName: 'patternLinear3d',
     editFlow: true,
-    requiredArgOrder: ['solids', 'instances', 'distance', 'axis'],
+    flowArgOrder: ['solids', 'instances', 'distance', 'axis'],
   },
   'GDT Flatness': {
     stdLibName: 'gdt::flatness',
     editFlow: true,
-    requiredArgOrder: ['faces', 'tolerance'],
+    flowArgOrder: ['faces', 'tolerance'],
   },
   'GDT Straightness': {
     stdLibName: 'gdt::straightness',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -364,7 +366,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Circularity': {
     stdLibName: 'gdt::circularity',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -373,7 +375,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Cylindricity': {
     stdLibName: 'gdt::cylindricity',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -382,7 +384,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Datum': {
     stdLibName: 'gdt::datum',
     editFlow: true,
-    requiredArgOrder: ['faces', 'name'],
+    flowArgOrder: ['faces', 'name'],
     argAliases: {
       face: 'faces',
     },
@@ -390,7 +392,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Position': {
     stdLibName: 'gdt::position',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -399,13 +401,13 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Profile': {
     stdLibName: 'gdt::profile',
     editFlow: true,
-    requiredArgOrder: ['edges', 'tolerance'],
+    flowArgOrder: ['edges', 'tolerance'],
     omittedStdLibArgs: ['faces'],
   },
   'GDT Distance': {
     stdLibName: 'gdt::distance',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       from: 'objects',
       to: 'objects',
@@ -415,7 +417,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Perpendicularity': {
     stdLibName: 'gdt::perpendicularity',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -424,7 +426,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Angularity': {
     stdLibName: 'gdt::angularity',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -433,7 +435,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Concentricity': {
     stdLibName: 'gdt::concentricity',
     editFlow: true,
-    requiredArgOrder: ['objects', 'datums', 'tolerance'],
+    flowArgOrder: ['objects', 'datums', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -442,7 +444,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Symmetry': {
     stdLibName: 'gdt::symmetry',
     editFlow: true,
-    requiredArgOrder: ['objects', 'datums', 'tolerance'],
+    flowArgOrder: ['objects', 'datums', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -451,7 +453,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Runout': {
     stdLibName: 'gdt::runout',
     editFlow: true,
-    requiredArgOrder: ['objects', 'datums', 'tolerance'],
+    flowArgOrder: ['objects', 'datums', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -460,7 +462,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Parallelism': {
     stdLibName: 'gdt::parallelism',
     editFlow: true,
-    requiredArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -469,7 +471,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Annotation': {
     stdLibName: 'gdt::annotation',
     editFlow: true,
-    requiredArgOrder: ['objects', 'annotation'],
+    flowArgOrder: ['objects', 'annotation'],
     argAliases: {
       faces: 'objects',
       edges: 'objects',
@@ -477,40 +479,40 @@ export const modelingCommandStdLibDriftConfig = {
   },
   'Boolean Subtract': {
     stdLibName: 'subtract',
-    requiredArgOrder: ['solids', 'tools'],
+    flowArgOrder: ['solids', 'tools'],
     omittedStdLibArgs: ['tolerance'],
   },
   'Boolean Union': {
     stdLibName: 'union',
-    requiredArgOrder: ['solids'],
+    flowArgOrder: ['solids'],
     omittedStdLibArgs: ['tolerance'],
   },
   'Boolean Intersect': {
     stdLibName: 'intersect',
-    requiredArgOrder: ['solids'],
+    flowArgOrder: ['solids'],
     omittedStdLibArgs: ['tolerance'],
   },
   'Boolean Split': {
     stdLibName: 'split',
     editFlow: true,
-    requiredArgOrder: ['targets'],
+    flowArgOrder: ['targets'],
   },
   'Flip Surface': {
     stdLibName: 'flipSurface',
-    requiredArgOrder: ['surface'],
+    flowArgOrder: ['surface'],
   },
   'Delete Face': {
     stdLibName: 'deleteFace',
-    requiredArgOrder: ['faces'],
+    flowArgOrder: ['faces'],
     omittedStdLibArgs: ['body', 'faceIndices'],
   },
   Blend: {
     stdLibName: 'blend',
-    requiredArgOrder: ['edges'],
+    flowArgOrder: ['edges'],
   },
   'Join Surfaces': {
     stdLibName: 'joinSurfaces',
-    requiredArgOrder: ['selection'],
+    flowArgOrder: ['selection'],
     omittedStdLibArgs: ['tolerance'],
   },
 } as const satisfies Partial<
@@ -548,7 +550,7 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
     argAliases: driftConfig.argAliases,
     overrides: options.overrides,
     includeEditFlowArgs: driftConfig.editFlow,
-    requiredArgOrder: driftConfig.requiredArgOrder,
+    flowArgOrder: driftConfig.flowArgOrder,
   })
 }
 

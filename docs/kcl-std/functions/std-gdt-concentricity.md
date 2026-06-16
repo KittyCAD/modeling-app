@@ -134,3 +134,5 @@ gdt::concentricity(
 
 
 ![Rendered example of gdt::concentricity 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-concentricity1.png)
+
+

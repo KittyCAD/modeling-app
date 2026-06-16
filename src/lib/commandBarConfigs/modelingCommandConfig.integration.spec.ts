@@ -321,11 +321,12 @@ describe('modeling command stdlib drift', () => {
 
       const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
       const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
+      const expectedStdLibArgOrder = stdLibCommand.args
+        .filter((arg) => arg.deprecatedSince === null)
+        .filter((arg) => !omittedStdLibArgs.has(arg.name))
+        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
       const expectedArgs = uniqueSorted([
-        ...stdLibCommand.args
-          .filter((arg) => arg.deprecatedSince === null)
-          .filter((arg) => !omittedStdLibArgs.has(arg.name))
-          .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name),
+        ...expectedStdLibArgOrder,
         ...(driftConfig.uiOnlyArgs ?? []),
         ...editFlowArgs,
       ])
@@ -337,18 +338,27 @@ describe('modeling command stdlib drift', () => {
         `${commandName} command args drifted from ${driftConfig.stdLibName}. Add a command arg, or document the intentional difference in modelingCommandStdLibDriftConfig.`
       ).toEqual(expectedArgs)
 
-      if (driftConfig.requiredArgOrder) {
-        const actualRequiredArgOrder = Object.entries(commandConfig.args ?? {})
+      if (driftConfig.flowArgOrder) {
+        const actualFlowArgOrder = Object.entries(commandConfig.args ?? {})
           .filter(([, arg]) => {
-            const { required } = arg as { required?: unknown }
-            return required === true || typeof required === 'function'
+            const { prepopulate, required, skip } = arg as {
+              prepopulate?: unknown
+              required?: unknown
+              skip?: unknown
+            }
+            return (
+              required === true ||
+              typeof required === 'function' ||
+              prepopulate === true ||
+              skip === false
+            )
           })
           .map(([argName]) => argName)
 
         expect(
-          actualRequiredArgOrder,
-          `${commandName} required command arg order drifted from the legacy command-bar order.`
-        ).toEqual(driftConfig.requiredArgOrder)
+          actualFlowArgOrder,
+          `${commandName} command-bar flow arg order drifted from the legacy command-bar order.`
+        ).toEqual(driftConfig.flowArgOrder)
       }
     }
   })
