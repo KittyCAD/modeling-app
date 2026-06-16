@@ -1,12 +1,22 @@
-import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
+  PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import {
+  type OutboxEntry,
   type ProjectArchiveFile,
   type ProjectManifest,
+  filterOpfsCloudProjectFilesForSync,
+  getOpfsCloudConflictCopyCleanupPlan,
+  getOpfsCloudInitialLocalProjectSyncAction,
   getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
   getOpfsCloudProjectSyncPreflightAction,
   getOpfsCloudRemoteArchiveReconciliationAction,
   getOpfsCloudRemoteIndexAction,
+  getOpfsCloudSyncScopePlan,
+  isOpfsCloudConflictCopyProjectName,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/fs-zds/opfsCloud'
@@ -111,6 +121,25 @@ describe('opfsCloud sync helpers', () => {
     ).toBe('default_file = "main.kcl"\n')
   })
 
+  it('excludes files ignored by project .gitignore from cloud sync manifests and uploads', () => {
+    const files = filterOpfsCloudProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile('.gitignore', `${PROJECT_IMAGE_NAME}\ndist/\n`),
+      projectFile(PROJECT_IMAGE_NAME, 'generated image'),
+      projectFile('dist/generated.kcl', 'ignored = 1'),
+      projectFile('nested/.gitignore', 'local.txt\n'),
+      projectFile('nested/local.txt', 'ignored nested note'),
+      projectFile('nested/part.kcl', 'part = 1'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual([
+      'main.kcl',
+      '.gitignore',
+      'nested/.gitignore',
+      'nested/part.kcl',
+    ])
+  })
+
   it('includes expected revisions in guarded project update uploads', () => {
     const payload = prepareProjectFilesForCloudUpload(
       '/projects/bracket',
@@ -174,6 +203,90 @@ describe('opfsCloud sync helpers', () => {
         hasMatchingLocalProject: true,
       })
     ).toBe('adopt-matching-local')
+  })
+
+  it('skips sync-excluded conflict copies during the initial local scan', () => {
+    expect(
+      getOpfsCloudInitialLocalProjectSyncAction({
+        hasBaseManifest: false,
+        tombstone: false,
+        syncExcluded: true,
+      })
+    ).toBe('skip')
+  })
+
+  it('still queues unsynced normal projects during the initial local scan', () => {
+    expect(
+      getOpfsCloudInitialLocalProjectSyncAction({
+        hasBaseManifest: false,
+        tombstone: false,
+        syncExcluded: false,
+      })
+    ).toBe('enqueue')
+  })
+
+  it('detects conflict copy project folder names', () => {
+    expect(
+      isOpfsCloudConflictCopyProjectName(
+        'demo-project (cloud conflict 20260612T001401)'
+      )
+    ).toBe(true)
+    expect(
+      isOpfsCloudConflictCopyProjectName(
+        'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
+      )
+    ).toBe(true)
+    expect(isOpfsCloudConflictCopyProjectName('demo-project')).toBe(false)
+  })
+
+  it('marks existing conflict copies as excluded and deletes exact duplicate copies', () => {
+    const originalManifest: ProjectManifest = {
+      files: {
+        'main.kcl': { byteSize: 10, sha256: 'a' },
+      },
+    }
+    const changedManifest: ProjectManifest = {
+      files: {
+        'main.kcl': { byteSize: 11, sha256: 'b' },
+      },
+    }
+    const cleanupPlan = getOpfsCloudConflictCopyCleanupPlan([
+      {
+        projectPath: '/projects/demo-project',
+        projectName: 'demo-project',
+        remoteProjectId: 'project-123',
+        manifest: originalManifest,
+      },
+      {
+        projectPath: '/projects/demo-project (cloud conflict 20260612T001401)',
+        projectName: 'demo-project (cloud conflict 20260612T001401)',
+        remoteProjectId: 'project-123',
+        manifest: originalManifest,
+      },
+      {
+        projectPath:
+          '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+        projectName:
+          'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+        remoteProjectId: 'project-123',
+        manifest: originalManifest,
+      },
+      {
+        projectPath: '/projects/demo-project (cloud conflict 20260612T151955)',
+        projectName: 'demo-project (cloud conflict 20260612T151955)',
+        remoteProjectId: 'project-123',
+        manifest: changedManifest,
+      },
+    ])
+
+    expect(cleanupPlan.excludeProjectPaths).toEqual([
+      '/projects/demo-project (cloud conflict 20260612T001401)',
+      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+      '/projects/demo-project (cloud conflict 20260612T151955)',
+    ])
+    expect(cleanupPlan.deleteProjectPaths).toEqual([
+      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
+    ])
   })
 
   it('pushes local edits only when the remote revision is still the synced base', () => {
@@ -243,5 +356,42 @@ describe('opfsCloud sync helpers', () => {
         100
       )
     ).toBe(100)
+  })
+
+  it('plans full cloud sync on Home and scoped sync on file routes', () => {
+    const entries: OutboxEntry[] = [
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/main.kcl',
+        createdAt: '2026-06-12T00:00:00.000Z',
+      },
+      {
+        projectPath: '/projects/conflicted',
+        kind: 'upsert',
+        targetPath: '/projects/conflicted/main.kcl',
+        createdAt: '2026-06-12T00:00:01.000Z',
+      },
+    ]
+
+    expect(getOpfsCloudSyncScopePlan(entries)).toEqual({
+      shouldSyncRemoteIndex: true,
+      projectPaths: ['/projects/current', '/projects/conflicted'],
+      pendingCount: 2,
+    })
+
+    expect(getOpfsCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 1,
+    })
+  })
+
+  it('keeps syncing the open project even when it has no queued local edits', () => {
+    expect(getOpfsCloudSyncScopePlan([], '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 0,
+    })
   })
 })

@@ -2372,7 +2372,6 @@ dependencies = [
  "dhat",
  "expectorate",
  "ezpz",
- "fnv",
  "form_urlencoded",
  "futures",
  "futures-lite",

@@ -49,6 +49,13 @@ import type {
   RemoteProject,
   Revision,
 } from '@src/lib/fs-zds/opfsCloud/types'
+import {
+  type GitignoreStackEntry,
+  appendGitignoreForDirectoryWithFs,
+  createGitignoreStackFromFiles,
+  createInitialGitignoreStackWithFs,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import {
@@ -64,6 +71,7 @@ export type {
   OPFSCloudSyncStatus,
   OpfsCloudLocalProject,
   OpfsCloudProjectMetadataIndexEntry,
+  OutboxEntry,
   ProjectArchiveFile,
   ProjectManifest,
   ProjectMetadata,
@@ -91,8 +99,10 @@ let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
+let conflictCopyRepairComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
+let syncScopeProjectPath: string | undefined
 
 export const opfsCloudSyncStatus = signal<OPFSCloudSyncStatus>({
   enabled: false,
@@ -145,6 +155,128 @@ function projectPathInDirectory(
     : undefined
 }
 
+function isProjectSyncExcluded(metadata: ProjectMetadata | undefined) {
+  return Boolean(metadata?.syncExcluded)
+}
+
+const CLOUD_CONFLICT_PROJECT_NAME_PATTERN = /\s+\(cloud conflict \d{8}T\d{6}\)/g
+
+export function isOpfsCloudConflictCopyProjectName(projectName: string) {
+  return Boolean(projectName.match(CLOUD_CONFLICT_PROJECT_NAME_PATTERN))
+}
+
+function getCloudConflictMarkerCount(projectName: string) {
+  return projectName.match(CLOUD_CONFLICT_PROJECT_NAME_PATTERN)?.length ?? 0
+}
+
+function getCloudConflictSourceProjectName(projectName: string) {
+  return projectName.replace(CLOUD_CONFLICT_PROJECT_NAME_PATTERN, '').trim()
+}
+
+function getProjectManifestKey(manifest: ProjectManifest) {
+  return JSON.stringify(
+    Object.entries(manifest.files).toSorted(([left], [right]) =>
+      left.localeCompare(right)
+    )
+  )
+}
+
+export type OpfsCloudConflictCopyCleanupCandidate = {
+  projectPath: string
+  projectName: string
+  remoteProjectId?: string
+  manifest?: ProjectManifest
+}
+
+export type OpfsCloudConflictCopyCleanupPlan = {
+  excludeProjectPaths: string[]
+  deleteProjectPaths: string[]
+}
+
+export function getOpfsCloudConflictCopyCleanupPlan(
+  candidates: OpfsCloudConflictCopyCleanupCandidate[]
+): OpfsCloudConflictCopyCleanupPlan {
+  const conflictCopies = candidates
+    .filter((candidate) =>
+      isOpfsCloudConflictCopyProjectName(candidate.projectName)
+    )
+    .map((candidate) => ({
+      ...candidate,
+      projectPath: normalizePathForSync(candidate.projectPath),
+    }))
+  const excludeProjectPaths = conflictCopies.map(
+    (conflictCopy) => conflictCopy.projectPath
+  )
+  const deleteProjectPaths: string[] = []
+  const conflictCopiesByRemoteProjectId = new Map<
+    string,
+    OpfsCloudConflictCopyCleanupCandidate[]
+  >()
+  for (const conflictCopy of conflictCopies) {
+    if (!conflictCopy.remoteProjectId || !conflictCopy.manifest) {
+      continue
+    }
+    conflictCopiesByRemoteProjectId.set(conflictCopy.remoteProjectId, [
+      ...(conflictCopiesByRemoteProjectId.get(conflictCopy.remoteProjectId) ??
+        []),
+      conflictCopy,
+    ])
+  }
+
+  for (const remoteProjectConflictCopies of conflictCopiesByRemoteProjectId.values()) {
+    const keptManifestKeys = new Set<string>()
+    for (const conflictCopy of remoteProjectConflictCopies.toSorted(
+      (left, right) => {
+        const markerCountDelta =
+          getCloudConflictMarkerCount(left.projectName) -
+          getCloudConflictMarkerCount(right.projectName)
+        return (
+          markerCountDelta || left.projectPath.localeCompare(right.projectPath)
+        )
+      }
+    )) {
+      const manifest = conflictCopy.manifest
+      if (!manifest) {
+        continue
+      }
+
+      const manifestKey = getProjectManifestKey(manifest)
+      if (keptManifestKeys.has(manifestKey)) {
+        deleteProjectPaths.push(conflictCopy.projectPath)
+        continue
+      }
+      keptManifestKeys.add(manifestKey)
+    }
+  }
+
+  return {
+    excludeProjectPaths,
+    deleteProjectPaths,
+  }
+}
+
+export function filterOpfsCloudProjectFilesForSync(
+  files: ProjectArchiveFile[]
+) {
+  const normalizedFiles = files.map((file) => ({
+    ...file,
+    relativePath: normalizeRelativePath(file.relativePath),
+  }))
+  const gitignoreStack = createGitignoreStackFromFiles(
+    normalizedFiles
+      .filter((file) => projectNameFromPath(file.relativePath) === '.gitignore')
+      .map((file) => ({
+        relativePath: file.relativePath,
+        contents: new TextDecoder().decode(file.data),
+      }))
+  )
+
+  return normalizedFiles.filter(
+    (file) =>
+      !isPathIgnoredByGitignore(gitignoreStack, file.relativePath, false)
+  )
+}
+
 function isInternalOpfsPath(targetPath: string) {
   return webSafePathSplit(normalizePathForSync(targetPath)).includes(
     INTERNAL_OPFS_META_FILE
@@ -153,6 +285,65 @@ function isInternalOpfsPath(targetPath: string) {
 
 function isConfiguredForCloud() {
   return config.enabled === true
+}
+
+function getSyncScopeProjectPath(projectPath: string | undefined) {
+  if (!projectPath) {
+    return undefined
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  return isProjectPathInDirectory(
+    normalizedProjectPath,
+    getConfiguredProjectDirectoryPath()
+  )
+    ? normalizedProjectPath
+    : undefined
+}
+
+function projectPathMatchesSyncScope(projectPath: string) {
+  return (
+    !syncScopeProjectPath ||
+    normalizePathForSync(projectPath) === syncScopeProjectPath
+  )
+}
+
+function outboxEntriesForProject(entries: OutboxEntry[], projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  return entries.filter(
+    (entry) => normalizePathForSync(entry.projectPath) === normalizedProjectPath
+  )
+}
+
+export type OpfsCloudSyncScopePlan = {
+  shouldSyncRemoteIndex: boolean
+  projectPaths: string[]
+  pendingCount: number
+}
+
+export function getOpfsCloudSyncScopePlan(
+  entries: OutboxEntry[],
+  scopeProjectPath?: string
+): OpfsCloudSyncScopePlan {
+  const normalizedScopeProjectPath = scopeProjectPath
+    ? normalizePathForSync(scopeProjectPath)
+    : undefined
+  if (normalizedScopeProjectPath) {
+    return {
+      shouldSyncRemoteIndex: false,
+      projectPaths: [normalizedScopeProjectPath],
+      pendingCount: outboxEntriesForProject(entries, normalizedScopeProjectPath)
+        .length,
+    }
+  }
+
+  return {
+    shouldSyncRemoteIndex: true,
+    projectPaths: Array.from(
+      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
+    ),
+    pendingCount: entries.length,
+  }
 }
 
 function getEnvironmentName() {
@@ -222,6 +413,24 @@ export function getOpfsCloudProjectModifiedTime(
   return localModified ?? null
 }
 
+export type OpfsCloudInitialLocalProjectSyncAction = 'skip' | 'enqueue'
+
+export function getOpfsCloudInitialLocalProjectSyncAction({
+  hasBaseManifest,
+  tombstone,
+  syncExcluded,
+}: {
+  hasBaseManifest: boolean
+  tombstone: boolean
+  syncExcluded: boolean
+}): OpfsCloudInitialLocalProjectSyncAction {
+  if (syncExcluded || (hasBaseManifest && !tombstone)) {
+    return 'skip'
+  }
+
+  return 'enqueue'
+}
+
 async function writeLocalProjectTitle(projectPath: string, title: string) {
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getProjectTitleFromProjectTomlContents(projectToml) === title
@@ -288,7 +497,10 @@ async function clearOutboxEntriesForProject(projectPath: string) {
 async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
-    updateStatus({ pendingCount: entries.length })
+    updateStatus({
+      pendingCount: getOpfsCloudSyncScopePlan(entries, syncScopeProjectPath)
+        .pendingCount,
+    })
   } catch {
     updateStatus({ pendingCount: 0 })
   }
@@ -314,7 +526,10 @@ function statIsDirectory(stat: IStat) {
 async function collectLocalProjectFiles(projectRoot: string) {
   const files: ProjectArchiveFile[] = []
 
-  const walk = async (currentPath: string) => {
+  const walk = async (
+    currentPath: string,
+    gitignoreStack: GitignoreStackEntry[]
+  ) => {
     const entries = await localFs.readdir(currentPath)
     for (const entry of entries) {
       if (entry === INTERNAL_OPFS_META_FILE) {
@@ -323,22 +538,38 @@ async function collectLocalProjectFiles(projectRoot: string) {
 
       const absolutePath = localFs.join(currentPath, entry)
       const stat = await localFs.stat(absolutePath)
+      const relativePath = normalizeRelativePath(
+        localFs.relative(projectRoot, absolutePath)
+      )
+      const isDirectory = statIsDirectory(stat)
+      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+        continue
+      }
+
       if (statIsDirectory(stat)) {
-        await walk(absolutePath)
+        const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
+          localFs,
+          gitignoreStack,
+          absolutePath,
+          projectRoot
+        )
+        await walk(absolutePath, childGitignoreStack)
         continue
       }
 
       const data = await localFs.readFile(absolutePath)
       files.push({
-        relativePath: normalizeRelativePath(
-          localFs.relative(projectRoot, absolutePath)
-        ),
+        relativePath,
         data: Uint8Array.from(data),
       })
     }
   }
 
-  await walk(projectRoot)
+  const gitignoreStack = await createInitialGitignoreStackWithFs(
+    localFs,
+    projectRoot
+  )
+  await walk(projectRoot, gitignoreStack)
   return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))
 }
 
@@ -424,6 +655,10 @@ async function findLocalProjectPathByRemoteProjectId(
     if (!(await exists(candidatePath))) {
       continue
     }
+    const candidateMetadata = await getProjectMetadata(candidatePath)
+    if (isProjectSyncExcluded(candidateMetadata)) {
+      continue
+    }
     const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
       candidatePath
     ).catch(() => undefined)
@@ -447,11 +682,13 @@ async function cloneRemoteProjectToLocal(
       ? preferredProjectPath
       : await uniqueProjectPath(projectDirectory, projectName)
   const archive = await downloadRemoteProjectArchive(config, remoteProject.id)
-  const files = withRemoteProjectMetadataInArchiveFiles(
-    await parseProjectArchive(archive),
-    remoteProject.title,
-    remoteProject.id,
-    getEnvironmentName()
+  const files = filterOpfsCloudProjectFilesForSync(
+    withRemoteProjectMetadataInArchiveFiles(
+      await parseProjectArchive(archive),
+      remoteProject.title,
+      remoteProject.id,
+      getEnvironmentName()
+    )
   )
   const nextMetadata = {
     ...metadataForProject(projectPath),
@@ -564,6 +801,95 @@ async function readProjectTomlCloudProjectId(projectPath: string) {
   return projectIdPattern.exec(projectToml)?.[1]
 }
 
+async function repairExistingConflictCopies() {
+  if (conflictCopyRepairComplete) {
+    return
+  }
+
+  const projectDirectory = getConfiguredProjectDirectoryPath()
+  if (!(await exists(projectDirectory))) {
+    conflictCopyRepairComplete = true
+    return
+  }
+
+  const entries = await localFs.readdir(projectDirectory)
+  const candidates: OpfsCloudConflictCopyCleanupCandidate[] = []
+  for (const entry of entries) {
+    if (entry.startsWith('.') || !isOpfsCloudConflictCopyProjectName(entry)) {
+      continue
+    }
+
+    const projectPath = localFs.join(projectDirectory, entry)
+    const stat = await localFs.stat(projectPath).catch(() => undefined)
+    if (!stat || !statIsDirectory(stat)) {
+      continue
+    }
+
+    const remoteProjectId = await readProjectTomlCloudProjectId(
+      projectPath
+    ).catch(() => undefined)
+    const manifest = await collectLocalProjectFiles(projectPath)
+      .then(projectManifestFromFiles)
+      .catch(() => undefined)
+
+    candidates.push({
+      projectPath,
+      projectName: entry,
+      remoteProjectId,
+      manifest,
+    })
+  }
+
+  const cleanupPlan = getOpfsCloudConflictCopyCleanupPlan(candidates)
+  const candidatesByPath = new Map(
+    candidates.map((candidate) => [
+      normalizePathForSync(candidate.projectPath),
+      candidate,
+    ])
+  )
+  const deleteProjectPaths = new Set(cleanupPlan.deleteProjectPaths)
+  const createdAt = nowIso()
+
+  for (const projectPath of cleanupPlan.excludeProjectPaths) {
+    if (deleteProjectPaths.has(projectPath)) {
+      continue
+    }
+
+    const candidate = candidatesByPath.get(projectPath)
+    const metadata = await getOrCreateProjectMetadata(projectPath)
+    const remoteProjectId =
+      candidate?.remoteProjectId ?? metadata.remoteProjectId
+    const sourceProjectName = candidate
+      ? getCloudConflictSourceProjectName(candidate.projectName)
+      : undefined
+    await clearOutboxEntriesForProject(projectPath)
+    await putProjectMetadata({
+      ...metadata,
+      remoteProjectId,
+      tombstone: false,
+      syncExcluded: {
+        reason: 'conflict-copy',
+        sourceProjectPath:
+          sourceProjectName && candidate?.projectName !== sourceProjectName
+            ? localFs.join(projectDirectory, sourceProjectName)
+            : undefined,
+        remoteProjectId,
+        createdAt: metadata.syncExcluded?.createdAt ?? createdAt,
+      },
+    })
+  }
+
+  for (const projectPath of cleanupPlan.deleteProjectPaths) {
+    await clearOutboxEntriesForProject(projectPath)
+    if (await exists(projectPath)) {
+      await localFs.rm(projectPath, { recursive: true })
+    }
+    await deleteProjectMetadata(projectPath)
+  }
+
+  conflictCopyRepairComplete = true
+}
+
 function metadataForProject(projectPath: string): ProjectMetadata {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   return {
@@ -584,7 +910,7 @@ async function getOrCreateProjectMetadata(projectPath: string) {
 }
 
 async function bindRemoteProjectIdFromToml(metadata: ProjectMetadata) {
-  if (metadata.remoteProjectId) {
+  if (metadata.remoteProjectId || isProjectSyncExcluded(metadata)) {
     return metadata
   }
 
@@ -616,11 +942,14 @@ async function markProjectFailure(
     },
   }
   await putProjectMetadata(next)
-  updateStatus({
-    state: 'failed',
-    lastFailure: message,
-    lastFailureAt: next.lastFailure.at,
-  })
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'failed',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: message,
+      lastFailureAt: next.lastFailure.at,
+    })
+  }
 }
 
 function markCloudMetadataFailure(error: unknown) {
@@ -657,6 +986,10 @@ async function markProjectSynced(
     lastFailure: undefined,
     lastSyncedAt: syncedAt,
   })
+  if (!projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    return
+  }
+
   if (syncInProgress) {
     pendingStatusSyncedAt = syncedAt
     updateStatus({
@@ -729,8 +1062,37 @@ async function markProjectConflict(
   remoteFiles: ProjectArchiveFile[],
   remoteTitle?: string
 ) {
+  const createdAt = nowIso()
+  const existingConflict = metadata.conflict
+  const existingConflictProjectPath = existingConflict?.conflictProjectPath
+  if (
+    existingConflictProjectPath &&
+    (await exists(existingConflictProjectPath))
+  ) {
+    await putProjectMetadata({
+      ...metadata,
+      conflict: {
+        ...existingConflict,
+        remoteRevision,
+        conflictProjectPath: existingConflictProjectPath,
+        createdAt: existingConflict.createdAt,
+      },
+      lastFailure: {
+        message: 'Cloud sync conflict: local and remote both changed.',
+        at: createdAt,
+      },
+    })
+    updateStatus({
+      state: 'conflict',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: 'Cloud sync conflict: local and remote both changed.',
+      lastFailureAt: createdAt,
+    })
+    return
+  }
+
   const parentDirectory = localFs.dirname(metadata.localProjectPath)
-  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)
+  const stamp = createdAt.replace(/[-:]/g, '').slice(0, 15)
   const conflictName = `${metadata.projectName} (cloud conflict ${stamp})`
   const conflictProjectPath = await uniqueProjectPath(
     parentDirectory,
@@ -743,23 +1105,37 @@ async function markProjectConflict(
   )
 
   await putProjectMetadata({
+    ...metadataForProject(conflictProjectPath),
+    remoteProjectId: metadata.remoteProjectId,
+    remoteRevision,
+    syncExcluded: {
+      reason: 'conflict-copy',
+      sourceProjectPath: metadata.localProjectPath,
+      remoteProjectId: metadata.remoteProjectId,
+      createdAt,
+    },
+  })
+  await putProjectMetadata({
     ...metadata,
     conflict: {
       remoteRevision,
       conflictProjectPath,
-      createdAt: nowIso(),
+      createdAt,
     },
     lastFailure: {
       message: 'Cloud sync conflict: local and remote both changed.',
-      at: nowIso(),
+      at: createdAt,
     },
   })
-  updateStatus({
-    state: 'conflict',
-    activeProjectPath: metadata.localProjectPath,
-    lastFailure: 'Cloud sync conflict: local and remote both changed.',
-    lastFailureAt: nowIso(),
-  })
+
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'conflict',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: 'Cloud sync conflict: local and remote both changed.',
+      lastFailureAt: nowIso(),
+    })
+  }
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -882,10 +1258,16 @@ async function syncDeletedProject(metadata: ProjectMetadata) {
 
 async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   let metadata = await getOrCreateProjectMetadata(projectPath)
-  updateStatus({
-    state: 'syncing',
-    activeProjectPath: metadata.localProjectPath,
-  })
+  if (isProjectSyncExcluded(metadata)) {
+    await clearOutboxEntriesForProject(metadata.localProjectPath)
+    return
+  }
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'syncing',
+      activeProjectPath: metadata.localProjectPath,
+    })
+  }
 
   try {
     const latestKind = latestOutboxKind(entries)
@@ -1010,11 +1392,13 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       config,
       remoteProjectId
     )
-    const remoteFiles = withRemoteProjectMetadataInArchiveFiles(
-      await parseProjectArchive(remoteArchive),
-      remoteProject.title,
-      remoteProjectId,
-      getEnvironmentName()
+    const remoteFiles = filterOpfsCloudProjectFilesForSync(
+      withRemoteProjectMetadataInArchiveFiles(
+        await parseProjectArchive(remoteArchive),
+        remoteProject.title,
+        remoteProjectId,
+        getEnvironmentName()
+      )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
 
@@ -1075,7 +1459,9 @@ async function syncRemoteIndex() {
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const remoteProjects = await listRemoteProjects(config)
-  let metadata = await getAllProjectMetadata()
+  let metadata = (await getAllProjectMetadata()).filter(
+    (entry) => !isProjectSyncExcluded(entry)
+  )
   const pendingProjectPaths = new Set(
     (await getAllOutboxEntries()).map((entry) =>
       normalizePathForSync(entry.projectPath)
@@ -1278,7 +1664,12 @@ async function enqueueExistingLocalProjectsForInitialSync() {
     }
 
     const metadata = await getProjectMetadata(projectPath)
-    if (metadata?.baseManifest && !metadata.tombstone) {
+    const initialSyncAction = getOpfsCloudInitialLocalProjectSyncAction({
+      hasBaseManifest: Boolean(metadata?.baseManifest),
+      tombstone: Boolean(metadata?.tombstone),
+      syncExcluded: isProjectSyncExcluded(metadata),
+    })
+    if (initialSyncAction === 'skip') {
       continue
     }
 
@@ -1300,31 +1691,36 @@ async function runCloudSync() {
   syncInProgress = true
   pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true, state: 'syncing' })
+  const scopedProjectPath = syncScopeProjectPath
   let remoteIndexFailed = false
   let remoteIndexFailureMessage: string | undefined
 
   try {
-    await enqueueExistingLocalProjectsForInitialSync()
-    await syncRemoteIndex().catch((error) => {
-      remoteIndexFailed = true
-      remoteIndexFailureMessage = errorMessage(error)
-      updateStatus({
-        state: 'failed',
-        lastFailure: remoteIndexFailureMessage,
-        lastFailureAt: nowIso(),
+    await repairExistingConflictCopies()
+
+    let entries = await getAllOutboxEntries()
+    let syncScopePlan = getOpfsCloudSyncScopePlan(entries, scopedProjectPath)
+    if (syncScopePlan.shouldSyncRemoteIndex) {
+      await enqueueExistingLocalProjectsForInitialSync()
+      await syncRemoteIndex().catch((error) => {
+        remoteIndexFailed = true
+        remoteIndexFailureMessage = errorMessage(error)
+        updateStatus({
+          state: 'failed',
+          lastFailure: remoteIndexFailureMessage,
+          lastFailureAt: nowIso(),
+        })
       })
-    })
 
-    const entries = await getAllOutboxEntries()
-    const projectPaths = Array.from(
-      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
-    )
+      entries = await getAllOutboxEntries()
+      syncScopePlan = getOpfsCloudSyncScopePlan(entries, scopedProjectPath)
+    }
 
-    for (const projectPath of projectPaths) {
-      const projectEntries = entries.filter(
-        (entry) => normalizePathForSync(entry.projectPath) === projectPath
+    for (const projectPath of syncScopePlan.projectPaths) {
+      await syncProject(
+        projectPath,
+        outboxEntriesForProject(entries, projectPath)
       )
-      await syncProject(projectPath, projectEntries)
     }
 
     await refreshPendingCount()
@@ -1363,7 +1759,7 @@ async function runCloudSync() {
       state: 'failed',
       lastFailure: errorMessage(error),
       lastFailureAt: nowIso(),
-      activeProjectPath: undefined,
+      activeProjectPath: scopedProjectPath,
       ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
     })
     scheduleSync(SYNC_RETRY_MS)
@@ -1396,6 +1792,36 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
 function scheduleRemoteIndexSync(delay = 0) {
   lastRemoteIndexSyncAt = 0
   scheduleSync(delay)
+}
+
+// Home syncs the full cloud index; file routes narrow status and retries to
+// the open project so unrelated project conflicts do not pollute the editor UI.
+export function setOpfsCloudSyncProjectScope(projectPath?: string) {
+  const nextSyncScopeProjectPath = getSyncScopeProjectPath(projectPath)
+  if (syncScopeProjectPath === nextSyncScopeProjectPath) {
+    return
+  }
+
+  syncScopeProjectPath = nextSyncScopeProjectPath
+  void refreshPendingCount()
+
+  const statusProjectPath = opfsCloudSyncStatus.value.activeProjectPath
+    ? normalizePathForSync(opfsCloudSyncStatus.value.activeProjectPath)
+    : undefined
+  if (
+    nextSyncScopeProjectPath &&
+    opfsCloudSyncStatus.value.state !== 'disabled' &&
+    statusProjectPath !== nextSyncScopeProjectPath
+  ) {
+    updateStatus({
+      state: 'idle',
+      activeProjectPath: undefined,
+      lastFailure: undefined,
+      lastFailureAt: undefined,
+    })
+  }
+
+  scheduleSync(0)
 }
 
 function attachVisibilityChangeListener() {
@@ -1432,6 +1858,10 @@ async function registerProjectMutation(
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
   let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
+  if (isProjectSyncExcluded(metadata)) {
+    await clearOutboxEntriesForProject(normalizedProjectPath)
+    return
+  }
   metadata = await bindRemoteProjectIdFromToml(metadata)
 
   if (kind === 'delete') {
@@ -1480,6 +1910,9 @@ async function registerProjectRename(sourcePath: string, targetPath: string) {
         projectName: projectNameFromPath(targetProjectRoot),
         tombstone: false,
       })
+      if (isProjectSyncExcluded(sourceMetadata)) {
+        return
+      }
     }
   }
 
@@ -1531,6 +1964,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
   if (cloudIdentityChanged || projectDirectoryChanged) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
+    conflictCopyRepairComplete = false
   }
 
   if (!config.enabled) {
@@ -1540,6 +1974,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
     }
     detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
+    conflictCopyRepairComplete = false
     lastRemoteIndexSyncAt = 0
     updateStatus({
       enabled: false,
@@ -1559,6 +1994,11 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
 }
 
 export function retryOpfsCloudSync() {
+  if (syncScopeProjectPath) {
+    scheduleSync(0)
+    return
+  }
+
   scheduleRemoteIndexSync()
 }
 
