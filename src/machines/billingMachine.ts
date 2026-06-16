@@ -31,23 +31,10 @@ export interface BillingContext extends Partial<IBillingInfo> {
   pendingUpdateApiToken: undefined | string
 }
 
-export interface BillingUpdateEvent {
-  type: BillingTransition.Update
-  apiToken: string
-}
-
-export interface BillingUsageStartedEvent {
-  type: BillingTransition.UsageStarted
-}
-
-export interface BillingUsageEndedEvent {
-  type: BillingTransition.UsageEnded
-}
-
-type BillingMachineEvent =
-  | BillingUpdateEvent
-  | BillingUsageStartedEvent
-  | BillingUsageEndedEvent
+export type BillingMachineEvent =
+  | { type: BillingTransition.Update; apiToken: string }
+  | { type: BillingTransition.UsageStarted }
+  | { type: BillingTransition.UsageEnded }
 
 export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   balance: undefined,
