@@ -30,16 +30,6 @@ function isProfileEdgeArtifact(
   return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
 }
 
-function isProfileSurfaceFaceArtifact(
-  artifact: Selections['graphSelections'][number]['artifact']
-): boolean {
-  return (
-    artifact?.type === 'cap' ||
-    artifact?.type === 'wall' ||
-    artifact?.type === 'edgeCut'
-  )
-}
-
 export type ProfileGdtFunction = 'profile' | 'profileLine' | 'profileSurface'
 
 /**
@@ -994,16 +984,14 @@ export function addProfileGdt({
     selections.graphSelections.some(
       (selection) =>
         !isProfileEdgeArtifact(selection.artifact) &&
-        !isProfileSurfaceFaceArtifact(selection.artifact)
+        !isFaceArtifact(selection.artifact)
     )
   if (unsupportedSelections) {
-    return new Error(
-      'Profile supports generated faces (caps, walls, or edge cuts) or sketch/sweep edges.'
-    )
+    return new Error('Profile supports face selections or sketch/sweep edges.')
   }
 
   const faceSelections = selections.graphSelections.filter((selection) =>
-    isProfileSurfaceFaceArtifact(selection.artifact)
+    isFaceArtifact(selection.artifact)
   )
   const edgeSelections = selections.graphSelections.filter((selection) =>
     isProfileEdgeArtifact(selection.artifact)

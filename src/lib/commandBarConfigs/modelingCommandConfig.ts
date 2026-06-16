@@ -557,9 +557,7 @@ export type ModelingCommandSchema = {
   }
   'GDT Profile': {
     nodeToEdit?: PathToNode
-    objects?: Selections
-    edges?: Selections
-    faces?: Selections
+    objects: Selections
     profileFunction?: ProfileGdtFunction
     datums?: KclCommandValue
     tolerance: KclCommandValue
