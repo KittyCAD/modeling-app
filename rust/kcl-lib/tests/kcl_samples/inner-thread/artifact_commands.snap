@@ -550,6 +550,22 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -557,6 +573,13 @@ description: Artifact commands inner-thread.kcl
         "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {

@@ -176,7 +176,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(result.into())
 }
 
-async fn coerce_extrude_targets(
+pub async fn coerce_extrude_targets(
     sketch_values: Vec<KclValue>,
     body_type: BodyType,
     tag_start: Option<&TagNode>,
@@ -670,7 +670,7 @@ async fn inner_extrude(
 
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
-            Extrudable::Face(face_tag) => {
+            Extrudable::FaceTag(face_tag) => {
                 let face_id = sketch_or_face_id;
                 let solid_id = match face_tag.geometry() {
                     Some(crate::execution::Geometry::Solid(solid)) => solid.id,
@@ -682,6 +682,10 @@ async fn inner_extrude(
                 };
                 BeingExtruded::Face { face_id, solid_id }
             }
+            Extrudable::Face(face) => BeingExtruded::Face {
+                face_id: face.id,
+                solid_id: face.parent_solid.solid_id,
+            },
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(

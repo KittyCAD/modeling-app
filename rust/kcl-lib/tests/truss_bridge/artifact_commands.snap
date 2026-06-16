@@ -925,6 +925,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -935,6 +951,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -1551,6 +1574,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -1561,6 +1600,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -2177,6 +2223,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -2187,6 +2249,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -2803,6 +2872,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -2813,6 +2898,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -3429,6 +3521,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -3439,6 +3547,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -4055,6 +4170,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -4065,6 +4196,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -4681,6 +4819,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -4691,6 +4845,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -5307,6 +5468,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -5317,6 +5494,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -5933,6 +6117,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -5943,6 +6143,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -6559,6 +6766,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -6569,6 +6792,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -7185,6 +7415,22 @@ description: Artifact commands truss_bridge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -7195,6 +7441,13 @@ description: Artifact commands truss_bridge.kcl
         "version": 2,
         "translate_profile_to_path": true,
         "orient_profile_perpendicular": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
