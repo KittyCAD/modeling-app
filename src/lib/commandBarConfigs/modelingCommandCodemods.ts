@@ -71,57 +71,9 @@ type ModelingCommandCodemodConfig<
   CommandName extends keyof ModelingCommandSchema,
 > = ModelingCodemod<ModelingCommandSchema[CommandName]>
 
-type ModelingCommandCodemodName =
-  | 'Extrude'
-  | 'Sweep'
-  | 'Loft'
-  | 'Revolve'
-  | 'Shell'
-  | 'Hole'
-  | 'Boolean Subtract'
-  | 'Boolean Union'
-  | 'Boolean Intersect'
-  | 'Boolean Split'
-  | 'Offset plane'
-  | 'Helix'
-  | 'Helical Gear'
-  | 'Herringbone Gear'
-  | 'Spur Gear'
-  | 'Ring Gear'
-  | 'Fillet'
-  | 'Chamfer'
-  | 'Appearance'
-  | 'Delete'
-  | 'Translate'
-  | 'Rotate'
-  | 'Scale'
-  | 'Clone'
-  | 'Mirror 3D'
-  | 'Pattern Circular 3D'
-  | 'Pattern Linear 3D'
-  | 'GDT Flatness'
-  | 'GDT Straightness'
-  | 'GDT Circularity'
-  | 'GDT Cylindricity'
-  | 'GDT Position'
-  | 'GDT Profile'
-  | 'GDT Distance'
-  | 'GDT Perpendicularity'
-  | 'GDT Angularity'
-  | 'GDT Concentricity'
-  | 'GDT Symmetry'
-  | 'GDT Runout'
-  | 'GDT Parallelism'
-  | 'GDT Annotation'
-  | 'GDT Datum'
-  | 'Flip Surface'
-  | 'Join Surfaces'
-  | 'Delete Face'
-  | 'Blend'
-
-type ModelingCommandCodemods = {
-  [CommandName in ModelingCommandCodemodName]: ModelingCommandCodemodConfig<CommandName>
-}
+type ModelingCommandCodemods = Partial<{
+  [CommandName in keyof ModelingCommandSchema]: ModelingCommandCodemodConfig<CommandName>
+}>
 
 type AddCodemodArgs<
   CommandName extends keyof ModelingCommandSchema,
