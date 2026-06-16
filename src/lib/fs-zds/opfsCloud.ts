@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals-core'
-import env from '@src/env'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs from '@src/lib/fs-zds/opfs'
@@ -221,17 +221,7 @@ function getEnvironmentName() {
     return config.environmentName
   }
 
-  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
-  if (baseDomain) {
-    return baseDomain
-  }
-
-  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
-  if (apiBaseUrl) {
-    return new URL(apiBaseUrl).hostname.replace(/^api\./, '')
-  }
-
-  return undefined
+  return getEnvironmentNameFromEnv(env())
 }
 
 function getRevision(project: RemoteProject | undefined): Revision | undefined {
