@@ -66,6 +66,7 @@ import {
   addShell,
 } from '@src/lang/modifyAst/faces'
 import {
+  type ProfileGdtFunction,
   addAngularityGdt,
   addAnnotationGdt,
   addCircularityGdt,
@@ -556,7 +557,10 @@ export type ModelingCommandSchema = {
   }
   'GDT Profile': {
     nodeToEdit?: PathToNode
-    edges: Selections
+    objects?: Selections
+    edges?: Selections
+    faces?: Selections
+    profileFunction?: ProfileGdtFunction
     datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
@@ -3373,8 +3377,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'GDT Profile': {
     description:
-      'Add profile geometric dimensioning & tolerancing annotation to edges.',
-    icon: 'gdtFlatness',
+      'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
+    icon: 'gdtProfile',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
@@ -3403,9 +3407,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      edges: {
+      objects: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
