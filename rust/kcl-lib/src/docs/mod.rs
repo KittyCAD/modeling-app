@@ -18,7 +18,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"line(end = [${0:0}, ${1:0}])"#);
+        assert_eq!(snippet, r#"line(end = [${1:0}, ${2:0}])"#);
     }
 
     #[test]
@@ -28,7 +28,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"extrude(length = ${0:10})"#);
+        assert_eq!(snippet, r#"extrude(length = ${1:10})"#);
     }
 
     #[test]
@@ -38,7 +38,7 @@ mod tests {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"fillet(radius = ${0:10}, tags = [${1:tag_or_edge_fn}])"#);
+        assert_eq!(snippet, r#"fillet(radius = ${1:10}, tags = [${2:tag_or_edge_fn}])"#);
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"startSketchOn(${0:XY})"#);
+        assert_eq!(snippet, r#"startSketchOn(${1:XY})"#);
     }
 
     #[test]
@@ -58,7 +58,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"startProfile(at = [${0:0}, ${1:0}])"#);
+        assert_eq!(snippet, r#"startProfile(at = [${1:0}, ${2:0}])"#);
     }
 
     #[test]
@@ -71,7 +71,7 @@ mod tests {
         let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"patternCircular3d(instances = ${0:10}, axis = [${1:1}, ${2:0}, ${3:0}], center = [${4:0}, ${5:0}, ${6:0}])"#
+            r#"patternCircular3d(instances = ${1:10}, axis = [${2:1}, ${3:0}, ${4:0}], center = [${5:0}, ${6:0}, ${7:0}])"#
         );
     }
 
@@ -82,7 +82,7 @@ mod tests {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"revolve(axis = ${0:X})"#);
+        assert_eq!(snippet, r#"revolve(axis = ${1:X})"#);
     }
 
     #[test]
@@ -93,7 +93,7 @@ mod tests {
         };
         let snippet = circle_fn.to_autocomplete_snippet();
         assert_eq!(
-            snippet, r#"circle(center = [${0:0}, ${1:0}], diameter = ${2:10})"#,
+            snippet, r#"circle(center = [${1:0}, ${2:0}], diameter = ${3:10})"#,
             "actual = left, expected = right"
         );
     }
@@ -107,7 +107,7 @@ mod tests {
         let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"arc(angleStart = ${0:0deg}, angleEnd = ${1:180deg}, diameter = ${2:10})"#
+            r#"arc(angleStart = ${1:0deg}, angleEnd = ${2:180deg}, diameter = ${3:10})"#
         );
     }
 
@@ -130,7 +130,7 @@ mod tests {
         let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"patternLinear2d(instances = ${0:10}, distance = ${1:10}, axis = [${2:1}, ${3:0}])"#
+            r#"patternLinear2d(instances = ${1:10}, distance = ${2:10}, axis = [${3:1}, ${4:0}])"#
         );
     }
 
@@ -141,7 +141,7 @@ mod tests {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, "appearance(color = ${0:\"#ff0000\"})");
+        assert_eq!(snippet, r##"appearance(color = ${1:"#ff0000"})"##);
     }
 
     #[test]
@@ -151,7 +151,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"loft([${0:sketch000}, ${1:sketch001}])"#);
+        assert_eq!(snippet, r#"loft([${1:sketch000}, ${2:sketch001}])"#);
     }
 
     #[test]
@@ -161,7 +161,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"sweep(path = ${0:sketch000})"#);
+        assert_eq!(snippet, r#"sweep(path = ${1:sketch000})"#);
     }
 
     #[test]
@@ -173,7 +173,7 @@ mod tests {
         let snippet = helix_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"helix(revolutions = ${0:10}, angleStart = ${1:0deg}, radius = ${2:10}, axis = ${3:X}, length = ${4:10})"#
+            r#"helix(revolutions = ${1:10}, angleStart = ${2:0deg}, radius = ${3:10}, axis = ${4:X}, length = ${5:10})"#
         );
     }
 
@@ -184,7 +184,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"union([${0:extrude001}, ${1:extrude002}])"#);
+        assert_eq!(snippet, r#"union([${1:extrude001}, ${2:extrude002}])"#);
     }
 
     #[test]
@@ -194,7 +194,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"subtract([${0:extrude001}], tools = [${1:extrude002}])"#);
+        assert_eq!(snippet, r#"subtract([${1:extrude001}], tools = [${2:extrude002}])"#);
     }
 
     #[test]
@@ -204,7 +204,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"subtract2d(tool = ${0:profileToSubtract})"#);
+        assert_eq!(snippet, r#"subtract2d(tool = ${1:profileToSubtract})"#);
     }
 
     #[test]
@@ -214,7 +214,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"intersect([${0:extrude001}, ${1:extrude002}])"#);
+        assert_eq!(snippet, r#"intersect([${1:extrude001}, ${2:extrude002}])"#);
     }
 
     #[test]
@@ -224,7 +224,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"getCommonEdge(faces = [${0:tag}, ${1:tag}])"#);
+        assert_eq!(snippet, r#"getCommonEdge(faces = [${1:tag}, ${2:tag}])"#);
     }
 
     #[test]
@@ -234,7 +234,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"scale(x = ${0:10}, y = ${1:10}, z = ${2:10})"#);
+        assert_eq!(snippet, r#"scale(x = ${1:10}, y = ${2:10}, z = ${3:10})"#);
     }
 
     #[test]
@@ -244,7 +244,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"translate(x = ${0:0}, y = ${1:0}, z = ${2:0})"#);
+        assert_eq!(snippet, r#"translate(x = ${1:0}, y = ${2:0}, z = ${3:0})"#);
     }
 
     #[test]
@@ -254,7 +254,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"rotate(roll = ${0:10}, pitch = ${1:10}, yaw = ${2:10})"#);
+        assert_eq!(snippet, r#"rotate(roll = ${1:10}, pitch = ${2:10}, yaw = ${3:10})"#);
     }
 
     #[test]
@@ -265,7 +265,7 @@ mod tests {
             panic!();
         };
         let snippet = clone_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"clone(${0:part001})"#);
+        assert_eq!(snippet, r#"clone(${1:part001})"#);
     }
 
     #[test]
@@ -275,7 +275,7 @@ mod tests {
             panic!();
         };
         let snippet = offset_plane_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"offsetPlane(${0:XY}, offset = ${1:10})"#);
+        assert_eq!(snippet, r#"offsetPlane(${1:XY}, offset = ${2:10})"#);
     }
 
     #[test]

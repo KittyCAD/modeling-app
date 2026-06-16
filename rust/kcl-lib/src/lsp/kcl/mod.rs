@@ -376,7 +376,7 @@ impl Backend {
                 filter_text: Some(arg_name.to_owned()),
                 insert_text: {
                     // let snippet = "${0:x}";
-                    if let Some(snippet) = arg_data.props.get_autocomplete_snippet(0).map(|(_i, snippet)| snippet) {
+                    if let Some(snippet) = arg_data.props.get_autocomplete_snippet(1).map(|(_i, snippet)| snippet) {
                         Some(snippet)
                     } else {
                         Some(format!("{arg_name} = "))

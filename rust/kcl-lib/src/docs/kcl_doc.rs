@@ -704,31 +704,31 @@ impl FnData {
 
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
-            return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+            return "loft([${1:sketch000}, ${2:sketch001}])".to_owned();
         } else if self.name == "union" {
-            return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+            return "union([${1:extrude001}, ${2:extrude002}])".to_owned();
         } else if self.name == "split" {
-            return "split([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+            return "split([${1:extrude001}], tools = [${2:extrude002}])".to_owned();
         } else if self.name == "subtract" {
-            return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+            return "subtract([${1:extrude001}], tools = [${2:extrude002}])".to_owned();
         } else if self.name == "subtract2d" {
-            return "subtract2d(tool = ${0:profileToSubtract})".to_owned();
+            return "subtract2d(tool = ${1:profileToSubtract})".to_owned();
         } else if self.name == "intersect" {
-            return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
+            return "intersect([${1:extrude001}, ${2:extrude002}])".to_owned();
         } else if self.name == "clone" {
-            return "clone(${0:part001})".to_owned();
+            return "clone(${1:part001})".to_owned();
         } else if self.name == "hole" {
-            return "hole(${0:holeSketch}, ${1:%})".to_owned();
+            return "hole(${1:holeSketch}, ${2:%})".to_owned();
         } else if self.name == "extrude" {
-            return "extrude(length = ${0:10})".to_owned();
+            return "extrude(length = ${1:10})".to_owned();
         } else if self.name == "translate" {
-            return "translate(x = ${0:0}, y = ${1:0}, z = ${2:0})".to_owned();
+            return "translate(x = ${1:0}, y = ${2:0}, z = ${3:0})".to_owned();
         }
         let mut args = Vec::new();
-        let mut index = 0;
+        let mut next_stop = 1;
         for arg in self.args.iter() {
-            if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index) {
-                index = i + 1;
+            if let Some((last_stop, arg_str)) = arg.get_autocomplete_snippet(next_stop) {
+                next_stop = last_stop + 1;
                 args.push(arg_str);
             }
         }
@@ -967,7 +967,7 @@ impl ArgData {
         result
     }
 
-    pub fn get_autocomplete_snippet(&self, index: usize) -> Option<(usize, String)> {
+    pub fn get_autocomplete_snippet(&self, next_stop: usize) -> Option<(usize, String)> {
         match self.override_in_snippet {
             Some(false) => return None,
             None if !self.kind.required() => return None,
@@ -984,13 +984,13 @@ impl ArgData {
             snippet.push('[');
             let n = vals.len();
             for (i, val) in vals.iter().enumerate() {
-                snippet.push_str(&format!("${{{}:{}}}", index + i, val));
+                snippet.push_str(&format!("${{{}:{}}}", next_stop + i, val));
                 if i != n - 1 {
                     snippet.push_str(", ");
                 }
             }
             snippet.push(']');
-            return Some((index + n - 1, snippet));
+            return Some((next_stop + n - 1, snippet));
         }
         match self.ty.as_deref() {
             Some("Sketch") if self.kind == ArgKind::Special => None,
@@ -1002,16 +1002,19 @@ impl ArgData {
                     "arcDegrees" => "360deg",
                     _ => "10",
                 };
-                Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
+                Some((next_stop, format!(r#"{label}${{{next_stop}:{value}}}"#)))
             }
-            Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
+            Some("Point2d") => Some((
+                next_stop + 1,
+                format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, next_stop, next_stop + 1),
+            )),
             Some("Point3d") => Some((
-                index + 2,
+                next_stop + 2,
                 format!(
                     r#"{label}[${{{}:0}}, ${{{}:0}}, ${{{}:0}}]"#,
-                    index,
-                    index + 1,
-                    index + 2
+                    next_stop,
+                    next_stop + 1,
+                    next_stop + 2
                 ),
             )),
             Some("Axis2d | Edge")
@@ -1021,26 +1024,26 @@ impl ArgData {
             | Some("Axis2d | Edge | Segment")
             | Some("Axis3d | Edge | Segment")
             | Some("Axis2d | Edge | Segment | any")
-            | Some("Axis3d | Edge | Segment | any") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            | Some("Axis3d | Edge | Segment | any") => Some((next_stop, format!(r#"{label}${{{next_stop}:X}}"#))),
             Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
-                Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
+                Some((next_stop, format!(r#"{label}${{{next_stop}:sketch000}}"#)))
             }
-            Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
-            Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
-            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
+            Some("Edge") => Some((next_stop, format!(r#"{label}${{{next_stop}:tag_or_edge_fn}}"#))),
+            Some("[Edge; 1+]") => Some((next_stop, format!(r#"{label}[${{{next_stop}:tag_or_edge_fn}}]"#))),
+            Some("Plane") | Some("Solid | Plane") => Some((next_stop, format!(r#"{label}${{{next_stop}:XY}}"#))),
             Some("[TaggedFace; 2]") => Some((
-                index + 1,
-                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
+                next_stop + 1,
+                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, next_stop, next_stop + 1),
             )),
 
             Some("string") => {
                 if self.name == "color" {
-                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
+                    Some((next_stop, format!(r"{label}${{{next_stop}:{}}}", "\"#ff0000\"")))
                 } else {
-                    Some((index, format!(r#"{label}${{{index}:"string"}}"#)))
+                    Some((next_stop, format!(r#"{label}${{{next_stop}:"string"}}"#)))
                 }
             }
-            Some("bool") => Some((index, format!(r#"{label}${{{index}:false}}"#))),
+            Some("bool") => Some((next_stop, format!(r#"{label}${{{next_stop}:false}}"#))),
             _ => None,
         }
     }
