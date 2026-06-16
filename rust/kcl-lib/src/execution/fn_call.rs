@@ -319,7 +319,7 @@ impl FunctionSource {
         }
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
-        let should_attach_body_tags = should_attach_body_tags_for_call(self, &args);
+        let body_tag_names = body_tag_names_for_call(self, &args);
 
         // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
@@ -503,8 +503,8 @@ impl FunctionSource {
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
-            if should_attach_body_tags {
-                attach_body_tags_to_geometry(result, exec_state);
+            if !body_tag_names.is_empty() {
+                attach_body_tags_to_geometry(result, exec_state, &body_tag_names);
             }
         }
 
@@ -554,16 +554,23 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
     }
 }
 
-fn should_attach_body_tags_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> bool {
+fn body_tag_names_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> Vec<String> {
     let Some(std_props) = &fn_def.std_props else {
-        return false;
+        return Vec::new();
     };
 
-    std_function_allows_body_tags(&std_props.name)
-        && args
-            .labeled
-            .keys()
-            .any(|label| matches!(label.as_str(), "tag" | "tagStart" | "tagEnd"))
+    if !std_function_allows_body_tags(&std_props.name) {
+        return Vec::new();
+    }
+
+    args.labeled
+        .iter()
+        .filter(|(label, _)| matches!(label.as_str(), "tag" | "tagStart" | "tagEnd"))
+        .filter_map(|(_, arg)| match &arg.value {
+            KclValue::TagDeclarator(tag) => Some(tag.name.clone()),
+            _ => None,
+        })
+        .collect()
 }
 
 fn std_function_allows_body_tags(std_fn_name: &str) -> bool {
@@ -578,24 +585,27 @@ fn std_function_allows_body_tags(std_fn_name: &str) -> bool {
     )
 }
 
-fn attach_body_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState) {
+fn attach_body_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState, tag_names: &[String]) {
     match result {
-        KclValue::Solid { value } => attach_body_tags_to_solid(value, exec_state),
+        KclValue::Solid { value } => attach_body_tags_to_solid(value, exec_state, tag_names),
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
-                attach_body_tags_to_geometry(v, exec_state);
+                attach_body_tags_to_geometry(v, exec_state, tag_names);
             }
         }
         _ => {}
     }
 }
 
-fn attach_body_tags_to_solid(solid: &mut Solid, exec_state: &ExecState) {
+fn attach_body_tags_to_solid(solid: &mut Solid, exec_state: &ExecState, tag_names: &[String]) {
     let surfaces = solid.value.clone();
     for surface in surfaces {
         let Some(tag) = surface.get_tag() else {
             continue;
         };
+        if !tag_names.iter().any(|tag_name| tag_name == &tag.name) {
+            continue;
+        }
 
         let tag_id = solid
             .sketch()
@@ -1382,8 +1392,9 @@ profile = startSketchOn(XY)
   |> close()
 
 body = extrude(profile, length = 5, tagEnd = $top)
-lineFromBody = body.tags.line1
 topFromBody = body.tags.top
+lineFromSketch = profile.tags.line1
+legacyLine = line1
 legacyTop = top
 "#;
 
@@ -1393,10 +1404,14 @@ legacyTop = top
             panic!("expected `body` to be a solid");
         };
 
-        assert!(body.tags.contains_key("line1"), "expected side tag on body");
+        assert!(
+            !body.tags.contains_key("line1"),
+            "sketch path tags should stay off body tags"
+        );
         assert!(body.tags.contains_key("top"), "expected cap tag on body");
-        assert!(matches!(get_var(&result, "lineFromBody"), KclValue::TagIdentifier(_)));
         assert!(matches!(get_var(&result, "topFromBody"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "lineFromSketch"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "legacyLine"), KclValue::TagIdentifier(_)));
         assert!(matches!(get_var(&result, "legacyTop"), KclValue::TagIdentifier(_)));
     }
 
@@ -1436,8 +1451,8 @@ profile = startSketchOn(XY)
   |> close()
 
 body = revolve(profile, axis = Y, angle = 90, tagStart = $startCap)
-sideFromBody = body.tags.side
 startFromBody = body.tags.startCap
+sideFromSketch = profile.tags.side
 "#;
 
         let result = parse_execute(program).await.unwrap();
@@ -1446,9 +1461,12 @@ startFromBody = body.tags.startCap
             panic!("expected `body` to be a solid");
         };
 
-        assert!(body.tags.contains_key("side"), "expected side tag on revolved body");
+        assert!(
+            !body.tags.contains_key("side"),
+            "sketch path tags should stay off revolved body tags"
+        );
         assert!(body.tags.contains_key("startCap"), "expected cap tag on revolved body");
-        assert!(matches!(get_var(&result, "sideFromBody"), KclValue::TagIdentifier(_)));
         assert!(matches!(get_var(&result, "startFromBody"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "sideFromSketch"), KclValue::TagIdentifier(_)));
     }
 }
