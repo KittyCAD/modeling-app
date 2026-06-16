@@ -54,9 +54,28 @@ use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
+#[derive(Debug, Clone, Default, PartialEq)]
+pub enum KclObjectKind {
+    #[default]
+    Default,
+    SketchTags {
+        deprecated_solid_tag_names: Vec<String>,
+    },
+}
+
+impl KclObjectKind {
+    pub(crate) fn deprecated_solid_tag_names(&self) -> &[String] {
+        match self {
+            Self::Default => &[],
+            Self::SketchTags {
+                deprecated_solid_tag_names,
+            } => deprecated_solid_tag_names,
+        }
+    }
+}
+
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[expect(clippy::large_enum_variant)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
@@ -102,6 +121,9 @@ pub enum KclValue {
     Object {
         value: KclObjectFields,
         constrainable: bool,
+        #[serde(skip)]
+        #[ts(skip)]
+        object_kind: KclObjectKind,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },

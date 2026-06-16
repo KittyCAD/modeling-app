@@ -52,6 +52,7 @@ use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
+use crate::execution::kcl_value::KclObjectKind;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::SKETCH_PREFIX;
 use crate::execution::memory::{self};
@@ -2029,6 +2030,7 @@ impl Node<SketchBlock> {
         let return_value = KclValue::Object {
             value: properties,
             constrainable: Default::default(),
+            object_kind: KclObjectKind::Default,
             meta: vec![metadata],
         };
         Ok(if self.is_being_edited {
@@ -2218,6 +2220,7 @@ impl Node<SketchBlock> {
         let meta_value = KclValue::Object {
             value: meta_map,
             constrainable: false,
+            object_kind: KclObjectKind::Default,
             meta: vec![Metadata {
                 source_range: SourceRange::from(self),
             }],
@@ -3251,8 +3254,31 @@ impl Node<MemberExpression> {
                     None,
                 )),
             },
-            (KclValue::Object { value: map, .. }, Property::String(property), false) => {
+            (
+                KclValue::Object {
+                    value: map,
+                    object_kind,
+                    ..
+                },
+                Property::String(property),
+                false,
+            ) => {
                 if let Some(value) = map.get(&property) {
+                    if object_kind
+                        .deprecated_solid_tag_names()
+                        .iter()
+                        .any(|tag_name| tag_name == &property)
+                    {
+                        exec_state.warn(
+                            CompilationIssue::err(
+                                SourceRange::from(self),
+                                format!(
+                                    "Accessing solid-created tag `{property}` through sketch tags is deprecated. Prefer the body's tags instead, e.g. `body.tags.{property}`."
+                                ),
+                            ),
+                            annotations::WARN_DEPRECATED,
+                        );
+                    }
                     Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
@@ -3341,6 +3367,7 @@ impl Node<MemberExpression> {
                         .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                         .collect(),
                     constrainable: false,
+                    object_kind: KclObjectKind::Default,
                 }
                 .continue_())
             }
@@ -3364,6 +3391,14 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
                 constrainable: false,
+                object_kind: KclObjectKind::SketchTags {
+                    deprecated_solid_tag_names: sk
+                        .tags
+                        .iter()
+                        .filter(|(_, tag)| tag.is_body_created_tag())
+                        .map(|(name, _)| name.to_owned())
+                        .collect(),
+                },
             }
             .continue_()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
@@ -5321,6 +5356,7 @@ impl Node<UnaryExpression> {
                             value,
                             meta: meta.clone(),
                             constrainable: false,
+                            object_kind: KclObjectKind::Default,
                         }
                         .continue_())
                     }
@@ -5566,6 +5602,7 @@ impl Node<ObjectExpression> {
                 source_range: self.into(),
             }],
             constrainable: false,
+            object_kind: KclObjectKind::Default,
         }
         .continue_())
     }

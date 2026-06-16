@@ -1169,6 +1169,7 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
+    use crate::errors::Severity;
     use crate::execution::ContextType;
     use crate::execution::EnvironmentRef;
     use crate::execution::ExecTestResults;
@@ -1230,6 +1231,15 @@ mod test {
                 "expected body.faces not to contain sketch tag `{tag}`"
             );
         }
+    }
+
+    fn deprecated_solid_tag_access_warnings(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("Accessing solid-created tag"))
+            .collect()
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1710,5 +1720,82 @@ legacyTop = top
             ],
         );
         assert_vars_are_missing(&result, &["edge1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn accessing_body_tag_through_body_sketch_tags_warns() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $line1)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = extrude(profile, length = 5, tagEnd = $top)
+topFromSketch = body.sketch.tags.top
+topFromBody = body.tags.top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(matches!(get_var(&result, "topFromSketch"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "topFromBody"), KclValue::TagIdentifier(_)));
+
+        let warnings = deprecated_solid_tag_access_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
+        assert!(
+            warnings[0].message.contains("body.tags.top"),
+            "found {}",
+            warnings[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn accessing_sketch_path_tag_through_body_sketch_tags_does_not_warn() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $line1)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = extrude(profile, length = 5, tagEnd = $top)
+lineFromSketch = body.sketch.tags.line1
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(matches!(get_var(&result, "lineFromSketch"), KclValue::TagIdentifier(_)));
+        let warnings = deprecated_solid_tag_access_warnings(&result);
+        assert!(
+            warnings.is_empty(),
+            "sketch path tags should not get body-tag deprecation warnings: {warnings:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn accessing_body_tag_through_sketch_block_region_tags_warns() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [10, 0])
+  line2 = line(start = [10, 0], end = [10, 10])
+  line3 = line(start = [10, 10], end = [0, 10])
+  line4 = line(start = [0, 10], end = [0, 0])
+}
+
+profileRegion = region(point = [1, 1], sketch = profile)
+body = extrude(profileRegion, length = 5, tagEnd = $top)
+topFromRegion = profileRegion.tags.top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(matches!(get_var(&result, "topFromRegion"), KclValue::TagIdentifier(_)));
+
+        let warnings = deprecated_solid_tag_access_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
     }
 }
