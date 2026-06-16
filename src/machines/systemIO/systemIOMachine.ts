@@ -1000,92 +1000,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
-        [SystemIOMachineEvents.renameProject]: [
-          {
-            target: SystemIOMachineStates.renamingProject,
-            guard: SystemIOMachineGuards.projectNameIsValidLength,
-          },
-          {
-            actions: [SystemIOMachineActions.toastProjectNameTooLong],
-          },
-        ],
-        [SystemIOMachineEvents.deleteProject]: {
-          target: SystemIOMachineStates.deletingProject,
-        },
-        [SystemIOMachineEvents.createKCLFile]: {
-          target: SystemIOMachineStates.creatingKCLFile,
-        },
-        [SystemIOMachineEvents.setDefaultProjectFolderName]: {
-          actions: [SystemIOMachineActions.setDefaultProjectFolderName],
-        },
-        [SystemIOMachineEvents.importFileFromURL]: {
-          target: SystemIOMachineStates.importFileFromURL,
-        },
-        [SystemIOMachineEvents.generateTextToCAD]: {
-          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
-        },
-        [SystemIOMachineEvents.deleteKCLFile]: {
-          target: SystemIOMachineStates.deletingKCLFile,
-        },
-        [SystemIOMachineEvents.bulkCreateKCLFiles]: {
-          target: SystemIOMachineStates.bulkCreatingKCLFiles,
-        },
-        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
-          target:
-            SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
-        },
         [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
           target:
             SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
-        },
-        [SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile]: {
-          target:
-            SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
-        },
-        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
-          target: SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
-        },
-        [SystemIOMachineEvents.renameFolder]: {
-          target: SystemIOMachineStates.renamingFolder,
-        },
-        [SystemIOMachineEvents.renameFile]: {
-          target: SystemIOMachineStates.renamingFile,
-        },
-        [SystemIOMachineEvents.deleteFileOrFolder]: {
-          target: SystemIOMachineStates.deletingFileOrFolder,
-        },
-        [SystemIOMachineEvents.createBlankFile]: {
-          target: SystemIOMachineStates.creatingBlankFile,
-        },
-        [SystemIOMachineEvents.createBlankFolder]: {
-          target: SystemIOMachineStates.creatingBlankFolder,
-        },
-        [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
-          target: SystemIOMachineStates.renamingFileAndNavigateToFile,
-        },
-        [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
-          target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
-        },
-        [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
-          target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
-        },
-        [SystemIOMachineEvents.copyRecursive]: {
-          target: SystemIOMachineStates.copyingRecursive,
-        },
-        [SystemIOMachineEvents.moveRecursive]: {
-          target: SystemIOMachineStates.movingRecursive,
-        },
-        [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
-          target: SystemIOMachineStates.movingRecursiveAndNavigate,
-        },
-        [SystemIOMachineEvents.getMlEphantConversations]: {
-          target: SystemIOMachineStates.gettingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.saveMlEphantConversations]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.deleteMlEphantConversation]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
       invoke: {
