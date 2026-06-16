@@ -3330,15 +3330,19 @@ impl Node<MemberExpression> {
                 }
                 .continue_())
             }
-            (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
-                // This is a common mistake.
-                Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Property `{prop}` not found on {}. You can get a solid's tags through its sketch, as in, `exampleSolid.sketch.tags`.",
-                        geometry.human_friendly_type()
-                    ),
-                    vec![self.clone().into()],
-                )))
+            (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "tags" => {
+                Ok(KclValue::Object {
+                    meta: vec![Metadata {
+                        source_range: SourceRange::from(self.clone()),
+                    }],
+                    value: solid
+                        .tags
+                        .iter()
+                        .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
+                        .collect(),
+                    constrainable: false,
+                }
+                .continue_())
             }
             (KclValue::Sketch { value: sk }, Property::String(prop), false) if prop == "tags" => Ok(KclValue::Object {
                 meta: vec![Metadata {

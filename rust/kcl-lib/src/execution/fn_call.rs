@@ -319,6 +319,7 @@ impl FunctionSource {
         }
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
+        let should_attach_body_tags = should_attach_body_tags_for_call(self, &args);
 
         // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
@@ -502,6 +503,9 @@ impl FunctionSource {
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
+            if should_attach_body_tags {
+                attach_body_tags_to_geometry(result, exec_state);
+            }
         }
 
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
@@ -550,6 +554,89 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
     }
 }
 
+fn should_attach_body_tags_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> bool {
+    let Some(std_props) = &fn_def.std_props else {
+        return false;
+    };
+
+    std_function_allows_body_tags(&std_props.name)
+        && args
+            .labeled
+            .keys()
+            .any(|label| matches!(label.as_str(), "tag" | "tagStart" | "tagEnd"))
+}
+
+fn std_function_allows_body_tags(std_fn_name: &str) -> bool {
+    matches!(
+        std_fn_name,
+        "std::sketch::extrude"
+            | "std::solid::chamfer"
+            | "std::solid::fillet"
+            | "std::sketch::sweep"
+            | "std::sketch::loft"
+            | "std::sketch::revolve"
+    )
+}
+
+fn attach_body_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState) {
+    match result {
+        KclValue::Solid { value } => attach_body_tags_to_solid(value, exec_state),
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+            for v in value {
+                attach_body_tags_to_geometry(v, exec_state);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn attach_body_tags_to_solid(solid: &mut Solid, exec_state: &ExecState) {
+    let surfaces = solid.value.clone();
+    for surface in surfaces {
+        let Some(tag) = surface.get_tag() else {
+            continue;
+        };
+
+        let tag_id = solid
+            .sketch()
+            .and_then(|sketch| sketch.tags.get(&tag.name))
+            .cloned()
+            .unwrap_or_else(|| {
+                let mut solid_copy = solid.clone();
+                clear_tags_from_solid_copy(&mut solid_copy);
+                TagIdentifier {
+                    value: tag.name.clone(),
+                    info: vec![(
+                        exec_state.stack().current_epoch(),
+                        TagEngineInfo {
+                            id: surface.get_id(),
+                            surface: Some(surface.clone()),
+                            path: None,
+                            geometry: Geometry::Solid(solid_copy),
+                        },
+                    )],
+                    meta: vec![Metadata {
+                        source_range: tag.clone().into(),
+                    }],
+                }
+            });
+
+        match solid.tags.get_mut(&tag.name) {
+            Some(existing_tag) => existing_tag.merge_info(&tag_id),
+            None => {
+                solid.tags.insert(tag.name.clone(), tag_id);
+            }
+        }
+    }
+}
+
+fn clear_tags_from_solid_copy(solid: &mut Solid) {
+    if let Some(sketch) = solid.sketch_mut() {
+        sketch.tags.clear(); // Avoid recursive tags.
+    }
+    solid.tags.clear();
+}
+
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
     let is_sketch_block = originates_from_sketch_block(&*result);
     // If the return result is a sketch or solid, we want to update the
@@ -590,9 +677,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 return Ok(());
             };
             for (v, mut solid_copy) in surfaces.iter().zip(solid_copies) {
-                if let Some(sketch) = solid_copy.sketch_mut() {
-                    sketch.tags.clear(); // Avoid recursive tags.
-                }
+                clear_tags_from_solid_copy(&mut solid_copy);
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
                     let mut is_part_of_sketch = false;
@@ -1076,6 +1161,7 @@ mod test {
     use super::*;
     use crate::execution::ContextType;
     use crate::execution::EnvironmentRef;
+    use crate::execution::ExecTestResults;
     use crate::execution::memory::Stack;
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
@@ -1084,6 +1170,15 @@ mod test {
     use crate::parsing::ast::types::Identifier;
     use crate::parsing::ast::types::Parameter;
     use crate::parsing::ast::types::Program;
+
+    fn get_var(result: &ExecTestResults, name: &str) -> KclValue {
+        result
+            .exec_state
+            .stack()
+            .memory
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
+            .unwrap_or_else(|err| panic!("expected variable `{name}` to exist: {err:?}"))
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -1274,5 +1369,86 @@ f([1, 2, 3])
 f(1, 2, 3)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_tagged_body_gets_body_tags_and_keeps_legacy_bindings() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $line1)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = extrude(profile, length = 5, tagEnd = $top)
+lineFromBody = body.tags.line1
+topFromBody = body.tags.top
+legacyTop = top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let body = get_var(&result, "body");
+        let KclValue::Solid { value: body } = body else {
+            panic!("expected `body` to be a solid");
+        };
+
+        assert!(body.tags.contains_key("line1"), "expected side tag on body");
+        assert!(body.tags.contains_key("top"), "expected cap tag on body");
+        assert!(matches!(get_var(&result, "lineFromBody"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "topFromBody"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "legacyTop"), KclValue::TagIdentifier(_)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_without_tag_arguments_does_not_get_body_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $line1)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = extrude(profile, length = 5)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let body = get_var(&result, "body");
+        let KclValue::Solid { value: body } = body else {
+            panic!("expected `body` to be a solid");
+        };
+
+        assert!(
+            body.tags.is_empty(),
+            "body tags should only be populated for tagged calls"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_tagged_body_gets_body_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [5, 0])
+  |> yLine(length = 10, tag = $side)
+  |> xLine(length = 1)
+  |> yLine(length = -10)
+  |> close()
+
+body = revolve(profile, axis = Y, angle = 90, tagStart = $startCap)
+sideFromBody = body.tags.side
+startFromBody = body.tags.startCap
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let body = get_var(&result, "body");
+        let KclValue::Solid { value: body } = body else {
+            panic!("expected `body` to be a solid");
+        };
+
+        assert!(body.tags.contains_key("side"), "expected side tag on revolved body");
+        assert!(body.tags.contains_key("startCap"), "expected cap tag on revolved body");
+        assert!(matches!(get_var(&result, "sideFromBody"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "startFromBody"), KclValue::TagIdentifier(_)));
     }
 }

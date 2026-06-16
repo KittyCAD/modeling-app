@@ -222,6 +222,7 @@ mod tests {
             value_id,
             artifact_id: ArtifactId::new(id),
             value: vec![],
+            tags: Default::default(),
             creator: SolidCreator::Procedural,
             start_cap_id: None,
             end_cap_id: None,

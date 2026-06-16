@@ -1056,6 +1056,7 @@ pub(crate) async fn do_post_extrude<'a>(
         value_id: extrude_cmd_id.into(),
         artifact_id: extrude_cmd_id,
         value: new_value,
+        tags: Default::default(),
         meta,
         units,
         sectional,
