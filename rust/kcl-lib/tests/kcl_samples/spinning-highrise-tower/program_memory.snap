@@ -24,7 +24,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "m"
     }
@@ -8924,7 +8925,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "m"
         },
@@ -9162,7 +9164,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -9397,7 +9400,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -9632,7 +9636,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -9867,7 +9872,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -10102,7 +10108,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -10337,7 +10344,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -10572,7 +10580,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -10807,7 +10816,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -11042,7 +11052,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -11277,7 +11288,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -11512,7 +11524,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -11747,7 +11760,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -11982,7 +11996,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -12217,7 +12232,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -12452,7 +12468,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -12687,7 +12704,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -12922,7 +12940,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "m"
             },
@@ -13096,7 +13115,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "m"
       },
@@ -13242,7 +13262,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "m"
                 },
@@ -13355,7 +13376,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "m"
                 },
@@ -13468,7 +13490,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "m"
                 },
@@ -13581,7 +13604,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "m"
                 },
@@ -13721,7 +13745,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "m"
               },
@@ -15708,7 +15733,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "m"
       },
