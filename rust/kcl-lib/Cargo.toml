@@ -70,9 +70,9 @@ image = { version = "0.25.10", default-features = false, features = ["png"] }
 image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
-kcl-derive-docs = { version = "0.2.164", path = "../kcl-derive-docs" }
-kcl-error = { version = "0.2.164", path = "../kcl-error" }
-kcl-syntax = { version = "0.2.164", path = "../kcl-syntax", optional = true }
+kcl-derive-docs = { version = "=0.2.164", path = "../kcl-derive-docs" }
+kcl-error = { version = "=0.2.164", path = "../kcl-error" }
+kcl-syntax = { version = "=0.2.164", path = "../kcl-syntax", optional = true }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
