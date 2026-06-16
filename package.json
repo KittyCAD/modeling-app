@@ -95,7 +95,6 @@
     "build": "npm run install:rust && . ./scripts/load-rust-env.sh && npm run install:wasm-pack:sh && npm run build:wasm && vite build",
     "build:wasm": "./scripts/build-wasm.sh",
     "build:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm.ps1",
-    "build:wasm-dev": "npm run build:wasm:dev",
     "build:wasm:dev": "./scripts/build-wasm-dev.sh",
     "build:wasm:dev:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm-dev.ps1",
     "pretest": "npm run remove-importmeta",
