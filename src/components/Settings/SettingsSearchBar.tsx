@@ -117,7 +117,7 @@ export function SettingsSearchBar({ showPlugins }: SettingsSearchBarProps) {
   )
 
   function handleSelection({ level, name }: SettingsSearchItem) {
-    void navigate(`?tab=${level}#${name}`)
+    void navigate(`?tab=${level}#${encodeURIComponent(name)}`)
   }
 
   return (

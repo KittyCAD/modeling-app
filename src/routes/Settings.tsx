@@ -73,7 +73,8 @@ export const Settings = () => {
     if (location.hash) {
       setTimeout(() => {
         // GOTCHA: Next tick required, you can instantly navigate to a path and this code will find a null element and not scroll into view.
-        const element = document.getElementById(location.hash.slice(1))
+        const elementID = decodeURIComponent(location.hash.slice(1))
+        const element = document.getElementById(elementID)
         if (element) {
           element.scrollIntoView({ block: 'center', behavior: 'smooth' })
           ;(
