@@ -19,6 +19,7 @@ import {
   enterEditFlow,
   filterOperations,
   getHideOpForArtifact,
+  getOperationLabel,
   getOperationVariableName,
   groupNestedOperations,
   groupOperationTypeStreaks,
@@ -417,9 +418,41 @@ describe('operations.test.ts', () => {
         commandName: 'GDT Profile',
         targetLabel: 'edges',
         targetExpression: '[edge001]',
+        expectedProfileFunction: 'profile',
+        expectedOperationLabel: 'Profile',
         targetValue: {
           type: 'Array',
           value: [{ type: 'Uuid', value: 'segment-id' }],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::profileLine',
+        commandName: 'GDT Profile',
+        targetLabel: 'edges',
+        targetExpression: '[edge001]',
+        expectedProfileFunction: 'profileLine',
+        expectedOperationLabel: 'Profile Line',
+        targetValue: {
+          type: 'Array',
+          value: [{ type: 'Uuid', value: 'segment-id' }],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::profileSurface',
+        commandName: 'GDT Profile',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        expectedProfileFunction: 'profileSurface',
+        expectedOperationLabel: 'Profile Surface',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
         } satisfies OpKclValue,
       },
       {
@@ -525,6 +558,8 @@ describe('operations.test.ts', () => {
         commandName,
         targetLabel,
         targetExpression,
+        expectedProfileFunction,
+        expectedOperationLabel,
         targetValue,
       }) => {
         const { rustContext } = await buildTheWorldAndNoEngineConnection()
@@ -572,8 +607,15 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
 
         const argDefaultValues = result.data.argDefaultValues as {
           datums?: { valueText: string }
+          profileFunction?: string
         }
         expect(result.data.name).toBe(commandName)
+        if (expectedOperationLabel) {
+          expect(getOperationLabel(operation)).toBe(expectedOperationLabel)
+        }
+        if (expectedProfileFunction) {
+          expect(argDefaultValues.profileFunction).toBe(expectedProfileFunction)
+        }
         expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
       }
     )
