@@ -437,22 +437,10 @@ jobs:
   vercel:
     name: e2e:web (vercel)
     runs-on: namespace-profile-ubuntu-8-cores
-    needs: build-wasm
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
 
     steps:
       - uses: actions/checkout@v6.0.2
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: prepared-ts-rs-bindings
-          path: prepared-ts-rs-bindings
-
-      - name: Copy prepared ts-rs bindings
-        run: |
-          ls -R prepared-ts-rs-bindings
-          mkdir rust/kcl-lib/bindings
-          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
