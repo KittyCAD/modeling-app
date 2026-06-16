@@ -284,7 +284,7 @@ describe('desktop utilities', () => {
           return 'dist\nnotes.txt\n'
         }
         if (path === '/test/projects/valid-project/project.toml') {
-          return 'title = "Some demo"\n\n[cloud."zoo.dev"]\nproject_id = "project-123"\n'
+          return 'title = "Some demo"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
         }
 
         return ''
