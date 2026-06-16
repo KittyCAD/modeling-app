@@ -8,6 +8,7 @@ import {
   closeOnboardingModalIfPresent,
   createProject,
   executorInputPath,
+  expectKeybindingsSettingsVisible,
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
@@ -71,8 +72,7 @@ test(
     await expect(page.getByTestId('keybindings-button')).toBeVisible()
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
-    // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
@@ -106,8 +106,7 @@ test(
     await expect(page.getByTestId('keybindings-button')).toBeVisible()
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
-    // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
