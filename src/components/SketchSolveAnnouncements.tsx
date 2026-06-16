@@ -20,8 +20,8 @@ export function Announcements({ token }: { token?: string }) {
         if (!controller.signal.aborted) {
           setAnnouncements(result.announcements)
         }
-      } catch {
-        // Silently fail - announcements are non-critical
+      } catch (e) {
+        console.error('Error fetching announcements:', e)
       }
     }
 
