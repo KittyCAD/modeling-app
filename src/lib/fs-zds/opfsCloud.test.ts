@@ -8,7 +8,7 @@ import {
   type ProjectArchiveFile,
   type ProjectManifest,
   filterOpfsCloudProjectFilesForSync,
-  getOpfsCloudConflictArtifactCleanupPlan,
+  getOpfsCloudConflictCopyCleanupPlan,
   getOpfsCloudInitialLocalProjectSyncAction,
   getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
@@ -16,7 +16,7 @@ import {
   getOpfsCloudRemoteArchiveReconciliationAction,
   getOpfsCloudRemoteIndexAction,
   getOpfsCloudSyncScopePlan,
-  isOpfsCloudConflictArtifactProjectName,
+  isOpfsCloudConflictCopyProjectName,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/fs-zds/opfsCloud'
@@ -205,7 +205,7 @@ describe('opfsCloud sync helpers', () => {
     ).toBe('adopt-matching-local')
   })
 
-  it('skips sync-excluded conflict artifacts during the initial local scan', () => {
+  it('skips sync-excluded conflict copies during the initial local scan', () => {
     expect(
       getOpfsCloudInitialLocalProjectSyncAction({
         hasBaseManifest: false,
@@ -225,21 +225,21 @@ describe('opfsCloud sync helpers', () => {
     ).toBe('enqueue')
   })
 
-  it('detects conflict artifact project folder names', () => {
+  it('detects conflict copy project folder names', () => {
     expect(
-      isOpfsCloudConflictArtifactProjectName(
+      isOpfsCloudConflictCopyProjectName(
         'demo-project (cloud conflict 20260612T001401)'
       )
     ).toBe(true)
     expect(
-      isOpfsCloudConflictArtifactProjectName(
+      isOpfsCloudConflictCopyProjectName(
         'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
       )
     ).toBe(true)
-    expect(isOpfsCloudConflictArtifactProjectName('demo-project')).toBe(false)
+    expect(isOpfsCloudConflictCopyProjectName('demo-project')).toBe(false)
   })
 
-  it('marks existing conflict artifacts as excluded and deletes exact duplicate copies', () => {
+  it('marks existing conflict copies as excluded and deletes exact duplicate copies', () => {
     const originalManifest: ProjectManifest = {
       files: {
         'main.kcl': { byteSize: 10, sha256: 'a' },
@@ -250,7 +250,7 @@ describe('opfsCloud sync helpers', () => {
         'main.kcl': { byteSize: 11, sha256: 'b' },
       },
     }
-    const cleanupPlan = getOpfsCloudConflictArtifactCleanupPlan([
+    const cleanupPlan = getOpfsCloudConflictCopyCleanupPlan([
       {
         projectPath: '/projects/demo-project',
         projectName: 'demo-project',

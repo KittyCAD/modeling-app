@@ -99,7 +99,7 @@ let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
-let conflictArtifactRepairComplete = false
+let conflictCopyRepairComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
 let syncScopeProjectPath: string | undefined
@@ -161,7 +161,7 @@ function isProjectSyncExcluded(metadata: ProjectMetadata | undefined) {
 
 const CLOUD_CONFLICT_PROJECT_NAME_PATTERN = /\s+\(cloud conflict \d{8}T\d{6}\)/g
 
-export function isOpfsCloudConflictArtifactProjectName(projectName: string) {
+export function isOpfsCloudConflictCopyProjectName(projectName: string) {
   return Boolean(projectName.match(CLOUD_CONFLICT_PROJECT_NAME_PATTERN))
 }
 
@@ -181,63 +181,68 @@ function getProjectManifestKey(manifest: ProjectManifest) {
   )
 }
 
-export type OpfsCloudConflictArtifactCleanupCandidate = {
+export type OpfsCloudConflictCopyCleanupCandidate = {
   projectPath: string
   projectName: string
   remoteProjectId?: string
   manifest?: ProjectManifest
 }
 
-export type OpfsCloudConflictArtifactCleanupPlan = {
+export type OpfsCloudConflictCopyCleanupPlan = {
   excludeProjectPaths: string[]
   deleteProjectPaths: string[]
 }
 
-export function getOpfsCloudConflictArtifactCleanupPlan(
-  candidates: OpfsCloudConflictArtifactCleanupCandidate[]
-): OpfsCloudConflictArtifactCleanupPlan {
-  const artifacts = candidates
+export function getOpfsCloudConflictCopyCleanupPlan(
+  candidates: OpfsCloudConflictCopyCleanupCandidate[]
+): OpfsCloudConflictCopyCleanupPlan {
+  const conflictCopies = candidates
     .filter((candidate) =>
-      isOpfsCloudConflictArtifactProjectName(candidate.projectName)
+      isOpfsCloudConflictCopyProjectName(candidate.projectName)
     )
     .map((candidate) => ({
       ...candidate,
       projectPath: normalizePathForSync(candidate.projectPath),
     }))
-  const excludeProjectPaths = artifacts.map((artifact) => artifact.projectPath)
+  const excludeProjectPaths = conflictCopies.map(
+    (conflictCopy) => conflictCopy.projectPath
+  )
   const deleteProjectPaths: string[] = []
-  const artifactsByRemoteProjectId = new Map<
+  const conflictCopiesByRemoteProjectId = new Map<
     string,
-    OpfsCloudConflictArtifactCleanupCandidate[]
+    OpfsCloudConflictCopyCleanupCandidate[]
   >()
-  for (const artifact of artifacts) {
-    if (!artifact.remoteProjectId || !artifact.manifest) {
+  for (const conflictCopy of conflictCopies) {
+    if (!conflictCopy.remoteProjectId || !conflictCopy.manifest) {
       continue
     }
-    artifactsByRemoteProjectId.set(artifact.remoteProjectId, [
-      ...(artifactsByRemoteProjectId.get(artifact.remoteProjectId) ?? []),
-      artifact,
+    conflictCopiesByRemoteProjectId.set(conflictCopy.remoteProjectId, [
+      ...(conflictCopiesByRemoteProjectId.get(conflictCopy.remoteProjectId) ??
+        []),
+      conflictCopy,
     ])
   }
 
-  for (const remoteProjectArtifacts of artifactsByRemoteProjectId.values()) {
+  for (const remoteProjectConflictCopies of conflictCopiesByRemoteProjectId.values()) {
     const keptManifestKeys = new Set<string>()
-    for (const artifact of remoteProjectArtifacts.toSorted((left, right) => {
-      const markerCountDelta =
-        getCloudConflictMarkerCount(left.projectName) -
-        getCloudConflictMarkerCount(right.projectName)
-      return (
-        markerCountDelta || left.projectPath.localeCompare(right.projectPath)
-      )
-    })) {
-      const manifest = artifact.manifest
+    for (const conflictCopy of remoteProjectConflictCopies.toSorted(
+      (left, right) => {
+        const markerCountDelta =
+          getCloudConflictMarkerCount(left.projectName) -
+          getCloudConflictMarkerCount(right.projectName)
+        return (
+          markerCountDelta || left.projectPath.localeCompare(right.projectPath)
+        )
+      }
+    )) {
+      const manifest = conflictCopy.manifest
       if (!manifest) {
         continue
       }
 
       const manifestKey = getProjectManifestKey(manifest)
       if (keptManifestKeys.has(manifestKey)) {
-        deleteProjectPaths.push(artifact.projectPath)
+        deleteProjectPaths.push(conflictCopy.projectPath)
         continue
       }
       keptManifestKeys.add(manifestKey)
@@ -796,24 +801,21 @@ async function readProjectTomlCloudProjectId(projectPath: string) {
   return projectIdPattern.exec(projectToml)?.[1]
 }
 
-async function repairExistingConflictArtifacts() {
-  if (conflictArtifactRepairComplete) {
+async function repairExistingConflictCopies() {
+  if (conflictCopyRepairComplete) {
     return
   }
 
   const projectDirectory = getConfiguredProjectDirectoryPath()
   if (!(await exists(projectDirectory))) {
-    conflictArtifactRepairComplete = true
+    conflictCopyRepairComplete = true
     return
   }
 
   const entries = await localFs.readdir(projectDirectory)
-  const candidates: OpfsCloudConflictArtifactCleanupCandidate[] = []
+  const candidates: OpfsCloudConflictCopyCleanupCandidate[] = []
   for (const entry of entries) {
-    if (
-      entry.startsWith('.') ||
-      !isOpfsCloudConflictArtifactProjectName(entry)
-    ) {
+    if (entry.startsWith('.') || !isOpfsCloudConflictCopyProjectName(entry)) {
       continue
     }
 
@@ -838,7 +840,7 @@ async function repairExistingConflictArtifacts() {
     })
   }
 
-  const cleanupPlan = getOpfsCloudConflictArtifactCleanupPlan(candidates)
+  const cleanupPlan = getOpfsCloudConflictCopyCleanupPlan(candidates)
   const candidatesByPath = new Map(
     candidates.map((candidate) => [
       normalizePathForSync(candidate.projectPath),
@@ -866,7 +868,7 @@ async function repairExistingConflictArtifacts() {
       remoteProjectId,
       tombstone: false,
       syncExcluded: {
-        reason: 'conflict-artifact',
+        reason: 'conflict-copy',
         sourceProjectPath:
           sourceProjectName && candidate?.projectName !== sourceProjectName
             ? localFs.join(projectDirectory, sourceProjectName)
@@ -885,7 +887,7 @@ async function repairExistingConflictArtifacts() {
     await deleteProjectMetadata(projectPath)
   }
 
-  conflictArtifactRepairComplete = true
+  conflictCopyRepairComplete = true
 }
 
 function metadataForProject(projectPath: string): ProjectMetadata {
@@ -1107,7 +1109,7 @@ async function markProjectConflict(
     remoteProjectId: metadata.remoteProjectId,
     remoteRevision,
     syncExcluded: {
-      reason: 'conflict-artifact',
+      reason: 'conflict-copy',
       sourceProjectPath: metadata.localProjectPath,
       remoteProjectId: metadata.remoteProjectId,
       createdAt,
@@ -1694,7 +1696,7 @@ async function runCloudSync() {
   let remoteIndexFailureMessage: string | undefined
 
   try {
-    await repairExistingConflictArtifacts()
+    await repairExistingConflictCopies()
 
     let entries = await getAllOutboxEntries()
     let syncScopePlan = getOpfsCloudSyncScopePlan(entries, scopedProjectPath)
@@ -1962,7 +1964,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
   if (cloudIdentityChanged || projectDirectoryChanged) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
-    conflictArtifactRepairComplete = false
+    conflictCopyRepairComplete = false
   }
 
   if (!config.enabled) {
@@ -1972,7 +1974,7 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
     }
     detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
-    conflictArtifactRepairComplete = false
+    conflictCopyRepairComplete = false
     lastRemoteIndexSyncAt = 0
     updateStatus({
       enabled: false,
