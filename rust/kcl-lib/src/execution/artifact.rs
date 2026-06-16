@@ -867,53 +867,31 @@ impl ArtifactGraph {
     }
 
     #[cfg(test)]
-    pub(crate) fn insert_subtract_composite_for_test(
+    pub(crate) fn insert_subtracted_region_sweep_cap_for_test(
         &mut self,
-        id: ArtifactId,
-        consumed: bool,
-        solid_ids: Vec<ArtifactId>,
-        tool_ids: Vec<ArtifactId>,
-        code_ref: CodeRef,
-        composite_solid_id: Option<ArtifactId>,
-    ) {
-        self.map.insert(
-            id,
-            Artifact::CompositeSolid(CompositeSolid {
-                id,
-                consumed,
-                sub_type: CompositeSolidSubType::Subtract,
-                output_index: None,
-                solid_ids,
-                tool_ids,
-                code_ref,
-                composite_solid_id,
-                pattern_ids: Vec::new(),
-            }),
-        );
-    }
+        sweep_code_ref: CodeRef,
+        composite_code_ref: CodeRef,
+        cap_sub_type: CapSubType,
+    ) -> ArtifactId {
+        let path_id = ArtifactId::new(Uuid::new_v4());
+        let solid2d_id = ArtifactId::new(Uuid::new_v4());
+        let sweep_id = ArtifactId::new(Uuid::new_v4());
+        let cap_id = ArtifactId::new(Uuid::new_v4());
+        let composite_id = ArtifactId::new(Uuid::new_v4());
 
-    #[cfg(test)]
-    pub(crate) fn insert_region_path_for_test(
-        &mut self,
-        id: ArtifactId,
-        sweep_id: Option<ArtifactId>,
-        solid2d_id: Option<ArtifactId>,
-        composite_solid_id: Option<ArtifactId>,
-        code_ref: CodeRef,
-    ) {
         self.map.insert(
-            id,
+            path_id,
             Artifact::Path(Path {
-                id,
+                id: path_id,
                 sub_type: PathSubType::Region,
                 plane_id: ArtifactId::placeholder(),
                 seg_ids: Vec::new(),
                 consumed: true,
-                sweep_id,
+                sweep_id: Some(sweep_id),
                 trajectory_sweep_id: None,
-                solid2d_id,
-                code_ref,
-                composite_solid_id,
+                solid2d_id: Some(solid2d_id),
+                code_ref: sweep_code_ref.clone(),
+                composite_solid_id: Some(composite_id),
                 sketch_block_id: None,
                 origin_path_id: None,
                 inner_path_id: None,
@@ -921,34 +899,28 @@ impl ArtifactGraph {
                 pattern_ids: Vec::new(),
             }),
         );
-    }
 
-    #[cfg(test)]
-    pub(crate) fn insert_sweep_for_test(&mut self, id: ArtifactId, path_id: ArtifactId, code_ref: CodeRef) {
         self.map.insert(
-            id,
+            sweep_id,
             Artifact::Sweep(Sweep {
-                id,
+                id: sweep_id,
                 sub_type: SweepSubType::Extrusion,
                 path_id,
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref,
+                code_ref: sweep_code_ref,
                 trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 consumed: true,
                 pattern_ids: Vec::new(),
             }),
         );
-    }
 
-    #[cfg(test)]
-    pub(crate) fn insert_cap_for_test(&mut self, id: ArtifactId, sweep_id: ArtifactId, sub_type: CapSubType) {
         self.map.insert(
-            id,
+            cap_id,
             Artifact::Cap(Cap {
-                id,
-                sub_type,
+                id: cap_id,
+                sub_type: cap_sub_type,
                 edge_cut_edge_ids: Vec::new(),
                 sweep_id,
                 path_ids: Vec::new(),
@@ -956,6 +928,23 @@ impl ArtifactGraph {
                 cmd_id: uuid::Uuid::nil(),
             }),
         );
+
+        self.map.insert(
+            composite_id,
+            Artifact::CompositeSolid(CompositeSolid {
+                id: composite_id,
+                consumed: false,
+                sub_type: CompositeSolidSubType::Subtract,
+                output_index: None,
+                solid_ids: vec![solid2d_id],
+                tool_ids: Vec::new(),
+                code_ref: composite_code_ref,
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+
+        cap_id
     }
 
     pub fn values(&self) -> impl Iterator<Item = &Artifact> {
