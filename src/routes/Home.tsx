@@ -41,7 +41,10 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import { opfsCloudSyncStatus } from '@src/lib/fs-zds/opfsCloud'
+import {
+  opfsCloudSyncStatus,
+  setOpfsCloudSyncProjectScope,
+} from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
@@ -124,6 +127,10 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+
+  useEffect(() => {
+    setOpfsCloudSyncProjectScope(undefined)
+  }, [])
 
   useEffect(() => {
     setOptimisticProjectRenames((renames) =>

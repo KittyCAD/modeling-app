@@ -20,7 +20,7 @@ import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
+import type { ActorRefFrom, EventObject } from 'xstate'
 
 export { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 
@@ -102,6 +102,8 @@ export enum SystemIOMachineActions {
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
   setMlEphantConversations = 'set ml-ephant conversations',
+  deferSystemIOEvent = 'defer system IO event',
+  flushDeferredSystemIOEvent = 'flush deferred system IO event',
 }
 
 export enum SystemIOMachineGuards {
@@ -145,6 +147,9 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  /** Event captured while checking project-directory access. */
+  deferredSystemIOEvent?: EventObject
+  lastRecursiveMoveTarget?: string
   lastOperation: any
 
   // A mapping between project id and conversation ids.

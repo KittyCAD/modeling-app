@@ -39,6 +39,7 @@ function ProjectCard({
   const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
   const [imageUrl, setImageUrl] = useState('')
+  /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
     projectPath: string
     name: string
