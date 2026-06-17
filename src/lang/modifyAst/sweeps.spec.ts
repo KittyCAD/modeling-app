@@ -46,6 +46,12 @@ let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
+const TESTS_WITHOUT_ENGINE_WORLD = [
+  'forces version 2 when no version is provided',
+  'preserves an explicit version',
+  'does not add version 2 when editing old sweep code without version',
+]
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -53,6 +59,13 @@ let rustContextInThisFile: RustContext = null!
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
+  const currentTestName = expect.getState().currentTestName ?? ''
+  if (
+    TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name))
+  ) {
+    return
+  }
+
   if (instanceInThisFile) {
     return
   }
@@ -65,7 +78,7 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 // TODO: two different methods for the same thing. Why?
@@ -1418,6 +1431,103 @@ profile003 = startProfile(sketch002, at = [0, 0])
     })
 
     // Note: helix sweep will be done in e2e since helix artifacts aren't created by the engineless executor
+
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [0, 0])
+  |> xLine(length = -5)
+  |> tangentialArc(endAbsolute = [-20, 5])`
+
+    async function setupSweep(sourceCode = code) {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const ast = assertParse(sourceCode, instance)
+      if (err(ast)) throw ast
+
+      const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+      const paths = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'path'
+      )
+      expect(paths).toHaveLength(2)
+
+      return {
+        ast,
+        artifactGraph,
+        instance,
+        rustContext,
+        sketches: createSelectionFromArtifacts([paths[0]], artifactGraph),
+        path: createSelectionFromArtifacts([paths[1]], artifactGraph),
+      }
+    }
+
+    it('forces version 2 when no version is provided', async () => {
+      const { ast, artifactGraph, sketches, path, instance } =
+        await setupSweep()
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        wasmInstance: instance,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instance)).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
+    })
+
+    it('preserves an explicit version', async () => {
+      const { ast, artifactGraph, sketches, path, instance, rustContext } =
+        await setupSweep()
+      const version = await getKclCommandValue('1', instance, rustContext)
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        version,
+        wasmInstance: instance,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instance)).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  version = 1,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
+    })
+
+    it('does not add version 2 when editing old sweep code without version', async () => {
+      const oldSweepCode = `${code}
+sweep001 = sweep(profile001, path = profile002)`
+      const { ast, artifactGraph, sketches, path, instance } =
+        await setupSweep(oldSweepCode)
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instance,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instance)
+      expect(newCode).toContain(
+        'sweep001 = sweep(profile001, path = profile002)'
+      )
+      expect(newCode).not.toContain('version = 2')
+      expect(newCode).not.toContain('translateProfileToPath')
+      expect(newCode).not.toContain('orientProfilePerpendicular')
+    })
   })
 
   describe('Testing addLoft', () => {
