@@ -54,7 +54,7 @@ use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub enum KclObjectKind {
     #[default]
     Default,
@@ -64,6 +64,13 @@ pub enum KclObjectKind {
 }
 
 impl KclObjectKind {
+    fn is_default(&self) -> bool {
+        match self {
+            KclObjectKind::Default => true,
+            KclObjectKind::SketchTags { .. } => false,
+        }
+    }
+
     pub(crate) fn deprecated_solid_tag_names(&self) -> &[String] {
         match self {
             Self::Default => &[],
@@ -121,7 +128,7 @@ pub enum KclValue {
     Object {
         value: KclObjectFields,
         constrainable: bool,
-        #[serde(skip)]
+        #[serde(default, skip_serializing_if = "KclObjectKind::is_default")]
         #[ts(skip)]
         object_kind: KclObjectKind,
         #[serde(skip)]
