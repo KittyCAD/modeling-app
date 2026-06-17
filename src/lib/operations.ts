@@ -74,6 +74,9 @@ type ExecuteCommandEvent = CommandBarMachineEvent & {
 }
 type ExecuteCommandEventPayload = ExecuteCommandEvent['data']
 type PrepareToEditFailurePayload = { reason: string }
+type ProfileGdtFunction = NonNullable<
+  ModelingCommandSchema['GDT Profile']['profileFunction']
+>
 type PrepareToEditCallback = (
   props: Omit<EnterEditFlowProps, 'commandBarSend'>
 ) =>
@@ -93,6 +96,21 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+}
+
+function getProfileFunctionFromOperationName(
+  operationName: string
+): ProfileGdtFunction | undefined {
+  switch (operationName) {
+    case 'gdt::profile':
+      return 'profile'
+    case 'gdt::profileLine':
+      return 'profileLine'
+    case 'gdt::profileSurface':
+      return 'profileSurface'
+    default:
+      return undefined
+  }
 }
 
 // Helper functions for argument extraction
@@ -2334,11 +2352,31 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 
   const edgesArg = operation.labeledArgs?.['edges']
-  if (!edgesArg || !edgesArg.sourceRange) {
-    return { reason: 'Missing or invalid edges argument' }
+  const facesArg = operation.labeledArgs?.['faces']
+  if (edgesArg && facesArg) {
+    return { reason: 'Profile operation has both edges and faces arguments' }
+  }
+  if (!edgesArg && !facesArg) {
+    return { reason: 'Missing or invalid profile target argument' }
   }
 
-  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  let objects: Selections
+  if (edgesArg) {
+    if (!edgesArg.sourceRange) {
+      return { reason: 'Missing or invalid edges argument' }
+    }
+    objects = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  } else {
+    if (!facesArg?.sourceRange) {
+      return { reason: 'Missing or invalid faces argument' }
+    }
+    const graphSelections = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in graphSelections) {
+      return { reason: graphSelections.error }
+    }
+    objects = { graphSelections, otherSelections: [] }
+  }
+
   const tolerance = await extractKclArgument(
     code,
     operation,
@@ -2372,7 +2410,8 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
-    edges,
+    objects,
+    profileFunction: getProfileFunctionFromOperationName(operation.name),
     datums,
     tolerance,
     precision,
@@ -2740,6 +2779,184 @@ const prepareToEditGdtConcentricity: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtSymmetry: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Symmetry',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const datums = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true,
+    true
+  )
+  if ('error' in datums) {
+    return { reason: datums.error }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Symmetry'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtRunout: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Runout',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const datums = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true,
+    true
+  )
+  if ('error' in datums) {
+    return { reason: datums.error }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Runout'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -3062,6 +3279,16 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'gdtConcentricity',
     prepareToEdit: prepareToEditGdtConcentricity,
   },
+  'gdt::symmetry': {
+    label: 'Symmetry',
+    icon: 'gdtSymmetry',
+    prepareToEdit: prepareToEditGdtSymmetry,
+  },
+  'gdt::runout': {
+    label: 'Runout',
+    icon: 'gdtRunout',
+    prepareToEdit: prepareToEditGdtRunout,
+  },
   'gdt::parallelism': {
     label: 'Parallelism',
     icon: 'parallel',
@@ -3079,6 +3306,16 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   'gdt::profile': {
     label: 'Profile',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileLine': {
+    label: 'Profile Line',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileSurface': {
+    label: 'Profile Surface',
     icon: 'gdtProfile',
     prepareToEdit: prepareToEditGdtProfile,
   },

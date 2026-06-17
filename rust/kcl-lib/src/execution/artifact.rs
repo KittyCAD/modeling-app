@@ -1,5 +1,5 @@
-use fnv::FnvHashMap;
-use fnv::FnvHashSet;
+use ahash::AHashMap;
+use ahash::AHashSet;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::EnableSketchMode;
 use kittycad_modeling_cmds::FaceIsPlanar;
@@ -892,8 +892,8 @@ fn import_statement_code_refs(
     module_infos: &ModuleInfoMap,
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
-) -> FnvHashMap<ModuleId, ImportCodeRef> {
-    let mut code_refs = FnvHashMap::default();
+) -> AHashMap<ModuleId, ImportCodeRef> {
+    let mut code_refs = AHashMap::default();
     for body_item in &ast.body {
         let BodyItem::ImportStatement(import_stmt) = body_item else {
             continue;
@@ -935,7 +935,7 @@ fn code_ref_for_range(
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     range: SourceRange,
-    import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
+    import_code_refs: &AHashMap<ModuleId, ImportCodeRef>,
 ) -> (SourceRange, NodePath) {
     if let Some(code_ref) = import_code_refs.get(&range.module_id()) {
         return (code_ref.range, code_ref.node_path.clone());
@@ -962,7 +962,7 @@ pub(super) fn build_artifact_graph(
     let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
 
-    let mut path_to_plane_id_map = FnvHashMap::default();
+    let mut path_to_plane_id_map = AHashMap::default();
     let mut current_plane_id = None;
     let import_code_refs = import_statement_code_refs(ast, module_infos, programs, item_count);
     let flattened_responses = flatten_modeling_command_responses(responses);
@@ -1026,7 +1026,7 @@ fn fill_in_node_paths(
     artifact: &mut Artifact,
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
-    import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
+    import_code_refs: &AHashMap<ModuleId, ImportCodeRef>,
 ) {
     match artifact {
         Artifact::StartSketchOnFace(face) if face.code_ref.node_path.is_empty() => {
@@ -1065,8 +1065,8 @@ fn fill_in_node_paths(
 /// responses.  The raw responses from the engine contain batches.
 fn flatten_modeling_command_responses(
     responses: &IndexMap<Uuid, WebSocketResponse>,
-) -> FnvHashMap<Uuid, OkModelingCmdResponse> {
-    let mut map = FnvHashMap::default();
+) -> AHashMap<Uuid, OkModelingCmdResponse> {
+    let mut map = AHashMap::default();
     for (cmd_id, ws_response) in responses {
         let WebSocketResponse::Success(response) = ws_response else {
             // Response not successful.
@@ -1117,9 +1117,9 @@ struct PendingEntityCloneMapping {
 /// `EntityGetAllChildUuids` queries emitted by `std::clone`.
 fn build_entity_clone_id_maps(
     artifact_commands: &[ArtifactCommand],
-    responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
-) -> FnvHashMap<Uuid, FnvHashMap<ArtifactId, ArtifactId>> {
-    let mut clone_id_maps = FnvHashMap::default();
+    responses: &AHashMap<Uuid, OkModelingCmdResponse>,
+) -> AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>> {
+    let mut clone_id_maps = AHashMap::default();
     let mut pending = Vec::new();
 
     for artifact_command in artifact_commands {
@@ -1149,7 +1149,7 @@ fn build_entity_clone_id_maps(
                     if let Some(old_child_ids) = &pending_map.old_child_ids
                         && *entity_id == pending_map.clone_cmd_id
                     {
-                        let mut id_map = FnvHashMap::default();
+                        let mut id_map = AHashMap::default();
                         id_map.insert(
                             ArtifactId::new(pending_map.old_entity_id),
                             ArtifactId::new(pending_map.clone_cmd_id),
@@ -1218,34 +1218,31 @@ fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     *base = new;
 }
 
-fn remap_id_for_clone(id: ArtifactId, entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>) -> ArtifactId {
+fn remap_id_for_clone(id: ArtifactId, entity_id_map: &AHashMap<ArtifactId, ArtifactId>) -> ArtifactId {
     entity_id_map.get(&id).copied().unwrap_or(id)
 }
 
 fn remap_opt_id_for_clone(
     id: Option<ArtifactId>,
-    entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
+    entity_id_map: &AHashMap<ArtifactId, ArtifactId>,
 ) -> Option<ArtifactId> {
     id.map(|id| remap_id_for_clone(id, entity_id_map))
 }
 
-fn remap_ids_for_clone(ids: &[ArtifactId], entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>) -> Vec<ArtifactId> {
+fn remap_ids_for_clone(ids: &[ArtifactId], entity_id_map: &AHashMap<ArtifactId, ArtifactId>) -> Vec<ArtifactId> {
     ids.iter()
         .copied()
         .map(|id| remap_id_for_clone(id, entity_id_map))
         .collect()
 }
 
-fn remap_mapped_ids_for_clone(
-    ids: &[ArtifactId],
-    entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
-) -> Vec<ArtifactId> {
+fn remap_mapped_ids_for_clone(ids: &[ArtifactId], entity_id_map: &AHashMap<ArtifactId, ArtifactId>) -> Vec<ArtifactId> {
     ids.iter().filter_map(|id| entity_id_map.get(id).copied()).collect()
 }
 
 fn remap_artifact_for_clone(
     artifact: &Artifact,
-    entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
+    entity_id_map: &AHashMap<ArtifactId, ArtifactId>,
     clone_code_ref: &CodeRef,
     clone_cmd_id: Uuid,
     source_root_id: ArtifactId,
@@ -1552,7 +1549,7 @@ fn update_consumed_csg_sweep(
     return_arr: &mut Vec<Artifact>,
     artifacts: &IndexMap<ArtifactId, Artifact>,
     sweep_id: ArtifactId,
-    consumed_sweep_ids: &mut FnvHashSet<ArtifactId>,
+    consumed_sweep_ids: &mut AHashSet<ArtifactId>,
 ) {
     if consumed_sweep_ids.insert(sweep_id)
         && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
@@ -1567,7 +1564,7 @@ fn mark_artifact_consumed_by_id(
     return_arr: &mut Vec<Artifact>,
     artifacts: &IndexMap<ArtifactId, Artifact>,
     artifact_id: ArtifactId,
-    consumed_ids: &mut FnvHashSet<ArtifactId>,
+    consumed_ids: &mut AHashSet<ArtifactId>,
 ) {
     let already_marked_as_consumed = !consumed_ids.insert(artifact_id);
     if already_marked_as_consumed {
@@ -1615,7 +1612,7 @@ fn mark_deleted_artifacts_consumed(
     object_ids: &std::collections::HashSet<Uuid>,
 ) -> Vec<Artifact> {
     let mut return_arr = Vec::new();
-    let mut consumed_ids = FnvHashSet::default();
+    let mut consumed_ids = AHashSet::default();
 
     // The order of iteration doesn't matter here, as all artifacts get marked as consumed.
     // Also the set comes from the API crate which uses HashSet.
@@ -1633,7 +1630,7 @@ fn update_csg_input_artifacts(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     input_ids: &[ArtifactId],
     composite_solid_id: Option<ArtifactId>,
-    consumed_sweep_ids: &mut FnvHashSet<ArtifactId>,
+    consumed_sweep_ids: &mut AHashSet<ArtifactId>,
 ) {
     for input_id in input_ids {
         if let Some(artifact) = artifacts.get(input_id) {
@@ -1722,13 +1719,13 @@ fn mirror_3d_artifact_updates(
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     artifact_command: &ArtifactCommand,
-    responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
-    entity_clone_id_maps: &FnvHashMap<Uuid, FnvHashMap<ArtifactId, ArtifactId>>,
-    path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
+    responses: &AHashMap<Uuid, OkModelingCmdResponse>,
+    entity_clone_id_maps: &AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>>,
+    path_to_plane_id_map: &AHashMap<Uuid, Uuid>,
     programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
-    import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
+    import_code_refs: &AHashMap<ModuleId, ImportCodeRef>,
 ) -> Result<Vec<Artifact>, KclError> {
     let uuid = artifact_command.cmd_id;
     let response = responses.get(&uuid);
@@ -2807,7 +2804,7 @@ fn artifacts_to_update(
             }
 
             let mut return_arr = Vec::new();
-            let mut consumed_sweep_ids = FnvHashSet::default();
+            let mut consumed_sweep_ids = AHashSet::default();
             let mut input_ids = solid_ids.clone();
             merge_ids(&mut input_ids, tool_ids.clone());
 
@@ -2867,7 +2864,7 @@ fn artifacts_to_update(
             }
 
             let mut return_arr = Vec::new();
-            let mut consumed_sweep_ids = FnvHashSet::default();
+            let mut consumed_sweep_ids = AHashSet::default();
 
             for input_id in solid_ids.iter().chain(tool_ids.iter()) {
                 let sweep_id = match artifacts.get(input_id) {
