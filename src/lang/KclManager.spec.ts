@@ -527,7 +527,7 @@ describe('KclManager diagnostics', () => {
   it('does not reload active editor disk updates while Zookeeper history is pending', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
-    const testInternals = kclManager as unknown as KclManager & {
+    const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
       systemDeps: { projectPath: { value: string } }
     }
