@@ -50,9 +50,13 @@ profile002 = startProfile(sketch002, at = [0, 0])
     })
     if (err(result)) throw result
 
-    expect(recast(result.modifiedAst, instance)).toContain(
-      'sweep001 = sweep(profile001, path = profile002, version = 2)'
-    )
+    expect(recast(result.modifiedAst, instance)).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
   })
 
   it('preserves an explicit version', async () => {
@@ -69,9 +73,13 @@ profile002 = startProfile(sketch002, at = [0, 0])
     })
     if (err(result)) throw result
 
-    expect(recast(result.modifiedAst, instance)).toContain(
-      'sweep001 = sweep(profile001, path = profile002, version = 1)'
-    )
+    expect(recast(result.modifiedAst, instance)).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  version = 1,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
   })
 
   it('does not add version 2 when editing old sweep code without version', async () => {
@@ -92,5 +100,7 @@ sweep001 = sweep(profile001, path = profile002)`
     const newCode = recast(result.modifiedAst, instance)
     expect(newCode).toContain('sweep001 = sweep(profile001, path = profile002)')
     expect(newCode).not.toContain('version = 2')
+    expect(newCode).not.toContain('translateProfileToPath')
+    expect(newCode).not.toContain('orientProfilePerpendicular')
   })
 })

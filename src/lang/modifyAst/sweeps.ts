@@ -320,6 +320,8 @@ export function addSweep({
   wasmInstance,
   sectional,
   relativeTo,
+  translateProfileToPath,
+  orientProfilePerpendicular,
   tagStart,
   tagEnd,
   bodyType,
@@ -333,6 +335,8 @@ export function addSweep({
   wasmInstance: ModuleType
   sectional?: boolean
   relativeTo?: SweepRelativeTo
+  translateProfileToPath?: boolean
+  orientProfilePerpendicular?: boolean
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
@@ -347,6 +351,7 @@ export function addSweep({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const isEditing = Boolean(mNodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
@@ -428,9 +433,42 @@ export function addSweep({
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
       : []
-  const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
-    : []
+  const relativeToExpr =
+    relativeTo && isEditing
+      ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
+      : []
+  const translateProfileToPathExpr =
+    translateProfileToPath !== undefined
+      ? [
+          createLabeledArg(
+            'translateProfileToPath',
+            createLiteral(translateProfileToPath, wasmInstance)
+          ),
+        ]
+      : isEditing
+        ? []
+        : [
+            createLabeledArg(
+              'translateProfileToPath',
+              createLiteral(false, wasmInstance)
+            ),
+          ]
+  const orientProfilePerpendicularExpr =
+    orientProfilePerpendicular !== undefined
+      ? [
+          createLabeledArg(
+            'orientProfilePerpendicular',
+            createLiteral(orientProfilePerpendicular, wasmInstance)
+          ),
+        ]
+      : isEditing
+        ? []
+        : [
+            createLabeledArg(
+              'orientProfilePerpendicular',
+              createLiteral(false, wasmInstance)
+            ),
+          ]
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -442,7 +480,7 @@ export function addSweep({
     : []
   const versionExpr = version
     ? [createLabeledArg('version', valueOrVariable(version))]
-    : mNodeToEdit
+    : isEditing
       ? []
       : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
@@ -455,6 +493,8 @@ export function addSweep({
     ...tagEndExpr,
     ...bodyTypeExpr,
     ...versionExpr,
+    ...translateProfileToPathExpr,
+    ...orientProfilePerpendicularExpr,
   ])
 
   if (version && 'variableName' in version && version.variableName) {

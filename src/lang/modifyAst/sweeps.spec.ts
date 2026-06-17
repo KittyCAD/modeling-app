@@ -951,9 +951,13 @@ profile002 = startProfile(sketch002, at = [0, 0])
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
-      expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, version = 2)`
-      )
+      expect(newCode).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
     })
 
     it('should add a sweep call on a cap', async () => {
@@ -988,13 +992,16 @@ profile002 = startProfile(sketch002, at = [0, 0])
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(
-        newCode
-      ).toContain(`extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
-sketch002 = startSketchOn(XZ)
-profile002 = startProfile(sketch002, at = [0, 0])
-  |> yLine(length = 5)
-sweep001 = sweep(capEnd001, path = profile002, version = 2)`)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)`
+      )
+      expect(newCode).toContain(`sweep001 = sweep(
+  capEnd001,
+  path = profile002,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
     })
 
     it('should add a sweep call from a sketch region selection', async () => {
@@ -1040,9 +1047,15 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `hidden001 = hide(s)
-region001 = region(point = [1mm, 1mm], sketch = s)
-sweep001 = sweep(region001, path = profile001, version = 2)`
+region001 = region(point = [1mm, 1mm], sketch = s)`
       )
+      expect(newCode).toContain(`sweep001 = sweep(
+  region001,
+  path = profile001,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -1093,9 +1106,15 @@ sketch002 = sketch(on = XZ) {
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `hidden001 = hide(s)
-region001 = region(point = [1mm, 1mm], sketch = s)
-sweep001 = sweep(region001, path = sketch002.line1, version = 2)`
+region001 = region(point = [1mm, 1mm], sketch = s)`
       )
+      expect(newCode).toContain(`sweep001 = sweep(
+  region001,
+  path = sketch002.line1,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -1145,9 +1164,13 @@ region001 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `sweep001 = sweep(region001, path = [sketch002.line1, sketch002.arc1], version = 2)`
-      )
+      expect(newCode).toContain(`sweep001 = sweep(
+  region001,
+  path = [sketch002.line1, sketch002.arc1],
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -1214,9 +1237,14 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
-      expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, bodyType = SURFACE, version = 2)`
-      )
+      expect(newCode).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  bodyType = SURFACE,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
     })
 
     it('should add a sweep call with surface bodyType on a sketch solve segment', async () => {
@@ -1254,13 +1282,18 @@ s2 = sketch(on = XZ) {
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `sweep001 = sweep(s.line1, path = [s2.line1, s2.arc1], bodyType = SURFACE, version = 2)`
-      )
+      expect(newCode).toContain(`sweep001 = sweep(
+  s.line1,
+  path = [s2.line1, s2.arc1],
+  bodyType = SURFACE,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a sweep call with sectional true and relativeTo setting', async () => {
+    it('should add a sweep call with sectional true and ignore relativeTo on new calls', async () => {
       const { ast, artifactGraph, sketches, path } =
         await getAstAndSketchesForSweep(
           circleAndLineCode,
@@ -1286,9 +1319,11 @@ s2 = sketch(on = XZ) {
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = sweep::SKETCH_PLANE,
   version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
 )`)
+      expect(newCode).not.toContain('relativeTo = sweep::SKETCH_PLANE')
     })
 
     it('should edit sweep call with sectional from true to false and relativeTo setting change', async () => {
@@ -1373,9 +1408,13 @@ profile003 = startProfile(sketch002, at = [0, 0])
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineAndRectProfilesCode)
-      expect(newCode).toContain(
-        `sweep001 = sweep([profile001, profile002], path = profile003, version = 2)`
-      )
+      expect(newCode).toContain(`sweep001 = sweep(
+  [profile001, profile002],
+  path = profile003,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`)
     })
 
     // Note: helix sweep will be done in e2e since helix artifacts aren't created by the engineless executor

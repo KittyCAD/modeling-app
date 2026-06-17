@@ -451,7 +451,8 @@ describe('operations.test.ts', () => {
   describe('Sweep edit flow', () => {
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      const code = 'sweep001 = sweep(capEnd001, path = profile002, version = 2)'
+      const code =
+        'sweep001 = sweep(capEnd001, path = profile002, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
       const operation = stdlib('sweep')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -480,6 +481,20 @@ describe('operations.test.ts', () => {
           },
           sourceRange: rangeOfText(code, '2'),
         },
+        translateProfileToPath: {
+          value: {
+            type: 'Bool',
+            value: false,
+          },
+          sourceRange: rangeOfText(code, 'false'),
+        },
+        orientProfilePerpendicular: {
+          value: {
+            type: 'Bool',
+            value: true,
+          },
+          sourceRange: rangeOfText(code, 'true'),
+        },
       }
 
       const result = await enterEditFlow({
@@ -504,6 +519,8 @@ describe('operations.test.ts', () => {
         sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
         path?: { graphSelections: Array<{ artifact?: Artifact }> }
         version?: { valueText: string }
+        translateProfileToPath?: boolean
+        orientProfilePerpendicular?: boolean
       }
       expect(result.data.name).toBe('Sweep')
       expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
@@ -513,6 +530,8 @@ describe('operations.test.ts', () => {
         'path'
       )
       expect(argDefaultValues.version?.valueText).toBe('2')
+      expect(argDefaultValues.translateProfileToPath).toBe(false)
+      expect(argDefaultValues.orientProfilePerpendicular).toBe(true)
     })
   })
 

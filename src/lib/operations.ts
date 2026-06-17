@@ -1324,6 +1324,32 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
+  let translateProfileToPath: boolean | undefined
+  if (
+    'translateProfileToPath' in operation.labeledArgs &&
+    operation.labeledArgs.translateProfileToPath
+  ) {
+    translateProfileToPath =
+      code.slice(
+        ...operation.labeledArgs.translateProfileToPath.sourceRange.map(
+          boundToUtf16
+        )
+      ) === 'true'
+  }
+
+  let orientProfilePerpendicular: boolean | undefined
+  if (
+    'orientProfilePerpendicular' in operation.labeledArgs &&
+    operation.labeledArgs.orientProfilePerpendicular
+  ) {
+    orientProfilePerpendicular =
+      code.slice(
+        ...operation.labeledArgs.orientProfilePerpendicular.sourceRange.map(
+          boundToUtf16
+        )
+      ) === 'true'
+  }
+
   let relativeTo: SweepRelativeTo | undefined
   if (
     'relativeTo' in operation.labeledArgs &&
@@ -1384,6 +1410,8 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     path,
     sectional,
     relativeTo,
+    translateProfileToPath,
+    orientProfilePerpendicular,
     tagStart,
     tagEnd,
     bodyType,

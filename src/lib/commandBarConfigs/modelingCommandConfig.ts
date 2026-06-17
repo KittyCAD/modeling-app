@@ -279,6 +279,8 @@ export type ModelingCommandSchema = {
     sectional?: boolean
     // TODO: figure out if we should expose `tolerance` or not
     relativeTo?: SweepRelativeTo
+    translateProfileToPath?: boolean
+    orientProfilePerpendicular?: boolean
     tagStart?: string
     tagEnd?: string
     bodyType?: KclPreludeBodyType
@@ -1200,6 +1202,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
           { name: 'Trajectory Curve', value: 'TRAJECTORY' },
         ],
+      },
+      translateProfileToPath: {
+        inputType: 'boolean',
+        required: false,
+      },
+      orientProfilePerpendicular: {
+        inputType: 'boolean',
+        required: false,
       },
       tagStart: {
         inputType: 'tagDeclarator',
