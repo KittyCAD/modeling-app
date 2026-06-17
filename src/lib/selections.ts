@@ -3,8 +3,6 @@ import { EditorSelection } from '@codemirror/state'
 import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
-  Point2d,
-  SelectedRegion,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -89,12 +87,16 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-let pendingSelectedRegion: SelectedRegion | null = null
-
-function takePendingSelectedRegion(): SelectedRegion | null {
-  const selectedRegion = pendingSelectedRegion
-  pendingSelectedRegion = null
-  return selectedRegion
+type RegionGetResolvableIntersectionInfo = {
+  segment: ArtifactId
+  intersection_segment: ArtifactId
+  intersection_index: number
+  intersection_count: number
+  curve_clockwise: boolean
+}
+type RegionGetResolvableIntersectionInfoResponse = {
+  type: 'region_get_resolvable_intersection_info'
+  data: RegionGetResolvableIntersectionInfo
 }
 
 async function getParentEntityIdForEntity(
@@ -115,22 +117,29 @@ async function getParentEntityIdForEntity(
   return parentIdResponse.data.entity_id
 }
 
-async function getSelectedRegionFromPoint(
-  selectedAtWindow: Point2d,
+async function getResolvableIntersectionInfoForRegion(
+  regionId: ArtifactId,
   engineCommandManager: ConnectionManager
-): Promise<SelectedRegion | null> {
+): Promise<RegionGetResolvableIntersectionInfo | null> {
   const response = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
-      type: 'select_region_from_point',
-      selected_at_window: selectedAtWindow,
+      type: 'region_get_resolvable_intersection_info',
+      region_id: regionId,
     },
-  })
+  } as unknown as WebSocketRequest)
   if (!isModelingResponse(response)) return null
-  const selectedRegionResponse = response.resp.data.modeling_response
-  if (selectedRegionResponse.type !== 'select_region_from_point') return null
-  return selectedRegionResponse.data.region ?? null
+  const regionInfoResponse = response.resp.data.modeling_response
+  if (
+    (regionInfoResponse as { type: string }).type !==
+    'region_get_resolvable_intersection_info'
+  ) {
+    return null
+  }
+  return (
+    regionInfoResponse as unknown as RegionGetResolvableIntersectionInfoResponse
+  ).data
 }
 
 function getSegmentArtifactForRegionSegment(
@@ -146,14 +155,11 @@ function getSegmentArtifactForRegionSegment(
   return originalSegment?.type === 'segment' ? originalSegment : segment
 }
 
-function getSketchIdForSelectedRegion(
-  selectedRegion: SelectedRegion,
+function getSketchIdForRegionInfo(
+  regionInfo: RegionGetResolvableIntersectionInfo,
   artifactGraph: ArtifactGraph
 ): ArtifactId | null {
-  const segmentIds = [
-    selectedRegion.segment,
-    selectedRegion.intersection_segment,
-  ]
+  const segmentIds = [regionInfo.segment, regionInfo.intersection_segment]
   for (const segmentId of segmentIds) {
     const segment = getSegmentArtifactForRegionSegment(segmentId, artifactGraph)
     if (!segment) continue
@@ -186,18 +192,24 @@ export async function getSketchIdForEngineRegionEntity(
   return sketch?.id ?? null
 }
 
-export function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
-  selectedRegion: SelectedRegion,
-  artifactGraph: ArtifactGraph
-): EngineRegionSelection | null {
-  const sketchId = getSketchIdForSelectedRegion(selectedRegion, artifactGraph)
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<EngineRegionSelection | null> {
+  const regionInfo = await getResolvableIntersectionInfoForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!regionInfo) return null
+
+  const sketchId = getSketchIdForRegionInfo(regionInfo, artifactGraph)
   if (!sketchId) return null
 
   const segmentIds =
-    selectedRegion.segment === selectedRegion.intersection_segment
-      ? ([selectedRegion.segment] as [ArtifactId])
-      : ([selectedRegion.segment, selectedRegion.intersection_segment] as [
+    regionInfo.segment === regionInfo.intersection_segment
+      ? ([regionInfo.segment] as [ArtifactId])
+      : ([regionInfo.segment, regionInfo.intersection_segment] as [
           ArtifactId,
           ArtifactId,
         ])
@@ -207,8 +219,11 @@ export function getEngineRegionSelectionFromEntity(
     id: regionEntityId,
     segmentIds,
     sketchId,
-    intersectionIndex: selectedRegion.intersection_index,
-    curveClockwise: selectedRegion.curve_clockwise,
+    intersectionIndex:
+      regionInfo.intersection_count > 1
+        ? regionInfo.intersection_index
+        : undefined,
+    curveClockwise: regionInfo.curve_clockwise,
   }
 }
 
@@ -280,7 +295,6 @@ export async function getEventForSelectWithPoint(
   }
 ): Promise<ModelingMachineEvent | null> {
   const { artifactGraph } = kclManager
-  const selectedRegion = takePendingSelectedRegion()
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -324,13 +338,11 @@ export async function getEventForSelectWithPoint(
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
     // we first check if it's a region
-    const regionSelection =
-      selectedRegion &&
-      getEngineRegionSelectionFromEntity(
-        data.entity_id,
-        selectedRegion,
-        artifactGraph
-      )
+    const regionSelection = await getEngineRegionSelectionFromEntity(
+      data.entity_id,
+      artifactGraph,
+      engineCommandManager
+    )
     if (regionSelection) {
       return {
         type: 'Set selection',
@@ -1134,10 +1146,6 @@ export async function sendSelectEventToEngine(
     videoRef,
     systemDeps.engineCommandManager.streamDimensions
   )
-  pendingSelectedRegion = await getSelectedRegionFromPoint(
-    { x, y },
-    systemDeps.engineCommandManager
-  )
   let res = await systemDeps.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
@@ -1148,7 +1156,6 @@ export async function sendSelectEventToEngine(
     cmd_id: uuidv4(),
   })
   if (!res) {
-    pendingSelectedRegion = null
     console.warn('No response')
     return undefined
   }
