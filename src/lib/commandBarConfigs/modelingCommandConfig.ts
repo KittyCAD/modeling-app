@@ -1168,7 +1168,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
+        selectionTypes: [
+          'solid2d',
+          'segment',
+          'cap',
+          'wall',
+          'pathRegion',
+          'engineRegion',
+        ],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
