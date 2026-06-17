@@ -1,7 +1,7 @@
 import { EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import React, { use, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -63,7 +63,6 @@ export const ModelingPageProvider = ({
   const kclManager = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
-  const location = useLocation()
   const token = auth.useToken()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor

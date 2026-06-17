@@ -17,7 +17,6 @@ import {
   getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
   getStringAfterLastSeparator,
-  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'

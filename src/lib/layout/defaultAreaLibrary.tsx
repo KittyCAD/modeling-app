@@ -158,19 +158,19 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + C',
           Component: KclEditorPane,
           useNotifications() {
+            const value =
+              kclManager?.diagnosticsSignal.value.filter(
+                (diagnostic) => diagnostic.severity === 'error'
+              ).length ?? 0
             if (!kclManager) {
               return undefined
             }
-            const value = kclManager.diagnosticsSignal.value.filter(
-              (diagnostic) => diagnostic.severity === 'error'
-            ).length
-            return useMemo(() => {
-              return {
-                value,
-                onClick: onCodeNotificationClick,
-                title: undefined,
-              }
-            }, [value])
+
+            return {
+              value,
+              onClick: onCodeNotificationClick,
+              title: undefined,
+            }
           },
         },
         files: {
@@ -178,13 +178,12 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + F',
           Component: ProjectExplorerPane,
           useNotifications() {
-            if (!kclManager) {
-              return undefined
-            }
             const title = 'Project files have runtime errors'
             // Only compute runtime errors! Compilation errors are not tracked here.
-            const errors = kclErrorsByFilename(kclManager.errorsSignal.value)
-            const value = errors.size > 0 ? 'x' : ''
+            const errors = kclManager
+              ? kclErrorsByFilename(kclManager.errorsSignal.value)
+              : undefined
+            const value = errors && errors.size > 0 ? 'x' : ''
             const onClick: MouseEventHandler = useCallback((e) => {
               e.preventDefault()
               // TODO: When we have generic file open
@@ -194,7 +193,11 @@ export const useDefaultAreaLibrary = () => {
               // Do you automatically open the project files
               // kclManager.scrollToFirstErrorDiagnosticIfExists()
             }, [])
-            return useMemo(() => ({ value, onClick, title }), [value, onClick])
+            if (!kclManager) {
+              return undefined
+            }
+
+            return { value, onClick, title }
           },
         },
         variables: {

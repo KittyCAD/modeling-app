@@ -182,9 +182,9 @@ function OpenedProjectWithoutExecutingFile() {
     ['file']
   )
   const authToken = auth.useToken()
+  const onboardingStatusSetting = settingsValues.app.onboardingStatus
   const onboardingStatus =
-    settingsValues.app.onboardingStatus.current ||
-    settingsValues.app.onboardingStatus.default
+    onboardingStatusSetting.current || onboardingStatusSetting.default
 
   useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
 
@@ -220,7 +220,7 @@ function OpenedProjectWithoutExecutingFile() {
       toast.success(
         () =>
           TutorialRequestToast({
-            onboardingStatus: settingsValues.app.onboardingStatus.current,
+            onboardingStatus: onboardingStatusSetting.current,
             navigate,
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
@@ -235,8 +235,7 @@ function OpenedProjectWithoutExecutingFile() {
       )
     }
   }, [
-    settingsValues.app.onboardingStatus.current,
-    settingsValues.app.theme.current,
+    onboardingStatusSetting,
     href,
     navigate,
     searchParams.size,
