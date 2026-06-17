@@ -1,7 +1,7 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig } from 'vitest/config'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import tsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [tsconfigPaths(), lezer()],

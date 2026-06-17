@@ -3,7 +3,7 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ExecState, Program } from '@src/lang/wasm'
+import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
@@ -69,14 +69,16 @@ export async function executeAst({
   ast,
   rustContext,
   path,
+  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
+  callbacks?: ExecCallbacks
 }): Promise<ExecutionResult> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.execute(ast, settings, path)
+    const execState = await rustContext.execute(ast, settings, path, callbacks)
     await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
@@ -94,11 +96,13 @@ export async function executeAstMock({
   rustContext,
   path,
   usePrevMemory,
+  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
   usePrevMemory?: boolean
+  callbacks?: ExecCallbacks
 }): Promise<ExecutionResult> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
@@ -106,7 +110,8 @@ export async function executeAstMock({
       ast,
       settings,
       path,
-      usePrevMemory
+      usePrevMemory,
+      callbacks
     )
 
     await rustContext.waitForAllEngineModelingCommands()

@@ -24,9 +24,9 @@ permissions:
 jobs:
   cargoclippy:
     name: cargo clippy
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
       - uses: taiki-e/install-action@just
       - name: Use correct Rust toolchain
         shell: bash

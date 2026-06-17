@@ -1,4 +1,4 @@
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import {
   collectProjectFiles,
@@ -143,11 +143,12 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.filesToDelete).toEqual([])
   })
 
-  it('collects project files from disk instead of filtered explorer children', async () => {
+  it('collects project files from disk and excludes .gitignore patterns', async () => {
     const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
     await fsZds.mkdir(fsZds.join(projectPath, '.hidden-dir'), {
       recursive: true,
     })
+    await fsZds.mkdir(fsZds.join(projectPath, 'dist'), { recursive: true })
     await fsZds.writeFile(
       fsZds.join(projectPath, 'main.kcl'),
       new TextEncoder().encode('cube()')
@@ -162,11 +163,15 @@ describe('System IO Utils', () => {
     )
     await fsZds.writeFile(
       fsZds.join(projectPath, '.gitignore'),
-      new TextEncoder().encode('dist')
+      new TextEncoder().encode('dist\nnotes.txt\n.hidden-dir/\n')
     )
     await fsZds.writeFile(
       fsZds.join(projectPath, '.hidden-dir', 'secret.txt'),
       new TextEncoder().encode('secret')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'dist', 'ignored.kcl'),
+      new TextEncoder().encode('ignored = 1')
     )
 
     try {
@@ -199,9 +204,7 @@ describe('System IO Utils', () => {
 
       expect(projectFiles.map((file) => file.relPath).sort()).toEqual([
         '.gitignore',
-        '.hidden-dir/secret.txt',
         'main.kcl',
-        'notes.txt',
         'project.toml',
       ])
     } finally {

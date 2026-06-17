@@ -7,24 +7,25 @@ import { getAngleDiff } from '@src/lib/utils'
 import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 import {
   axisConstraintIncludesOrigin,
-  getAxisConstraintLineId,
   coincidentContainsSegment,
-  getAxisConstraintPointIds,
-  getCoincidentSegmentIds,
-  getCoincidentCluster,
   getArcPoints,
+  getAxisConstraintLineId,
+  getAxisConstraintPointIds,
+  getCoincidentCluster,
+  getCoincidentSegmentIds,
   getLinePoints,
   isArcLikeSegment,
   isArcSegment,
   isConstraint,
+  isConstraintSegmentId,
   isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 export type InvisibleConstraint = Extract<
   ApiConstraint,
@@ -229,7 +230,7 @@ export function findSegmentsForInvisibleConstraint(
         return [
           constraint.kind.constraint.point,
           constraint.kind.constraint.segment,
-        ]
+        ].filter(isConstraintSegmentId)
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
@@ -408,7 +409,10 @@ function isConstrainingPointCluster(
         pointIds.includes(id)
       )
     case 'Midpoint':
-      return pointIds.includes(constraint.kind.constraint.point)
+      return (
+        isConstraintSegmentId(constraint.kind.constraint.point) &&
+        pointIds.includes(constraint.kind.constraint.point)
+      )
     default:
       return false
   }

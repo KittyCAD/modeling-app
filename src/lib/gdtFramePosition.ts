@@ -46,6 +46,9 @@ type GdtCommandData =
   | ModelingCommandSchema['GDT Profile']
   | ModelingCommandSchema['GDT Distance']
   | ModelingCommandSchema['GDT Perpendicularity']
+  | ModelingCommandSchema['GDT Angularity']
+  | ModelingCommandSchema['GDT Concentricity']
+  | ModelingCommandSchema['GDT Symmetry']
   | ModelingCommandSchema['GDT Parallelism']
   | ModelingCommandSchema['GDT Annotation']
 
@@ -59,9 +62,6 @@ function getSelectionsFromGdtData(
   }
   if ('faces' in data) {
     return data.faces
-  }
-  if ('edges' in data) {
-    return data.edges
   }
   return undefined
 }

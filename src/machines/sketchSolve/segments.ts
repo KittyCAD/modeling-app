@@ -1,12 +1,34 @@
 import type { ApiObject, SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
+import {
+  SEGMENT_WIDTH_PX,
+  STRAIGHT_SEGMENT_BODY,
+} from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { type Themes } from '@src/lib/theme'
+import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
 import { hasNumericValue } from '@src/lib/kclHelpers'
+import { type Themes } from '@src/lib/theme'
+import { hasProperty, isArray } from '@src/lib/utils'
+import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
+import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
+import { sampleControlPointSplinePoints } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  setupConstructionArcDashShader,
+  setupConstructionLineDashShader,
+} from '@src/machines/sketchSolve/constructionDashShader'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
+// Import and re-export pure utility functions
+import {
+  LIGHT_CONSTRAINED_COLOR,
+  getPointSegmentScale,
+  getSegmentColor,
+  getSegmentLineWidth,
+} from '@src/machines/sketchSolve/segmentsUtils'
 import {
   BufferGeometry,
   CircleGeometry,
@@ -19,32 +41,10 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
-import {
-  SEGMENT_WIDTH_PX,
-  STRAIGHT_SEGMENT_BODY,
-} from '@src/clientSideScene/sceneConstants'
-import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
-import { hasProperty, isArray } from '@src/lib/utils'
-// Import and re-export pure utility functions
-import {
-  getPointSegmentScale,
-  getSegmentColor,
-  getSegmentLineWidth,
-  LIGHT_CONSTRAINED_COLOR,
-} from '@src/machines/sketchSolve/segmentsUtils'
-import {
-  setupConstructionLineDashShader,
-  setupConstructionArcDashShader,
-} from '@src/machines/sketchSolve/constructionDashShader'
-import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
-import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
-import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
-import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
-import { sampleControlPointSplinePoints } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**
  * Type guard to check if a value is a uniform value object with a 'value' property.

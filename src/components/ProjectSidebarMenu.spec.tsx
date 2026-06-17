@@ -1,14 +1,24 @@
+import { Popover } from '@headlessui/react'
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
-import { afterEach, expect, describe, test, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
 
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 
-vi.mock('@src/hooks/useAbsoluteFilePath', () => ({
-  useAbsoluteFilePath: () => undefined,
-}))
+import ProjectSidebarMenu, {
+  ProjectBreadcrumbButton,
+  canNavigateHome,
+} from '@src/components/ProjectSidebarMenu'
 
-import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -45,29 +55,52 @@ const nestedFile = {
   children: null,
 } satisfies FileEntry
 
+function renderWithRouter(children: ReactNode) {
+  return render(<BrowserRouter>{children}</BrowserRouter>)
+}
+
+function renderBreadcrumb() {
+  return render(
+    <Popover>
+      <ProjectBreadcrumbButton project={projectWellFormed} file={nestedFile} />
+    </Popover>
+  )
+}
+
 describe('ProjectSidebarMenu tests', () => {
+  test('enables home navigation for desktop or cloud-backed web', () => {
+    expect(
+      canNavigateHome({ isDesktopApp: true, hasOpfsCloudFeature: false })
+    ).toBe(true)
+    expect(
+      canNavigateHome({ isDesktopApp: false, hasOpfsCloudFeature: true })
+    ).toBe(true)
+    expect(
+      canNavigateHome({ isDesktopApp: false, hasOpfsCloudFeature: false })
+    ).toBe(false)
+  })
+
   test('Disables popover menu by default', () => {
-    render(
-      <BrowserRouter>
-        <ProjectSidebarMenu project={projectWellFormed} />
-      </BrowserRouter>
-    )
+    renderWithRouter(<ProjectSidebarMenu project={projectWellFormed} />)
 
     expect(screen.getByTestId('project-name')).toHaveTextContent(
       projectWellFormed.name
     )
   })
 
-  test('Shows the full project-relative file path in the breadcrumb', () => {
-    render(
-      <BrowserRouter>
-        <ProjectSidebarMenu
-          enableMenu
-          project={projectWellFormed}
-          file={nestedFile}
-        />
-      </BrowserRouter>
+  test('Links the logo to Home when home navigation is enabled', () => {
+    renderWithRouter(
+      <ProjectSidebarMenu project={projectWellFormed} hasOpfsCloudFeature />
     )
+
+    const logoLink = screen.getByTestId('app-logo').closest('a')
+
+    expect(logoLink).toHaveAttribute('href', PATHS.HOME)
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Go home')
+  })
+
+  test('Shows the full project-relative file path in the breadcrumb', () => {
+    renderBreadcrumb()
 
     expect(screen.getByTestId('app-header-file-name')).toHaveTextContent(
       'parts / generated / nested-part.kcl'
@@ -78,15 +111,7 @@ describe('ProjectSidebarMenu tests', () => {
     vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(200)
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(100)
 
-    render(
-      <BrowserRouter>
-        <ProjectSidebarMenu
-          enableMenu
-          project={projectWellFormed}
-          file={nestedFile}
-        />
-      </BrowserRouter>
-    )
+    renderBreadcrumb()
 
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
       'Simple Box / parts / generated / nested-part.kcl'

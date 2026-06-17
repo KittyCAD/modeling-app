@@ -8,32 +8,32 @@ import {
   setup,
 } from 'xstate'
 
-import type {
-  SetSelections,
-  MouseState,
-  SegmentOverlayPayload,
-  SketchDetails,
-  SketchDetailsUpdate,
-  ExtrudeFacePlane,
-  DefaultPlane,
-  OffsetPlane,
-  SketchTool,
-  PlaneVisibilityMap,
-  ModelingMachineContext,
-  ModelingMachineInput,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
 import {
   dummyInitSketchGraphDelta,
   modelingMachineInitialInternalContext,
 } from '@src/machines/modelingSharedContext'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  ModelingMachineContext,
+  ModelingMachineInput,
+  MouseState,
+  OffsetPlane,
+  PlaneVisibilityMap,
+  SegmentOverlayPayload,
+  Selections,
+  SetSelections,
+  SketchDetails,
+  SketchDetailsUpdate,
+  SketchTool,
+} from '@src/machines/modelingSharedTypes'
 
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   ApiObject,
   SceneGraphDelta,
   SketchCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type {
   OutputFormat3d,
@@ -51,10 +51,10 @@ import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
-import type { MachineManager } from '@src/lib/MachineManager'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -94,16 +94,16 @@ import {
   applyConstraintAngleLength,
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
-  startSketchOnDefault,
   splitPipedProfile,
+  startSketchOnDefault,
 } from '@src/lang/modifyAst'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   addIntersect,
   addSplit,
@@ -114,19 +114,44 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import {
   addDeleteFace,
+  addHole,
   addOffsetPlane,
   addShell,
-  addHole,
 } from '@src/lang/modifyAst/faces'
-import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addAngularityGdt,
+  addAnnotationGdt,
+  addCircularityGdt,
+  addConcentricityGdt,
+  addCylindricityGdt,
+  addDatumGdt,
+  addDistanceGdt,
+  addFlatnessGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addPositionGdt,
+  addProfileGdt,
+  addRunoutGdt,
+  addStraightnessGdt,
+  addSymmetryGdt,
+} from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
   addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
+import { addHelix } from '@src/lang/modifyAst/geometry'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import {
   addExtrude,
   addLoft,
@@ -134,24 +159,11 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import {
-  addFlatnessGdt,
-  addDatumGdt,
-  addPositionGdt,
-  addAnnotationGdt,
-  addParallelismGdt,
-  addPerpendicularityGdt,
-  addDistanceGdt,
-  addProfileGdt,
-} from '@src/lang/modifyAst/gdt'
-import {
   addAppearance,
   addClone,
-  addMirror3D,
+  addDelete,
   addHide,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -162,8 +174,8 @@ import {
   getNodeFromPath,
   isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
-  traverse,
   stringifyPathToNode,
+  traverse,
   updatePathToNodesAfterEdit,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -172,10 +184,11 @@ import {
   getPathsFromArtifact,
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
-  isFaceFromLegacySketch,
   getSketchBlockArtifactForPathToNode,
   getSketchBlockForArtifact,
+  isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import {
   crossProduct,
   isCursorInSketchCommandRange,
@@ -192,6 +205,7 @@ import type {
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -203,7 +217,10 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
+import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
+import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
@@ -216,27 +233,18 @@ import {
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type RustContext from '@src/lib/rustContext'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { addTagForSketchOnFace } from '@src/lang/std/sketch'
-import { toPlaneName } from '@src/lib/planes'
-import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -586,7 +594,25 @@ export type ModelingMachineEvent =
         objects: Selections
       }
     }
+  | {
+      type: 'Delete'
+      data: {
+        objects: Selections
+      }
+    }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
+  | {
+      type: 'GDT Straightness'
+      data: ModelingCommandSchema['GDT Straightness']
+    }
+  | {
+      type: 'GDT Circularity'
+      data: ModelingCommandSchema['GDT Circularity']
+    }
+  | {
+      type: 'GDT Cylindricity'
+      data: ModelingCommandSchema['GDT Cylindricity']
+    }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
   | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
@@ -594,6 +620,22 @@ export type ModelingMachineEvent =
   | {
       type: 'GDT Perpendicularity'
       data: ModelingCommandSchema['GDT Perpendicularity']
+    }
+  | {
+      type: 'GDT Angularity'
+      data: ModelingCommandSchema['GDT Angularity']
+    }
+  | {
+      type: 'GDT Concentricity'
+      data: ModelingCommandSchema['GDT Concentricity']
+    }
+  | {
+      type: 'GDT Symmetry'
+      data: ModelingCommandSchema['GDT Symmetry']
+    }
+  | {
+      type: 'GDT Runout'
+      data: ModelingCommandSchema['GDT Runout']
     }
   | {
       type: 'GDT Parallelism'
@@ -1974,6 +2016,35 @@ export const modelingMachine = setup({
               otherSelections: [setSelections.selection],
             }
           }
+
+          if (setSelections.selectionType === 'defaultPlaneSelection') {
+            const { engineEvents, codeMirrorSelection } = handleSelectionBatch({
+              selections,
+              artifactGraph: kclManager.artifactGraph,
+              code: kclManager.code,
+              ast: kclManager.ast,
+              systemDeps: {
+                engineCommandManager,
+                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                wasmInstance,
+              },
+            })
+
+            if (codeMirrorSelection) {
+              // Default planes are non-code selections, so clear any previous
+              // graph selection still highlighted in the editor.
+              kclManager.editorView.dispatch({
+                selection: codeMirrorSelection,
+              })
+            }
+
+            engineEvents?.forEach((event) => {
+              engineCommandManager
+                .sendSceneCommand(event)
+                .catch(reportRejection)
+            })
+          }
+
           return {
             selectionRanges: selections,
           }
@@ -4237,11 +4308,31 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+        let ast = input.kclManager.ast
+        if (
+          input.data.draftAngle &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
+
         const astResult = addExtrude({
           ast,
           artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
           ...input.data,
         })
         if (err(astResult)) {
@@ -4795,7 +4886,25 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        let ast = input.kclManager.ast
+        if (
+          input.data.version &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            input.wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
         const astResult = addFillet({
           ...input.data,
           ast,
@@ -4836,7 +4945,25 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast, artifactGraph } = input.kclManager
+        const { artifactGraph } = input.kclManager
+        let ast = input.kclManager.ast
+        if (
+          input.data.version &&
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithNewSetting = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            input.wasmInstance
+          )
+          if (err(astWithNewSetting)) {
+            return Promise.reject(astWithNewSetting)
+          }
+
+          ast = astWithNewSetting
+        }
         const astResult = addChamfer({
           ...input.data,
           ast,
@@ -5194,6 +5321,62 @@ export const modelingMachine = setup({
         )
       }
     ),
+    deleteAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data:
+                | {
+                    objects: Selections
+                  }
+                | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let ast: Node<Program> = input.kclManager.ast
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const astWithExperimentalFeatures = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(astWithExperimentalFeatures)) {
+            return Promise.reject(astWithExperimentalFeatures)
+          }
+
+          ast = astWithExperimentalFeatures
+        }
+
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addDelete({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager
+        )
+      }
+    ),
     gdtFlatnessAstMod: fromPromise(
       async ({
         input,
@@ -5222,6 +5405,147 @@ export const modelingMachine = setup({
         })
 
         const result = addFlatnessGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtStraightnessAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Straightness'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addStraightnessGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtCircularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Circularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addCircularityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtCylindricityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Cylindricity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addCylindricityGdt({
           ...data,
           ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
@@ -5457,6 +5781,194 @@ export const modelingMachine = setup({
         })
 
         const result = addPerpendicularityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtAngularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Angularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addAngularityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtConcentricityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Concentricity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addConcentricityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtSymmetryAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Symmetry'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addSymmetryGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtRunoutAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Runout'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addRunoutGdt({
           ...data,
           ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
@@ -6290,8 +6802,24 @@ export const modelingMachine = setup({
           target: 'Applying hide',
         },
 
+        Delete: {
+          target: 'Applying delete',
+        },
+
         'GDT Flatness': {
           target: 'Applying GDT Flatness',
+        },
+
+        'GDT Straightness': {
+          target: 'Applying GDT Straightness',
+        },
+
+        'GDT Circularity': {
+          target: 'Applying GDT Circularity',
+        },
+
+        'GDT Cylindricity': {
+          target: 'Applying GDT Cylindricity',
         },
 
         'GDT Datum': {
@@ -6312,6 +6840,22 @@ export const modelingMachine = setup({
 
         'GDT Perpendicularity': {
           target: 'Applying GDT Perpendicularity',
+        },
+
+        'GDT Angularity': {
+          target: 'Applying GDT Angularity',
+        },
+
+        'GDT Concentricity': {
+          target: 'Applying GDT Concentricity',
+        },
+
+        'GDT Symmetry': {
+          target: 'Applying GDT Symmetry',
+        },
+
+        'GDT Runout': {
+          target: 'Applying GDT Runout',
         },
 
         'GDT Parallelism': {
@@ -8366,12 +8910,93 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying delete': {
+      invoke: {
+        src: 'deleteAstMod',
+        id: 'deleteAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Delete') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying GDT Flatness': {
       invoke: {
         src: 'gdtFlatnessAstMod',
         id: 'gdtFlatnessAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Flatness') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Straightness': {
+      invoke: {
+        src: 'gdtStraightnessAstMod',
+        id: 'gdtStraightnessAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Straightness') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Circularity': {
+      invoke: {
+        src: 'gdtCircularityAstMod',
+        id: 'gdtCircularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Circularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Cylindricity': {
+      invoke: {
+        src: 'gdtCylindricityAstMod',
+        id: 'gdtCylindricityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Cylindricity') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
@@ -8472,6 +9097,86 @@ export const modelingMachine = setup({
         id: 'gdtPerpendicularityAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Perpendicularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Angularity': {
+      invoke: {
+        src: 'gdtAngularityAstMod',
+        id: 'gdtAngularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Angularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Concentricity': {
+      invoke: {
+        src: 'gdtConcentricityAstMod',
+        id: 'gdtConcentricityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Concentricity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Symmetry': {
+      invoke: {
+        src: 'gdtSymmetryAstMod',
+        id: 'gdtSymmetryAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Symmetry') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Runout': {
+      invoke: {
+        src: 'gdtRunoutAstMod',
+        id: 'gdtRunoutAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Runout') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

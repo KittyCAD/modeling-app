@@ -1,47 +1,46 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KclManager } from '@src/lang/KclManager'
+import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
+import {
+  createIdentifier,
+  createLiteral,
+  createVariableDeclaration,
+} from '@src/lang/create'
+import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 /** Engine-using integration tests of modelingMachine. */
 import {
-  assertParse,
-  recast,
   type Artifact,
   type ArtifactGraph,
   type CallExpressionKw,
+  assertParse,
+  recast,
 } from '@src/lang/wasm'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
-import toast from 'react-hot-toast'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  createLiteral,
-  createIdentifier,
-  createVariableDeclaration,
-} from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
-import { vi } from 'vitest'
-import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
-import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import {
   dummyInitSketchGraphDelta,
   generateModelingMachineDefaultContext,
   modelingMachineInitialInternalContext,
 } from '@src/machines/modelingSharedContext'
-import {
-  removeSingleConstraint,
-  transformAstSketchLines,
-} from '@src/lang/std/sketchcombos'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
+import toast from 'react-hot-toast'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { vi } from 'vitest'
+import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
@@ -118,9 +117,7 @@ describe('modelingMachine.test.ts', () => {
     SetAngleLengthModal: vi.fn(),
   }))
 
-  const toastErrorSpy = vi
-    .spyOn(toast, 'error')
-    .mockImplementation(() => '' as any)
+  const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
 
   // Add this function before the test cases
   // Utility function to wait for a condition to be met
@@ -1675,8 +1672,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })
@@ -1751,8 +1747,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })

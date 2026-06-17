@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart regression_test_hide_flatten_consumed.kcl
+extension: md
+snapshot_kind: binary
+---

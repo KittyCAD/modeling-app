@@ -299,11 +299,15 @@ impl DocData {
     }
 
     pub fn is_experimental(&self) -> bool {
+        self.properties().experimental
+    }
+
+    pub fn properties(&self) -> &Properties {
         match self {
-            DocData::Fn(f) => f.properties.experimental,
-            DocData::Const(c) => c.properties.experimental,
-            DocData::Ty(t) => t.properties.experimental,
-            DocData::Mod(d) => d.properties.experimental,
+            DocData::Fn(f) => &f.properties,
+            DocData::Const(c) => &c.properties,
+            DocData::Ty(t) => &t.properties,
+            DocData::Mod(d) => &d.properties,
         }
     }
 
@@ -859,6 +863,8 @@ pub struct ExampleProperties {
 pub struct ArgData {
     /// The name of the argument.
     pub name: String,
+    /// Whether this argument is experimental.
+    pub experimental: bool,
     /// The type of the argument.
     pub ty: Option<String>,
     /// If the argument is required.
@@ -901,6 +907,7 @@ impl ArgData {
         let mut result = ArgData {
             snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
+            experimental: arg.experimental,
             ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
@@ -1007,9 +1014,14 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge | Segment") | Some("Axis3d | Edge | Segment") => {
-                Some((index, format!(r#"{label}${{{index}:X}}"#)))
-            }
+            Some("Axis2d | Edge")
+            | Some("Axis3d | Edge")
+            | Some("Axis2d | Edge | any")
+            | Some("Axis3d | Edge | any")
+            | Some("Axis2d | Edge | Segment")
+            | Some("Axis3d | Edge | Segment")
+            | Some("Axis2d | Edge | Segment | any")
+            | Some("Axis3d | Edge | Segment | any") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
             Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
                 Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
             }

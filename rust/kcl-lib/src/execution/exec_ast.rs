@@ -137,6 +137,8 @@ fn push_fixed_origin_point(
             id: origin_x_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -146,6 +148,8 @@ fn push_fixed_origin_point(
             id: origin_y_id,
             initial_value: 0.0,
             ty: sketch_var_ty,
+            // Synthesized fixed origin coord; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -394,6 +398,8 @@ fn push_circular_radius_constraints(
             id: circular_radius_id,
             initial_value: circular.radius_initial_value,
             ty: sketch_var_ty,
+            // Synthesized hidden radius for circular distance; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -434,6 +440,8 @@ fn push_circular_distance_constraints(
             id: target_distance_id,
             initial_value: distance_value,
             ty: sketch_var_ty,
+            // Synthesized hidden distance for point-circular tangency; not source-backed.
+            node_path: None,
             meta: vec![],
         }),
     });
@@ -666,7 +674,10 @@ impl ExecutorContext {
             .map_err(|err| (err, None, None))?;
 
         if preserve_mem.normal() {
-            exec_state.mut_stack().push_new_root_env(!no_prelude);
+            exec_state
+                .mut_stack()
+                .push_new_root_env(!no_prelude)
+                .map_err(|err| (err, None, None))?;
         }
 
         let result = self
@@ -676,7 +687,8 @@ impl ExecutorContext {
         let env_ref = match preserve_mem {
             PreserveMem::Always => exec_state.mut_stack().pop_and_preserve_env(),
             PreserveMem::Normal => exec_state.mut_stack().pop_env(),
-        };
+        }
+        .map_err(|err| (err, None, None))?;
         let module_artifacts = match preserve_mem {
             PreserveMem::Always => std::mem::take(&mut exec_state.mod_local.artifacts),
             PreserveMem::Normal => {
@@ -734,6 +746,19 @@ impl ExecutorContext {
                         .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;
 
+                    if let ModulePath::Local { value, .. } = &module_path {
+                        let name = import_stmt
+                            .module_name()
+                            .unwrap_or_else(|| value.file_name().unwrap_or_default());
+                        exec_state.push_op(Operation::ModuleInstance {
+                            name,
+                            module_id,
+                            glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
+                            node_path: NodePath::placeholder(),
+                            source_range,
+                        });
+                    }
+
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
                             let (env_ref, module_exports) =
@@ -741,13 +766,12 @@ impl ExecutorContext {
                             for import_item in items {
                                 // Extract the item from the module.
                                 let mem = &exec_state.stack().memory;
-                                let mut value = mem
-                                    .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
-                                    .cloned();
+                                let mut value =
+                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
                                 let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
                                 let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
+                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
                                     return Err(KclError::new_undefined_value(
@@ -844,14 +868,13 @@ impl ExecutorContext {
                                 let item = exec_state
                                     .stack()
                                     .memory
-                                    .get_from(name, env_ref, source_range, 0)
+                                    .get_from_owned(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         internal_err(
                                             format!("{name} is not defined in module (but was exported?)"),
                                             source_range,
                                         )
-                                    })?
-                                    .clone();
+                                    })?;
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
@@ -1441,7 +1464,7 @@ impl ExecutorContext {
                         let dummy = EnvironmentRef::dummy();
                         (dummy, Some(dummy))
                     } else {
-                        (exec_state.mut_stack().snapshot(), None)
+                        (exec_state.mut_stack().snapshot()?, None)
                     };
                     (
                         KclValue::Function {
@@ -1620,6 +1643,10 @@ impl Node<SketchBlock> {
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Face(_) => None,
+            };
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
@@ -1648,6 +1675,7 @@ impl Node<SketchBlock> {
                 id: artifact_id,
                 standard_plane,
                 plane_id: plane_artifact_id,
+                plane_info,
                 // Fill this in later once we create the path. We can't just add
                 // the artifact later because order relative to constraint
                 // artifacts is significant.
@@ -1666,7 +1694,7 @@ impl Node<SketchBlock> {
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
-            self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
+            self.prep_mem(exec_state.mut_stack().snapshot()?, exec_state)?;
 
             // Track that we're executing a sketch block.
             let initial_sketch_block_state = {
@@ -1688,15 +1716,17 @@ impl Node<SketchBlock> {
             // the returned sketch object.
             let (result, block_variables) = match self.load_sketch2_into_current_scope(exec_state, ctx, range).await {
                 Ok(()) => {
-                    let parent = exec_state.mut_stack().snapshot();
-                    exec_state.mut_stack().push_new_env_for_call(parent);
+                    let parent = exec_state.mut_stack().snapshot()?;
+                    exec_state.mut_stack().push_new_env_for_call(parent)?;
                     let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
-                    let block_variables = exec_state
-                        .stack()
-                        .find_all_in_current_env()
-                        .map(|(name, value)| (name.clone(), value.clone()))
-                        .collect::<IndexMap<_, _>>();
-                    exec_state.mut_stack().pop_env();
+                    let (result, block_variables) = match exec_state.stack().find_all_in_current_env() {
+                        Ok(block_variables) => (result, block_variables.into_iter().collect::<IndexMap<_, _>>()),
+                        Err(err) => (Err(err), IndexMap::new()),
+                    };
+                    let result = match exec_state.mut_stack().pop_env() {
+                        Ok(_) => result,
+                        Err(err) => Err(err),
+                    };
                     (result, block_variables)
                 }
                 Err(err) => (Err(err), IndexMap::new()),
@@ -1707,7 +1737,10 @@ impl Node<SketchBlock> {
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
             // Pop the scope used for sketch2 aliases.
-            exec_state.mut_stack().pop_env();
+            let result = match exec_state.mut_stack().pop_env() {
+                Ok(_) => result,
+                Err(err) => Err(err),
+            };
 
             (result, block_variables, sketch_block_state)
         };
@@ -1795,6 +1828,12 @@ impl Node<SketchBlock> {
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                if !outcome.converged {
+                    exec_state.warn(
+                        CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                        annotations::WARN_SOLVER,
+                    );
+                }
                 (outcome, freedom)
             }
             Err(failure) => {
@@ -1802,12 +1841,11 @@ impl Node<SketchBlock> {
                     NonLinearSystemError::FaerMatrix { .. }
                     | NonLinearSystemError::Faer { .. }
                     | NonLinearSystemError::FaerSolve { .. }
-                    | NonLinearSystemError::FaerSvd(..)
-                    | NonLinearSystemError::DidNotConverge => {
+                    | NonLinearSystemError::FaerSvd(..) => {
                         // Constraint solver failed to find a solution. Build a
                         // solution that is the initial guesses.
                         exec_state.warn(
-                            CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            CompilationIssue::err(range, "Internal error in constraint solver".to_owned()),
                             annotations::WARN_SOLVER,
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
@@ -1818,6 +1856,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                converged: false,
                             },
                             None,
                         )
@@ -2103,7 +2142,7 @@ impl Node<SketchBlock> {
             let sketch_id = exec_state.next_object_id();
             exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
 
             let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
                 let message =
@@ -2149,8 +2188,7 @@ impl Node<SketchBlock> {
             let value = exec_state
                 .stack()
                 .memory
-                .get_from(&name, env_ref, source_range, 0)?
-                .clone();
+                .get_from_owned(&name, env_ref, source_range, 0)?;
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
@@ -2192,8 +2230,8 @@ impl Node<SketchBlock> {
 }
 
 impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
-        exec_state.mut_stack().push_new_env_for_call(parent);
+    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
+        exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
 
@@ -2207,7 +2245,7 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, exec_state)
+            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
@@ -2218,6 +2256,7 @@ impl Node<SketchVar> {
                     id,
                     initial_value: 0.0,
                     ty: NumericType::default(),
+                    node_path: self.node_path.clone(),
                     meta: vec![metadata],
                 }),
             }
@@ -2280,7 +2319,7 @@ impl BinaryPart {
     ) -> Result<KclValueControlFlow, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned().map(KclValue::continue_),
+            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.map(KclValue::continue_),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
@@ -2296,22 +2335,18 @@ impl BinaryPart {
 }
 
 impl Node<Name> {
-    pub(super) async fn get_result<'a>(
+    pub(super) async fn get_result(
         &self,
-        exec_state: &'a mut ExecState,
+        exec_state: &mut ExecState,
         ctx: &ExecutorContext,
-    ) -> Result<&'a KclValue, KclError> {
+    ) -> Result<KclValue, KclError> {
         let being_declared = exec_state.mod_local.being_declared.clone();
         self.get_result_inner(exec_state, ctx)
             .await
             .map_err(|e| var_in_own_ref_err(e, &being_declared))
     }
 
-    async fn get_result_inner<'a>(
-        &self,
-        exec_state: &'a mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<&'a KclValue, KclError> {
+    async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.abs_path {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
@@ -2322,9 +2357,8 @@ impl Node<Name> {
         let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
 
         if self.path.is_empty() {
-            let item_value = exec_state.stack().get(&self.name.name, self.into());
-            if item_value.is_ok() {
-                return item_value;
+            if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
+                return Ok(item_value);
             }
             return exec_state.stack().get(&mod_name, self.into());
         }
@@ -2343,25 +2377,28 @@ impl Node<Name> {
                     exec_state
                         .stack()
                         .memory
-                        .get_from(&p.name, env, p.as_source_range(), 0)?
+                        .get_from_owned(&p.name, env, p.as_source_range(), 0)?
                 }
                 None => exec_state
                     .stack()
                     .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
             };
 
-            let KclValue::Module { value: module_id, .. } = value else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Identifier in path must refer to a module, found {}",
-                        value.human_friendly_type()
-                    ),
-                    p.as_source_ranges(),
-                )));
+            let module_id = match value {
+                KclValue::Module { value, .. } => value,
+                value => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Identifier in path must refer to a module, found {}",
+                            value.human_friendly_type()
+                        ),
+                        p.as_source_ranges(),
+                    )));
+                }
             };
 
             mem_spec = Some(
-                ctx.exec_module_for_items(*module_id, exec_state, p.as_source_range())
+                ctx.exec_module_for_items(module_id, exec_state, p.as_source_range())
                     .await?,
             );
         }
@@ -2372,7 +2409,7 @@ impl Node<Name> {
         let item_value = exec_state
             .stack()
             .memory
-            .get_from(&self.name.name, env, self.name.as_source_range(), 0);
+            .get_from_owned(&self.name.name, env, self.name.as_source_range(), 0);
 
         // Item is defined and exported.
         if item_exported && item_value.is_ok() {
@@ -2383,7 +2420,7 @@ impl Node<Name> {
         let mod_value = exec_state
             .stack()
             .memory
-            .get_from(&mod_name, env, self.name.as_source_range(), 0);
+            .get_from_owned(&mod_name, env, self.name.as_source_range(), 0);
 
         // Module is defined and exported.
         if mod_exported && mod_value.is_ok() {
@@ -3767,6 +3804,8 @@ impl Node<BinaryExpression> {
                                             id: origin_x_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3776,6 +3815,8 @@ impl Node<BinaryExpression> {
                                             id: origin_y_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3918,6 +3959,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -3927,6 +3970,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4053,6 +4098,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4062,6 +4109,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4287,6 +4336,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4296,6 +4347,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4441,6 +4494,8 @@ impl Node<BinaryExpression> {
                                     id: support_x_id,
                                     initial_value: support_initial[0],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4450,6 +4505,8 @@ impl Node<BinaryExpression> {
                                     id: support_y_id,
                                     initial_value: support_initial[1],
                                     ty: sketch_var_ty,
+                                    // Synthesized support point coord for distance lowering; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4465,6 +4522,8 @@ impl Node<BinaryExpression> {
                                     id: support_radius_id,
                                     initial_value: support_radius_value,
                                     ty: sketch_var_ty,
+                                    // Synthesized hidden support radius for circular-circular distance; not source-backed.
+                                    node_path: None,
                                     meta: vec![],
                                 }),
                             });
@@ -4697,6 +4756,8 @@ impl Node<BinaryExpression> {
                                             id: radius_id,
                                             initial_value: radius_initial_value,
                                             ty: sketch_var_ty,
+                                            // Synthesized hidden radius for circle constraint; not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -5182,6 +5243,8 @@ impl Node<UnaryExpression> {
                         if plane.info.x_axis.z != 0.0 {
                             plane.info.x_axis.z *= -1.0;
                         }
+                        plane.info.z_axis = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                        plane.info.z_axis.canonicalize_signed_zero();
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;
@@ -5692,18 +5755,18 @@ arr1 = [42]: [number(cm)]
         let mem = result.exec_state.stack();
         assert!(matches!(
             mem.memory
-                .get_from("p", result.mem_env, SourceRange::default(), 0)
+                .get_from_owned("p", result.mem_env, SourceRange::default(), 0)
                 .unwrap(),
             KclValue::Plane { .. }
         ));
         let arr1 = mem
             .memory
-            .get_from("arr1", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("arr1", result.mem_env, SourceRange::default(), 0)
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
             assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
             assert_eq!(
-                *ty,
+                ty,
                 RuntimeType::known_length(kittycad_modeling_cmds::units::UnitLength::Centimeters)
             );
             // Compare, ignoring meta.
@@ -5795,7 +5858,7 @@ p2 = -p
         let mem = result.exec_state.stack();
         match mem
             .memory
-            .get_from("p2", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("p2", result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
             KclValue::Plane { value } => {
@@ -5900,6 +5963,7 @@ d = b + c
                 ..Default::default()
             },
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 
@@ -6064,7 +6128,7 @@ good = a[0]
         let mem = result.exec_state.stack();
         let num = mem
             .memory
-            .get_from("good", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("good", result.mem_env, SourceRange::default(), 0)
             .unwrap()
             .as_ty_f64()
             .unwrap();
@@ -6094,7 +6158,7 @@ y = x: number(Length)"#;
         let mem = result.exec_state.stack();
         let num = mem
             .memory
-            .get_from("y", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("y", result.mem_env, SourceRange::default(), 0)
             .unwrap()
             .as_ty_f64()
             .unwrap();
@@ -6244,7 +6308,7 @@ s = sketch(on = XY) {
         let mem = result.exec_state.stack();
         let sketch_value = mem
             .memory
-            .get_from("s", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("s", result.mem_env, SourceRange::default(), 0)
             .unwrap();
 
         let KclValue::Object { value, .. } = sketch_value else {

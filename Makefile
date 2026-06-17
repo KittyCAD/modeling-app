@@ -51,7 +51,11 @@ node_modules/.package-lock.json: package.json package-lock.json
 	npm install
 
 $(WASM_PACK):
+ifdef WINDOWS
 	npm run install:wasm-pack:cargo
+else
+	npm run install:wasm-pack:sh
+endif
 
 ###############################################################################
 # BUILD
@@ -70,9 +74,9 @@ build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vit
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifdef WINDOWS
-	npm run build:wasm:dev:windows
+	npm run build:wasm:windows
 else
-	npm run build:wasm:dev
+	npm run build:wasm
 endif
 
 public/kcl-samples/manifest.json: $(KCL_SOURCES)

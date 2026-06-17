@@ -1,17 +1,17 @@
-import path from 'path'
 import fs from 'fs'
-import os from 'os'
 import { fileURLToPath } from 'node:url'
+import os from 'os'
+import path from 'path'
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
 import { app, protocol } from 'electron'
 import mime from 'mime-types'
 
-import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 import {
   STAGING_BUILD_SUFFIX,
   getAppFolderNameFromBuild,
 } from '@src/lib/appFolderName'
+import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi

@@ -1,18 +1,47 @@
 import { Popover } from '@headlessui/react'
 
-import { useApp } from '@src/lib/boot'
-import Tooltip from '@src/components/Tooltip'
-import type { BillingContext } from '@src/machines/billingMachine'
 import {
   BillingDialog,
   BillingRemaining,
   BillingRemainingMode,
-} from '@kittycad/react-shared'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+} from '@kittycad/ui-components'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
+import { getEstimatedBillingBalance } from '@src/lib/billingEstimate'
+import { useApp } from '@src/lib/boot'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import type { BillingContext } from '@src/machines/billingMachine'
+import { useEffect, useState } from 'react'
+
+const BILLING_BALANCE_TICK_MS = 1000
+
+function useEstimatedBillingBalance(billingContext: BillingContext) {
+  const [now, setNow] = useState(Date.now())
+  const shouldTick = billingContext.usageStartedAt !== undefined
+
+  useEffect(() => {
+    if (!shouldTick) {
+      return
+    }
+
+    setNow(Date.now())
+    const id = setInterval(() => {
+      setNow(Date.now())
+    }, BILLING_BALANCE_TICK_MS)
+
+    return () => {
+      clearInterval(id)
+    }
+  }, [shouldTick])
+
+  return getEstimatedBillingBalance(billingContext, now)
+}
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
+  const openBillingLinkExternally = openExternalBrowserIfDesktop()
+  const displayedBalance = useEstimatedBillingBalance(props.billingContext)
+
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
@@ -22,9 +51,8 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
           error={props.billingContext.error}
-          balance={props.billingContext.balance}
+          balance={displayedBalance}
           allowance={props.billingContext.allowance}
-          paymentMethods={props.billingContext.paymentMethods}
           userPaymentBalance={props.billingContext.userPaymentBalance}
         />
         {!props.billingContext.error && (
@@ -41,9 +69,10 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
       <Popover.Panel className="absolute right-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
         <BillingDialog
           upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-          upgradeClick={openExternalBrowserIfDesktop()}
+          accountHref={withSiteBaseURL('/account/billing')}
+          billingClick={openBillingLinkExternally}
           error={props.billingContext.error}
-          balance={props.billingContext.balance}
+          balance={displayedBalance}
           allowance={props.billingContext.allowance}
           userPaymentBalance={props.billingContext.userPaymentBalance}
         />

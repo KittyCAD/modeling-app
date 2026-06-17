@@ -323,17 +323,20 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]",
           "[uuid]",
           "[uuid]"
         ],
-        "radius": 0.5,
+        "cut_type": {
+          "fillet": {
+            "radius": 0.5,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": [
           "[uuid]",
@@ -379,6 +382,48 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
             "id": "[uuid]"
           }
         }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_get_all_child_uuids",
+        "entity_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {

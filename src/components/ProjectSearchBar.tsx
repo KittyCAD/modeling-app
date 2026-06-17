@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import type { Project } from '@src/lib/project'
 
 export function useProjectSearch(projects: Project[] | undefined) {
@@ -10,7 +11,10 @@ export function useProjectSearch(projects: Project[] | undefined) {
   const [searchResults, setSearchResults] = useState(projects)
 
   const fuse = new Fuse(projects ?? [], {
-    keys: [{ name: 'name', weight: 0.7 }],
+    keys: [
+      { name: 'title', weight: 0.8 },
+      { name: 'name', weight: 0.2 },
+    ],
     includeScore: true,
   })
 
@@ -58,14 +62,11 @@ export function ProjectSearchBar({
           className="w-5 h-5 rounded-sm bg-primary/10 dark:bg-transparent text-primary dark:text-chalkboard-10 group-focus-within:bg-primary group-focus-within:text-chalkboard-10"
         />
         <input
+          {...noAutofillInputProps}
           ref={inputRef}
           onChange={(event) => setQuery(event.target.value)}
           className="w-full text-sm bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
           placeholder="Search projects (Ctrl+.)"
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck="false"
         />
       </div>
     </div>

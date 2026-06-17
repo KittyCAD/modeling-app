@@ -90,7 +90,7 @@ fn update_semver(bump: Option<SemverBump>, cargo_dot_toml: &mut DocumentMut) -> 
 fn update_kcl_lib_dependency_versions(cargo_dot_toml: &mut DocumentMut, next_version: &semver::Version) {
     // Make kcl-lib depend on the new versions so that crates that depend on
     // kcl-lib also update these.
-    for dependency in ["kcl-derive-docs", "kcl-error"] {
+    for dependency in ["kcl-derive-docs", "kcl-error", "kcl-syntax"] {
         if !update_dependency_version(cargo_dot_toml, dependency, next_version) {
             eprintln!("Warning: could not find dependency `{dependency}` in kcl-lib [dependencies]");
         }
@@ -115,18 +115,21 @@ fn update_dependency_version(cargo_dot_toml: &mut DocumentMut, dependency: &str,
         return false;
     };
 
-    let version_string = version.to_string();
+    // kcl crates don't use SemVer, so we don't allow kcl-lib 0.2.0 to work with
+    // kcl-error 0.2.1. The versions should match exactly, not be merely
+    // SemVer-compatible.
+    let version_constraint = format!("={version}");
     match dependency_item {
         Item::Value(Value::String(_)) => {
-            *dependency_item = value(version_string);
+            *dependency_item = value(version_constraint);
             true
         }
         Item::Value(Value::InlineTable(inline_table)) => {
-            inline_table.insert("version", Value::from(version_string));
+            inline_table.insert("version", Value::from(version_constraint));
             true
         }
         Item::Table(table) => {
-            table["version"] = value(version_string);
+            table["version"] = value(version_constraint);
             true
         }
         _ => false,
@@ -248,13 +251,13 @@ kcl-error = { version = "0.1", path = "../kcl-error" }
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-error"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
     }
 
@@ -279,7 +282,7 @@ kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
         let dependencies = cargo_dot_toml["dependencies"]
             .as_table_like()
@@ -309,13 +312,13 @@ kcl-error = "0.1"
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-error"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
     }
 
@@ -340,7 +343,7 @@ kcl-lib = { version = "0.1", path = "../kcl-lib" }
             cargo_dot_toml["dependencies"]["kcl-lib"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
-            Some("0.2.129")
+            Some("=0.2.129")
         );
     }
 }

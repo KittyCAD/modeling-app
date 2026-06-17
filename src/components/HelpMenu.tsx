@@ -1,19 +1,19 @@
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { useNavigate } from 'react-router-dom'
-import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />

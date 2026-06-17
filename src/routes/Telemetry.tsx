@@ -1,11 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { type RouteObject, useLocation, useNavigate } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { TelemetryExplorer } from '@src/components/TelemetryExplorer'
 import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
+import { Fragment } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export const Telemetry = () => {
   const navigate = useNavigate()
@@ -73,13 +73,4 @@ export const Telemetry = () => {
       </Dialog>
     </Transition>
   )
-}
-
-export const telemetryHomeRoute: RouteObject = {
-  path: webSafeJoin([PATHS.HOME, PATHS.TELEMETRY]),
-  element: <Telemetry />,
-}
-export const telemetryFileRoute: RouteObject = {
-  path: webSafeJoin([PATHS.FILE, ':id', PATHS.TELEMETRY]),
-  element: <Telemetry />,
 }

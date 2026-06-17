@@ -1,19 +1,28 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import {
+  type GitignoreStackEntry,
+  appendGitignoreForDirectory,
+  createInitialGitignoreStack,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { isErr } from '@src/lib/trap'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
-import fsZds from '@src/lib/fs-zds'
-import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
+import type { ActorRefFrom, EventObject } from 'xstate'
+
+export { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
@@ -80,62 +89,6 @@ export enum SystemIOMachineStates {
   savingMlEphantConversations = 'saving ml-ephant conversations',
 }
 
-const donePrefix = 'xstate.done.actor.'
-
-export enum SystemIOMachineEvents {
-  readFoldersFromProjectDirectory = 'read folders from project directory',
-  done_readFoldersFromProjectDirectory = donePrefix +
-    'read folders from project directory',
-  setProjectDirectoryPath = 'set project directory path',
-  navigateToProject = 'navigate to project',
-  navigateToFile = 'navigate to file',
-  createProject = 'create project',
-  renameProject = 'rename project',
-  done_renameProject = donePrefix + 'rename project',
-  deleteProject = 'delete project',
-  done_deleteProject = donePrefix + 'delete project',
-  createKCLFile = 'create kcl file',
-  setDefaultProjectFolderName = 'set default project folder name',
-  done_checkReadWrite = donePrefix + 'check read write',
-  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
-  importFileFromURL = 'import file from URL',
-  done_importFileFromURL = donePrefix + 'import file from URL',
-  generateTextToCAD = 'generate text to CAD',
-  deleteKCLFile = 'delete kcl file',
-  bulkCreateKCLFiles = 'bulk create kcl files',
-  bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
-  bulkImportProjectFilesAndNavigateToFile = 'bulk import project files and navigate to file',
-  bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
-  done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
-    'bulk create kcl files and navigate to file',
-  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
-  done_bulkCreateAndDeleteKCLFilesAndNavigateToFile = donePrefix +
-    'bulk create and delete kcl files and navigate to file',
-  renameFolder = 'rename folder',
-  renameFile = 'rename file',
-  deleteFileOrFolder = 'delete file or folder',
-  createBlankFile = 'create blank file',
-  createBlankFolder = 'create blank folder',
-  renameFileAndNavigateToFile = 'rename file and navigate to file',
-  done_renameFileAndNavigateToFile = donePrefix +
-    'rename file and navigate to file',
-  renameFolderAndNavigateToFile = 'rename folder and navigate to file',
-  done_renameFolderAndNavigateToFile = donePrefix +
-    'rename folder and navigate to file',
-  deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
-  done_deleteFileOrFolderAndNavigate = donePrefix +
-    'delete file or folder and navigate',
-  copyRecursive = 'copy recursive',
-  moveRecursive = 'move recursive',
-  moveRecursiveAndNavigate = 'move recursive and navigate',
-  done_moveRecursiveAndNavigate = donePrefix + 'move recursive and navigate',
-  getMlEphantConversations = 'get ml-ephant conversations',
-  done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
-  saveMlEphantConversations = 'save ml-ephant conversations',
-  done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
-  deleteMlEphantConversation = 'delete ml-ephant conversation',
-}
-
 export enum SystemIOMachineActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
@@ -149,6 +102,8 @@ export enum SystemIOMachineActions {
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
   setMlEphantConversations = 'set ml-ephant conversations',
+  deferSystemIOEvent = 'defer system IO event',
+  flushDeferredSystemIOEvent = 'flush deferred system IO event',
 }
 
 export enum SystemIOMachineGuards {
@@ -192,6 +147,9 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  /** Event captured while checking project-directory access. */
+  deferredSystemIOEvent?: EventObject
+  lastRecursiveMoveTarget?: string
   lastOperation: any
 
   // A mapping between project id and conversation ids.
@@ -274,6 +232,9 @@ export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
   projectContext?: Project
+  selectedFilePath?: string
+  warnIfProjectExceeds64Mb?: boolean
+  skipUnreadableFiles?: boolean
 }) => {
   let projectFiles: FileMeta[] = [
     {
@@ -291,7 +252,7 @@ export const collectProjectFiles = async (args: {
     }
   })
   let basePath = ''
-  if (args.projectContext?.children) {
+  if (args.projectContext) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
@@ -301,8 +262,12 @@ export const collectProjectFiles = async (args: {
         fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
 
       filePromises.push(
-        fsZds
-          .readFile(absolutePathToFileNameWithExtension)
+        Promise.resolve()
+          .then(() =>
+            args.selectedFilePath === absolutePathToFileNameWithExtension
+              ? new TextEncoder().encode(args.selectedFileContents)
+              : fsZds.readFile(absolutePathToFileNameWithExtension)
+          )
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
@@ -328,20 +293,42 @@ export const collectProjectFiles = async (args: {
           })
           .catch((e) => {
             console.error('error reading file', e)
+            if (args.skipUnreadableFiles === false) {
+              return Promise.reject(isErr(e) ? e : new Error(String(e)))
+            }
             return null
           })
       )
     }
 
-    const recursivelyPushFilePromisesFromPath = async (path: string) => {
+    const recursivelyPushFilePromisesFromPath = async (
+      path: string,
+      gitignoreStack: GitignoreStackEntry[]
+    ) => {
       const entries = await fsZds.readdir(path)
       for (const entry of entries) {
         const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
+        const relativePath = (
+          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+        ).replace(/\\/g, '/')
         const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
+        const isDirectory = Boolean(stat.mode & fsZdsConstants.S_IFDIR)
 
-        if (Boolean(stat.mode & fsZdsConstants.S_IFDIR)) {
+        if (
+          isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+        ) {
+          continue
+        }
+
+        if (isDirectory) {
+          const childGitignoreStack = await appendGitignoreForDirectory(
+            gitignoreStack,
+            absolutePathToFileNameWithExtension,
+            basePath
+          )
           await recursivelyPushFilePromisesFromPath(
-            absolutePathToFileNameWithExtension
+            absolutePathToFileNameWithExtension,
+            childGitignoreStack
           )
           continue
         }
@@ -350,10 +337,11 @@ export const collectProjectFiles = async (args: {
       }
     }
 
-    await recursivelyPushFilePromisesFromPath(basePath)
+    const gitignoreStack = await createInitialGitignoreStack(basePath)
+    await recursivelyPushFilePromisesFromPath(basePath, gitignoreStack)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
-    if (uploadSize > MB64) {
+    if (args.warnIfProjectExceeds64Mb !== false && uploadSize > MB64) {
       toast.error(
         'Your project exceeds 64Mb, this will slow down Zookeeper.\nPlease remove any unnecessary files.'
       )

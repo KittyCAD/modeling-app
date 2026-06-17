@@ -19,6 +19,7 @@ function makeRemoteProject(
       has_unpublished_changes: false,
     },
     publication_status: 'draft',
+    revision: 'revision-1',
     title: 'Bracket',
     updated_at: '2026-04-09T15:00:00Z',
     ...overrides,
@@ -62,12 +63,16 @@ const mockState = vi.hoisted(() => ({
   }),
 }))
 
-vi.mock('@src/env', () => ({
-  default: () => ({
-    VITE_ZOO_BASE_DOMAIN: 'dev.zoo.dev',
-    VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
-  }),
-}))
+vi.mock('@src/env', async () => {
+  const actual = await vi.importActual<Record<string, unknown>>('@src/env')
+  return {
+    ...actual,
+    default: () => ({
+      VITE_ZOO_BASE_DOMAIN: 'dev.zoo.dev',
+      VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
+    }),
+  }
+})
 
 vi.mock('@src/lib/kcClient', () => ({
   createKCClient: mockState.createKCClient,

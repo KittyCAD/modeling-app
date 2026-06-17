@@ -12,6 +12,8 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -24,12 +26,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
-import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function addTranslate({
   ast,
@@ -453,16 +453,22 @@ export function addAppearance({
   }
 }
 
-export function addHide({
+type ObjectTransformName = 'hide' | 'delete'
+
+function addObjectTransform({
   ast,
   artifactGraph,
   objects,
   wasmInstance,
+  name,
+  variableIfNewDecl,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
   wasmInstance: ModuleType
+  name: ObjectTransformName
+  variableIfNewDecl?: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -488,13 +494,13 @@ export function addHide({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('hide', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(name, objectsExpr, [])
 
-  // 3. Just push the new function call declaration to the end
+  // 3. Just push the new function call to the end
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN,
+    variableIfNewDecl,
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -505,6 +511,47 @@ export function addHide({
     modifiedAst,
     pathToNode,
   }
+}
+
+export function addHide({
+  ast,
+  artifactGraph,
+  objects,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addObjectTransform({
+    ast,
+    artifactGraph,
+    objects,
+    wasmInstance,
+    name: 'hide',
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN,
+  })
+}
+
+export function addDelete({
+  ast,
+  artifactGraph,
+  objects,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addObjectTransform({
+    ast,
+    artifactGraph,
+    objects,
+    wasmInstance,
+    name: 'delete',
+  })
 }
 
 export function addMirror3D({

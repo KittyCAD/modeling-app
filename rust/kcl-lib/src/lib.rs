@@ -94,20 +94,26 @@ pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
 pub use errors::CompilationIssue;
+pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
 pub use errors::ExecError;
+pub use errors::IsRetryable;
 pub use errors::KclError;
 pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
+pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
+pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
+pub use execution::OperationCallbackArgs;
 pub use execution::Point2d;
+pub use execution::SegmentDragAnchor;
 pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
@@ -118,6 +124,7 @@ pub use execution::transpile_old_sketch_to_new;
 pub use execution::transpile_old_sketch_to_new_ast;
 pub use execution::transpile_old_sketch_to_new_with_execution;
 pub use execution::typed_path::TypedPath;
+pub use kcl_error;
 pub use kcl_error::SourceRange;
 pub use lsp::ToLspRange;
 pub use lsp::copilot::Backend as CopilotLspBackend;
@@ -190,6 +197,8 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditDistanceConstraintLabelPositionOptions,
+        EditSegmentsOptions,
         FrontendState,
         SetProgramOutcome,
         api::{

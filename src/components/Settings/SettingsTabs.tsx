@@ -1,18 +1,19 @@
 import { RadioGroup } from '@headlessui/react'
 
 import { SettingsTabButton } from '@src/components/Settings/SettingsTabButton'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 interface SettingsTabButtonProps {
   value: string
   onChange: (value: string) => void
   showProjectTab: boolean
+  showPluginsTab: boolean
 }
 
 export function SettingsTabs({
   value,
   onChange,
   showProjectTab,
+  showPluginsTab,
 }: SettingsTabButtonProps) {
   return (
     <RadioGroup
@@ -45,7 +46,7 @@ export function SettingsTabs({
           />
         )}
       </RadioGroup.Option>
-      {IS_STAGING_OR_DEBUG && (
+      {showPluginsTab && (
         <RadioGroup.Option value="plugins">
           {({ checked }) => (
             <SettingsTabButton

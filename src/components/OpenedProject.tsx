@@ -17,6 +17,7 @@ import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectU
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
@@ -24,9 +25,11 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
+  CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
+import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -45,10 +48,7 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
-import {
-  MlEphantManagerReactContext,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
@@ -56,7 +56,6 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { filterEngineSceneStatusBarItems } from '@src/registry/extensions/engineScene/statusBar'
 import {
   TutorialRequestToast,
   needsToOnboard,
@@ -86,8 +85,6 @@ export function OpenedProject() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
-
   const location = useLocation()
   const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
@@ -106,8 +103,20 @@ export function OpenedProject() {
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
+  useEffect(() => {
+    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+
+    return () => {
+      setOpfsCloudSyncProjectScope(undefined)
+    }
+  }, [projectPath])
+
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
+    if (systemIOState !== SystemIOMachineStates.idle) {
+      return
+    }
+
     if (
       projects &&
       projects.length > 0 &&
@@ -125,7 +134,7 @@ export function OpenedProject() {
       void navigate(PATHS.HOME)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation])
+  }, [projects, lastOperation, systemIOState])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
@@ -169,14 +178,6 @@ export function OpenedProject() {
     )
   }, [onProjectOpen, projectName, projectPath, project])
 
-  useEffect(() => {
-    // Clear conversation
-    mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projectName, projectPath])
-
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
@@ -185,14 +186,39 @@ export function OpenedProject() {
     registry.signal(statusBarGlobalItemsValueSpec).value,
     ['file']
   )
-  const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(
-    filterStatusBarItemsForScopes(
-      registry.signal(statusBarLocalItemsValueSpec).value,
-      ['file']
-    ),
-    settingsValues
+  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarLocalItemsValueSpec).value,
+    ['file']
   )
   const authToken = auth.useToken()
+  const currentProject = project?.projectIORefSignal.value
+  const projectStatus = useProjectStatus(
+    currentProject?.cloudProjectId,
+    authToken
+  )
+  const hasChangesRequested =
+    projectStatus?.publicationStatus === 'changes_requested'
+
+  useEffect(() => {
+    if (!hasChangesRequested) {
+      return
+    }
+
+    const message = projectStatus?.feedback
+      ? `Changes requested: ${projectStatus.feedback}. Republishing will put it back into the review queue.`
+      : 'Your Aquarium submission was reviewed and changes were requested. Republishing will put it back into the review queue.'
+
+    toast(message, {
+      id: CHANGES_REQUESTED_TOAST_ID,
+      duration: Number.POSITIVE_INFINITY,
+      icon: '⚠️',
+    })
+
+    return () => {
+      toast.dismiss(CHANGES_REQUESTED_TOAST_ID)
+    }
+  }, [hasChangesRequested, projectStatus?.feedback])
+
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default

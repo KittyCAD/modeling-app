@@ -4,17 +4,41 @@ import {
   defineRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { commandSystemService } from '@src/registry/contracts/commands'
 import {
+  type CommandSystemService,
+  commandSystemService,
+} from '@src/registry/contracts/commands'
+import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  KEYMAP_SCHEMA_VERSION,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  type PersistedKeymap,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
-import { describe, expect, it, vi } from 'vitest'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import keymapExtension from '.'
 
+const persistenceMocks = vi.hoisted(() => ({
+  readUserKeymapFile: vi.fn(),
+  writeUserKeymapFile: vi.fn(),
+}))
+
+vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
+
 describe('keymap extension', () => {
+  beforeEach(() => {
+    persistenceMocks.readUserKeymapFile.mockResolvedValue({
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [],
+    })
+    persistenceMocks.writeUserKeymapFile.mockResolvedValue(undefined)
+  })
+
   it('contributes the default keymap as the Base source', () => {
     const registry = createRegistryWithKeymapItems([])
     const keymap = registry.get(keymapService)
@@ -26,6 +50,47 @@ describe('keymap extension', () => {
     ).toBe('Base')
 
     registry[Symbol.dispose]()
+  })
+
+  it('uses Shift+Escape to exit sketch across desktop and web', () => {
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketch-legacy.exit'
+      )?.keystrokes
+    ).toEqual(['shift+escape'])
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketch.exit'
+      )?.keystrokes
+    ).toEqual(['shift+escape'])
+
+    expect(
+      defaultKeymap.bindings.filter((binding) =>
+        binding.id.startsWith('toolbar.sketch-legacy.exit')
+      )
+    ).toHaveLength(1)
+    expect(
+      defaultKeymap.bindings.filter((binding) =>
+        binding.id.startsWith('toolbar.sketch.exit')
+      )
+    ).toHaveLength(1)
+  })
+
+  it('hides legacy sketch keybindings and links them to user-facing sketch bindings', () => {
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.sketch-legacy.line'
+      )
+    ).toMatchObject({
+      hidden: true,
+      command: 'zds.toolbar.sketchLegacy.line',
+      userBindingCommand: 'zds.toolbar.sketch.line',
+    })
+    const sketchLine = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.line'
+    )
+    expect(sketchLine?.command).toBe('zds.toolbar.sketch.line')
+    expect(sketchLine?.hidden).toBeUndefined()
   })
 
   it('marks a partial match and awaits more input', () => {
@@ -66,6 +131,31 @@ describe('keymap extension', () => {
 
     expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
     expect(keymap.partialMatch.value).toBe(false)
+
+    registry[Symbol.dispose]()
+  })
+
+  it('matches macOS Option-modified letter chords by physical key code', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.alt-d',
+        title: 'Test Alt+D',
+        command: 'test.alt-d',
+        source: 'test',
+        keystrokes: ['alt+d'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+
+    const keymap = registry.get(keymapService)
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    const event = new KeyboardEvent('keydown', {
+      key: '\u2202',
+      code: 'KeyD',
+      altKey: true,
+    })
+
+    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
 
     registry[Symbol.dispose]()
   })
@@ -138,7 +228,7 @@ describe('keymap extension', () => {
               },
               send,
               useState: vi.fn(),
-            } as any),
+            } as unknown as CommandSystemService),
           ],
         }),
       ]
@@ -165,6 +255,50 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('waits for the initial persisted keymap load before saving overrides', async () => {
+    let resolveInitialRead: ((keymap: PersistedKeymap) => void) | undefined
+    persistenceMocks.readUserKeymapFile.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveInitialRead = resolve
+      })
+    )
+    const registry = createRegistryWithKeymapItems([])
+
+    const keymap = registry.get(keymapService)
+    keymap.applyScope(MODE_SKETCHING_KEYMAP_SCOPE)
+
+    const savePromise = keymap.savePersistedKeymap({
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [
+        {
+          command: 'zds.toolbar.sketch.line',
+          keystrokes: ['shift+q'],
+          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        },
+      ],
+    })
+
+    await Promise.resolve()
+    expect(persistenceMocks.writeUserKeymapFile).not.toHaveBeenCalled()
+
+    resolveInitialRead?.({ version: KEYMAP_SCHEMA_VERSION, bindings: [] })
+    await savePromise
+
+    expect(
+      keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
+        source: 'global',
+      })
+    ).toBe(false)
+    expect(
+      keymap.handleKeyDown(
+        new KeyboardEvent('keydown', { key: 'Q', shiftKey: true }),
+        { source: 'global' }
+      )
+    ).toBe(true)
+
+    registry[Symbol.dispose]()
+  })
+
   it('lets CodeMirror source handle contenteditable targets', () => {
     const registry = createRegistryWithKeymapItems([
       {
@@ -178,6 +312,8 @@ describe('keymap extension', () => {
     const keymap = registry.get(keymapService)
     const target = document.createElement('div')
     target.contentEditable = 'true'
+    document.body.append(target)
+    target.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
     const globalEvent = createKeyboardEventWithTarget('Escape', target)
     const codeMirrorEvent = createKeyboardEventWithTarget('Escape', target)
 
@@ -186,6 +322,73 @@ describe('keymap extension', () => {
       keymap.handleKeyDown(codeMirrorEvent, { source: 'codeMirror' })
     ).toBe(true)
 
+    target.remove()
+    registry[Symbol.dispose]()
+  })
+
+  it('does not run mode keybindings from CodeMirror while the editor is focused', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const event = new KeyboardEvent('keydown', { key: 'l' })
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    keymap.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+    keymap.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+
+    expect(keymap.handleKeyDown(event, { source: 'codeMirror' })).toBe(false)
+
+    registry[Symbol.dispose]()
+  })
+
+  it('keeps editor focus priority until focus moves outside editable content', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const editableTarget = document.createElement('div')
+    editableTarget.contentEditable = 'true'
+    document.body.append(editableTarget)
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    editableTarget.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', editableTarget), {
+        source: 'global',
+      })
+    ).toBe(false)
+
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', editableTarget), {
+        source: 'global',
+      })
+    ).toBe(true)
+
+    editableTarget.remove()
     registry[Symbol.dispose]()
   })
 

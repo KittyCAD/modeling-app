@@ -18,7 +18,12 @@ import {
   shell,
 } from 'electron'
 import { autoUpdater as appUpdater } from 'electron-updater'
-import { type DeviceFlowHandle, Issuer } from 'openid-client'
+import {
+  Configuration,
+  None,
+  initiateDeviceAuthorization,
+  pollDeviceAuthorizationGrant,
+} from 'openid-client'
 
 import fs from 'fs'
 import {
@@ -36,6 +41,7 @@ import {
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -68,6 +74,11 @@ type MachineApiSignal = 'on' | 'off'
 const args = parseCLIArgs(process.argv)
 let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
+type DeviceFlowHandle = {
+  abort: () => void
+  poll: () => Promise<{ access_token?: string }>
+}
+
 const deviceFlowSessions = new DeviceFlowSessionStore<
   BrowserWindow,
   DeviceFlowHandle
@@ -486,8 +497,13 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
   return shell.showItemInFolder(data)
 })
 
-ipcMain.handle('shell.openExternal', (event, data) => {
-  return shell.openExternal(data)
+ipcMain.handle('shell.openExternal', (_event, data) => {
+  const allowedURL = getAllowedExternalURL(data)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
+  return shell.openExternal(allowedURL)
 })
 
 ipcMain.handle('openInNewWindow', (event, data) => {
@@ -504,27 +520,40 @@ ipcMain.handle('startDeviceFlow', async (event, host: string) => {
     return Promise.reject(new Error('No window available for device flow'))
   }
 
-  // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
-  // We quiet ts because we are not using this in the standard way.
-  // @ts-ignore
-  const issuer = new Issuer({
-    device_authorization_endpoint: `${host}/oauth2/device/auth`,
-    token_endpoint: `${host}/oauth2/device/token`,
-  })
-  const client = new issuer.Client({
-    // We can hardcode the client ID.
-    // This value is safe to be embedded in version control.
-    // This is the client ID of the KittyCAD app.
-    client_id: OAUTH2_DEVICE_CLIENT_ID,
-    token_endpoint_auth_method: 'none',
-  })
-
-  const handle = await client.deviceAuthorization()
+  const config = new Configuration(
+    {
+      issuer: host,
+      device_authorization_endpoint: `${host}/oauth2/device/auth`,
+      token_endpoint: `${host}/oauth2/device/token`,
+    },
+    OAUTH2_DEVICE_CLIENT_ID,
+    undefined,
+    None()
+  )
+  const deviceAuthorizationResponse = await initiateDeviceAuthorization(
+    config,
+    {}
+  )
   const verificationUri =
-    handle.verification_uri_complete || handle.verification_uri
+    deviceAuthorizationResponse.verification_uri_complete ??
+    deviceAuthorizationResponse.verification_uri
 
   if (!verificationUri) {
     return Promise.reject(new Error('No verification URI received'))
+  }
+
+  const abortController = new AbortController()
+  const handle: DeviceFlowHandle = {
+    abort: () => abortController.abort(),
+    poll: () =>
+      pollDeviceAuthorizationGrant(
+        config,
+        deviceAuthorizationResponse,
+        {},
+        {
+          signal: abortController.signal,
+        }
+      ),
   }
 
   deviceFlowSessions.set(targetWindow, {
@@ -533,7 +562,7 @@ ipcMain.handle('startDeviceFlow', async (event, host: string) => {
   })
 
   return {
-    userCode: handle.user_code,
+    userCode: deviceAuthorizationResponse.user_code,
     verificationUri,
   }
 })
@@ -559,7 +588,14 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
   }
 
   if (NODE_ENV !== 'test') {
-    shell.openExternal(deviceFlowSession.verificationUri).catch(reportRejection)
+    const verificationUri = getAllowedExternalURL(
+      deviceFlowSession.verificationUri
+    )
+    if (verificationUri instanceof Error) {
+      return Promise.reject(verificationUri)
+    }
+
+    shell.openExternal(verificationUri).catch(reportRejection)
   }
 
   // Wait for the user to login.

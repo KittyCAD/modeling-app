@@ -1,20 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
-import {
-  createActor,
-  createMachine,
-  assign,
-  fromPromise,
-  waitFor,
-} from 'xstate'
-import type {
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
-import { Group } from 'three'
-import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { Themes } from '@src/lib/theme'
-import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
 import {
   createControlPointSplineApiObject,
   createMockKclManager,
@@ -22,6 +7,17 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { machine as splineTool } from '@src/machines/sketchSolve/tools/splineTool'
+import { Group } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { describe, expect, it, vi } from 'vitest'
+import {
+  assign,
+  createActor,
+  createMachine,
+  fromPromise,
+  waitFor,
+} from 'xstate'
 
 function createLeftMouseEvent(detail = 1): MouseEvent {
   const event = new MouseEvent('click', {
@@ -82,31 +78,10 @@ function createToolHarness(
   } as any
 
   const parentMachine = createMachine({
-    types: {} as {
-      context: {
-        sketchExecOutcome: {
-          sourceDelta: SourceDelta
-          sceneGraphDelta: SceneGraphDelta
-        }
-        draftEntities?: { segmentIds: number[]; constraintIds: number[] }
-      }
-      events:
-        | {
-            type: 'update sketch outcome'
-            data: {
-              sourceDelta: SourceDelta
-              sceneGraphDelta: SceneGraphDelta
-            }
-          }
-        | {
-            type: 'set draft entities'
-            data: { segmentIds: number[]; constraintIds: number[] }
-          }
-        | { type: 'clear draft entities' }
-    },
+    types: {},
     context: {
       sketchExecOutcome: {
-        sourceDelta: { text: '' } as SourceDelta,
+        sourceDelta: { text: '' },
         sceneGraphDelta: createSceneGraphDelta([
           createSketchApiObject(0),
         ] as any),
@@ -151,7 +126,12 @@ function createToolHarness(
     actor,
     sceneInfra,
     sketchSolveGroup,
-    getDraftEntities: () => actor.getSnapshot().context.draftEntities,
+    getDraftEntities: ():
+      | {
+          segmentIds: number[]
+          constraintIds: number[]
+        }
+      | undefined => actor.getSnapshot().context.draftEntities,
     getCallbacks: () => callbacks,
   }
 }
@@ -168,7 +148,7 @@ function createSplineSceneGraphDelta({
   )
   const spline = createControlPointSplineApiObject({
     id: splineId,
-    controls: pointIds as number[],
+    controls: pointIds,
   })
   return createSceneGraphDelta(
     [createSketchApiObject(0) as any, ...points, spline],
@@ -194,7 +174,7 @@ function createSplineSceneGraphDeltaAtPositions({
   )
   const spline = createControlPointSplineApiObject({
     id: splineId,
-    controls: pointIds as number[],
+    controls: pointIds,
   })
   return createSceneGraphDelta(
     [createSketchApiObject(0) as any, ...points, spline],
@@ -205,7 +185,7 @@ function createSplineSceneGraphDeltaAtPositions({
 describe('splineTool', () => {
   it('keeps the first phase purely visual until the first move after the second click', async () => {
     const createInitialSpline = vi.fn(async ({ input }: any) => ({
-      kclSource: { text: 'test' } as SourceDelta,
+      kclSource: { text: 'test' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
       splineId: 4,
       draftPointId: 3,
@@ -323,7 +303,7 @@ describe('splineTool', () => {
 
   it('appends a new draft control point only after the next move following a commit click', async () => {
     const createInitialSpline = vi.fn(async () => ({
-      kclSource: { text: 'initial' } as SourceDelta,
+      kclSource: { text: 'initial' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
       splineId: 4,
       draftPointId: 3,
@@ -333,11 +313,11 @@ describe('splineTool', () => {
       },
     }))
     const finalizeDraftPoint = vi.fn(async () => ({
-      kclSource: { text: 'finalized' } as SourceDelta,
+      kclSource: { text: 'finalized' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
     }))
     const appendDraftPoint = vi.fn(async () => ({
-      kclSource: { text: 'appended' } as SourceDelta,
+      kclSource: { text: 'appended' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3, 5] }),
       draftPointId: 5,
       newlyAddedEntities: {
@@ -398,7 +378,7 @@ describe('splineTool', () => {
 
   it('keeps appending even when the rebuilt spline points shift during solving', async () => {
     const createInitialSpline = vi.fn(async () => ({
-      kclSource: { text: 'initial' } as SourceDelta,
+      kclSource: { text: 'initial' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
       splineId: 4,
       draftPointId: 3,
@@ -408,7 +388,7 @@ describe('splineTool', () => {
       },
     }))
     const finalizeDraftPoint = vi.fn(async () => ({
-      kclSource: { text: 'finalized' } as SourceDelta,
+      kclSource: { text: 'finalized' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
     }))
     const appendDraftPoint = vi.fn(async () => {
@@ -421,7 +401,7 @@ describe('splineTool', () => {
         controls: [10, 11, 12, 13],
       })
       return {
-        kclSource: { text: 'appended' } as SourceDelta,
+        kclSource: { text: 'appended' },
         sceneGraphDelta: createSceneGraphDelta(
           [createSketchApiObject(0) as any, p1, p2, p3, p4, spline],
           [10, 11, 12, 13, 20]
@@ -480,7 +460,7 @@ describe('splineTool', () => {
 
   it('keeps the spline draft-active until escape ends the current spline', async () => {
     const createInitialSpline = vi.fn(async () => ({
-      kclSource: { text: 'initial' } as SourceDelta,
+      kclSource: { text: 'initial' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
       splineId: 4,
       draftPointId: 3,
@@ -490,7 +470,7 @@ describe('splineTool', () => {
       },
     }))
     const finalizeDraftPoint = vi.fn(async () => ({
-      kclSource: { text: 'finalized' } as SourceDelta,
+      kclSource: { text: 'finalized' },
       sceneGraphDelta: createSplineSceneGraphDelta({ pointIds: [1, 2, 3] }),
     }))
 
@@ -548,7 +528,7 @@ describe('splineTool', () => {
       ],
     })
     const createInitialSpline = vi.fn(async () => ({
-      kclSource: { text: 'initial' } as SourceDelta,
+      kclSource: { text: 'initial' },
       sceneGraphDelta: positionedSplineDelta,
       splineId: 4,
       draftPointId: 3,
@@ -558,7 +538,7 @@ describe('splineTool', () => {
       },
     }))
     const finalizeDraftPoint = vi.fn(async () => ({
-      kclSource: { text: 'finalized' } as SourceDelta,
+      kclSource: { text: 'finalized' },
       sceneGraphDelta: positionedSplineDelta,
     }))
 

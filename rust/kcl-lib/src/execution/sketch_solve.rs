@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use ahash::AHashSet;
 use ezpz::Warning;
@@ -111,10 +112,18 @@ pub(super) fn substitute_sketch_vars(
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
+    let sketch = sketch.cloned().map(Arc::new);
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
-        let subbed_value =
-            substitute_sketch_var(value, surface, sketch_id, sketch, solve_outcome, solution_ty, analysis)?;
+        let subbed_value = substitute_sketch_var(
+            value,
+            surface,
+            sketch_id,
+            sketch.as_ref(),
+            solve_outcome,
+            solution_ty,
+            analysis,
+        )?;
         subbed.insert(name, subbed_value);
     }
     Ok(subbed)
@@ -124,7 +133,7 @@ fn substitute_sketch_var(
     value: KclValue,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<&Sketch>,
+    sketch: Option<&Arc<Sketch>>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -232,7 +241,7 @@ pub(super) fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<Sketch>,
+    sketch: Option<Arc<Sketch>>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -486,6 +495,8 @@ pub(crate) struct Solved {
     pub(crate) priority_solved: u32,
     /// Variables involved in unsatisfied constraints (for conflict detection)
     pub(crate) variables_in_conflicts: AHashSet<ezpz::Id>,
+    /// Did the solver converge on a solution?
+    pub(crate) converged: bool,
 }
 
 impl Solved {
@@ -515,6 +526,7 @@ impl Solved {
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
             variables_in_conflicts,
+            converged: value.converged(),
         }
     }
 }
@@ -953,4 +965,160 @@ pub(super) fn create_segment_scene_objects(
         }
     }
     Ok(scene_objects)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use indexmap::IndexMap;
+    use kittycad_modeling_cmds::units::UnitLength;
+    use uuid::Uuid;
+
+    use super::*;
+    use crate::execution::ArtifactId;
+    use crate::execution::BasePath;
+    use crate::execution::GeoMeta;
+    use crate::execution::Plane;
+    use crate::execution::PlaneInfo;
+    use crate::execution::PlaneKind;
+    use crate::execution::ProfileClosed;
+    use crate::front::Expr;
+    use crate::front::LineCtor;
+    use crate::front::Number;
+    use crate::front::ObjectId;
+    use crate::front::Point2d;
+    use crate::std::sketch::PlaneData;
+
+    fn test_point(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+            y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+        }
+    }
+
+    fn test_surface() -> SketchSurface {
+        let id = Uuid::new_v4();
+        SketchSurface::Plane(Box::new(Plane {
+            id,
+            artifact_id: ArtifactId::new(id),
+            object_id: None,
+            kind: PlaneKind::XY,
+            info: PlaneInfo::try_from(PlaneData::XY).unwrap(),
+            meta: vec![],
+        }))
+    }
+
+    fn test_sketch(surface: SketchSurface) -> Sketch {
+        let id = Uuid::new_v4();
+        let base = BasePath {
+            from: [0.0, 0.0],
+            to: [0.0, 0.0],
+            units: UnitLength::Millimeters,
+            tag: None,
+            geo_meta: GeoMeta {
+                id,
+                metadata: Metadata {
+                    source_range: SourceRange::default(),
+                },
+            },
+        };
+        Sketch {
+            id,
+            paths: vec![],
+            inner_paths: vec![],
+            on: surface,
+            start: base,
+            tags: Default::default(),
+            artifact_id: ArtifactId::new(id),
+            original_id: id,
+            origin_sketch_id: None,
+            mirror: None,
+            clone: None,
+            synthetic_jump_path_ids: vec![],
+            units: UnitLength::Millimeters,
+            meta: vec![],
+            is_closed: ProfileClosed::No,
+        }
+    }
+
+    fn test_line_value(object_id_seed: usize) -> KclValue {
+        let point = |x, y| {
+            [
+                UnsolvedExpr::Known(TyF64::new(x, NumericType::mm())),
+                UnsolvedExpr::Known(TyF64::new(y, NumericType::mm())),
+            ]
+        };
+        let segment = UnsolvedSegment {
+            id: Uuid::new_v4(),
+            object_id: ObjectId(object_id_seed),
+            kind: UnsolvedSegmentKind::Line {
+                start: point(0.0, 0.0),
+                end: point(1.0, 0.0),
+                ctor: Box::new(LineCtor {
+                    start: test_point(0.0, 0.0),
+                    end: test_point(1.0, 0.0),
+                    construction: None,
+                }),
+                start_object_id: ObjectId(object_id_seed + 1),
+                end_object_id: ObjectId(object_id_seed + 2),
+                construction: false,
+            },
+            tag: None,
+            node_path: None,
+            meta: vec![],
+        };
+
+        KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Unsolved {
+                    segment: Box::new(segment),
+                },
+                meta: vec![],
+            }),
+        }
+    }
+
+    fn segment_sketch(value: &KclValue) -> &Arc<Sketch> {
+        let KclValue::Segment { value } = value else {
+            panic!("expected segment");
+        };
+        let SegmentRepr::Solved { segment } = &value.repr else {
+            panic!("expected solved segment");
+        };
+        segment.sketch.as_ref().expect("expected segment sketch")
+    }
+
+    #[test]
+    fn substitute_sketch_vars_shares_one_sketch_across_segments() {
+        let surface = test_surface();
+        let sketch = test_sketch(surface.clone());
+        let mut variables = IndexMap::new();
+        variables.insert("line1".to_owned(), test_line_value(1));
+        variables.insert("line2".to_owned(), test_line_value(4));
+        let solved = Solved {
+            final_values: vec![],
+            iterations: 0,
+            warnings: vec![],
+            priority_solved: 0,
+            variables_in_conflicts: AHashSet::new(),
+            converged: true,
+        };
+
+        let substituted = substitute_sketch_vars(
+            variables,
+            &surface,
+            sketch.id,
+            Some(&sketch),
+            &solved,
+            NumericType::mm(),
+            None,
+        )
+        .unwrap();
+
+        let line1_sketch = segment_sketch(&substituted["line1"]);
+        let line2_sketch = segment_sketch(&substituted["line2"]);
+        assert!(Arc::ptr_eq(line1_sketch, line2_sketch));
+        assert_eq!(line1_sketch.id, sketch.id);
+    }
 }

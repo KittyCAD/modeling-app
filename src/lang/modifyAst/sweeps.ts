@@ -9,22 +9,27 @@ import {
   createName,
   createTagDeclarator,
 } from '@src/lang/create'
+import { toUtf16 } from '@src/lang/errors'
 import {
+  createPoint2dExpression,
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
-  createPoint2dExpression,
 } from '@src/lang/modifyAst'
+import {
+  getFacesExprsFromSelection,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { addHide } from '@src/lang/modifyAst/transforms'
-import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
@@ -40,23 +45,18 @@ import type {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
-  type KclPreludeExtrudeMethod,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_SOLID,
   KCL_PRELUDE_BODY_TYPE_SURFACE,
+  type KclPreludeBodyType,
+  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
+import { isEngineRegionSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getFacesExprsFromSelection,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { toUtf16 } from '@src/lang/errors'
-import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -69,6 +69,7 @@ export function addExtrude({
   bidirectionalLength,
   tagStart,
   tagEnd,
+  draftAngle,
   twistAngle,
   twistAngleStep,
   twistCenter,
@@ -87,6 +88,7 @@ export function addExtrude({
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  draftAngle?: KclCommandValue
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
@@ -200,6 +202,9 @@ export function addExtrude({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const draftAngleExpr = draftAngle
+    ? [createLabeledArg('draftAngle', valueOrVariable(draftAngle))]
+    : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
     : []
@@ -234,6 +239,7 @@ export function addExtrude({
     ...bidirectionalLengthExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...draftAngleExpr,
     ...twistAngleExpr,
     ...twistAngleStepExpr,
     ...twistCenterExpr,
@@ -256,6 +262,9 @@ export function addExtrude({
       modifiedAst,
       mNodeToEdit
     )
+  }
+  if (draftAngle && 'variableName' in draftAngle && draftAngle.variableName) {
+    insertVariableAndOffsetPathToNode(draftAngle, modifiedAst, mNodeToEdit)
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
@@ -338,16 +347,40 @@ export function addSweep({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const res = getFacesExprsFromSelection(
+    modifiedAst,
     sketches,
     artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
-  if (err(vars)) {
-    return vars
+  if (err(res)) return res
+  modifiedAst = res.modifiedAst
+  vars.exprs.push(...res.exprs)
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)

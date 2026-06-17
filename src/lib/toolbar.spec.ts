@@ -1,19 +1,26 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ commands: { send: vi.fn() } }),
+}))
+
 import {
+  type ToolbarDropdown,
+  type ToolbarItem,
   buildToolbarConfig,
-  getDefaultRecentToolbarItemIds,
   getConstraintToolbarToggleEvent,
+  getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
-  recordRecentToolbarItemId,
-  promoteRecentToolbarItemId,
-  resolveRecentToolbarItems,
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
+  promoteRecentToolbarItemId,
+  recordRecentToolbarItemId,
+  resolveRecentToolbarItems,
 } from '@src/lib/toolbar'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 
 const stubModelingState = (
   activeStates: string[]
@@ -36,11 +43,58 @@ function findConstraintsDropdown() {
   )
 }
 
+function findModelingToolbarDropdown(id: string): ToolbarDropdown | undefined {
+  return buildToolbarConfig({
+    send: () => {},
+  }).modeling.items.find(
+    (item): item is ToolbarDropdown =>
+      item !== 'break' && 'array' in item && item.id === id
+  )
+}
+
+function findModelingToolbarItem(id: string): ToolbarItem {
+  const item = buildToolbarConfig({
+    send: () => {},
+  }).modeling.items.find(
+    (item): item is ToolbarItem =>
+      item !== 'break' && !('array' in item) && item.id === id
+  )
+
+  if (!item) {
+    throw new Error(`Could not find toolbar item ${id}`)
+  }
+
+  return item
+}
+
+function getToolbarItems(
+  toolbarConfig: ReturnType<typeof buildToolbarConfig>
+): ToolbarItem[] {
+  return Object.values(toolbarConfig).flatMap((mode) =>
+    mode.items.flatMap((item) => {
+      if (item === 'break') {
+        return []
+      }
+
+      if ('array' in item) {
+        return item.array
+      }
+
+      return [item]
+    })
+  )
+}
+
 describe('toolbar state helpers', () => {
   test('keeps the sketch solve toolbar visible while animating into sketch solve', () => {
     expect(
       modelingMachineStateToToolbarModeName(
         stubModelingState(['animating to sketch solve mode'])
+      )
+    ).toBe('sketchSolve')
+    expect(
+      modelingMachineStateToToolbarModeName(
+        stubModelingState(['animating to existing sketch solve'])
       )
     ).toBe('sketchSolve')
   })
@@ -54,6 +108,11 @@ describe('toolbar state helpers', () => {
     expect(
       isSketchToolbarTransitioning(
         stubModelingState(['animating to existing sketch'])
+      )
+    ).toBe(true)
+    expect(
+      isSketchToolbarTransitioning(
+        stubModelingState(['animating to existing sketch solve'])
       )
     ).toBe(true)
   })
@@ -130,6 +189,177 @@ describe('toolbar state helpers', () => {
       verticalConstraintTool: 'vertical',
       perpendicularConstraintTool: 'perpendicular',
       fixedConstraintTool: 'fix',
+    })
+  })
+
+  test('hides experimental toolbar items unless sketch experimental features are enabled', () => {
+    const defaultToolbarConfig = buildToolbarConfig({
+      send: () => {},
+    })
+
+    expect(
+      getToolbarItems(defaultToolbarConfig).filter(
+        (item) => item.status === 'experimental'
+      )
+    ).toEqual([])
+    expect(
+      getToolbarItems(defaultToolbarConfig).map((item) => item.id)
+    ).toContain('trim')
+
+    const experimentalToolbarConfig = buildToolbarConfig(
+      {
+        send: () => {},
+      },
+      { showExperimentalFeatures: true }
+    )
+
+    expect(
+      getToolbarItems(experimentalToolbarConfig)
+        .filter((item) => item.status === 'experimental')
+        .map((item) => item.id)
+    ).toEqual(
+      expect.arrayContaining([
+        'spline',
+        'blend-surface',
+        'delete-face',
+        'delete',
+        'gear-helical',
+        'gear-spur',
+        'gear-herringbone',
+        'gear-ring',
+      ])
+    )
+  })
+
+  test('opens the Delete modeling command from the transform dropdown', () => {
+    const commands = { send: vi.fn() }
+    const toolbarConfig = buildToolbarConfig(commands, {
+      showExperimentalFeatures: true,
+    })
+    const deleteItem = getToolbarItems(toolbarConfig).find(
+      (item) => item.id === 'delete'
+    )
+
+    if (!deleteItem) {
+      throw new Error('Could not find toolbar item delete')
+    }
+
+    deleteItem.onClick({
+      modelingSend: vi.fn(),
+      modelingState: stubModelingState([]),
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(commands.send).toHaveBeenCalledWith({
+      type: 'Find and select command',
+      data: { name: 'Delete', groupId: 'modeling' },
+    })
+  })
+
+  test('orders the GDT dropdown items by displayed name', () => {
+    const gdtDropdown = findModelingToolbarDropdown('gdt')
+
+    expect(gdtDropdown).toBeDefined()
+    if (!gdtDropdown) {
+      return
+    }
+
+    const titles = gdtDropdown.array.map((item) => {
+      if (typeof item.title !== 'string') {
+        throw new Error(`Expected ${item.id} to have a string title`)
+      }
+
+      return item.title
+    })
+    const sortedTitles = [...titles].sort((a, b) => a.localeCompare(b))
+
+    expect(titles.length).toBeGreaterThan(0)
+    expect(titles, 'GDT dropdown names are not sorted').toEqual(sortedTitles)
+  })
+
+  test('starts sketch solve on an already-selected plane', () => {
+    const modelingSend = vi.fn()
+    const sketchItem = findModelingToolbarItem('sketch')
+    const modelingState = {
+      context: {
+        kclManager: { sceneInfra: { modelingSend } },
+        selectionRanges: {
+          graphSelections: [
+            {
+              artifact: {
+                id: 'plane-001',
+                type: 'plane',
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        store: {
+          useSketchSolveMode: { current: true },
+        },
+      },
+    } as unknown as StateFrom<typeof modelingMachine>
+
+    sketchItem.onClick({
+      modelingSend,
+      modelingState,
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(modelingSend).toHaveBeenNthCalledWith(1, {
+      type: 'Enter sketch',
+      data: {
+        forceNewSketch: true,
+        keepDefaultPlaneVisibility: true,
+      },
+    })
+    expect(modelingSend).toHaveBeenNthCalledWith(2, {
+      type: 'Select sketch solve plane',
+      data: 'plane-001',
+    })
+  })
+
+  test('starts sketch solve on an already-selected default plane', () => {
+    const modelingSend = vi.fn()
+    const sketchItem = findModelingToolbarItem('sketch')
+    const modelingState = {
+      context: {
+        kclManager: { sceneInfra: { modelingSend } },
+        selectionRanges: {
+          graphSelections: [],
+          otherSelections: [{ id: 'default-plane-xy', name: 'XY' }],
+        },
+        store: {
+          useSketchSolveMode: { current: true },
+        },
+      },
+    } as unknown as StateFrom<typeof modelingMachine>
+
+    sketchItem.onClick({
+      modelingSend,
+      modelingState,
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(modelingSend).toHaveBeenNthCalledWith(1, {
+      type: 'Enter sketch',
+      data: {
+        forceNewSketch: true,
+        keepDefaultPlaneVisibility: true,
+      },
+    })
+    expect(modelingSend).toHaveBeenNthCalledWith(2, {
+      type: 'Select sketch solve plane',
+      data: 'default-plane-xy',
     })
   })
 
@@ -223,5 +453,39 @@ describe('toolbar state helpers', () => {
         ['coincident', 'Tangent', 'Parallel']
       ).visibleItems.map((item) => item.id)
     ).toEqual(['vertical', 'coincident', 'Tangent'])
+  })
+
+  test('has a default keymap binding for every command-backed toolbar item', () => {
+    const toolbarConfig = buildToolbarConfig(
+      {
+        send: () => {},
+      },
+      { showExperimentalFeatures: true }
+    )
+    const defaultKeymapCommands = new Set(
+      defaultKeymap.bindings.map((binding) => binding.command)
+    )
+
+    const toolbarCommands = Object.values(toolbarConfig).flatMap((mode) =>
+      mode.items.flatMap((item) => {
+        if (item === 'break') {
+          return []
+        }
+
+        if ('array' in item) {
+          return item.array.flatMap((dropdownItem) =>
+            dropdownItem.command ? [dropdownItem.command] : []
+          )
+        }
+
+        return item.command ? [item.command] : []
+      })
+    )
+
+    expect(
+      [...new Set(toolbarCommands)].filter(
+        (command) => !defaultKeymapCommands.has(command)
+      )
+    ).toEqual([])
   })
 })

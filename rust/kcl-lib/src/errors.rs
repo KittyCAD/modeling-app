@@ -14,12 +14,13 @@ use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ModuleId;
+use crate::NodePath;
 use crate::SourceRange;
 use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
-use crate::execution::Operation;
+use crate::execution::OperationsByModule;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -214,7 +215,7 @@ pub struct KclErrorWithOutputs {
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
     pub variables: IndexMap<String, KclValue>,
-    pub operations: Vec<Operation>,
+    pub operations: OperationsByModule,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
     // reason.
     pub _artifact_commands: Vec<ArtifactCommand>,
@@ -224,7 +225,7 @@ pub struct KclErrorWithOutputs {
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -237,12 +238,12 @@ impl KclErrorWithOutputs {
         error: KclError,
         non_fatal: Vec<CompilationIssue>,
         variables: IndexMap<String, KclValue>,
-        operations: Vec<Operation>,
+        operations: OperationsByModule,
         artifact_commands: Vec<ArtifactCommand>,
         artifact_graph: ArtifactGraph,
         scene_objects: Vec<Object>,
         source_range_to_object: BTreeMap<SourceRange, ObjectId>,
-        var_solutions: Vec<(SourceRange, Number)>,
+        var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -519,6 +520,62 @@ impl miette::Diagnostic for Report {
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("{}", self.issue.message)]
+pub struct CompilationIssueReport {
+    pub issue: CompilationIssue,
+    pub kcl_source: String,
+    pub filename: String,
+}
+
+impl miette::Diagnostic for CompilationIssueReport {
+    fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
+        let tag = match self.issue.tag {
+            Tag::Deprecated => "deprecated",
+            Tag::Unnecessary => "unnecessary",
+            Tag::UnknownNumericUnits => "unknown-numeric-units",
+            Tag::None => return None,
+        };
+        Some(Box::new(format!("KCL {tag}")))
+    }
+
+    fn severity(&self) -> Option<miette::Severity> {
+        Some(match self.issue.severity {
+            Severity::Warning => miette::Severity::Warning,
+            Severity::Error | Severity::Fatal => miette::Severity::Error,
+        })
+    }
+
+    fn help<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
+        self.issue
+            .suggestion
+            .as_ref()
+            .map(|s| Box::new(s.title.clone()) as Box<dyn std::fmt::Display>)
+    }
+
+    fn source_code(&self) -> Option<&dyn miette::SourceCode> {
+        Some(&self.kcl_source)
+    }
+
+    fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
+        let span = miette::SourceSpan::from(self.issue.source_range);
+        let label = miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span);
+        Some(Box::new(std::iter::once(label)))
+    }
+}
+
+/// Render a [`CompilationIssue`] as a miette report string, mirroring the
+/// formatting used for [`Report`].
+pub fn render_compilation_issue_miette(filename: &str, source: &str, issue: CompilationIssue) -> String {
+    let report = CompilationIssueReport {
+        issue,
+        kcl_source: source.to_owned(),
+        filename: filename.to_owned(),
+    };
+    let report = miette::Report::new(report);
+    format!("{report:?}")
 }
 
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]

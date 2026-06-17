@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
   createCircleApiObject,
@@ -12,9 +12,9 @@ import {
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import { Group, OrthographicCamera } from 'three'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
+import { describe, expect, it } from 'vitest'
 
 function createObjectsArray(objects: ApiObject[]) {
   return createSceneGraphDelta(objects).new_graph.objects

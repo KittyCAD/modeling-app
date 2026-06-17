@@ -1,16 +1,17 @@
+import nodeFsSync from 'fs'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
-import nodeFsSync from 'fs'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
+  closeOnboardingModalIfPresent,
   createProject,
   executorInputPath,
+  expectKeybindingsSettingsVisible,
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
-  closeOnboardingModalIfPresent,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -71,8 +72,7 @@ test(
     await expect(page.getByTestId('keybindings-button')).toBeVisible()
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
-    // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
@@ -106,8 +106,7 @@ test(
     await expect(page.getByTestId('keybindings-button')).toBeVisible()
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
-    // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
@@ -1099,10 +1098,15 @@ test(
 
     await u.openFilePanel()
 
-    // Find the current file.
+    // Find the current file
     const filesPane = page.locator('#files-pane')
     // Open the directory
-    await page.getByText('nested').click()
+    const nestedFolder = filesPane
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: 'nested', exact: true })
+    if ((await nestedFolder.getAttribute('aria-expanded')) !== 'true') {
+      await nestedFolder.click()
+    }
     // See the bracket
     await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
 
@@ -1885,7 +1889,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       await editor.expectEditor.toContain(lineToStay)
 
       // Exit sketch mode
-      await page.keyboard.press('Meta+Escape')
+      await page.keyboard.press('Shift+Escape')
       await scene.settled()
     })
 

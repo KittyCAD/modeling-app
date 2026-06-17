@@ -1,6 +1,6 @@
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { isArray } from '@src/lib/utils'
 
 /**
@@ -416,6 +416,71 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
+  test('sketch solve tool hotkeys equip tools and update the sketch', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await test.step('Set up the app and enter sketch solve mode', async () => {
+      await context.addInitScript(() => {
+        localStorage.setItem('persistCode', '')
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+
+      await toolbar.startSketchOnDefaultPlane('Top plane')
+      await editor.expectEditor.toContain('sketch(on = XY) {')
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
+      await scene.clickNoWhere()
+    })
+
+    await test.step('Equip the line tool with its keybinding and draw a line', async () => {
+      await page.keyboard.press('l')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
+        format: 'ratio',
+      })
+      const [lineEnd] = scene.makeMouseHelpers(0.55, 0.45, {
+        format: 'ratio',
+      })
+
+      await lineStart()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await lineEnd()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('line(start = [')
+    })
+
+    await test.step('Equip the circle tool with its keybinding and draw a circle', async () => {
+      await page.keyboard.press('c')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      let previousCode = await editor.getCurrentCode()
+      const [circleCenter] = scene.makeMouseHelpers(0.7, 0.55, {
+        format: 'ratio',
+      })
+      const [circleRadius] = scene.makeMouseHelpers(0.78, 0.62, {
+        format: 'ratio',
+      })
+
+      await circleCenter()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await circleRadius()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('circle(start = [')
+    })
+  })
+
   test('unequipping line tool should not drop committed segments from the scene', async ({
     page,
     context,
@@ -805,11 +870,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           addToHistory: unknown
         }> = []
         const updateCodeEditorCalls: string[] = []
+        const { kclManager } = window.app.singletons
 
         const originalSendModelingEvent =
-          window.kclManager.sendModelingEvent.bind(window.kclManager)
-        window.kclManager.sendModelingEvent = ((
-          ...args: Parameters<typeof window.kclManager.sendModelingEvent>
+          kclManager.sendModelingEvent.bind(kclManager)
+        kclManager.sendModelingEvent = ((
+          ...args: Parameters<typeof kclManager.sendModelingEvent>
         ) => {
           const [event] = args
           if (event.type === 'update sketch outcome') {
@@ -822,17 +888,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
           }
 
           return originalSendModelingEvent(...args)
-        }) satisfies typeof window.kclManager.sendModelingEvent
+        }) satisfies typeof kclManager.sendModelingEvent
 
         const originalUpdateCodeEditor =
-          window.kclManager.updateCodeEditor.bind(window.kclManager)
-        window.kclManager.updateCodeEditor = ((
-          ...args: Parameters<typeof window.kclManager.updateCodeEditor>
+          kclManager.updateCodeEditor.bind(kclManager)
+        kclManager.updateCodeEditor = ((
+          ...args: Parameters<typeof kclManager.updateCodeEditor>
         ) => {
           const [code] = args
           updateCodeEditorCalls.push(code)
           return originalUpdateCodeEditor(...args)
-        }) satisfies typeof window.kclManager.updateCodeEditor
+        }) satisfies typeof kclManager.updateCodeEditor
 
         Reflect.set(window, 'directEditorOutcomesForTest', directEditorOutcomes)
         Reflect.set(
@@ -920,9 +986,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Delay the next sketch execution and observe editor saves', async () => {
       await page.evaluate(() => {
         const writeToFileCalls: string[] = []
-        const originalWriteToFile = window.kclManager.writeToFile.bind(
-          window.kclManager
-        )
+        const { kclManager } = window.app.singletons
+        const originalWriteToFile = kclManager.writeToFile.bind(kclManager)
         /*
          * This is only a spy on the save path. The test still edits through
          * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
@@ -930,13 +995,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
          * reaches the normal save listener, and that the delayed execution does
          * not add a stale out-of-band save afterward.
          */
-        window.kclManager.writeToFile = (async (
-          ...args: Parameters<typeof window.kclManager.writeToFile>
+        kclManager.writeToFile = (async (
+          ...args: Parameters<typeof kclManager.writeToFile>
         ) => {
-          const [newCode = window.kclManager.code] = args
+          const [newCode = kclManager.code] = args
           writeToFileCalls.push(newCode)
           return originalWriteToFile(...args)
-        }) satisfies typeof window.kclManager.writeToFile
+        }) satisfies typeof kclManager.writeToFile
         Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
 
         const originalHackSetProgram = window.rustContext.hackSetProgram.bind(
@@ -1925,44 +1990,41 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await toolbar.openFeatureTreePane()
     })
 
-    await test.step('Delete first constraint from feature tree and verify code updates', async () => {
+    await test.step('Remove first constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
       )
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
-    // TODO: can't quite figure out why this is needed for the second delete to work
+    // TODO: can't quite figure out why this is needed for the second remove to work
     await test.step('Wait a bit', async () => {
       await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(1000)
     })
 
-    await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+    await test.step('Remove second constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
       )
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain(
         'coincident([line2.start, line1.end])'
       )
     })
 
-    await test.step('Delete sketch block from feature tree and verify code updates', async () => {
+    await test.step('Remove sketch block from feature tree and verify code updates', async () => {
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain('sketch(on')
     })
@@ -2060,26 +2122,24 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       ).not.toBeInViewport()
     })
 
-    await test.step('Delete extrude from feature tree', async () => {
+    await test.step('Remove extrude from feature tree', async () => {
       await toolbar.openFeatureTreePane()
       const extrudeOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Extrude|extrude001)$/ })
         .first()
       await expect(extrudeOp).toBeVisible()
-      await extrudeOp.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(extrudeOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('extrude(')
     })
 
-    await test.step('Delete region from feature tree and expect original code', async () => {
+    await test.step('Remove region from feature tree and expect original code', async () => {
       await toolbar.openFeatureTreePane()
       const regionOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Region|region001)$/ })
         .first()
       await expect(regionOp).toBeVisible()
-      await regionOp.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(regionOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('region(')
       await editor.expectEditor.toContain(square, { shouldNormalise: true })

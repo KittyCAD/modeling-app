@@ -5,11 +5,11 @@ import {
   createSetVarNameModal,
 } from '@src/components/SetVarNameModal'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
 import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
 import { isNodeSafeToReplace } from '@src/lang/queryAst'
 import type { PathToNode, SourceRange } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 

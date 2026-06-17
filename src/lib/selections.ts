@@ -63,7 +63,7 @@ import type {
 } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import { err, isErr } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
@@ -75,6 +75,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  DefaultPlaneSelection,
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
@@ -506,6 +507,13 @@ export function handleSelectionBatch({
         id: s.id,
         range: defaultSourceRange(),
       })
+      return
+    }
+    if (isDefaultPlaneSelection(s)) {
+      selectionToEngine.push({
+        id: s.id,
+        range: defaultSourceRange(),
+      })
     }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
@@ -543,6 +551,18 @@ export function handleSelectionBatch({
 type SelectionToEngine = {
   id?: string
   range: SourceRange
+}
+
+export function isDefaultPlaneSelection(
+  selection: Selections['otherSelections'][number]
+): selection is DefaultPlaneSelection {
+  return (
+    typeof selection === 'object' && selection !== null && 'name' in selection
+  )
+}
+
+export function getSelectedDefaultPlane(selectionRanges: Selections) {
+  return selectionRanges.otherSelections.find(isDefaultPlaneSelection)
 }
 
 export function processCodeMirrorRanges({
@@ -783,7 +803,7 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
       incrementOrInitializeSelectionType('engineRegion')
-    } else if ('name' in selection) {
+    } else if (isDefaultPlaneSelection(selection)) {
       incrementOrInitializeSelectionType('plane')
     } else if (
       selection.type === 'enginePrimitive' &&
@@ -1365,9 +1385,10 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
-  const offsetResult = await getOffsetSketchPlaneData(artifact, {
-    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+  const offsetResult = getStableOffsetPlaneData(artifact, {
+    execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
+    sketchBlock,
   })
   if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
@@ -1409,6 +1430,44 @@ export function selectDefaultSketchPlane(
   return true
 }
 
+// Uses the executed sketch `on` plane so editing an offset-plane sketch is
+// independent of camera-facing scene data.
+export function getStableOffsetPlaneData(
+  artifact: Artifact | undefined,
+  systemDeps: {
+    execState: ExecState
+    sceneInfra: SceneInfra
+    sketchBlock?: Extract<Artifact, { type: 'sketchBlock' }>
+  }
+): Error | false | OffsetPlane {
+  if (artifact?.type !== 'plane') {
+    return false
+  }
+
+  const planeInfo = systemDeps.sketchBlock?.planeInfo
+
+  if (!planeInfo) {
+    return false
+  }
+
+  return {
+    type: 'offsetPlane',
+    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
+    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
+    position: [
+      planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.z / systemDeps.sceneInfra.baseUnitMultiplier,
+    ],
+    planeId: artifact.id,
+    pathToNode: artifact.codeRef.pathToNode,
+    negated: false,
+  }
+}
+
+// Uses engine sketch-mode plane data so offset-plane selection can keep the current camera-facing side.
+// The returned value depends on current camera view, ie. when viewing the back side zAxis will be flipped
+// due to getFaceDetails().
 export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {
@@ -1505,6 +1564,63 @@ export async function selectOffsetSketchPlane(
     return false
   }
   return true
+}
+
+export async function selectSketchPlane(
+  planeOrFaceId: string | undefined,
+  useSketchSolveMode: boolean | undefined,
+  kclManager?: KclManager
+) {
+  try {
+    if (!kclManager) return
+    if (!planeOrFaceId) return
+
+    if (useSketchSolveMode) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId, {
+      sceneInfra: kclManager.sceneInfra,
+      rustContext: kclManager.rustContext,
+    })
+    if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+      return
+    }
+
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    })
+    if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+      return
+    }
+
+    const sweepFaceSelected = await selectionBodyFace(
+      planeOrFaceId,
+      kclManager.artifactGraph,
+      kclManager.ast,
+      kclManager.execState,
+      {
+        rustContext: kclManager.rustContext,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      }
+    )
+    if (sweepFaceSelected) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch plane',
+        data: sweepFaceSelected,
+      })
+    }
+  } catch (err) {
+    reportRejection(err)
+  }
 }
 
 export async function selectionBodyFace(
