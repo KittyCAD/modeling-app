@@ -25,14 +25,19 @@ import {
   createExpressionStatement,
   createLabeledArg,
   createLiteral,
+  createLocalName,
+  createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getRegionSketchTagExprFromSourceSurface,
   getSettingsAnnotation,
+  getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
@@ -52,11 +57,16 @@ import {
   getCodeRefsByArtifactId,
   getPatternArtifactForCopyId,
   getSketchBlockForPathArtifact,
+  getSweepArtifactFromSelection,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
-import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import {
+  findKwArg,
+  isCursorInSketchCommandRange,
+  topLevelRange,
+} from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -375,17 +385,342 @@ export function getBodySelectionFromPrimitiveParentEntityId(
   }
 }
 
-function createPrimitiveReferenceCode({
-  primitiveSelection,
-  artifactGraph,
-  kclManager,
-  wasmInstance,
-}: {
+type SelectionExpressionBuilderContext = {
   primitiveSelection: ReferenceablePrimitiveSelection
   artifactGraph: ArtifactGraph
   kclManager: KclManager
   wasmInstance: ModuleType
-}): string | null {
+  engineCommandManager: ConnectionManager
+}
+
+type SelectionExpressionValidationContext =
+  SelectionExpressionBuilderContext & {
+    expr: Expr
+    code: string
+  }
+
+type SelectionExpressionApproach = {
+  create: (context: SelectionExpressionBuilderContext) => Expr | null
+  validate: (context: SelectionExpressionValidationContext) => Promise<boolean>
+}
+
+function createFaceApiReferenceExpr() {
+  return null
+}
+
+async function validateFaceApiReferenceExpr() {
+  return false
+}
+
+function getTaggableEdgeArtifact(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' | 'sweepEdge' }> | null {
+  if (
+    selection.artifact?.type === 'segment' ||
+    selection.artifact?.type === 'sweepEdge'
+  ) {
+    return selection.artifact
+  }
+
+  if (selection.artifact?.type !== 'edgeCut') {
+    return null
+  }
+
+  const consumedEdge = getArtifactOfTypes(
+    {
+      key: selection.artifact.consumedEdgeId,
+      types: ['segment', 'sweepEdge'],
+    },
+    artifactGraph
+  )
+  return err(consumedEdge) ? null : consumedEdge
+}
+
+function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
+  if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
+    return createCallExpressionStdLibKw('getOppositeEdge', tag, [])
+  }
+
+  if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
+    return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
+  }
+
+  return tag
+}
+
+function getSourceSurfaceExpr(
+  sourceSurfaceArtifact: Extract<Artifact, { type: 'sweep' }>,
+  { artifactGraph, kclManager, wasmInstance }: SelectionExpressionBuilderContext
+): Expr | null {
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sourceSurfaceArtifact,
+          codeRef: sourceSurfaceArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars) || sourceSurfaceVars.exprs.length !== 1) {
+    return null
+  }
+
+  return sourceSurfaceVars.exprs[0]
+}
+
+function getSegmentArtifactForTagReference(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | null {
+  if (artifact.type === 'segment') {
+    return artifact
+  }
+
+  const segmentId =
+    artifact.type === 'sweepEdge'
+      ? artifact.segId
+      : artifact.type === 'wall'
+        ? artifact.segId
+        : null
+  if (!segmentId) {
+    return null
+  }
+
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  return err(segment) ? null : segment
+}
+
+function getExistingSegmentTagExpr(
+  segmentArtifact: Extract<Artifact, { type: 'segment' }>,
+  { kclManager, wasmInstance }: SelectionExpressionBuilderContext
+): Expr | null {
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
+    kclManager.ast,
+    segmentArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (err(segmentNode) || segmentNode.node.type !== 'CallExpressionKw') {
+    return null
+  }
+
+  const tagArg = findKwArg('tag', segmentNode.node)
+  if (tagArg?.type === 'TagDeclarator') {
+    return createLocalName(tagArg.value)
+  }
+
+  return tagArg?.type === 'Name' ? structuredClone(tagArg) : null
+}
+
+function getDirectTagExprFromSourceSurface({
+  sourceSurfaceArtifact,
+  sourceSurfaceExpr,
+  taggedArtifact,
+  context,
+}: {
+  sourceSurfaceArtifact: Extract<Artifact, { type: 'sweep' }>
+  sourceSurfaceExpr: Expr | null
+  taggedArtifact: Artifact
+  context: SelectionExpressionBuilderContext
+}): Expr | null {
+  const { artifactGraph, kclManager, wasmInstance } = context
+
+  const regionTagExpr = getRegionSketchTagExprFromSourceSurface(
+    sourceSurfaceArtifact,
+    taggedArtifact,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (regionTagExpr) {
+    return regionTagExpr
+  }
+
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+    sourceSurfaceArtifact,
+    taggedArtifact,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance,
+    { fallbackToFirstSegment: false }
+  )
+  if (sourceSurfaceExpr && sketchSegmentName) {
+    return createMemberExpression(
+      createMemberExpression(
+        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+        'tags'
+      ),
+      sketchSegmentName
+    )
+  }
+
+  const segmentArtifact = getSegmentArtifactForTagReference(
+    taggedArtifact,
+    artifactGraph
+  )
+  return segmentArtifact
+    ? getExistingSegmentTagExpr(segmentArtifact, context)
+    : null
+}
+
+function createDirectTaggedFaceReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph } = context
+
+  if (primitiveSelection.primitiveType !== 'face') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  if (graphSelection?.artifact?.type !== 'wall') {
+    return null
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    graphSelection,
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return null
+  }
+  const sourceSurface = sourceSurfaceArtifact as Extract<
+    Artifact,
+    { type: 'sweep' }
+  >
+
+  return getDirectTagExprFromSourceSurface({
+    sourceSurfaceArtifact: sourceSurface,
+    sourceSurfaceExpr: getSourceSurfaceExpr(sourceSurface, context),
+    taggedArtifact: graphSelection.artifact,
+    context,
+  })
+}
+
+function createDirectTaggedEdgeReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph } = context
+
+  if (primitiveSelection.primitiveType !== 'edge') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  if (!graphSelection) {
+    return null
+  }
+
+  const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
+  if (!edgeArtifact || edgeArtifact.type === 'sweepEdge') {
+    return null
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    {
+      ...graphSelection,
+      artifact: edgeArtifact,
+    },
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return null
+  }
+  const sourceSurface = sourceSurfaceArtifact as Extract<
+    Artifact,
+    { type: 'sweep' }
+  >
+
+  const tagExpr = getDirectTagExprFromSourceSurface({
+    sourceSurfaceArtifact: sourceSurface,
+    sourceSurfaceExpr: getSourceSurfaceExpr(sourceSurface, context),
+    taggedArtifact: edgeArtifact,
+    context,
+  })
+  return tagExpr
+}
+
+function createAdjacentOrOppositeEdgeReferenceExpr({
+  primitiveSelection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+}: SelectionExpressionBuilderContext): Expr | null {
+  if (primitiveSelection.primitiveType !== 'edge') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  if (!graphSelection) {
+    return null
+  }
+
+  const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
+  if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
+    return null
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    {
+      ...graphSelection,
+      artifact: edgeArtifact,
+    },
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return null
+  }
+
+  const tagResult = modifyAstWithTagsForSelection(
+    kclManager.ast,
+    {
+      ...graphSelection,
+      artifact: edgeArtifact,
+      codeRef: graphSelection.codeRef,
+    },
+    artifactGraph,
+    wasmInstance,
+    ['oppositeAndAdjacentEdges']
+  )
+  const tagExpr = err(tagResult) ? null : tagResult.exprs[0]
+  if (!tagExpr) {
+    return null
+  }
+
+  return getEdgeTagCallExpr(tagExpr, edgeArtifact)
+}
+
+function createTagReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  return (
+    createDirectTaggedFaceReferenceExpr(context) ??
+    createDirectTaggedEdgeReferenceExpr(context) ??
+    createAdjacentOrOppositeEdgeReferenceExpr(context)
+  )
+}
+
+async function validateAvailableReferenceExpr({
+  code,
+}: SelectionExpressionValidationContext) {
+  return code.length > 0
+}
+
+function createPrimitiveIndexReferenceExpr({
+  primitiveSelection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+}: SelectionExpressionBuilderContext): Expr | null {
   if (!primitiveSelection.parentEntityId) {
     return null
   }
@@ -421,18 +756,54 @@ function createPrimitiveReferenceCode({
   const bodyExpr = bodyVariables.exprs[0]
   const functionName =
     primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
-  const call = createCallExpressionStdLibKw(
-    functionName,
-    structuredClone(bodyExpr),
-    [
-      createLabeledArg(
-        'index',
-        createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
-      ),
-    ]
-  )
+  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
+    createLabeledArg(
+      'index',
+      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
+    ),
+  ])
+}
 
-  return recastExpr(call, wasmInstance)
+const selectionExpressionApproaches: SelectionExpressionApproach[] = [
+  {
+    create: createFaceApiReferenceExpr,
+    validate: validateFaceApiReferenceExpr,
+  },
+  {
+    create: createTagReferenceExpr,
+    validate: validateAvailableReferenceExpr,
+  },
+  {
+    create: createPrimitiveIndexReferenceExpr,
+    validate: validateAvailableReferenceExpr,
+  },
+]
+
+async function createPrimitiveReferenceCode(
+  context: SelectionExpressionBuilderContext
+): Promise<string | null> {
+  for (const approach of selectionExpressionApproaches) {
+    const expr = approach.create(context)
+    if (!expr) {
+      continue
+    }
+
+    const code = recastExpr(expr, context.wasmInstance)
+    if (!code) {
+      continue
+    }
+
+    const isValid = await approach.validate({
+      ...context,
+      expr,
+      code,
+    })
+    if (isValid) {
+      return code
+    }
+  }
+
+  return null
 }
 
 function createExpressionReferences({
@@ -496,6 +867,12 @@ export async function getSelectionReferences({
 }): Promise<SelectionReference[]> {
   const references: SelectionReference[] = []
   const primitiveSelections: ReferenceablePrimitiveSelection[] = []
+  const graphSelectionByEntityId = new Map<string, Selection>(
+    graphSelections.flatMap((selection): [string, Selection][] => {
+      const entityId = selection.artifact?.id || selection.engineEntityId
+      return entityId ? [[entityId, selection]] : []
+    })
+  )
 
   for (const selection of graphSelections) {
     if (isBodyReferenceArtifact(selection.artifact)) {
@@ -556,6 +933,7 @@ export async function getSelectionReferences({
     if (isReferenceablePrimitiveSelection(selection)) {
       primitiveSelections.push({
         ...selection,
+        graphSelection: graphSelectionByEntityId.get(selection.entityId),
         enginePrimitiveSelection: selection,
       })
     }
@@ -570,29 +948,26 @@ export async function getSelectionReferences({
     ).values(),
   ]
 
-  references.push(
-    ...dedupedPrimitiveSelections.flatMap((primitiveSelection) => {
-      const code = createPrimitiveReferenceCode({
-        primitiveSelection,
-        artifactGraph,
-        kclManager,
-        wasmInstance,
-      })
-      if (!code) {
-        return []
-      }
-
-      return [
-        {
-          id: `${primitiveSelection.primitiveType}:${primitiveSelection.entityId}`,
-          label: primitiveSelection.primitiveType === 'face' ? 'Face' : 'Edge',
-          code,
-          graphSelection: primitiveSelection.graphSelection,
-          enginePrimitiveSelection: primitiveSelection.enginePrimitiveSelection,
-        },
-      ]
+  for (const primitiveSelection of dedupedPrimitiveSelections) {
+    const code = await createPrimitiveReferenceCode({
+      primitiveSelection,
+      artifactGraph,
+      engineCommandManager,
+      kclManager,
+      wasmInstance,
     })
-  )
+    if (!code) {
+      continue
+    }
+
+    references.push({
+      id: `${primitiveSelection.primitiveType}:${primitiveSelection.entityId}`,
+      label: primitiveSelection.primitiveType === 'face' ? 'Face' : 'Edge',
+      code,
+      graphSelection: primitiveSelection.graphSelection,
+      enginePrimitiveSelection: primitiveSelection.enginePrimitiveSelection,
+    })
+  }
 
   return [
     ...new Map(
