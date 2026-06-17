@@ -1,3 +1,4 @@
+import path from 'node:path'
 import type { UserFeature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -16,9 +17,13 @@ import { projectSessionService } from '@src/registry/contracts/projectSession'
 import { loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-const mockProjectPath = '/private/tmp/zds-app-spec-project-system/test'
+const mockProjectDirectoryPath = path.join(
+  process.cwd(),
+  '.tmp',
+  'zds-app-spec-project-system'
+)
+const mockProjectPath = path.join(mockProjectDirectoryPath, 'test')
 const mockProjectMainFilePath = `${mockProjectPath}/main.kcl`
-const mockProjectDirectoryPath = '/private/tmp/zds-app-spec-project-system'
 
 const mockProject: Project = {
   name: 'test',
@@ -50,13 +55,13 @@ beforeAll(async () => {
     type: StorageName.NodeFS,
     options: {},
   })
-  await fsZds.rm(mockProjectPath, { recursive: true, force: true })
+  await fsZds.rm(mockProjectDirectoryPath, { recursive: true, force: true })
   await fsZds.mkdir(mockProjectPath, { recursive: true })
   await fsZds.writeFile(mockProjectMainFilePath, new TextEncoder().encode(''))
 })
 
 afterAll(async () => {
-  await fsZds.rm(mockProjectPath, { recursive: true, force: true })
+  await fsZds.rm(mockProjectDirectoryPath, { recursive: true, force: true })
   vi.restoreAllMocks()
 })
 
