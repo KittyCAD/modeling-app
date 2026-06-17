@@ -9,22 +9,16 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  type PreparedZookeeperPatchFileReplay,
-  buildZookeeperHistoryExtension,
-} from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import {
-  BODIES_PANE_FEATURE_FLAG,
-  PROJECT_ENTRYPOINT,
-} from '@src/lib/constants'
+import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import fsZds from '@src/lib/fs-zds'
+import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -41,10 +35,6 @@ import {
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
-import {
-  type SettingsType,
-  createSettings,
-} from '@src/lib/settings/initialSettings'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -60,14 +50,9 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
-import {
-  type SettingsActorType,
-  getOnlySettingsFromContext,
-  settingsMachine,
-} from '@src/machines/settingsMachine'
+import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
   type UserFeaturesContext,
@@ -86,7 +71,10 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import {
+  type SettingsRegistryService,
+  settingsService,
+} from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
@@ -106,15 +94,6 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
-
-function zookeeperReplayChangesProjectFileSet(
-  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
-) {
-  return replayFiles.some(
-    (replayFile) =>
-      replayFile.previousContent === null || replayFile.nextContent === null
-  )
-}
 
 function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
@@ -177,12 +156,7 @@ export type AppAuthSystem = {
 
 export type AppCommandSystem = CommandSystemService
 
-export type AppSettingsSystem = {
-  actor: SettingsActorType
-  send: SettingsActorType['send']
-  get: () => SettingsType
-  useSettings: () => SettingsType
-}
+export type AppSettingsSystem = SettingsRegistryService
 
 export type AppBillingSystem = {
   actor: ActorRefFrom<typeof billingMachine>
@@ -295,25 +269,18 @@ export class App implements AppSubsystems {
       },
     }).start()
 
-    this.registry.reconfigure(appCommandsSlot, [
-      defineRegistryItem({
-        id: 'app.global-commands',
-        provides: [
-          ...createAuthCommands({ authActor: this.auth.actor }).map(
-            provideCommand
-          ),
-          ...createProjectCommands({ systemIOActor: this.systemIOActor }).map(
-            provideCommand
-          ),
-        ],
-      }),
-    ])
+    this.syncAppCommands()
     this.commands.actor.send({
       type: 'Set userFeatures',
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
+    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
+    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
+    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
+    this.syncOpfsCloudBacking()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -352,27 +319,8 @@ export class App implements AppSubsystems {
       createAppRegistryItems({ wasmPromise, machineManager })
     )
     const commands = appRegistry.get(commandSystemService)
-    const extensionSettings = appRegistry.get(settingsValueSpec)
-
-    const settingsActor = createActor(settingsMachine, {
-      input: {
-        ...createSettings(extensionSettings),
-        commandBarActor: commands.actor,
-        extensionSettings,
-        wasmInstancePromise: wasmPromise,
-      },
-    }).start()
-    const settings: AppSettingsSystem = {
-      actor: settingsActor,
-      send: settingsActor.send.bind(App),
-      get: () =>
-        getOnlySettingsFromContext(settingsActor.getSnapshot().context),
-      useSettings: () =>
-        useSelector(settingsActor, (state) => {
-          // We have to peel everything that isn't settings off
-          return getOnlySettingsFromContext(state.context)
-        }),
-    }
+    const settings = appRegistry.get(settingsService)
+    const settingsActor = settings.actor
     const engineCommandManager = new ConnectionManager({
       settingsActor,
     })
@@ -572,64 +520,13 @@ export class App implements AppSubsystems {
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
-    // These extensions make global project operations un/redoable.
+    // This extension makes it possible to mark FS operations as un/redoable
     effect(() => {
       if (this.project?.executingEditor.value) {
-        const executingEditor = this.project.executingEditor.value
-        const disposeFSHistory = buildFSHistoryExtension(
+        buildFSHistoryExtension(
           this.systemIOActor,
-          executingEditor
+          this.project.executingEditor.value
         )
-        const disposeZookeeperHistory = buildZookeeperHistoryExtension({
-          kclManager: executingEditor,
-          onCurrentFileDelete: async (deletedPaths) => {
-            if (!this.project) {
-              return Promise.reject(
-                new Error(
-                  `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
-                )
-              )
-            }
-            const entrypointPath = fsZds.join(
-              this.project.path,
-              PROJECT_ENTRYPOINT
-            )
-            const entrypointFile = this.project.files.find(
-              (file) => file.path === entrypointPath
-            )
-            if (!entrypointFile || deletedPaths.has(entrypointPath)) {
-              return Promise.reject(
-                new Error(
-                  `Cannot replay this Zookeeper edit because ${PROJECT_ENTRYPOINT} is not available.`
-                )
-              )
-            }
-            await this.project.openEditor(entrypointPath, executingEditor)
-          },
-          onActiveFileRestore: async (restoredPath, restoredContents) => {
-            if (!this.project) {
-              return
-            }
-            await this.project.openEditor(
-              restoredPath,
-              executingEditor,
-              restoredContents
-            )
-          },
-          onProjectFilesReplay: async (replayFiles) => {
-            await this.project?.syncReplayedFilesToRust(replayFiles)
-            if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-              this.systemIOActor.send({
-                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-              })
-            }
-          },
-        })
-
-        return () => {
-          disposeFSHistory()
-          disposeZookeeperHistory()
-        }
       }
     })
 
@@ -652,7 +549,6 @@ export class App implements AppSubsystems {
 
     return this.project
   }
-
   private unsubscribeFromSettings: Subscription | undefined = undefined
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
@@ -674,6 +570,57 @@ export class App implements AppSubsystems {
     if (snapshot.matches('loggedOut')) {
       this.userFeatures.send({ type: UserFeaturesTransition.Clear })
     }
+  }
+
+  syncOpfsCloudBacking = () => {
+    if (typeof window === 'undefined' || window.electron) {
+      return
+    }
+
+    const authSnapshot = this.auth.actor.getSnapshot()
+    const token = authSnapshot.matches('loggedIn')
+      ? authSnapshot.context.token
+      : undefined
+    const enabled =
+      Boolean(token) &&
+      userFeaturesContextHas(
+        this.userFeatures.actor.getSnapshot().context,
+        OPFS_CLOUD_FEATURE_FLAG,
+        false
+      )
+
+    configureOpfsCloudSync({
+      enabled,
+      token,
+      projectDirectoryPath:
+        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+    })
+  }
+
+  syncAppCommands = () => {
+    const enableProjectDirectoryCommands =
+      typeof window !== 'undefined' &&
+      (Boolean(window.electron) ||
+        userFeaturesContextHas(
+          this.userFeatures.actor.getSnapshot().context,
+          OPFS_CLOUD_FEATURE_FLAG,
+          false
+        ))
+
+    this.registry.reconfigure(appCommandsSlot, [
+      defineRegistryItem({
+        id: 'app.global-commands',
+        provides: [
+          ...createAuthCommands({ authActor: this.auth.actor }).map(
+            provideCommand
+          ),
+          ...createProjectCommands({
+            systemIOActor: this.systemIOActor,
+            enableProjectDirectoryCommands,
+          }).map(provideCommand),
+        ],
+      }),
+    ])
   }
 
   /**
@@ -739,7 +686,7 @@ export class App implements AppSubsystems {
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
-        id: 'executing-editor-services',
+        id: 'app.runtime-services',
         providesServices: [
           provideService(
             executingEditorService,

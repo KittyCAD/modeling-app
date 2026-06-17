@@ -134,7 +134,9 @@ import {
   addPerpendicularityGdt,
   addPositionGdt,
   addProfileGdt,
+  addRunoutGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
@@ -626,6 +628,14 @@ export type ModelingMachineEvent =
   | {
       type: 'GDT Concentricity'
       data: ModelingCommandSchema['GDT Concentricity']
+    }
+  | {
+      type: 'GDT Symmetry'
+      data: ModelingCommandSchema['GDT Symmetry']
+    }
+  | {
+      type: 'GDT Runout'
+      data: ModelingCommandSchema['GDT Runout']
     }
   | {
       type: 'GDT Parallelism'
@@ -5884,6 +5894,100 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtSymmetryAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Symmetry'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addSymmetryGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtRunoutAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Runout'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addRunoutGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     gdtParallelismAstMod: fromPromise(
       async ({
         input,
@@ -6744,6 +6848,14 @@ export const modelingMachine = setup({
 
         'GDT Concentricity': {
           target: 'Applying GDT Concentricity',
+        },
+
+        'GDT Symmetry': {
+          target: 'Applying GDT Symmetry',
+        },
+
+        'GDT Runout': {
+          target: 'Applying GDT Runout',
         },
 
         'GDT Parallelism': {
@@ -9025,6 +9137,46 @@ export const modelingMachine = setup({
         id: 'gdtConcentricityAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Concentricity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Symmetry': {
+      invoke: {
+        src: 'gdtSymmetryAstMod',
+        id: 'gdtSymmetryAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Symmetry') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Runout': {
+      invoke: {
+        src: 'gdtRunoutAstMod',
+        id: 'gdtRunoutAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Runout') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

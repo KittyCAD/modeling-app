@@ -145,8 +145,6 @@ export const MlEphantConversationPane = (props: {
       mode,
       additionalFiles: attachments,
     })
-
-    props.sendBillingUpdate()
   }
 
   const needsReconnect = abruptlyClosed
@@ -161,7 +159,6 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onCancel = () => {
-    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.Cancel,
     })
@@ -208,12 +205,11 @@ export const MlEphantConversationPane = (props: {
       steeredId.current = id
       // Interrupt the current prompt; when the response completes,
       // the auto-submit effect sends the steered message.
-      sendBillingUpdate()
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.Interrupt,
       })
     },
-    [mlEphantManagerActor, sendBillingUpdate]
+    [mlEphantManagerActor]
   )
 
   // Auto-submit the next queued message when current processing completes.
@@ -469,9 +465,6 @@ export const MlEphantConversationPane = (props: {
         if (isProcessing) {
           return
         }
-
-        // End of processing, trigger a billing update
-        props.sendBillingUpdate()
 
         if (context.conversation !== undefined) {
           return
