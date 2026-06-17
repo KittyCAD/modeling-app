@@ -294,7 +294,7 @@ describe('project system', () => {
       expect(snapshot.context.currentArgument?.name).toBe('name')
     } finally {
       await waitForAuthSettled(app)
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 
