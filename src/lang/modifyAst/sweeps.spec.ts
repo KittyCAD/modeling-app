@@ -952,7 +952,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002)`
+        `sweep001 = sweep(profile001, path = profile002, version = 2)`
       )
     })
 
@@ -994,7 +994,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
 sketch002 = startSketchOn(XZ)
 profile002 = startProfile(sketch002, at = [0, 0])
   |> yLine(length = 5)
-sweep001 = sweep(capEnd001, path = profile002)`)
+sweep001 = sweep(capEnd001, path = profile002, version = 2)`)
     })
 
     it('should add a sweep call from a sketch region selection', async () => {
@@ -1041,7 +1041,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       expect(newCode).toContain(
         `hidden001 = hide(s)
 region001 = region(point = [1mm, 1mm], sketch = s)
-sweep001 = sweep(region001, path = profile001)`
+sweep001 = sweep(region001, path = profile001, version = 2)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1094,7 +1094,7 @@ sketch002 = sketch(on = XZ) {
       expect(newCode).toContain(
         `hidden001 = hide(s)
 region001 = region(point = [1mm, 1mm], sketch = s)
-sweep001 = sweep(region001, path = sketch002.line1)`
+sweep001 = sweep(region001, path = sketch002.line1, version = 2)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1146,7 +1146,7 @@ region001 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `sweep001 = sweep(region001, path = [sketch002.line1, sketch002.arc1])`
+        `sweep001 = sweep(region001, path = [sketch002.line1, sketch002.arc1], version = 2)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1215,7 +1215,7 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, bodyType = SURFACE)`
+        `sweep001 = sweep(profile001, path = profile002, bodyType = SURFACE, version = 2)`
       )
     })
 
@@ -1255,7 +1255,7 @@ s2 = sketch(on = XZ) {
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `sweep001 = sweep(s.line1, path = [s2.line1, s2.arc1], bodyType = SURFACE)`
+        `sweep001 = sweep(s.line1, path = [s2.line1, s2.arc1], bodyType = SURFACE, version = 2)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1287,6 +1287,7 @@ s2 = sketch(on = XZ) {
   path = profile002,
   sectional = true,
   relativeTo = sweep::SKETCH_PLANE,
+  version = 2,
 )`)
     })
 
@@ -1373,7 +1374,7 @@ profile003 = startProfile(sketch002, at = [0, 0])
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineAndRectProfilesCode)
       expect(newCode).toContain(
-        `sweep001 = sweep([profile001, profile002], path = profile003)`
+        `sweep001 = sweep([profile001, profile002], path = profile003, version = 2)`
       )
     })
 

@@ -1276,6 +1276,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   operation,
   code,
   artifactGraph,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Sweep',
@@ -1361,6 +1362,20 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     bodyType = res
   }
 
+  let version: KclCommandValue | undefined
+  if ('version' in operation.labeledArgs && operation.labeledArgs.version) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.version.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve version argument" }
+    }
+    version = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1372,6 +1387,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     tagStart,
     tagEnd,
     bodyType,
+    version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

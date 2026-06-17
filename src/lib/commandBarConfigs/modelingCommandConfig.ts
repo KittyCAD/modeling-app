@@ -282,6 +282,7 @@ export type ModelingCommandSchema = {
     tagStart?: string
     tagEnd?: string
     bodyType?: KclPreludeBodyType
+    version?: KclCommandValue
   }
   Loft: {
     // Enables editing workflow
@@ -1212,6 +1213,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
+      },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '2',
+        required: false,
+        status: 'experimental',
       },
     },
   },

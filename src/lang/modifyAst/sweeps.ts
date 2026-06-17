@@ -323,6 +323,7 @@ export function addSweep({
   tagStart,
   tagEnd,
   bodyType,
+  version,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -335,6 +336,7 @@ export function addSweep({
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -438,6 +440,11 @@ export function addSweep({
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
+  const versionExpr = version
+    ? [createLabeledArg('version', valueOrVariable(version))]
+    : mNodeToEdit
+      ? []
+      : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
@@ -447,7 +454,12 @@ export function addSweep({
     ...tagStartExpr,
     ...tagEndExpr,
     ...bodyTypeExpr,
+    ...versionExpr,
   ])
+
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
