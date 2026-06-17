@@ -62,6 +62,7 @@ export const useOptionalExecutingEditor = () => {
 export const useExecutingEditor = () => {
   const executingEditor = useOptionalExecutingEditor()
   if (!executingEditor) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error('No executing editor is currently available.')
   }
   return executingEditor
