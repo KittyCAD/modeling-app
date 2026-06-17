@@ -5196,13 +5196,33 @@ fn sketch_face_of_scene_object_ast_expr(
 
     match &on_object.kind {
         ObjectKind::Wall(_) => {
-            let [sweep_range, segment_range] = ranges.as_slice() else {
+            let (solid_range, sweep_range, segment_range) = match ranges.as_slice() {
+                [sweep_range, segment_range] => (sweep_range, sweep_range, segment_range),
+                [solid_range, sweep_range, segment_range] => (solid_range, sweep_range, segment_range),
+                _ => {
+                    return Err(KclError::refactor(format!(
+                        "Expected wall source metadata to have 2 or 3 ranges, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    )));
+                }
+            };
+            let solid_ref = get_or_insert_ast_reference(
+                ast,
+                &SourceRef::Simple {
+                    range: solid_range.0,
+                    node_path: solid_range.1.clone(),
+                },
+                "solid",
+                None,
+            )?;
+            let ast::Expr::Name(solid_name_expr) = solid_ref else {
                 return Err(KclError::refactor(format!(
-                    "Expected wall source metadata to have 2 ranges, got {}; artifact_id={:?}",
-                    ranges.len(),
+                    "Could not resolve solid reference for selected wall: artifact_id={:?}",
                     on_object.artifact_id
                 )));
             };
+            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
             let sweep_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
@@ -5212,14 +5232,13 @@ fn sketch_face_of_scene_object_ast_expr(
                 "solid",
                 None,
             )?;
-            let ast::Expr::Name(solid_name_expr) = sweep_ref else {
+            let ast::Expr::Name(sweep_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve sweep reference for selected wall: artifact_id={:?}",
                     on_object.artifact_id
                 )));
             };
-            let solid_name = solid_name_expr.name.name.clone();
-            let solid_expr = ast_name_expr(solid_name.clone());
+            let sweep_name = sweep_name_expr.name.name.clone();
             let segment_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
@@ -5230,7 +5249,7 @@ fn sketch_face_of_scene_object_ast_expr(
                 None,
             )?;
 
-            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &solid_name) {
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(KclError::refactor(format!(
                         "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
@@ -5248,18 +5267,21 @@ fn sketch_face_of_scene_object_ast_expr(
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
         }
         ObjectKind::Cap(cap) => {
-            let [range] = ranges.as_slice() else {
-                return Err(KclError::refactor(format!(
-                    "Expected cap source metadata to have 1 range, got {}; artifact_id={:?}",
-                    ranges.len(),
-                    on_object.artifact_id
-                )));
+            let solid_range = match ranges.as_slice() {
+                [solid_range] | [solid_range, _] => solid_range,
+                _ => {
+                    return Err(KclError::refactor(format!(
+                        "Expected cap source metadata to have 1 or 2 ranges, got {}; artifact_id={:?}",
+                        ranges.len(),
+                        on_object.artifact_id
+                    )));
+                }
             };
             let solid_ref = get_or_insert_ast_reference(
                 ast,
                 &SourceRef::Simple {
-                    range: range.0,
-                    node_path: range.1.clone(),
+                    range: solid_range.0,
+                    node_path: solid_range.1.clone(),
                 },
                 "solid",
                 None,
@@ -5286,8 +5308,9 @@ fn sketch_face_of_scene_object_ast_expr(
 fn downstream_composite_code_ref_for_source(artifact_graph: &ArtifactGraph, source_id: ArtifactId) -> Option<&CodeRef> {
     let mut current_id = source_id;
     let mut current_composite = None;
+    let mut visited = HashSet::new();
 
-    loop {
+    while visited.insert(current_id) {
         let next_composite_id = downstream_composite_id_for_solid_source(artifact_graph, current_id);
 
         let Some(composite_id) = next_composite_id else {
@@ -5341,6 +5364,11 @@ fn downstream_composite_id_for_solid_source(
     })
 }
 
+fn code_ref_source_ref_range(code_ref: &CodeRef) -> (SourceRange, Option<crate::NodePath>) {
+    let node_path = (!code_ref.node_path.is_empty()).then(|| code_ref.node_path.clone());
+    (code_ref.range, node_path)
+}
+
 fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
     let mut existing_artifact_ids = scene_objects
         .iter()
@@ -5374,6 +5402,15 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                         _ => None,
                     })
                     .unwrap_or(segment);
+                let solid_code_ref =
+                    downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id).unwrap_or(&sweep.code_ref);
+                let mut ranges = Vec::new();
+                if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
+                {
+                    ranges.push(code_ref_source_ref_range(solid_code_ref));
+                }
+                ranges.push(code_ref_source_ref_range(&sweep.code_ref));
+                ranges.push(code_ref_source_ref_range(&source_segment.code_ref));
                 let id = ObjectId(scene_objects.len());
                 scene_objects.push(crate::front::Object {
                     id,
@@ -5381,15 +5418,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: wall.id,
-                    source: SourceRef::BackTrace {
-                        ranges: vec![
-                            (sweep.code_ref.range, Some(sweep.code_ref.node_path.clone())),
-                            (
-                                source_segment.code_ref.range,
-                                Some(source_segment.code_ref.node_path.clone()),
-                            ),
-                        ],
-                    },
+                    source: SourceRef::BackTrace { ranges },
                 });
                 existing_artifact_ids.insert(wall.id);
             }
@@ -5411,15 +5440,19 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 };
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, cap.sweep_id).unwrap_or(&sweep.code_ref);
+                let mut ranges = Vec::new();
+                if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
+                {
+                    ranges.push(code_ref_source_ref_range(solid_code_ref));
+                }
+                ranges.push(code_ref_source_ref_range(&sweep.code_ref));
                 scene_objects.push(crate::front::Object {
                     id,
                     kind: ObjectKind::Cap(crate::frontend::api::Cap { id, kind }),
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: cap.id,
-                    source: SourceRef::BackTrace {
-                        ranges: vec![(solid_code_ref.range, Some(solid_code_ref.node_path.clone()))],
-                    },
+                    source: SourceRef::BackTrace { ranges },
                 });
                 existing_artifact_ids.insert(cap.id);
             }
@@ -5544,10 +5577,16 @@ fn variable_name_containing_source_ref(ast: &ast::Node<ast::Program>, source_ref
             return None;
         };
         let init_range = SourceRange::from(&var_decl.declaration.init);
-        (init_range.module_id() == source_range.module_id()
+        let source_is_inside_init = init_range.module_id() == source_range.module_id()
             && init_range.start() <= source_range.start()
-            && source_range.end() <= init_range.end())
-        .then(|| var_decl.name().to_owned())
+            && source_range.end() <= init_range.end();
+        if matches!(&var_decl.declaration.init, ast::Expr::SketchBlock(_))
+            && init_range != source_range
+            && source_is_inside_init
+        {
+            return None;
+        }
+        source_is_inside_init.then(|| var_decl.name().to_owned())
     })
 }
 
@@ -13808,55 +13847,106 @@ extrude001 = extrude(region001, length = 5)
     }
 
     #[test]
-    fn test_sketch_on_cap_backtraced_to_composite_uses_composite_solid() {
+    fn test_enclosing_variable_fallback_skips_nested_sketch_items() {
         let source = "\
-boxSolid = extrude(profile, length = 10)
+sketch001 = sketch(on = XY) {
+  line(start = [0, 0], end = [1, 0])
+}
+part = subtract(boxSolid, tools = [cutSolid])
+  |> appearance(color = \"#8f96a3\")
+";
+        let ast = Program::parse(source).unwrap().0.unwrap().ast;
+        let line_start = source.find("line").unwrap();
+        let line_end = line_start + "line(start = [0, 0], end = [1, 0])".len();
+        let line_ref = SourceRef::Simple {
+            range: [line_start, line_end, 0].into(),
+            node_path: None,
+        };
+        assert_eq!(variable_name_containing_source_ref(&ast, &line_ref), None);
+
+        let subtract_start = source.find("subtract").unwrap();
+        let subtract_end = subtract_start + "subtract(boxSolid, tools = [cutSolid])".len();
+        let subtract_ref = SourceRef::Simple {
+            range: [subtract_start, subtract_end, 0].into(),
+            node_path: None,
+        };
+        assert_eq!(
+            variable_name_containing_source_ref(&ast, &subtract_ref),
+            Some("part".to_owned())
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_subtracted_sweep_cap_uses_composite_solid() {
+        clear_mem_cache().await;
+        let source = "\
+boxSolid = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [4, 0], tag = $bottomEdge)
+  |> line(end = [0, 4])
+  |> line(end = [-4, 0])
+  |> close()
+  |> extrude(length = 10)
+cutSolid = startSketchOn(XY)
+  |> startProfile(at = [1, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> line(end = [-1, 0])
+  |> close()
+  |> extrude(length = 10)
 part = subtract(boxSolid, tools = [cutSolid])
   |> appearance(color = \"#8f96a3\", roughness = 55, metalness = 8)
 ";
-        let mut ast = Program::parse(source).unwrap().0.unwrap().ast;
+        let program = Program::parse(source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        match frontend.hack_set_program(&ctx, program).await.unwrap() {
+            SetProgramOutcome::Success { .. } => {}
+            SetProgramOutcome::ExecFailure { error } => panic!("KCL fixture failed to execute: {error:?}"),
+        }
+
         let sweep_call_start = source.find("extrude").unwrap();
-        let sweep_call_end = sweep_call_start + "extrude(profile, length = 10)".len();
+        let sweep_call_end = sweep_call_start + "extrude(length = 10)".len();
         let part_call_start = source.find("subtract").unwrap();
         let part_call_end = part_call_start + "subtract(boxSolid, tools = [cutSolid])".len();
-        let sweep_code_ref = CodeRef::placeholder([sweep_call_start, sweep_call_end, 0].into());
-        let composite_code_ref = CodeRef::placeholder([part_call_start, part_call_end, 0].into());
-        let mut scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
-        let mut artifact_graph = ArtifactGraph::default();
-        let cap_artifact_id = artifact_graph.insert_subtracted_region_sweep_cap_for_test(
-            sweep_code_ref.clone(),
-            composite_code_ref.clone(),
-            CapSubType::End,
-        );
+        let sweep_range = [sweep_call_start, sweep_call_end, 0].into();
+        let composite_range = [part_call_start, part_call_end, 0].into();
 
-        add_wall_and_cap_face_objects(&mut scene_graph.objects, &artifact_graph);
-        let cap_object = scene_graph
+        let cap_object = frontend
+            .scene_graph
             .objects
             .iter()
-            .find(|object| object.artifact_id == cap_artifact_id)
-            .unwrap();
-        let SourceRef::BackTrace { ranges } = &cap_object.source else {
-            panic!("expected cap source to be backtraced");
-        };
-        assert_eq!(ranges.len(), 1);
-        assert_eq!(ranges[0].0, composite_code_ref.range);
-        assert_ne!(ranges[0].0, sweep_code_ref.range);
+            .find(|object| {
+                matches!(
+                    object.kind,
+                    ObjectKind::Cap(crate::frontend::api::Cap {
+                        kind: crate::frontend::api::CapKind::End,
+                        ..
+                    })
+                ) && matches!(
+                    &object.source,
+                    SourceRef::BackTrace { ranges }
+                        if ranges.len() == 2 && ranges[0].0 == composite_range && ranges[1].0 == sweep_range
+                )
+            })
+            .expect("expected end cap object to trace through subtract and original extrude");
 
-        let expr = sketch_on_ast_expr(&mut ast, &scene_graph, &Plane::Object(cap_object.id)).unwrap();
-        let face_decl = ast::VariableDeclaration::new(
-            ast::VariableDeclarator::new("face001", expr.clone()),
+        let mut ast = frontend.program.ast.clone();
+        let cap_expr = sketch_on_ast_expr(&mut ast, &frontend.scene_graph, &Plane::Object(cap_object.id)).unwrap();
+        let cap_face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("capFace", cap_expr.clone()),
             ast::ItemVisibility::Default,
             ast::VariableKind::Const,
         );
         ast.body
             .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
-                face_decl,
+                cap_face_decl,
             ))));
         let generated_source = source_from_ast(&ast);
 
-        assert!(generated_source.contains("face001 = faceOf(part, face = END)"));
+        assert!(generated_source.contains("capFace = faceOf(part, face = END)"));
         assert!(!generated_source.contains("faceOf(boxSolid"));
-        let ast::Expr::CallExpressionKw(call) = expr else {
+        let ast::Expr::CallExpressionKw(call) = cap_expr else {
             panic!("expected faceOf call");
         };
         assert_eq!(call.callee.name.name, "faceOf");
@@ -13868,6 +13958,8 @@ part = subtract(boxSolid, tools = [cutSolid])
             panic!("expected face name");
         };
         assert_eq!(face_name.name.name, "END");
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
