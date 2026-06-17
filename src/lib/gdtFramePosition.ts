@@ -63,9 +63,6 @@ function getSelectionsFromGdtData(
   if ('faces' in data) {
     return data.faces
   }
-  if ('edges' in data) {
-    return data.edges
-  }
   return undefined
 }
 
