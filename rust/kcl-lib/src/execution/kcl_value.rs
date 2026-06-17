@@ -59,6 +59,7 @@ pub enum KclObjectKind {
     #[default]
     Default,
     SketchTags {
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
         deprecated_solid_tag_names: Vec<String>,
     },
 }
