@@ -12,6 +12,7 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toastToolbar } from '@src/lib/toolbarToast'
 import { roundOff } from '@src/lib/utils'
 import {
   TAU,
@@ -33,7 +34,6 @@ import type {
   SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import toast from 'react-hot-toast'
 import { setup } from 'xstate'
 
 type DimensionToolContext = {
@@ -192,18 +192,14 @@ function deactivateRuntime(runtime: DraftRuntime) {
 }
 
 function showAngleSectorPrompt() {
-  toast('Choose angle sector, then click to place the label.', {
+  toastToolbar('Move mouse to choose sector, then click to place label.', {
     id: ANGLE_SECTOR_PROMPT_TOAST_ID,
     duration: Number.POSITIVE_INFINITY,
-    position: 'top-center',
-    style: {
-      marginTop: '68px',
-    },
   })
 }
 
 function dismissAngleSectorPrompt() {
-  toast.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
+  toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
 }
 
 function getObjects(context: DimensionToolContext) {
