@@ -936,8 +936,21 @@ sketch001 = sketch(on = XZ) {
   ${circleCode}
 }
 region001 = region(segments = [sketch001.circle1])`
-    const sweepDeclaration = 'sweep001 = sweep(region001, path = helix001)'
-    const editedSweepDeclaration = `sweep001 = sweep(region001, path = helix001, relativeTo = sweep::SKETCH_PLANE)`
+    const sweepDeclaration = `sweep001 = sweep(
+  region001,
+  path = helix001,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`
+    const editedSweepDeclaration = `sweep001 = sweep(
+  region001,
+  path = helix001,
+  relativeTo = sweep::SKETCH_PLANE,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
