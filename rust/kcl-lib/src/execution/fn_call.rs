@@ -1746,7 +1746,7 @@ topFromBody = body.tags.top
         assert_eq!(warnings[0].severity, Severity::Warning);
         assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
         assert!(
-            warnings[0].message.contains("body.tags.top"),
+            warnings[0].message.contains("Accessing solid-created tag `top` through sketch tags is deprecated. Prefer the body's tags instead, e.g. `body.tags.top`."),
             "found {}",
             warnings[0].message
         );
