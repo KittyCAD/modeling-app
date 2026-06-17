@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react'
 const BILLING_BALANCE_TICK_MS = 1000
 
 function useEstimatedBillingBalance(billingContext: BillingContext) {
-  const [now, setNow] = useState(() => Date.now())
+  const [now, setNow] = useState(Date.now())
   const shouldTick = billingContext.usageStartedAt !== undefined
 
   useEffect(() => {

@@ -7,6 +7,7 @@ use kcmc::length_unit::LengthUnit;
 use kcmc::shared::BodyType;
 use kittycad_modeling_cmds::id::ModelingCmdId;
 use kittycad_modeling_cmds::shared::RelativeTo;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 
@@ -15,20 +16,23 @@ use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
+use crate::execution::Extrudable;
 use crate::execution::Helix;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ProfileClosed;
 use crate::execution::Segment;
 use crate::execution::Sketch;
+use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::extrude::BeingExtruded;
 use crate::std::extrude::build_segment_surface_sketch;
+use crate::std::extrude::coerce_extrude_targets;
 use crate::std::extrude::do_post_extrude;
-use crate::std::revolve::coerce_revolve_targets;
 
 /// A path to sweep along.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -53,7 +57,12 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let sketch_values = args.get_unlabeled_kw_arg(
         "sketches",
         &RuntimeType::Array(
-            Box::new(RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::segment()])),
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::sketch(),
+                RuntimeType::segment(),
+                RuntimeType::face(),
+                RuntimeType::tagged_face(),
+            ])),
             ArrayLen::Minimum(1),
         ),
         exec_state,
@@ -89,7 +98,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         SweepPath::Helix(helix) => InnerSweepPath::Helix(helix),
     };
 
-    let sketches = coerce_revolve_targets(
+    let sketches = coerce_extrude_targets(
         sketch_values,
         body_type.unwrap_or_default(),
         tag_start.as_ref(),
@@ -157,7 +166,7 @@ impl ProfileTransform {
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
-    sketches: Vec<Sketch>,
+    sketches: Vec<Extrudable>,
     path: InnerSweepPath,
     sectional: Option<bool>,
     tolerance: Option<TyF64>,
@@ -172,7 +181,7 @@ async fn inner_sweep(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
-    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed(), ProfileClosed::No)) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Cannot solid sweep an open profile. Either close the profile, or use a surface sweep.".to_owned(),
             vec![args.source_range],
@@ -243,47 +252,80 @@ async fn inner_sweep(
 
     let mut solids = Vec::new();
     for sketch in &sketches {
-        let id = exec_state.next_uuid();
-        exec_state
-            .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(
-                    mcmd::Sweep::builder()
-                        .target(sketch.id.into())
-                        .trajectory(trajectory)
-                        .sectional(sectional.unwrap_or(false))
-                        .tolerance(LengthUnit(
-                            tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
-                        ))
-                        .maybe_relative_to(profile_transform.relative_to())
-                        .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
-                        .maybe_translate_profile_to_path(profile_transform.translate_profile_to_path())
-                        .body_type(body_type)
-                        .maybe_version(version)
-                        .build(),
-                ),
-            )
-            .await?;
-
-        solids.push(
-            do_post_extrude(
-                sketch,
-                id.into(),
-                sectional.unwrap_or(false),
-                &super::extrude::NamedCapTags {
-                    start: tag_start.as_ref(),
-                    end: tag_end.as_ref(),
-                },
-                kittycad_modeling_cmds::shared::ExtrudeMethod::New,
-                exec_state,
-                &args,
-                None,
-                None,
-                body_type,
-                crate::std::extrude::BeingExtruded::Sketch,
-            )
-            .await?,
+        let sweep_cmd_id = exec_state.next_uuid();
+        let sketch_or_face_id = sketch.id_to_extrude(exec_state, &args, false).await?;
+        let cmd = ModelingCmd::from(
+            mcmd::Sweep::builder()
+                .target(sketch_or_face_id.into())
+                .trajectory(trajectory)
+                .sectional(sectional.unwrap_or(false))
+                .tolerance(LengthUnit(
+                    tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                ))
+                .maybe_relative_to(profile_transform.relative_to())
+                .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
+                .maybe_translate_profile_to_path(profile_transform.translate_profile_to_path())
+                .body_type(body_type)
+                .maybe_version(version)
+                .build(),
         );
+
+        let being_extruded = match sketch {
+            Extrudable::Sketch(..) => BeingExtruded::Sketch,
+            Extrudable::FaceTag(face_tag) => {
+                let face_id = sketch_or_face_id;
+                let solid_id = match face_tag.geometry() {
+                    Some(crate::execution::Geometry::Solid(solid)) => solid.id,
+                    Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
+                        SketchSurface::Face(face) => face.parent_solid.solid_id,
+                        SketchSurface::Plane(_) => sketch.id,
+                    },
+                    None => face_id,
+                };
+                BeingExtruded::Face { face_id, solid_id }
+            }
+            Extrudable::Face(face) => BeingExtruded::Face {
+                face_id: face.id,
+                solid_id: face.parent_solid.solid_id,
+            },
+        };
+
+        if let Some(post_extr_sketch) = sketch.as_sketch() {
+            let cmds = post_extr_sketch.build_sketch_mode_cmds(
+                exec_state,
+                ModelingCmdReq {
+                    cmd_id: sweep_cmd_id.into(),
+                    cmd,
+                },
+            );
+            exec_state
+                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, sweep_cmd_id), &cmds)
+                .await?;
+            solids.push(
+                do_post_extrude(
+                    &post_extr_sketch,
+                    sweep_cmd_id.into(),
+                    sectional.unwrap_or(false),
+                    &super::extrude::NamedCapTags {
+                        start: tag_start.as_ref(),
+                        end: tag_end.as_ref(),
+                    },
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+                    exec_state,
+                    &args,
+                    None,
+                    None,
+                    body_type,
+                    being_extruded,
+                )
+                .await?,
+            );
+        } else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected a sketch for sweeping".to_owned(),
+                vec![args.source_range],
+            )));
+        }
     }
 
     // Hide the artifact from the sketch or helix.

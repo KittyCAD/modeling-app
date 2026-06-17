@@ -806,6 +806,8 @@ pub struct FaceParentSolid {
     pub solid_id: Uuid,
     /// ID of the sketch which created this solid, if any.
     pub creator_sketch_id: Option<Uuid>,
+    /// Has the creator sketch been closed? This is only relevant if `creator_sketch_id` is Some, and we cannot infer the closed status otherwise.
+    pub creator_sketch_is_closed: Option<ProfileClosed>,
     /// Pending edge cut IDs that may need to be flushed before referencing the face.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_ids: Vec<Uuid>,
@@ -1025,8 +1027,10 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
+    /// Tagged Face.
+    FaceTag(FaceTag),
     /// Face.
-    Face(FaceTag),
+    Face(Box<Face>),
 }
 
 impl Extrudable {
@@ -1039,31 +1043,37 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
-            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::Face(face) => Ok(face.id),
         }
     }
 
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face) => match face.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
+            Extrudable::Face(_) => None,
         }
     }
 
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
                     .sketch()
                     .map(|sketch| sketch.is_closed)
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Face(face) => match face.parent_solid.creator_sketch_is_closed {
+                Some(is_closed) => is_closed,
+                None => ProfileClosed::Maybe,
             },
         }
     }
@@ -1279,6 +1289,7 @@ impl From<&Solid> for FaceParentSolid {
         Self {
             solid_id: solid.id,
             creator_sketch_id: solid.sketch_id(),
+            creator_sketch_is_closed: solid.sketch().map(|sketch| sketch.is_closed),
             edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
         }
     }
