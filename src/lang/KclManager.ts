@@ -3586,6 +3586,36 @@ export class KclManager extends File {
     this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
     this.setDiagnosticsForCurrentErrors()
   }
+
+  async reloadFromDisk(
+    options: Partial<UpdateCodeEditorOptions> = {}
+  ): Promise<void> {
+    const code = normalizeLineEndings(await this.read())
+    if (isCodeTheSame(code, this.code)) {
+      this.markFileCodeAsSynced(code)
+      return
+    }
+
+    if (this.hasUnsavedLocalChanges()) {
+      console.warn(
+        'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
+      )
+      toast.error(
+        'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+      )
+      return
+    }
+
+    this.updateCodeEditor(code, {
+      shouldExecute: true,
+      shouldClearHistory: true,
+      shouldResetCamera: true,
+      ...options,
+      shouldWriteToDisk: false,
+    })
+    this.markFileCodeAsSynced(code)
+  }
+
   async writeToFile(
     newCode = this.codeSignal.value,
     requestedDocumentVersion = this._documentVersion,
