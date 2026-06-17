@@ -6,12 +6,15 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  getCloudProjectFolderRenameName,
+  reloadExecutingEditorAfterBulkWrite,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -1193,6 +1196,51 @@ describe('systemIOMachine - XState', () => {
         } finally {
           actor.stop()
         }
+      })
+    })
+    describe('when bulk writing the active file', () => {
+      it('should reload the executing editor after overwriting its file', async () => {
+        const reloadFromDisk = vi.fn().mockResolvedValue(undefined)
+
+        await reloadExecutingEditorAfterBulkWrite({
+          context: {
+            app: {
+              project: {
+                executingEditor: {
+                  value: {
+                    path: '/projects/demo/main.kcl',
+                    reloadFromDisk,
+                  },
+                },
+              },
+            },
+          } as unknown as SystemIOContext,
+          writtenFilePaths: ['/projects/demo/main.kcl'],
+        })
+
+        expect(reloadFromDisk).toHaveBeenCalledTimes(1)
+      })
+
+      it('should not reload the executing editor after writing another file', async () => {
+        const reloadFromDisk = vi.fn().mockResolvedValue(undefined)
+
+        await reloadExecutingEditorAfterBulkWrite({
+          context: {
+            app: {
+              project: {
+                executingEditor: {
+                  value: {
+                    path: '/projects/demo/main.kcl',
+                    reloadFromDisk,
+                  },
+                },
+              },
+            },
+          } as unknown as SystemIOContext,
+          writtenFilePaths: ['/projects/demo/other.kcl'],
+        })
+
+        expect(reloadFromDisk).not.toHaveBeenCalled()
       })
     })
     describe('when setting default project folder name', () => {

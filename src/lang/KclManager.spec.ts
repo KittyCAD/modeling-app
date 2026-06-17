@@ -549,6 +549,29 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('from disk')
   })
 
+  it('reloads clean editor state from explicit disk refreshes', async () => {
+    const { kclManager } = createKclManagerTestHarness('from disk')
+
+    kclManager.path = '/tmp/kcl-manager-explicit-reload-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('sketch = 1')
+    const updateSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+
+    await kclManager.reloadFromDisk()
+
+    expect(updateSpy).toHaveBeenCalledWith(
+      'sketch = 1',
+      expect.objectContaining({
+        shouldExecute: true,
+        shouldClearHistory: true,
+        shouldResetCamera: true,
+        shouldWriteToDisk: false,
+      })
+    )
+    expect(kclManager.code).toBe('sketch = 1')
+  })
+
   it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
     const { kclManager } = createKclManagerTestHarness('')
     const path = '/tmp/kcl-manager-watch-open-test.kcl'
