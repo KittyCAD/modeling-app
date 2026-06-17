@@ -19,7 +19,6 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
@@ -46,7 +45,10 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
