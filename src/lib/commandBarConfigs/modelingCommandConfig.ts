@@ -648,12 +648,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           selectionTypes: [
             'solid2d',
             'segment',
-            'pathRegion',
-            'engineRegion',
             'cap',
             'wall',
-            'primitiveFace',
-            'enginePrimitiveFace',
+            'pathRegion',
+            'engineRegion',
           ],
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1860,7 +1858,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'GDT Profile': {
     description:
-      'Add profile geometric dimensioning & tolerancing annotation to edges.',
+      'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
     icon: 'gdtProfile',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1870,9 +1868,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'GDT Profile',
       {
         overrides: {
-          edges: {
+          objects: {
             inputType: 'selection',
-            selectionTypes: ['segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,

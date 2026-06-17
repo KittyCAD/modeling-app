@@ -401,7 +401,10 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Profile': {
     stdLibName: 'gdt::profileLine',
     editFlow: true,
-    flowArgOrder: ['edges', 'tolerance'],
+    flowArgOrder: ['objects', 'tolerance'],
+    argAliases: {
+      edges: 'objects',
+    },
   },
   'GDT Distance': {
     stdLibName: 'gdt::distance',

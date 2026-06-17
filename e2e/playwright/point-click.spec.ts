@@ -3693,7 +3693,7 @@ extrude001 = extrude(region001, length = 30)`
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     await test.step('Add GDT Flatness to the scene', async () => {
       await test.step('Open GDT Flatness command from toolbar', async () => {
-        await toolbar.gdtFlatnessButton.click()
+        await toolbar.selectGdtFlatness()
         await cmdBar.expectState({
           stage: 'arguments',
           commandName: 'GDT Flatness',

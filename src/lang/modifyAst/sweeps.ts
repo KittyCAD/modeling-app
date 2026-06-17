@@ -352,16 +352,40 @@ export function addSweep({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const res = getFacesExprsFromSelection(
+    modifiedAst,
     sketches,
     artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
-  if (err(vars)) {
-    return vars
+  if (err(res)) return res
+  modifiedAst = res.modifiedAst
+  vars.exprs.push(...res.exprs)
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)

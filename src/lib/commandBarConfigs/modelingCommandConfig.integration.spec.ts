@@ -213,12 +213,10 @@ describe('Sweep-like bodyType argument', () => {
       selectionTypes: [
         'solid2d',
         'segment',
-        'pathRegion',
-        'engineRegion',
         'cap',
         'wall',
-        'primitiveFace',
-        'enginePrimitiveFace',
+        'pathRegion',
+        'engineRegion',
       ],
     })
   })

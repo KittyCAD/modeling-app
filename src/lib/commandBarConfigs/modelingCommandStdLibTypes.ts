@@ -4,6 +4,7 @@ import type {
 } from '@rust/kcl-lib/bindings/StdLibCommands'
 
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
+import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type {
@@ -203,8 +204,11 @@ export type GdtCylindricityCommandArgs =
   GdtObjectsCommandArgs<'gdt::cylindricity'>
 export type GdtPositionCommandArgs = GdtObjectsCommandArgs<'gdt::position'>
 export type GdtProfileCommandArgs = Override<
-  StdLibCommandArgs<'gdt::profileLine'>,
-  { edges: Selections } & GdtFrameArgs
+  Omit<StdLibCommandArgs<'gdt::profileLine'>, 'edges'>,
+  {
+    objects: Selections
+    profileFunction?: ProfileGdtFunction
+  } & GdtFrameArgs
 >
 export type GdtDistanceCommandArgs = Override<
   Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
