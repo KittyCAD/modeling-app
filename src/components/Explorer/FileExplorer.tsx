@@ -15,7 +15,6 @@ import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import type { Dispatch } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const StatusDot = () => {
@@ -67,18 +66,24 @@ export const FileExplorer = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isDeleting,
   isCopying,
+  isInteractionDisabled,
   isExternalDragOver,
   highlightedEntry,
+  onDeleteEnd,
   onExternalDragOverRow,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isDeleting: boolean
   isCopying: boolean
+  isInteractionDisabled: boolean
   isExternalDragOver?: boolean
   highlightedEntry?: FileExplorerEntry | null
+  onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   return (
@@ -103,9 +108,12 @@ export const FileExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isDeleting={isDeleting}
             isCopying={isCopying}
+            isInteractionDisabled={isInteractionDisabled}
             isExternalDragHighlighted={isHighlighted}
             isExternalDragOver={isExternalDragOver}
+            onDeleteEnd={onDeleteEnd}
             onExternalDragOverRow={onExternalDragOverRow}
           />
         )
@@ -218,18 +226,18 @@ function RenameForm({
 
 function DeleteFileTreeItemDialog({
   row,
-  setIsOpen,
+  onDismiss,
 }: {
   row: FileExplorerRender
-  setIsOpen: Dispatch<React.SetStateAction<boolean>>
+  onDismiss: () => void
 }) {
   return (
     <DeleteConfirmationDialog
       title={`Delete ${row.isFolder ? 'folder' : 'file'}`}
-      onDismiss={() => setIsOpen(false)}
+      onDismiss={onDismiss}
       onConfirm={() => {
         row.onDelete()
-        setIsOpen(false)
+        onDismiss()
       }}
     >
       <p className="my-4">
@@ -253,18 +261,24 @@ export const FileExplorerRowElement = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isDeleting,
   isCopying,
+  isInteractionDisabled,
   isExternalDragHighlighted,
   isExternalDragOver,
+  onDeleteEnd,
   onExternalDragOverRow,
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isDeleting: boolean
   isCopying: boolean
+  isInteractionDisabled: boolean
   isExternalDragHighlighted?: boolean
   isExternalDragOver?: boolean
+  onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   const dragPreviewId = `drag-preview-${row.name}`
@@ -327,6 +341,7 @@ export const FileExplorerRowElement = ({
   const isIndexActive = row.domIndex === row.activeIndex
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
+  const isMyRowDeleting = isContextMenuRow && isDeleting
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
@@ -338,6 +353,13 @@ export const FileExplorerRowElement = ({
   const externalHighlightCSS = isExternalDragHighlighted
     ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/10'
     : ''
+  const interactionCSS = isInteractionDisabled
+    ? 'cursor-wait opacity-70'
+    : 'cursor-pointer hover:outline hover:outline-1 hover:bg-gray-300/50'
+  const handleDeleteDismiss = useCallback(() => {
+    setIsConfirmingDelete(false)
+    onDeleteEnd()
+  }, [onDeleteEnd])
 
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
@@ -346,10 +368,11 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
+      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
+      aria-disabled={isInteractionDisabled}
       aria-setsize={row.setSize}
       aria-posinset={row.positionInSet}
       aria-label={row.name}
@@ -357,18 +380,27 @@ export const FileExplorerRowElement = ({
       aria-level={row.level + 1}
       aria-expanded={row.isFolder && row.isOpen}
       onClick={() => {
+        if (isInteractionDisabled) {
+          return
+        }
         row.onClick(row.domIndex)
       }}
       onDoubleClick={
         row.onDoubleClick
           ? (event) => {
+              if (isInteractionDisabled) {
+                return
+              }
               event.preventDefault()
               row.onDoubleClick?.(row.domIndex)
             }
           : undefined
       }
-      draggable="true"
+      draggable={!isInteractionDisabled}
       onDragOver={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -388,6 +420,9 @@ export const FileExplorerRowElement = ({
         }
       }}
       onDragLeave={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -402,6 +437,10 @@ export const FileExplorerRowElement = ({
         }
       }}
       onDragStart={(event) => {
+        if (isInteractionDisabled) {
+          event.preventDefault()
+          return
+        }
         event.dataTransfer.effectAllowed = 'move'
         event.dataTransfer.setData(
           'json',
@@ -421,6 +460,9 @@ export const FileExplorerRowElement = ({
         removeDragPreviewElem()
       }}
       onDrop={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -470,31 +512,33 @@ export const FileExplorerRowElement = ({
       )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
-      {isConfirmingDelete && (
-        <DeleteFileTreeItemDialog row={row} setIsOpen={setIsConfirmingDelete} />
+      {(isConfirmingDelete || isMyRowDeleting) && (
+        <DeleteFileTreeItemDialog row={row} onDismiss={handleDeleteDismiss} />
       )}
-      <FileExplorerRowContextMenu
-        itemRef={rowElementRef}
-        onRename={() => {
-          row.onRenameStart()
-        }}
-        onDelete={() => {
-          setIsConfirmingDelete(true)
-        }}
-        onOpenInNewWindow={() => {
-          row.onOpenInNewWindow()
-        }}
-        onCopy={() => {
-          row.onCopy()
-        }}
-        callback={() => {
-          row.onContextMenuOpen(row.domIndex)
-        }}
-        onPaste={() => {
-          row.onPaste()
-        }}
-        isCopying={isCopying}
-      />
+      {!isInteractionDisabled && (
+        <FileExplorerRowContextMenu
+          itemRef={rowElementRef}
+          onRename={() => {
+            row.onRenameStart()
+          }}
+          onDelete={() => {
+            setIsConfirmingDelete(true)
+          }}
+          onOpenInNewWindow={() => {
+            row.onOpenInNewWindow()
+          }}
+          onCopy={() => {
+            row.onCopy()
+          }}
+          callback={() => {
+            row.onContextMenuOpen(row.domIndex)
+          }}
+          onPaste={() => {
+            row.onPaste()
+          }}
+          isCopying={isCopying}
+        />
+      )}
     </div>
   )
 }

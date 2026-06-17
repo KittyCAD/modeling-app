@@ -9,7 +9,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
-import env from '@src/env'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
@@ -37,6 +37,11 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
+import {
+  getCloudProjectIdFromProjectTomlContents,
+  getProjectTitleFromProjectTomlContents,
+  setProjectTitleInProjectTomlContents,
+} from '@src/lib/projectTomlMetadata'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase, isArray } from '@src/lib/utils'
@@ -76,6 +81,28 @@ const convertIStatToFileMetadata = (
     type: null,
     size: stats.size,
     permission: null,
+  }
+}
+
+async function readProjectTomlMetadata(projectPath: string) {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  try {
+    const projectToml = await fsZds.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+    const environmentName = getEnvironmentNameFromEnv(env())
+    return {
+      title: getProjectTitleFromProjectTomlContents(projectToml),
+      cloudProjectId: getCloudProjectIdFromProjectTomlContents(
+        projectToml,
+        environmentName
+      ),
+    }
+  } catch {
+    return {
+      title: undefined,
+      cloudProjectId: undefined,
+    }
   }
 }
 
@@ -532,9 +559,13 @@ export async function getProjectInfo(
       wasmInstance
     )
   }
+  const projectTomlMetadata = canReadWriteProjectPath
+    ? await readProjectTomlMetadata(projectPath)
+    : { title: undefined, cloudProjectId: undefined }
 
   let project = {
     ...walked,
+    ...projectTomlMetadata,
     metadata: convertIStatToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
@@ -561,6 +592,32 @@ export async function writeProjectSettingsFile(
   return fsZds.writeFile(
     projectSettingsFilePath,
     new TextEncoder().encode(tomlStr)
+  )
+}
+
+export async function writeProjectTitleToProjectToml(
+  projectPath: string,
+  title: string
+): Promise<void> {
+  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  let projectToml = ''
+  try {
+    projectToml = await fsZds.readFile(projectSettingsFilePath, {
+      encoding: 'utf-8',
+    })
+  } catch (error) {
+    if (error !== 'ENOENT') {
+      return Promise.reject(error)
+    }
+  }
+
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    projectToml,
+    title
+  )
+  await fsZds.writeFile(
+    projectSettingsFilePath,
+    new TextEncoder().encode(nextProjectToml)
   )
 }
 

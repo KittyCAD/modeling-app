@@ -6,6 +6,7 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import {
+  type ToolbarDropdown,
   type ToolbarItem,
   buildToolbarConfig,
   getConstraintToolbarToggleEvent,
@@ -39,6 +40,15 @@ function findConstraintsDropdown() {
       'break'
     > =>
       item !== 'break' && typeof item !== 'string' && item.id === 'constraints'
+  )
+}
+
+function findModelingToolbarDropdown(id: string): ToolbarDropdown | undefined {
+  return buildToolbarConfig({
+    send: () => {},
+  }).modeling.items.find(
+    (item): item is ToolbarDropdown =>
+      item !== 'break' && 'array' in item && item.id === id
   )
 }
 
@@ -212,12 +222,62 @@ describe('toolbar state helpers', () => {
         'spline',
         'blend-surface',
         'delete-face',
+        'delete',
         'gear-helical',
         'gear-spur',
         'gear-herringbone',
         'gear-ring',
       ])
     )
+  })
+
+  test('opens the Delete modeling command from the transform dropdown', () => {
+    const commands = { send: vi.fn() }
+    const toolbarConfig = buildToolbarConfig(commands, {
+      showExperimentalFeatures: true,
+    })
+    const deleteItem = getToolbarItems(toolbarConfig).find(
+      (item) => item.id === 'delete'
+    )
+
+    if (!deleteItem) {
+      throw new Error('Could not find toolbar item delete')
+    }
+
+    deleteItem.onClick({
+      modelingSend: vi.fn(),
+      modelingState: stubModelingState([]),
+      sketchPathId: false,
+      editorHasFocus: false,
+      isActive: false,
+      keepSelection: false,
+    })
+
+    expect(commands.send).toHaveBeenCalledWith({
+      type: 'Find and select command',
+      data: { name: 'Delete', groupId: 'modeling' },
+    })
+  })
+
+  test('orders the GDT dropdown items by displayed name', () => {
+    const gdtDropdown = findModelingToolbarDropdown('gdt')
+
+    expect(gdtDropdown).toBeDefined()
+    if (!gdtDropdown) {
+      return
+    }
+
+    const titles = gdtDropdown.array.map((item) => {
+      if (typeof item.title !== 'string') {
+        throw new Error(`Expected ${item.id} to have a string title`)
+      }
+
+      return item.title
+    })
+    const sortedTitles = [...titles].sort((a, b) => a.localeCompare(b))
+
+    expect(titles.length).toBeGreaterThan(0)
+    expect(titles, 'GDT dropdown names are not sorted').toEqual(sortedTitles)
   })
 
   test('starts sketch solve on an already-selected plane', () => {

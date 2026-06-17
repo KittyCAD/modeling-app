@@ -18,9 +18,9 @@ permissions:
 jobs:
   cargocheck:
     name: cargo check
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
       - name: Use correct Rust toolchain
         shell: bash
         run: |

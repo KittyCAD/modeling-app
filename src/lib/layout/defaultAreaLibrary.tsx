@@ -166,7 +166,7 @@ export const useDefaultAreaLibrary = () => {
             // Only compute runtime errors! Compilation errors are not tracked here.
             const errors = kclErrorsByFilename(kclManager.errorsSignal.value)
             const value = errors.size > 0 ? 'x' : ''
-            const onClick: MouseEventHandler = (e) => {
+            const onClick: MouseEventHandler = useCallback((e) => {
               e.preventDefault()
               // TODO: When we have generic file open
               // If badge is pressed
@@ -174,8 +174,8 @@ export const useDefaultAreaLibrary = () => {
               // Then scroll to error
               // Do you automatically open the project files
               // kclManager.scrollToFirstErrorDiagnosticIfExists()
-            }
-            return useMemo(() => ({ value, onClick, title }), [value, title])
+            }, [])
+            return useMemo(() => ({ value, onClick, title }), [value, onClick])
           },
         },
         variables: {

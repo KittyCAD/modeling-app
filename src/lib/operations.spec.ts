@@ -19,6 +19,7 @@ import {
   enterEditFlow,
   filterOperations,
   getHideOpForArtifact,
+  getOperationLabel,
   getOperationVariableName,
   groupNestedOperations,
   groupOperationTypeStreaks,
@@ -88,6 +89,60 @@ function segmentArtifact(id: string): Artifact {
       pathToNode: [],
     },
     commonSurfaceIds: [],
+  }
+}
+
+function pathArtifact(id: string): Artifact {
+  return {
+    type: 'path',
+    id,
+    subType: 'sketch',
+    planeId: 'plane-id',
+    segIds: [],
+    consumed: false,
+    trajectorySweepId: null,
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+  }
+}
+
+function sweepArtifact(id: string, pathId: string): Artifact {
+  return {
+    type: 'sweep',
+    id,
+    subType: 'extrusion',
+    pathId,
+    surfaceIds: [],
+    edgeIds: [],
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+    trajectoryId: null,
+    method: 'new',
+    consumed: false,
+    patternIds: [],
+  }
+}
+
+function capArtifact(id: string, sweepId: string): Artifact {
+  return {
+    type: 'cap',
+    id,
+    subType: 'end',
+    sweepId,
+    pathIds: [],
+    edgeCutEdgeIds: [],
+    faceCodeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+    cmdId: '',
   }
 }
 
@@ -345,6 +400,112 @@ describe('operations.test.ts', () => {
     )
   }
 
+  describe('Extrude edit flow', () => {
+    it('preserves draftAngle in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        draftAngle: {
+          value: { type: 'Number', value: 45, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '45deg'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        draftAngle?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Extrude')
+      expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
+    })
+  })
+
+  describe('Sweep edit flow', () => {
+    it('retrieves tagged cap profiles in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'sweep001 = sweep(capEnd001, path = profile002)'
+      const operation = stdlib('sweep')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'TagIdentifier',
+          value: 'capEnd001',
+          artifact_id: 'cap-id',
+        },
+        sourceRange: rangeOfText(code, 'capEnd001'),
+      }
+      operation.labeledArgs = {
+        path: {
+          value: {
+            type: 'Sketch',
+            value: { artifactId: 'trajectory-path-id' },
+          },
+          sourceRange: rangeOfText(code, 'profile002'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          pathArtifact('source-path-id'),
+          sweepArtifact('sweep-id', 'source-path-id'),
+          capArtifact('cap-id', 'sweep-id'),
+          pathArtifact('trajectory-path-id'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
+        path?: { graphSelections: Array<{ artifact?: Artifact }> }
+      }
+      expect(result.data.name).toBe('Sweep')
+      expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
+        'cap'
+      )
+      expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
+        'path'
+      )
+    })
+  })
+
   describe('GDT edit flow', () => {
     it.each([
       {
@@ -352,14 +513,110 @@ describe('operations.test.ts', () => {
         commandName: 'GDT Profile',
         targetLabel: 'edges',
         targetExpression: '[edge001]',
+        expectedProfileFunction: 'profile',
+        expectedOperationLabel: 'Profile',
         targetValue: {
           type: 'Array',
           value: [{ type: 'Uuid', value: 'segment-id' }],
         } satisfies OpKclValue,
       },
       {
+        operationName: 'gdt::profileLine',
+        commandName: 'GDT Profile',
+        targetLabel: 'edges',
+        targetExpression: '[edge001]',
+        expectedProfileFunction: 'profileLine',
+        expectedOperationLabel: 'Profile Line',
+        targetValue: {
+          type: 'Array',
+          value: [{ type: 'Uuid', value: 'segment-id' }],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::profileSurface',
+        commandName: 'GDT Profile',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        expectedProfileFunction: 'profileSurface',
+        expectedOperationLabel: 'Profile Surface',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
         operationName: 'gdt::perpendicularity',
         commandName: 'GDT Perpendicularity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::angularity',
+        commandName: 'GDT Angularity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::concentricity',
+        commandName: 'GDT Concentricity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::symmetry',
+        commandName: 'GDT Symmetry',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::runout',
+        commandName: 'GDT Runout',
         targetLabel: 'faces',
         targetExpression: '[side]',
         targetValue: {
@@ -396,6 +653,8 @@ describe('operations.test.ts', () => {
         commandName,
         targetLabel,
         targetExpression,
+        expectedProfileFunction,
+        expectedOperationLabel,
         targetValue,
       }) => {
         const { rustContext } = await buildTheWorldAndNoEngineConnection()
@@ -443,8 +702,15 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
 
         const argDefaultValues = result.data.argDefaultValues as {
           datums?: { valueText: string }
+          profileFunction?: string
         }
         expect(result.data.name).toBe(commandName)
+        if (expectedOperationLabel) {
+          expect(getOperationLabel(operation)).toBe(expectedOperationLabel)
+        }
+        if (expectedProfileFunction) {
+          expect(argDefaultValues.profileFunction).toBe(expectedProfileFunction)
+        }
         expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
       }
     )

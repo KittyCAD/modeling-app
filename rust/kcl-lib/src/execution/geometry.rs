@@ -51,6 +51,7 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
 use crate::util::MathExt;
@@ -117,6 +118,14 @@ impl GeometryWithImportedGeometry {
                 let id = i.id(ctx).await?;
                 Ok(id)
             }
+        }
+    }
+
+    pub fn into_solid(self) -> Option<Solid> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(_) => None,
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => None,
         }
     }
 }
@@ -189,7 +198,7 @@ impl ImportedGeometry {
     }
 }
 
-/// Data for a solid, sketch, or an imported geometry.
+/// Data for geometry that can be hidden.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -197,6 +206,7 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    PlaneSet(Vec<Plane>),
     SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
     GdtAnnotationSet(Vec<GdtAnnotation>),
@@ -206,6 +216,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
     fn from(value: HideableGeometry) -> Self {
         match value {
             HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::PlaneSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Plane { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Plane { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::plane(),
+                    }
+                }
+            }
             HideableGeometry::SolidSet(mut s) => {
                 if s.len() == 1
                     && let Some(s) = s.pop()
@@ -278,6 +303,7 @@ impl HideableGeometry {
 
                 Ok(vec![id])
             }
+            HideableGeometry::PlaneSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
@@ -780,6 +806,8 @@ pub struct FaceParentSolid {
     pub solid_id: Uuid,
     /// ID of the sketch which created this solid, if any.
     pub creator_sketch_id: Option<Uuid>,
+    /// Has the creator sketch been closed? This is only relevant if `creator_sketch_id` is Some, and we cannot infer the closed status otherwise.
+    pub creator_sketch_is_closed: Option<ProfileClosed>,
     /// Pending edge cut IDs that may need to be flushed before referencing the face.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_ids: Vec<Uuid>,
@@ -792,14 +820,19 @@ impl FaceParentSolid {
 }
 
 /// A bounded edge.
+/// Carries either `edge_id` (resolved) or `edge_specifier` (payload passed through for resolution in blend).
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BoundedEdge {
     /// The id of the face this edge belongs to.
     pub face_id: uuid::Uuid,
-    /// The id of the edge.
-    pub edge_id: uuid::Uuid,
+    /// The id of the edge (when resolved from a tag or UUID). Mutually exclusive with `edge_specifier`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge_id: Option<uuid::Uuid>,
+    /// Edge specifier payload (sideFaces, endFaces, index) when not resolved. Resolved in blend().
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge_specifier: Option<UnresolvedEdgeSpecifier>,
     /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
     /// Range (0, 1)
     pub lower_bound: f32,
@@ -994,8 +1027,10 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
+    /// Tagged Face.
+    FaceTag(FaceTag),
     /// Face.
-    Face(FaceTag),
+    Face(Box<Face>),
 }
 
 impl Extrudable {
@@ -1008,31 +1043,37 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
-            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::Face(face) => Ok(face.id),
         }
     }
 
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face) => match face.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
+            Extrudable::Face(_) => None,
         }
     }
 
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
                     .sketch()
                     .map(|sketch| sketch.is_closed)
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Face(face) => match face.parent_solid.creator_sketch_is_closed {
+                Some(is_closed) => is_closed,
+                None => ProfileClosed::Maybe,
             },
         }
     }
@@ -1173,6 +1214,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1232,7 +1277,10 @@ impl Solid {
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
-        self.edge_cuts.iter().map(|foc| foc.id())
+        self.edge_cuts
+            .iter()
+            .map(|foc| foc.id())
+            .chain(self.pending_edge_cut_ids.iter().copied())
     }
 }
 
@@ -1241,6 +1289,7 @@ impl From<&Solid> for FaceParentSolid {
         Self {
             solid_id: solid.id,
             creator_sketch_id: solid.sketch_id(),
+            creator_sketch_is_closed: solid.sketch().map(|sketch| sketch.is_closed),
             edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
         }
     }

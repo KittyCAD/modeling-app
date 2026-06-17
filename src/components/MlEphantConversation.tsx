@@ -70,6 +70,19 @@ const getModeOption = (
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => option.id === mode)
 
+const getSelectableModeOption = (
+  mode: MlCopilotModeId | undefined,
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined => {
+  const option = getModeOption(mode, modeOptions)
+  return option && !option.disabled ? option : undefined
+}
+
+const getFirstSelectableMode = (
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined =>
+  modeOptions?.find((option) => !option.disabled)
+
 export interface MlCopilotModesProps {
   onClick: (mode: MlCopilotModeId) => void
   children: ReactNode
@@ -93,15 +106,22 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           {({ close }) => (
             <>
               {props.modeOptions.map((mode) => (
-                <div
-                  tabIndex={0}
-                  role="button"
+                <button
+                  type="button"
                   key={mode.id}
+                  disabled={mode.disabled}
                   onClick={() => {
+                    if (mode.disabled) return
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex w-full flex-row items-start gap-2 p-2 pr-4 rounded-md border text-left ${
+                    props.current === mode.id ? 'border-primary' : ''
+                  } ${
+                    mode.disabled
+                      ? 'cursor-not-allowed opacity-60'
+                      : 'cursor-pointer hover:bg-2'
+                  }`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
@@ -113,8 +133,13 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     <span className="text-chalkboard-70 text-[11px] leading-tight">
                       {mode.description}
                     </span>
+                    {mode.disabled && (
+                      <span className="text-primary text-[11px] leading-tight">
+                        Upgrade your plan to use this mode.
+                      </span>
+                    )}
                   </div>
-                </div>
+                </button>
               ))}
             </>
           )}
@@ -135,7 +160,7 @@ export interface MlEphantExtraInputsProps {
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const currentMode = getModeOption(props.mode, props.modeOptions)
+  const currentMode = getSelectableModeOption(props.mode, props.modeOptions)
   const modeOptions = props.modeOptions ?? []
 
   return (
@@ -272,15 +297,16 @@ export const MlEphantConversationInput = (
   const { modeOptions, onMlCopilotModeChange } = props
   useEffect(() => {
     if (!modeOptions || modeOptions.length === 0) return
-    if (
-      mode !== undefined &&
-      !modeOptions.some((option) => option.id === mode)
-    ) {
+    const selectedMode = getSelectableModeOption(mode, modeOptions)
+    if (mode !== undefined && selectedMode === undefined) {
+      const fallbackMode =
+        getSelectableModeOption(props.initialMlCopilotMode, modeOptions) ??
+        getFirstSelectableMode(modeOptions)
       userHasPickedMode.current = false
-      setMode(undefined)
-      onMlCopilotModeChange?.(undefined)
+      setMode(fallbackMode?.id)
+      onMlCopilotModeChange?.(fallbackMode?.id)
     }
-  }, [modeOptions, mode, onMlCopilotModeChange])
+  }, [modeOptions, mode, onMlCopilotModeChange, props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -288,7 +314,11 @@ export const MlEphantConversationInput = (
     if (!value && attachments.length === 0) return
     if (!refDiv.current) return
 
-    props.onProcess(value, getModeOption(mode, modeOptions)?.id, attachments)
+    props.onProcess(
+      value,
+      getSelectableModeOption(mode, modeOptions)?.id,
+      attachments
+    )
     setValue('')
     setAttachments([])
   }

@@ -1,7 +1,7 @@
 import type { Location, NavigateFunction } from 'react-router-dom'
 
 import type { Command } from '@src/lib/commandTypes'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 export function createRouteCommands(
   navigate: NavigateFunction,
@@ -16,9 +16,10 @@ export function createRouteCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (_data) => {
-      const path = location.pathname.includes(PATHS.FILE)
-        ? filePath + PATHS.TELEMETRY + '?tab=project'
-        : PATHS.HOME + PATHS.TELEMETRY
+      const path = webSafeJoin([
+        location.pathname.includes(PATHS.FILE) ? filePath : PATHS.HOME,
+        PATHS.TELEMETRY,
+      ])
       void navigate(path)
     },
   }

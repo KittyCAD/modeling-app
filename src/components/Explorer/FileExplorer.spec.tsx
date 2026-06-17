@@ -12,6 +12,9 @@ describe('FileExplorer', () => {
           contextMenuRow={null}
           isRenaming={false}
           isCopying={false}
+          isDeleting={false}
+          isInteractionDisabled={false}
+          onDeleteEnd={() => {}}
         />
       )
       const container = screen.getByTestId('file-explorer')
