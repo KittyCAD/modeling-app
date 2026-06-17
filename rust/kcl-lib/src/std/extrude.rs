@@ -9,6 +9,7 @@ use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::ok_response::OkModelingCmdResponse;
 use kcmc::output::ExtrusionFaceInfo;
+use kcmc::output::Solid3dGetExtrusionFaceInfo;
 use kcmc::shared::ExtrudeReference;
 use kcmc::shared::ExtrusionFaceCapType;
 use kcmc::shared::Opposite;
@@ -20,6 +21,7 @@ use kittycad_modeling_cmds::shared::BodyType;
 use kittycad_modeling_cmds::shared::DirectionType;
 use kittycad_modeling_cmds::shared::EntityReference;
 use kittycad_modeling_cmds::shared::ExtrudeMethod;
+use kittycad_modeling_cmds::shared::RefsSeed;
 use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
@@ -870,26 +872,50 @@ pub(crate) async fn do_post_extrude<'a>(
         sketch.id
     };
 
-    let solid3d_info = exec_state
-        .send_modeling_cmd(
+    exec_state
+        .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::Solid3dGetExtrusionFaceInfo::builder()
-                    .edge_id(extrusion_info_edge_id)
                     .object_id(sketch_id)
+                    .edge_id(extrusion_info_edge_id)
+                    .refs_seed(RefsSeed(sketch_id))
+                    // Edges belonging to a sketch that have created a region.
+                    // The server will iterate through them to find a valid one
+                    // to get info out of.
+                    .edge_ids(sketch.paths.clone().into_iter().map(|v| v.get_id()).collect())
                     .build(),
             ),
         )
         .await?;
 
-    let face_infos = if let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
-    } = solid3d_info
-    {
-        data.faces
-    } else {
-        vec![]
-    };
+    // A "good state" is always having a top & bottom cap, with sides.
+    // We will generate all that data, but only the script writer knows what
+    // really exists.
+    let mut face_infos = vec![];
+    face_infos.push(ExtrusionFaceInfo::builder()
+      .face_id(kcmc::id::client_ref_from((sketch_id, &0.to_string())))
+      .cap(ExtrusionFaceCapType::Bottom)
+      .build()
+    );
+    face_infos.push(ExtrusionFaceInfo::builder()
+      .face_id(kcmc::id::client_ref_from((sketch_id, &1.to_string())))
+      .cap(ExtrusionFaceCapType::Top)
+      .build()
+    );
+    
+    // Push the rest of the faces for the sides - because we have "bags" of segments
+    // now, it's not necessarily true that all segments are part of the solid.
+    for (index, path) in sketch.paths.iter().enumerate() {
+      // TODO: If needed, optimize to add the index instead to the resulting bytes of `object_id`.
+      // Will avoid allocating a bunch of tiny strings.
+      face_infos.push(ExtrusionFaceInfo::builder()
+        .curve_id(path.get_id())
+        .face_id(kcmc::id::client_ref_from((sketch_id, &(index + 2).to_string())))
+        .cap(ExtrusionFaceCapType::None)
+        .build()
+      );
+    }
 
     // Only do this if we need the artifact graph.
     // if !args.ctx.settings.skip_artifact_graph {

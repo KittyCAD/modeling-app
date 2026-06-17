@@ -6,6 +6,7 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::ok_response::OkModelingCmdResponse;
 use kcmc::shared::BodyType;
+use kcmc::shared::RefsSeed;
 use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
@@ -127,12 +128,15 @@ pub(super) async fn fix_tags_and_references(
     args: &Args,
 ) -> Result<()> {
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, exec_state, args).await?;
 
     // Fix the path references in the new geometry.
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
+            // Because items expected back changes based on what's cloned, we
+            // have to scope each call to each branch.
+            let items_expected_at_most = 1 + sketch.paths.len() + sketch.paths.len();
+            let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, items_expected_at_most, exec_state, args).await?;
             sketch.clone = Some(old_geometry_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
@@ -152,6 +156,8 @@ pub(super) async fn fix_tags_and_references(
             sketch.artifact_id = new_geometry_id.into();
             sketch.clone = Some(old_geometry_id);
 
+            let items_expected_at_most = (sketch.paths.len() + (sketch.paths.len() + 2)) * 2;
+            let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, items_expected_at_most, exec_state, args).await?;
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
             let sketch_for_post = sketch.clone();
 
@@ -202,52 +208,42 @@ pub(super) async fn fix_tags_and_references(
 async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
+    items_expected_at_most: usize,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
     // Get the old geometries entity ids.
-    let response = exec_state
-        .send_modeling_cmd(
+    exec_state
+        .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::EntityGetAllChildUuids::builder()
                     .entity_id(old_geometry_id)
+                    .items_expected_at_most(items_expected_at_most)
+                    .refs_seed(RefsSeed(old_geometry_id))
                     .build(),
             ),
         )
         .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(old_resp),
-    } = response
-    else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
-    };
-    let old_entity_ids = old_resp.entity_ids;
+        
+        
+    let old_entity_ids = (0..items_expected_at_most).map(|i| kcmc::id::client_ref_from((old_geometry_id, &i.to_string()))).collect::<Vec<uuid::Uuid>>();
 
     // Get the new geometries entity ids.
-    let response = exec_state
-        .send_modeling_cmd(
+    exec_state
+        .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::EntityGetAllChildUuids::builder()
                     .entity_id(new_geometry_id)
+                    .items_expected_at_most(items_expected_at_most)
+                    .refs_seed(RefsSeed(new_geometry_id))
                     .build(),
             ),
         )
         .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(new_resp),
-    } = response
-    else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
-    };
-    let new_entity_ids = new_resp.entity_ids;
+        
+    let new_entity_ids = (0..items_expected_at_most).map(|i| kcmc::id::client_ref_from((new_geometry_id, &i.to_string()))).collect::<Vec<uuid::Uuid>>();
 
     // Create a map of old entity ids to new entity ids.
     Ok(HashMap::from_iter(
@@ -296,13 +292,15 @@ async fn fix_sketch_tags_and_references(
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = (*found_surface).clone();
                 let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!(
-                            "Failed to find new face id for old face id: {:?}",
-                            new_surface.face_id()
-                        ),
-                        vec![args.source_range],
-                    )));
+                    continue;
+                    // Not necessarily an error. It means this was just a mock face.
+                    // return Err(KclError::new_engine(KclErrorDetails::new(
+                    //     format!(
+                    //         "Failed to find new face id for old face id: {:?}",
+                    //         new_surface.face_id()
+                    //     ),
+                    //     vec![args.source_range],
+                    // )));
                 };
                 new_surface.set_face_id(new_face_id);
                 surface = Some(new_surface);
