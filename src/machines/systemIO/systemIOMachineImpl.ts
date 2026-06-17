@@ -226,6 +226,25 @@ const prepareBulkProjectWrite = async ({
   }
 }
 
+export const reloadExecutingEditorAfterBulkWrite = async ({
+  context,
+  writtenFilePaths,
+}: {
+  context: SystemIOContext
+  writtenFilePaths: string[]
+}) => {
+  const executingEditor = context.app.project?.executingEditor.value
+  if (!executingEditor) {
+    return
+  }
+
+  if (!writtenFilePaths.includes(executingEditor.path)) {
+    return
+  }
+
+  await executingEditor.reloadFromDisk()
+}
+
 const sharedBulkCreateWorkflow = async ({
   input,
 }: {
@@ -247,6 +266,7 @@ const sharedBulkCreateWorkflow = async ({
     wasmInstance: input.wasmInstance,
   })
 
+  const writtenFilePaths: string[] = []
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedFileName = file.requestedFileName
@@ -263,6 +283,8 @@ const sharedBulkCreateWorkflow = async ({
           })
         ).name
 
+    writtenFilePaths.push(fsZds.join(projectRoot, fileName))
+
     // Create the project around the file if newProject
     await createNewProjectDirectory(
       newProjectName,
@@ -273,6 +295,11 @@ const sharedBulkCreateWorkflow = async ({
       projectDirectoryPath
     )
   }
+  await reloadExecutingEditorAfterBulkWrite({
+    context: input.context,
+    writtenFilePaths,
+  })
+
   const numberOfFiles = input.files.length
   const fileText = numberOfFiles > 1 ? 'files' : 'file'
   const message = input.override
