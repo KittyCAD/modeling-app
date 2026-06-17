@@ -135,6 +135,14 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Plane)
     }
 
+    /// `[Plane; 1+]`
+    pub fn planes() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Plane)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
     pub fn face() -> Self {
         RuntimeType::Primitive(PrimitiveType::Face)
     }

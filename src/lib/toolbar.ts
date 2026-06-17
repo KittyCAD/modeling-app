@@ -222,6 +222,12 @@ export function getToolbarDropdownDisplay(
   return dropdown.display ?? 'default'
 }
 
+function sortToolbarItemsByTitle<T extends ToolbarItem & { title: string }>(
+  items: T[]
+): T[] {
+  return [...items].sort((a, b) => a.title.localeCompare(b.title))
+}
+
 export function getDefaultRecentToolbarItemIds(
   dropdown: ToolbarDropdownLike<ToolbarDropdownItemIdLike>
 ): string[] {
@@ -1273,6 +1279,26 @@ export function buildToolbarConfig(
                 },
               ],
             },
+            {
+              id: 'delete',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Delete', groupId: 'modeling' },
+                }),
+              status: 'experimental',
+              title: 'Delete',
+              icon: 'trash',
+              description: 'Delete selected bodies from the scene.',
+              links: [
+                {
+                  label: 'API docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-transform-delete'
+                  ),
+                },
+              ],
+            },
           ],
         },
         {
@@ -1325,7 +1351,7 @@ export function buildToolbarConfig(
         'break',
         {
           id: 'gdt',
-          array: [
+          array: sortToolbarItemsByTitle([
             {
               id: 'gdt-flatness',
               onClick: () =>
@@ -1472,6 +1498,102 @@ export function buildToolbarConfig(
               ],
             },
             {
+              id: 'gdt-concentricity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Concentricity',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Concentricity',
+              icon: 'gdtConcentricity',
+              description:
+                'Controls how closely a feature axis aligns with a datum axis.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-concentricity'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-symmetry',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Symmetry',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Symmetry',
+              icon: 'gdtSymmetry',
+              description:
+                'Controls how closely median points align with a datum center plane.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-symmetry'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-runout',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Runout',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Runout',
+              icon: 'gdtRunout',
+              description:
+                'Controls how much a round feature may vary as it rotates around a datum axis.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-runout'
+                  ),
+                },
+              ],
+            },
+            {
+              id: 'gdt-angularity',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Angularity',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'available',
+              title: 'Angularity',
+              icon: 'angle',
+              description:
+                'Specifies how much a feature may deviate from an orientation at a basic angle.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-angularity'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'gdt-perpendicularity',
               onClick: () =>
                 commands.send({
@@ -1561,7 +1683,7 @@ export function buildToolbarConfig(
                 },
               ],
             },
-          ],
+          ]),
         },
       ],
     },
