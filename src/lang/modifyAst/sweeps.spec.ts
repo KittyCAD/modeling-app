@@ -12,7 +12,7 @@ import {
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
-  ArtifactGraph,
+  type ArtifactGraph,
   type Name,
   type PathToNode,
   assertParse,
