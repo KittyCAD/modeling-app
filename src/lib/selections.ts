@@ -173,7 +173,7 @@ export async function getEngineRegionSelectionFromEntity(
   }
 }
 
-async function getPrimitiveSelectionForEntity(
+export async function getPrimitiveSelectionForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
 ): Promise<EnginePrimitiveSelection | null> {

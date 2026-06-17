@@ -1,4 +1,3 @@
-import type { EntityGetPrimitiveIndex } from '@kittycad/lib'
 import { use } from 'react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -23,9 +22,11 @@ import {
 import type { Artifact, ArtifactGraph, Expr } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import {
+  getPrimitiveSelectionForEntity,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import type {
   EnginePrimitiveSelection,
   Selection,
@@ -46,10 +47,7 @@ type SelectionReferenceState =
   | { status: 'ready'; references: SelectionReference[] }
   | { status: 'error'; references: SelectionReference[]; message: string }
 
-type PrimitiveInfo = {
-  entityId: string
-  parentEntityId?: string
-  primitiveIndex: number
+type ReferenceablePrimitiveSelection = EnginePrimitiveSelection & {
   primitiveType: 'face' | 'edge'
   graphSelection?: Selection
   enginePrimitiveSelection?: EnginePrimitiveSelection
@@ -62,86 +60,12 @@ const BODY_REFERENCE_ARTIFACT_TYPES: Artifact['type'][] = [
   'helix',
 ]
 
-async function getParentEntityIdForEntity(
-  entityId: string,
-  engineCommandManager: ConnectionManager
-): Promise<string | undefined> {
-  const parentResponse = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_parent_id',
-      entity_id: entityId,
-    },
-  })
-  if (!isModelingResponse(parentResponse)) {
-    return undefined
-  }
-  const parentIdResponse = parentResponse.resp.data.modeling_response
-  if (parentIdResponse.type !== 'entity_get_parent_id') {
-    return undefined
-  }
-  return parentIdResponse.data.entity_id
-}
-
-async function getPrimitiveInfoForEntity(
-  entityId: string,
-  engineCommandManager: ConnectionManager
-): Promise<PrimitiveInfo | null> {
-  const websocketResponse = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'entity_get_primitive_index',
-      entity_id: entityId,
-    },
-  })
-
-  if (!isModelingResponse(websocketResponse)) {
-    return null
-  }
-
-  const primitiveIndexResponse = websocketResponse.resp.data.modeling_response
-  if (primitiveIndexResponse.type !== 'entity_get_primitive_index') {
-    return null
-  }
-
-  const entityGetPrimitiveIndex: EntityGetPrimitiveIndex =
-    primitiveIndexResponse.data
-  if (
-    entityGetPrimitiveIndex.entity_type !== 'face' &&
-    entityGetPrimitiveIndex.entity_type !== 'edge'
-  ) {
-    return null
-  }
-
-  return {
-    entityId,
-    parentEntityId: await getParentEntityIdForEntity(
-      entityId,
-      engineCommandManager
-    ),
-    primitiveIndex: entityGetPrimitiveIndex.primitive_index,
-    primitiveType: entityGetPrimitiveIndex.entity_type,
-  }
-}
-
-function getPrimitiveInfoFromSelection(
+function isReferenceablePrimitiveSelection(
   selection: EnginePrimitiveSelection
-): PrimitiveInfo | null {
-  if (
-    selection.primitiveType !== 'face' &&
-    selection.primitiveType !== 'edge'
-  ) {
-    return null
-  }
-
-  return {
-    entityId: selection.entityId,
-    parentEntityId: selection.parentEntityId,
-    primitiveIndex: selection.primitiveIndex,
-    primitiveType: selection.primitiveType,
-  }
+): selection is ReferenceablePrimitiveSelection {
+  return (
+    selection.primitiveType === 'face' || selection.primitiveType === 'edge'
+  )
 }
 
 function isBodyReferenceArtifact(
@@ -256,22 +180,22 @@ function getBodySelectionFromPrimitiveParentEntityId(
 }
 
 function createPrimitiveReferenceCode({
-  primitiveInfo,
+  primitiveSelection,
   artifactGraph,
   kclManager,
   wasmInstance,
 }: {
-  primitiveInfo: PrimitiveInfo
+  primitiveSelection: ReferenceablePrimitiveSelection
   artifactGraph: ArtifactGraph
   kclManager: ReturnType<typeof useSingletons>['kclManager']
   wasmInstance: Parameters<typeof recast>[1]
 }): string | null {
-  if (!primitiveInfo.parentEntityId) {
+  if (!primitiveSelection.parentEntityId) {
     return null
   }
 
   const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-    primitiveInfo.parentEntityId,
+    primitiveSelection.parentEntityId,
     artifactGraph
   )
   if (!bodySelection) {
@@ -295,14 +219,14 @@ function createPrimitiveReferenceCode({
 
   const bodyExpr = bodyVariables.exprs[0]
   const functionName =
-    primitiveInfo.primitiveType === 'face' ? 'faceId' : 'edgeId'
+    primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
   const call = createCallExpressionStdLibKw(
     functionName,
     structuredClone(bodyExpr),
     [
       createLabeledArg(
         'index',
-        createLiteral(primitiveInfo.primitiveIndex, wasmInstance)
+        createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
       ),
     ]
   )
@@ -370,7 +294,7 @@ async function getSelectionReferences({
   wasmInstance: Parameters<typeof recast>[1]
 }): Promise<SelectionReference[]> {
   const references: SelectionReference[] = []
-  const primitiveInfos: PrimitiveInfo[] = []
+  const primitiveSelections: ReferenceablePrimitiveSelection[] = []
 
   for (const selection of graphSelections) {
     if (isBodyReferenceArtifact(selection.artifact)) {
@@ -412,38 +336,43 @@ async function getSelectionReferences({
       continue
     }
 
-    const primitiveInfo = await getPrimitiveInfoForEntity(
+    const primitiveSelection = await getPrimitiveSelectionForEntity(
       entityId,
       engineCommandManager
     )
-    if (primitiveInfo) {
-      primitiveInfos.push({ ...primitiveInfo, graphSelection: selection })
+    if (
+      primitiveSelection &&
+      isReferenceablePrimitiveSelection(primitiveSelection)
+    ) {
+      primitiveSelections.push({
+        ...primitiveSelection,
+        graphSelection: selection,
+      })
     }
   }
 
   for (const selection of enginePrimitives) {
-    const primitiveInfo = getPrimitiveInfoFromSelection(selection)
-    if (primitiveInfo) {
-      primitiveInfos.push({
-        ...primitiveInfo,
+    if (isReferenceablePrimitiveSelection(selection)) {
+      primitiveSelections.push({
+        ...selection,
         enginePrimitiveSelection: selection,
       })
     }
   }
 
-  const dedupedPrimitiveInfos = [
+  const dedupedPrimitiveSelections = [
     ...new Map(
-      primitiveInfos.map((info) => [
-        `${info.primitiveType}:${info.parentEntityId || ''}:${info.primitiveIndex}:${info.entityId}`,
-        info,
+      primitiveSelections.map((selection) => [
+        `${selection.primitiveType}:${selection.parentEntityId || ''}:${selection.primitiveIndex}:${selection.entityId}`,
+        selection,
       ])
     ).values(),
   ]
 
   references.push(
-    ...dedupedPrimitiveInfos.flatMap((primitiveInfo) => {
+    ...dedupedPrimitiveSelections.flatMap((primitiveSelection) => {
       const code = createPrimitiveReferenceCode({
-        primitiveInfo,
+        primitiveSelection,
         artifactGraph,
         kclManager,
         wasmInstance,
@@ -454,11 +383,11 @@ async function getSelectionReferences({
 
       return [
         {
-          id: `${primitiveInfo.primitiveType}:${primitiveInfo.entityId}`,
-          label: primitiveInfo.primitiveType === 'face' ? 'Face' : 'Edge',
+          id: `${primitiveSelection.primitiveType}:${primitiveSelection.entityId}`,
+          label: primitiveSelection.primitiveType === 'face' ? 'Face' : 'Edge',
           code,
-          graphSelection: primitiveInfo.graphSelection,
-          enginePrimitiveSelection: primitiveInfo.enginePrimitiveSelection,
+          graphSelection: primitiveSelection.graphSelection,
+          enginePrimitiveSelection: primitiveSelection.enginePrimitiveSelection,
         },
       ]
     })
@@ -479,13 +408,7 @@ function getEnginePrimitiveSelections(
     typeof useModelingContext
   >['context']['selectionRanges']
 ): EnginePrimitiveSelection[] {
-  return selections.otherSelections.filter(
-    (selection): selection is EnginePrimitiveSelection =>
-      typeof selection === 'object' &&
-      selection !== null &&
-      'type' in selection &&
-      selection.type === 'enginePrimitive'
-  )
+  return selections.otherSelections.filter(isEnginePrimitiveSelection)
 }
 
 async function copyCode(code: string) {
