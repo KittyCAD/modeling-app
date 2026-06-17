@@ -52,7 +52,7 @@ export function getCloudSyncStatusBarPresentation(
     : isBlocked
       ? 'triangleExclamation'
       : hasPendingChanges
-        ? 'refresh'
+        ? 'loading'
         : 'checkmark'
   const pendingText = `${status.pendingCount} cloud sync operation${
     status.pendingCount === 1 ? '' : 's'
@@ -61,7 +61,8 @@ export function getCloudSyncStatusBarPresentation(
   return {
     label,
     icon,
-    iconClassName: isSyncing ? 'animate-spin' : '',
+    iconClassName:
+      isSyncing || (!isBlocked && hasPendingChanges) ? 'animate-spin' : '',
     isBlocked,
     tooltip:
       status.lastFailure ||
