@@ -64,7 +64,7 @@ describe('optimistic project renames', () => {
     expect(projects?.[0].metadata?.modified).toBe(300)
   })
 
-  it('prunes overlays once the durable project modified time catches up', () => {
+  it('keeps overlays until the durable project title and modified time catch up', () => {
     expect(
       pruneSettledOptimisticProjectRenames([baseProject], {
         'project-123': {
@@ -84,6 +84,32 @@ describe('optimistic project renames', () => {
         [
           {
             ...baseProject,
+            metadata: {
+              ...baseProject.metadata,
+              modified: 200,
+            },
+          },
+        ],
+        {
+          'project-123': {
+            title: 'New cloud title',
+            modified: 200,
+          },
+        }
+      )
+    ).toEqual({
+      'project-123': {
+        title: 'New cloud title',
+        modified: 200,
+      },
+    })
+
+    expect(
+      pruneSettledOptimisticProjectRenames(
+        [
+          {
+            ...baseProject,
+            title: 'New cloud title',
             metadata: {
               ...baseProject.metadata,
               modified: 200,
