@@ -227,7 +227,7 @@ export const fileLoader =
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
     if (requestedFileName.project === projectName) {
-      requestedFileName.onNavigationComplete?.()
+      requestedFileName.onProjectLoaderComplete?.()
     }
 
     const appProjectDir = settings.settings.app.projectDirectory.current

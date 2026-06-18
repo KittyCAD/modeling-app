@@ -74,7 +74,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileName: string
             requestedSubRoute?: string
-            onNavigationComplete?: () => void
+            onProjectLoaderComplete?: () => void
           }
         }
       | {
@@ -167,7 +167,7 @@ export const systemIOMachine = setup({
             projectName: string
             fileName: string
             shouldNavigate: boolean
-            onNavigationComplete?: () => void
+            onProjectLoaderComplete?: () => void
           }
         }
       | {
@@ -395,8 +395,8 @@ export const systemIOMachine = setup({
           project: event.data.requestedProjectName,
           file: event.data.requestedFileName,
           subRoute: event.data.requestedSubRoute,
-          ...(event.data.onNavigationComplete
-            ? { onNavigationComplete: event.data.onNavigationComplete }
+          ...(event.data.onProjectLoaderComplete
+            ? { onProjectLoaderComplete: event.data.onProjectLoaderComplete }
             : {}),
         }
       },
@@ -677,7 +677,7 @@ export const systemIOMachine = setup({
           projectName: string
           subRoute: string
           shouldNavigate: boolean
-          onNavigationComplete?: () => void
+          onProjectLoaderComplete?: () => void
         }> => {
           return {
             message: '',
@@ -1726,7 +1726,7 @@ export const systemIOMachine = setup({
                       projectName: string
                       fileName: string
                       shouldNavigate: boolean
-                      onNavigationComplete?: () => void
+                      onProjectLoaderComplete?: () => void
                     }
                   }
                 ).output
@@ -1740,8 +1740,10 @@ export const systemIOMachine = setup({
                 return {
                   project: output.projectName,
                   file,
-                  ...(output.onNavigationComplete
-                    ? { onNavigationComplete: output.onNavigationComplete }
+                  ...(output.onProjectLoaderComplete
+                    ? {
+                        onProjectLoaderComplete: output.onProjectLoaderComplete,
+                      }
                     : {}),
                 }
               },

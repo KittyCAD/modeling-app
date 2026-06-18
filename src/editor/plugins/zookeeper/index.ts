@@ -297,9 +297,9 @@ async function replayZookeeperEditPatch({
       restoredActiveFileReplay.nextContent ?? ''
     )
     if (effectProps.direction === 'undo') {
-      kclManager.synchronizeLocalHistoryAfterExternalGlobalUndo()
+      kclManager.synchronizeLocalHistoryAfterDirectGlobalUndo()
     } else {
-      kclManager.synchronizeLocalHistoryAfterExternalGlobalRedo()
+      kclManager.synchronizeLocalHistoryAfterDirectGlobalRedo()
     }
     return
   }

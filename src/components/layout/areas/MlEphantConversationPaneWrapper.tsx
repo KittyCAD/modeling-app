@@ -9,7 +9,7 @@ import {
   zookeeperEditPatchHistoryEvent,
 } from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isCodeTheSame } from '@src/lib/codeEditor'
@@ -132,206 +132,14 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
-  const pendingZookeeperHistoryByExchange = useRef(
-    new Map<number, PendingZookeeperHistory>()
-  )
-  useEffect(() => {
-    const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
-    return () => {
-      pendingZookeeperHistories.clear()
-      kclManager.zookeeperHistoryRecordingInProgress = false
-    }
-  }, [kclManager])
-  useEffect(() => {
-    if (!project) {
-      return
-    }
-
-    return buildZookeeperHistoryExtension({
-      kclManager,
-      onCurrentFileDelete: async (deletedPaths) => {
-        const fallbackPath = getZookeeperReplayFallbackFilePath(
-          project,
-          deletedPaths
-        )
-        if (!fallbackPath) {
-          return
-        }
-
-        await project.openEditor(fallbackPath, kclManager)
-      },
-      onActiveFileRestore: async (path, contents) => {
-        await project.openEditor(path, kclManager, contents)
-      },
-      onProjectFilesReplay: async (replayFiles) => {
-        await project.syncReplayedFilesToRust(replayFiles)
-      },
-    })
-  }, [kclManager, project])
-  const recordZookeeperHistory = useCallback(
-    ({
-      activeFileDeleted,
-      activeFilePath,
-      activeEditorState,
-      activeFileRequestedCode,
-      currentFilePath,
-      currentFileRequestedCode,
-      patch,
-      projectPath,
-    }: ReadyPendingZookeeperHistory) => {
-      const codeChangeFilePath =
-        currentFilePath ?? (!activeFileDeleted ? activeFilePath : undefined)
-      const codeChangeRequestedCode =
-        currentFileRequestedCode ??
-        (!activeFileDeleted ? activeFileRequestedCode : undefined)
-      const codeChangeRelativePath = codeChangeFilePath
-        ? normalizeKCLFileDeletePath(
-            fsZds.relative(projectPath, codeChangeFilePath)
-          )
-        : undefined
-      const patchChangesCodeChangeFile =
-        codeChangeRelativePath !== undefined &&
-        patch.changed_files?.some(
-          (file) =>
-            normalizeKCLFileDeletePath(file.path) === codeChangeRelativePath
-        )
-
-      if (
-        codeChangeFilePath &&
-        patchChangesCodeChangeFile &&
-        codeChangeRequestedCode !== undefined &&
-        kclManager.path === codeChangeFilePath
-      ) {
-        const codeChangePreviousCode = getZookeeperPatchPreviousCode(
-          patch,
-          codeChangeRelativePath,
-          codeChangeRequestedCode
-        )
-        // Project refreshes may reload the active editor before Zookeeper
-        // history is recorded. Put the captured pre-write state back first so
-        // the Zookeeper change lands on top of the user's local undo stack.
-        if (
-          activeEditorState &&
-          codeChangePreviousCode !== undefined &&
-          isCodeTheSame(
-            activeEditorState.doc.toString(),
-            codeChangePreviousCode
-          ) &&
-          (isCodeTheSame(kclManager.code, codeChangePreviousCode) ||
-            isCodeTheSame(kclManager.code, codeChangeRequestedCode))
-        ) {
-          kclManager.restoreEditorHistoryState(activeEditorState)
-        }
-        kclManager.addGlobalHistoryEventWithCodeChange(
-          zookeeperEditPatchHistoryEvent({
-            projectPath,
-            patch,
-            activeFilePath,
-          }),
-          codeChangeRequestedCode,
-          codeChangePreviousCode
-        )
-        return
-      }
-
-      kclManager.addGlobalHistoryEvent(
-        zookeeperEditPatchHistoryEvent({
-          projectPath,
-          patch,
-          activeFilePath,
-        })
-      )
-    },
-    [kclManager]
-  )
-  const tryFlushPendingZookeeperHistory = useCallback(
-    (exchangeId: number) => {
-      const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
-      if (
-        !pending?.streamEnded ||
-        pending.outstandingWrites > 0 ||
-        !pending.projectPath ||
-        !pending.patch?.changed_files?.length ||
-        !pending.activeFilePath
-      ) {
-        return
-      }
-
-      pendingZookeeperHistoryByExchange.current.delete(exchangeId)
-      try {
-        recordZookeeperHistory({
-          activeFileDeleted: pending.activeFileDeleted,
-          activeFilePath: pending.activeFilePath,
-          activeEditorState: pending.activeEditorState,
-          activeFileRequestedCode: pending.activeFileRequestedCode,
-          currentFilePath: pending.currentFilePath,
-          currentFileRequestedCode: pending.currentFileRequestedCode,
-          patch: pending.patch,
-          projectPath: pending.projectPath,
-        })
-      } finally {
-        if (pendingZookeeperHistoryByExchange.current.size === 0) {
-          kclManager.zookeeperHistoryRecordingInProgress = false
-        }
-      }
-    },
-    [kclManager, recordZookeeperHistory]
-  )
-  const beginPendingZookeeperHistoryWrite = useCallback(
-    (exchangeId: number, activeFilePath?: string) => {
-      const pending =
-        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
-        createPendingZookeeperHistory()
-      pending.outstandingWrites += 1
-      if (
-        !pending.activeEditorState &&
-        activeFilePath &&
-        activeFilePath === kclManager.path
-      ) {
-        pending.activeEditorState = kclManager.captureEditorHistoryState()
-      }
-      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
-      kclManager.zookeeperHistoryRecordingInProgress = true
-    },
-    [kclManager]
-  )
-  const completePendingZookeeperHistoryWrite = useCallback(
-    ({
-      activeFileDeleted,
-      activeFilePath,
-      activeFileRequestedCode,
-      currentFilePath,
-      currentFileRequestedCode,
-      exchangeId,
-      patch,
-      projectPath,
-    }: CompletePendingZookeeperHistoryWriteProps) => {
-      const pending =
-        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
-        createPendingZookeeperHistory()
-      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
-      pending.projectPath = projectPath
-      pending.activeFilePath ??= activeFilePath
-      pending.activeFileDeleted = pending.activeFileDeleted || activeFileDeleted
-      pending.activeFileRequestedCode =
-        activeFileRequestedCode ?? pending.activeFileRequestedCode
-      pending.currentFilePath = currentFilePath ?? pending.currentFilePath
-      pending.currentFileRequestedCode =
-        currentFileRequestedCode ?? pending.currentFileRequestedCode
-      pending.patch = pending.patch
-        ? mergeZookeeperEditPatches(pending.patch, patch)
-        : patch
-      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
-      tryFlushPendingZookeeperHistory(exchangeId)
-    },
-    [tryFlushPendingZookeeperHistory]
-  )
-
-  useFlushZookeeperHistoryOnResponseEnd(
+  const {
+    beginPendingZookeeperHistoryWrite,
+    completePendingZookeeperHistoryWrite,
+  } = useZookeeperEditPatchHistory({
+    kclManager,
     mlEphantManagerActor,
-    pendingZookeeperHistoryByExchange,
-    tryFlushPendingZookeeperHistory
-  )
+    project,
+  })
 
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
@@ -528,6 +336,246 @@ function getZookeeperReplayFallbackFilePath(
   ].filter((path, index, paths) => paths.indexOf(path) === index)
 
   return candidates.find((path) => path && !deletedPaths.has(path))
+}
+
+function useZookeeperEditPatchHistory({
+  kclManager,
+  mlEphantManagerActor,
+  project,
+}: {
+  kclManager: KclManager
+  mlEphantManagerActor: MlEphantManagerActor
+  project: ZDSProject | undefined
+}) {
+  const pendingZookeeperHistoryByExchange = useRef(
+    new Map<number, PendingZookeeperHistory>()
+  )
+
+  useEffect(() => {
+    const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
+    return () => {
+      pendingZookeeperHistories.clear()
+      kclManager.zookeeperHistoryRecordingInProgress = false
+    }
+  }, [kclManager])
+
+  useEffect(() => {
+    if (!project) {
+      return
+    }
+
+    return buildZookeeperHistoryExtension({
+      kclManager,
+      onCurrentFileDelete: async (deletedPaths) => {
+        const fallbackPath = getZookeeperReplayFallbackFilePath(
+          project,
+          deletedPaths
+        )
+        if (!fallbackPath) {
+          return
+        }
+
+        await project.openEditor(fallbackPath, kclManager)
+      },
+      onActiveFileRestore: async (path, contents) => {
+        await project.openEditor(path, kclManager, contents)
+      },
+      onProjectFilesReplay: async (replayFiles) => {
+        await project.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+  }, [kclManager, project])
+
+  const recordZookeeperHistory = useCallback(
+    (pending: ReadyPendingZookeeperHistory) => {
+      const {
+        codeChangeFilePath,
+        codeChangeRelativePath,
+        codeChangeRequestedCode,
+        patchChangesCodeChangeFile,
+      } = getZookeeperCodeChangeTarget(pending)
+
+      if (
+        codeChangeFilePath &&
+        patchChangesCodeChangeFile &&
+        codeChangeRequestedCode !== undefined &&
+        kclManager.path === codeChangeFilePath
+      ) {
+        const codeChangePreviousCode = getZookeeperPatchPreviousCode(
+          pending.patch,
+          codeChangeRelativePath,
+          codeChangeRequestedCode
+        )
+        // Project refreshes may reload the active editor before Zookeeper
+        // history is recorded. Put the captured pre-write state back first so
+        // the Zookeeper change lands on top of the user's local undo stack.
+        if (
+          pending.activeEditorState &&
+          codeChangePreviousCode !== undefined &&
+          isCodeTheSame(
+            pending.activeEditorState.doc.toString(),
+            codeChangePreviousCode
+          ) &&
+          (isCodeTheSame(kclManager.code, codeChangePreviousCode) ||
+            isCodeTheSame(kclManager.code, codeChangeRequestedCode))
+        ) {
+          kclManager.restoreEditorHistoryState(pending.activeEditorState)
+        }
+        kclManager.addGlobalHistoryEventWithCodeChange(
+          zookeeperEditPatchHistoryEvent({
+            projectPath: pending.projectPath,
+            patch: pending.patch,
+            activeFilePath: pending.activeFilePath,
+          }),
+          codeChangeRequestedCode,
+          codeChangePreviousCode
+        )
+        return
+      }
+
+      kclManager.addGlobalHistoryEvent(
+        zookeeperEditPatchHistoryEvent({
+          projectPath: pending.projectPath,
+          patch: pending.patch,
+          activeFilePath: pending.activeFilePath,
+        })
+      )
+    },
+    [kclManager]
+  )
+
+  const tryFlushPendingZookeeperHistory = useCallback(
+    (exchangeId: number) => {
+      const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
+      if (
+        !pending?.streamEnded ||
+        pending.outstandingWrites > 0 ||
+        !pending.projectPath ||
+        !pending.patch?.changed_files?.length ||
+        !pending.activeFilePath
+      ) {
+        return
+      }
+
+      pendingZookeeperHistoryByExchange.current.delete(exchangeId)
+      try {
+        recordZookeeperHistory({
+          activeFileDeleted: pending.activeFileDeleted,
+          activeFilePath: pending.activeFilePath,
+          activeEditorState: pending.activeEditorState,
+          activeFileRequestedCode: pending.activeFileRequestedCode,
+          currentFilePath: pending.currentFilePath,
+          currentFileRequestedCode: pending.currentFileRequestedCode,
+          patch: pending.patch,
+          projectPath: pending.projectPath,
+        })
+      } finally {
+        if (pendingZookeeperHistoryByExchange.current.size === 0) {
+          kclManager.zookeeperHistoryRecordingInProgress = false
+        }
+      }
+    },
+    [kclManager, recordZookeeperHistory]
+  )
+
+  const beginPendingZookeeperHistoryWrite = useCallback(
+    (exchangeId: number, activeFilePath?: string) => {
+      const pending =
+        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
+        createPendingZookeeperHistory()
+      pending.outstandingWrites += 1
+      if (
+        !pending.activeEditorState &&
+        activeFilePath &&
+        activeFilePath === kclManager.path
+      ) {
+        pending.activeEditorState = kclManager.captureEditorHistoryState()
+      }
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      kclManager.zookeeperHistoryRecordingInProgress = true
+    },
+    [kclManager]
+  )
+
+  const completePendingZookeeperHistoryWrite = useCallback(
+    ({
+      activeFileDeleted,
+      activeFilePath,
+      activeFileRequestedCode,
+      currentFilePath,
+      currentFileRequestedCode,
+      exchangeId,
+      patch,
+      projectPath,
+    }: CompletePendingZookeeperHistoryWriteProps) => {
+      const pending =
+        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
+        createPendingZookeeperHistory()
+      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
+      pending.projectPath = projectPath
+      pending.activeFilePath ??= activeFilePath
+      pending.activeFileDeleted = pending.activeFileDeleted || activeFileDeleted
+      pending.activeFileRequestedCode =
+        activeFileRequestedCode ?? pending.activeFileRequestedCode
+      pending.currentFilePath = currentFilePath ?? pending.currentFilePath
+      pending.currentFileRequestedCode =
+        currentFileRequestedCode ?? pending.currentFileRequestedCode
+      pending.patch = pending.patch
+        ? mergeZookeeperEditPatches(pending.patch, patch)
+        : patch
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      tryFlushPendingZookeeperHistory(exchangeId)
+    },
+    [tryFlushPendingZookeeperHistory]
+  )
+
+  useFlushZookeeperHistoryOnResponseEnd(
+    mlEphantManagerActor,
+    pendingZookeeperHistoryByExchange,
+    tryFlushPendingZookeeperHistory
+  )
+
+  return {
+    beginPendingZookeeperHistoryWrite,
+    completePendingZookeeperHistoryWrite,
+  }
+}
+
+function getZookeeperCodeChangeTarget({
+  activeFileDeleted,
+  activeFilePath,
+  activeFileRequestedCode,
+  currentFilePath,
+  currentFileRequestedCode,
+  patch,
+  projectPath,
+}: ReadyPendingZookeeperHistory) {
+  const fallbackFilePath = activeFileDeleted ? undefined : activeFilePath
+  const fallbackRequestedCode = activeFileDeleted
+    ? undefined
+    : activeFileRequestedCode
+  const codeChangeFilePath = currentFilePath ?? fallbackFilePath
+  const codeChangeRequestedCode =
+    currentFileRequestedCode ?? fallbackRequestedCode
+  const codeChangeRelativePath = codeChangeFilePath
+    ? normalizeKCLFileDeletePath(
+        fsZds.relative(projectPath, codeChangeFilePath)
+      )
+    : undefined
+  const patchChangesCodeChangeFile = Boolean(
+    codeChangeRelativePath &&
+      patch.changed_files?.some(
+        (file) =>
+          normalizeKCLFileDeletePath(file.path) === codeChangeRelativePath
+      )
+  )
+
+  return {
+    codeChangeFilePath,
+    codeChangeRelativePath,
+    codeChangeRequestedCode,
+    patchChangesCodeChangeFile,
+  }
 }
 
 type PendingZookeeperHistory = {

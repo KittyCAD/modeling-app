@@ -924,7 +924,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             subRoute: input.requestedSubRoute || '',
             shouldNavigate,
             ...(shouldNavigate && input.onSuccess
-              ? { onNavigationComplete: input.onSuccess }
+              ? { onProjectLoaderComplete: input.onSuccess }
               : {}),
           }
         }

@@ -16,7 +16,15 @@ type TestGlobalEffect = {
   after: string
 }
 
-function createHistoryTestHarness() {
+type HistoryTestHarnessOptions = {
+  initialDoc?: string
+  onApplyGlobalEffect?: (effect: TestGlobalEffect) => void
+}
+
+function createHistoryTestHarness({
+  initialDoc = '',
+  onApplyGlobalEffect,
+}: HistoryTestHarnessOptions = {}) {
   const globalEffect = StateEffect.define<TestGlobalEffect>()
   const initialGlobalEffect = Annotation.define<boolean>()
   const historyView = new HistoryView([
@@ -30,9 +38,25 @@ function createHistoryTestHarness() {
           })
         )
     ),
+    EditorView.updateListener.of((update) => {
+      if (!onApplyGlobalEffect) {
+        return
+      }
+
+      for (const transaction of update.transactions) {
+        if (transaction.annotation(initialGlobalEffect)) {
+          continue
+        }
+        for (const effect of transaction.effects) {
+          if (effect.is(globalEffect)) {
+            onApplyGlobalEffect(effect.value)
+          }
+        }
+      }
+    }),
   ])
   const localView = new EditorView({
-    doc: '',
+    doc: initialDoc,
     extensions: [createHistoryExtension(), localHistoryTarget.of([])],
   })
   historyView.registerLocalHistoryTarget(localView)
@@ -51,7 +75,7 @@ function createHistoryTestHarness() {
       return after
     }
 
-    const historyMarker = historyView.recordGlobalEventForLocalTransaction({
+    const historyMarker = historyView.recordGlobalRedoEventForLocalTransaction({
       effects: globalEffect.of({ before, after }),
       annotations: [initialGlobalEffect.of(true)],
     })
@@ -66,11 +90,24 @@ function createHistoryTestHarness() {
     return after
   }
 
-  return { historyView, localView, applyAction }
+  const destroy = () => {
+    historyView.destroy()
+    localView.destroy()
+  }
+
+  return {
+    historyView,
+    localView,
+    applyAction,
+    destroy,
+    globalEffect,
+    initialGlobalEffect,
+  }
 }
 
 function expectFullUndoRedoCycle(actions: TestHistoryAction[], cycles = 1) {
-  const { historyView, localView, applyAction } = createHistoryTestHarness()
+  const { historyView, localView, applyAction, destroy } =
+    createHistoryTestHarness()
   const states = ['']
   for (const action of actions) states.push(applyAction(action))
 
@@ -88,7 +125,7 @@ function expectFullUndoRedoCycle(actions: TestHistoryAction[], cycles = 1) {
     expect(historyView.redo(localView)).toBe(false)
   }
 
-  localView.destroy()
+  destroy()
 }
 
 describe('HistoryView', () => {
@@ -164,7 +201,8 @@ describe('HistoryView', () => {
   )
 
   it('clears the redo branch after a new manual edit', () => {
-    const { historyView, localView, applyAction } = createHistoryTestHarness()
+    const { historyView, localView, applyAction, destroy } =
+      createHistoryTestHarness()
     applyAction({ kind: 'zookeeper', label: 'z1' })
     applyAction({ kind: 'manual', label: 'm1' })
     applyAction({ kind: 'zookeeper', label: 'z2' })
@@ -184,11 +222,12 @@ describe('HistoryView', () => {
     expect(localView.state.doc.toString()).toBe('|z1')
     expect(historyView.undo(localView)).toBe(true)
     expect(localView.state.doc.toString()).toBe('')
-    localView.destroy()
+    destroy()
   })
 
   it('clears the redo branch after a new Zookeeper edit', () => {
-    const { historyView, localView, applyAction } = createHistoryTestHarness()
+    const { historyView, localView, applyAction, destroy } =
+      createHistoryTestHarness()
     applyAction({ kind: 'manual', label: 'm1' })
     applyAction({ kind: 'zookeeper', label: 'z1' })
     applyAction({ kind: 'manual', label: 'm2' })
@@ -207,7 +246,7 @@ describe('HistoryView', () => {
     expect(localView.state.doc.toString()).toBe('|m1')
     expect(historyView.undo(localView)).toBe(true)
     expect(localView.state.doc.toString()).toBe('')
-    localView.destroy()
+    destroy()
   })
 
   it('redoes a global edit before later manual edits', () => {
@@ -283,38 +322,28 @@ describe('HistoryView', () => {
     expect(historyView.redo(localView)).toBe(true)
     expect(localView.state.doc.toString()).toBe('zk manual-1 manual-2')
 
+    historyView.destroy()
     localView.destroy()
   })
 
   it('locks mixed history and restores both pointers after a failed global undo', () => {
-    const historyEffect = StateEffect.define<number>()
-    const ignoreEffect = Annotation.define<boolean>()
     let appliedGlobalValue = 0
 
-    const historyView = new HistoryView([
-      invertedEffects.of((transaction) =>
-        transaction.effects
-          .filter((effect) => effect.is(historyEffect))
-          .map((effect) => historyEffect.of(-effect.value))
-      ),
-      EditorView.updateListener.of((update) => {
-        for (const transaction of update.transactions) {
-          if (transaction.annotation(ignoreEffect)) continue
-          for (const effect of transaction.effects) {
-            if (effect.is(historyEffect)) appliedGlobalValue += effect.value
-          }
-        }
-      }),
-    ])
-    const localView = new EditorView({
-      doc: '',
-      extensions: [createHistoryExtension(), localHistoryTarget.of([])],
+    const {
+      historyView,
+      localView,
+      globalEffect,
+      initialGlobalEffect,
+      destroy,
+    } = createHistoryTestHarness({
+      onApplyGlobalEffect: (effect) => {
+        appliedGlobalValue += effect.after === 'global' ? 1 : -1
+      },
     })
-    historyView.registerLocalHistoryTarget(localView)
 
     historyView.dispatch({
-      effects: historyEffect.of(1),
-      annotations: [ignoreEffect.of(true)],
+      effects: globalEffect.of({ before: '', after: 'global' }),
+      annotations: [initialGlobalEffect.of(true)],
     })
     localView.dispatch({
       changes: { from: 0, insert: 'manual edit' },
@@ -338,6 +367,6 @@ describe('HistoryView', () => {
     expect(historyView.undo(localView)).toBe(true)
     expect(appliedGlobalValue).toBe(-1)
 
-    localView.destroy()
+    destroy()
   })
 })

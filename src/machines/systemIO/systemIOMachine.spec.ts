@@ -199,7 +199,7 @@ describe('systemIOMachine - XState', () => {
                   fileName: input.requestedFileNameWithExtension,
                   subRoute: '',
                   shouldNavigate: true,
-                  onNavigationComplete: input.onSuccess,
+                  onProjectLoaderComplete: input.onSuccess,
                 })),
               [SystemIOMachineActors.readFoldersFromProjectDirectory]:
                 fromPromise(async () => [] as Project[]),
@@ -234,7 +234,7 @@ describe('systemIOMachine - XState', () => {
 
         expect(onSuccess).not.toHaveBeenCalled()
         expect(
-          actor.getSnapshot().context.requestedFileName.onNavigationComplete
+          actor.getSnapshot().context.requestedFileName.onProjectLoaderComplete
         ).toBe(onSuccess)
         actor.stop()
       })

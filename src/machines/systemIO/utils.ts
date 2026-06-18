@@ -141,7 +141,7 @@ export type SystemIOContext = SystemIOInput & {
     project: string
     file: string
     subRoute?: string
-    onNavigationComplete?: () => void
+    onProjectLoaderComplete?: () => void
   }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }

@@ -587,6 +587,12 @@ export class ZDSProject {
     return Promise.all(this.files.map((f) => f.asRustApiFile()))
   }
 
+  /**
+   * Keep Rust's project file registry aligned while Zookeeper history replay
+   * applies create/update/delete changes directly to the browser file system.
+   * Normal editor writes only touch the active file, so replay needs this
+   * explicit multi-file synchronization path.
+   */
   async syncReplayedFilesToRust(
     replayFiles: readonly {
       absolutePath: string
@@ -1073,6 +1079,11 @@ export class KclManager extends File {
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  /**
+   * Zookeeper needs to record history against the editor state captured before
+   * its file writes land, so file watchers must not reload the active editor
+   * while the pending history entry is being assembled.
+   */
   public zookeeperHistoryRecordingInProgress = false
   /**
     Indicator Promise that is pending while a live write is happening.
@@ -1604,6 +1615,12 @@ export class KclManager extends File {
     1000
   )
 
+  /**
+   * `EditorView.setState` bypasses the usual editor update effects. After
+   * restoring a captured state for Zookeeper history, manually resync the
+   * manager state, recovery snapshot, Rust file contents, and deferred
+   * execution that ordinary editor writes would have triggered.
+   */
   private refreshRestoredEditorStateAfterFileSwitch(code: string) {
     this._code.value = code
     this._hasEditsSinceLastExecution.value = !isCodeTheSame(
@@ -2704,6 +2721,11 @@ export class KclManager extends File {
   captureEditorHistoryState(): EditorState {
     return this._editorView.state
   }
+  /**
+   * Restore a previously captured CodeMirror state so a Zookeeper edit can be
+   * recorded on top of the user's original local undo stack after project
+   * refreshes or file switches have recreated the editor.
+   */
   restoreEditorHistoryState(state: EditorState) {
     this._editorView.setState(state)
     this.updateHistoryDepth(state)
@@ -2972,6 +2994,13 @@ export class KclManager extends File {
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
     this._globalHistoryView.dispatch(spec)
   }
+  /**
+   * Record a project-level Zookeeper event while also adding the active-file
+   * code change to CodeMirror's local history. When the editor already shows
+   * the requested code, we first seed the previous text without history so the
+   * following update produces a normal local undo step paired with the global
+   * history marker.
+   */
   addGlobalHistoryEventWithCodeChange(
     spec: TransactionSpecNoChanges,
     code: string,
@@ -2993,7 +3022,7 @@ export class KclManager extends File {
     }
 
     const globalHistoryEffect =
-      this._globalHistoryView.recordGlobalEventForLocalTransaction(spec)
+      this._globalHistoryView.recordGlobalRedoEventForLocalTransaction(spec)
     this.updateCodeEditor(
       code,
       {
@@ -3015,19 +3044,19 @@ export class KclManager extends File {
   redo() {
     this._globalHistoryView.redo(this._editorView)
   }
-  synchronizeLocalHistoryAfterExternalGlobalRedo() {
+  synchronizeLocalHistoryAfterDirectGlobalRedo() {
     if (!this.restoredEditorHistoryOnLastFileSwitch) {
       return false
     }
     this.restoredEditorHistoryOnLastFileSwitch = false
-    return this._globalHistoryView.synchronizeLocalHistoryAfterExternalGlobalRedo()
+    return this._globalHistoryView.synchronizeLocalHistoryAfterDirectGlobalRedo()
   }
-  synchronizeLocalHistoryAfterExternalGlobalUndo() {
+  synchronizeLocalHistoryAfterDirectGlobalUndo() {
     if (!this.restoredEditorHistoryOnLastFileSwitch) {
       return false
     }
     this.restoredEditorHistoryOnLastFileSwitch = false
-    return this._globalHistoryView.synchronizeLocalHistoryAfterExternalGlobalUndo()
+    return this._globalHistoryView.synchronizeLocalHistoryAfterDirectGlobalUndo()
   }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()

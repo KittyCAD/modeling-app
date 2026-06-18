@@ -81,6 +81,12 @@ export class HistoryView {
     })
   }
 
+  destroy() {
+    this.historyChangedListeners.clear()
+    this.localHistoryTargetView = undefined
+    this.editorView.destroy()
+  }
+
   private static doNotForward = Annotation.define<boolean>()
 
   registerLocalHistoryTarget(target: EditorView) {
@@ -137,7 +143,12 @@ export class HistoryView {
     })
   }
 
-  recordGlobalEventForLocalTransaction(spec: TransactionSpecNoChanges) {
+  /**
+   * Record a global redo point before applying the paired local transaction.
+   * The local transaction stores this returned marker so later local undo/redo
+   * commands can replay the already-recorded global effect in the same order.
+   */
+  recordGlobalRedoEventForLocalTransaction(spec: TransactionSpecNoChanges) {
     this.dispatch(spec, { shouldForwardToLocalHistory: false })
     return globalHistoryRequest.of({
       historySource: this.editorView,
@@ -207,7 +218,12 @@ export class HistoryView {
     return restoredLocal || undo(this.editorView)
   }
 
-  synchronizeLocalHistoryAfterExternalGlobalRedo() {
+  /**
+   * Replay the local redo marker after a direct global redo has already run.
+   * This is used when restoring a captured local editor state around a file
+   * switch; the local stack must catch up without echoing the global redo.
+   */
+  synchronizeLocalHistoryAfterDirectGlobalRedo() {
     if (!this.localHistoryTargetView) {
       return false
     }
@@ -220,7 +236,12 @@ export class HistoryView {
     return restored
   }
 
-  synchronizeLocalHistoryAfterExternalGlobalUndo() {
+  /**
+   * Replay the local undo marker after a direct global undo has already run.
+   * This is used when restoring a captured local editor state around a file
+   * switch; the local stack must catch up without echoing the global undo.
+   */
+  synchronizeLocalHistoryAfterDirectGlobalUndo() {
     if (!this.localHistoryTargetView) {
       return false
     }

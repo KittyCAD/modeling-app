@@ -10,19 +10,19 @@ import {
 export type ZookeeperCreatedPatchFile = {
   path: string
   status: 'created'
-  contents?: string | null
+  contents?: string
 }
 
 export type ZookeeperModifiedPatchFile = {
   path: string
   status: 'modified'
-  diff?: string | null
+  diff?: string
 }
 
 export type ZookeeperDeletedPatchFile = {
   path: string
   status: 'deleted'
-  previous_contents?: string | null
+  previous_contents?: string
 }
 
 export type ZookeeperEditPatchFile =
@@ -95,10 +95,22 @@ export function mergeZookeeperEditPatches(
   }
 }
 
+/**
+ * Normalize streamed Zookeeper patch paths to project-relative POSIX-style
+ * paths. This only strips leading "./" path segments, so dotfile names such
+ * as ".gitignore" are preserved.
+ */
 export function normalizeZookeeperPatchPath(path: string) {
   return path.replaceAll('\\', '/').replace(/^(?:\.\/)+/, '')
 }
 
+/**
+ * Merge streamed patch entries for one path into the aggregate patch for a run.
+ * Zookeeper currently streams modified-file diffs cumulatively from the file's
+ * original contents, so the latest modified diff replaces the earlier one. If
+ * the API starts sending incremental diffs, this branch must compose patches
+ * instead.
+ */
 function mergeZookeeperEditPatchFile(
   previousFile: ZookeeperEditPatchFile,
   nextFile: ZookeeperEditPatchFile
@@ -160,10 +172,6 @@ function mergeZookeeperEditPatchFile(
   }
 
   if (previousFile.status === 'modified' && nextFile.status === 'modified') {
-    // Zookeeper streams each modified-file diff cumulatively from the original
-    // file contents for the run, so the latest diff supersedes earlier diffs.
-    // If the API starts sending incremental diffs instead, this merge path must
-    // compose patches rather than replacing the previous one.
     return nextFile
   }
 
