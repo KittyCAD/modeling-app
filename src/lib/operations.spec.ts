@@ -109,6 +109,43 @@ function pathArtifact(id: string): Artifact {
   }
 }
 
+function sweepArtifact(id: string, pathId: string): Artifact {
+  return {
+    type: 'sweep',
+    id,
+    subType: 'extrusion',
+    pathId,
+    surfaceIds: [],
+    edgeIds: [],
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+    trajectoryId: null,
+    method: 'new',
+    consumed: false,
+    patternIds: [],
+  }
+}
+
+function capArtifact(id: string, sweepId: string): Artifact {
+  return {
+    type: 'cap',
+    id,
+    subType: 'end',
+    sweepId,
+    pathIds: [],
+    edgeCutEdgeIds: [],
+    faceCodeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+    cmdId: '',
+  }
+}
+
 function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
   return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
@@ -408,6 +445,64 @@ describe('operations.test.ts', () => {
       }
       expect(result.data.name).toBe('Extrude')
       expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
+    })
+  })
+
+  describe('Sweep edit flow', () => {
+    it('retrieves tagged cap profiles in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'sweep001 = sweep(capEnd001, path = profile002)'
+      const operation = stdlib('sweep')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'TagIdentifier',
+          value: 'capEnd001',
+          artifact_id: 'cap-id',
+        },
+        sourceRange: rangeOfText(code, 'capEnd001'),
+      }
+      operation.labeledArgs = {
+        path: {
+          value: {
+            type: 'Sketch',
+            value: { artifactId: 'trajectory-path-id' },
+          },
+          sourceRange: rangeOfText(code, 'profile002'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          pathArtifact('source-path-id'),
+          sweepArtifact('sweep-id', 'source-path-id'),
+          capArtifact('cap-id', 'sweep-id'),
+          pathArtifact('trajectory-path-id'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
+        path?: { graphSelections: Array<{ artifact?: Artifact }> }
+      }
+      expect(result.data.name).toBe('Sweep')
+      expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
+        'cap'
+      )
+      expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
+        'path'
+      )
     })
   })
 
