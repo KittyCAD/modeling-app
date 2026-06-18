@@ -49,7 +49,7 @@ pub enum TransportCreationError {}
 /// 2. wasm in the browser sandbox, using wasm-bindgen to get a handle for
 /// sending and receiving data over the websocket.
 #[async_trait::async_trait]
-pub trait EngineTransport {
+pub trait EngineTransport: Send + Sync + 'static {
     async fn inner_fire_modeling_cmd(
         &self,
         cmd_id: uuid::Uuid,
@@ -61,7 +61,46 @@ pub trait EngineTransport {
     async fn close(self) -> Result<(), TransportCloseError>;
 }
 
-mod wasm_transport {
+pub mod mock_transport {
+    use crate::SourceRange;
+    use crate::errors::KclError;
+
+    use kcmc::websocket::WebSocketRequest;
+    use kittycad_modeling_cmds as kcmc;
+    use uuid::Uuid;
+
+    use super::{EngineTransport, TransportCloseError};
+
+    use std::collections::HashMap;
+
+    /// Doesn't actually connect to the engine.
+    pub struct MockTransport;
+
+    impl MockTransport {
+        pub fn new() -> Self {
+            Self
+        }
+    }
+
+    #[async_trait::async_trait]
+    impl EngineTransport for MockTransport {
+        async fn inner_fire_modeling_cmd(
+            &self,
+            _cmd_id: Uuid,
+            _source_range: SourceRange,
+            _cmd: WebSocketRequest,
+            _id_to_source_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<(), KclError> {
+            Ok(())
+        }
+
+        async fn close(self) -> Result<(), TransportCloseError> {
+            Ok(())
+        }
+    }
+}
+
+pub mod wasm_transport {
     use crate::SourceRange;
     use crate::errors::KclError;
 
@@ -95,7 +134,7 @@ mod wasm_transport {
     }
 }
 
-mod ws_transport {
+pub mod ws_transport {
     use crate::SourceRange;
     use crate::errors::KclError;
     use crate::errors::KclErrorDetails;
@@ -110,7 +149,6 @@ mod ws_transport {
     use anyhow::anyhow;
     use futures::SinkExt;
     use futures::StreamExt;
-    use indexmap::IndexMap;
     use kcmc::ModelingCmd;
     use kcmc::websocket::BatchResponse;
     use kcmc::websocket::FailureWebSocketResponse;
@@ -198,7 +236,20 @@ mod ws_transport {
 
     impl WebSocketTransport {
         /// Start a long-lived actor that reads from
-        async fn spawn(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Result<Self, TransportCreationError> {
+        pub async fn spawn(
+            // Passed via UnifiedConnection from elsewhere
+            ws: reqwest::Upgraded,
+            heartbeats: Option<u64>,
+
+            // Created by UnifiedConnection
+            response_information: ResponseInformation,
+            shutdown_tx: mpsc::Sender<()>,
+            session_data: Arc<RwLock<Option<ModelingSessionData>>>,
+            pending_errors: Arc<RwLock<Vec<String>>>,
+            socket_health: Arc<RwLock<SocketHealth>>,
+            debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
+            shutdown_rx: mpsc::Receiver<()>,
+        ) -> Self {
             let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
                 // 4294967296 bytes, which is around 4.2 GB.
                 .max_message_size(Some(usize::MAX))
@@ -213,7 +264,6 @@ mod ws_transport {
 
             let (tcp_write, tcp_read) = ws_stream.split();
             let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
-            let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
             tokio::task::spawn(Self::start_write_actor(
                 tcp_write,
                 engine_req_rx,
@@ -223,19 +273,17 @@ mod ws_transport {
 
             let mut tcp_read = TcpRead { stream: tcp_read };
 
-            let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
-            let session_data2 = session_data.clone();
-            let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> =
-                Arc::new(RwLock::new(IndexMap::new()));
-            let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
-            let pending_errors = Arc::new(RwLock::new(Vec::new()));
-            let pending_errors_clone = pending_errors.clone();
-            let response_information = ResponseInformation {
-                responses: Arc::new(RwLock::new(IndexMap::new())),
-            };
-            let response_information_cloned = response_information.clone();
-            let debug_info = Arc::new(RwLock::new(None));
-            let debug_info_cloned = debug_info.clone();
+            // let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
+            // let session_data2 = session_data.clone();
+            // let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> =
+            //     Arc::new(RwLock::new(IndexMap::new()));
+            // let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+            // let pending_errors = Arc::new(RwLock::new(Vec::new()));
+            // let pending_errors_clone = pending_errors.clone();
+            // let response_information = ResponseInformation {
+            //     responses: Arc::new(RwLock::new(IndexMap::new())),
+            // };
+            // let debug_info = Arc::new(RwLock::new(None));
 
             let socket_health_tcp_read = socket_health.clone();
             let tcp_read_handle = tokio::spawn(async move {
@@ -260,7 +308,7 @@ mod ws_transport {
                                             BatchResponse::Success { response } => {
                                                 // If the id is in our ids of async commands, remove
                                                 // it.
-                                                response_information_cloned
+                                                response_information
                                                     .add(
                                                         id,
                                                         WebSocketResponse::Success(SuccessWebSocketResponse {
@@ -274,7 +322,7 @@ mod ws_transport {
                                                     .await;
                                             }
                                             BatchResponse::Failure { errors } => {
-                                                response_information_cloned
+                                                response_information
                                                     .add(
                                                         id,
                                                         WebSocketResponse::Failure(FailureWebSocketResponse {
@@ -292,7 +340,7 @@ mod ws_transport {
                                     resp: OkWebSocketResponseData::ModelingSessionData { session },
                                     ..
                                 }) => {
-                                    let mut sd = session_data2.write().await;
+                                    let mut sd = session_data.write().await;
                                     sd.replace(session.clone());
                                     logln!("API Call ID: {}", session.api_call_id);
                                 }
@@ -302,7 +350,7 @@ mod ws_transport {
                                     errors,
                                 }) => {
                                     if let Some(id) = request_id {
-                                        response_information_cloned
+                                        response_information
                                             .add(
                                                 *id,
                                                 WebSocketResponse::Failure(FailureWebSocketResponse {
@@ -314,7 +362,7 @@ mod ws_transport {
                                             .await;
                                     } else {
                                         // Add it to our pending errors.
-                                        let mut pe = pending_errors_clone.write().await;
+                                        let mut pe = pending_errors.write().await;
                                         for error in errors {
                                             if !pe.contains(&error.message) {
                                                 pe.push(error.message.clone());
@@ -327,14 +375,14 @@ mod ws_transport {
                                     resp: debug @ OkWebSocketResponseData::Debug { .. },
                                     ..
                                 }) => {
-                                    let mut handle = debug_info_cloned.write().await;
+                                    let mut handle = debug_info.write().await;
                                     *handle = Some(debug.clone());
                                 }
                                 _ => {}
                             }
 
                             if let Some(id) = id {
-                                response_information_cloned.add(id, ws_resp.clone()).await;
+                                response_information.add(id, ws_resp.clone()).await;
                             }
                         }
                         Err(e) => {
@@ -350,14 +398,14 @@ mod ws_transport {
                     }
                 }
             });
-            Ok(Self {
-                engine_req_tx,
+            Self {
                 shutdown_tx,
+                socket_health,
+                engine_req_tx,
                 tcp_read_handle: Arc::new(TcpReadHandle {
                     handle: Arc::new(tcp_read_handle),
                 }),
-                socket_health,
-            })
+            }
         }
 
         async fn inner_send_to_engine_binary(
@@ -516,17 +564,24 @@ mod ws_transport {
 
 /// Information about the responses from the engine.
 #[derive(Clone, Debug)]
-struct ResponseInformation {
+pub struct ResponseInformation {
     /// The responses from the engine.
     responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
 }
 
 impl ResponseInformation {
+    /// Basic constructor.
+    pub fn new(responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>) -> Self {
+        Self { responses }
+    }
+
+    /// Add a new response from the engine.
     pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
         self.responses.write().await.insert(id, response);
     }
 }
 
+#[derive(bon::Builder)]
 pub struct UnifiedConnection {
     // Replaces `engine_req_tx: mpsc::Sender<ToEngineReq>`
     // from the original native connection type.
@@ -538,12 +593,15 @@ pub struct UnifiedConnection {
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
+    #[builder(default)]
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
+    #[builder(default)]
     stats: EngineStats,
 
+    #[builder(default)]
     async_tasks: AsyncTasks,
 
     debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
@@ -566,17 +624,86 @@ impl std::fmt::Debug for UnifiedConnection {
 }
 
 impl UnifiedConnection {
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
+        use crate::engine::conn_unified::ws_transport::WebSocketTransport;
+
+        let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
+        let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let pending_errors = Arc::new(RwLock::new(Vec::new()));
+        let responses = ResponseInformation {
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+        };
+        let debug_info = Arc::new(RwLock::new(None));
+        let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
+
+        let transport = WebSocketTransport::spawn(
+            ws,
+            heartbeats,
+            responses.clone(),
+            shutdown_tx.clone(),
+            Arc::clone(&session_data),
+            Arc::clone(&pending_errors),
+            Arc::clone(&socket_health),
+            Arc::clone(&debug_info),
+            shutdown_rx,
+        )
+        .await;
+
+        Self {
+            transport: Arc::new(Box::new(transport)),
+            shutdown_tx,
+            responses,
+            pending_errors,
+            socket_health,
+            ids_of_async_commands,
+            default_planes: Default::default(),
+            session_data,
+            stats: Default::default(),
+            async_tasks: Default::default(),
+            debug_info,
+        }
+    }
+
+    /// Mock connection that doesn't actually connect to anything.
+    /// Used for testing.
+    pub fn new_mock() -> Self {
+        let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
+        let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let pending_errors = Arc::new(RwLock::new(Vec::new()));
+        let responses = ResponseInformation {
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+        };
+        let debug_info = Arc::new(RwLock::new(None));
+        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
+        Self {
+            transport: Arc::new(Box::new(mock_transport::MockTransport::new())),
+            shutdown_tx,
+            responses,
+            pending_errors,
+            socket_health,
+            ids_of_async_commands,
+            default_planes: Default::default(),
+            session_data,
+            stats: Default::default(),
+            async_tasks: Default::default(),
+            debug_info,
+        }
+    }
+
     /// Take the ids of async commands that have accumulated so far and clear them.
     async fn take_ids_of_async_commands(&self) -> IndexMap<Uuid, SourceRange> {
         std::mem::take(&mut *self.ids_of_async_commands().write().await)
     }
 
     /// Take the responses that have accumulated so far and clear them.
-    async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
+    pub async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
         std::mem::take(&mut *self.responses().write().await)
     }
 
-    async fn clear_scene(
+    pub async fn clear_scene(
         &self,
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
@@ -605,7 +732,7 @@ impl UnifiedConnection {
     }
 
     /// Ensure a specific async command has been completed.
-    async fn ensure_async_command_completed(
+    pub async fn ensure_async_command_completed(
         &self,
         id: uuid::Uuid,
         source_range: Option<SourceRange>,
@@ -666,7 +793,7 @@ impl UnifiedConnection {
     }
 
     /// Ensure ALL async commands have been completed.
-    async fn ensure_async_commands_completed(&self, batch_context: &EngineBatchContext) -> Result<(), KclError> {
+    pub async fn ensure_async_commands_completed(&self, batch_context: &EngineBatchContext) -> Result<(), KclError> {
         // Check if all async commands have been completed.
         let ids = self.take_ids_of_async_commands().await;
 
@@ -713,7 +840,7 @@ impl UnifiedConnection {
     }
 
     /// Re-run the command to apply the settings.
-    async fn reapply_settings(
+    pub async fn reapply_settings(
         &self,
         batch_context: &EngineBatchContext,
         settings: &crate::ExecutorSettings,
@@ -749,7 +876,7 @@ impl UnifiedConnection {
     }
 
     // Add a modeling command to the batch but don't fire it right away.
-    async fn batch_modeling_cmd(
+    pub async fn batch_modeling_cmd(
         &self,
         batch_context: &EngineBatchContext,
         id: uuid::Uuid,
@@ -772,7 +899,7 @@ impl UnifiedConnection {
     // This allows you to force them all to be added together in the same order.
     // When we are running things in parallel this prevents race conditions that might come
     // if specific commands are run before others.
-    async fn batch_modeling_cmds(
+    pub async fn batch_modeling_cmds(
         &self,
         batch_context: &EngineBatchContext,
         source_range: SourceRange,
@@ -792,7 +919,7 @@ impl UnifiedConnection {
     /// Add a command to the batch that needs to be executed at the very end.
     /// This for stuff like fillets or chamfers where if we execute too soon the
     /// engine will eat the ID and we can't reference it for other commands.
-    async fn batch_end_cmd(
+    pub async fn batch_end_cmd(
         &self,
         batch_context: &EngineBatchContext,
         id: uuid::Uuid,
@@ -811,7 +938,7 @@ impl UnifiedConnection {
     }
 
     /// Send the modeling cmd and wait for the response.
-    async fn send_modeling_cmd(
+    pub async fn send_modeling_cmd(
         &self,
         batch_context: &EngineBatchContext,
         id: uuid::Uuid,
@@ -836,7 +963,7 @@ impl UnifiedConnection {
 
     /// Send the modeling cmd async and don't wait for the response.
     /// Add it to our list of async commands.
-    async fn async_modeling_cmd(
+    pub async fn async_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: SourceRange,
@@ -970,7 +1097,7 @@ impl UnifiedConnection {
     }
 
     /// Force flush the batch queue.
-    async fn flush_batch(
+    pub async fn flush_batch(
         &self,
         batch_context: &EngineBatchContext,
         // Whether or not to flush the end commands as well.
@@ -1248,7 +1375,7 @@ impl UnifiedConnection {
         Ok(())
     }
 
-    async fn clear_queues(&self, batch_context: &EngineBatchContext) {
+    pub async fn clear_queues(&self, batch_context: &EngineBatchContext) {
         batch_context.clear().await;
         self.ids_of_async_commands().write().await.clear();
         self.async_tasks().clear().await;
@@ -1288,7 +1415,7 @@ impl UnifiedConnection {
         self.async_tasks.clone()
     }
 
-    fn stats(&self) -> &EngineStats {
+    pub fn stats(&self) -> &EngineStats {
         &self.stats
     }
 
@@ -1384,11 +1511,11 @@ impl UnifiedConnection {
         )))
     }
 
-    async fn get_session_data(&self) -> Option<ModelingSessionData> {
+    pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.read().await.clone()
     }
 
-    async fn close(&self) {
+    pub async fn close(&self) {
         let _ = self.shutdown_tx.send(()).await;
         loop {
             let guard = self.socket_health.read().await;
@@ -1399,8 +1526,9 @@ impl UnifiedConnection {
     }
 }
 
+/// State of the connection to the engine.
 #[derive(Debug, PartialEq)]
-enum SocketHealth {
+pub enum SocketHealth {
     Active,
     Inactive,
 }

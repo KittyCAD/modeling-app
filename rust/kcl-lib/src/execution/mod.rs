@@ -68,8 +68,10 @@ use crate::NodePath;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
-use crate::engine::EngineManager;
 use crate::engine::GridScaleBehavior;
+use crate::engine::conn_unified;
+#[cfg(not(target_arch = "wasm32"))]
+use crate::engine::conn_unified::UnifiedConnection;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::cache::CacheInformation;
@@ -795,7 +797,7 @@ pub enum ContextType {
 /// as this uses `Arc` under the hood.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
-    pub engine: Arc<Box<dyn EngineManager>>,
+    pub engine: Arc<UnifiedConnection>,
     pub engine_batch: EngineBatchContext,
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
@@ -947,7 +949,7 @@ impl ExecutorSettings {
 impl ExecutorContext {
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
-        engine: Arc<Box<dyn EngineManager>>,
+        engine: Arc<UnifiedConnection>,
         fs: Arc<FileManager>,
         settings: ExecutorSettings,
     ) -> Self {
@@ -974,7 +976,7 @@ impl ExecutorContext {
 
     /// Create a new live executor context from an engine using the local file manager.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_with_engine(engine: Arc<Box<dyn EngineManager>>, settings: ExecutorSettings) -> Self {
+    pub fn new_with_engine(engine: Arc<UnifiedConnection>, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, Arc::new(FileManager::new()), settings)
     }
 
@@ -1004,9 +1006,8 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
-            crate::engine::conn::EngineConnection::new(ws, settings.heartbeats).await?,
-        ));
+        let engine_conn = conn_unified::UnifiedConnection::new_websocket_transport(ws, settings.heartbeats).await;
+        let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
     }
@@ -1019,7 +1020,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(conn_unified::UnifiedConnection::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
@@ -1066,7 +1067,7 @@ impl ExecutorContext {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
+    pub fn new_forwarded_mock(engine: Arc<UnifiedConnection>) -> Self {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
@@ -2174,14 +2175,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
-            |err| {
-                KclError::new_internal(crate::errors::KclErrorDetails::new(
-                    format!("Failed to create mock engine connection: {err}"),
-                    vec![SourceRange::default()],
-                ))
-            },
-        )?)),
+        engine: Arc::new(conn_unified::UnifiedConnection::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
@@ -2312,7 +2306,7 @@ mod tests {
 
         let program = crate::Program::parse_no_errs(main_code).unwrap();
         let ctx = ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(conn_unified::UnifiedConnection::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
@@ -2341,7 +2335,7 @@ mod tests {
         clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_with_engine(
-            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Arc::new(conn_unified::UnifiedConnection::new_mock()),
             Default::default(),
         );
         let program = crate::Program::parse_no_errs(code).unwrap();
@@ -3739,7 +3733,7 @@ solid7 = extrude(r7, length = width)
         clear_mem_cache().await;
 
         let ctx = ExecutorContext::new_with_engine(
-            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Arc::new(conn_unified::UnifiedConnection::new_mock()),
             Default::default(),
         );
         let program = crate::Program::parse_no_errs(

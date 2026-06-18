@@ -90,7 +90,6 @@ mod wasm;
 
 pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
-pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
 pub use errors::CompilationIssue;
@@ -142,6 +141,14 @@ pub use unparser::recast_dir;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::walk_dir;
 
+pub mod engine_connection {
+    pub use crate::engine::conn_unified::EngineTransport;
+    pub use crate::engine::conn_unified::ResponseInformation;
+    pub use crate::engine::conn_unified::SocketHealth;
+    pub use crate::engine::conn_unified::TransportCloseError;
+    pub use crate::engine::conn_unified::UnifiedConnection;
+}
+
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
@@ -167,15 +174,6 @@ pub mod wasm_engine {
     pub use crate::engine::conn_wasm::ResponseContext;
     pub use crate::fs::wasm::FileManager;
     pub use crate::fs::wasm::FileSystemManager;
-}
-
-pub mod mock_engine {
-    pub use crate::engine::conn_mock::EngineConnection;
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub mod native_engine {
-    pub use crate::engine::conn::EngineConnection;
 }
 
 pub mod std_utils {
