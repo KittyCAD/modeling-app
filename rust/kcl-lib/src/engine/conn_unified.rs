@@ -66,6 +66,50 @@ pub trait EngineTransport: Sized {
     async fn close(self) -> Result<(), TransportCloseError>;
 }
 
+mod wasm_transport {
+    use crate::SourceRange;
+    use crate::errors::KclError;
+
+    use kcmc::websocket::WebSocketRequest;
+    use kittycad_modeling_cmds as kcmc;
+    use uuid::Uuid;
+
+    use super::{EngineTransport, TransportCloseError, TransportCreationError};
+
+    use std::collections::HashMap;
+
+    /// Runs inside a web browser's WASM sandbox, using functions from the JavaScript
+    /// engine to transport data to/from the engine.
+    pub struct WasmTransport {}
+
+    #[async_trait::async_trait]
+    impl EngineTransport for WasmTransport {
+        type Requirements = ();
+
+        async fn inner_fire_modeling_cmd(
+            &self,
+            _cmd_id: Uuid,
+            _source_range: SourceRange,
+            _cmd: WebSocketRequest,
+            _id_to_source_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<(), KclError> {
+            todo!()
+        }
+
+        /// Start a long-lived actor that reads from
+        async fn spawn(
+            _requirements: Self::Requirements,
+            _heartbeats: Option<u64>,
+        ) -> Result<Self, TransportCreationError> {
+            todo!()
+        }
+
+        async fn close(self) -> Result<(), TransportCloseError> {
+            todo!()
+        }
+    }
+}
+
 mod ws_transport {
     use crate::SourceRange;
     use crate::errors::KclError;
