@@ -433,10 +433,15 @@ export function addSweep({
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
       : []
+  // `relativeTo` is legacy for new sweep calls; only preserve or update it when
+  // editing existing code that already depends on that argument.
   const relativeToExpr =
     relativeTo && isEditing
       ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
       : []
+  // New sweep calls should explicitly use the current recommended behavior:
+  // version = 2, translateProfileToPath = false, and orientProfilePerpendicular = false.
+  // When editing, omit missing args so old sweep code is not silently upgraded.
   const translateProfileToPathExpr =
     translateProfileToPath !== undefined
       ? [
