@@ -108,3 +108,5 @@ gaugeProfileSketch = sketch(on = XY) {
 gaugeRegion = region(segments = [gaugeProfileSketch.leftOuterEdge])
 hide(gaugeProfileSketch)
 gaugeBody = extrude(gaugeRegion, length = gaugeThickness)
+
+foobar()

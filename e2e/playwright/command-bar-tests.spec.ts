@@ -22,6 +22,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
   |> line(end = [0, 20])
   |> xLine(length = -20)
   |> close()
+
+  foobar()
     `
       )
     })
