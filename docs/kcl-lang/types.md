@@ -52,6 +52,8 @@ The syntax for declaring a tag is `$myTag`. Tags are used for bodies (such as ex
 **Example: Referencing sketch segments and tagging cap faces**
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.17mm, var -0.91mm], end = [var 3.01mm, var -1.57mm])
   line2 = line(start = [var 3.01mm, var -1.57mm], end = [var 3.13mm, var 3.12mm])
