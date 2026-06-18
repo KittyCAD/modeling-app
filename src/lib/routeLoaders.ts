@@ -6,7 +6,6 @@ import fsZds from '@src/lib/fs-zds'
 import { PATHS, getRouterSearchFromRequestUrl } from '@src/lib/paths'
 import { webHomeRouteEnabled } from '@src/lib/routeLoaderUtils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSessionService } from '@src/registry/contracts/projectSession'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
@@ -53,18 +52,18 @@ export const baseLoader =
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
-    const requestedProjectName = fsZds.resolve(
+    const requestedProjectPath = fsZds.resolve(
       settings.settings.app.projectDirectory.current,
       DEFAULT_WEB_PROJECT_NAME
     )
 
     // We have to create and/or navigate to a project on web.
     try {
-      await fsZds.stat(requestedProjectName)
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToProject,
-        data: { requestedProjectName },
-      })
+      await fsZds.stat(requestedProjectPath)
+      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(
+        requestedProjectPath
+      )}`
+      return redirect(fileURLPath + routerSearch)
     } catch {
       await projectSkeletonCreate(
         fsZds.resolve(
@@ -77,7 +76,9 @@ export const baseLoader =
         wasmInstance
       )
 
-      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(requestedProjectName)}`
+      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(
+        requestedProjectPath
+      )}`
       return redirect(fileURLPath + routerSearch)
     }
   }
