@@ -14,8 +14,8 @@ if (typeof process !== 'undefined') {
 }
 
 import { cleanup } from '@testing-library/react'
-import { afterEach } from 'vitest'
 import { Vector2 } from 'three'
+import { afterEach } from 'vitest'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 import { WebSocket } from 'ws'

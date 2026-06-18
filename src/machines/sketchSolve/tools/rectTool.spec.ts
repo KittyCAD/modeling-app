@@ -1,17 +1,15 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createActor, waitFor, fromPromise } from 'xstate'
-import { machine } from '@src/machines/sketchSolve/tools/rectTool'
-import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
-import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
+import { machine } from '@src/machines/sketchSolve/tools/rectTool'
+import type { RectDraftIds } from '@src/machines/sketchSolve/tools/rectUtils'
 import {
-  createSceneGraphDelta,
-  createMockSceneInfra,
-  createMockRustContext,
   createMockKclManager,
+  createMockRustContext,
+  createMockSceneInfra,
+  createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   clearToolSnappingState,
@@ -19,6 +17,8 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 vi.mock('@src/machines/sketchSolve/tools/toolSnappingUtils', () => ({
   clearToolSnappingState: vi.fn(),
@@ -48,7 +48,7 @@ function createTestMachine(mockActors?: {
       modAndSolveFirstClick: fromPromise(
         mockActors?.modAndSolveFirstClick ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
             draft: {
               lineIds: [1, 2, 3, 4],
@@ -164,7 +164,7 @@ describe('rectTool - XState', () => {
 
     it('should pass the first click snap target into rectangle creation', async () => {
       const modAndSolveFirstClick = vi.fn(async () => ({
-        kclSource: { text: 'test' } as SourceDelta,
+        kclSource: { text: 'test' },
         sceneGraphDelta: createSceneGraphDelta([], []),
         draft: {
           lineIds: [1, 2, 3, 4] as [number, number, number, number],

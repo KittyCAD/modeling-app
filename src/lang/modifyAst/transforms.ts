@@ -12,17 +12,25 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getVariableExprsFromSelection,
   resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  Expr,
+  PathToNode,
+  Program,
+  VariableMap,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function addTranslate({
   ast,
@@ -446,16 +454,22 @@ export function addAppearance({
   }
 }
 
-export function addHide({
+type ObjectTransformName = 'hide' | 'delete'
+
+function addObjectTransform({
   ast,
   artifactGraph,
   objects,
   wasmInstance,
+  name,
+  variableIfNewDecl,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
   wasmInstance: ModuleType
+  name: ObjectTransformName
+  variableIfNewDecl?: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -484,13 +498,153 @@ export function addHide({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('hide', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(name, objectsExpr, [])
 
-  // 3. Just push the new function call declaration to the end
+  // 3. Just push the new function call to the end
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    variableIfNewDecl,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addHide({
+  ast,
+  artifactGraph,
+  objects,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addObjectTransform({
+    ast,
+    artifactGraph,
+    objects,
+    wasmInstance,
+    name: 'hide',
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HIDDEN,
+  })
+}
+
+export function addDelete({
+  ast,
+  artifactGraph,
+  objects,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addObjectTransform({
+    ast,
+    artifactGraph,
+    objects,
+    wasmInstance,
+    name: 'delete',
+  })
+}
+
+export function addMirror3D({
+  ast,
+  artifactGraph,
+  variables,
+  bodies,
+  across,
+  nodeToEdit,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  variables: VariableMap
+  bodies: Selections
+  across: Selections
+  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // 2. Prepare unlabeled and labeled arguments
+  const vars = getVariableExprsFromSelection(
+    bodies,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit,
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const isEdgeSelection = across.graphSelections.some(
+    (selection) =>
+      selection.artifact?.type === 'segment' ||
+      selection.artifact?.type === 'sweepEdge' ||
+      selection.artifact?.type === 'edgeCutEdge'
+  )
+  let acrossArg: Expr
+  if (isEdgeSelection) {
+    const result = getAxisExpression(
+      undefined,
+      across,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph,
+      mNodeToEdit
+    )
+    if (err(result)) {
+      return result
+    }
+    modifiedAst = result.modifiedAst
+    acrossArg = result.generatedAxis
+  } else {
+    const result = getPlaneExprFromSelection({
+      ast: modifiedAst,
+      artifactGraph,
+      variables,
+      plane: across,
+      wasmInstance,
+      nodeToEdit: mNodeToEdit,
+    })
+    if (err(result)) {
+      return result
+    }
+    modifiedAst = result.modifiedAst
+    acrossArg = result.expr
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('mirror3d', objectsExpr, [
+    createLabeledArg('across', acrossArg),
+  ])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: mNodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
     wasmInstance,
   })
   if (err(pathToNode)) {

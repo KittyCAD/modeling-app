@@ -118,7 +118,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.openProject('demo-project')
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // end setup, now test hover and selects
       for (const { pos, expectedCode } of cases) {
@@ -202,7 +202,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 1000 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -256,14 +256,12 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
      *
      * To continue to test this workflow, we now enter sketch mode and place a single point before exiting the line tool.
      */
-    const u = await getUtils(page)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, 'sketch001 = startSketchOn(XZ)')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.openDebugPanel()
 
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
     await expect(toolbar.startSketchBtn).toBeVisible()
@@ -318,8 +316,6 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     // select line tool again
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
-    await u.closeDebugPanel()
-
     // Click to continue profile
     await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
     await page.waitForTimeout(100)
@@ -364,7 +360,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     }, bracket)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const line = page.getByText(
       'xLine(length = -shelfMountLength, tag = $seg03)'
@@ -423,7 +419,7 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Two dumb hardcoded screen ratio values
     const [clickOnFace] = scene.makeMouseHelpers(0.6, 0.6, { format: 'ratio' })
@@ -457,7 +453,7 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Two dumb hardcoded screen ratio values
     const [clickOnEdge] = scene.makeMouseHelpers(0.5, 0.6, { format: 'ratio' })

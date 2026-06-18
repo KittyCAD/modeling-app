@@ -1,10 +1,10 @@
-import { isDesktop } from '@src/lib/isDesktop'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
-import type { ActionLibrary } from '@src/lib/layout/types'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
-import { useSignals } from '@preact/signals-react/runtime'
+import type { ActionLibrary } from '@src/lib/layout/types'
 import { layoutActionLibraryValueSpec } from '@src/registry/contracts/layout'
 
 export const useDefaultActionLibrary = () => {

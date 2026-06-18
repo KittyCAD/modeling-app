@@ -1,12 +1,12 @@
-import type { Connection } from '@src/network/connection'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type { SourceRange } from '@src/lang/wasm'
 import type {
   HighlightSetEntity,
   OkModelingCmdResponse,
   RtcSessionDescription,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { SourceRange } from '@src/lang/wasm'
+import type { Connection } from '@src/network/connection'
 
 // Ping/Pong every 1 second
 export const PING_INTERVAL_MS = 1_000
@@ -227,7 +227,7 @@ export function toRTCSessionDescriptionInit(
   return {
     sdp: desc.sdp,
     // Force the type to be one of the valid RTCSdpType values
-    type: desc.type as RTCSdpType,
+    type: desc.type,
   }
 }
 

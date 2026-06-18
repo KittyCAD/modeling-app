@@ -28,43 +28,88 @@ baseThk = 4
 baseMargin = 3 // extra beyond arm reach or body footprint
 baseColor = "#bdbdbd"
 
-// Robust sphere via revolve, following KCL sphere example
-fn sphereByRevolve(@r) {
-  d = r * 2
-  sketch = startSketchOn(XY)
-  profile = startProfile(sketch, at = [-r, 0])
-    |> xLine(length = d)
-    |> arc(angleStart = 0deg, angleEnd = 180deg, radius = r)
-    |> close()
-  return revolve(profile, axis = X, angle = 360deg)
-}
-
 // Stack positions along Z so spheres just touch
 zBottomC = rBottom
 zMiddleC = 2 * rBottom + rMiddle
 zHeadC = 2 * rBottom + 2 * rMiddle + rHead
 
-// Bodies (pure spheres)
-bottom = sphereByRevolve(rBottom)
+// Bodies (pure spheres) — each a half-disk revolved about X
+bottomSketch = sketch(on = XY) {
+  line1 = line(start = [var -40mm, var 0mm], end = [var 40mm, var 0mm])
+  arc2 = arc(start = [var 40mm, var 0mm], end = [var -40mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == rBottom
+}
+bottomRegion = region(segments = [bottomSketch.line1, bottomSketch.arc2])
+hide(bottomSketch)
+bottom = revolve(bottomRegion, axis = X, angle = 360deg)
   |> translate(z = zBottomC)
   |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
 
-middle = sphereByRevolve(rMiddle)
+middleSketch = sketch(on = XY) {
+  line1 = line(start = [var -28mm, var 0mm], end = [var 28mm, var 0mm])
+  arc2 = arc(start = [var 28mm, var 0mm], end = [var -28mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == rMiddle
+}
+middleRegion = region(segments = [middleSketch.line1, middleSketch.arc2])
+hide(middleSketch)
+middle = revolve(middleRegion, axis = X, angle = 360deg)
   |> translate(z = zMiddleC)
   |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
 
-head = sphereByRevolve(rHead)
+headSketch = sketch(on = XY) {
+  line1 = line(start = [var -20mm, var 0mm], end = [var 20mm, var 0mm])
+  arc2 = arc(start = [var 20mm, var 0mm], end = [var -20mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == rHead
+}
+headRegion = region(segments = [headSketch.line1, headSketch.arc2])
+hide(headSketch)
+head = revolve(headRegion, axis = X, angle = 360deg)
   |> translate(z = zHeadC)
   |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
 
 // Buttons on middle (three small spheres along +X/front)
 btnSpacing = rMiddle * 0.6
 btnX = rMiddle * 0.92
-btn1 = sphereByRevolve(buttonR)
+btn1Sketch = sketch(on = XY) {
+  line1 = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+  arc2 = arc(start = [var 3mm, var 0mm], end = [var -3mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == buttonR
+}
+btn1Region = region(segments = [btn1Sketch.line1, btn1Sketch.arc2])
+hide(btn1Sketch)
+btn1 = revolve(btn1Region, axis = X, angle = 360deg)
   |> translate(x = btnX, y = 0, z = zMiddleC + btnSpacing)
-btn2 = sphereByRevolve(buttonR)
+
+btn2Sketch = sketch(on = XY) {
+  line1 = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+  arc2 = arc(start = [var 3mm, var 0mm], end = [var -3mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == buttonR
+}
+btn2Region = region(segments = [btn2Sketch.line1, btn2Sketch.arc2])
+hide(btn2Sketch)
+btn2 = revolve(btn2Region, axis = X, angle = 360deg)
   |> translate(x = btnX, y = 0, z = zMiddleC)
-btn3 = sphereByRevolve(buttonR)
+
+btn3Sketch = sketch(on = XY) {
+  line1 = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+  arc2 = arc(start = [var 3mm, var 0mm], end = [var -3mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == buttonR
+}
+btn3Region = region(segments = [btn3Sketch.line1, btn3Sketch.arc2])
+hide(btn3Sketch)
+btn3 = revolve(btn3Region, axis = X, angle = 360deg)
   |> translate(x = btnX, y = 0, z = zMiddleC - btnSpacing)
 buttons = [btn1, btn2, btn3]
   |> appearance(color = "#000000", roughness = 50, metalness = 0)
@@ -73,9 +118,28 @@ buttons = [btn1, btn2, btn3]
 eyeX = rHead * 0.95
 eyeYOffset = rHead * 0.35
 eyeZ = zHeadC + rHead * 0.15
-eyeL = sphereByRevolve(eyeR)
+eyeLSketch = sketch(on = XY) {
+  line1 = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+  arc2 = arc(start = [var 3mm, var 0mm], end = [var -3mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == eyeR
+}
+eyeLRegion = region(segments = [eyeLSketch.line1, eyeLSketch.arc2])
+hide(eyeLSketch)
+eyeL = revolve(eyeLRegion, axis = X, angle = 360deg)
   |> translate(x = eyeX, y = -eyeYOffset, z = eyeZ)
-eyeRht = sphereByRevolve(eyeR)
+
+eyeRSketch = sketch(on = XY) {
+  line1 = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+  arc2 = arc(start = [var 3mm, var 0mm], end = [var -3mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == eyeR
+}
+eyeRRegion = region(segments = [eyeRSketch.line1, eyeRSketch.arc2])
+hide(eyeRSketch)
+eyeRht = revolve(eyeRRegion, axis = X, angle = 360deg)
   |> translate(x = eyeX, y = eyeYOffset, z = eyeZ)
 eyes = [eyeL, eyeRht]
   |> appearance(color = "#000000", roughness = 50, metalness = 0)
@@ -96,6 +160,7 @@ noseSketch = sketch(on = XZ) {
   horizontal(line2)
 }
 region001 = region(segments = [noseSketch.line1, noseSketch.line2])
+hide(noseSketch)
 nose = revolve(region001, axis = X)
   |> translate(x = rHead * 0.98, y = 0, z = zHeadC)
   |> appearance(color = "#ff7f00", roughness = 40, metalness = 0)
@@ -106,12 +171,14 @@ sketch001 = sketch(on = hatBrimPlane) {
   circle1 = circle(start = [var 26mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region002 = region(segments = [sketch001.circle1])
+hide(sketch001)
 hatBrim = extrude(region002, length = hatBrimThk)
 
 sketch002 = sketch(on = startSketchOn(hatBrim, face = END)) {
   circle1 = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [sketch002.circle1])
+hide(sketch002)
 hat = extrude(region003, length = hatTopH)
   |> appearance(color = "#111111", metalness = 10, roughness = 40)
 
@@ -122,6 +189,7 @@ armCircleR = sketch(on = armSketchR) {
   circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region004 = region(segments = [armCircleR.circle1])
+hide(armCircleR)
 rightArm = extrude(region004, length = armLen)
   |> translate(
        x = 0,
@@ -137,6 +205,7 @@ armCircleL = sketch(on = armSketchL) {
   circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region005 = region(segments = [armCircleL.circle1])
+hide(armCircleL)
 leftArm = extrude(region005, length = armLen)
   |> translate(
        x = 0,
@@ -153,17 +222,24 @@ sketch003 = sketch(on = XY) {
   circle1 = circle(start = [var 71.8mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region006 = region(segments = [sketch003.circle1])
+hide(sketch003)
 baseDisk = extrude(region006, length = -baseThk)
-  |> appearance(color = baseColor, roughness = 70, metalness = 0)
+  |> appearance(
+       color = baseColor,
+       roughness = 70,
+       metalness = 0,
+       opacity = 60,
+     )
 
-bottomWithBase = union([bottom, baseDisk])
-  |> appearance(color = "#ffffff", roughness = 20, metalness = 0)
-
-// Collect parts into a flat array
-parts0 = concat([bottomWithBase, middle, head], items = buttons)
-parts1 = concat(parts0, items = eyes)
-snowmanParts = concat(parts1, items = [nose, hat])
-limbs = [rightArm, leftArm]
-
-concat(snowmanParts, items = limbs)
+// Collect parts into a flat array to be rotated
+[
+  middle,
+  head,
+  buttons,
+  eyes,
+  nose,
+  hat,
+  rightArm,
+  leftArm
+]
   |> rotate(axis = Z, angle = -90deg, global = true)

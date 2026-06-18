@@ -5,12 +5,9 @@ description: Operations executed import_whole_transitive_import.kcl
 {
   "rust/kcl-lib/tests/import_whole_transitive_import/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "part.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "part",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -20,9 +17,6 @@ description: Operations executed import_whole_transitive_import.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -72,6 +66,20 @@ description: Operations executed import_whole_transitive_import.kcl
     }
   ],
   "rust/kcl-lib/tests/import_whole_transitive_import/part.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "bolt",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "VariableDeclaration",
       "name": "thickness",

@@ -14,15 +14,15 @@ import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
-  classifyConstraintSelection,
   type ConstraintToolName,
   type ConstraintToolSelectionMatch,
+  classifyConstraintSelection,
   getConstraintToolConfig,
   getConstraintToolSelectionMatches,
   selectionMatcherMatchesKind,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 
 type HorizontalVerticalPayload =
   | Extract<ApiConstraint, { type: 'Horizontal' }>
@@ -248,26 +248,29 @@ function buildConstraintToolPayloads(
         },
       ]
     case 'midpointConstraintTool': {
-      const midpointPair = toPair(objectSelectionIds)
+      const midpointPair = toPair(selectionIds)
       if (!midpointPair) {
         return null
       }
 
       const [firstId, secondId] = midpointPair
       const pointIsFirst =
-        match.mode.id === 'point-line' || match.mode.id === 'point-arc'
+        match.mode.id === 'point-line' ||
+        match.mode.id === 'origin-line' ||
+        match.mode.id === 'point-arc' ||
+        match.mode.id === 'origin-arc'
+      const point = pointIsFirst ? firstId : secondId
+      const segment = pointIsFirst ? secondId : firstId
+      if (!isNumberSelection(segment)) {
+        return null
+      }
+
       return [
-        pointIsFirst
-          ? {
-              type: 'Midpoint',
-              point: firstId,
-              segment: secondId,
-            }
-          : {
-              type: 'Midpoint',
-              point: secondId,
-              segment: firstId,
-            },
+        {
+          type: 'Midpoint',
+          point: point === ORIGIN_TARGET ? 'ORIGIN' : point,
+          segment,
+        },
       ]
     }
     case 'tangentConstraintTool': {

@@ -1,11 +1,12 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type {
+  Number as ApiNumber,
   ApiObject,
   ApiPoint2d,
   ExistingSegmentCtor,
-  Number as ApiNumber,
   SceneGraphDelta,
   SegmentCtor,
+  SegmentDragAnchor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -27,10 +28,12 @@ import {
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
-  isConstraint,
   isArcLikeSegment,
+  isConstraint,
+  isControlPointSplineSegment,
   isDiameterConstraint,
   isDistanceConstraint,
+  isOwnedLineSegment,
   isPointSegment,
   isRadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -58,13 +61,12 @@ import {
 import {
   type SnappingCandidate,
   allowSnapping,
+  getCoincidentSegmentsForSnapTarget,
   getConstraintsForSnapTarget,
   getObjectIdForSnapTarget,
-  getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import {
   type SelectionBoxVisualState,
   findContainedSegments,
@@ -74,6 +76,7 @@ import {
   removeSelectionBox,
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { Group, type Object3D, Vector2, Vector3 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
@@ -90,6 +93,8 @@ type ConstraintLabelEdit = {
 type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
   constraintLabelEdits: ConstraintLabelEdit[]
+  dragAnchorSegmentIds: number[]
+  dragAnchors: SegmentDragAnchor[]
 }
 
 type ClosestSelectionTarget = {
@@ -207,6 +212,10 @@ function buildSegmentCtorWithDrag({
     return null
   }
 
+  if (isOwnedLineSegment(obj)) {
+    return null
+  }
+
   if (baseCtor.type === 'Point') {
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
@@ -273,12 +282,20 @@ function buildSegmentCtorWithDrag({
       center: newCenter,
       start: newStart,
     }
+  } else if (baseCtor.type === 'ControlPointSpline') {
+    return {
+      type: 'ControlPointSpline',
+      points: baseCtor.points.map((point) =>
+        applyVectorToPoint2D(point, dragVec)
+      ),
+      construction: baseCtor.construction,
+    }
   }
 
   return baseCtor
 }
 
-function buildConstraintLabelPosition(
+function buildApiPoint2d(
   position: Vector2,
   units: NumericSuffix
 ): ApiPoint2d<ApiNumber> {
@@ -292,6 +309,49 @@ function buildConstraintLabelPosition(
       units,
     },
   }
+}
+
+function buildConstraintLabelPosition(
+  position: Vector2,
+  units: NumericSuffix
+): ApiPoint2d<ApiNumber> {
+  return buildApiPoint2d(position, units)
+}
+
+function buildSegmentDragAnchors({
+  draggedEntityId,
+  objects,
+  target,
+  units,
+}: {
+  draggedEntityId: number | null
+  objects: Array<ApiObject>
+  target: Vector2
+  units: NumericSuffix
+}): SegmentDragAnchor[] {
+  if (draggedEntityId === null) {
+    return []
+  }
+
+  const obj = objects[draggedEntityId]
+  if (obj?.kind.type !== 'Segment') {
+    return []
+  }
+
+  if (
+    obj.kind.segment.type !== 'Line' &&
+    obj.kind.segment.type !== 'Arc' &&
+    obj.kind.segment.type !== 'Circle'
+  ) {
+    return []
+  }
+
+  return [
+    {
+      segmentId: draggedEntityId,
+      target: buildApiPoint2d(target, units),
+    },
+  ]
 }
 
 function isConstraintWithDraggableLabel(obj: ApiObject | undefined) {
@@ -645,11 +705,38 @@ function getDragPointSnappingCandidate({
     draggedEntityId,
     sceneGraphDelta.new_graph.objects
   )
+  const excludedPointIds = new Set<number>(coincidentPointIds)
+  const allowedPointIds = new Set<number>()
   const excludedSegmentIds = new Set<number>()
   for (const pointId of coincidentPointIds) {
     const point = sceneGraphDelta.new_graph.objects[pointId]
     if (isPointSegment(point) && point.kind.segment.owner !== null) {
       excludedSegmentIds.add(point.kind.segment.owner)
+    }
+  }
+
+  const ownerId = draggedObject.kind.segment.owner
+  if (ownerId !== null) {
+    const ownerObject = sceneGraphDelta.new_graph.objects[ownerId]
+    if (isControlPointSplineSegment(ownerObject)) {
+      const controls = ownerObject.kind.segment.controls
+      const firstControlId = controls[0]
+      const lastControlId = controls[controls.length - 1]
+      if (draggedEntityId === firstControlId && lastControlId !== undefined) {
+        allowedPointIds.add(lastControlId)
+      } else if (
+        draggedEntityId === lastControlId &&
+        firstControlId !== undefined
+      ) {
+        allowedPointIds.add(firstControlId)
+      }
+
+      ownerObject.kind.segment.controls.forEach((controlId) => {
+        if (!allowedPointIds.has(controlId)) {
+          excludedPointIds.add(controlId)
+        }
+      })
+      excludedSegmentIds.add(ownerObject.id)
     }
   }
 
@@ -663,13 +750,29 @@ function getDragPointSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (candidate.target.type === 'point') {
-          return !coincidentPointIds.includes(candidate.target.id)
+          return (
+            allowedPointIds.has(candidate.target.id) ||
+            !excludedPointIds.has(candidate.target.id)
+          )
         }
 
         const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        if (snapTargetSegmentId === null) {
+          return true
+        }
+
+        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+        const snapTargetOwnerId =
+          (isPointSegment(snapTargetSegment) ||
+            isOwnedLineSegment(snapTargetSegment)) &&
+          snapTargetSegment.kind.segment.owner != null
+            ? snapTargetSegment.kind.segment.owner
+            : null
+
         return (
-          snapTargetSegmentId === null ||
-          !excludedSegmentIds.has(snapTargetSegmentId)
+          !excludedSegmentIds.has(snapTargetSegmentId) &&
+          (snapTargetOwnerId == null ||
+            !excludedSegmentIds.has(snapTargetOwnerId))
         )
       }
     ) ?? null
@@ -1146,7 +1249,9 @@ export function createOnDragCallback({
     version: number,
     sketchId: number,
     segments: Array<ExistingSegmentCtor>,
-    settings: DeepPartial<Configuration>
+    settings: DeepPartial<Configuration>,
+    dragAnchorSegmentIds?: number[],
+    dragAnchors?: SegmentDragAnchor[]
   ) => Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -1301,6 +1406,25 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const dragAnchors = buildSegmentDragAnchors({
+        draggedEntityId: entityUnderCursorId,
+        objects,
+        target: twoD,
+        units,
+      })
+      const dragAnchorIds = new Set(
+        dragAnchors.map((anchor) => anchor.segmentId)
+      )
+      const dragAnchorSegmentIds = Array.from(
+        new Set(
+          [entityUnderCursorId, ...selectedIds].filter(
+            (id): id is number =>
+              id !== null &&
+              objects[id]?.kind.type === 'Segment' &&
+              !dragAnchorIds.has(id)
+          )
+        )
+      )
 
       for (const id of idsToEdit) {
         const obj = objects[id]
@@ -1345,7 +1469,9 @@ export function createOnDragCallback({
         0,
         sketchId,
         segmentsToEdit,
-        settings
+        settings,
+        dragAnchorSegmentIds,
+        dragAnchors
       ).catch((err) => {
         if (!isActiveDragSession()) {
           return null
@@ -1358,13 +1484,23 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
+          let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
           const constraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
               objectsBeforeDrag: objects,
               objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
               units,
+            }).filter(({ constraintId }) => {
+              if (dragAnchors.length === 0) {
+                return true
+              }
+
+              const constraint = objects[constraintId]
+              return (
+                !isRadiusConstraint(constraint) &&
+                !isDiameterConstraint(constraint)
+              )
             })
-          let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
           if (constraintLabelEdits.length > 0) {
             const labelResult = await applyConstraintLabelPreviewEdits({
               result,
@@ -1373,7 +1509,7 @@ export function createOnDragCallback({
               version: 0,
               sketchId,
               settings,
-              anchorSegmentIds: segmentsToEdit.map(({ id }) => id),
+              anchorSegmentIds: dragAnchorSegmentIds,
             }).catch((err) => {
               if (!isActiveDragSession()) {
                 return null
@@ -1395,6 +1531,8 @@ export function createOnDragCallback({
             ...result,
             segmentsToEdit,
             constraintLabelEdits: appliedConstraintLabelEdits,
+            dragAnchorSegmentIds,
+            dragAnchors,
           })
           // Only advance the drag anchor on a valid solve.
           setLastSuccessfulDragFromPoint(twoD.clone())
@@ -1802,15 +1940,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = []
+            constraintLabelEdits: ConstraintLabelEdit[] = [],
+            dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id),
+            dragAnchors: SegmentDragAnchor[] = []
           ) => {
-            const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
             let latestResult = await context.rustContext.editSegments(
               0,
               context.sketchId,
               segmentsToEdit,
               settings,
-              constraintLabelEdits.length === 0
+              constraintLabelEdits.length === 0,
+              dragAnchorSegmentIds,
+              true,
+              dragAnchors
             )
 
             for (const [
@@ -1825,7 +1967,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   labelPosition,
                   settings,
                   index === constraintLabelEdits.length - 1,
-                  anchorSegmentIds
+                  dragAnchorSegmentIds
                 )
             }
 
@@ -1853,7 +1995,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
             if (lastGoodPreview?.segmentsToEdit.length) {
               const recoveredCommit = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                lastGoodPreview.dragAnchorSegmentIds,
+                lastGoodPreview.dragAnchors
               )
 
               if (
@@ -1910,7 +2054,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 },
               ],
               settings,
-              true
+              true,
+              [draggedEntityId]
             )
 
             const axisConstraint = snapConstraints.find(
@@ -2024,7 +2169,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
             if (lastGoodPreview?.segmentsToEdit.length) {
               result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                lastGoodPreview.dragAnchorSegmentIds,
+                lastGoodPreview.dragAnchors
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -2033,6 +2180,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
               )
             } else {
               const objects = currentSceneGraphDelta.new_graph.objects
+              const dragAnchorSegmentIds = Array.from(
+                new Set(
+                  [draggedEntityId, ...snapshot.context.selectedIds]
+                    .filter(isObjectSelectionId)
+                    .filter((id) => objects[id]?.kind.type === 'Segment')
+                )
+              )
               const coincidentClusterPointIds =
                 draggedEntityId !== null
                   ? getCoincidentCluster(draggedEntityId, objects)
@@ -2067,7 +2221,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  true
+                  true,
+                  dragAnchorSegmentIds
                 )
               }
             }
@@ -2126,13 +2281,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
         version: number,
         sketchId: number,
         segments: Array<ExistingSegmentCtor>,
-        settings: DeepPartial<Configuration>
+        settings: DeepPartial<Configuration>,
+        dragAnchorSegmentIds?: number[],
+        dragAnchors?: SegmentDragAnchor[]
       ) => {
         return context.rustContext.editSegments(
           version,
           sketchId,
           segments,
-          settings
+          settings,
+          false,
+          dragAnchorSegmentIds,
+          false,
+          dragAnchors
         )
       },
       editDistanceConstraintLabelPosition: async (
@@ -2150,7 +2311,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           labelPosition,
           settings,
           false,
-          anchorSegmentIds
+          anchorSegmentIds,
+          false
         )
       },
       onNewSketchOutcome: (outcome) => {

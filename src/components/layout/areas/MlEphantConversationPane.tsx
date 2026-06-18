@@ -1,34 +1,34 @@
-import { reportRejection } from '@src/lib/trap'
-import { NIL as uuidNIL } from 'uuid'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { KclManager } from '@src/lang/KclManager'
-import { useEffect, useState, useRef, useCallback } from 'react'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
 import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { reportRejection } from '@src/lib/trap'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
+import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { FileEntry, Project } from '@src/lib/project'
-import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import { useSelector } from '@xstate/react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
+import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
-import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
 
 type MlEphantConversationPaneUser = {
   block_message?: string
@@ -48,6 +48,8 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   sendBillingUpdate: () => void
+  sendBillingUsageStarted: () => void
+  sendBillingUsageEnded: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: MlEphantConversationPaneUser
@@ -83,6 +85,10 @@ export const MlEphantConversationPane = (props: {
   const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.modeOptions
   })
+  const attachmentsLoadedForCurrentPrompt = useSelector(
+    props.mlEphantManagerActor,
+    (actor) => actor.context.attachmentsLoadedForCurrentPrompt
+  )
   const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.defaultMode
   })
@@ -138,8 +144,6 @@ export const MlEphantConversationPane = (props: {
       mode,
       additionalFiles: attachments,
     })
-
-    props.sendBillingUpdate()
   }
 
   const needsReconnect = abruptlyClosed
@@ -154,7 +158,6 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onCancel = () => {
-    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.Cancel,
     })
@@ -187,7 +190,12 @@ export const MlEphantConversationPane = (props: {
     setQueue((prev) => prev.filter((msg) => msg.id !== id))
   }, [])
 
-  const { sendBillingUpdate, mlEphantManagerActor } = props
+  const {
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+    sendBillingUsageStarted,
+    mlEphantManagerActor,
+  } = props
   const onSteer = useCallback(
     (id: string) => {
       // Mark the message to be processed next without reordering the queue.
@@ -196,12 +204,11 @@ export const MlEphantConversationPane = (props: {
       steeredId.current = id
       // Interrupt the current prompt; when the response completes,
       // the auto-submit effect sends the steered message.
-      sendBillingUpdate()
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.Interrupt,
       })
     },
-    [mlEphantManagerActor, sendBillingUpdate]
+    [mlEphantManagerActor]
   )
 
   // Auto-submit the next queued message when current processing completes.
@@ -457,9 +464,6 @@ export const MlEphantConversationPane = (props: {
           return
         }
 
-        // End of processing, trigger a billing update
-        props.sendBillingUpdate()
-
         if (context.conversation !== undefined) {
           return
         }
@@ -495,10 +499,35 @@ export const MlEphantConversationPane = (props: {
   }, [searchParams, setSearchParams])
 
   const userBlockedOnPaymentReason = props.user?.block_message
+  const isLoadingAttachments =
+    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
+  const wasPromptRunningRef = useRef(false)
+
+  useEffect(() => {
+    if (isPromptRunning === wasPromptRunningRef.current) {
+      return
+    }
+
+    wasPromptRunningRef.current = isPromptRunning
+
+    if (isPromptRunning) {
+      sendBillingUsageStarted()
+      return
+    }
+
+    sendBillingUsageEnded()
+    sendBillingUpdate()
+  }, [
+    isPromptRunning,
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+    sendBillingUsageStarted,
+  ])
 
   return (
     <MlEphantConversation
       isLoading={conversation === undefined}
+      isLoadingAttachments={isLoadingAttachments}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}

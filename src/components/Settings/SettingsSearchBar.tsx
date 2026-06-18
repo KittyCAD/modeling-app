@@ -1,20 +1,34 @@
 import { Combobox } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
+import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
 import Fuse from 'fuse.js'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { isDesktop } from '@src/lib/isDesktop'
-import { interactionMap } from '@src/lib/settings/initialKeybindings'
-import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import {
-  hiddenOnPlatform,
   formatSettingsLabel,
+  hiddenOnPlatform,
 } from '@src/lib/settings/settingsUtils'
+import {
+  KEYMAP_SCHEMA_VERSION,
+  type KeymapScope,
+  getKeymapItemScopes,
+  keymapScopesValueSpec,
+  keymapService,
+  keymapValueSpec,
+} from '@src/registry/contracts/keymap'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
+
+interface SettingsSearchBarProps {
+  showPlugins: boolean
+}
 
 export type SettingsSearchItem = {
   name: string
@@ -24,8 +38,20 @@ export type SettingsSearchItem = {
   level: ExtendedSettingsLevel
 }
 
-export function SettingsSearchBar() {
-  const { settings } = useApp()
+export function SettingsSearchBar({ showPlugins }: SettingsSearchBarProps) {
+  useSignals()
+  const { settings, registry } = useApp()
+  const keymap = registry.optional(keymapService)
+  const contributedKeymap = registry.signal(keymapValueSpec).value
+  const persistedKeymap = keymap?.persistedKeymap.value ?? {
+    version: KEYMAP_SCHEMA_VERSION,
+    bindings: [],
+  }
+  const keybindingRows = useMemo(
+    () => getKeybindingRows(contributedKeymap.items, persistedKeymap.bindings),
+    [contributedKeymap.items, persistedKeymap.bindings]
+  )
+  const keymapScopes = registry.signal(keymapScopesValueSpec).value
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
     'Ctrl+.',
@@ -40,8 +66,9 @@ export function SettingsSearchBar() {
   const settingsValues = settings.useSettings()
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
-      ...Object.entries(settingsValues).flatMap(
-        ([category, categorySettings]) =>
+      ...Object.entries(settingsValues)
+        .filter(([category]) => showPlugins || category !== 'plugins')
+        .flatMap(([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {
             const s = setting
             return (['project', 'user'] satisfies SettingsLevel[])
@@ -56,35 +83,41 @@ export function SettingsSearchBar() {
                 level: l,
               }))
           })
-      ),
-      ...Object.entries(interactionMap).flatMap(
-        ([category, categoryKeybindings]) =>
-          categoryKeybindings.map((keybinding) => ({
-            name: keybinding.name,
+        ),
+      ...keybindingRows.map(
+        (keybinding) =>
+          ({
+            name: keybinding.id,
             displayName: keybinding.title,
-            description: keybinding.description,
-            category: category,
-            level: 'keybindings' as ExtendedSettingsLevel,
-          }))
+            description:
+              keybinding.state === 'unbound'
+                ? `Unbound - ${keybinding.command}`
+                : keybinding.command,
+            category: formatKeymapSearchCategory(keybinding, keymapScopes),
+            level: 'keybindings',
+          }) satisfies SettingsSearchItem
       ),
     ],
-    [settingsValues]
+    [settingsValues, keybindingRows, keymapScopes, showPlugins]
   )
-  const [searchResults, setSearchResults] = useState(settingsAsSearchable)
-
-  const fuse = new Fuse(settingsAsSearchable, {
-    keys: ['category', 'displayName', 'description'],
-    includeScore: true,
-  })
-
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setSearchResults(query.length > 0 ? results : settingsAsSearchable)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [query])
+  const fuse = useMemo(
+    () =>
+      new Fuse(settingsAsSearchable, {
+        keys: ['category', 'displayName', 'description'],
+        includeScore: true,
+      }),
+    [settingsAsSearchable]
+  )
+  const searchResults = useMemo(
+    () =>
+      query.length > 0
+        ? fuse.search(query).map((result) => result.item)
+        : settingsAsSearchable,
+    [fuse, query, settingsAsSearchable]
+  )
 
   function handleSelection({ level, name }: SettingsSearchItem) {
-    void navigate(`?tab=${level}#${name}`)
+    void navigate(`?tab=${level}#${encodeURIComponent(name)}`)
   }
 
   return (
@@ -92,14 +125,11 @@ export function SettingsSearchBar() {
       <div className="relative group">
         <div className="flex items-center gap-2 py-0.5 pr-1 pl-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
           <Combobox.Input
+            {...noAutofillInputProps}
             ref={inputRef}
             onChange={(event) => setQuery(event.target.value)}
             className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
             placeholder="Search settings (Ctrl+.)"
-            autoCapitalize="off"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck="false"
             autoFocus
           />
           <CustomIcon
@@ -128,4 +158,17 @@ export function SettingsSearchBar() {
       </div>
     </Combobox>
   )
+}
+
+function formatKeymapSearchCategory(
+  keybinding: Parameters<typeof getKeymapItemScopes>[0],
+  keymapScopes: readonly KeymapScope[]
+) {
+  const keymapScopesById = new Map(
+    keymapScopes.map((scope) => [scope.id, scope.displayName])
+  )
+
+  return getKeymapItemScopes(keybinding)
+    .map((scope) => keymapScopesById.get(scope) ?? formatSettingsLabel(scope))
+    .join(', ')
 }

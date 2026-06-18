@@ -5,18 +5,18 @@ import type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
 
 import { ActionButton } from '@src/components/ActionButton'
+import Loading from '@src/components/Loading'
 import Tooltip from '@src/components/Tooltip'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { VariableMap } from '@src/lang/wasm'
 import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
+import { useSingletons } from '@src/lib/boot'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Suspense, use } from 'react'
-import Loading from '@src/components/Loading'
-import { useSingletons } from '@src/lib/boot'
 
 export const MemoryPaneMenu = () => {
   const { kclManager } = useSingletons()

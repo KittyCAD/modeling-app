@@ -117,6 +117,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => vec![a.source_id],
         }
     }
@@ -258,6 +259,7 @@ impl Artifact {
                 }
                 ids
             }
+            Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => {
                 // Note: Don't include source_id since it's the parent.
                 let mut ids = a.copy_ids.clone();
@@ -277,7 +279,7 @@ impl ArtifactGraph {
         output.push_str("flowchart LR\n");
 
         let mut next_id = 1_u32;
-        let mut stable_id_map = FnvHashMap::default();
+        let mut stable_id_map = AHashMap::default();
 
         for id in self.map.keys() {
             stable_id_map.insert(*id, next_id);
@@ -299,7 +301,7 @@ impl ArtifactGraph {
     fn flowchart_nodes<W: Write>(
         &self,
         output: &mut W,
-        stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> std::fmt::Result {
         // Artifact ID of the path is the key.  The value is a list of
@@ -340,6 +342,7 @@ impl ArtifactGraph {
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_)
+                | Artifact::GdtAnnotation(_)
                 | Artifact::Pattern(_) => false,
             };
             if !grouped {
@@ -538,6 +541,14 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
+            Artifact::GdtAnnotation(annotation) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"GdtAnnotation<br>{:?}\"]",
+                    code_ref_display(&annotation.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &annotation.code_ref)?;
+            }
             Artifact::Pattern(pattern) => {
                 writeln!(
                     output,
@@ -557,7 +568,7 @@ impl ArtifactGraph {
     fn flowchart_edges<W: Write>(
         &self,
         output: &mut W,
-        stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> Result<(), std::fmt::Error> {
         // Mermaid will display two edges in either direction, even using

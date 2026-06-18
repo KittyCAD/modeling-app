@@ -1,14 +1,14 @@
+import { join } from 'path'
 import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import {
   closestPointOnRay,
   deg2Rad,
   isParallel,
   lerp2d,
 } from '@src/lib/utils2d'
-import { join } from 'path'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { expect, describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('test isPointsCW', () => {

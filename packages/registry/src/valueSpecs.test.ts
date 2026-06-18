@@ -1,8 +1,8 @@
 import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it } from 'vitest'
-import { appendValueSpec } from './valueSpec'
 import { defineRegistryItem, provide } from './helpers'
 import { Registry } from './registry'
+import { appendValueSpec } from './valueSpec'
 
 describe('value specs', () => {
   it('orders by precedence', () => {

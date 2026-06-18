@@ -230,6 +230,7 @@ pub enum Segment {
     Line(Line),
     Arc(Arc),
     Circle(Circle),
+    ControlPointSpline(ControlPointSpline),
 }
 
 impl Segment {
@@ -241,6 +242,7 @@ impl Segment {
             Self::Line(_) => "a Line",
             Self::Arc(_) => "an Arc",
             Self::Circle(_) => "a Circle",
+            Self::ControlPointSpline(_) => "a Control Point Spline",
         }
     }
 
@@ -254,6 +256,7 @@ impl Segment {
             Self::Line(l) => l.freedom(&lookup),
             Self::Arc(a) => a.freedom(&lookup),
             Self::Circle(c) => c.freedom(&lookup),
+            Self::ControlPointSpline(s) => s.freedom(&lookup),
         }
     }
 }
@@ -273,6 +276,7 @@ pub enum SegmentCtor {
     Line(LineCtor),
     Arc(ArcCtor),
     Circle(CircleCtor),
+    ControlPointSpline(ControlPointSplineCtor),
 }
 
 impl SegmentCtor {
@@ -284,6 +288,7 @@ impl SegmentCtor {
             Self::Line(_) => "a Line constructor",
             Self::Arc(_) => "an Arc constructor",
             Self::Circle(_) => "a Circle constructor",
+            Self::ControlPointSpline(_) => "a Control Point Spline constructor",
         }
     }
 }
@@ -306,6 +311,9 @@ pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
 pub struct Line {
     pub start: ObjectId,
     pub end: ObjectId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub owner: Option<ObjectId>,
     // Invariant: Line or MidPointLine
     pub ctor: SegmentCtor,
     // The constructor is applicable if changing the values of the constructor will change the rendering
@@ -405,6 +413,36 @@ impl Circle {
 pub struct CircleCtor {
     pub start: Point2d<Expr>,
     pub center: Point2d<Expr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiControlPointSpline")]
+pub struct ControlPointSpline {
+    pub controls: Vec<ObjectId>,
+    pub degree: u32,
+    pub ctor: SegmentCtor,
+    pub ctor_applicable: bool,
+    pub construction: bool,
+}
+
+impl ControlPointSpline {
+    /// Compute the overall freedom of this spline by merging the freedom of its
+    /// control points. Returns `None` if any required point lookup failed.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+        let mut controls = self.controls.iter();
+        let first = lookup(*controls.next()?)?;
+        let merged = controls.try_fold(first, |acc, id| lookup(*id).map(|freedom| acc.merge(freedom)))?;
+        Some(merged)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct ControlPointSplineCtor {
+    pub points: Vec<Point2d<Expr>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub construction: Option<bool>,
@@ -600,7 +638,7 @@ pub struct LinesEqualLength {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Midpoint {
-    pub point: ObjectId,
+    pub point: ConstraintSegment,
     #[serde(alias = "line")]
     pub segment: ObjectId,
 }

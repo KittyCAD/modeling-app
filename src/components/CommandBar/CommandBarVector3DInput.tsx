@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState, useMemo, use } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import toast from 'react-hot-toast'
-import { useApp } from '@src/lib/boot'
-import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import { roundOffWithUnits } from '@src/lib/utils'
-import { isKclCommandValue } from '@src/lib/commandUtils'
 import type { KclManager } from '@src/lang/KclManager'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { roundOffWithUnits } from '@src/lib/utils'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 function CoordinateInput({
   label,
@@ -34,6 +35,7 @@ function CoordinateInput({
         {label}
       </span>
       <input
+        {...noAutofillInputProps}
         ref={inputRef}
         data-testid={testId}
         type="text"
@@ -180,7 +182,7 @@ function CommandBarVector3DInput({
   const zInputRef = useRef<HTMLInputElement>(null)
 
   // Close the command bar
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
+  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
 
   // Focus and select the first input on mount
   useEffect(() => {
@@ -289,6 +291,7 @@ function CommandBarVector3DInput({
 
   return (
     <form
+      {...noAutofillFormProps}
       id="arg-form"
       className="mb-2"
       onSubmit={handleSubmit}

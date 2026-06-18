@@ -14,15 +14,14 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::EdgeRefactorMeta;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::PendingEdgeRefactorMeta;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
@@ -61,6 +60,12 @@ pub(crate) async fn get_face_ids_for_edge(
     edge_id: Uuid,
     args: &Args,
 ) -> Result<Vec<Uuid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        // Return two so that anything that is expecting an edge on a solid
+        // works.
+        return Ok(vec![exec_state.next_uuid(), exec_state.next_uuid()]);
+    }
+
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
@@ -91,6 +96,50 @@ pub(crate) async fn get_face_ids_for_edge(
         )));
     }
     Ok(info.faces.clone())
+}
+
+async fn record_edge_refactor_meta_from_edge_faces(
+    exec_state: &mut ExecState,
+    object_id: Uuid,
+    edge_id: Uuid,
+    known_adjacent_face_id: Uuid,
+    stdlib_fn: EdgeRefactorStdlibFn,
+    args: &Args,
+) -> bool {
+    let Ok(face_ids) = get_face_ids_for_edge(exec_state, object_id, edge_id, args).await else {
+        return false;
+    };
+
+    let face_pair = match face_ids.as_slice() {
+        [a, b] => Some([*a, *b]),
+        [face_id] if *face_id != known_adjacent_face_id => Some([known_adjacent_face_id, *face_id]),
+        _ => None,
+    };
+
+    if let Some(face_ids) = face_pair {
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            source_range: args.source_range,
+            stdlib_fn,
+        });
+        return true;
+    }
+
+    false
+}
+
+fn record_pending_edge_refactor_meta(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    stdlib_fn: EdgeRefactorStdlibFn,
+    args: &Args,
+) {
+    exec_state.record_pending_edge_refactor_meta(PendingEdgeRefactorMeta {
+        edge_id,
+        source_range: args.source_range,
+        stdlib_fn,
+    });
 }
 
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
@@ -159,16 +208,17 @@ async fn inner_get_opposite_edge(
 
     let edge_id = opposite_edge.edge;
 
-    #[cfg(feature = "artifact-graph")]
-    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
-        && let [a, b] = face_ids.as_slice()
+    if !record_edge_refactor_meta_from_edge_faces(
+        exec_state,
+        sketch_id,
+        edge_id,
+        face_id,
+        EdgeRefactorStdlibFn::GetOppositeEdge,
+        &args,
+    )
+    .await
     {
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
-            edge_id,
-            face_ids: [*a, *b],
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::GetOppositeEdge,
-        });
+        record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetOppositeEdge, &args);
     }
     Ok(edge_id)
 }
@@ -229,16 +279,17 @@ async fn inner_get_next_adjacent_edge(
         ))
     })?;
 
-    #[cfg(feature = "artifact-graph")]
-    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
-        && let [a, b] = face_ids.as_slice()
+    if !record_edge_refactor_meta_from_edge_faces(
+        exec_state,
+        sketch_id,
+        edge_id,
+        face_id,
+        EdgeRefactorStdlibFn::GetNextAdjacentEdge,
+        &args,
+    )
+    .await
     {
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
-            edge_id,
-            face_ids: [*a, *b],
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::GetNextAdjacentEdge,
-        });
+        record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetNextAdjacentEdge, &args);
     }
     Ok(edge_id)
 }
@@ -298,16 +349,22 @@ async fn inner_get_previous_adjacent_edge(
         ))
     })?;
 
-    #[cfg(feature = "artifact-graph")]
-    if let Ok(face_ids) = get_face_ids_for_edge(exec_state, sketch_id, edge_id, &args).await
-        && let [a, b] = face_ids.as_slice()
+    if !record_edge_refactor_meta_from_edge_faces(
+        exec_state,
+        sketch_id,
+        edge_id,
+        face_id,
+        EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+        &args,
+    )
+    .await
     {
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        record_pending_edge_refactor_meta(
+            exec_state,
             edge_id,
-            face_ids: [*a, *b],
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
-        });
+            EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+            &args,
+        );
     }
     Ok(edge_id)
 }
@@ -418,7 +475,6 @@ async fn inner_get_common_edge(
         ))
     })?;
 
-    #[cfg(feature = "artifact-graph")]
     exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
         edge_id,
         face_ids: [first_face_id, second_face_id],
@@ -536,6 +592,12 @@ pub(crate) fn parse_edge_specifier_object(
     args: &Args,
 ) -> Result<UnresolvedEdgeSpecifier, KclError> {
     let side_faces = parse_tag_or_uuid_array(obj, "sideFaces", true, args)?;
+    if side_faces.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "sideFaces must be an array of at least one face, but zero were given".to_owned(),
+            vec![args.source_range],
+        )));
+    }
     let end_faces = parse_tag_or_uuid_array(obj, "endFaces", false, args)?;
     let index = parse_edge_specifier_index(obj, args)?;
     Ok(UnresolvedEdgeSpecifier {
@@ -645,8 +707,10 @@ pub(crate) async fn parse_edge_refs_to_references(
     Ok(edge_references)
 }
 
-/// Get the face (surface body) id from the first side_face of an unresolved specifier. Used when building a BoundedEdge from an edge specifier object in blend().
-pub(crate) fn face_id_from_first_side_face(
+/// Get the face (surface body) id from the first side_face of an unresolved
+/// specifier. Used when building a BoundedEdge from an edge specifier object in
+/// blend().
+pub(super) fn face_id_from_first_side_face(
     spec: &UnresolvedEdgeSpecifier,
     exec_state: &mut ExecState,
     args: &Args,
@@ -666,7 +730,7 @@ pub(crate) fn face_id_from_first_side_face(
     }
 }
 
-pub async fn inner_get_bounded_edge_with_id(
+pub(crate) async fn inner_get_bounded_edge_with_id(
     face: Solid,
     edge: EdgeReference,
     lower_bound: Option<TyF64>,
@@ -741,7 +805,7 @@ fn bounds_from_opts(
 }
 
 /// Resolve an unresolved edge specifier (tags/UUIDs) to engine EdgeSpecifier (face UUIDs) for blend. Called from blend().
-pub async fn resolve_unresolved_edge_specifier(
+pub(crate) async fn resolve_unresolved_edge_specifier(
     object_id: Uuid,
     unresolved: &UnresolvedEdgeSpecifier,
     exec_state: &mut ExecState,

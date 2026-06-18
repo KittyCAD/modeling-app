@@ -1,9 +1,9 @@
-import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type {
   MlCopilotServerMessage,
-  ReasoningMessage,
   MlToolResult,
+  ReasoningMessage,
 } from '@kittycad/lib'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 
 const ALPHA = 'abcdefghijklmnopqrstuvwyz     '.split('')
 const EMOJI = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '🥲', '🥹', '☺']

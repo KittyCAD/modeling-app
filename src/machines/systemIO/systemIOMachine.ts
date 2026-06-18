@@ -21,7 +21,7 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, enqueueActions, fromPromise, setup } from 'xstate'
 
 /**
  * /some/dir            = directoryPath
@@ -51,6 +51,10 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.done_readFoldersFromProjectDirectory
           output: Project[]
+        }
+      | {
+          type: SystemIOMachineEvents.setFolders
+          data: { folders: Project[] }
         }
       | {
           type: SystemIOMachineEvents.done_checkReadWrite
@@ -298,7 +302,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_moveRecursiveAndNavigate
-          output: { requestedProjectName: string }
+          output: { requestedProjectName: string; target: string }
         }
       | {
           type: SystemIOMachineEvents.getMlEphantConversations
@@ -341,17 +345,31 @@ export const systemIOMachine = setup({
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
       folders: ({ event }) => {
-        assertEvent(
-          event,
-          SystemIOMachineEvents.done_readFoldersFromProjectDirectory
-        )
-        return event.output
+        assertEvent(event, [
+          SystemIOMachineEvents.done_readFoldersFromProjectDirectory,
+          SystemIOMachineEvents.setFolders,
+        ])
+        return 'output' in event ? event.output : event.data.folders
       },
     }),
     [SystemIOMachineActions.setProjectDirectoryPath]: assign({
       projectDirectoryPath: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
         return event.data.requestedProjectDirectoryPath
+      },
+      folders: ({ context, event }) => {
+        assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
+        return context.projectDirectoryPath ===
+          event.data.requestedProjectDirectoryPath
+          ? context.folders
+          : undefined
+      },
+      hasListedProjects: ({ context, event }) => {
+        assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
+        return context.projectDirectoryPath ===
+          event.data.requestedProjectDirectoryPath
+          ? context.hasListedProjects
+          : false
       },
     }),
     [SystemIOMachineActions.setRequestedProjectName]: assign({
@@ -433,6 +451,20 @@ export const systemIOMachine = setup({
         return event.output
       },
     }),
+    [SystemIOMachineActions.deferSystemIOEvent]: assign({
+      deferredSystemIOEvent: ({ event }) => event,
+    }),
+    [SystemIOMachineActions.flushDeferredSystemIOEvent]: enqueueActions(
+      ({ context, enqueue }) => {
+        if (!context.deferredSystemIOEvent) {
+          return
+        }
+
+        const deferredEvent = context.deferredSystemIOEvent
+        enqueue.assign({ deferredSystemIOEvent: undefined })
+        enqueue.raise(deferredEvent as any)
+      }
+    ),
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -750,6 +782,7 @@ export const systemIOMachine = setup({
           message: '',
           requestedAbsolutePath: '',
           requestedProjectName: '',
+          target: input.target,
         }
       }
     ),
@@ -819,6 +852,8 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    deferredSystemIOEvent: undefined,
+    lastRecursiveMoveTarget: undefined,
     lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
@@ -939,9 +974,118 @@ export const systemIOMachine = setup({
     },
     [SystemIOMachineStates.readingFolders]: {
       on: {
+        [SystemIOMachineEvents.setFolders]: {
+          actions: SystemIOMachineActions.setFolders,
+        },
+        [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
+          target: SystemIOMachineStates.readingFolders,
+          reenter: true,
+        },
+        [SystemIOMachineEvents.setProjectDirectoryPath]: {
+          target: SystemIOMachineStates.checkingReadWrite,
+          actions: [SystemIOMachineActions.setProjectDirectoryPath],
+        },
+        [SystemIOMachineEvents.navigateToProject]: {
+          actions: [SystemIOMachineActions.setRequestedProjectName],
+        },
+        [SystemIOMachineEvents.navigateToFile]: {
+          actions: [SystemIOMachineActions.setRequestedFileName],
+        },
+        [SystemIOMachineEvents.createProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            target: SystemIOMachineStates.creatingProject,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.renameProject]: [
+          {
+            target: SystemIOMachineStates.renamingProject,
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.deleteProject]: {
+          target: SystemIOMachineStates.deletingProject,
+        },
+        [SystemIOMachineEvents.createKCLFile]: {
+          target: SystemIOMachineStates.creatingKCLFile,
+        },
+        [SystemIOMachineEvents.setDefaultProjectFolderName]: {
+          actions: [SystemIOMachineActions.setDefaultProjectFolderName],
+        },
+        [SystemIOMachineEvents.importFileFromURL]: {
+          target: SystemIOMachineStates.importFileFromURL,
+        },
+        [SystemIOMachineEvents.generateTextToCAD]: {
+          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        },
+        [SystemIOMachineEvents.deleteKCLFile]: {
+          target: SystemIOMachineStates.deletingKCLFile,
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFiles]: {
+          target: SystemIOMachineStates.bulkCreatingKCLFiles,
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
+          target:
+            SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        },
         [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
           target:
             SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile]: {
+          target:
+            SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
+          target: SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolder]: {
+          target: SystemIOMachineStates.renamingFolder,
+        },
+        [SystemIOMachineEvents.renameFile]: {
+          target: SystemIOMachineStates.renamingFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolder]: {
+          target: SystemIOMachineStates.deletingFileOrFolder,
+        },
+        [SystemIOMachineEvents.createBlankFile]: {
+          target: SystemIOMachineStates.creatingBlankFile,
+        },
+        [SystemIOMachineEvents.createBlankFolder]: {
+          target: SystemIOMachineStates.creatingBlankFolder,
+        },
+        [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFileAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
+          target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.copyRecursive]: {
+          target: SystemIOMachineStates.copyingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursive]: {
+          target: SystemIOMachineStates.movingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
+          target: SystemIOMachineStates.movingRecursiveAndNavigate,
+        },
+        [SystemIOMachineEvents.getMlEphantConversations]: {
+          target: SystemIOMachineStates.gettingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.deleteMlEphantConversation]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
       invoke: {
@@ -970,6 +1114,12 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [
+            assign({
+              folders: ({ context }) => context.folders ?? [],
+              hasListedProjects: true,
+            }),
+          ],
         },
       },
     },
@@ -1168,9 +1318,112 @@ export const systemIOMachine = setup({
     },
     [SystemIOMachineStates.checkingReadWrite]: {
       on: {
+        [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.navigateToProject]: {
+          actions: [SystemIOMachineActions.setRequestedProjectName],
+        },
+        [SystemIOMachineEvents.navigateToFile]: {
+          actions: [SystemIOMachineActions.setRequestedFileName],
+        },
+        [SystemIOMachineEvents.setProjectDirectoryPath]: {
+          target: SystemIOMachineStates.checkingReadWrite,
+          reenter: true,
+          actions: [SystemIOMachineActions.setProjectDirectoryPath],
+        },
+        [SystemIOMachineEvents.createProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            actions: [SystemIOMachineActions.deferSystemIOEvent],
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.renameProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            actions: [SystemIOMachineActions.deferSystemIOEvent],
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.deleteProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.createKCLFile]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.setDefaultProjectFolderName]: {
+          actions: [SystemIOMachineActions.setDefaultProjectFolderName],
+        },
+        [SystemIOMachineEvents.importFileFromURL]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.generateTextToCAD]: {
+          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        },
+        [SystemIOMachineEvents.deleteKCLFile]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFiles]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
-          target:
-            SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
+        [SystemIOMachineEvents.renameFolder]: {
+          target: SystemIOMachineStates.renamingFolder,
+        },
+        [SystemIOMachineEvents.renameFile]: {
+          target: SystemIOMachineStates.renamingFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolder]: {
+          target: SystemIOMachineStates.deletingFileOrFolder,
+        },
+        [SystemIOMachineEvents.createBlankFile]: {
+          target: SystemIOMachineStates.creatingBlankFile,
+        },
+        [SystemIOMachineEvents.createBlankFolder]: {
+          target: SystemIOMachineStates.creatingBlankFolder,
+        },
+        [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFileAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
+          target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.copyRecursive]: {
+          target: SystemIOMachineStates.copyingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursive]: {
+          target: SystemIOMachineStates.movingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
+          target: SystemIOMachineStates.movingRecursiveAndNavigate,
+        },
+        [SystemIOMachineEvents.getMlEphantConversations]: {
+          target: SystemIOMachineStates.gettingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.deleteMlEphantConversation]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
       invoke: {
@@ -1186,6 +1439,7 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.flushDeferredSystemIOEvent],
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,
@@ -1378,17 +1632,23 @@ export const systemIOMachine = setup({
                 }
               },
               requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
+                ).output
+
+                if (output.fileName) {
+                  return { name: NO_PROJECT_DIRECTORY }
+                }
+
                 return {
-                  name: (
-                    event as {
-                      output: { projectName: string; subRoute?: string }
-                    }
-                  ).output.projectName,
-                  subRoute: (
-                    event as {
-                      output: { projectName: string; subRoute?: string }
-                    }
-                  ).output.subRoute,
+                  name: output.projectName,
+                  subRoute: output.subRoute,
                 }
               },
             }),
@@ -1750,7 +2010,14 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            assign({
+              lastRecursiveMoveTarget: ({ event }) => {
+                return (event as { output: { target?: string } }).output.target
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
@@ -1776,6 +2043,9 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastRecursiveMoveTarget: ({ event }) => {
+                return (event as { output: { target?: string } }).output.target
+              },
               requestedProjectName: ({ event }) => {
                 assertEvent(
                   event,

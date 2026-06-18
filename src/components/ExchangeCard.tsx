@@ -1,22 +1,22 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
+import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
-  useEffect,
-  useState,
-  type ReactNode,
   type ComponentProps,
+  type ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from 'react'
-import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -24,11 +24,42 @@ export type ExchangeCardProps = Exchange & {
   isLastResponse: boolean
 }
 
-type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
-  error: any
-}
-  ? T
-  : never
+type MlCopilotServerMessageError = Extract<
+  MlCopilotServerMessage,
+  { error: unknown }
+>
+
+type MlCopilotServerMessageEndOfStream = Extract<
+  MlCopilotServerMessage,
+  { end_of_stream: unknown }
+>
+
+const NON_TERMINAL_INFO_TEXTS = [
+  'Manual edits detected since the last Zookeeper state.',
+  'Transient model streaming error; retrying.',
+]
+
+const getEndOfStreamResponse = (
+  responses?: MlCopilotServerMessage[]
+): MlCopilotServerMessageEndOfStream | undefined =>
+  responses?.findLast(
+    (response): response is MlCopilotServerMessageEndOfStream =>
+      'end_of_stream' in response
+  )
+
+const isNonTerminalInfoResponse = (response: MlCopilotServerMessage): boolean =>
+  'info' in response &&
+  NON_TERMINAL_INFO_TEXTS.some((infoText) =>
+    response.info.text.startsWith(infoText)
+  )
+
+const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
+  responses?.some(
+    (response) =>
+      'end_of_stream' in response ||
+      'error' in response ||
+      ('info' in response && !isNonTerminalInfoResponse(response))
+  ) ?? false
 
 export interface IButtonCopyProps {
   content: string
@@ -77,17 +108,13 @@ export const ResponseCardToolBar = (props: {
   onClickClearChat: () => void
   isLastResponse: boolean
 }) => {
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   let contentForClipboard: string | undefined = ''
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      contentForClipboard = lastResponse.end_of_stream.whole_response
-    }
+    contentForClipboard = getEndOfStreamResponse(props.responses)?.end_of_stream
+      .whole_response
   }
 
   return (
@@ -122,9 +149,7 @@ export const ExchangeCardStatus = (props: {
 
   // Error and info also signals the end of a stream, because we'll never
   // see an end_of_stream from them.
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -142,11 +167,13 @@ export const ExchangeCardStatus = (props: {
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
       timeReasonedFor =
-        new Date(lastResponse.end_of_stream.completed_at ?? 0).getTime() -
-        new Date(lastResponse.end_of_stream.started_at ?? 0).getTime()
+        new Date(
+          endOfStreamResponse.end_of_stream.completed_at ?? 0
+        ).getTime() -
+        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
     }
   } else {
     timeReasonedFor =
@@ -323,7 +350,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const items = props.items.map(
+  const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       // This is INTENTIONALLY left here for documentation.
       // We aggregate `delta` responses into `Exchange.responseAggregated`
@@ -335,14 +362,16 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       if ('info' in response) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
-      if ('error' in response) {
-        return <MaybeError key={index} maybeError={response} />
-      }
       return null
     }
   )
 
-  const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
+  const infoItemsFilteredNulls = infoItems.filter(
+    (x: ReactNode | null) => x !== null
+  )
+
+  const maybeError = props.items.filter((r) => 'error' in r)[0]
+  const isComplete = isExchangeComplete(props.items)
 
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
@@ -354,22 +383,38 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   }, [props.deltasAggregated])
 
   const children = [
-    itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+    maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
     deltasAggregatedMarkdown,
   ].filter((x: ReactNode) => x !== null)
 
-  return hasVisibleChildren(children) || props.isLastResponse ? (
+  const shouldShowResponseBubble =
+    hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
+
+  return infoItemsFilteredNulls.length > 0 || shouldShowResponseBubble ? (
     <>
-      <ChatBubble
-        side={'left'}
-        wfull={true}
-        userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
-        dataTestId="ml-response-chat-bubble"
-        placeholderTestId="ml-response-chat-bubble-thinking"
-        className="py-4"
-      >
-        {children}
-      </ChatBubble>
+      {infoItemsFilteredNulls.length > 0 && (
+        <ChatBubble
+          side={'left'}
+          wfull={true}
+          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+          dataTestId="ml-response-info-chat-bubble"
+          className="py-4"
+        >
+          {infoItemsFilteredNulls}
+        </ChatBubble>
+      )}
+      {shouldShowResponseBubble && (
+        <ChatBubble
+          side={'left'}
+          wfull={true}
+          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+          dataTestId="ml-response-chat-bubble"
+          placeholderTestId="ml-response-chat-bubble-thinking"
+          className="py-4"
+        >
+          {children}
+        </ChatBubble>
+      )}
       <ResponseCardToolBar
         responses={props.items}
         isLastResponse={props.isLastResponse}
@@ -397,9 +442,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -414,9 +457,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }, [isEndOfStream])
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      startedAt = new Date(lastResponse.end_of_stream.started_at ?? 0)
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
+      startedAt = new Date(endOfStreamResponse.end_of_stream.started_at ?? 0)
     }
   }
 

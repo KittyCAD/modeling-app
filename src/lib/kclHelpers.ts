@@ -1,19 +1,19 @@
+import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
+import { toUtf16 } from '@src/lang/errors'
 import { executeAstMock } from '@src/lang/executeAstMock'
+import { forceSuffix } from '@src/lang/util'
 import {
-  type SourceRange,
   type KclValue,
+  type SourceRange,
   formatNumberValue,
   parse,
   resultIsOk,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { err } from '@src/lib/trap'
 import type RustContext from '@src/lib/rustContext'
-import { forceSuffix } from '@src/lang/util'
+import { err } from '@src/lib/trap'
 import { roundOff } from '@src/lib/utils'
-import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Vector2 } from 'three'
-import { toUtf16 } from '@src/lang/errors'
 
 export const DUMMY_VARIABLE_NAME = '__result__'
 

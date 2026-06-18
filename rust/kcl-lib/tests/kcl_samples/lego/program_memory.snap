@@ -24,7 +24,8 @@ description: Variables in memory after executing lego.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }
@@ -82,7 +83,8 @@ description: Variables in memory after executing lego.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }
@@ -108,7 +110,8 @@ description: Variables in memory after executing lego.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }
@@ -125,10 +128,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1216,
-            "end": 1221,
+            "commentStart": 993,
+            "end": 998,
             "moduleId": 0,
-            "start": 1216,
+            "start": 993,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -139,10 +142,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1298,
-            "end": 1303,
+            "commentStart": 1075,
+            "end": 1080,
             "moduleId": 0,
-            "start": 1298,
+            "start": 1075,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -153,10 +156,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1417,
-            "end": 1422,
+            "commentStart": 1194,
+            "end": 1199,
             "moduleId": 0,
-            "start": 1417,
+            "start": 1194,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -167,10 +170,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1536,
-            "end": 1541,
+            "commentStart": 1313,
+            "end": 1318,
             "moduleId": 0,
-            "start": 1536,
+            "start": 1313,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -192,10 +195,10 @@ description: Variables in memory after executing lego.kcl
               -11.9
             ],
             "tag": {
-              "commentStart": 1216,
-              "end": 1221,
+              "commentStart": 993,
+              "end": 998,
               "moduleId": 0,
-              "start": 1216,
+              "start": 993,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -216,10 +219,10 @@ description: Variables in memory after executing lego.kcl
               -11.9
             ],
             "tag": {
-              "commentStart": 1298,
-              "end": 1303,
+              "commentStart": 1075,
+              "end": 1080,
               "moduleId": 0,
-              "start": 1298,
+              "start": 1075,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -240,10 +243,10 @@ description: Variables in memory after executing lego.kcl
               11.9
             ],
             "tag": {
-              "commentStart": 1417,
-              "end": 1422,
+              "commentStart": 1194,
+              "end": 1199,
               "moduleId": 0,
-              "start": 1417,
+              "start": 1194,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -264,10 +267,10 @@ description: Variables in memory after executing lego.kcl
               11.9
             ],
             "tag": {
-              "commentStart": 1536,
-              "end": 1541,
+              "commentStart": 1313,
+              "end": 1318,
               "moduleId": 0,
-              "start": 1536,
+              "start": 1313,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -467,10 +470,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2728,
-                "end": 2737,
+                "commentStart": 2505,
+                "end": 2514,
                 "moduleId": 0,
-                "start": 2728,
+                "start": 2505,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -498,10 +501,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2728,
-                  "end": 2737,
+                  "commentStart": 2505,
+                  "end": 2514,
                   "moduleId": 0,
-                  "start": 2728,
+                  "start": 2505,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -533,7 +536,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -582,10 +586,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2728,
-                "end": 2737,
+                "commentStart": 2505,
+                "end": 2514,
                 "moduleId": 0,
-                "start": 2728,
+                "start": 2505,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -613,10 +617,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2728,
-                  "end": 2737,
+                  "commentStart": 2505,
+                  "end": 2514,
                   "moduleId": 0,
-                  "start": 2728,
+                  "start": 2505,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -648,7 +652,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -697,10 +702,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2728,
-                "end": 2737,
+                "commentStart": 2505,
+                "end": 2514,
                 "moduleId": 0,
-                "start": 2728,
+                "start": 2505,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -728,10 +733,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2728,
-                  "end": 2737,
+                  "commentStart": 2505,
+                  "end": 2514,
                   "moduleId": 0,
-                  "start": 2728,
+                  "start": 2505,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -763,7 +768,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -812,10 +818,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2728,
-                "end": 2737,
+                "commentStart": 2505,
+                "end": 2514,
                 "moduleId": 0,
-                "start": 2728,
+                "start": 2505,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -843,10 +849,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2728,
-                  "end": 2737,
+                  "commentStart": 2505,
+                  "end": 2514,
                   "moduleId": 0,
-                  "start": 2728,
+                  "start": 2505,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -878,7 +884,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -927,10 +934,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2728,
-                "end": 2737,
+                "commentStart": 2505,
+                "end": 2514,
                 "moduleId": 0,
-                "start": 2728,
+                "start": 2505,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -958,10 +965,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2728,
-                  "end": 2737,
+                  "commentStart": 2505,
+                  "end": 2514,
                   "moduleId": 0,
-                  "start": 2728,
+                  "start": 2505,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -993,7 +1000,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -1042,10 +1050,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2728,
-                "end": 2737,
+                "commentStart": 2505,
+                "end": 2514,
                 "moduleId": 0,
-                "start": 2728,
+                "start": 2505,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -1073,10 +1081,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2728,
-                  "end": 2737,
+                  "commentStart": 2505,
+                  "end": 2514,
                   "moduleId": 0,
-                  "start": 2728,
+                  "start": 2505,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -1108,7 +1116,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -1169,10 +1178,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 2728,
-            "end": 2737,
+            "commentStart": 2505,
+            "end": 2514,
             "moduleId": 0,
-            "start": 2728,
+            "start": 2505,
             "type": "TagDeclarator",
             "value": "pegCircle"
           },
@@ -1204,7 +1213,8 @@ description: Variables in memory after executing lego.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
       },
@@ -1248,10 +1258,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2728,
-            "end": 2737,
+            "commentStart": 2505,
+            "end": 2514,
             "moduleId": 0,
-            "start": 2728,
+            "start": 2505,
             "type": "TagDeclarator",
             "value": "pegCircle"
           },
@@ -1279,10 +1289,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 2728,
-              "end": 2737,
+              "commentStart": 2505,
+              "end": 2514,
               "moduleId": 0,
-              "start": 2728,
+              "start": 2505,
               "type": "TagDeclarator",
               "value": "pegCircle"
             },
@@ -1314,7 +1324,8 @@ description: Variables in memory after executing lego.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
         },
@@ -1379,10 +1390,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 2728,
-                    "end": 2737,
+                    "commentStart": 2505,
+                    "end": 2514,
                     "moduleId": 0,
-                    "start": 2728,
+                    "start": 2505,
                     "type": "TagDeclarator",
                     "value": "pegCircle"
                   },
@@ -1414,7 +1425,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
               },
@@ -1549,7 +1561,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -1662,7 +1675,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -1700,7 +1714,8 @@ description: Variables in memory after executing lego.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }
@@ -1739,10 +1754,10 @@ description: Variables in memory after executing lego.kcl
             -11.9
           ],
           "tag": {
-            "commentStart": 1216,
-            "end": 1221,
+            "commentStart": 993,
+            "end": 998,
             "moduleId": 0,
-            "start": 1216,
+            "start": 993,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1763,10 +1778,10 @@ description: Variables in memory after executing lego.kcl
             -11.9
           ],
           "tag": {
-            "commentStart": 1298,
-            "end": 1303,
+            "commentStart": 1075,
+            "end": 1080,
             "moduleId": 0,
-            "start": 1298,
+            "start": 1075,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1787,10 +1802,10 @@ description: Variables in memory after executing lego.kcl
             11.9
           ],
           "tag": {
-            "commentStart": 1417,
-            "end": 1422,
+            "commentStart": 1194,
+            "end": 1199,
             "moduleId": 0,
-            "start": 1417,
+            "start": 1194,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1811,10 +1826,10 @@ description: Variables in memory after executing lego.kcl
             11.9
           ],
           "tag": {
-            "commentStart": 1536,
-            "end": 1541,
+            "commentStart": 1313,
+            "end": 1318,
             "moduleId": 0,
-            "start": 1536,
+            "start": 1313,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1913,10 +1928,10 @@ description: Variables in memory after executing lego.kcl
             -10.4
           ],
           "tag": {
-            "commentStart": 2007,
-            "end": 2012,
+            "commentStart": 1784,
+            "end": 1789,
             "moduleId": 0,
-            "start": 2007,
+            "start": 1784,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1937,10 +1952,10 @@ description: Variables in memory after executing lego.kcl
             -10.4
           ],
           "tag": {
-            "commentStart": 2089,
-            "end": 2094,
+            "commentStart": 1866,
+            "end": 1871,
             "moduleId": 0,
-            "start": 2089,
+            "start": 1866,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1961,10 +1976,10 @@ description: Variables in memory after executing lego.kcl
             10.4
           ],
           "tag": {
-            "commentStart": 2208,
-            "end": 2213,
+            "commentStart": 1985,
+            "end": 1990,
             "moduleId": 0,
-            "start": 2208,
+            "start": 1985,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1985,10 +2000,10 @@ description: Variables in memory after executing lego.kcl
             10.4
           ],
           "tag": {
-            "commentStart": 2327,
-            "end": 2332,
+            "commentStart": 2104,
+            "end": 2109,
             "moduleId": 0,
-            "start": 2327,
+            "start": 2104,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2020,7 +2035,8 @@ description: Variables in memory after executing lego.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
       },
@@ -2076,10 +2092,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2007,
-            "end": 2012,
+            "commentStart": 1784,
+            "end": 1789,
             "moduleId": 0,
-            "start": 2007,
+            "start": 1784,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2090,10 +2106,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2089,
-            "end": 2094,
+            "commentStart": 1866,
+            "end": 1871,
             "moduleId": 0,
-            "start": 2089,
+            "start": 1866,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2104,10 +2120,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2208,
-            "end": 2213,
+            "commentStart": 1985,
+            "end": 1990,
             "moduleId": 0,
-            "start": 2208,
+            "start": 1985,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2118,10 +2134,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2327,
-            "end": 2332,
+            "commentStart": 2104,
+            "end": 2109,
             "moduleId": 0,
-            "start": 2327,
+            "start": 2104,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2143,10 +2159,10 @@ description: Variables in memory after executing lego.kcl
               -10.4
             ],
             "tag": {
-              "commentStart": 2007,
-              "end": 2012,
+              "commentStart": 1784,
+              "end": 1789,
               "moduleId": 0,
-              "start": 2007,
+              "start": 1784,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2167,10 +2183,10 @@ description: Variables in memory after executing lego.kcl
               -10.4
             ],
             "tag": {
-              "commentStart": 2089,
-              "end": 2094,
+              "commentStart": 1866,
+              "end": 1871,
               "moduleId": 0,
-              "start": 2089,
+              "start": 1866,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2191,10 +2207,10 @@ description: Variables in memory after executing lego.kcl
               10.4
             ],
             "tag": {
-              "commentStart": 2208,
-              "end": 2213,
+              "commentStart": 1985,
+              "end": 1990,
               "moduleId": 0,
-              "start": 2208,
+              "start": 1985,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2215,10 +2231,10 @@ description: Variables in memory after executing lego.kcl
               10.4
             ],
             "tag": {
-              "commentStart": 2327,
-              "end": 2332,
+              "commentStart": 2104,
+              "end": 2109,
               "moduleId": 0,
-              "start": 2327,
+              "start": 2104,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2250,7 +2266,8 @@ description: Variables in memory after executing lego.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
         },
@@ -2801,10 +2818,10 @@ description: Variables in memory after executing lego.kcl
                     -11.9
                   ],
                   "tag": {
-                    "commentStart": 1216,
-                    "end": 1221,
+                    "commentStart": 993,
+                    "end": 998,
                     "moduleId": 0,
-                    "start": 1216,
+                    "start": 993,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2825,10 +2842,10 @@ description: Variables in memory after executing lego.kcl
                     -11.9
                   ],
                   "tag": {
-                    "commentStart": 1298,
-                    "end": 1303,
+                    "commentStart": 1075,
+                    "end": 1080,
                     "moduleId": 0,
-                    "start": 1298,
+                    "start": 1075,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2849,10 +2866,10 @@ description: Variables in memory after executing lego.kcl
                     11.9
                   ],
                   "tag": {
-                    "commentStart": 1417,
-                    "end": 1422,
+                    "commentStart": 1194,
+                    "end": 1199,
                     "moduleId": 0,
-                    "start": 1417,
+                    "start": 1194,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2873,10 +2890,10 @@ description: Variables in memory after executing lego.kcl
                     11.9
                   ],
                   "tag": {
-                    "commentStart": 1536,
-                    "end": 1541,
+                    "commentStart": 1313,
+                    "end": 1318,
                     "moduleId": 0,
-                    "start": 1536,
+                    "start": 1313,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3067,7 +3084,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -3180,7 +3198,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -3293,7 +3312,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -3406,7 +3426,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -3439,10 +3460,10 @@ description: Variables in memory after executing lego.kcl
                     -10.4
                   ],
                   "tag": {
-                    "commentStart": 2007,
-                    "end": 2012,
+                    "commentStart": 1784,
+                    "end": 1789,
                     "moduleId": 0,
-                    "start": 2007,
+                    "start": 1784,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3463,10 +3484,10 @@ description: Variables in memory after executing lego.kcl
                     -10.4
                   ],
                   "tag": {
-                    "commentStart": 2089,
-                    "end": 2094,
+                    "commentStart": 1866,
+                    "end": 1871,
                     "moduleId": 0,
-                    "start": 2089,
+                    "start": 1866,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3487,10 +3508,10 @@ description: Variables in memory after executing lego.kcl
                     10.4
                   ],
                   "tag": {
-                    "commentStart": 2208,
-                    "end": 2213,
+                    "commentStart": 1985,
+                    "end": 1990,
                     "moduleId": 0,
-                    "start": 2208,
+                    "start": 1985,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3511,10 +3532,10 @@ description: Variables in memory after executing lego.kcl
                     10.4
                   ],
                   "tag": {
-                    "commentStart": 2327,
-                    "end": 2332,
+                    "commentStart": 2104,
+                    "end": 2109,
                     "moduleId": 0,
-                    "start": 2327,
+                    "start": 2104,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3546,7 +3567,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
               },
@@ -3661,10 +3683,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3697,
-                "end": 3707,
+                "commentStart": 3474,
+                "end": 3484,
                 "moduleId": 0,
-                "start": 3697,
+                "start": 3474,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -3692,10 +3714,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3697,
-                  "end": 3707,
+                  "commentStart": 3474,
+                  "end": 3484,
                   "moduleId": 0,
-                  "start": 3697,
+                  "start": 3474,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -3727,7 +3749,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -3776,10 +3799,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3697,
-                "end": 3707,
+                "commentStart": 3474,
+                "end": 3484,
                 "moduleId": 0,
-                "start": 3697,
+                "start": 3474,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -3807,10 +3830,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3697,
-                  "end": 3707,
+                  "commentStart": 3474,
+                  "end": 3484,
                   "moduleId": 0,
-                  "start": 3697,
+                  "start": 3474,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -3842,7 +3865,8 @@ description: Variables in memory after executing lego.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -3903,10 +3927,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 3697,
-            "end": 3707,
+            "commentStart": 3474,
+            "end": 3484,
             "moduleId": 0,
-            "start": 3697,
+            "start": 3474,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -3938,7 +3962,8 @@ description: Variables in memory after executing lego.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
       },
@@ -3982,10 +4007,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3697,
-            "end": 3707,
+            "commentStart": 3474,
+            "end": 3484,
             "moduleId": 0,
-            "start": 3697,
+            "start": 3474,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -4013,10 +4038,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 3697,
-              "end": 3707,
+              "commentStart": 3474,
+              "end": 3484,
               "moduleId": 0,
-              "start": 3697,
+              "start": 3474,
               "type": "TagDeclarator",
               "value": "tubeCircle"
             },
@@ -4048,7 +4073,8 @@ description: Variables in memory after executing lego.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
         },
@@ -4113,10 +4139,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 3697,
-                    "end": 3707,
+                    "commentStart": 3474,
+                    "end": 3484,
                     "moduleId": 0,
-                    "start": 3697,
+                    "start": 3474,
                     "type": "TagDeclarator",
                     "value": "tubeCircle"
                   },
@@ -4148,7 +4174,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
               },
@@ -4283,7 +4310,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -4396,7 +4424,8 @@ description: Variables in memory after executing lego.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -4434,7 +4463,8 @@ description: Variables in memory after executing lego.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { useEffect, useRef, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'

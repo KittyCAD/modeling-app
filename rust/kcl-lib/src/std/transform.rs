@@ -464,13 +464,14 @@ async fn inner_rotate(
     Ok(objects)
 }
 
-/// Hide solids, sketches, helices, or imported objects.
+/// Hide solids, planes, sketches, helices, or imported objects.
 pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::planes(),
             RuntimeType::helices(),
             RuntimeType::imported(),
             RuntimeType::gdts(),
@@ -505,10 +506,41 @@ async fn hide_inner(
     Ok(objects)
 }
 
+/// Delete solids, sketches, helices, or imported objects.
+pub async fn delete(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let objects = args.get_unlabeled_kw_arg(
+        "objects",
+        &RuntimeType::Union(vec![
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::helices(),
+            RuntimeType::imported(),
+            RuntimeType::gdts(),
+        ]),
+        exec_state,
+    )?;
+
+    delete_inner(objects, exec_state, args).await.map(|()| KclValue::none())
+}
+
+async fn delete_inner(mut objects: HideableGeometry, exec_state: &mut ExecState, args: Args) -> Result<(), KclError> {
+    let ids = objects.ids(&args.ctx).await?.into_iter().collect();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(mcmd::RemoveSceneObjects::builder().object_ids(ids).build()),
+        )
+        .await
+}
+
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
     use pretty_assertions::assert_eq;
 
+    use crate::errors::Severity;
+    use crate::errors::Tag;
+    use crate::execution::MockConfig;
     use crate::execution::parse_execute;
 
     const PIPE: &str = r#"sweepPath = startSketchOn(XZ)
@@ -764,6 +796,63 @@ sweepSketch = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn hide_consumed_solid_reports_deprecation_warning() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+result = subtract(target, tools = [tool])
+hidden = hide(target)
+"#;
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let outcome = outcome.unwrap();
+
+        assert!(
+            outcome.issues.iter().any(|issue| {
+                issue.severity == Severity::Warning
+                    && issue.tag == Tag::Deprecated
+                    && issue
+                        .message
+                        .contains("Calling `hide` with a consumed solid is deprecated")
+                    && issue
+                        .message
+                        .contains("`target` was already consumed by a `subtract` operation")
+            }),
+            "expected hide consumed-solid deprecation warning, got: {:#?}",
+            outcome.issues
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_hide_helix() {
         let ast = r#"helixPath = helix(
   axis = Z,
@@ -788,6 +877,34 @@ hide(helixPath)
 hide(sketch001)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_hide_plane() {
+        let ast = r#"plane001 = offsetPlane(YZ, offset = 500)
+
+hide(plane001)
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let object_visible_commands = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::ObjectVisible(object_visible) => Some(object_visible),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            object_visible_commands.len(),
+            1,
+            "expected exactly one ObjectVisible command, got: {:#?}",
+            result.root_module_artifact_commands()
+        );
+        assert!(
+            object_visible_commands[0].hidden,
+            "expected ObjectVisible command to hide the plane"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

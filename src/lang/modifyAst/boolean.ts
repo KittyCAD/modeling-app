@@ -12,9 +12,9 @@ import {
 import { getVariableExprsFromSelection } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function addUnion({
   ast,

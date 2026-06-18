@@ -1,3 +1,26 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import RootLayout from '@src/Root'
+import { CommandBar } from '@src/components/CommandBar/CommandBar'
+import { ErrorPage } from '@src/components/ErrorPage'
+import Loading from '@src/components/Loading'
+import { MachineApiController } from '@src/components/MachineApiController'
+import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
+import ModelingPageProvider from '@src/components/ModelingPageProvider'
+import { OpenedProject } from '@src/components/OpenedProject'
+import { NetworkContext } from '@src/hooks/useNetworkContext'
+import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { isDesktop } from '@src/lib/isDesktop'
+import { TestLayout } from '@src/lib/layout/TestLayout'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { PATHS } from '@src/lib/paths'
+import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import Home from '@src/routes/Home'
+import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
+import { Settings } from '@src/routes/Settings'
+import SignIn from '@src/routes/SignIn'
+import { Telemetry } from '@src/routes/Telemetry'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { Suspense, useMemo } from 'react'
 import {
   Outlet,
@@ -5,30 +28,6 @@ import {
   createBrowserRouter,
   createHashRouter,
 } from 'react-router-dom'
-import { OpenedProject } from '@src/components/OpenedProject'
-import RootLayout from '@src/Root'
-import { CommandBar } from '@src/components/CommandBar/CommandBar'
-import { ErrorPage } from '@src/components/ErrorPage'
-import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
-import ModelingPageProvider from '@src/components/ModelingPageProvider'
-import { NetworkContext } from '@src/hooks/useNetworkContext'
-import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { isDesktop } from '@src/lib/isDesktop'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { PATHS } from '@src/lib/paths'
-import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
-import { useApp, useSingletons } from '@src/lib/boot'
-import Home from '@src/routes/Home'
-import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
-import { Settings } from '@src/routes/Settings'
-import SignIn from '@src/routes/SignIn'
-import { Telemetry } from '@src/routes/Telemetry'
-import { TestLayout } from '@src/lib/layout/TestLayout'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import Loading from '@src/components/Loading'
-import { MachineApiController } from '@src/components/MachineApiController'
-import { routesValueSpec } from '@src/registry/contracts/routes'
-import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -41,7 +40,6 @@ export const Router = () => {
   const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
-  const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>
       createRouter([
@@ -128,6 +126,15 @@ export const Router = () => {
                   path: makeUrlPathRelative(PATHS.SETTINGS),
                   element: <Settings />,
                 },
+                {
+                  id: PATHS.HOME + 'TELEMETRY',
+                  children: [
+                    {
+                      path: makeUrlPathRelative(PATHS.TELEMETRY),
+                      element: <Telemetry />,
+                    },
+                  ],
+                },
               ],
             },
             {
@@ -138,17 +145,25 @@ export const Router = () => {
             ...(IS_STAGING_OR_DEBUG
               ? [
                   {
+                    path: '/error-page-test',
+                    errorElement: <ErrorPage />,
+                    loader: () => {
+                      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+                      throw new Error('Manual ErrorPage test')
+                    },
+                    element: <></>,
+                  },
+                  {
                     path: '/layout',
                     errorElement: <ErrorPage />,
                     element: <TestLayout />,
                   },
                 ]
               : []),
-            ...routesProvidedByRegistry,
           ],
         },
       ]),
-    [app, routesProvidedByRegistry]
+    [app]
   )
 
   return (

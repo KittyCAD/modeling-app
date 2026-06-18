@@ -115,7 +115,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       })
       await homePage.openProject('test-sample')
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.openFeatureTreePane()
       await expect
@@ -210,7 +210,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       sortBy: 'last-modified-desc',
     })
     await homePage.openProject('test-sample')
-    await scene.settled(cmdBar)
+    await scene.settled()
     await toolbar.openFeatureTreePane()
 
     const cylinderOperation = toolbar.featureTreePane
@@ -263,7 +263,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       stage: 'review',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
   })
 
@@ -298,7 +298,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.Debug)
       await toolbar.openFeatureTreePane()
     })
@@ -347,7 +347,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         .getByTestId('feature-tree-visibility-toggle')
       await bodyRow.hover()
       await bodyToggle.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Verify cylinder is hidden via standalone hide(cylinder)', async () => {
@@ -465,7 +465,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openFeatureTreePane()
     })
 
@@ -594,7 +594,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openFeatureTreePane()
     })
 
@@ -666,7 +666,7 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
     const planeColor: [number, number, number] = [74, 74, 74]
 
     await homePage.openProject('test-sample')
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Verify we see the sketch`, async () => {
       await scene.expectPixelColor(sketchColor, pointOnSketch, 10)
@@ -741,7 +741,7 @@ test = startSketchOn(controllerBody, face = END)
     })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await toolbar.openFeatureTreePane()
 
     await test.step('right-click on second sketch and select Edit', async () => {
@@ -794,7 +794,7 @@ profile001 = startProfile(sketch001, at = [-3.75, 3.75])
     })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await toolbar.openFeatureTreePane()
 
     await test.step('double-click on sketch to enter edit mode', async () => {

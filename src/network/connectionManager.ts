@@ -121,16 +121,15 @@ export class ConnectionManager extends EventTarget {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
-  } = {} as any
+  } = {}
   unreliableSubscriptions: {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
-  } = {} as any
+  } = {}
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Rogue runtime dependency from the modeling machine. hope it is there!
-  modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => {}) as any
+  modelingSend: ReturnType<typeof useModelingContext>['send'] = () => {}
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -455,6 +454,7 @@ export class ConnectionManager extends EventTarget {
 
   listenToDarkModeMatcher() {
     const onDarkThemeMediaQueryChange = createOnDarkThemeMediaQueryChange({
+      getTheme: () => this.settings.theme,
       setTheme: this.setTheme.bind(this),
     })
     this.trackListener('darkmodewatcher-change', {

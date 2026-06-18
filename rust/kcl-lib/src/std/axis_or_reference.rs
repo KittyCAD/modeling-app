@@ -59,6 +59,11 @@ impl Axis2dOrEdgeReference {
                 backtrace: Default::default(),
                 message: "Cannot use a circle as an axis".to_owned(),
             })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
         }
     }
 }
@@ -82,6 +87,11 @@ impl MirrorAcross3d {
                 source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
                 backtrace: Default::default(),
                 message: "Cannot use a circle as an axis".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
             })),
         }
     }
@@ -118,6 +128,50 @@ impl Axis3dOrEdgeReference {
                 source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
                 backtrace: Default::default(),
                 message: "Cannot use a circle as an axis".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
+        }
+    }
+}
+
+/// A 3D point or tagged edge.
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq)]
+pub enum Point3dOrEdgeReference {
+    /// 3D point and origin.
+    Point([TyF64; 3]),
+    /// Tagged edge.
+    Edge(EdgeReference),
+}
+
+impl Point3dOrEdgeReference {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { position, .. } => Ok(Self::Point([
+                position[0].clone(),
+                position[1].clone(),
+                TyF64::count(0.0),
+            ])),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as a 3D point or edge reference".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as a 3D point or edge reference".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as a 3D point or edge reference".to_owned(),
             })),
         }
     }

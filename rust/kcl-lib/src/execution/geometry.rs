@@ -4,6 +4,7 @@ use std::ops::AddAssign;
 use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::SubAssign;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -37,6 +38,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
+use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
 use crate::front::Number;
@@ -52,6 +54,7 @@ use crate::std::args::TyF64;
 use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::util::MathExt;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -115,6 +118,14 @@ impl GeometryWithImportedGeometry {
                 let id = i.id(ctx).await?;
                 Ok(id)
             }
+        }
+    }
+
+    pub fn into_solid(self) -> Option<Solid> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(_) => None,
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => None,
         }
     }
 }
@@ -187,7 +198,7 @@ impl ImportedGeometry {
     }
 }
 
-/// Data for a solid, sketch, or an imported geometry.
+/// Data for geometry that can be hidden.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -195,6 +206,7 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    PlaneSet(Vec<Plane>),
     SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
     GdtAnnotationSet(Vec<GdtAnnotation>),
@@ -204,6 +216,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
     fn from(value: HideableGeometry) -> Self {
         match value {
             HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::PlaneSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Plane { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Plane { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::plane(),
+                    }
+                }
+            }
             HideableGeometry::SolidSet(mut s) => {
                 if s.len() == 1
                     && let Some(s) = s.pop()
@@ -276,6 +303,7 @@ impl HideableGeometry {
 
                 Ok(vec![id])
             }
+            HideableGeometry::PlaneSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
@@ -778,6 +806,8 @@ pub struct FaceParentSolid {
     pub solid_id: Uuid,
     /// ID of the sketch which created this solid, if any.
     pub creator_sketch_id: Option<Uuid>,
+    /// Has the creator sketch been closed? This is only relevant if `creator_sketch_id` is Some, and we cannot infer the closed status otherwise.
+    pub creator_sketch_is_closed: Option<ProfileClosed>,
     /// Pending edge cut IDs that may need to be flushed before referencing the face.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_ids: Vec<Uuid>,
@@ -997,8 +1027,10 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
+    /// Tagged Face.
+    FaceTag(FaceTag),
     /// Face.
-    Face(FaceTag),
+    Face(Box<Face>),
 }
 
 impl Extrudable {
@@ -1011,31 +1043,37 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
-            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::Face(face) => Ok(face.id),
         }
     }
 
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face) => match face.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
+            Extrudable::Face(_) => None,
         }
     }
 
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
                     .sketch()
                     .map(|sketch| sketch.is_closed)
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Face(face) => match face.parent_solid.creator_sketch_is_closed {
+                Some(is_closed) => is_closed,
+                None => ProfileClosed::Maybe,
             },
         }
     }
@@ -1176,6 +1214,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1235,7 +1277,10 @@ impl Solid {
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
-        self.edge_cuts.iter().map(|foc| foc.id())
+        self.edge_cuts
+            .iter()
+            .map(|foc| foc.id())
+            .chain(self.pending_edge_cut_ids.iter().copied())
     }
 }
 
@@ -1244,6 +1289,7 @@ impl From<&Solid> for FaceParentSolid {
         Self {
             solid_id: solid.id,
             creator_sketch_id: solid.sketch_id(),
+            creator_sketch_is_closed: solid.sketch().map(|sketch| sketch.is_closed),
             edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
         }
     }
@@ -1380,6 +1426,19 @@ impl Point3d {
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
             units: None,
+        }
+    }
+
+    /// Normalize `-0.0` to `0.0` for cleaner serialized axis data.
+    pub fn canonicalize_signed_zero(&mut self) {
+        if self.x == 0.0 {
+            self.x = 0.0;
+        }
+        if self.y == 0.0 {
+            self.y = 0.0;
+        }
+        if self.z == 0.0 {
+            self.z = 0.0;
         }
     }
 
@@ -1939,8 +1998,8 @@ fn linear_distance(
     [x0, y0]: &[f64; 2],
     [x1, y1]: &[f64; 2]
 ) -> f64 {
-    let y_sq = (y1 - y0).powi(2);
-    let x_sq = (x1 - x0).powi(2);
+    let y_sq = (y1 - y0).squared();
+    let x_sq = (x1 - x0).squared();
     (y_sq + x_sq).sqrt()
 }
 
@@ -2082,6 +2141,8 @@ pub struct SketchVar {
     pub id: SketchVarId,
     pub initial_value: f64,
     pub ty: NumericType,
+    /// Used for solver feedback to source.
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2203,6 +2264,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    ControlPointSpline {
+        controls: Vec<UnsolvedPoint2dExpr>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        degree: u32,
+        construction: bool,
+    },
 }
 
 impl UnsolvedSegmentKind {
@@ -2214,6 +2283,7 @@ impl UnsolvedSegmentKind {
             Self::Line { .. } => "a Line",
             Self::Arc { .. } => "an Arc",
             Self::Circle { .. } => "a Circle",
+            Self::ControlPointSpline { .. } => "a Control Point Spline",
         }
     }
 }
@@ -2230,7 +2300,8 @@ pub struct Segment {
     /// The engine ID of the sketch that this is a part of.
     pub sketch_id: Uuid,
     #[serde(skip)]
-    pub sketch: Option<Sketch>,
+    #[ts(skip)]
+    pub sketch: Option<Arc<Sketch>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
     #[serde(skip)]
@@ -2246,6 +2317,7 @@ impl Segment {
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
             SegmentKind::Circle { construction, .. } => *construction,
+            SegmentKind::ControlPointSpline { construction, .. } => *construction,
         }
     }
 }
@@ -2298,6 +2370,16 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    ControlPointSpline {
+        controls: Vec<[TyF64; 2]>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        control_freedoms: Vec<Option<Freedom>>,
+        degree: u32,
         construction: bool,
     },
 }

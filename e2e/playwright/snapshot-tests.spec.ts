@@ -1,11 +1,11 @@
-import type { Page } from '@playwright/test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
-  lowerRightMasks,
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  lowerRightMasks,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import { Themes } from '@src/lib/theme'
 
 const SCREENSHOT_SIZE = { width: 1200, height: 900 }
@@ -15,7 +15,7 @@ function screenshotName(step: number, name: string, mode: Themes) {
 }
 
 const screenshotOptions = (page: Page) => ({
-  maxDiffPixels: 300,
+  maxDiffPixelRatio: 0.001,
   mask: lowerRightMasks(page),
 })
 
@@ -94,7 +94,7 @@ function runTestForTheme(mode: Themes) {
 
     await test.step('Create a project', async () => {
       await page.setViewportSize(SCREENSHOT_SIZE)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.openFeatureTreePane()
       await editor.openPane()
@@ -128,7 +128,7 @@ function runTestForTheme(mode: Themes) {
     await test.step('Exit the sketch', async () => {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-exited', mode),

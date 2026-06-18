@@ -1,5 +1,5 @@
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('hotkeyDisplay', () => {
   it('displays mod', async () => {
@@ -32,5 +32,10 @@ describe('hotkeyDisplay', () => {
     expect(hotkeyDisplay('shift+alt+ctrl+c', 'windows')).toEqual(
       'Shift+Alt+Ctrl+C'
     )
+  })
+  it('displays keymap sequences', async () => {
+    expect(hotkeyDisplay(['v', '1'], 'macos')).toEqual('V 1')
+    expect(hotkeyDisplay(['mod+k', 'p'], 'windows')).toEqual('Ctrl+K P')
+    expect(hotkeyDisplay([], 'linux')).toBeUndefined()
   })
 })

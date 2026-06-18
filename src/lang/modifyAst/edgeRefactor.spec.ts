@@ -29,15 +29,18 @@
  *     |> fillet(radius = 1, edges = [{ sideFaces = [e1, capEnd001] }])
  */
 import { join } from 'path'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
-import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  defaultArtifactGraph,
+} from '@src/lang/std/artifactGraph'
 import { assertParse } from '@src/lang/wasm'
 import type {
+  Artifact,
   ArtifactGraph,
   DirectTagFilletMeta,
   EdgeRefactorMeta,
@@ -46,6 +49,7 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 const WASM_PATH = join(process.cwd(), 'public', 'kcl_wasm_lib_bg.wasm')
 
@@ -109,6 +113,89 @@ function sourceRangeForCall(
 
 function facePair(a: string, b: string): [string, string] {
   return [a, b]
+}
+
+function sourceRangeForSnippet(
+  code: string,
+  snippet: string
+): [number, number, number] {
+  const start = code.indexOf(snippet)
+  if (start < 0) throw new Error(`Could not find snippet: ${snippet}`)
+  return [start, start + snippet.length, 0]
+}
+
+function createTaggedCapGraph(
+  ast: ReturnType<typeof assertParse>,
+  code: string,
+  sweepConfigs: Array<{
+    pathId: string
+    sweepId: string
+    extrudeSnippet: string
+    capStartId: string
+    capEndId: string
+  }>
+): ArtifactGraph {
+  const graph = defaultArtifactGraph()
+
+  for (const config of sweepConfigs) {
+    const codeRef = {
+      ...codeRefFromRange(
+        sourceRangeForSnippet(code, config.extrudeSnippet),
+        ast
+      ),
+      nodePath: { steps: [] },
+    }
+    const path: Artifact = {
+      type: 'path',
+      id: config.pathId,
+      subType: 'sketch',
+      codeRef,
+      planeId: 'plane-1',
+      segIds: [],
+      sweepId: config.sweepId,
+      trajectorySweepId: null,
+      consumed: true,
+    }
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: config.sweepId,
+      codeRef,
+      pathId: config.pathId,
+      subType: 'extrusion',
+      surfaceIds: [config.capStartId, config.capEndId],
+      edgeIds: [],
+      method: 'new',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const capStart: Artifact = {
+      type: 'cap',
+      id: config.capStartId,
+      subType: 'start',
+      edgeCutEdgeIds: [],
+      sweepId: config.sweepId,
+      pathIds: [],
+      faceCodeRef: codeRef,
+      cmdId: `${config.capStartId}-cmd`,
+    }
+    const capEnd: Artifact = {
+      type: 'cap',
+      id: config.capEndId,
+      subType: 'end',
+      edgeCutEdgeIds: [],
+      sweepId: config.sweepId,
+      pathIds: [],
+      faceCodeRef: codeRef,
+      cmdId: `${config.capEndId}-cmd`,
+    }
+
+    graph.set(path.id, path)
+    graph.set(sweep.id, sweep)
+    graph.set(capStart.id, capStart)
+    graph.set(capEnd.id, capEnd)
+  }
+
+  return graph
 }
 
 const SAMPLE_KCL = `body = startSketchOn(XY)
@@ -352,6 +439,48 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
+/** Mixed: one adjacent-edge helper + one edgeId closestTo helper. */
+const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])
+body = base
+  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeFromPoint])
+`
+
+const KCL_SHADOWED_EDGE_HELPER_VARIABLE = `globalBody = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagStart = $globalStart, tagEnd = $globalEnd)
+edgeFromPoint = edgeId(globalBody, closestTo = [5, 0, 0])
+
+fn makePart() {
+  base = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(endAbsolute = [10, 0])
+    |> line(endAbsolute = [10, 10])
+    |> line(endAbsolute = [0, 10])
+    |> line(endAbsolute = [0, 0])
+    |> close()
+    |> extrude(length = 5, tagStart = $localStart, tagEnd = $localEnd)
+  edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])
+  body = base
+    |> fillet(radius = 1, tags = [edgeFromPoint])
+  return body
+}
+
+part = makePart()
+`
+
 /** Focusrite Scarlett mounting bracket (first 55 lines): sketch in a function, fillet uses getPreviousAdjacentEdge(bs.tags.edge7) style. Z0006 refactor should emit edgeRefs with bs.tags.x (not bare edge6, edge7). */
 const KCL_FOCUSRITE_BRACKET = `// Mounting bracket for the Focusrite Scarlett Solo audio interface
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
@@ -480,6 +609,99 @@ describe('refactorZ0006Unified', () => {
       expect(toFix.length).toBeGreaterThanOrEqual(1)
       expect(toFix[0]?.faceIds).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('does not partially refactor a fillet tags array when one element has no metadata', () => {
+      const code = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5)
+  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeId(body, closestTo = [0, 0, 5])])
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getOppositeEdge',
+        },
+      ]
+
+      const result = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No Z0006 fixes to apply')
+    })
+
+    it('does not migrate a nested fillet tag variable using a shadowed top-level edge helper', () => {
+      const code = KCL_SHADOWED_EDGE_HELPER_VARIABLE
+      const ast = assertParse(code, wasmInstance)
+      const graph = createTaggedCapGraph(ast, code, [
+        {
+          pathId: 'global-path',
+          sweepId: 'global-sweep',
+          extrudeSnippet:
+            'extrude(length = 5, tagStart = $globalStart, tagEnd = $globalEnd)',
+          capStartId: 'global-start-cap',
+          capEndId: 'global-end-cap',
+        },
+        {
+          pathId: 'local-path',
+          sweepId: 'local-sweep',
+          extrudeSnippet:
+            'extrude(length = 5, tagStart = $localStart, tagEnd = $localEnd)',
+          capStartId: 'local-start-cap',
+          capEndId: 'local-end-cap',
+        },
+      ])
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'global-edge',
+          sourceRange: sourceRangeForSnippet(
+            code,
+            'edgeId(globalBody, closestTo = [5, 0, 0])'
+          ),
+          faceIds: facePair('global-start-cap', 'global-end-cap'),
+          stdlibFn: 'edgeId',
+        },
+        {
+          edgeId: 'local-edge',
+          sourceRange: sourceRangeForSnippet(
+            code,
+            'edgeId(base, closestTo = [5, 0, 0])'
+          ),
+          faceIds: facePair('local-start-cap', 'local-end-cap'),
+          stdlibFn: 'edgeId',
+        },
+      ]
+
+      const result = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No Z0006 fixes to apply')
     })
   })
 
@@ -997,6 +1219,68 @@ describe('refactorZ0006Unified', () => {
         // TODO: Decide whether to (1) keep seg01 in same fillet and only convert getOppositeEdge to edgeRefs,
         // or (2) split into two separate fillet calls. For now we just assert no crash.
         expect(refactored).toContain('fillet')
+      }
+    )
+
+    it(
+      'refactors mixed getOppositeEdge and edgeId closestTo tags when both have metadata',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        const edgeMetadata = execState.edgeRefactorMetadata ?? []
+        const metadataDebug = JSON.stringify(
+          {
+            errors: kclManagerInThisFile.errors.map((error) => ({
+              kind: error.kind,
+              message: error.msg,
+              sourceRange: error.sourceRange,
+            })),
+            issues: execState.issues.map((issue) => ({
+              severity: issue.severity,
+              message: issue.message,
+              sourceRange: issue.sourceRange,
+            })),
+            edgeMetadata,
+          },
+          null,
+          2
+        )
+        expect(
+          edgeMetadata.some((meta) => meta.stdlibFn === 'getOppositeEdge'),
+          metadataDebug
+        ).toBe(true)
+        expect(
+          edgeMetadata.some((meta) => meta.stdlibFn === 'edgeId'),
+          metadataDebug
+        ).toBe(true)
+
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [e1, capStart001]')
+        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
+          .length
+        expect(sideFaceCount).toBe(2)
+        expect(n).not.toContain('tags = [')
+        expect(n).toContain(
+          'edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])'
+        )
       }
     )
   })

@@ -3,11 +3,29 @@ import {
   type FileExplorerEntry,
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { beforeAll, expect, describe, it, beforeEach, afterEach } from 'vitest'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import {
+  PROJECT_EXPLORER_COMMAND_IDS,
+  defaultKeymap,
+} from '@src/registry/extensions/keymap/defaultKeymap'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -37,6 +55,14 @@ const createFolder = (name: string, children?: FileEntry[]): FileEntry => {
     path: `/${applicationDirectory}/${projectName}/${name}`,
     children: children || [],
   }
+}
+const fireModKeyDown = (key: string, code: string) => {
+  fireEvent.keyDown(window, {
+    key,
+    code,
+    ctrlKey: true,
+    metaKey: true,
+  })
 }
 const oneFile: FileEntry = createFile('main.kcl')
 const PROJECT_TEMPLATE: Project = {
@@ -197,6 +223,345 @@ describe('ProjectExplorer', () => {
     expect(items.length).toBe(2)
     expect(items[0].innerText).toBe('parts')
     expect(items[1].innerText).toBe('main.kcl')
+    expect(items[1]).toHaveAttribute('aria-selected', 'true')
+  })
+  it('should select the current file when it changes after load', async () => {
+    const rootFile = createFile('main.kcl')
+    const importedMainFile = createFile('main.kcl', 'shared-project/')
+    project.children = [
+      rootFile,
+      createFolder('shared-project', [importedMainFile]),
+    ]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    const { rerender } = render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={rootFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+        overrideApplicationProjectDirectory="applicationDirectory/"
+      />
+    )
+
+    rerender(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={importedMainFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+        overrideApplicationProjectDirectory="applicationDirectory/"
+      />
+    )
+
+    await waitFor(() => {
+      const items = screen.getAllByTestId('file-tree-item')
+      const selectedRows = items.filter(
+        (item) => item.getAttribute('aria-selected') === 'true'
+      )
+      expect(selectedRows).toHaveLength(1)
+      expect(selectedRows[0].innerText).toBe('main.kcl')
+      expect(items[0].innerText).toBe('shared-project')
+      expect(selectedRows[0]).toBe(items[1])
+    })
+  })
+  it('should not handle Enter outside of the explorer when the current file is selected', async () => {
+    project.children = [oneFile]
+    const onRowEnter = vi.fn()
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={onRowEnter}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.keyDown(window, { key: 'Enter' })
+
+    expect(onRowEnter).not.toHaveBeenCalled()
+  })
+  it('should handle Enter through the keymap after the explorer row is clicked', async () => {
+    project.children = [oneFile]
+    const onRowEnter = vi.fn()
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={onRowEnter}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireEvent.keyDown(window, { key: 'Enter' })
+
+    await waitFor(() => {
+      expect(onRowEnter).toHaveBeenCalledTimes(1)
+    })
+    expect(onRowEnter.mock.calls[0][0].path).toBe(oneFile.path)
+  })
+  it('should start renaming the active row with the F2 keymap shortcut', async () => {
+    project.children = [oneFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireEvent.keyDown(window, { key: 'F2' })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-rename-field')).toHaveAttribute(
+        'placeholder',
+        'main.kcl'
+      )
+    })
+  })
+  it('should enable paste after copying the active row with the keymap shortcut', async () => {
+    project.children = [oneFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireModKeyDown('c', 'KeyC')
+    fireEvent.contextMenu(screen.getByText('main.kcl'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('context-menu-paste')).not.toHaveAttribute(
+        'disabled'
+      )
+    })
+  })
+  it('should open delete confirmation with the delete keymap shortcut', async () => {
+    project.children = [oneFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('file-tree-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireModKeyDown('Backspace', 'Backspace')
+
+    await waitFor(() => {
+      expect(screen.getByTestId('delete-confirmation')).toBeInTheDocument()
+    })
+  })
+  it('should define default keymap bindings for project explorer file operations', () => {
+    expect(defaultKeymap.bindings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.delete,
+          keystrokes: ['mod+backspace'],
+        }),
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.copy,
+          keystrokes: ['mod+c'],
+        }),
+        expect.objectContaining({
+          id: PROJECT_EXPLORER_COMMAND_IDS.paste,
+          keystrokes: ['mod+v'],
+        }),
+      ])
+    )
+  })
+  it('should move the active row with keymap arrow navigation without resetting to the current file', async () => {
+    const mainFile = createFile('main.kcl')
+    const dogFile = createFile('dog.kcl')
+    project.children = [mainFile, dogFile]
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={mainFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    await waitFor(() => {
+      const rows = screen.getAllByTestId('file-tree-item')
+      expect(rows[1]).toHaveAttribute('aria-selected', 'true')
+    })
+
+    const [dogRow, mainRow] = screen.getAllByTestId('file-tree-item')
+    expect(dogRow.innerText).toBe('dog.kcl')
+    expect(mainRow.innerText).toBe('main.kcl')
+
+    fireEvent.click(mainRow)
+    expect(mainRow.className).toContain('outline-primary')
+
+    fireEvent.keyDown(window, { key: 'ArrowUp' })
+
+    await waitFor(() => {
+      expect(dogRow.className).toContain('outline-primary')
+    })
+    expect(mainRow).toHaveAttribute('aria-selected', 'true')
+  })
+  it('should collapse and reopen the current file parent folder with keymap arrow navigation', async () => {
+    const mainFile = createFile('main.kcl', 'parts/')
+    project.children = [createFolder('parts', [mainFile])]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={mainFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+        overrideApplicationProjectDirectory="applicationDirectory/"
+      />
+    )
+
+    await waitFor(() => {
+      const rows = screen.getAllByTestId('file-tree-item')
+      expect(rows).toHaveLength(2)
+      expect(rows[1]).toHaveAttribute('aria-selected', 'true')
+    })
+
+    fireEvent.click(screen.getByText('main.kcl'))
+    fireEvent.keyDown(window, { key: 'ArrowUp' })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('file-tree-item')[0].className).toContain(
+        'outline-primary'
+      )
+    })
+
+    fireEvent.keyDown(window, { key: 'ArrowLeft' })
+
+    await waitFor(() => {
+      const rows = screen.getAllByTestId('file-tree-item')
+      expect(rows).toHaveLength(1)
+      expect(rows[0].innerText).toBe('parts')
+      expect(rows[0]).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    fireEvent.keyDown(window, { key: 'ArrowRight' })
+
+    await waitFor(() => {
+      const rows = screen.getAllByTestId('file-tree-item')
+      expect(rows).toHaveLength(2)
+      expect(rows[0].innerText).toBe('parts')
+      expect(rows[0]).toHaveAttribute('aria-expanded', 'true')
+      expect(rows[1].innerText).toBe('main.kcl')
+    })
   })
   it('should render main.kcl on initialization within 3 nested folders', () => {
     const mainFile = createFile('main.kcl', 'parts/very/cool/')
