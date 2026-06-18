@@ -1,12 +1,20 @@
+import { STD_LIB_COMMANDS } from '@rust/kcl-lib/bindings/StdLibCommands'
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import { assertParse } from '@src/lang/wasm'
-import type { Artifact } from '@src/lang/wasm'
+import { type Artifact, assertParse } from '@src/lang/wasm'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
+  type ModelingCommandSchema,
   extrudeSelectionRequiresBodyType,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
   profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  type StdLibCommandDriftConfig,
+  modelingCommandStdLibDriftConfig,
+  modelingStdLibCommandArgs,
+  modelingStdLibCommandStatus,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
@@ -194,6 +202,25 @@ describe('Extrude bodyType argument', () => {
 })
 
 describe('Sweep-like bodyType argument', () => {
+  it('allows sweep profiles to be selected from sketches, segments, regions, and faces', () => {
+    const commandConfig = modelingMachineCommandConfig.Sweep
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(commandConfig.args?.sketches).toMatchObject({
+      inputType: 'selection',
+      selectionTypes: [
+        'solid2d',
+        'segment',
+        'cap',
+        'wall',
+        'pathRegion',
+        'engineRegion',
+      ],
+    })
+  })
+
   it('requires bodyType for sweep segment profiles after the path is selected', () => {
     expect(
       bodyTypeRequiredForCommand('Sweep', {
@@ -234,6 +261,124 @@ describe('Sweep-like bodyType argument', () => {
           },
         })
       ).toBe(false)
+    }
+  })
+})
+
+const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
+
+describe('stdlib command arg derivation', () => {
+  it('derives base command-bar arg config from KCL stdlib metadata', () => {
+    const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
+      'Extrude',
+      {
+        overrides: {
+          sketches: {
+            inputType: 'selection',
+            selectionTypes: [],
+            multiple: true,
+          },
+        },
+      }
+    )
+
+    expect(args.sketches).toMatchObject({
+      inputType: 'selection',
+      required: true,
+    })
+    expect(args.length).toMatchObject({ inputType: 'kcl', required: false })
+    expect(args.symmetric).toMatchObject({
+      inputType: 'boolean',
+      required: false,
+    })
+    expect(args.tagStart).toMatchObject({
+      inputType: 'tagDeclarator',
+      required: false,
+    })
+    expect(args.draftAngle).toMatchObject({
+      inputType: 'kcl',
+      required: false,
+      status: 'experimental',
+    })
+    expect(args.twistCenter).toMatchObject({
+      inputType: 'vector2d',
+      required: false,
+    })
+    expect('direction' in args).toBe(false)
+  })
+
+  it('derives command status from KCL stdlib metadata', () => {
+    expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
+    expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
+  })
+})
+
+describe('modeling command stdlib drift', () => {
+  it('covers every shared modeling codemod', () => {
+    expect(Object.keys(modelingCommandStdLibDriftConfig).sort()).toEqual(
+      Object.keys(modelingCommandCodemods).sort()
+    )
+  })
+
+  it('keeps command-bar args aligned with KCL stdlib signatures', () => {
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    ) as [string, StdLibCommandDriftConfig][]) {
+      const commandConfig =
+        modelingMachineCommandConfig[
+          commandName as keyof typeof modelingMachineCommandConfig
+        ]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const stdLibCommand = STD_LIB_COMMANDS[driftConfig.stdLibName]
+      expect(
+        stdLibCommand,
+        `${commandName} references missing stdlib function ${driftConfig.stdLibName}`
+      ).toBeDefined()
+
+      const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+      const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
+      const expectedStdLibArgOrder = stdLibCommand.args
+        .filter((arg) => arg.deprecatedSince === null)
+        .filter((arg) => !omittedStdLibArgs.has(arg.name))
+        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
+      const expectedArgs = uniqueSorted([
+        ...expectedStdLibArgOrder,
+        ...(driftConfig.uiOnlyArgs ?? []),
+        ...editFlowArgs,
+      ])
+      const actualArgOrder = Object.keys(commandConfig.args ?? {})
+      const actualArgs = uniqueSorted(actualArgOrder)
+
+      expect(
+        actualArgs,
+        `${commandName} command args drifted from ${driftConfig.stdLibName}. Add a command arg, or document the intentional difference in modelingCommandStdLibDriftConfig.`
+      ).toEqual(expectedArgs)
+
+      if (driftConfig.flowArgOrder) {
+        const actualFlowArgOrder = Object.entries(commandConfig.args ?? {})
+          .filter(([, arg]) => {
+            const { prepopulate, required, skip } = arg as {
+              prepopulate?: unknown
+              required?: unknown
+              skip?: unknown
+            }
+            return (
+              required === true ||
+              typeof required === 'function' ||
+              prepopulate === true ||
+              skip === false
+            )
+          })
+          .map(([argName]) => argName)
+
+        expect(
+          actualFlowArgOrder,
+          `${commandName} command-bar flow arg order drifted from the legacy command-bar order.`
+        ).toEqual(driftConfig.flowArgOrder)
+      }
     }
   })
 })
