@@ -1190,6 +1190,48 @@ mod test {
             .unwrap_or_else(|err| panic!("expected variable `{name}` to exist: {err:?}"))
     }
 
+    fn var_exists(result: &ExecTestResults, name: &str) -> bool {
+        result
+            .exec_state
+            .stack()
+            .memory
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
+            .is_ok()
+    }
+
+    fn assert_vars_are_tags(result: &ExecTestResults, names: &[&str]) {
+        for name in names {
+            assert!(
+                matches!(get_var(result, name), KclValue::TagIdentifier(_)),
+                "expected variable `{name}` to be a tag identifier"
+            );
+        }
+    }
+
+    fn assert_vars_are_missing(result: &ExecTestResults, names: &[&str]) {
+        for name in names {
+            assert!(!var_exists(result, name), "expected variable `{name}` to be absent");
+        }
+    }
+
+    fn assert_body_face_tags(result: &ExecTestResults, expected: &[&str], unexpected: &[&str]) {
+        let body = get_var(result, "body");
+        let KclValue::Solid { value: body } = body else {
+            panic!("expected `body` to be a solid");
+        };
+
+        for tag in expected {
+            assert!(body.faces.contains_key(*tag), "expected body.faces to contain `{tag}`");
+        }
+
+        for tag in unexpected {
+            assert!(
+                !body.faces.contains_key(*tag),
+                "expected body.faces not to contain sketch tag `{tag}`"
+            );
+        }
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
         // Set up a little framework for this test.
@@ -1384,48 +1426,59 @@ f(1, 2, 3)
     #[tokio::test(flavor = "multi_thread")]
     async fn extrude_tagged_body_gets_face_tags_and_keeps_legacy_bindings() {
         let program = r#"@settings(kclVersion = 2.0)
-profile = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $line1)
-  |> line(end = [0, 10])
-  |> line(end = [-10, 0])
-  |> close()
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region1 = region(point = [5mm, 5mm], sketch = profile)
 
-body = extrude(profile, length = 5, tagEnd = $top)
+body = extrude(region1, length = 5mm, tagStart = $bottom, tagEnd = $top)
+bottomFromBody = body.faces.bottom
 topFromBody = body.faces.top
-lineFromSketch = profile.tags.line1
-legacyLine = line1
+lineFromSketch = region1.tags.line1
+legacyBottom = bottom
 legacyTop = top
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let body = get_var(&result, "body");
-        let KclValue::Solid { value: body } = body else {
-            panic!("expected `body` to be a solid");
-        };
-
-        assert!(
-            !body.faces.contains_key("line1"),
-            "sketch path tags should stay off body faces"
+        assert_body_face_tags(&result, &["bottom", "top"], &["line1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "bottom",
+                "top",
+                "bottomFromBody",
+                "topFromBody",
+                "lineFromSketch",
+                "legacyBottom",
+                "legacyTop",
+            ],
         );
-        assert!(body.faces.contains_key("top"), "expected cap tag on body");
-        assert!(matches!(get_var(&result, "topFromBody"), KclValue::TagIdentifier(_)));
-        assert!(matches!(get_var(&result, "lineFromSketch"), KclValue::TagIdentifier(_)));
-        assert!(matches!(get_var(&result, "legacyLine"), KclValue::TagIdentifier(_)));
-        assert!(matches!(get_var(&result, "legacyTop"), KclValue::TagIdentifier(_)));
+        assert_vars_are_missing(&result, &["line1"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn extrude_without_tag_arguments_does_not_get_face_tags() {
         let program = r#"@settings(kclVersion = 2.0)
-profile = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $line1)
-  |> line(end = [0, 10])
-  |> line(end = [-10, 0])
-  |> close()
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region1 = region(point = [5mm, 5mm], sketch = profile)
 
-body = extrude(profile, length = 5)
+body = extrude(region1, length = 5mm)
 "#;
 
         let result = parse_execute(program).await.unwrap();
@@ -1443,30 +1496,219 @@ body = extrude(profile, length = 5)
     #[tokio::test(flavor = "multi_thread")]
     async fn revolve_tagged_body_gets_face_tags() {
         let program = r#"@settings(kclVersion = 2.0)
-profile = startSketchOn(XY)
-  |> startProfile(at = [5, 0])
-  |> yLine(length = 10, tag = $side)
-  |> xLine(length = 1)
-  |> yLine(length = -10)
-  |> close()
+profile = sketch(on = XY) {
+  side = line(start = [var 5mm, var 0mm], end = [var 5mm, var 10mm])
+  line2 = line(start = [var 5mm, var 10mm], end = [var 6mm, var 10mm])
+  line3 = line(start = [var 6mm, var 10mm], end = [var 6mm, var 0mm])
+  line4 = line(start = [var 6mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([side.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, side.start])
+}
+region1 = region(point = [5.5mm, 5mm], sketch = profile)
 
-body = revolve(profile, axis = Y, angle = 90, tagStart = $startCap)
+body = revolve(region1, axis = Y, angle = 90deg, tagStart = $startCap, tagEnd = $endCap)
 startFromBody = body.faces.startCap
-sideFromSketch = profile.tags.side
+endFromBody = body.faces.endCap
+sideFromSketch = region1.tags.side
+legacyStart = startCap
+legacyEnd = endCap
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let body = get_var(&result, "body");
-        let KclValue::Solid { value: body } = body else {
-            panic!("expected `body` to be a solid");
-        };
-
-        assert!(
-            !body.faces.contains_key("side"),
-            "sketch path tags should stay off revolved body faces"
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["side"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "startCap",
+                "endCap",
+                "startFromBody",
+                "endFromBody",
+                "sideFromSketch",
+                "legacyStart",
+                "legacyEnd",
+            ],
         );
-        assert!(body.faces.contains_key("startCap"), "expected cap tag on revolved body");
-        assert!(matches!(get_var(&result, "startFromBody"), KclValue::TagIdentifier(_)));
-        assert!(matches!(get_var(&result, "sideFromSketch"), KclValue::TagIdentifier(_)));
+        assert_vars_are_missing(&result, &["side"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XZ) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 0mm])
+  edge2 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 2mm])
+  edge3 = line(start = [var 2mm, var 2mm], end = [var 0mm, var 2mm])
+  edge4 = line(start = [var 0mm, var 2mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [1mm, 1mm], sketch = profile)
+
+pathSketch = sketch(on = offsetPlane(YZ, offset = -2mm)) {
+  pathLine = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5mm])
+}
+
+body = sweep(profileRegion, path = pathSketch.pathLine, tagStart = $startCap, tagEnd = $endCap)
+startFromBody = body.faces.startCap
+endFromBody = body.faces.endCap
+edgeFromSketch = profileRegion.tags.edge1
+pathFromSketch = pathSketch.pathLine
+legacyStart = startCap
+legacyEnd = endCap
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["edge1", "pathLine"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "startCap",
+                "endCap",
+                "startFromBody",
+                "endFromBody",
+                "edgeFromSketch",
+                "legacyStart",
+                "legacyEnd",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1", "pathLine"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+lowerProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+lowerRegion = region(point = [3mm, 2mm], sketch = lowerProfile)
+
+upperProfile = sketch(on = offsetPlane(XY, offset = 8mm)) {
+  edge5 = line(start = [var 1mm, var 1mm], end = [var 5mm, var 1mm])
+  edge6 = line(start = [var 5mm, var 1mm], end = [var 4mm, var 3mm])
+  edge7 = line(start = [var 4mm, var 3mm], end = [var 2mm, var 3mm])
+  edge8 = line(start = [var 2mm, var 3mm], end = [var 1mm, var 1mm])
+  coincident([edge5.end, edge6.start])
+  coincident([edge6.end, edge7.start])
+  coincident([edge7.end, edge8.start])
+  coincident([edge8.end, edge5.start])
+}
+upperRegion = region(point = [3mm, 2mm], sketch = upperProfile)
+
+body = loft([lowerRegion, upperRegion], tagStart = $startCap, tagEnd = $endCap)
+startFromBody = body.faces.startCap
+endFromBody = body.faces.endCap
+edgeFromSketch = lowerRegion.tags.edge1
+legacyStart = startCap
+legacyEnd = endCap
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["edge1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "startCap",
+                "endCap",
+                "startFromBody",
+                "endFromBody",
+                "edgeFromSketch",
+                "legacyStart",
+                "legacyEnd",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn chamfer_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+
+base = extrude(profileRegion, length = 5mm, tagEnd = $top)
+body = chamfer(base, tags = getCommonEdge(faces = [profileRegion.tags.edge1, top]), length = 1mm, tag = $chamferFace)
+chamferFromBody = body.faces.chamferFace
+topFromBody = body.faces.top
+edgeFromSketch = profileRegion.tags.edge1
+legacyChamfer = chamferFace
+legacyTop = top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["top", "chamferFace"], &["edge1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "top",
+                "chamferFace",
+                "chamferFromBody",
+                "topFromBody",
+                "edgeFromSketch",
+                "legacyChamfer",
+                "legacyTop",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fillet_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+
+base = extrude(profileRegion, length = 5mm, tagEnd = $top)
+body = fillet(base, tags = getCommonEdge(faces = [profileRegion.tags.edge1, top]), radius = 1mm, tag = $filletFace)
+filletFromBody = body.faces.filletFace
+topFromBody = body.faces.top
+edgeFromSketch = profileRegion.tags.edge1
+legacyFillet = filletFace
+legacyTop = top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["top", "filletFace"], &["edge1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "top",
+                "filletFace",
+                "filletFromBody",
+                "topFromBody",
+                "edgeFromSketch",
+                "legacyFillet",
+                "legacyTop",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1"]);
     }
 }
