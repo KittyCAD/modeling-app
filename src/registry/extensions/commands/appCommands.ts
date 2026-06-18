@@ -153,8 +153,7 @@ function toggleSnapToGrid(input: unknown) {
 
 function selectAllInCurrentSketchCommand(input: unknown) {
   const kclManager = getKclManager(input)
-  const state = kclManager?.modelingState
-  if (!kclManager || !state?.matches('Sketch')) {
+  if (!kclManager) {
     return
   }
 
