@@ -936,8 +936,21 @@ sketch001 = sketch(on = XZ) {
   ${circleCode}
 }
 region001 = region(segments = [sketch001.circle1])`
-    const sweepDeclaration = 'sweep001 = sweep(region001, path = helix001)'
-    const editedSweepDeclaration = `sweep001 = sweep(region001, path = helix001, relativeTo = sweep::SKETCH_PLANE)`
+    const sweepDeclaration = `sweep001 = sweep(
+  region001,
+  path = helix001,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`
+    const editedSweepDeclaration = `sweep001 = sweep(
+  region001,
+  path = helix001,
+  sectional = true,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -995,7 +1008,9 @@ region001 = region(segments = [sketch001.circle1])`
         stage: 'review',
       })
       await cmdBar.progressCmdBar(true)
-      await editor.expectEditor.toContain(sweepDeclaration)
+      await editor.expectEditor.toContain(sweepDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Go through the edit flow via feature tree', async () => {
@@ -1004,37 +1019,51 @@ region001 = region(segments = [sketch001.circle1])`
       await op.dblclick()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: {},
+        headerArguments: {
+          Version: '2',
+          TranslateProfileToPath: 'false',
+          OrientProfilePerpendicular: 'false',
+        },
         commandName: 'Sweep',
       })
-      await cmdBar.clickOptionalArgument('relativeTo')
+      await cmdBar.clickOptionalArgument('sectional')
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'relativeTo',
+        currentArgKey: 'sectional',
         currentArgValue: '',
         headerArguments: {
-          RelativeTo: '',
+          Version: '2',
+          TranslateProfileToPath: 'false',
+          OrientProfilePerpendicular: 'false',
+          Sectional: '',
         },
-        highlightedHeaderArg: 'relativeTo',
+        highlightedHeaderArg: 'sectional',
         commandName: 'Sweep',
       })
-      await cmdBar.selectOption({ name: 'Sketch Plane' }).click()
+      await cmdBar.selectOption({ name: 'On' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          RelativeTo: 'SKETCH_PLANE',
+          Version: '2',
+          TranslateProfileToPath: 'false',
+          OrientProfilePerpendicular: 'false',
+          Sectional: 'true',
         },
         commandName: 'Sweep',
       })
       await cmdBar.submit()
-      await editor.expectEditor.toContain(editedSweepDeclaration)
+      await editor.expectEditor.toContain(editedSweepDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Delete sweep via feature tree selection', async () => {
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
       await page.keyboard.press('Delete')
-      await editor.expectEditor.not.toContain(editedSweepDeclaration)
+      await editor.expectEditor.not.toContain(editedSweepDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 

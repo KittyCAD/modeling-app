@@ -68,7 +68,7 @@ export type ExtrudeCommandArgs = Override<
 >
 
 export type SweepCommandArgs = Override<
-  Omit<StdLibCommandArgs<'sweep'>, 'tolerance' | 'version'>,
+  Omit<StdLibCommandArgs<'sweep'>, 'tolerance'>,
   {
     relativeTo?: SweepRelativeTo
     bodyType?: KclPreludeBodyType

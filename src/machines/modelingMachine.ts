@@ -231,14 +231,20 @@ function findSceneObjectForPlaneSelection(
 
   if (plane.faceInfo.type === 'cap') {
     const capKind = plane.faceInfo.subType
-    return sceneGraphObjects.find(
-      (object) =>
-        object.kind.type === 'Cap' &&
-        object.kind.kind === capKind &&
-        object.source.type === 'BackTrace' &&
-        object.source.ranges.length === 1 &&
-        sourceRangesEqual(object.source.ranges[0][0], sweepRange)
-    )
+    return sceneGraphObjects.find((object) => {
+      if (
+        object.kind.type !== 'Cap' ||
+        object.kind.kind !== capKind ||
+        object.source.type !== 'BackTrace'
+      ) {
+        return false
+      }
+      const sweepSource = object.source.ranges.at(-1)
+      return (
+        sweepSource !== undefined &&
+        sourceRangesEqual(sweepSource[0], sweepRange)
+      )
+    })
   }
 
   const segmentRange = sourceRangeForPath(
@@ -248,14 +254,19 @@ function findSceneObjectForPlaneSelection(
   )
   if (err(segmentRange)) return undefined
 
-  return sceneGraphObjects.find(
-    (object) =>
-      object.kind.type === 'Wall' &&
-      object.source.type === 'BackTrace' &&
-      object.source.ranges.length === 2 &&
-      sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
-      sourceRangesEqual(object.source.ranges[1][0], segmentRange)
-  )
+  return sceneGraphObjects.find((object) => {
+    if (object.kind.type !== 'Wall' || object.source.type !== 'BackTrace') {
+      return false
+    }
+    const sweepSource = object.source.ranges.at(-2)
+    const segmentSource = object.source.ranges.at(-1)
+    return (
+      sweepSource !== undefined &&
+      segmentSource !== undefined &&
+      sourceRangesEqual(sweepSource[0], sweepRange) &&
+      sourceRangesEqual(segmentSource[0], segmentRange)
+    )
+  })
 }
 
 function getSelectedSketchBlockArtifact({

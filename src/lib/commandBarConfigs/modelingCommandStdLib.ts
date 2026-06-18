@@ -164,7 +164,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'sweep',
     editFlow: true,
     flowArgOrder: ['sketches', 'path', 'bodyType'],
-    omittedStdLibArgs: ['tolerance', 'version'],
+    omittedStdLibArgs: ['tolerance'],
   },
   Loft: {
     stdLibName: 'loft',
