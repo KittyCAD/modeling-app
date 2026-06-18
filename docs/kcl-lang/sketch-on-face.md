@@ -7,6 +7,8 @@ layout: manual
 When you sketch on a plane and extrude, a new solid is created.
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 squareSketch = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
@@ -24,6 +26,8 @@ However, when you sketch on the face of an existing solid, extruding extends the
 existing solid.
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 squareSketch = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
@@ -55,6 +59,8 @@ the sketch on the same plane. Since it's not directly on the first solid's face,
 extrusions do not modify the solid. They create new solids instead.
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 squareSketch = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
@@ -80,6 +86,8 @@ The second way to create a separate solid is by using the `method` parameter of
 that the method should create a new solid using `method = NEW`.
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 squareSketch = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
