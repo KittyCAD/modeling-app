@@ -49,9 +49,7 @@ pub enum TransportCreationError {}
 /// 2. wasm in the browser sandbox, using wasm-bindgen to get a handle for
 /// sending and receiving data over the websocket.
 #[async_trait::async_trait]
-pub trait EngineTransport: Sized {
-    type Requirements;
-
+pub trait EngineTransport {
     async fn inner_fire_modeling_cmd(
         &self,
         cmd_id: uuid::Uuid,
@@ -59,9 +57,6 @@ pub trait EngineTransport: Sized {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<(), KclError>;
-
-    /// Start a long-lived actor that reads from
-    async fn spawn(requirements: Self::Requirements, heartbeats: Option<u64>) -> Result<Self, TransportCreationError>;
 
     async fn close(self) -> Result<(), TransportCloseError>;
 }
@@ -74,7 +69,7 @@ mod wasm_transport {
     use kittycad_modeling_cmds as kcmc;
     use uuid::Uuid;
 
-    use super::{EngineTransport, TransportCloseError, TransportCreationError};
+    use super::{EngineTransport, TransportCloseError};
 
     use std::collections::HashMap;
 
@@ -84,8 +79,6 @@ mod wasm_transport {
 
     #[async_trait::async_trait]
     impl EngineTransport for WasmTransport {
-        type Requirements = ();
-
         async fn inner_fire_modeling_cmd(
             &self,
             _cmd_id: Uuid,
@@ -93,14 +86,6 @@ mod wasm_transport {
             _cmd: WebSocketRequest,
             _id_to_source_range: HashMap<Uuid, SourceRange>,
         ) -> Result<(), KclError> {
-            todo!()
-        }
-
-        /// Start a long-lived actor that reads from
-        async fn spawn(
-            _requirements: Self::Requirements,
-            _heartbeats: Option<u64>,
-        ) -> Result<Self, TransportCreationError> {
             todo!()
         }
 
@@ -212,156 +197,8 @@ mod ws_transport {
     }
 
     impl WebSocketTransport {
-        async fn inner_send_to_engine_binary(
-            request: WebSocketRequest,
-            tcp_write: &mut WebSocketTcpWrite,
-        ) -> anyhow::Result<()> {
-            let msg = rmp_serde::to_vec_named(&request).map_err(|e| anyhow!("could not serialize msgpack: {e}"))?;
-            tcp_write
-                .send(WsMsg::Binary(msg.into()))
-                .await
-                .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
-            Ok(())
-        }
-
-        /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
-        async fn inner_send_to_engine(
-            request: WebSocketRequest,
-            tcp_write: &mut WebSocketTcpWrite,
-        ) -> anyhow::Result<()> {
-            let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
-            tcp_write
-                .send(WsMsg::Text(msg.into()))
-                .await
-                .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
-            Ok(())
-        }
-
-        async fn start_write_actor(
-            mut tcp_write: WebSocketTcpWrite,
-            mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
-            mut shutdown_rx: mpsc::Receiver<()>,
-            heartbeats: Option<u64>,
-        ) {
-            let heartbeats = heartbeats.unwrap_or_default();
-            let send_heartbeats = heartbeats != 0;
-            let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
-            let period = Duration::from_secs(period_seconds);
-            let mut heartbeats_stream = tokio::time::interval(period);
-
-            loop {
-                tokio::select! {
-                    maybe_req = engine_req_rx.recv() => {
-                        match maybe_req {
-                            Some(ToEngineReq { req, request_sent }) => {
-                                // Decide whether to send as binary or text,
-                                // then send to the engine.
-                                let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
-                                    cmd: ModelingCmd::ImportFiles { .. },
-                                    cmd_id: _,
-                                }) = &req
-                                {
-                                    Self::inner_send_to_engine_binary(req, &mut tcp_write).await
-                                } else {
-                                    Self::inner_send_to_engine(req, &mut tcp_write).await
-                                };
-
-                                // Let the caller know we’ve sent the request (ok or error).
-                                let _ = request_sent.send(res);
-                            }
-                            None => {
-                                // The engine_req_rx channel has closed, so no more requests.
-                                // We'll gracefully exit the loop and close the engine.
-                                break;
-                            }
-                        }
-                    },
-
-                    // If we get a shutdown signal, close the engine immediately and return.
-                    _ = shutdown_rx.recv() => {
-                        let _ = Self::inner_close_engine(&mut tcp_write).await;
-                        return;
-                    }
-
-                    // Send heartbeats periodically.
-                    _ = heartbeats_stream.tick(), if send_heartbeats => {
-                        // Send a heartbeat.
-                        let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
-                        // We don't really care if a heartbeat fails, we'll just try again soon.
-                        let _ = res;
-                    }
-                }
-            }
-
-            // If we exit the loop (e.g. engine_req_rx was closed),
-            // still gracefully close the engine before returning.
-            let _ = Self::inner_close_engine(&mut tcp_write).await;
-        }
-
-        /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
-        async fn inner_close_engine(tcp_write: &mut WebSocketTcpWrite) -> anyhow::Result<()> {
-            tcp_write
-                .send(WsMsg::Close(None))
-                .await
-                .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
-            Ok(())
-        }
-    }
-
-    #[async_trait::async_trait]
-    impl EngineTransport for WebSocketTransport {
-        type Requirements = reqwest::Upgraded;
-
-        async fn inner_fire_modeling_cmd(
-            &self,
-            _cmd_id: uuid::Uuid,
-            source_range: SourceRange,
-            cmd: WebSocketRequest,
-            _id_to_source_range: HashMap<Uuid, SourceRange>,
-        ) -> Result<(), KclError> {
-            let (tx, rx) = oneshot::channel();
-
-            // Send the request to the engine, via the actor.
-            self.engine_req_tx
-                .send(ToEngineReq {
-                    req: cmd.clone(),
-                    request_sent: tx,
-                })
-                .await
-                .map_err(|e| {
-                    KclError::new_engine(KclErrorDetails::new(
-                        format!("Failed to send modeling command: {e}"),
-                        vec![source_range],
-                    ))
-                })?;
-
-            // Wait for the request to be sent.
-            rx.await
-                .map_err(|e| {
-                    KclError::new_engine_hangup(
-                        KclErrorDetails::new(
-                            format!("could not send request to the engine actor: {e}"),
-                            vec![source_range],
-                        ),
-                        None,
-                    )
-                })?
-                .map_err(|e| {
-                    KclError::new_engine_hangup(
-                        KclErrorDetails::new(format!("could not send request to the engine: {e}"), vec![source_range]),
-                        None,
-                    )
-                })?;
-
-            Ok(())
-        }
-
         /// Start a long-lived actor that reads from
-        async fn spawn(
-            requirements: Self::Requirements,
-            heartbeats: Option<u64>,
-        ) -> Result<Self, TransportCreationError> {
-            let ws = requirements;
+        async fn spawn(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Result<Self, TransportCreationError> {
             let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
                 // 4294967296 bytes, which is around 4.2 GB.
                 .max_message_size(Some(usize::MAX))
@@ -523,6 +360,148 @@ mod ws_transport {
             })
         }
 
+        async fn inner_send_to_engine_binary(
+            request: WebSocketRequest,
+            tcp_write: &mut WebSocketTcpWrite,
+        ) -> anyhow::Result<()> {
+            let msg = rmp_serde::to_vec_named(&request).map_err(|e| anyhow!("could not serialize msgpack: {e}"))?;
+            tcp_write
+                .send(WsMsg::Binary(msg.into()))
+                .await
+                .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
+            Ok(())
+        }
+
+        /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
+        async fn inner_send_to_engine(
+            request: WebSocketRequest,
+            tcp_write: &mut WebSocketTcpWrite,
+        ) -> anyhow::Result<()> {
+            let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
+            tcp_write
+                .send(WsMsg::Text(msg.into()))
+                .await
+                .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+            Ok(())
+        }
+
+        async fn start_write_actor(
+            mut tcp_write: WebSocketTcpWrite,
+            mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
+            mut shutdown_rx: mpsc::Receiver<()>,
+            heartbeats: Option<u64>,
+        ) {
+            let heartbeats = heartbeats.unwrap_or_default();
+            let send_heartbeats = heartbeats != 0;
+            let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
+            let period = Duration::from_secs(period_seconds);
+            let mut heartbeats_stream = tokio::time::interval(period);
+
+            loop {
+                tokio::select! {
+                    maybe_req = engine_req_rx.recv() => {
+                        match maybe_req {
+                            Some(ToEngineReq { req, request_sent }) => {
+                                // Decide whether to send as binary or text,
+                                // then send to the engine.
+                                let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                                    cmd: ModelingCmd::ImportFiles { .. },
+                                    cmd_id: _,
+                                }) = &req
+                                {
+                                    Self::inner_send_to_engine_binary(req, &mut tcp_write).await
+                                } else {
+                                    Self::inner_send_to_engine(req, &mut tcp_write).await
+                                };
+
+                                // Let the caller know we’ve sent the request (ok or error).
+                                let _ = request_sent.send(res);
+                            }
+                            None => {
+                                // The engine_req_rx channel has closed, so no more requests.
+                                // We'll gracefully exit the loop and close the engine.
+                                break;
+                            }
+                        }
+                    },
+
+                    // If we get a shutdown signal, close the engine immediately and return.
+                    _ = shutdown_rx.recv() => {
+                        let _ = Self::inner_close_engine(&mut tcp_write).await;
+                        return;
+                    }
+
+                    // Send heartbeats periodically.
+                    _ = heartbeats_stream.tick(), if send_heartbeats => {
+                        // Send a heartbeat.
+                        let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
+                        // We don't really care if a heartbeat fails, we'll just try again soon.
+                        let _ = res;
+                    }
+                }
+            }
+
+            // If we exit the loop (e.g. engine_req_rx was closed),
+            // still gracefully close the engine before returning.
+            let _ = Self::inner_close_engine(&mut tcp_write).await;
+        }
+
+        /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
+        async fn inner_close_engine(tcp_write: &mut WebSocketTcpWrite) -> anyhow::Result<()> {
+            tcp_write
+                .send(WsMsg::Close(None))
+                .await
+                .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
+            Ok(())
+        }
+    }
+
+    #[async_trait::async_trait]
+    impl EngineTransport for WebSocketTransport {
+        async fn inner_fire_modeling_cmd(
+            &self,
+            _cmd_id: uuid::Uuid,
+            source_range: SourceRange,
+            cmd: WebSocketRequest,
+            _id_to_source_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<(), KclError> {
+            let (tx, rx) = oneshot::channel();
+
+            // Send the request to the engine, via the actor.
+            self.engine_req_tx
+                .send(ToEngineReq {
+                    req: cmd.clone(),
+                    request_sent: tx,
+                })
+                .await
+                .map_err(|e| {
+                    KclError::new_engine(KclErrorDetails::new(
+                        format!("Failed to send modeling command: {e}"),
+                        vec![source_range],
+                    ))
+                })?;
+
+            // Wait for the request to be sent.
+            rx.await
+                .map_err(|e| {
+                    KclError::new_engine_hangup(
+                        KclErrorDetails::new(
+                            format!("could not send request to the engine actor: {e}"),
+                            vec![source_range],
+                        ),
+                        None,
+                    )
+                })?
+                .map_err(|e| {
+                    KclError::new_engine_hangup(
+                        KclErrorDetails::new(format!("could not send request to the engine: {e}"), vec![source_range]),
+                        None,
+                    )
+                })?;
+
+            Ok(())
+        }
+
         async fn close(self) -> Result<(), TransportCloseError> {
             let _ = self.shutdown_tx.send(()).await;
             loop {
@@ -548,11 +527,10 @@ impl ResponseInformation {
     }
 }
 
-#[derive(Debug)]
-pub struct UnifiedConnection<Transport> {
+pub struct UnifiedConnection {
     // Replaces `engine_req_tx: mpsc::Sender<ToEngineReq>`
     // from the original native connection type.
-    transport: Transport,
+    transport: Arc<Box<dyn EngineTransport>>,
     shutdown_tx: mpsc::Sender<()>,
     responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
@@ -571,10 +549,23 @@ pub struct UnifiedConnection<Transport> {
     debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
 }
 
-impl<Transport> UnifiedConnection<Transport>
-where
-    Transport: EngineTransport,
-{
+impl std::fmt::Debug for UnifiedConnection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("UnifiedConnection")
+            .field("responses", &self.responses)
+            .field("pending_errors", &self.pending_errors)
+            .field("socket_health", &self.socket_health)
+            .field("ids_of_async_commands", &self.ids_of_async_commands)
+            .field("default_planes", &self.default_planes)
+            .field("session_data", &self.session_data)
+            .field("stats", &self.stats)
+            .field("async_tasks", &self.async_tasks)
+            .field("debug_info", &self.debug_info)
+            .finish()
+    }
+}
+
+impl UnifiedConnection {
     /// Take the ids of async commands that have accumulated so far and clear them.
     async fn take_ids_of_async_commands(&self) -> IndexMap<Uuid, SourceRange> {
         std::mem::take(&mut *self.ids_of_async_commands().write().await)
