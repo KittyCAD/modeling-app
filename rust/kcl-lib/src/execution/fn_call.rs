@@ -319,7 +319,7 @@ impl FunctionSource {
         }
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
-        let body_tag_names = body_tag_names_for_call(self, &args);
+        let face_tag_names = face_tag_names_for_call(self, &args);
 
         // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
@@ -503,8 +503,8 @@ impl FunctionSource {
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
-            if !body_tag_names.is_empty() {
-                attach_body_tags_to_geometry(result, exec_state, &body_tag_names);
+            if !face_tag_names.is_empty() {
+                attach_face_tags_to_geometry(result, exec_state, &face_tag_names);
             }
         }
 
@@ -554,12 +554,12 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
     }
 }
 
-fn body_tag_names_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> Vec<String> {
+fn face_tag_names_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> Vec<String> {
     let Some(std_props) = &fn_def.std_props else {
         return Vec::new();
     };
 
-    if !std_function_allows_body_tags(&std_props.name) {
+    if !std_function_allows_face_tags(&std_props.name) {
         return Vec::new();
     }
 
@@ -573,7 +573,7 @@ fn body_tag_names_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> V
         .collect()
 }
 
-fn std_function_allows_body_tags(std_fn_name: &str) -> bool {
+fn std_function_allows_face_tags(std_fn_name: &str) -> bool {
     matches!(
         std_fn_name,
         "std::sketch::extrude"
@@ -585,19 +585,19 @@ fn std_function_allows_body_tags(std_fn_name: &str) -> bool {
     )
 }
 
-fn attach_body_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState, tag_names: &[String]) {
+fn attach_face_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState, tag_names: &[String]) {
     match result {
-        KclValue::Solid { value } => attach_body_tags_to_solid(value, exec_state, tag_names),
+        KclValue::Solid { value } => attach_face_tags_to_solid(value, exec_state, tag_names),
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
-                attach_body_tags_to_geometry(v, exec_state, tag_names);
+                attach_face_tags_to_geometry(v, exec_state, tag_names);
             }
         }
         _ => {}
     }
 }
 
-fn attach_body_tags_to_solid(solid: &mut Solid, exec_state: &ExecState, tag_names: &[String]) {
+fn attach_face_tags_to_solid(solid: &mut Solid, exec_state: &ExecState, tag_names: &[String]) {
     let surfaces = solid.value.clone();
     for surface in surfaces {
         let Some(tag) = surface.get_tag() else {
@@ -631,10 +631,10 @@ fn attach_body_tags_to_solid(solid: &mut Solid, exec_state: &ExecState, tag_name
                 }
             });
 
-        match solid.tags.get_mut(&tag.name) {
+        match solid.faces.get_mut(&tag.name) {
             Some(existing_tag) => existing_tag.merge_info(&tag_id),
             None => {
-                solid.tags.insert(tag.name.clone(), tag_id);
+                solid.faces.insert(tag.name.clone(), tag_id);
             }
         }
     }
@@ -644,7 +644,7 @@ fn clear_tags_from_solid_copy(solid: &mut Solid) {
     if let Some(sketch) = solid.sketch_mut() {
         sketch.tags.clear(); // Avoid recursive tags.
     }
-    solid.tags.clear();
+    solid.faces.clear();
 }
 
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
@@ -1382,7 +1382,7 @@ f(1, 2, 3)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn extrude_tagged_body_gets_body_tags_and_keeps_legacy_bindings() {
+    async fn extrude_tagged_body_gets_face_tags_and_keeps_legacy_bindings() {
         let program = r#"@settings(kclVersion = 2.0)
 profile = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -1392,7 +1392,7 @@ profile = startSketchOn(XY)
   |> close()
 
 body = extrude(profile, length = 5, tagEnd = $top)
-topFromBody = body.tags.top
+topFromBody = body.faces.top
 lineFromSketch = profile.tags.line1
 legacyLine = line1
 legacyTop = top
@@ -1405,10 +1405,10 @@ legacyTop = top
         };
 
         assert!(
-            !body.tags.contains_key("line1"),
-            "sketch path tags should stay off body tags"
+            !body.faces.contains_key("line1"),
+            "sketch path tags should stay off body faces"
         );
-        assert!(body.tags.contains_key("top"), "expected cap tag on body");
+        assert!(body.faces.contains_key("top"), "expected cap tag on body");
         assert!(matches!(get_var(&result, "topFromBody"), KclValue::TagIdentifier(_)));
         assert!(matches!(get_var(&result, "lineFromSketch"), KclValue::TagIdentifier(_)));
         assert!(matches!(get_var(&result, "legacyLine"), KclValue::TagIdentifier(_)));
@@ -1416,7 +1416,7 @@ legacyTop = top
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn extrude_without_tag_arguments_does_not_get_body_tags() {
+    async fn extrude_without_tag_arguments_does_not_get_face_tags() {
         let program = r#"@settings(kclVersion = 2.0)
 profile = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -1435,13 +1435,13 @@ body = extrude(profile, length = 5)
         };
 
         assert!(
-            body.tags.is_empty(),
-            "body tags should only be populated for tagged calls"
+            body.faces.is_empty(),
+            "body faces should only be populated for tagged calls"
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn revolve_tagged_body_gets_body_tags() {
+    async fn revolve_tagged_body_gets_face_tags() {
         let program = r#"@settings(kclVersion = 2.0)
 profile = startSketchOn(XY)
   |> startProfile(at = [5, 0])
@@ -1451,7 +1451,7 @@ profile = startSketchOn(XY)
   |> close()
 
 body = revolve(profile, axis = Y, angle = 90, tagStart = $startCap)
-startFromBody = body.tags.startCap
+startFromBody = body.faces.startCap
 sideFromSketch = profile.tags.side
 "#;
 
@@ -1462,10 +1462,10 @@ sideFromSketch = profile.tags.side
         };
 
         assert!(
-            !body.tags.contains_key("side"),
-            "sketch path tags should stay off revolved body tags"
+            !body.faces.contains_key("side"),
+            "sketch path tags should stay off revolved body faces"
         );
-        assert!(body.tags.contains_key("startCap"), "expected cap tag on revolved body");
+        assert!(body.faces.contains_key("startCap"), "expected cap tag on revolved body");
         assert!(matches!(get_var(&result, "startFromBody"), KclValue::TagIdentifier(_)));
         assert!(matches!(get_var(&result, "sideFromSketch"), KclValue::TagIdentifier(_)));
     }

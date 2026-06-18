@@ -3330,19 +3330,29 @@ impl Node<MemberExpression> {
                 }
                 .continue_())
             }
-            (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "tags" => {
+            (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "faces" => {
                 Ok(KclValue::Object {
                     meta: vec![Metadata {
                         source_range: SourceRange::from(self.clone()),
                     }],
                     value: solid
-                        .tags
+                        .faces
                         .iter()
                         .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                         .collect(),
                     constrainable: false,
                 }
                 .continue_())
+            }
+            (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
+                // This is a common mistake.
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Property `{prop}` not found on {}. You can get a solid's faces through `exampleSolid.faces`, or its sketch tags through `exampleSolid.sketch.tags`.",
+                        geometry.human_friendly_type()
+                    ),
+                    vec![self.clone().into()],
+                )))
             }
             (KclValue::Sketch { value: sk }, Property::String(prop), false) if prop == "tags" => Ok(KclValue::Object {
                 meta: vec![Metadata {
