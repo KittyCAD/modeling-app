@@ -20,6 +20,7 @@ import {
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/fs-zds/opfsCloud'
+import { withRemoteProjectMetadataInArchiveFiles } from '@src/lib/fs-zds/opfsCloud/projectArchive'
 import { describe, expect, it } from 'vitest'
 
 const encoder = new TextEncoder()
@@ -118,7 +119,46 @@ describe('opfsCloud sync helpers', () => {
           (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
         )?.data
       )
-    ).toBe('default_file = "main.kcl"\n')
+    ).toContain('default_file = "main.kcl"')
+    expect(
+      new TextDecoder().decode(
+        payload.files.find(
+          (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+        )?.data
+      )
+    ).toContain('title = "bracket"')
+  })
+
+  it('adds the upload title to project.toml when local project settings have no title', () => {
+    const payload = prepareProjectFilesForCloudUpload('/projects/bracket', [
+      projectFile('main.kcl'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, 'default_file = "main.kcl"\n'),
+    ])
+    const projectToml = new TextDecoder().decode(
+      payload.files.find(
+        (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+      )?.data
+    )
+
+    expect(payload.body.title).toBe('bracket')
+    expect(projectToml).toContain('default_file = "main.kcl"')
+    expect(projectToml).toContain('title = "bracket"')
+  })
+
+  it('adds an Untitled project.toml title when remote project metadata has no title', () => {
+    const files = withRemoteProjectMetadataInArchiveFiles(
+      [projectFile('main.kcl')],
+      undefined,
+      'remote-project-123',
+      'dev.zoo.dev'
+    )
+    const projectToml = new TextDecoder().decode(
+      files.find((file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME)
+        ?.data
+    )
+
+    expect(projectToml).toContain('title = "Untitled"')
+    expect(projectToml).toContain('project_id = "remote-project-123"')
   })
 
   it('excludes files ignored by project .gitignore from cloud sync manifests and uploads', () => {
