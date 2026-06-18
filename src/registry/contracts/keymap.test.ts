@@ -11,6 +11,7 @@ import {
   createKeymapTree,
   createKeymapTreeFromContributions,
   findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
   matchKeymapKeystrokes,
   normalizeEventKey,
   normalizeKeymapChord,
@@ -32,6 +33,12 @@ describe('keymap contract', () => {
       type: 'full',
       item,
     })
+  })
+
+  it('formats keymap keystrokes for display', () => {
+    expect(keymapKeystrokesDisplay(['mod+k', 'p'], 'windows')).toBe('Ctrl+K P')
+    expect(keymapKeystrokesDisplay(['mod+k'], 'macos')).toBe('⌘K')
+    expect(keymapKeystrokesDisplay([], 'linux')).toBeUndefined()
   })
 
   it('normalizes modified alt-including keyboard events from their unmodified key code', () => {
