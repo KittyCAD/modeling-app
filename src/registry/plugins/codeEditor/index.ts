@@ -4,7 +4,6 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
@@ -16,6 +15,10 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
@@ -55,7 +58,18 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
-  const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)
+  const keymap = app.registry.optional(keymapService)
+  const renderHotkeyLabel = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.editor.render,
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [RENDER_HOTKEY],
+    platform
+  )
 
   if (!currentProject || automaticallyRenderEnabled || !executionService) {
     return null
