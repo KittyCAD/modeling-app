@@ -2,6 +2,7 @@ import { defineRegistryItem, provide } from '@kittycad/registry'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
@@ -143,11 +144,29 @@ export const defaultKeymap: KeymapDocument = {
       command: APP_COMMAND_IDS.editor.undo,
     },
     {
+      id: 'editor.undo.code-editor-focused',
+      title: 'Undo',
+      scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+z'],
+      command: APP_COMMAND_IDS.editor.undo,
+      hidden: true,
+      userBindingCommand: APP_COMMAND_IDS.editor.undo,
+    },
+    {
       id: 'editor.redo',
       title: 'Redo',
       scopes: FILE_KEYMAP_SCOPES,
       keystrokes: ['mod+shift+z'],
       command: APP_COMMAND_IDS.editor.redo,
+    },
+    {
+      id: 'editor.redo.code-editor-focused',
+      title: 'Redo',
+      scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+shift+z'],
+      command: APP_COMMAND_IDS.editor.redo,
+      hidden: true,
+      userBindingCommand: APP_COMMAND_IDS.editor.redo,
     },
     ...(!isDesktop()
       ? [

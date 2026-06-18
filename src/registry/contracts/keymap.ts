@@ -497,9 +497,9 @@ function getKeymapItemUserBindingCommand(item: KeymapItem) {
 
 function isKeymapLinkedUserBinding(item: KeymapItem, binding: KeymapBinding) {
   return (
+    item.hidden === true &&
     item.userBindingCommand !== undefined &&
-    item.userBindingCommand === binding.command &&
-    item.command !== binding.command
+    item.userBindingCommand === binding.command
   )
 }
 
