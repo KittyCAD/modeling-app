@@ -38,7 +38,7 @@ import {
   codeRefFromRange,
   defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
-import { assertParse } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
 import type {
   Artifact,
   ArtifactGraph,
@@ -252,6 +252,61 @@ const KCL_GET_COMMON_EDGE = `body = startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $cap1)
   |> fillet(radius = 1, tags = [getCommonEdge(faces = [e1, cap1])])
+`
+
+const KCL_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE = `@settings(kclVersion = 2.0)
+
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+
+baseRegion = region(point = [5mm, 5mm], sketch = profile)
+body = extrude(baseRegion, length = 5mm)
+
+filleted = fillet(
+  body,
+  radius = 1mm,
+  tags = [getOppositeEdge(baseRegion.tags.edge1)],
+)
+`
+
+const EXPECTED_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE = `@settings(kclVersion = 2.0)
+
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+
+baseRegion = region(point = [5mm, 5mm], sketch = profile)
+body = extrude(baseRegion, length = 5mm, tagEnd = $capEnd001)
+
+filleted = fillet(
+  body,
+  radius = 1mm,
+  edges = [
+    {
+      sideFaces = [
+        baseRegion.tags.edge1,
+        capEnd001
+      ]
+    }
+  ],
+)
 `
 
 // Extrude to edge via deprecated getCommonEdge; refactor should produce to = { sideFaces = [facetag0, facetag1] }
@@ -1127,6 +1182,29 @@ describe('refactorZ0006Unified', () => {
           n,
           'Refactored code must contain exact fillet block with bs.tags.x style'
         ).toContain(norm(expectedFilletBlock))
+      }
+    )
+
+    it(
+      'refactors sketch-block region getOppositeEdge to edgeRefs with region and cap tags',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        const expected = recast(
+          assertParse(
+            EXPECTED_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE,
+            instanceInThisFile
+          ),
+          instanceInThisFile
+        )
+        expect(err(expected)).toBe(false)
+        if (err(expected)) throw expected
+        expect(n).toBe(norm(expected))
+        expect(n).not.toContain('baseRegion.tags.capEnd001')
       }
     )
 
