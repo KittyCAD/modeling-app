@@ -9,7 +9,7 @@ import {
   mergeZookeeperEditPatches,
   zookeeperEditPatchHistoryEvent,
 } from '@src/editor/plugins/zookeeper'
-import { File, KclManager } from '@src/lang/KclManager'
+import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
@@ -17,6 +17,7 @@ import type { Project } from '@src/lib/project'
 import { loadWasm } from '@src/unitTestUtils'
 
 const apps: App[] = []
+const historyDisposers: Array<() => void> = []
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -27,6 +28,9 @@ beforeAll(async () => {
 
 afterEach(async () => {
   vi.restoreAllMocks()
+  for (const disposeHistory of historyDisposers.splice(0)) {
+    disposeHistory()
+  }
   for (const app of apps.splice(0)) {
     await disposeApp(app)
   }
@@ -1188,6 +1192,28 @@ async function createProjectHarness(files: Record<string, string>) {
   const kclManager = await openedProject.openEditor(
     fsZds.join(projectPath, 'main.kcl')
   )
+  historyDisposers.push(
+    buildZookeeperHistoryExtension({
+      kclManager,
+      onCurrentFileDelete: async (deletedPaths) => {
+        const fallbackPath = getZookeeperReplayFallbackFilePath(
+          openedProject,
+          deletedPaths
+        )
+        if (!fallbackPath) {
+          return
+        }
+
+        await openedProject.openEditor(fallbackPath, kclManager)
+      },
+      onActiveFileRestore: async (path, contents) => {
+        await openedProject.openEditor(path, kclManager, contents)
+      },
+      onProjectFilesReplay: async (replayFiles) => {
+        await openedProject.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+  )
   await Promise.resolve()
   return { app, projectPath, kclManager }
 }
@@ -1392,4 +1418,17 @@ async function disposeApp(app: App) {
   if (projectPath) {
     await fsZds.rm(projectPath, { recursive: true, force: true })
   }
+}
+
+function getZookeeperReplayFallbackFilePath(
+  project: ZDSProject,
+  deletedPaths: Set<string>
+) {
+  const defaultFile = project.projectIORefSignal.value.default_file
+  const candidates = [
+    defaultFile,
+    ...project.files.map((file) => file.path),
+  ].filter((path, index, paths) => paths.indexOf(path) === index)
+
+  return candidates.find((path) => path && !deletedPaths.has(path))
 }

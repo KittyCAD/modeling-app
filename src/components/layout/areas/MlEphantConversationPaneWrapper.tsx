@@ -4,8 +4,12 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import {
+  buildZookeeperHistoryExtension,
+  zookeeperEditPatchHistoryEvent,
+} from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { ZDSProject } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isCodeTheSame } from '@src/lib/codeEditor'
@@ -138,6 +142,32 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       kclManager.zookeeperHistoryRecordingInProgress = false
     }
   }, [kclManager])
+  useEffect(() => {
+    if (!project) {
+      return
+    }
+
+    return buildZookeeperHistoryExtension({
+      kclManager,
+      onCurrentFileDelete: async (deletedPaths) => {
+        const fallbackPath = getZookeeperReplayFallbackFilePath(
+          project,
+          deletedPaths
+        )
+        if (!fallbackPath) {
+          return
+        }
+
+        await project.openEditor(fallbackPath, kclManager)
+      },
+      onActiveFileRestore: async (path, contents) => {
+        await project.openEditor(path, kclManager, contents)
+      },
+      onProjectFilesReplay: async (replayFiles) => {
+        await project.syncReplayedFilesToRust(replayFiles)
+      },
+    })
+  }, [kclManager, project])
   const recordZookeeperHistory = useCallback(
     ({
       activeFileDeleted,
@@ -485,6 +515,19 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       />
     </LayoutPanel>
   )
+}
+
+function getZookeeperReplayFallbackFilePath(
+  project: ZDSProject,
+  deletedPaths: Set<string>
+) {
+  const defaultFile = project.projectIORefSignal.value.default_file
+  const candidates = [
+    defaultFile,
+    ...project.files.map((file) => file.path),
+  ].filter((path, index, paths) => paths.indexOf(path) === index)
+
+  return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
 type PendingZookeeperHistory = {
