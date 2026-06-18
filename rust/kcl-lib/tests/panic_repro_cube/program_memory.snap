@@ -104,7 +104,7 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capStart001": {
           "type": "TagIdentifier",
           "value": "capStart001"

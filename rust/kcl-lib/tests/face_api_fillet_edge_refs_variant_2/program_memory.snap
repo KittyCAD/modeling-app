@@ -275,7 +275,7 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "endCap": {
           "type": "TagIdentifier",
           "value": "endCap"
@@ -844,7 +844,7 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "endCap": {
           "type": "TagIdentifier",
           "value": "endCap"

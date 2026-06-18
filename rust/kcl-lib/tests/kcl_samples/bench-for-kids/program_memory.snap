@@ -173,7 +173,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
-          "tags": {
+          "faces": {
             "legCapStart": {
               "type": "TagIdentifier",
               "value": "legCapStart"
@@ -335,7 +335,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
-          "tags": {
+          "faces": {
             "legCapStart": {
               "type": "TagIdentifier",
               "value": "legCapStart"
@@ -497,7 +497,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
-          "tags": {
+          "faces": {
             "legCapStart": {
               "type": "TagIdentifier",
               "value": "legCapStart"
@@ -659,7 +659,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
-          "tags": {
+          "faces": {
             "legCapStart": {
               "type": "TagIdentifier",
               "value": "legCapStart"
@@ -869,7 +869,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "earCapEnd": {
           "type": "TagIdentifier",
           "value": "earCapEnd"
@@ -1463,7 +1463,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
-          "tags": {
+          "faces": {
             "earCapEnd": {
               "type": "TagIdentifier",
               "value": "earCapEnd"
@@ -1625,7 +1625,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
-          "tags": {
+          "faces": {
             "earCapEnd": {
               "type": "TagIdentifier",
               "value": "earCapEnd"
@@ -1789,7 +1789,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "legCapStart": {
           "type": "TagIdentifier",
           "value": "legCapStart"
@@ -1951,7 +1951,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "legCapStart": {
           "type": "TagIdentifier",
           "value": "legCapStart"
@@ -2136,7 +2136,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "legCapStart": {
           "type": "TagIdentifier",
           "value": "legCapStart"
@@ -3622,7 +3622,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "tailCapStart": {
           "type": "TagIdentifier",
           "value": "tailCapStart"

@@ -159,7 +159,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "chamfer"
         }
       ],
-      "tags": {
+      "faces": {
         "beveledFace": {
           "type": "TagIdentifier",
           "value": "beveledFace"
@@ -438,7 +438,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "topCap": {
           "type": "TagIdentifier",
           "value": "topCap"
@@ -3030,7 +3030,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "chamfer"
         }
       ],
-      "tags": {
+      "faces": {
         "beveledFace": {
           "type": "TagIdentifier",
           "value": "beveledFace"
@@ -3323,7 +3323,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "fillet"
         }
       ],
-      "tags": {
+      "faces": {
         "roundedFace": {
           "type": "TagIdentifier",
           "value": "roundedFace"

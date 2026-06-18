@@ -72,7 +72,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "type": "chamfer"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd001": {
           "type": "TagIdentifier",
           "value": "capEnd001"

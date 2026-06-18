@@ -137,7 +137,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd001": {
           "type": "TagIdentifier",
           "value": "capEnd001"

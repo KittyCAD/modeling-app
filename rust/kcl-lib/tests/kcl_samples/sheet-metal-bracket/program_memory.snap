@@ -432,7 +432,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd001": {
           "type": "TagIdentifier",
           "value": "capEnd001"
@@ -13094,7 +13094,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd001": {
           "type": "TagIdentifier",
           "value": "capEnd001"

@@ -242,7 +242,7 @@ description: Variables in memory after executing revolve_axis_edge_ref.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "axisStart": {
           "type": "TagIdentifier",
           "value": "axisStart"

@@ -1661,7 +1661,7 @@ description: Variables in memory after executing bottle.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "neckTop": {
           "type": "TagIdentifier",
           "value": "neckTop"
@@ -1801,7 +1801,7 @@ description: Variables in memory after executing bottle.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "neckTop": {
           "type": "TagIdentifier",
           "value": "neckTop"
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing bottle.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "neckTop": {
           "type": "TagIdentifier",
           "value": "neckTop"

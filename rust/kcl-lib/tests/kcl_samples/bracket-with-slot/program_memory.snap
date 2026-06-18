@@ -298,7 +298,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd": {
           "type": "TagIdentifier",
           "value": "capEnd"
@@ -670,7 +670,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd": {
           "type": "TagIdentifier",
           "value": "capEnd"
@@ -1128,7 +1128,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd": {
           "type": "TagIdentifier",
           "value": "capEnd"
@@ -2876,7 +2876,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd": {
           "type": "TagIdentifier",
           "value": "capEnd"
@@ -4098,7 +4098,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd": {
           "type": "TagIdentifier",
           "value": "capEnd"
@@ -5725,7 +5725,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd": {
           "type": "TagIdentifier",
           "value": "capEnd"

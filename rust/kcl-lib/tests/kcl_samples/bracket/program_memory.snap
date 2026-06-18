@@ -182,7 +182,7 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "bracketEndFace": {
           "type": "TagIdentifier",
           "value": "bracketEndFace"
@@ -1782,7 +1782,7 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "bracketEndFace": {
           "type": "TagIdentifier",
           "value": "bracketEndFace"
@@ -2184,7 +2184,7 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "bracketEndFace": {
           "type": "TagIdentifier",
           "value": "bracketEndFace"
@@ -2642,7 +2642,7 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "bracketEndFace": {
           "type": "TagIdentifier",
           "value": "bracketEndFace"
@@ -3030,7 +3030,7 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "bracketEndFace": {
           "type": "TagIdentifier",
           "value": "bracketEndFace"
@@ -3506,7 +3506,7 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "bracketEndFace": {
           "type": "TagIdentifier",
           "value": "bracketEndFace"

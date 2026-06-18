@@ -8519,7 +8519,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "plateTop": {
           "type": "TagIdentifier",
           "value": "plateTop"
@@ -8847,7 +8847,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "plateTop": {
           "type": "TagIdentifier",
           "value": "plateTop"
@@ -10562,7 +10562,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "plateTop": {
           "type": "TagIdentifier",
           "value": "plateTop"
@@ -10832,7 +10832,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "plateTop": {
           "type": "TagIdentifier",
           "value": "plateTop"

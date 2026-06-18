@@ -3921,7 +3921,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd001": {
           "type": "TagIdentifier",
           "value": "capEnd001"
@@ -4364,7 +4364,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd005": {
           "type": "TagIdentifier",
           "value": "capEnd005"
@@ -5436,7 +5436,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd002": {
           "type": "TagIdentifier",
           "value": "capEnd002"
@@ -6615,7 +6615,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd001": {
           "type": "TagIdentifier",
           "value": "capEnd001"
@@ -8770,7 +8770,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd004": {
           "type": "TagIdentifier",
           "value": "capEnd004"
@@ -9351,7 +9351,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
-      "tags": {
+      "faces": {
         "capEnd003": {
           "type": "TagIdentifier",
           "value": "capEnd003"

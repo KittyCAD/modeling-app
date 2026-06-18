@@ -88,7 +88,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "type": "chamfer"
         }
       ],
-      "tags": {
+      "faces": {
         "seg03": {
           "type": "TagIdentifier",
           "value": "seg03"
