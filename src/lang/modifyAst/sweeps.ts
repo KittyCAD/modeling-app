@@ -975,7 +975,8 @@ export function getAxisExpression(
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      nodeToEdit
+      nodeToEdit,
+      { preferDirectSegment: true }
     )
     if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
       const directAxisExpr = segmentAxisExpr.exprs[0]

@@ -1274,6 +1274,7 @@ export function getVariableNameFromNodePath(
 type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
+  preferDirectSegment?: boolean
 }
 
 // Go from a selection to a list of KCL expressions that
@@ -1287,7 +1288,11 @@ export function getVariableExprsFromSelection(
   nodeToEdit?: PathToNode,
   options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
-  const { lastChildLookup = false, artifactTypeFilter } = options
+  const {
+    lastChildLookup = false,
+    artifactTypeFilter,
+    preferDirectSegment = false,
+  } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
@@ -1325,10 +1330,16 @@ export function getVariableExprsFromSelection(
       continue
     }
 
+    const directArtifact =
+      preferDirectSegment && s.entityRef != null
+        ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+        : undefined
     const segmentArtifact =
-      resolvedForSegment?.artifact?.type === 'segment'
-        ? resolvedForSegment.artifact
-        : null
+      directArtifact?.type === 'segment'
+        ? directArtifact
+        : resolvedForSegment?.artifact?.type === 'segment'
+          ? resolvedForSegment.artifact
+          : null
     if (segmentArtifact) {
       const sketchSegmentId =
         segmentArtifact.originalSegId ?? segmentArtifact.id
