@@ -1734,7 +1734,7 @@ profile = startSketchOn(XY)
 
 body = extrude(profile, length = 5, tagEnd = $top)
 topFromSketch = body.sketch.tags.top
-topFromBody = body.tags.top
+topFromBody = body.faces.top
 "#;
 
         let result = parse_execute(program).await.unwrap();
