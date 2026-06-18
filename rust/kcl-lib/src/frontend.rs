@@ -5335,33 +5335,48 @@ fn downstream_composite_id_for_solid_source(
     artifact_graph: &ArtifactGraph,
     source_id: ArtifactId,
 ) -> Option<ArtifactId> {
+    // Source is a path, find its solid.
     if let Some(Artifact::Path(path)) = artifact_graph.get(&source_id)
         && let Some(composite_id) = path.composite_solid_id
         && let Some(Artifact::CompositeSolid(composite)) = artifact_graph.get(&composite_id)
-        && (composite.solid_ids.contains(&path.id)
-            || path.solid2d_id.is_some_and(|id| composite.solid_ids.contains(&id)))
+        && composite_contains_path_input(&composite.solid_ids, &composite.tool_ids, path.id, path.solid2d_id)
     {
         return Some(composite_id);
     }
 
+    // Source is a sweep, find its path -> then find the solid
     for artifact in artifact_graph.values() {
         if let Artifact::Path(path) = artifact
             && path.sweep_id == Some(source_id)
             && let Some(composite_id) = path.composite_solid_id
             && let Some(Artifact::CompositeSolid(composite)) = artifact_graph.get(&composite_id)
-            && (composite.solid_ids.contains(&path.id)
-                || path.solid2d_id.is_some_and(|id| composite.solid_ids.contains(&id)))
+            && composite_contains_path_input(&composite.solid_ids, &composite.tool_ids, path.id, path.solid2d_id)
         {
             return Some(composite_id);
         }
     }
 
+    // Source is a solid, find its downstream solid.
     artifact_graph.values().find_map(|artifact| {
         let Artifact::CompositeSolid(composite) = artifact else {
             return None;
         };
-        composite.solid_ids.contains(&source_id).then_some(composite.id)
+        composite_contains_input(&composite.solid_ids, &composite.tool_ids, source_id).then_some(composite.id)
     })
+}
+
+fn composite_contains_path_input(
+    solid_ids: &[ArtifactId],
+    tool_ids: &[ArtifactId],
+    path_id: ArtifactId,
+    solid2d_id: Option<ArtifactId>,
+) -> bool {
+    composite_contains_input(solid_ids, tool_ids, path_id)
+        || solid2d_id.is_some_and(|solid2d_id| composite_contains_input(solid_ids, tool_ids, solid2d_id))
+}
+
+fn composite_contains_input(solid_ids: &[ArtifactId], tool_ids: &[ArtifactId], input_id: ArtifactId) -> bool {
+    solid_ids.contains(&input_id) || tool_ids.contains(&input_id)
 }
 
 fn code_ref_source_ref_range(code_ref: &CodeRef) -> (SourceRange, Option<crate::NodePath>) {
