@@ -3273,7 +3273,7 @@ impl Node<MemberExpression> {
                             CompilationIssue::err(
                                 SourceRange::from(self),
                                 format!(
-                                    "Accessing solid-created tag `{property}` through sketch tags is deprecated. Prefer the body's tags instead, e.g. `body.tags.{property}`."
+                                    "Accessing solid-created face `{property}` through sketch tags is deprecated. Use the body's faces instead, e.g. `body.faces.{property}`."
                                 ),
                             ),
                             annotations::WARN_DEPRECATED,

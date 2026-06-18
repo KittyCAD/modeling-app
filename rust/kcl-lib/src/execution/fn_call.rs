@@ -1238,7 +1238,7 @@ mod test {
             .exec_state
             .issues()
             .iter()
-            .filter(|issue| issue.message.contains("Accessing solid-created tag"))
+            .filter(|issue| issue.message.contains("Accessing solid-created face"))
             .collect()
     }
 
@@ -1746,7 +1746,7 @@ topFromBody = body.tags.top
         assert_eq!(warnings[0].severity, Severity::Warning);
         assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
         assert!(
-            warnings[0].message.contains("Accessing solid-created tag `top` through sketch tags is deprecated. Prefer the body's tags instead, e.g. `body.tags.top`."),
+            warnings[0].message.contains("Accessing solid-created face `top` through sketch tags is deprecated. Use the body's faces instead, e.g. `body.faces.top`."),
             "found {}",
             warnings[0].message
         );
