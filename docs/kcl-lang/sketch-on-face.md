@@ -40,7 +40,7 @@ squareSketch = sketch(on = XY) {
 region001 = region(segments = [squareSketch.line1, squareSketch.line2])
 cube = extrude(region001, length = 1)
 
-towerSketch = sketch(on = startSketchOn(cube, face = END)) {
+towerSketch = sketch(on = faceOf(cube, face = END)) {
   circle1 = circle(start = [var 0.6mm, var 0.5mm], center = [var 0.5mm, var 0.5mm])
 }
 region002 = region(segments = [towerSketch.circle1])
@@ -101,7 +101,7 @@ region001 = region(segments = [squareSketch.line1, squareSketch.line2])
 cube = extrude(region001, length = 1)
 
 // This tower is a separate solid from the cube.
-towerSketch = sketch(on = startSketchOn(cube, face = END)) {
+towerSketch = sketch(on = faceOf(cube, face = END)) {
   circle1 = circle(start = [var 0.6mm, var 0.5mm], center = [var 0.5mm, var 0.5mm])
 }
 region002 = region(segments = [towerSketch.circle1])
