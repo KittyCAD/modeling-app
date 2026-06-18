@@ -8,11 +8,11 @@ import {
   createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/toolTips'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
+  type ResolvedGraphSelection,
   codeRefFromRange,
   getArtifactFromRange,
   getArtifactOfTypes,
@@ -23,7 +23,6 @@ import {
   getPatternArtifactForCopyId,
   getSegmentForEdgeCut,
   getSweepFromSuspectedSweepSurface,
-  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -31,6 +30,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
+import type { ToolTip } from '@src/lang/toolTips'
 import { findKwArg, topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
@@ -59,18 +59,18 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
-  deg2Rad,
   isParallel as areVectorsParallel,
+  deg2Rad,
   subVec,
 } from '@src/lib/utils2d'
 
+import type { EntityReference } from '@kittycad/lib'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { EntityReference } from '@kittycad/lib'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,

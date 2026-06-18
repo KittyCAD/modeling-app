@@ -9,26 +9,38 @@ import {
   createName,
   createTagDeclarator,
 } from '@src/lang/create'
+import { toUtf16 } from '@src/lang/errors'
 import {
+  createPoint2dExpression,
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
-  createPoint2dExpression,
 } from '@src/lang/modifyAst'
+import {
+  createEdgeRefObjectExpression,
+  entityReferenceToEdgeRefPayload,
+  getEdgeTagCall,
+  getPrimitiveEdgeSelections,
+  groupSelectionsByBodyAndAddTags,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+  retrieveEdgeSelectionsFromSingleEdgeRef,
+} from '@src/lang/modifyAst/edges'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import {
   modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/tagManagement'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   artifactToEntityRef,
   getVariableExprsFromSelection,
-  resolveToCodeRef,
   getVariableNameFromNodePath,
   isCallExprWithName,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { addHide } from '@src/lang/modifyAst/transforms'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactFromRange,
   getArtifactOfTypes,
@@ -46,30 +58,18 @@ import type {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
-  type KclPreludeExtrudeMethod,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_SOLID,
   KCL_PRELUDE_BODY_TYPE_SURFACE,
+  type KclPreludeBodyType,
+  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
+import { isEngineRegionSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
-import {
-  getEdgeTagCall,
-  entityReferenceToEdgeRefPayload,
-  createEdgeRefObjectExpression,
-  retrieveEdgeSelectionsFromSingleEdgeRef,
-  getPrimitiveEdgeSelections,
-  groupSelectionsByBodyAndAddTags,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
-} from '@src/lang/modifyAst/edges'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { toUtf16 } from '@src/lang/errors'
-import { isEngineRegionSelection } from '@src/lib/selections'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 export function addExtrude({
   ast,

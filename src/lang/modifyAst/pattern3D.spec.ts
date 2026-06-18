@@ -1,24 +1,24 @@
-import {
-  type Artifact,
-  type ArtifactGraph,
-  assertParse,
-  type CodeRef,
-  recast,
-} from '@src/lang/wasm'
-import { artifactToEntityRef } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { artifactToEntityRef } from '@src/lang/queryAst'
+import {
+  type Artifact,
+  type ArtifactGraph,
+  type CodeRef,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

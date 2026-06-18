@@ -1,25 +1,25 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
+import env from '@src/env'
+import type { KclManager } from '@src/lang/KclManager'
 import { addFillet } from '@src/lang/modifyAst/edges'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import type { KclManager } from '@src/lang/KclManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import {
-  getAstAndArtifactGraph,
-  enginelessExecutor,
-} from '@src/lib/testHelpers'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import type { Expr } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type RustContext from '@src/lib/rustContext'
+import {
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import env from '@src/env'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

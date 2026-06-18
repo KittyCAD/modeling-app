@@ -1,8 +1,8 @@
 import type {
   ApiConstraint,
   ApiObject,
-  Expr,
   Coincident,
+  Expr,
   FixedPoint,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'

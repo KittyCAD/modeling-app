@@ -27,8 +27,8 @@ import {
   isCursorInFunctionDefinition,
   isNodeSafeToReplace,
   isOffsetPlane,
-  retrieveSelectionsFromOpArg,
   resolveToCodeRef,
+  retrieveSelectionsFromOpArg,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'

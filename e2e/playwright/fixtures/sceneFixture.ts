@@ -3,8 +3,8 @@ import { isArray, uuidv4 } from '@src/lib/utils'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import {
-  closeOnboardingModalIfPresent,
   closeDebugPanel,
+  closeOnboardingModalIfPresent,
   doAndWaitForImageDiff,
   getPixelRGBs,
   openAndClearDebugPanel,

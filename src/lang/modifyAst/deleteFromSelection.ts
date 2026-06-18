@@ -16,13 +16,13 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
+  type ResolvedGraphSelection,
   expandCap,
   expandPlane,
   expandWall,
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getFaceCodeRef,
-  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,

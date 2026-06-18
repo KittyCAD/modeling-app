@@ -11,16 +11,16 @@ import {
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { AddTagInfo } from '@src/lang/std/stdTypes'
+import { findKwArg } from '@src/lang/util'
 import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
   type VariableDeclarator,
 } from '@src/lang/wasm'
-import { findKwArg } from '@src/lang/util'
-import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 const SKETCH_TAGGABLE_HELPERS = [
   'arc',

@@ -15,11 +15,11 @@ import {
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import {
-  getCapForPathId,
-  type ResolvedGraphSelection,
-} from '@src/lang/std/artifactGraph'
 import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
+import {
+  type ResolvedGraphSelection,
+  getCapForPathId,
+} from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'

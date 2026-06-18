@@ -1,26 +1,7 @@
-import { assertParse, recast, type Name } from '@src/lang/wasm'
-import {
-  createSelectionFromArtifacts,
-  createSelectionFromPathArtifact,
-  enginelessExecutor,
-  getAstAndArtifactGraph,
-  getAstAndSketchSelections,
-  getCapFromCylinder,
-  getWalls,
-  getKclCommandValue,
-  runNewAstAndCheckForSweep,
-  runNewAstAndCountSweeps,
-} from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  buildTheWorldAndConnectToEngine,
-  buildTheWorldAndNoEngineConnection,
-} from '@src/unitTestUtils'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addExtrude,
   addLoft,
@@ -31,10 +12,29 @@ import {
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import { resolveToCodeRef } from '@src/lang/queryAst'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { type Name, assertParse, recast } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
+import {
+  createSelectionFromArtifacts,
+  createSelectionFromPathArtifact,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+  getAstAndSketchSelections,
+  getCapFromCylinder,
+  getKclCommandValue,
+  getWalls,
+  runNewAstAndCheckForSweep,
+  runNewAstAndCountSweeps,
+} from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import {
+  buildTheWorldAndConnectToEngine,
+  buildTheWorldAndNoEngineConnection,
+} from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

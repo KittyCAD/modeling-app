@@ -1,9 +1,9 @@
-import { expect, test } from '@e2e/playwright/zoo-test'
 import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_ONBOARDING_START,
 } from '@e2e/playwright/storageStates'
 import { settingsToToml } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
   test('Desktop onboarding flow works', async ({

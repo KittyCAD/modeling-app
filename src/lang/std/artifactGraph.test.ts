@@ -1,11 +1,11 @@
 import {
+  type Artifact,
+  type ResolvedGraphSelection,
   getArtifactFromRange,
   getBodiesFromArtifactGraph,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   isFaceFromLegacySketch,
-  type Artifact,
-  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selection } from '@src/machines/modelingSharedTypes'

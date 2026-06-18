@@ -1,8 +1,8 @@
-import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { settingsToToml } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
 
 /**

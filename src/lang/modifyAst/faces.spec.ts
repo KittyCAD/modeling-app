@@ -1,8 +1,28 @@
-import { recast, type PlaneArtifact } from '@src/lang/wasm'
-import type {
-  NonCodeSelection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import {
+  addDeleteFace,
+  addHole,
+  addOffsetPlane,
+  addShell,
+  retrieveFaceSelectionsFromOpArgs,
+  retrieveHoleBodyArgs,
+  retrieveHoleBottomArgs,
+  retrieveHoleTypeArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
+} from '@src/lang/modifyAst/faces'
+import type { StdLibCallOp } from '@src/lang/queryAst'
+import {
+  artifactToEntityRef,
+  getEdgeCutMeta,
+  resolveToCodeRef,
+} from '@src/lang/queryAst'
+import { type PlaneArtifact, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { bracket } from '@src/lib/exampleKcl'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
@@ -11,34 +31,14 @@ import {
   getWalls,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  addHole,
-  addOffsetPlane,
-  addShell,
-  addDeleteFace,
-  retrieveFaceSelectionsFromOpArgs,
-  retrieveHoleBodyArgs,
-  retrieveHoleBottomArgs,
-  retrieveHoleTypeArgs,
-  retrieveNonDefaultPlaneSelectionFromOpArg,
-} from '@src/lang/modifyAst/faces'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { StdLibCallOp } from '@src/lang/queryAst'
-import {
-  artifactToEntityRef,
-  getEdgeCutMeta,
-  resolveToCodeRef,
-} from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type {
+  NonCodeSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import { bracket } from '@src/lib/exampleKcl'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

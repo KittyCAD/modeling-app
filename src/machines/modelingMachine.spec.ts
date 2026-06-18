@@ -1,39 +1,39 @@
-/** Engine-using integration tests of modelingMachine.
- * For engineless unit tests, see modelingMachine.test.ts */
-import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import { err } from '@src/lib/trap'
-import toast from 'react-hot-toast'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KclManager } from '@src/lang/KclManager'
+import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
-  createLiteral,
   createIdentifier,
+  createLiteral,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import { modelingMachine } from '@src/machines/modelingMachine'
-import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
-import { vi } from 'vitest'
-import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
-import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+/** Engine-using integration tests of modelingMachine.
+ * For engineless unit tests, see modelingMachine.test.ts */
+import { type CallExpressionKw, assertParse, recast } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
+import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
+import toast from 'react-hot-toast'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { vi } from 'vitest'
+import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!

@@ -1,12 +1,22 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { ComponentProps, ReactNode } from 'react'
-import { use, useCallback, useMemo, memo } from 'react'
+import { Disclosure } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import Tooltip from '@src/components/Tooltip'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import usePlatform from '@src/hooks/usePlatform'
+import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import {
   artifactToEntityRef,
   findOperationArtifact,
@@ -19,63 +29,53 @@ import {
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
+import { type Artifact, type SourceRange, base64Decode } from '@src/lang/wasm'
 import {
-  filterOperations,
-  getOperationCalculatedDisplay,
-  getOperationIcon,
-  getOperationLabel,
-  getOperationVariableName,
-  getOpTypeLabel,
-  getSketchBlockOperationKey,
-  groupSketchBlockOperations,
-  onHide,
-  groupOperationTypeStreaks,
-  isSketchBlockOperationGroup,
-  stdLibMap,
-  onUnhide,
-} from '@src/lib/operations'
-import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { err, isErr, reportRejection } from '@src/lib/trap'
-import toast from 'react-hot-toast'
-import { base64Decode, type Artifact, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
-import {
-  type AreaTypeComponentProps,
-  DefaultLayoutPaneID,
-  getOpenPanes,
-  togglePaneLayoutNode,
-  type Layout,
-} from '@src/lib/layout'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
-import Tooltip from '@src/components/Tooltip'
-import { Disclosure } from '@headlessui/react'
-import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
   resolveFeatureTreeVisibility,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import {
-  getUnrenderedChangesDisabledReason,
-  shouldDisableModelingForUnrenderedChanges,
-} from '@src/lib/automaticRendering'
-import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { useSignals } from '@preact/signals-react/runtime'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+  type AreaTypeComponentProps,
+  DefaultLayoutPaneID,
+  type Layout,
+  getOpenPanes,
+  togglePaneLayoutNode,
+} from '@src/lib/layout'
+import {
+  filterOperations,
+  getOpTypeLabel,
+  getOperationCalculatedDisplay,
+  getOperationIcon,
+  getOperationLabel,
+  getOperationVariableName,
+  getSketchBlockOperationKey,
+  groupOperationTypeStreaks,
+  groupSketchBlockOperations,
+  isSketchBlockOperationGroup,
+  onHide,
+  onUnhide,
+  stdLibMap,
+} from '@src/lib/operations'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
+import { err, isErr, reportRejection } from '@src/lib/trap'
+import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { ComponentProps, ReactNode } from 'react'
+import { memo, use, useCallback, useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {

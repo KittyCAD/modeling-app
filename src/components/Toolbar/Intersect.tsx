@@ -4,6 +4,7 @@ import {
   GetInfoModal,
   createInfoModal,
 } from '@src/components/SetHorVertDistanceModal'
+import type { KclManager } from '@src/lang/KclManager'
 import { createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import {
@@ -12,25 +13,24 @@ import {
   isLinesParallelAndConstrained,
   resolveToCodeRef,
 } from '@src/lang/queryAst'
-import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/util'
+import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
 import {
   getTransformInfos,
   isExprBinaryPart,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
-  isPathToNode,
   type Expr,
   type Program,
   type VariableDeclarator,
+  isPathToNode,
 } from '@src/lang/wasm'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
-import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 

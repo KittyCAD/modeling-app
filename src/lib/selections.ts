@@ -12,13 +12,20 @@ import { Mesh } from 'three'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
+import type { EntityReference } from '@kittycad/lib'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import {
   EXTRA_SEGMENT_HANDLE,
   SEGMENT_BLUE,
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
@@ -27,24 +34,20 @@ import {
   getSettingsAnnotation,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
+import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
-import type { KclManager } from '@src/lang/KclManager'
 import {
+  getArtifactFromRange,
+  getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getPatternArtifactForCopyId,
   getSketchBlockForPathArtifact,
+  getSolid2dCodeRef,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
-  getArtifactOfTypes,
-  getArtifactFromRange,
-  getSolid2dCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
@@ -56,7 +59,6 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import type { EntityReference } from '@kittycad/lib'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type {
   CommandArgument,
@@ -68,8 +70,6 @@ import {
 } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
@@ -89,14 +89,14 @@ import type {
   NonCodeSelection,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import toast from 'react-hot-toast'
 import type {
   EngineTopologyFallback,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import toast from 'react-hot-toast'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 

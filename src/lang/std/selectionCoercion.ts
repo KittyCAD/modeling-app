@@ -1,5 +1,5 @@
-import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
+import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import {
   getArtifactFromRange,
   getArtifactOfTypes,
@@ -8,9 +8,9 @@ import {
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { CommandSelectionType } from '@src/lib/commandTypes'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 /**
  * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).

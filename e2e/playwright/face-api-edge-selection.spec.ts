@@ -1,5 +1,5 @@
-import { expect, test } from '@e2e/playwright/zoo-test'
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
  * Test KCL code - creates a scene with solid3d, surface, and split edges

@@ -1,5 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { EntityReference } from '@kittycad/lib'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   createArrayExpression,
@@ -35,15 +36,15 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  getArtifactOfTypes,
+  type ResolvedGraphSelection,
   getArtifactFromRange,
+  getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getFaceCodeRef,
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
   getSweepFromSuspectedSweepSurface,
-  type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
 import { recast } from '@src/lang/wasm'
@@ -62,7 +63,6 @@ import type {
   SweepArtifact,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import type { EntityReference } from '@kittycad/lib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {

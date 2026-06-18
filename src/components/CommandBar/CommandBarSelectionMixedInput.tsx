@@ -1,21 +1,21 @@
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { useApp } from '@src/lib/boot'
-import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  setSelectionFilter,
-  setSelectionFilterToDefault,
-} from '@src/lib/selectionFilterUtils'
-import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 

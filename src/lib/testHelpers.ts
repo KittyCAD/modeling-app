@@ -1,22 +1,22 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import {
-  assertParse,
-  type CodeRef,
-  type Artifact,
-  type ArtifactGraph,
-  type ExecState,
-  type Program,
-} from '@src/lang/wasm'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type RustContext from '@src/lib/rustContext'
+import type { KclManager } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import { err } from '@src/lib/trap'
+import {
+  type Artifact,
+  type ArtifactGraph,
+  type CodeRef,
+  type ExecState,
+  type Program,
+  assertParse,
+} from '@src/lang/wasm'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { expect } from 'vitest'
 
 export async function enginelessExecutor(

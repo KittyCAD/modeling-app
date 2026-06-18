@@ -24,8 +24,8 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import {
-  getNodeFromPath,
   getEdgeCutMeta,
+  getNodeFromPath,
   getRegionTagExprFromSegmentId,
   isSketchSegmentCallName,
 } from '@src/lang/queryAst'
@@ -49,10 +49,10 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 // ==============================================
 // SECTION 1: PUBLIC TAG ENTRY POINTS

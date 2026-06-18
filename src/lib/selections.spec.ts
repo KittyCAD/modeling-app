@@ -7,7 +7,6 @@ import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
@@ -16,6 +15,7 @@ import {
   handleSelectionBatch,
   normalizeEntityReference,
 } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {

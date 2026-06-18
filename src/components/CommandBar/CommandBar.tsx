@@ -4,15 +4,15 @@ import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
 import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
+import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { useApp } from '@src/lib/boot'
-import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
+import Tooltip from '@src/components/Tooltip'
+import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
-import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()

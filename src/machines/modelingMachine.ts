@@ -8,32 +8,32 @@ import {
   setup,
 } from 'xstate'
 
-import type {
-  SetSelections,
-  MouseState,
-  SegmentOverlayPayload,
-  SketchDetails,
-  SketchDetailsUpdate,
-  ExtrudeFacePlane,
-  DefaultPlane,
-  OffsetPlane,
-  SketchTool,
-  PlaneVisibilityMap,
-  ModelingMachineContext,
-  ModelingMachineInput,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
 import {
   dummyInitSketchGraphDelta,
   modelingMachineInitialInternalContext,
 } from '@src/machines/modelingSharedContext'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  ModelingMachineContext,
+  ModelingMachineInput,
+  MouseState,
+  OffsetPlane,
+  PlaneVisibilityMap,
+  SegmentOverlayPayload,
+  Selections,
+  SetSelections,
+  SketchDetails,
+  SketchDetailsUpdate,
+  SketchTool,
+} from '@src/machines/modelingSharedTypes'
 
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   ApiObject,
   SceneGraphDelta,
   SketchCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type {
   OutputFormat3d,
@@ -51,10 +51,10 @@ import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
-import type { MachineManager } from '@src/lib/MachineManager'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -94,16 +94,16 @@ import {
   applyConstraintAngleLength,
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
-  startSketchOnDefault,
   splitPipedProfile,
+  startSketchOnDefault,
 } from '@src/lang/modifyAst'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   addIntersect,
   addSplit,
@@ -114,39 +114,43 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
+import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import {
   addDeleteFace,
+  addHole,
   addOffsetPlane,
   addShell,
-  addHole,
 } from '@src/lang/modifyAst/faces'
-import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addAnnotationGdt,
+  addDatumGdt,
+  addDistanceGdt,
+  addFlatnessGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addPositionGdt,
+  addProfileGdt,
+} from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
   addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
+import { addHelix } from '@src/lang/modifyAst/geometry'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import {
   addExtrude,
   addLoft,
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import {
-  addFlatnessGdt,
-  addDatumGdt,
-  addPositionGdt,
-  addAnnotationGdt,
-  addParallelismGdt,
-  addPerpendicularityGdt,
-  addDistanceGdt,
-  addProfileGdt,
-} from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
@@ -163,8 +167,8 @@ import {
   isNodeSafeToReplacePath,
   resolveToCodeRef,
   selectionV2Equals,
-  traverse,
   stringifyPathToNode,
+  traverse,
   updatePathToNodesAfterEdit,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -173,9 +177,10 @@ import {
   getPathsFromArtifact,
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
-  isFaceFromLegacySketch,
   getSketchBlockArtifactForPathToNode,
+  isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import {
   crossProduct,
   isCursorInSketchCommandRange,
@@ -192,6 +197,7 @@ import type {
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -203,7 +209,9 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
+import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
@@ -217,27 +225,19 @@ import {
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
-import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type RustContext from '@src/lib/rustContext'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { EditorView } from 'codemirror'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { addTagForSketchOnFace } from '@src/lang/std/sketch'
-import { toPlaneName } from '@src/lib/planes'
 
 function sourceRangesEqual(
   a: [number, number, number],

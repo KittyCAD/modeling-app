@@ -34,17 +34,15 @@ import {
   createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/toolTips'
-import { toolTips } from '@src/lang/toolTips'
 import {
   mutateKwArg,
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '@src/lang/modifyAst'
-import { addTagKw } from '@src/lang/std/sketchTaggingHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { addTagKw } from '@src/lang/std/sketchTaggingHelpers'
 import type {
   ArrayItemInput,
   ConstrainInfo,
@@ -58,6 +56,8 @@ import type {
   SketchLineHelperKw,
   addCall,
 } from '@src/lang/std/stdTypes'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import {
   findKwArg,
   findKwArgAny,
@@ -67,6 +67,7 @@ import {
   isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
+import type { Coords2d } from '@src/lang/util'
 import type {
   CallExpressionKw,
   Expr,
@@ -90,7 +91,6 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { Coords2d } from '@src/lang/util'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export { addTagForSketchOnFace } from '@src/lang/std/sketchTaggingHelpers'

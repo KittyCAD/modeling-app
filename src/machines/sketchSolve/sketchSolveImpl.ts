@@ -9,6 +9,7 @@ import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
 import type { Themes } from '@src/lib/theme'
 import type {
@@ -17,7 +18,6 @@ import type {
   OffsetPlane,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { resolveToCodeRef } from '@src/lang/queryAst'
 import {
   type SegmentRenderState,
   resetSketchSolvePointHandleCount,
@@ -39,8 +39,8 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
-import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'

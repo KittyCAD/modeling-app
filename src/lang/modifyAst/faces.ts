@@ -18,6 +18,10 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  modifyAstWithTagForCapFace,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
+import {
   artifactToEntityRef,
   getEdgeCutMeta,
   getRegionTagExprFromSegmentId,
@@ -35,8 +39,8 @@ import {
   getFaceCodeRef,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
+import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
-  formatNumberValue,
   type Artifact,
   type ArtifactGraph,
   type CallExpressionKw,
@@ -44,6 +48,7 @@ import {
   type PathToNode,
   type Program,
   type VariableMap,
+  formatNumberValue,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -53,17 +58,12 @@ import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import type {
-  Selections,
-  Selection,
   EdgeCutInfo,
   EnginePrimitiveSelection,
+  Selection,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  modifyAstWithTagForCapFace,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
 
 export function addShell({
   ast,

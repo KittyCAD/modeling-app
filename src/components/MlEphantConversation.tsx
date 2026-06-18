@@ -1,23 +1,23 @@
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import Loading from '@src/components/Loading'
-import { type Selections } from '@src/machines/modelingSharedTypes'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import Loading from '@src/components/Loading'
+import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
+import Tooltip from '@src/components/Tooltip'
+import { useSingletons } from '@src/lib/boot'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import { isNonNullable } from '@src/lib/utils'
 import type {
   Conversation,
   Exchange,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
+import { type Selections } from '@src/machines/modelingSharedTypes'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { useSingletons } from '@src/lib/boot'
-import Tooltip from '@src/components/Tooltip'
-import { isExternalFileDrag } from '@src/components/Explorer/utils'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
-import { isNonNullable } from '@src/lib/utils'
-import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 
 const noop = () => {}
 

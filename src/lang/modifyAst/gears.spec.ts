@@ -1,12 +1,12 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import {
   addHelicalGear,
   addHerringboneGear,
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
-import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { recast } from '@src/lang/wasm'

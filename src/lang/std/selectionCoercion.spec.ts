@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { coerceSelectionsToBody } from '@src/lang/std/selectionCoercion'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { describe, expect, it } from 'vitest'
 
 describe('coerceSelectionsToBody', () => {
   // Tests below are not redundant: they assert selectionsV2 behavior for codeRef-only selections
