@@ -14,11 +14,13 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import {
+  SHARE_COMMAND_ID,
+  SHARE_HOTKEY,
+  SHARE_KEYMAP_SOURCE,
+} from '@src/registry/plugins/share/constants'
 import { createElement } from 'react'
 
-const SHARE_COMMAND_ID = 'zds.share.open'
-const SHARE_KEYMAP_SOURCE = 'share'
-const SHARE_HOTKEY = 'mod+alt+s'
 const shareOpenRequest = signal(0)
 
 const shareKeymap: KeymapDocument = {

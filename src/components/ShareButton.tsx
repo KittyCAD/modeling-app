@@ -7,11 +7,18 @@ import { ShareDialog } from '@src/components/ShareDialog'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { copyFileShareLink } from '@src/lib/links'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import {
+  SHARE_COMMAND_ID,
+  SHARE_HOTKEY,
+} from '@src/registry/plugins/share/constants'
 import { type RefObject, memo, useCallback, useRef } from 'react'
-
-const shareHotkey = 'mod+alt+s'
 
 type ShareButtonProps = {
   app: App
@@ -83,6 +90,18 @@ function SharePopoverContent({
   const allowPassword = !!billingContext.hasSubscription
   const ast = kclManager.astSignal.value
   const shareDisabled = ast.body.some((n) => n.type === 'ImportStatement')
+  const keymap = app.registry.optional(keymapService)
+  const shareKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          SHARE_COMMAND_ID,
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [SHARE_HOTKEY],
+    platform
+  )
 
   const onCopyShareLink = useCallback(
     async ({
@@ -125,10 +144,8 @@ function SharePopoverContent({
                 ? `Share links are not currently supported for multi-file assemblies`
                 : `Share this project`}
           </span>
-          {!billingLoading && (
-            <kbd className="hotkey text-xs capitalize">
-              {hotkeyDisplay(shareHotkey, platform)}
-            </kbd>
+          {!billingLoading && shareKeybinding && (
+            <kbd className="hotkey text-xs capitalize">{shareKeybinding}</kbd>
           )}
         </Tooltip>
       </Popover.Button>
