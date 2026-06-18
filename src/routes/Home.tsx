@@ -77,6 +77,10 @@ import {
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
+  HOME_KEYMAP_SCOPE,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
@@ -99,10 +103,24 @@ const Home = () => {
   useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
+  const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
+
+  useEffect(() => {
+    if (!keymap) {
+      return
+    }
+
+    keymap.applyScope(HOME_KEYMAP_SCOPE)
+
+    return () => {
+      keymap.removeScope(HOME_KEYMAP_SCOPE)
+    }
+  }, [keymap])
+
   const navigate = useNavigate()
   const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -311,15 +329,6 @@ const Home = () => {
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
-  useHotkeys(
-    isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => {
-      void navigate(PATHS.HOME + PATHS.SETTINGS)
-    },
-    {
-      splitKey: '|',
-    }
-  )
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
