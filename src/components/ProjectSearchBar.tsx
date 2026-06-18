@@ -34,8 +34,10 @@ export function useProjectSearch(projects: Project[] | undefined) {
 
 export function ProjectSearchBar({
   setQuery,
+  keybinding,
 }: {
   setQuery: (query: string) => void
+  keybinding?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const lastHandledFocusRequest = useRef(projectSearchFocusRequest.value)
@@ -60,7 +62,9 @@ export function ProjectSearchBar({
           ref={inputRef}
           onChange={(event) => setQuery(event.target.value)}
           className="w-full text-sm bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-          placeholder="Search projects (Ctrl+.)"
+          placeholder={
+            keybinding ? `Search projects (${keybinding})` : 'Search projects'
+          }
         />
       </div>
     </div>
