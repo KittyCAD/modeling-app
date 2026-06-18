@@ -18,4 +18,4 @@ once fixed in engine, will just start working here with no language changes.
 
 The following are known issues with KCL 1.0. To opt-in to the fixes and new features, use the latest version of KCL with `@settings(kclVersion = 2.0)`.
 
-- **Region tags are shuffled**: When you name a segment in a sketch block, the tags in the region may not correspond to the original sketch segments.
+- **Region tags are shuffled**: When you name a segment in a sketch block, the tags in the region may not correspond to the original sketch segments. This is fixed in KCL 2.0.
