@@ -46,12 +46,6 @@ let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
-const TESTS_WITHOUT_ENGINE_WORLD = [
-  'forces version 2 when no version is provided',
-  'preserves an explicit version',
-  'does not add version 2 when editing old sweep code without version',
-]
-
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -59,13 +53,6 @@ const TESTS_WITHOUT_ENGINE_WORLD = [
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
-  const currentTestName = expect.getState().currentTestName ?? ''
-  if (
-    TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name))
-  ) {
-    return
-  }
-
   if (instanceInThisFile) {
     return
   }
@@ -78,7 +65,7 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+  engineCommandManagerInThisFile.tearDown()
 })
 
 // TODO: two different methods for the same thing. Why?
