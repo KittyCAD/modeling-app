@@ -523,6 +523,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             normalizeProjectPathForCloudMetadata(entry.path)
           )
           project.cloudProjectId ??= cloudMetadata?.remoteProjectId
+          project.cloudConflict = cloudMetadata?.conflict
           if (project.metadata) {
             project.metadata.modified = getOpfsCloudProjectModifiedTime(
               cloudMetadata,
