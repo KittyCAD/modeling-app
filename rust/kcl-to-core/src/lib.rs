@@ -115,14 +115,12 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
     let pending_errors = Arc::new(RwLock::new(Vec::new()));
     let responses = ResponseInformation::new(Arc::new(RwLock::new(IndexMap::new())));
-    let debug_info = Arc::new(RwLock::new(None));
 
     let connection = UnifiedConnection::builder()
         .transport(Arc::new(Box::new(transport)))
         .session_data(session_data)
         .pending_errors(pending_errors)
         .responses(responses)
-        .debug_info(debug_info)
         .ids_of_async_commands(ids_of_async_commands)
         .socket_health(socket_health)
         .build();

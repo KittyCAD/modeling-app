@@ -5784,7 +5784,6 @@ mod test {
     use super::*;
     use crate::ExecutorSettings;
     use crate::engine::conn_unified;
-    use crate::engine::conn_unified::mock_transport::MockTransport;
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;

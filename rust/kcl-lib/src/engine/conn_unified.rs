@@ -556,7 +556,6 @@ pub mod ws_transport {
             session_data: Arc<RwLock<Option<ModelingSessionData>>>,
             pending_errors: Arc<RwLock<Vec<String>>>,
             socket_health: Arc<RwLock<SocketHealth>>,
-            debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
             shutdown_rx: mpsc::Receiver<()>,
         ) -> Self {
             let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
@@ -582,23 +581,10 @@ pub mod ws_transport {
 
             let mut tcp_read = TcpRead { stream: tcp_read };
 
-            // let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
-            // let session_data2 = session_data.clone();
-            // let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> =
-            //     Arc::new(RwLock::new(IndexMap::new()));
-            // let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
-            // let pending_errors = Arc::new(RwLock::new(Vec::new()));
-            // let pending_errors_clone = pending_errors.clone();
-            // let response_information = ResponseInformation {
-            //     responses: Arc::new(RwLock::new(IndexMap::new())),
-            // };
-            // let debug_info = Arc::new(RwLock::new(None));
-
             let response_information_for_read = response_information.clone();
             let session_data_for_read = session_data.clone();
             let pending_errors_for_read = pending_errors.clone();
             let socket_health_tcp_read = socket_health.clone();
-            let debug_info_for_read = debug_info.clone();
             let tcp_read_handle = tokio::spawn(async move {
                 // Get Websocket messages from API server
                 loop {
@@ -685,11 +671,10 @@ pub mod ws_transport {
                                     }
                                 }
                                 WebSocketResponse::Success(SuccessWebSocketResponse {
-                                    resp: debug @ OkWebSocketResponseData::Debug { .. },
+                                    resp: _debug @ OkWebSocketResponseData::Debug { .. },
                                     ..
                                 }) => {
-                                    let mut handle = debug_info_for_read.write().await;
-                                    *handle = Some(debug.clone());
+                                    // Deletd, I don't think this was ever used.
                                 }
                                 _ => {}
                             }
@@ -976,8 +961,6 @@ pub struct UnifiedConnection {
 
     #[builder(default)]
     async_tasks: AsyncTasks,
-
-    debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
 }
 
 impl std::fmt::Debug for UnifiedConnection {
@@ -991,7 +974,6 @@ impl std::fmt::Debug for UnifiedConnection {
             .field("session_data", &self.session_data)
             .field("stats", &self.stats)
             .field("async_tasks", &self.async_tasks)
-            .field("debug_info", &self.debug_info)
             .finish()
     }
 }
@@ -1007,7 +989,6 @@ impl UnifiedConnection {
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let responses = response_context.response_information();
-        let debug_info = Arc::new(RwLock::new(None));
 
         Self {
             transport: Arc::new(Box::new(wasm_transport::WasmTransport::new(manager))),
@@ -1019,7 +1000,6 @@ impl UnifiedConnection {
             session_data,
             stats: Default::default(),
             async_tasks: Default::default(),
-            debug_info,
         }
     }
 
@@ -1034,7 +1014,6 @@ impl UnifiedConnection {
         let responses = ResponseInformation {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
-        let debug_info = Arc::new(RwLock::new(None));
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
 
         let transport = WebSocketTransport::spawn(
@@ -1045,7 +1024,6 @@ impl UnifiedConnection {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
-            Arc::clone(&debug_info),
             shutdown_rx,
         )
         .await;
@@ -1060,7 +1038,6 @@ impl UnifiedConnection {
             session_data,
             stats: Default::default(),
             async_tasks: Default::default(),
-            debug_info,
         }
     }
 
@@ -1074,7 +1051,6 @@ impl UnifiedConnection {
         let responses = ResponseInformation {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
-        let debug_info = Arc::new(RwLock::new(None));
         Self {
             transport: Arc::new(Box::new(mock_transport::MockTransport::new())),
             responses,
@@ -1085,7 +1061,6 @@ impl UnifiedConnection {
             session_data,
             stats: Default::default(),
             async_tasks: Default::default(),
-            debug_info,
         }
     }
 
@@ -1777,28 +1752,6 @@ impl UnifiedConnection {
         self.async_tasks().clear().await;
     }
 
-    /// Get the default planes, creating them if they don't exist.
-    async fn default_planes(
-        &self,
-        batch_context: &EngineBatchContext,
-        id_generator: &mut IdGenerator,
-        source_range: SourceRange,
-    ) -> Result<DefaultPlanes, KclError> {
-        {
-            let opt = self.get_default_planes().read().await.as_ref().cloned();
-            if let Some(planes) = opt {
-                return Ok(planes);
-            }
-        } // drop the read lock
-
-        let new_planes = self
-            .new_default_planes(batch_context, id_generator, source_range)
-            .await?;
-        *self.get_default_planes().write().await = Some(new_planes.clone());
-
-        Ok(new_planes)
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.responses.clone()
     }
@@ -1817,15 +1770,6 @@ impl UnifiedConnection {
 
     pub fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
         self.default_planes.clone()
-    }
-
-    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
-        self.debug_info.read().await.clone()
-    }
-
-    async fn fetch_debug(&self) -> Result<(), KclError> {
-        // TODO: Replace this with sending a WebSocketRequest msg.
-        todo!()
     }
 
     async fn clear_scene_post_hook(
