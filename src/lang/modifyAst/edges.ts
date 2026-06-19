@@ -905,8 +905,15 @@ export function createEdgeRefObjectExpression(
   const sideFaceExprs: Expr[] = []
   let currentAst = ast
 
-  const applyTagsBaseExprIfNeeded = (expr: Expr): Expr => {
-    if (tagsBaseExpr != null && expr.type === 'Name') {
+  const applyTagsBaseExprIfNeeded = (
+    expr: Expr,
+    faceArtifact: Artifact
+  ): Expr => {
+    if (
+      tagsBaseExpr != null &&
+      expr.type === 'Name' &&
+      faceArtifact.type !== 'cap'
+    ) {
       return createMemberExpression(
         createMemberExpression(structuredClone(tagsBaseExpr), 'tags'),
         expr.name?.name ?? ''
@@ -992,7 +999,7 @@ export function createEdgeRefObjectExpression(
       }
 
       sideFaceExprs.push(
-        applyTagsBaseExprIfNeeded(createLocalName(tagResult.tag))
+        applyTagsBaseExprIfNeeded(createLocalName(tagResult.tag), faceArtifact)
       )
       currentAst = tagResult.modifiedAst
     } else {
@@ -1017,7 +1024,7 @@ export function createEdgeRefObjectExpression(
         return new Error(`Failed to extract tag name for face ${faceId}`)
       }
 
-      sideFaceExprs.push(applyTagsBaseExprIfNeeded(faceTagExpr))
+      sideFaceExprs.push(applyTagsBaseExprIfNeeded(faceTagExpr, faceArtifact))
       currentAst = tagResult.modifiedAst
     }
   }

@@ -222,6 +222,12 @@ export function getToolbarDropdownDisplay(
   return dropdown.display ?? 'default'
 }
 
+function sortToolbarItemsByTitle<T extends ToolbarItem & { title: string }>(
+  items: T[]
+): T[] {
+  return [...items].sort((a, b) => a.title.localeCompare(b.title))
+}
+
 export function getDefaultRecentToolbarItemIds(
   dropdown: ToolbarDropdownLike<ToolbarDropdownItemIdLike>
 ): string[] {
@@ -1347,7 +1353,7 @@ export function buildToolbarConfig(
         'break',
         {
           id: 'gdt',
-          array: [
+          array: sortToolbarItemsByTitle([
             {
               id: 'gdt-flatness',
               onClick: () =>
@@ -1679,7 +1685,7 @@ export function buildToolbarConfig(
                 },
               ],
             },
-          ],
+          ]),
         },
       ],
     },

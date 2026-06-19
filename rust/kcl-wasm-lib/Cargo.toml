@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.164"
+version = "0.1.165"
 edition = "2024"
 publish = false
 
