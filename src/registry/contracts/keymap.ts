@@ -5,7 +5,7 @@ import {
   provide,
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import { isArray } from '@src/lib/utils'
+import { type Platform, isArray } from '@src/lib/utils'
 
 export const BASE_KEYMAP_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
@@ -14,6 +14,7 @@ export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
 export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
+export const HOME_KEYMAP_SCOPE = 'home'
 export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE = 'project-explorer.focused'
 export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
   'project-explorer.renaming'
@@ -115,6 +116,56 @@ const createKeymapTreeNode = (): KeymapTreeNode => ({
   items: [],
   scopes: new Set(),
 })
+
+const LOWER_CASE_LETTER = /[a-z]/
+const WHITESPACE = /\s+/g
+const KEYMAP_KEYSTROKE_SEPARATOR = ' '
+
+export function keymapKeystrokesDisplay(
+  keystrokes: readonly string[] | undefined,
+  platform: Platform
+): string | undefined {
+  const display = (keystrokes ?? [])
+    .map((chord) => keymapChordDisplay(chord, platform))
+    .filter((chordDisplay): chordDisplay is string => !!chordDisplay)
+    .join(KEYMAP_KEYSTROKE_SEPARATOR)
+
+  return display || undefined
+}
+
+export function keymapChordDisplay(
+  chord: string | undefined,
+  platform: Platform
+): string | undefined {
+  if (!chord) {
+    return undefined
+  }
+
+  const isMac = platform === 'macos'
+  const isWindows = platform === 'windows'
+  const meta = isWindows ? 'Win' : 'Super'
+  const outputSeparator = isMac ? '' : '+'
+
+  return chord
+    .split('+')
+    .map((word) => word.trim().toLocaleLowerCase())
+    .map((word) => {
+      if (word === 'escape' || word === 'esc') {
+        return 'Esc'
+      }
+      if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
+        return word.toUpperCase()
+      }
+      return word
+    })
+    .join(outputSeparator)
+    .replaceAll(WHITESPACE, ' ')
+    .replaceAll('mod', isMac ? '⌘' : 'Ctrl')
+    .replaceAll('meta', isMac ? '⌘' : meta)
+    .replaceAll('ctrl', isMac ? '^' : 'Ctrl')
+    .replaceAll('shift', isMac ? '⬆' : 'Shift')
+    .replaceAll('alt', isMac ? '⌥' : 'Alt')
+}
 
 export function normalizeKeymapChord(chord: string) {
   return chord
@@ -446,9 +497,9 @@ function getKeymapItemUserBindingCommand(item: KeymapItem) {
 
 function isKeymapLinkedUserBinding(item: KeymapItem, binding: KeymapBinding) {
   return (
+    item.hidden === true &&
     item.userBindingCommand !== undefined &&
-    item.userBindingCommand === binding.command &&
-    item.command !== binding.command
+    item.userBindingCommand === binding.command
   )
 }
 

@@ -30,7 +30,6 @@ import {
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   DefaultLayoutPaneID,
@@ -64,7 +63,6 @@ import {
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -224,43 +222,6 @@ export function OpenedProject() {
     settingsValues.app.onboardingStatus.default
 
   useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
-
-  useHotkeys('backspace', (e) => {
-    e.preventDefault()
-  })
-  // Since these already exist in the editor, we don't need to define them
-  // with the wrapper.
-  useHotkeys('mod+z', (e) => {
-    e.preventDefault()
-    kclManager.undo()
-  })
-  useHotkeys('mod+shift+z', (e) => {
-    e.preventDefault()
-    kclManager.redo()
-  })
-
-  useHotkeyWrapper(
-    ['alt + shift + f'],
-    () => {
-      void kclManager.format()
-    },
-    kclManager,
-    {
-      enabled: !isDesktop(),
-      enableOnContentEditable: true,
-      enableOnFormTags: true,
-      // Desktop uses the native Electron menu accelerator for this binding.
-      // Skip CodeMirror registration because this combo types a character there.
-      registerToCodeMirror: false,
-    }
-  )
-  useHotkeyWrapper(
-    ['ctrl + shift + c'],
-    () => {
-      void kclManager.convertToVariable()
-    },
-    kclManager
-  )
 
   useEngineConnectionSubscriptions()
 
