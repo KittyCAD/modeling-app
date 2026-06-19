@@ -6983,6 +6983,8 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
 
 #[cfg(test)]
 mod tests {
+    use std::sync;
+
     use super::*;
     use crate::engine::PlaneName;
     use crate::engine::conn_unified::UnifiedConnection;
@@ -7000,7 +7002,6 @@ mod tests {
     use crate::front::Tangent;
     use crate::frontend::sketch::Vertical;
     use crate::pretty::NumericSuffix;
-    use std::sync;
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {

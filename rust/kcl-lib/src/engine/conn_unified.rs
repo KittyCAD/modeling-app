@@ -41,7 +41,6 @@ use crate::settings::types::default_backface_color;
 use crate::settings::types::default_backface_color_struct;
 
 pub enum TransportCloseError {}
-pub enum TransportCreationError {}
 
 /// Handles sending requests to the engine, and waiting for responses.
 /// Should have at least two implementations:
@@ -58,20 +57,45 @@ pub trait EngineTransport: Send + Sync + 'static {
         id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<(), KclError>;
 
-    async fn close(self) -> Result<(), TransportCloseError>;
+    async fn inner_send_modeling_cmd(
+        &self,
+        cmd_id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<Option<WebSocketResponse>, KclError> {
+        self.inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+            .await?;
+        Ok(None)
+    }
+
+    async fn start_new_session(&self, _source_range: SourceRange) -> Result<(), KclError> {
+        Ok(())
+    }
+
+    async fn close(&self) -> Result<(), TransportCloseError>;
 }
 
 pub mod mock_transport {
-    use crate::SourceRange;
-    use crate::errors::KclError;
+    use std::collections::HashMap;
 
+    use kcmc::ok_response::OkModelingCmdResponse;
+    use kcmc::websocket::BatchResponse;
+    use kcmc::websocket::ModelingBatch;
+    use kcmc::websocket::ModelingCmdReq;
+    use kcmc::websocket::OkWebSocketResponseData;
+    use kcmc::websocket::SuccessWebSocketResponse;
     use kcmc::websocket::WebSocketRequest;
+    use kcmc::websocket::WebSocketResponse;
     use kittycad_modeling_cmds as kcmc;
+    use kittycad_modeling_cmds::ImportFiles;
+    use kittycad_modeling_cmds::ModelingCmd;
     use uuid::Uuid;
 
-    use super::{EngineTransport, TransportCloseError};
-
-    use std::collections::HashMap;
+    use super::EngineTransport;
+    use super::TransportCloseError;
+    use crate::SourceRange;
+    use crate::errors::KclError;
 
     /// Doesn't actually connect to the engine.
     pub struct MockTransport;
@@ -94,54 +118,319 @@ pub mod mock_transport {
             Ok(())
         }
 
-        async fn close(self) -> Result<(), TransportCloseError> {
+        async fn inner_send_modeling_cmd(
+            &self,
+            id: Uuid,
+            _source_range: SourceRange,
+            cmd: WebSocketRequest,
+            _id_to_source_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<Option<WebSocketResponse>, KclError> {
+            let response = match cmd {
+                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
+                    ref requests,
+                    batch_id: _,
+                    responses: _,
+                }) => {
+                    let mut responses = HashMap::with_capacity(requests.len());
+                    for request in requests {
+                        responses.insert(
+                            request.cmd_id,
+                            BatchResponse::Success {
+                                response: OkModelingCmdResponse::Empty {},
+                            },
+                        );
+                    }
+                    WebSocketResponse::Success(SuccessWebSocketResponse {
+                        request_id: Some(id),
+                        resp: OkWebSocketResponseData::ModelingBatch { responses },
+                        success: true,
+                    })
+                }
+                WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                    cmd: ModelingCmd::ImportFiles(ImportFiles { .. }),
+                    cmd_id,
+                }) => WebSocketResponse::Success(SuccessWebSocketResponse {
+                    request_id: Some(id),
+                    resp: OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::ImportFiles(
+                            kittycad_modeling_cmds::output::ImportFiles::builder()
+                                .object_id(cmd_id.into())
+                                .build(),
+                        ),
+                    },
+                    success: true,
+                }),
+                WebSocketRequest::ModelingCmdReq(_) => WebSocketResponse::Success(SuccessWebSocketResponse {
+                    request_id: Some(id),
+                    resp: OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::Empty {},
+                    },
+                    success: true,
+                }),
+                _ => WebSocketResponse::Success(SuccessWebSocketResponse {
+                    request_id: Some(id),
+                    resp: OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::Empty {},
+                    },
+                    success: true,
+                }),
+            };
+
+            Ok(Some(response))
+        }
+
+        async fn close(&self) -> Result<(), TransportCloseError> {
             Ok(())
         }
     }
 }
 
+#[cfg(target_arch = "wasm32")]
 pub mod wasm_transport {
+    use std::collections::HashMap;
+    use std::sync::Arc;
+
+    use indexmap::IndexMap;
+    use kcmc::websocket::FailureWebSocketResponse;
+    use kcmc::websocket::WebSocketRequest;
+    use kcmc::websocket::WebSocketResponse;
+    use kittycad_modeling_cmds as kcmc;
+    use tokio::sync::RwLock;
+    use uuid::Uuid;
+    use wasm_bindgen::prelude::*;
+
+    use super::EngineTransport;
+    use super::ResponseInformation;
+    use super::TransportCloseError;
     use crate::SourceRange;
     use crate::errors::KclError;
+    use crate::errors::KclErrorDetails;
 
-    use kcmc::websocket::WebSocketRequest;
-    use kittycad_modeling_cmds as kcmc;
-    use uuid::Uuid;
+    #[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
+    extern "C" {
+        #[derive(Debug, Clone)]
+        pub type EngineCommandManager;
 
-    use super::{EngineTransport, TransportCloseError};
+        #[wasm_bindgen(constructor)]
+        pub fn new() -> EngineCommandManager;
 
-    use std::collections::HashMap;
+        #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
+        fn fire_modeling_cmd_from_wasm(
+            this: &EngineCommandManager,
+            id: String,
+            rangeStr: String,
+            cmdStr: String,
+            idToRangeStr: String,
+        ) -> Result<(), js_sys::Error>;
+
+        #[wasm_bindgen(method, js_name = sendModelingCommandFromWasm, catch)]
+        fn send_modeling_cmd_from_wasm(
+            this: &EngineCommandManager,
+            id: String,
+            rangeStr: String,
+            cmdStr: String,
+            idToRangeStr: String,
+        ) -> Result<js_sys::Promise, js_sys::Error>;
+
+        #[wasm_bindgen(method, js_name = startNewSession, catch)]
+        fn start_new_session(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
+    }
+
+    #[wasm_bindgen]
+    #[derive(Debug, Clone)]
+    pub struct ResponseContext {
+        responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
+    }
+
+    #[wasm_bindgen]
+    impl ResponseContext {
+        #[wasm_bindgen(constructor)]
+        pub fn new() -> Self {
+            Self {
+                responses: Arc::new(RwLock::new(IndexMap::new())),
+            }
+        }
+
+        pub async fn send_response(&self, data: js_sys::Uint8Array) {
+            let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
+                Ok(res) => res,
+                Err(_) => return,
+            };
+
+            let Some(id) = ws_result.request_id() else {
+                return;
+            };
+
+            self.add(id, ws_result).await;
+        }
+    }
+
+    impl ResponseContext {
+        pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
+            self.responses.write().await.insert(id, response);
+        }
+
+        pub fn response_information(&self) -> ResponseInformation {
+            ResponseInformation::new(self.responses.clone())
+        }
+    }
 
     /// Runs inside a web browser's WASM sandbox, using functions from the JavaScript
     /// engine to transport data to/from the engine.
-    pub struct WasmTransport {}
+    pub struct WasmTransport {
+        manager: Arc<EngineCommandManager>,
+    }
+
+    impl WasmTransport {
+        pub fn new(manager: EngineCommandManager) -> Self {
+            Self {
+                manager: Arc::new(manager),
+            }
+        }
+
+        fn serialize_args(
+            source_range: SourceRange,
+            cmd: &WebSocketRequest,
+            id_to_source_range: &HashMap<Uuid, SourceRange>,
+        ) -> Result<(String, String, String), KclError> {
+            let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to serialize source range: {:?}", e),
+                    vec![source_range],
+                ))
+            })?;
+            let cmd_str = serde_json::to_string(cmd).map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to serialize modeling command: {:?}", e),
+                    vec![source_range],
+                ))
+            })?;
+            let id_to_source_range_str = serde_json::to_string(id_to_source_range).map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to serialize id to source range: {:?}", e),
+                    vec![source_range],
+                ))
+            })?;
+
+            Ok((source_range_str, cmd_str, id_to_source_range_str))
+        }
+
+        fn js_error_to_kcl_error(e: JsValue, source_range: SourceRange) -> KclError {
+            let err_str = e.as_string().unwrap_or_default();
+            if let Ok(FailureWebSocketResponse { errors, .. }) = serde_json::from_str(&err_str) {
+                KclError::new_engine(KclErrorDetails::new(
+                    errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                    vec![source_range],
+                ))
+            } else if let Ok(data) = serde_json::from_str::<Vec<FailureWebSocketResponse>>(&err_str) {
+                if let Some(data) = data.first() {
+                    KclError::new_engine(KclErrorDetails::new(
+                        data.errors
+                            .iter()
+                            .map(|e| e.message.clone())
+                            .collect::<Vec<_>>()
+                            .join("\n"),
+                        vec![source_range],
+                    ))
+                } else {
+                    KclError::new_engine(KclErrorDetails::new(
+                        "Received empty response from engine".into(),
+                        vec![source_range],
+                    ))
+                }
+            } else {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to wait for promise from send modeling command: {:?}", e),
+                    vec![source_range],
+                ))
+            }
+        }
+    }
+
+    // Safety: WebAssembly runs this transport on the browser's single thread.
+    unsafe impl Send for WasmTransport {}
+    unsafe impl Sync for WasmTransport {}
 
     #[async_trait::async_trait]
     impl EngineTransport for WasmTransport {
         async fn inner_fire_modeling_cmd(
             &self,
-            _cmd_id: Uuid,
-            _source_range: SourceRange,
-            _cmd: WebSocketRequest,
-            _id_to_source_range: HashMap<Uuid, SourceRange>,
+            cmd_id: Uuid,
+            source_range: SourceRange,
+            cmd: WebSocketRequest,
+            id_to_source_range: HashMap<Uuid, SourceRange>,
         ) -> Result<(), KclError> {
-            todo!()
+            let (source_range_str, cmd_str, id_to_source_range_str) =
+                Self::serialize_args(source_range, &cmd, &id_to_source_range)?;
+
+            self.manager
+                .fire_modeling_cmd_from_wasm(cmd_id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
+                .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+
+            Ok(())
         }
 
-        async fn close(self) -> Result<(), TransportCloseError> {
-            todo!()
+        async fn inner_send_modeling_cmd(
+            &self,
+            cmd_id: Uuid,
+            source_range: SourceRange,
+            cmd: WebSocketRequest,
+            id_to_source_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<Option<WebSocketResponse>, KclError> {
+            let (source_range_str, cmd_str, id_to_source_range_str) =
+                Self::serialize_args(source_range, &cmd, &id_to_source_range)?;
+
+            let promise = self
+                .manager
+                .send_modeling_cmd_from_wasm(cmd_id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
+                .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+
+            let value = crate::wasm::JsFuture::from(promise)
+                .await
+                .map_err(|e| Self::js_error_to_kcl_error(e, source_range))?;
+
+            if value.is_null() || value.is_undefined() {
+                return Err(KclError::new_engine(KclErrorDetails::new(
+                    "Received null or undefined response from engine".into(),
+                    vec![source_range],
+                )));
+            }
+
+            let data = js_sys::Uint8Array::from(value);
+            let ws_result: WebSocketResponse = rmp_serde::from_slice(&data.to_vec()).map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to deserialize msgpack response from engine: {:?}", e),
+                    vec![source_range],
+                ))
+            })?;
+
+            Ok(Some(ws_result))
+        }
+
+        async fn start_new_session(&self, source_range: SourceRange) -> Result<(), KclError> {
+            let promise = self
+                .manager
+                .start_new_session()
+                .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+
+            crate::wasm::JsFuture::from(promise).await.map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to wait for promise from start new session: {:?}", e),
+                    vec![source_range],
+                ))
+            })?;
+
+            Ok(())
+        }
+
+        async fn close(&self) -> Result<(), TransportCloseError> {
+            Ok(())
         }
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 pub mod ws_transport {
-    use crate::SourceRange;
-    use crate::errors::KclError;
-    use crate::errors::KclErrorDetails;
-    use crate::log::logln;
-
-    use super::{EngineTransport, ResponseInformation, SocketHealth, TransportCloseError, TransportCreationError};
-
     use std::collections::HashMap;
     use std::sync::Arc;
     use std::time::Duration;
@@ -164,6 +453,15 @@ pub mod ws_transport {
     use tokio::sync::oneshot;
     use tokio_tungstenite::tungstenite::Message as WsMsg;
     use uuid::Uuid;
+
+    use super::EngineTransport;
+    use super::ResponseInformation;
+    use super::SocketHealth;
+    use super::TransportCloseError;
+    use crate::SourceRange;
+    use crate::errors::KclError;
+    use crate::errors::KclErrorDetails;
+    use crate::log::logln;
 
     pub struct TcpRead {
         stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
@@ -550,7 +848,7 @@ pub mod ws_transport {
             Ok(())
         }
 
-        async fn close(self) -> Result<(), TransportCloseError> {
+        async fn close(&self) -> Result<(), TransportCloseError> {
             let _ = self.shutdown_tx.send(()).await;
             loop {
                 let guard = self.socket_health.read().await;
@@ -624,6 +922,34 @@ impl std::fmt::Debug for UnifiedConnection {
 }
 
 impl UnifiedConnection {
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_wasm_transport(
+        manager: wasm_transport::EngineCommandManager,
+        response_context: Arc<wasm_transport::ResponseContext>,
+    ) -> Self {
+        let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
+        let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let pending_errors = Arc::new(RwLock::new(Vec::new()));
+        let responses = response_context.response_information();
+        let debug_info = Arc::new(RwLock::new(None));
+        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
+
+        Self {
+            transport: Arc::new(Box::new(wasm_transport::WasmTransport::new(manager))),
+            shutdown_tx,
+            responses,
+            pending_errors,
+            socket_health,
+            ids_of_async_commands,
+            default_planes: Default::default(),
+            session_data,
+            stats: Default::default(),
+            async_tasks: Default::default(),
+            debug_info,
+        }
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
         use crate::engine::conn_unified::ws_transport::WebSocketTransport;
@@ -1444,6 +1770,8 @@ impl UnifiedConnection {
             .await?;
         *self.default_planes.write().await = Some(new_planes);
 
+        self.transport.start_new_session(source_range).await?;
+
         Ok(())
     }
 
@@ -1454,9 +1782,14 @@ impl UnifiedConnection {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        self.transport
-            .inner_fire_modeling_cmd(id, source_range, cmd, id_to_source_range)
-            .await?;
+        if let Some(response) = self
+            .transport
+            .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?
+        {
+            self.responses.add(id, response.clone()).await;
+            return Ok(response);
+        }
 
         // Wait for the response.
         let response_timeout = 600;
@@ -1516,13 +1849,7 @@ impl UnifiedConnection {
     }
 
     pub async fn close(&self) {
-        let _ = self.shutdown_tx.send(()).await;
-        loop {
-            let guard = self.socket_health.read().await;
-            if *guard == SocketHealth::Inactive {
-                return;
-            }
-        }
+        let _ = self.transport.close().await;
     }
 }
 

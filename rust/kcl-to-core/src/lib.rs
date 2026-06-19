@@ -32,7 +32,7 @@ impl EngineTransport for Transport {
         Ok(())
     }
 
-    async fn close(self) -> Result<(), TransportCloseError> {
+    async fn close(&self) -> Result<(), TransportCloseError> {
         Ok(())
     }
 }

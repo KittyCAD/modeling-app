@@ -1,7 +1,6 @@
 //! Functions for managing engine communications.
 
 pub mod async_tasks;
-#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "engine")]
 pub mod conn_unified;
 #[cfg(target_arch = "wasm32")]
