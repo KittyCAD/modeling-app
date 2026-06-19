@@ -1,3 +1,123 @@
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
+
+const projectExplorerBootMocks = vi.hoisted(() => {
+  const commandsById = new Map<string, { onSubmit: () => void }>()
+  const state = {
+    projectExplorerFocused: false,
+    executingEditor: undefined as
+      | {
+          errorsSignal: { value: unknown[] }
+          addGlobalHistoryEvent: () => void
+        }
+      | undefined,
+  }
+  const commandBus = {
+    send: vi.fn(
+      (event: {
+        type: string
+        data?: { commands?: Array<{ id: string; onSubmit: () => void }> }
+      }) => {
+        if (event.type === 'Add commands') {
+          for (const command of event.data?.commands ?? []) {
+            commandsById.set(command.id, command)
+          }
+        }
+        if (event.type === 'Remove commands') {
+          for (const command of event.data?.commands ?? []) {
+            commandsById.delete(command.id)
+          }
+        }
+      }
+    ),
+  }
+  const systemIOSnapshot = {
+    context: {
+      lastRecursiveMoveTarget: undefined,
+    },
+    matches: (candidate: string) => candidate === 'idle',
+  }
+  const systemIOActor = {
+    send: vi.fn(),
+    getSnapshot: () => systemIOSnapshot,
+    subscribe: () => ({
+      unsubscribe: vi.fn(),
+    }),
+  }
+  const keymap = {
+    applyScope: vi.fn((scope: string) => {
+      if (scope === 'project-explorer.focused') {
+        state.projectExplorerFocused = true
+      }
+    }),
+    removeScope: vi.fn((scope: string) => {
+      if (scope === 'project-explorer.focused') {
+        state.projectExplorerFocused = false
+      }
+    }),
+  }
+  const commandIdForKeyboardEvent = (event: KeyboardEvent) => {
+    const key = event.key.toLowerCase()
+    const isMod = event.ctrlKey || event.metaKey
+    if (key === 'arrowleft') return 'project-explorer.arrow-left'
+    if (key === 'arrowright') return 'project-explorer.arrow-right'
+    if (key === 'arrowup') return 'project-explorer.arrow-up'
+    if (key === 'arrowdown') return 'project-explorer.arrow-down'
+    if (key === 'enter') return 'project-explorer.enter'
+    if (key === 'f2') return 'project-explorer.rename'
+    if (isMod && key === 'backspace') return 'project-explorer.delete'
+    if (isMod && key === 'c') return 'project-explorer.copy'
+    if (isMod && key === 'v') return 'project-explorer.paste'
+    return undefined
+  }
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (!state.projectExplorerFocused) return
+    const commandId = commandIdForKeyboardEvent(event)
+    if (!commandId) return
+    commandsById.get(commandId)?.onSubmit()
+  }
+
+  return {
+    commandBus,
+    commandsById,
+    handleKeyDown,
+    keymap,
+    state,
+    systemIOActor,
+    useApp: () => ({
+      commands: commandBus,
+      registry: {
+        optional: () => keymap,
+      },
+      settings: {
+        useSettings: () => ({
+          app: {
+            projectDirectory: {
+              current: 'applicationDirectory',
+            },
+          },
+        }),
+      },
+      systemIOActor,
+    }),
+    useOptionalExecutingEditor: () => state.executingEditor,
+  }
+})
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: projectExplorerBootMocks.useApp,
+  useOptionalExecutingEditor:
+    projectExplorerBootMocks.useOptionalExecutingEditor,
+}))
+
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import {
   type FileExplorerEntry,
@@ -17,21 +137,16 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react'
-import {
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
-
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
     options: {},
   })
+  window.addEventListener('keydown', projectExplorerBootMocks.handleKeyDown)
+})
+
+afterAll(() => {
+  window.removeEventListener('keydown', projectExplorerBootMocks.handleKeyDown)
 })
 
 // Helper functions within this file to create a project and file entries easier to
@@ -81,6 +196,13 @@ describe('ProjectExplorer', () => {
   beforeEach(() => {
     // reset the project before each test
     project = JSON.parse(JSON.stringify(PROJECT_TEMPLATE))
+    projectExplorerBootMocks.commandsById.clear()
+    projectExplorerBootMocks.commandBus.send.mockClear()
+    projectExplorerBootMocks.keymap.applyScope.mockClear()
+    projectExplorerBootMocks.keymap.removeScope.mockClear()
+    projectExplorerBootMocks.state.projectExplorerFocused = false
+    projectExplorerBootMocks.state.executingEditor = undefined
+    projectExplorerBootMocks.systemIOActor.send.mockClear()
   })
   afterEach(() => {
     cleanup()

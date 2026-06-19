@@ -24,6 +24,7 @@ const hookMocks = vi.hoisted(() => {
     useSingletons: () => ({
       kclManager: state.kclManager,
     }),
+    useExecutingEditor: () => state.kclManager,
     useModelingContext: () => ({
       state: {
         matches: (value: string) => value === state.modelingValue,
@@ -35,6 +36,7 @@ const hookMocks = vi.hoisted(() => {
 vi.mock('@src/lib/boot', () => ({
   useApp: hookMocks.useApp,
   useSingletons: hookMocks.useSingletons,
+  useExecutingEditor: hookMocks.useExecutingEditor,
 }))
 
 vi.mock('@src/hooks/useModelingContext', () => ({

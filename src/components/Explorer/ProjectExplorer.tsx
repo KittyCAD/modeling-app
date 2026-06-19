@@ -16,8 +16,8 @@ import type {
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
-import { kclErrorsByFilename } from '@src/lang/errors'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import { type KCLError, kclErrorsByFilename } from '@src/lang/errors'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -69,6 +69,8 @@ const FILE_TREE_MUTATION_STATES = [
   SystemIOMachineStates.movingRecursive,
   SystemIOMachineStates.movingRecursiveAndNavigate,
 ] as const
+
+const EMPTY_KCL_ERRORS: KCLError[] = []
 
 const handleExternalDragEvent = (e: React.DragEvent): boolean => {
   if (!isExternalFileDrag(e)) {
@@ -193,7 +195,7 @@ export const ProjectExplorer = ({
 }) => {
   const { commands, registry, settings, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
   const isSystemIOIdle = useSelector(systemIOActor, (state) =>
     state.matches(SystemIOMachineStates.idle)
   )
@@ -206,7 +208,7 @@ export const ProjectExplorer = ({
     systemIOActor,
     (state) => state.context.lastRecursiveMoveTarget
   )
-  const errors = kclManager.errorsSignal.value
+  const errors = kclManager?.errorsSignal.value ?? EMPTY_KCL_ERRORS
   const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
     settingsValues.app.projectDirectory.current
@@ -1052,7 +1054,7 @@ export const ProjectExplorer = ({
                       requestedProjectName: project.name,
                     },
                   })
-                  kclManager.addGlobalHistoryEvent(
+                  kclManager?.addGlobalHistoryEvent(
                     fsArchiveFile({
                       src,
                       target,
@@ -1080,7 +1082,7 @@ export const ProjectExplorer = ({
                       successMessage: 'Archived successfully',
                     },
                   })
-                  kclManager.addGlobalHistoryEvent(
+                  kclManager?.addGlobalHistoryEvent(
                     fsArchiveFile({
                       src,
                       target,
@@ -1158,7 +1160,7 @@ export const ProjectExplorer = ({
                     target,
                   },
                 })
-                kclManager.addGlobalHistoryEvent(
+                kclManager?.addGlobalHistoryEvent(
                   fsMoveFile({
                     src,
                     target,
