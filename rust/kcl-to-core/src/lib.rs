@@ -25,7 +25,6 @@ use kittycad_modeling_cmds::websocket::SuccessWebSocketResponse;
 use kittycad_modeling_cmds::websocket::WebSocketRequest;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
 use tokio::sync::RwLock;
-use tokio::sync::mpsc;
 use uuid::Uuid;
 
 struct Transport;
@@ -117,7 +116,6 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let pending_errors = Arc::new(RwLock::new(Vec::new()));
     let responses = ResponseInformation::new(Arc::new(RwLock::new(IndexMap::new())));
     let debug_info = Arc::new(RwLock::new(None));
-    let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
 
     let connection = UnifiedConnection::builder()
         .transport(Arc::new(Box::new(transport)))
@@ -127,7 +125,6 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
         .debug_info(debug_info)
         .ids_of_async_commands(ids_of_async_commands)
         .socket_health(socket_health)
-        .shutdown_tx(shutdown_tx)
         .build();
     let ctx = ExecutorContext::new_forwarded_mock(Arc::new(connection));
     ctx.run(&program, &mut ExecState::new(&ctx)).await?;

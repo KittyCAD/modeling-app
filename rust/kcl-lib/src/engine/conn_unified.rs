@@ -18,6 +18,7 @@ use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::ModelingBatch;
 use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::RwLock;
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::sync::mpsc;
 use uuid::Uuid;
 use web_time::Instant;
@@ -498,7 +499,7 @@ pub mod ws_transport {
     /// Sends requests to the engine over its Modeling API WebSocket.
     /// Used on native platforms, does not work in browser WASM sandbox.
     pub struct WebSocketTransport {
-        tcp_read_handle: Arc<TcpReadHandle>,
+        _tcp_read_handle: Arc<TcpReadHandle>,
         engine_req_tx: mpsc::Sender<ToEngineReq>,
         shutdown_tx: mpsc::Sender<()>,
         responses: ResponseInformation,
@@ -509,6 +510,12 @@ pub mod ws_transport {
 
     pub struct TcpReadHandle {
         handle: Arc<tokio::task::JoinHandle<Result<(), WebSocketReadError>>>,
+    }
+
+    impl Drop for TcpReadHandle {
+        fn drop(&mut self) {
+            self.handle.abort();
+        }
     }
 
     /// Occurs when client couldn't read from the WebSocket to the engine.
@@ -711,7 +718,7 @@ pub mod ws_transport {
                 session_data,
                 socket_health,
                 engine_req_tx,
-                tcp_read_handle: Arc::new(TcpReadHandle {
+                _tcp_read_handle: Arc::new(TcpReadHandle {
                     handle: Arc::new(tcp_read_handle),
                 }),
             }
@@ -953,7 +960,6 @@ pub struct UnifiedConnection {
     // Replaces `engine_req_tx: mpsc::Sender<ToEngineReq>`
     // from the original native connection type.
     transport: Arc<Box<dyn EngineTransport>>,
-    shutdown_tx: mpsc::Sender<()>,
     responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
@@ -1002,11 +1008,9 @@ impl UnifiedConnection {
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let responses = response_context.response_information();
         let debug_info = Arc::new(RwLock::new(None));
-        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
 
         Self {
             transport: Arc::new(Box::new(wasm_transport::WasmTransport::new(manager))),
-            shutdown_tx,
             responses,
             pending_errors,
             socket_health,
@@ -1048,7 +1052,6 @@ impl UnifiedConnection {
 
         Self {
             transport: Arc::new(Box::new(transport)),
-            shutdown_tx,
             responses,
             pending_errors,
             socket_health,
@@ -1072,10 +1075,8 @@ impl UnifiedConnection {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
         let debug_info = Arc::new(RwLock::new(None));
-        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
         Self {
             transport: Arc::new(Box::new(mock_transport::MockTransport::new())),
-            shutdown_tx,
             responses,
             pending_errors,
             socket_health,
