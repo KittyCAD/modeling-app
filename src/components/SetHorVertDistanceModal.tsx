@@ -10,7 +10,7 @@ import {
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import { useSingletons } from '@src/lib/boot'
+import { useExecutingEditor } from '@src/lib/boot'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
@@ -49,7 +49,7 @@ export const GetInfoModal = ({
   initialVariableName,
   selectionRanges,
 }: GetInfoModalProps) => {
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const [sign, setSign] = useState(initialValue?.startsWith('-') ? -1 : 1)
   const [segName, setSegName] = useState(initialSegName)
   const [value, setValue] = useState(

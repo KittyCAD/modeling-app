@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { App } from '@src/lib/app'
 import {
   StorageName,
@@ -51,6 +52,21 @@ window.app = app
  * `useSingletons` will eventually be deprecated.
  */
 export const useSingletons = () => React.useContext(AppContext).singletons
+
+export const useOptionalExecutingEditor = () => {
+  useSignals()
+  const app = React.useContext(AppContext)
+  return app.projectSession.openedProject.value?.executingEditor.value
+}
+
+export const useExecutingEditor = () => {
+  const executingEditor = useOptionalExecutingEditor()
+  if (!executingEditor) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('No executing editor is currently available.')
+  }
+  return executingEditor
+}
 
 /**
  * Hook to get access to the app instance.

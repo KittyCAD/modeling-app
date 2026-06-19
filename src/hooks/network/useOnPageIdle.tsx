@@ -1,5 +1,5 @@
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { EngineDebugger } from '@src/lib/debugger'
 import { useEffect, useRef } from 'react'
 
@@ -11,7 +11,7 @@ export const useOnPageIdle = ({
   idleCallback: () => void
 }) => {
   const { settings } = useApp()
-  const { kclManager } = useSingletons()
+  const kclManager = useExecutingEditor()
   const settingsValues = settings.useSettings()
   const streamIdleMode = settingsValues.app.streamIdleMode.current
   const { state: modelingMachineState } = useModelingContext()

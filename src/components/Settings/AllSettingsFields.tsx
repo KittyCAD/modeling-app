@@ -2,7 +2,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
@@ -40,7 +40,6 @@ export const AllSettingsFields = forwardRef(
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
     const { settings, layout, systemIOActor } = useApp()
-    const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
@@ -67,7 +66,6 @@ export const AllSettingsFields = forwardRef(
       const props = {
         onboardingStatus: onboardingStartPath,
         navigate,
-        kclManager,
         systemIOActor,
         settingsActor: settings.actor,
         executingPath,

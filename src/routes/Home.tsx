@@ -39,7 +39,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import {
   opfsCloudSyncStatus,
@@ -99,10 +99,9 @@ const Home = () => {
   useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
-  const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const navigate = useNavigate()
   const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -302,11 +301,9 @@ const Home = () => {
   }
   useMenuListener(cb)
 
-  // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-    kclManager.cancelAllExecutions()
-  }, [kclManager])
+  }, [])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -346,7 +343,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      kclManager,
                       systemIOActor,
                       settingsActor,
                       executingPath,
