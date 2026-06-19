@@ -40,6 +40,7 @@ import {
   type Expr,
   type PathToNode,
   type Program,
+  type SweepArtifact,
   type VariableDeclaration,
   type VariableMap,
   formatNumberValue,
@@ -166,6 +167,7 @@ export function addDeleteFace({
     {
       lastChildLookup: true,
       artifactTypeFilter: ['sweep', 'compositeSolid'],
+      resolveCompositeSolids: true,
     }
   )
   if (err(result)) {
@@ -964,8 +966,10 @@ export function getPlaneExprFromSelection({
 
 function getSolidSelectionsFromFaceSelections(
   faces: Selections,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  options: { resolveCompositeSolids?: boolean } = {}
 ): Selections {
+  const { resolveCompositeSolids = false } = options
   return {
     graphSelections: faces.graphSelections.flatMap((face) => {
       if (!face.artifact) {
@@ -979,6 +983,16 @@ function getSolidSelectionsFromFaceSelections(
         return []
       }
 
+      if (resolveCompositeSolids) {
+        const compositeSolidSelection = getCompositeSolidSelectionFromSweep(
+          sweep,
+          artifactGraph
+        )
+        if (compositeSolidSelection) {
+          return compositeSolidSelection
+        }
+      }
+
       return {
         artifact: sweep as Artifact,
         codeRef: sweep.codeRef,
@@ -986,6 +1000,47 @@ function getSolidSelectionsFromFaceSelections(
     }),
     otherSelections: [],
   }
+}
+
+function getCompositeSolidSelectionFromSweep(
+  sweep: SweepArtifact,
+  artifactGraph: ArtifactGraph
+): Selection | null {
+  const path = getArtifactOfTypes(
+    { key: sweep.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (err(path)) {
+    return null
+  }
+
+  if (path.compositeSolidId) {
+    const compositeSolid = getArtifactOfTypes(
+      { key: path.compositeSolidId, types: ['compositeSolid'] },
+      artifactGraph
+    )
+    if (!err(compositeSolid)) {
+      return {
+        artifact: compositeSolid,
+        codeRef: compositeSolid.codeRef,
+      }
+    }
+  }
+
+  const compositeSolid = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'compositeSolid' }> =>
+      artifact.type === 'compositeSolid' &&
+      artifact.solidIds.some(
+        (solidId) => solidId === sweep.id || solidId === path.id
+      )
+  )
+
+  return compositeSolid
+    ? {
+        artifact: compositeSolid,
+        codeRef: compositeSolid.codeRef,
+      }
+    : null
 }
 
 export function getBodySelectionFromPrimitiveParentEntityId(
@@ -1261,11 +1316,18 @@ export function buildSolidsAndFacesExprs(
   options: {
     lastChildLookup?: boolean
     artifactTypeFilter?: Array<Artifact['type']>
+    resolveCompositeSolids?: boolean
   } = {}
 ) {
   let modifiedAst = structuredClone(ast)
-  const { lastChildLookup = true, artifactTypeFilter = ['sweep'] } = options
-  const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph)
+  const {
+    lastChildLookup = true,
+    artifactTypeFilter = ['sweep'],
+    resolveCompositeSolids = false,
+  } = options
+  const solids = getSolidSelectionsFromFaceSelections(faces, artifactGraph, {
+    resolveCompositeSolids,
+  })
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
     solids,

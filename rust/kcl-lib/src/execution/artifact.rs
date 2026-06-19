@@ -2614,6 +2614,12 @@ fn artifacts_to_update(
                     let mut new_sweep = sweep.clone();
                     new_sweep.consumed = true;
                     return_arr.push(Artifact::Sweep(new_sweep));
+
+                    if let Some(Artifact::Path(path)) = artifacts.get(&sweep.path_id) {
+                        let mut new_path = path.clone();
+                        new_path.composite_solid_id = Some(id);
+                        return_arr.push(Artifact::Path(new_path));
+                    }
                 }
             }
             return Ok(return_arr);

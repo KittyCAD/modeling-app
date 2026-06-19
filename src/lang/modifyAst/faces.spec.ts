@@ -764,6 +764,89 @@ extrude001 = extrude(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a deleteFace call on a joined surface using the joinSurfaces variable', async () => {
+      const code = `sketch004 = startSketchOn(XY)
+profile004 = startProfile(sketch004, at = [-3.59, -20.3])
+  |> line(end = [10.07, 1.58], tag = $seg02)
+revolve001 = revolve(
+  profile004,
+  angle = 100deg,
+  axis = X,
+  bodyType = SURFACE,
+)
+
+sketch005 = startSketchOn(XZ)
+profile005 = startProfile(sketch005, at = [7.03, 24.17])
+  |> line(end = [8.49, -9.89], tag = $seg04)
+extrude002 = extrude(profile005, length = -20, bodyType = SURFACE)
+blend001 = blend([seg02, seg04])
+surface001 = joinSurfaces([revolve001, extrude002, blend001])`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const revolveSweep = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' && artifact.subType === 'revolve'
+      )
+      const extrudeSweep = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' && artifact.subType === 'extrusion'
+      )
+      const revolveWall = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'wall' && artifact.sweepId === revolveSweep?.id
+      )
+      const extrudeWall = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'wall' && artifact.sweepId === extrudeSweep?.id
+      )
+      if (!revolveWall) {
+        throw new Error('Could not find expected revolved face selection')
+      }
+      if (!extrudeWall) {
+        throw new Error('Could not find expected extruded face selection')
+      }
+
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: createSelectionFromArtifacts([revolveWall], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `surface002 = deleteFace(surface001, faces = seg02)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+
+      const extrudeResult = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: createSelectionFromArtifacts([extrudeWall], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(extrudeResult)) {
+        throw extrudeResult
+      }
+
+      const extrudeNewCode = recast(
+        extrudeResult.modifiedAst,
+        instanceInThisFile
+      )
+      expect(extrudeNewCode).toContain(
+        `surface002 = deleteFace(surface001, faces = seg04)`
+      )
+      await enginelessExecutor(extrudeResult.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a deleteFace call on the bracket', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
