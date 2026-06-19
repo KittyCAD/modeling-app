@@ -49,6 +49,7 @@ pub enum TransportCloseError {}
 /// sending and receiving data over the websocket.
 #[async_trait::async_trait]
 pub trait EngineTransport: Send + Sync + 'static {
+    /// Send a modeling command without waiting for any response.
     async fn inner_fire_modeling_cmd(
         &self,
         cmd_id: uuid::Uuid,
@@ -57,22 +58,21 @@ pub trait EngineTransport: Send + Sync + 'static {
         id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<(), KclError>;
 
+    /// Send a modeling command, wait for a response.
     async fn inner_send_modeling_cmd(
         &self,
         cmd_id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<Uuid, SourceRange>,
-    ) -> Result<Option<WebSocketResponse>, KclError> {
-        self.inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
-            .await?;
-        Ok(None)
-    }
+    ) -> Result<WebSocketResponse, KclError>;
 
+    /// If client is reused across sessions, implement this to clear sessions.
     async fn start_new_session(&self, _source_range: SourceRange) -> Result<(), KclError> {
         Ok(())
     }
 
+    /// Close connection to the engine, clean up resources.
     async fn close(&self) -> Result<(), TransportCloseError>;
 }
 
@@ -124,7 +124,7 @@ pub mod mock_transport {
             _source_range: SourceRange,
             cmd: WebSocketRequest,
             _id_to_source_range: HashMap<Uuid, SourceRange>,
-        ) -> Result<Option<WebSocketResponse>, KclError> {
+        ) -> Result<WebSocketResponse, KclError> {
             let response = match cmd {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                     ref requests,
@@ -176,7 +176,7 @@ pub mod mock_transport {
                 }),
             };
 
-            Ok(Some(response))
+            Ok(response)
         }
 
         async fn close(&self) -> Result<(), TransportCloseError> {
@@ -376,7 +376,7 @@ pub mod wasm_transport {
             source_range: SourceRange,
             cmd: WebSocketRequest,
             id_to_source_range: HashMap<Uuid, SourceRange>,
-        ) -> Result<Option<WebSocketResponse>, KclError> {
+        ) -> Result<WebSocketResponse, KclError> {
             let (source_range_str, cmd_str, id_to_source_range_str) =
                 Self::serialize_args(source_range, &cmd, &id_to_source_range)?;
 
@@ -404,7 +404,7 @@ pub mod wasm_transport {
                 ))
             })?;
 
-            Ok(Some(ws_result))
+            Ok(ws_result)
         }
 
         async fn start_new_session(&self, source_range: SourceRange) -> Result<(), KclError> {
@@ -434,6 +434,7 @@ pub mod ws_transport {
     use std::collections::HashMap;
     use std::sync::Arc;
     use std::time::Duration;
+    use std::time::Instant;
 
     use anyhow::anyhow;
     use futures::SinkExt;
@@ -500,6 +501,9 @@ pub mod ws_transport {
         tcp_read_handle: Arc<TcpReadHandle>,
         engine_req_tx: mpsc::Sender<ToEngineReq>,
         shutdown_tx: mpsc::Sender<()>,
+        responses: ResponseInformation,
+        pending_errors: Arc<RwLock<Vec<String>>>,
+        session_data: Arc<RwLock<Option<ModelingSessionData>>>,
         socket_health: Arc<RwLock<SocketHealth>>,
     }
 
@@ -583,7 +587,11 @@ pub mod ws_transport {
             // };
             // let debug_info = Arc::new(RwLock::new(None));
 
+            let response_information_for_read = response_information.clone();
+            let session_data_for_read = session_data.clone();
+            let pending_errors_for_read = pending_errors.clone();
             let socket_health_tcp_read = socket_health.clone();
+            let debug_info_for_read = debug_info.clone();
             let tcp_read_handle = tokio::spawn(async move {
                 // Get Websocket messages from API server
                 loop {
@@ -606,7 +614,7 @@ pub mod ws_transport {
                                             BatchResponse::Success { response } => {
                                                 // If the id is in our ids of async commands, remove
                                                 // it.
-                                                response_information
+                                                response_information_for_read
                                                     .add(
                                                         id,
                                                         WebSocketResponse::Success(SuccessWebSocketResponse {
@@ -620,7 +628,7 @@ pub mod ws_transport {
                                                     .await;
                                             }
                                             BatchResponse::Failure { errors } => {
-                                                response_information
+                                                response_information_for_read
                                                     .add(
                                                         id,
                                                         WebSocketResponse::Failure(FailureWebSocketResponse {
@@ -638,7 +646,7 @@ pub mod ws_transport {
                                     resp: OkWebSocketResponseData::ModelingSessionData { session },
                                     ..
                                 }) => {
-                                    let mut sd = session_data.write().await;
+                                    let mut sd = session_data_for_read.write().await;
                                     sd.replace(session.clone());
                                     logln!("API Call ID: {}", session.api_call_id);
                                 }
@@ -648,7 +656,7 @@ pub mod ws_transport {
                                     errors,
                                 }) => {
                                     if let Some(id) = request_id {
-                                        response_information
+                                        response_information_for_read
                                             .add(
                                                 *id,
                                                 WebSocketResponse::Failure(FailureWebSocketResponse {
@@ -660,7 +668,7 @@ pub mod ws_transport {
                                             .await;
                                     } else {
                                         // Add it to our pending errors.
-                                        let mut pe = pending_errors.write().await;
+                                        let mut pe = pending_errors_for_read.write().await;
                                         for error in errors {
                                             if !pe.contains(&error.message) {
                                                 pe.push(error.message.clone());
@@ -673,14 +681,14 @@ pub mod ws_transport {
                                     resp: debug @ OkWebSocketResponseData::Debug { .. },
                                     ..
                                 }) => {
-                                    let mut handle = debug_info.write().await;
+                                    let mut handle = debug_info_for_read.write().await;
                                     *handle = Some(debug.clone());
                                 }
                                 _ => {}
                             }
 
                             if let Some(id) = id {
-                                response_information.add(id, ws_resp.clone()).await;
+                                response_information_for_read.add(id, ws_resp.clone()).await;
                             }
                         }
                         Err(e) => {
@@ -698,6 +706,9 @@ pub mod ws_transport {
             });
             Self {
                 shutdown_tx,
+                responses: response_information,
+                pending_errors,
+                session_data,
                 socket_health,
                 engine_req_tx,
                 tcp_read_handle: Arc::new(TcpReadHandle {
@@ -846,6 +857,64 @@ pub mod ws_transport {
                 })?;
 
             Ok(())
+        }
+
+        async fn inner_send_modeling_cmd(
+            &self,
+            cmd_id: uuid::Uuid,
+            source_range: SourceRange,
+            cmd: WebSocketRequest,
+            id_to_source_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<WebSocketResponse, KclError> {
+            self.inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                .await?;
+
+            let response_timeout = 600;
+            let current_time = Instant::now();
+            while current_time.elapsed().as_secs() < response_timeout {
+                let guard = self.socket_health.read().await;
+                if *guard == SocketHealth::Inactive {
+                    let session_data = self.session_data.read().await;
+                    let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
+                    let api_call_id_msg = if let Some(ref id) = api_call_id {
+                        format!(" (API call ID: {})", id)
+                    } else {
+                        String::new()
+                    };
+
+                    let pe = self.pending_errors.read().await;
+                    if !pe.is_empty() {
+                        return Err(KclError::new_engine(KclErrorDetails::new(
+                            format!("{}{}", pe.join(", "), api_call_id_msg),
+                            vec![source_range],
+                        )));
+                    } else {
+                        return Err(KclError::new_engine_hangup(
+                            KclErrorDetails::new(
+                                format!("Modeling command failed: websocket closed early{}", api_call_id_msg),
+                                vec![source_range],
+                            ),
+                            api_call_id,
+                        ));
+                    }
+                }
+
+                if let Some(resp) = self.responses.responses.read().await.get(&cmd_id) {
+                    return Ok(resp.clone());
+                }
+            }
+
+            let session_data = self.session_data.read().await;
+            let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+                format!(" (API call ID: {})", session.api_call_id)
+            } else {
+                String::new()
+            };
+
+            Err(KclError::new_engine(KclErrorDetails::new(
+                format!("Modeling command timed out `{cmd_id}`{}", api_call_id_msg),
+                vec![source_range],
+            )))
         }
 
         async fn close(&self) -> Result<(), TransportCloseError> {
@@ -1782,66 +1851,13 @@ impl UnifiedConnection {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        if let Some(response) = self
+        let response = self
             .transport
             .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
-            .await?
-        {
-            self.responses.add(id, response.clone()).await;
-            return Ok(response);
-        }
+            .await?;
 
-        // Wait for the response.
-        let response_timeout = 600;
-        let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < response_timeout {
-            let guard = self.socket_health.read().await;
-            if *guard == SocketHealth::Inactive {
-                // Get the API call ID from session data if available
-                let session_data = self.session_data.read().await;
-                let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
-                let api_call_id_msg = if let Some(ref id) = api_call_id {
-                    format!(" (API call ID: {})", id)
-                } else {
-                    String::new()
-                };
-
-                // Check if we have any pending errors.
-                let pe = self.pending_errors.read().await;
-                if !pe.is_empty() {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!("{}{}", pe.join(", "), api_call_id_msg),
-                        vec![source_range],
-                    )));
-                } else {
-                    return Err(KclError::new_engine_hangup(
-                        KclErrorDetails::new(
-                            format!("Modeling command failed: websocket closed early{}", api_call_id_msg),
-                            vec![source_range],
-                        ),
-                        api_call_id,
-                    ));
-                }
-            }
-
-            // We cannot pop here or it will break the artifact graph.
-            if let Some(resp) = self.responses.responses.read().await.get(&id) {
-                return Ok(resp.clone());
-            }
-        }
-
-        // Get the API call ID from session data if available for timeout error
-        let session_data = self.session_data.read().await;
-        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
-            format!(" (API call ID: {})", session.api_call_id)
-        } else {
-            String::new()
-        };
-
-        Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Modeling command timed out `{id}`{}", api_call_id_msg),
-            vec![source_range],
-        )))
+        self.responses.add(id, response.clone()).await;
+        Ok(response)
     }
 
     pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
