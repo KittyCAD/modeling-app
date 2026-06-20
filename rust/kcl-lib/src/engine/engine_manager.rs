@@ -3,6 +3,7 @@ use std::sync::Arc;
 use std::sync::atomic::Ordering::Relaxed;
 
 use anyhow::Result;
+pub use engine_transport::EngineTransport;
 use indexmap::IndexMap;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -38,8 +39,6 @@ use crate::execution::IdGenerator;
 use crate::execution::PlaneInfo;
 use crate::settings::types::default_backface_color;
 use crate::settings::types::default_backface_color_struct;
-
-pub use engine_transport::EngineTransport;
 
 pub enum TransportCloseError {}
 
