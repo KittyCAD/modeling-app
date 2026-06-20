@@ -19,7 +19,7 @@ use crate::NodePath;
 use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
-use crate::engine::conn_unified::EngineManager;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;

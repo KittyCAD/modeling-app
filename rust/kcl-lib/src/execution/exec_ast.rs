@@ -5783,7 +5783,7 @@ mod test {
 
     use super::*;
     use crate::ExecutorSettings;
-    use crate::engine::conn_unified;
+    use crate::engine::engine_manager;
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
@@ -5998,7 +5998,7 @@ d = b + c
             .unwrap();
 
         let exec_ctxt = ExecutorContext {
-            engine: Arc::new(conn_unified::EngineManager::new_mock()),
+            engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {

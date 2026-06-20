@@ -1,11 +1,11 @@
 //! Functions for managing engine communications.
 
 pub mod async_tasks;
-#[cfg(feature = "engine")]
-pub mod conn_unified;
 #[cfg(target_arch = "wasm32")]
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
+#[cfg(feature = "engine")]
+pub mod engine_manager;
 
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;

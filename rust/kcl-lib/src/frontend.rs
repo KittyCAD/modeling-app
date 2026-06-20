@@ -6987,7 +6987,7 @@ mod tests {
 
     use super::*;
     use crate::engine::PlaneName;
-    use crate::engine::conn_unified::EngineManager;
+    use crate::engine::engine_manager::EngineManager;
     use crate::execution::cache::SketchModeState;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;

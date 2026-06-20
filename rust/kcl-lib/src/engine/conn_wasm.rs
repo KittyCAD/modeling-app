@@ -1,5 +1,5 @@
 //! Browser WASM engine transport exports.
 
-pub use crate::engine::conn_unified::EngineManager as EngineConnection;
-pub use crate::engine::conn_unified::wasm_transport::EngineCommandManager;
-pub use crate::engine::conn_unified::wasm_transport::ResponseContext;
+pub use crate::engine::engine_manager::EngineManager as EngineConnection;
+pub use crate::engine::engine_manager::wasm_transport::EngineCommandManager;
+pub use crate::engine::engine_manager::wasm_transport::ResponseContext;

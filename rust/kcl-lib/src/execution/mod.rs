@@ -69,7 +69,7 @@ use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
 use crate::engine::GridScaleBehavior;
-use crate::engine::conn_unified::EngineManager;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::cache::CacheInformation;

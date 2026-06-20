@@ -142,11 +142,11 @@ pub use unparser::recast_dir;
 pub use unparser::walk_dir;
 
 pub mod engine_connection {
-    pub use crate::engine::conn_unified::EngineTransport;
-    pub use crate::engine::conn_unified::ResponseInformation;
-    pub use crate::engine::conn_unified::SocketHealth;
-    pub use crate::engine::conn_unified::TransportCloseError;
-    pub use crate::engine::conn_unified::EngineManager;
+    pub use crate::engine::engine_manager::EngineManager;
+    pub use crate::engine::engine_manager::EngineTransport;
+    pub use crate::engine::engine_manager::ResponseInformation;
+    pub use crate::engine::engine_manager::SocketHealth;
+    pub use crate::engine::engine_manager::TransportCloseError;
 }
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.

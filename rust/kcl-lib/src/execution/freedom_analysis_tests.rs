@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::ExecutorContext;
 use crate::ExecutorSettings;
-use crate::engine::conn_unified::EngineManager;
+use crate::engine::engine_manager::EngineManager;
 use crate::execution::ContextType;
 use crate::execution::MockConfig;
 use crate::front::Freedom;

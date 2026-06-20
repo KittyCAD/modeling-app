@@ -1169,7 +1169,7 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
-    use crate::engine::conn_unified::EngineManager;
+    use crate::engine::engine_manager::EngineManager;
     use crate::errors::Severity;
     use crate::execution::ContextType;
     use crate::execution::EnvironmentRef;
