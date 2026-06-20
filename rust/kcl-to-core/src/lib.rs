@@ -7,11 +7,11 @@ use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
 use kcl_lib::KclError;
 use kcl_lib::SourceRange;
+use kcl_lib::engine_connection::EngineManager;
 use kcl_lib::engine_connection::EngineTransport;
 use kcl_lib::engine_connection::ResponseInformation;
 use kcl_lib::engine_connection::SocketHealth;
 use kcl_lib::engine_connection::TransportCloseError;
-use kcl_lib::engine_connection::UnifiedConnection;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::ImportFiles;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -116,7 +116,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let pending_errors = Arc::new(RwLock::new(Vec::new()));
     let responses = ResponseInformation::new(Arc::new(RwLock::new(IndexMap::new())));
 
-    let connection = UnifiedConnection::builder()
+    let connection = EngineManager::builder()
         .transport(Arc::new(Box::new(transport)))
         .session_data(session_data)
         .pending_errors(pending_errors)

@@ -19,7 +19,7 @@ use crate::NodePath;
 use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
-use crate::engine::conn_unified::UnifiedConnection;
+use crate::engine::conn_unified::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -881,7 +881,7 @@ impl ExecState {
 
     pub(crate) async fn build_artifact_graph(
         &mut self,
-        engine: &Arc<UnifiedConnection>,
+        engine: &Arc<EngineManager>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         let mut new_commands = Vec::new();

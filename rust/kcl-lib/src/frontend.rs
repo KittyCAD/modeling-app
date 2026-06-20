@@ -6987,7 +6987,7 @@ mod tests {
 
     use super::*;
     use crate::engine::PlaneName;
-    use crate::engine::conn_unified::UnifiedConnection;
+    use crate::engine::conn_unified::EngineManager;
     use crate::execution::cache::SketchModeState;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
@@ -8193,7 +8193,7 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(UnifiedConnection::new_mock()), Default::default());
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -8216,7 +8216,7 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(UnifiedConnection::new_mock()), Default::default());
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -8257,7 +8257,7 @@ foo = 1
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(UnifiedConnection::new_mock()), Default::default());
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14436,7 +14436,7 @@ sketch002 = sketch(on = XY) {
 
         let program = Program::parse(source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(UnifiedConnection::new_mock()), Default::default());
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);

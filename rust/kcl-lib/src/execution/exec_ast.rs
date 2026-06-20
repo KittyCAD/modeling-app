@@ -5998,7 +5998,7 @@ d = b + c
             .unwrap();
 
         let exec_ctxt = ExecutorContext {
-            engine: Arc::new(conn_unified::UnifiedConnection::new_mock()),
+            engine: Arc::new(conn_unified::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {

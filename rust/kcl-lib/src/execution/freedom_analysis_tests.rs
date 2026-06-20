@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::ExecutorContext;
 use crate::ExecutorSettings;
-use crate::engine::conn_unified::UnifiedConnection;
+use crate::engine::conn_unified::EngineManager;
 use crate::execution::ContextType;
 use crate::execution::MockConfig;
 use crate::front::Freedom;
@@ -13,7 +13,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(UnifiedConnection::new_mock()),
+        engine: Arc::new(EngineManager::new_mock()),
         engine_batch: crate::engine::EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),

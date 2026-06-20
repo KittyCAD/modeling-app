@@ -146,7 +146,7 @@ pub mod engine_connection {
     pub use crate::engine::conn_unified::ResponseInformation;
     pub use crate::engine::conn_unified::SocketHealth;
     pub use crate::engine::conn_unified::TransportCloseError;
-    pub use crate::engine::conn_unified::UnifiedConnection;
+    pub use crate::engine::conn_unified::EngineManager;
 }
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.

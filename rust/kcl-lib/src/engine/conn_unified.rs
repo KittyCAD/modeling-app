@@ -544,11 +544,11 @@ pub mod ws_transport {
     impl WebSocketTransport {
         /// Start a long-lived actor that reads from
         pub async fn spawn(
-            // Passed via UnifiedConnection from elsewhere
+            // Passed via EngineManager from elsewhere
             ws: reqwest::Upgraded,
             heartbeats: Option<u64>,
 
-            // Created by UnifiedConnection
+            // Created by EngineManager
             response_information: ResponseInformation,
             session_data: Arc<RwLock<Option<ModelingSessionData>>>,
             pending_errors: Arc<RwLock<Vec<String>>>,
@@ -938,7 +938,7 @@ impl ResponseInformation {
 }
 
 #[derive(bon::Builder)]
-pub struct UnifiedConnection {
+pub struct EngineManager {
     // Replaces `engine_req_tx: mpsc::Sender<ToEngineReq>`
     // from the original native connection type.
     transport: Arc<Box<dyn EngineTransport>>,
@@ -960,9 +960,9 @@ pub struct UnifiedConnection {
     async_tasks: AsyncTasks,
 }
 
-impl std::fmt::Debug for UnifiedConnection {
+impl std::fmt::Debug for EngineManager {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("UnifiedConnection")
+        f.debug_struct("EngineManager")
             .field("responses", &self.responses)
             .field("pending_errors", &self.pending_errors)
             .field("socket_health", &self.socket_health)
@@ -975,7 +975,7 @@ impl std::fmt::Debug for UnifiedConnection {
     }
 }
 
-impl UnifiedConnection {
+impl EngineManager {
     #[cfg(target_arch = "wasm32")]
     pub fn new_wasm_transport(
         manager: wasm_transport::EngineCommandManager,
