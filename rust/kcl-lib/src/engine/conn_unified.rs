@@ -18,8 +18,6 @@ use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::ModelingBatch;
 use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::RwLock;
-#[cfg(not(target_arch = "wasm32"))]
-use tokio::sync::mpsc;
 use uuid::Uuid;
 use web_time::Instant;
 
@@ -552,11 +550,9 @@ pub mod ws_transport {
 
             // Created by UnifiedConnection
             response_information: ResponseInformation,
-            shutdown_tx: mpsc::Sender<()>,
             session_data: Arc<RwLock<Option<ModelingSessionData>>>,
             pending_errors: Arc<RwLock<Vec<String>>>,
             socket_health: Arc<RwLock<SocketHealth>>,
-            shutdown_rx: mpsc::Receiver<()>,
         ) -> Self {
             let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
                 // 4294967296 bytes, which is around 4.2 GB.
@@ -572,6 +568,7 @@ pub mod ws_transport {
 
             let (tcp_write, tcp_read) = ws_stream.split();
             let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
+            let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
             tokio::task::spawn(Self::start_write_actor(
                 tcp_write,
                 engine_req_rx,
@@ -1014,17 +1011,14 @@ impl UnifiedConnection {
         let responses = ResponseInformation {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
-        let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
 
         let transport = WebSocketTransport::spawn(
             ws,
             heartbeats,
             responses.clone(),
-            shutdown_tx.clone(),
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
-            shutdown_rx,
         )
         .await;
 
