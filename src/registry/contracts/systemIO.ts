@@ -10,21 +10,29 @@ export type ProjectHandle = {
   readonly path: string
 }
 
+export type ProjectHandles = readonly ProjectHandle[] | undefined
+
 export type Projects = Project[] | undefined
 
 export type SystemIOService = {
-  projectHandles: ReadonlySignal<readonly ProjectHandle[]>
+  projectHandles: ReadonlySignal<ProjectHandles>
   projects: ReadonlySignal<Projects>
   refreshProjectHandles: () => Promise<readonly ProjectHandle[]>
 }
 
 export function combineProjectHandles(
-  inputs: readonly (readonly ProjectHandle[])[]
-): readonly ProjectHandle[] {
+  inputs: readonly ProjectHandles[]
+): ProjectHandles {
+  let hasHandles = false
   const seenPaths = new Set<string>()
   const handles: ProjectHandle[] = []
 
   for (const input of inputs) {
+    if (input === undefined) {
+      continue
+    }
+
+    hasHandles = true
     for (const handle of input) {
       if (seenPaths.has(handle.path)) {
         continue
@@ -35,7 +43,7 @@ export function combineProjectHandles(
     }
   }
 
-  return handles
+  return hasHandles ? handles : undefined
 }
 
 export function combineProjects(inputs: readonly Projects[]): Projects {
@@ -64,12 +72,9 @@ export function combineProjects(inputs: readonly Projects[]): Projects {
 
 export const systemIOContract = defineContract({
   systemIOService: defineService<SystemIOService>('system-io.service'),
-  projectHandlesValueSpec: defineValueSpec<
-    readonly ProjectHandle[],
-    readonly ProjectHandle[]
-  >({
+  projectHandlesValueSpec: defineValueSpec<ProjectHandles, ProjectHandles>({
     name: 'system-io.project-handles',
-    defaultValue: [],
+    defaultValue: undefined,
     combine: combineProjectHandles,
   }),
   projectsValueSpec: defineValueSpec<Projects, Projects>({

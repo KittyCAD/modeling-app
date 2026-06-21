@@ -68,7 +68,10 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { useCanReadWriteProjectDirectory } from '@src/machines/systemIO/hooks'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   HOME_KEYMAP_SCOPE,

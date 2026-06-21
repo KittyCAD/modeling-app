@@ -62,23 +62,26 @@ describe('systemIO extension', () => {
     }
   })
 
-  it('provides empty project handles without a settings service', async () => {
+  it('provides unloaded project handles until refreshed without a settings service', async () => {
     const registry = new Registry()
     cleanup.push(() => registry[Symbol.dispose]())
     registry.configure([systemIOExtension])
 
     const systemIO = registry.get(systemIOService)
 
-    expect(systemIO.projectHandles.value).toEqual([])
+    expect(systemIO.projectHandles.value).toBeUndefined()
     expect(systemIO.projects.value).toBeUndefined()
-    expect(registry.get(projectHandlesValueSpec)).toEqual([])
+    expect(registry.get(projectHandlesValueSpec)).toBeUndefined()
     expect(registry.get(projectsValueSpec)).toBeUndefined()
     await expect(systemIO.refreshProjectHandles()).resolves.toEqual([])
+    expect(systemIO.projectHandles.value).toEqual([])
+    expect(registry.get(projectHandlesValueSpec)).toEqual([])
   })
 
   it('combines project handle contributions by path', () => {
     expect(
       combineProjectHandles([
+        undefined,
         [{ path: '/projects/alpha' }, { path: '/projects/beta' }],
         [{ path: '/projects/beta' }, { path: '/projects/gamma' }],
       ])
@@ -87,6 +90,10 @@ describe('systemIO extension', () => {
       { path: '/projects/beta' },
       { path: '/projects/gamma' },
     ])
+  })
+
+  it('combines missing project handles as not loaded', () => {
+    expect(combineProjectHandles([undefined])).toBeUndefined()
   })
 
   it('combines project contributions by path', () => {
@@ -164,13 +171,62 @@ describe('systemIO extension', () => {
       betaProject,
     ])
     expect(
-      systemIO.projectHandles.value.map((handle) => handle.path).sort()
+      systemIO.projectHandles.value?.map((handle) => handle.path).sort()
     ).toEqual([alphaProject, betaProject])
     expect(
       registry
         .get(projectHandlesValueSpec)
-        .map((handle) => handle.path)
+        ?.map((handle) => handle.path)
         .sort()
     ).toEqual([alphaProject, betaProject])
+  })
+
+  it('clears project handles while a changed project directory refreshes', async () => {
+    const firstProjectDirectory = fsZds.join(
+      tmpdir(),
+      `system-io-extension-first-${Date.now()}`
+    )
+    const secondProjectDirectory = fsZds.join(
+      tmpdir(),
+      `system-io-extension-second-${Date.now()}`
+    )
+    const firstProject = fsZds.join(firstProjectDirectory, 'first')
+    const secondProject = fsZds.join(secondProjectDirectory, 'second')
+
+    await fsZds.mkdir(firstProject, { recursive: true })
+    await fsZds.mkdir(secondProject, { recursive: true })
+    cleanup.push(() =>
+      fsZds.rm(firstProjectDirectory, { recursive: true, force: true })
+    )
+    cleanup.push(() =>
+      fsZds.rm(secondProjectDirectory, { recursive: true, force: true })
+    )
+
+    const settings = signal(createSettings(firstProjectDirectory))
+    const registry = new Registry()
+    cleanup.push(() => registry[Symbol.dispose]())
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-settings-service',
+        providesServices: [
+          provideService(settingsService, {
+            current: settings,
+            get: () => settings.value,
+          } as SettingsRegistryService),
+        ],
+      }),
+      systemIOExtension,
+    ])
+
+    const systemIO = registry.get(systemIOService)
+    await Promise.resolve()
+    await systemIO.refreshProjectHandles()
+    expect(systemIO.projectHandles.value?.map((handle) => handle.path)).toEqual(
+      [firstProject]
+    )
+
+    settings.value = createSettings(secondProjectDirectory)
+
+    expect(systemIO.projectHandles.value).toBeUndefined()
   })
 })

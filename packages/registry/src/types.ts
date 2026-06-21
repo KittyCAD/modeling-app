@@ -14,6 +14,11 @@ export interface DisposableLike {
   [Symbol.dispose](): void
 }
 
+export type RegistryItemLifecycleCleanup = DisposableLike | (() => void)
+
+export type RegistryItemLifecycleHook =
+  () => void | RegistryItemLifecycleCleanup
+
 /**
  * Value-spec contributions may be static values or live reactive values.
  *
@@ -92,7 +97,8 @@ export interface RegistryItemDefinition {
  * contributions.
  */
 export interface RuntimeRegistryItemDefinition extends RegistryItemDefinition {
-  readonly dispose?: DisposableLike | (() => void)
+  readonly activate?: RegistryItemLifecycleHook
+  readonly dispose?: RegistryItemLifecycleCleanup
 }
 
 /**

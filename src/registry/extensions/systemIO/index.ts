@@ -12,6 +12,7 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
   type ProjectHandle,
+  type ProjectHandles,
   type Projects,
   type SystemIOService,
   projectHandlesValueSpec,
@@ -70,7 +71,7 @@ export async function listProjectHandlesFromProjectDirectory(
 }
 
 export const systemIOExtension = defineRegistryItemFactory((ctx) => {
-  const projectDirectoryProjectHandles = signal<readonly ProjectHandle[]>([])
+  const projectDirectoryProjectHandles = signal<ProjectHandles>(undefined)
   const projectHandles = ctx.valueSpecs.signal(projectHandlesValueSpec)
   const projects = ctx.valueSpecs.signal(projectsValueSpec)
   let latestProjectDirectoryPath = ''
@@ -85,11 +86,16 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
   const refreshProjectHandlesFromDirectory = async (
     projectDirectoryPath: string
   ) => {
+    const directoryChanged = projectDirectoryPath !== latestProjectDirectoryPath
     latestProjectDirectoryPath = projectDirectoryPath
+    if (directoryChanged) {
+      projectDirectoryProjectHandles.value = undefined
+    }
+
     const nextProjectHandles =
       await listProjectHandlesFromProjectDirectory(projectDirectoryPath)
 
-    if (projectDirectoryPath === latestProjectDirectoryPath) {
+    if (!disposed && projectDirectoryPath === latestProjectDirectoryPath) {
       projectDirectoryProjectHandles.value = nextProjectHandles
     }
 
@@ -141,17 +147,13 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
     watchedProjectDirectoryPath = projectDirectoryPath
   }
 
-  queueMicrotask(() => {
-    if (disposed) {
-      return
-    }
-
+  const activate = () => {
     disposeSettingsEffect = effect(() => {
       const projectDirectoryPath = getProjectDirectoryPath()
       watchProjectDirectory(projectDirectoryPath)
       void refreshProjectHandlesFromDirectory(projectDirectoryPath)
     })
-  })
+  }
 
   const serviceImpl: SystemIOService = {
     projectHandles,
@@ -168,6 +170,7 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
         }),
       ],
       providesServices: [provideService(systemIOService, serviceImpl)],
+      activate,
       dispose: () => {
         disposed = true
         disposeSettingsEffect?.()
@@ -180,17 +183,19 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
 export const systemIOProjectsExtension = defineRegistryItemFactory((ctx) => {
   const projectHandles = ctx.valueSpecs.signal(projectHandlesValueSpec)
   const projects = signal<Projects>(undefined)
-  let hasSkippedInitialEmptyProjectHandles = false
   let latestRefreshId = 0
   let disposed = false
   let disposeProjectHandlesEffect: (() => void) | undefined
 
   const getWasmPromise = () => ctx.valueSpecs.get(wasmPromiseValueSpec)
 
-  const refreshProjectsFromHandles = async (
-    handles: readonly ProjectHandle[]
-  ) => {
+  const refreshProjectsFromHandles = async (handles: ProjectHandles) => {
     const refreshId = ++latestRefreshId
+
+    if (handles === undefined) {
+      projects.value = undefined
+      return
+    }
 
     if (handles.length === 0) {
       projects.value = []
@@ -224,23 +229,11 @@ export const systemIOProjectsExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  queueMicrotask(() => {
-    if (disposed) {
-      return
-    }
-
+  const activate = () => {
     disposeProjectHandlesEffect = effect(() => {
-      if (
-        !hasSkippedInitialEmptyProjectHandles &&
-        projectHandles.value.length === 0
-      ) {
-        hasSkippedInitialEmptyProjectHandles = true
-        return
-      }
-
       void refreshProjectsFromHandles(projectHandles.value)
     })
-  })
+  }
 
   return {
     item: defineRuntimeRegistryItem({
@@ -250,6 +243,7 @@ export const systemIOProjectsExtension = defineRegistryItemFactory((ctx) => {
           key: 'system-io.project-handles',
         }),
       ],
+      activate,
       dispose: () => {
         disposed = true
         disposeProjectHandlesEffect?.()
