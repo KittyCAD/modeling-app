@@ -2,19 +2,25 @@ import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { createNewProjectDirectory } from '@src/lib/desktop'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { buildTheWorldNode } from '@src/unitTestUtils'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const createdProjectDirectoryPaths: string[] = []
-let wasmInstance: ModuleType
+const wasmInstance = {
+  change_default_units: vi.fn((kcl: string, len: string) => {
+    const defaultLengthUnit = JSON.parse(len)
+    return `@settings(defaultLengthUnit = ${defaultLengthUnit})\n\n${kcl}`
+  }),
+  change_kcl_version: vi.fn((kcl: string, versionString: string) => {
+    const version = JSON.parse(versionString)
+    return `@settings(kclVersion = ${version})\n\n${kcl}`
+  }),
+} as unknown as ModuleType
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
     options: {},
   })
-  const { instance } = await buildTheWorldNode()
-  wasmInstance = await instance
 })
 
 describe('createNewProjectDirectory', () => {
