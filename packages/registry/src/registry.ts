@@ -475,7 +475,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
       }
 
       instance.activated = true
-      instance.activationDispose = normalizeDisposer(activate())
+      const cleanup = activate()
+      instance.activationDispose = cleanup
+        ? normalizeDisposer(cleanup)
+        : undefined
     })
   }
 

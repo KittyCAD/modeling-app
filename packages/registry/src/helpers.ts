@@ -44,7 +44,7 @@ export function unwrapMaybeSignal<T>(value: MaybeSignal<T>): T {
 
 /** Normalize function-based and Symbol.dispose-based cleanup into one shape. */
 export function normalizeDisposer(
-  dispose?: { [Symbol.dispose](): void } | (() => void) | void
+  dispose?: { [Symbol.dispose](): void } | (() => void)
 ): (() => void) | undefined {
   if (!dispose) return undefined
   if (typeof dispose === 'function') return dispose

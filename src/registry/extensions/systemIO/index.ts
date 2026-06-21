@@ -9,6 +9,11 @@ import { effect, signal } from '@preact/signals-core'
 import { getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import {
+  getOpfsCloudProjectMetadataIndex,
+  getOpfsCloudProjectModifiedTime,
+  opfsCloudSyncStatus,
+} from '@src/lib/fs-zds/opfsCloud'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
   type ProjectHandle,
@@ -30,6 +35,10 @@ type ProjectHandleWithModified = ProjectHandle & {
 const getElectron = () =>
   typeof window === 'undefined' ? undefined : window.electron
 
+function normalizeProjectPathForCloudMetadata(projectPath: string) {
+  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
 export async function listProjectHandlesFromProjectDirectory(
   projectDirectoryPath: string
 ): Promise<readonly ProjectHandle[]> {
@@ -45,6 +54,9 @@ export async function listProjectHandlesFromProjectDirectory(
   }
 
   const handles: ProjectHandleWithModified[] = []
+  const cloudProjectMetadataByPath = opfsCloudSyncStatus.value.enabled
+    ? await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
+    : new Map()
 
   for (const entry of entries) {
     if (entry.startsWith('.')) {
@@ -59,7 +71,16 @@ export async function listProjectHandlesFromProjectDirectory(
         continue
       }
 
-      handles.push({ path, modified: stat.mtimeMs })
+      handles.push({
+        path,
+        modified:
+          getOpfsCloudProjectModifiedTime(
+            cloudProjectMetadataByPath.get(
+              normalizeProjectPathForCloudMetadata(path)
+            ),
+            stat.mtimeMs
+          ) ?? stat.mtimeMs,
+      })
     } catch {
       // Ignore entries that disappear or cannot be statted.
     }
@@ -82,6 +103,11 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
   const getProjectDirectoryPath = () =>
     ctx.services.optional(settingsService)?.current.value.app.projectDirectory
       .current ?? ''
+
+  const getProjectDirectoryRefreshState = () => ({
+    projectDirectoryPath: getProjectDirectoryPath(),
+    cloudSyncedAt: opfsCloudSyncStatus.value.lastSyncedAt,
+  })
 
   const refreshProjectHandlesFromDirectory = async (
     projectDirectoryPath: string
@@ -149,10 +175,11 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
 
   const activate = () => {
     disposeSettingsEffect = effect(() => {
-      const projectDirectoryPath = getProjectDirectoryPath()
+      const { projectDirectoryPath } = getProjectDirectoryRefreshState()
       watchProjectDirectory(projectDirectoryPath)
       void refreshProjectHandlesFromDirectory(projectDirectoryPath)
     })
+    return undefined
   }
 
   const serviceImpl: SystemIOService = {
@@ -209,11 +236,25 @@ export const systemIOProjectsExtension = defineRegistryItemFactory((ctx) => {
     }
 
     const wasmInstance = await wasmPromise
+    const cloudProjectMetadataByPath = opfsCloudSyncStatus.value.enabled
+      ? await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
+      : new Map()
     const nextProjects: NonNullable<Projects> = []
 
     for (const handle of handles) {
       try {
         const project = await getProjectInfo(handle.path, wasmInstance)
+        const cloudMetadata = cloudProjectMetadataByPath.get(
+          normalizeProjectPathForCloudMetadata(handle.path)
+        )
+        project.cloudProjectId ??= cloudMetadata?.remoteProjectId
+        if (project.metadata) {
+          project.metadata.modified = getOpfsCloudProjectModifiedTime(
+            cloudMetadata,
+            project.metadata.modified
+          )
+        }
+
         if (project.kcl_file_count === 0 && project.readWriteAccess) {
           continue
         }
@@ -233,6 +274,7 @@ export const systemIOProjectsExtension = defineRegistryItemFactory((ctx) => {
     disposeProjectHandlesEffect = effect(() => {
       void refreshProjectsFromHandles(projectHandles.value)
     })
+    return undefined
   }
 
   return {

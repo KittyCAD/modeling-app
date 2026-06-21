@@ -1,4 +1,3 @@
-import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { Dispatch, FormEvent, HTMLProps, SetStateAction } from 'react'
 import { useEffect, useMemo, useState } from 'react'
@@ -41,10 +40,7 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import {
-  opfsCloudSyncStatus,
-  setOpfsCloudSyncProjectScope,
-} from '@src/lib/fs-zds/opfsCloud'
+import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
@@ -68,10 +64,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { useCanReadWriteProjectDirectory } from '@src/machines/systemIO/hooks'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   HOME_KEYMAP_SCOPE,
@@ -92,7 +85,7 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { type ActorRefFrom, waitFor } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -214,37 +207,6 @@ const Home = () => {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    let disposed = false
-    let lastHandledSyncedAt: string | undefined
-
-    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
-      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
-      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
-        return
-      }
-
-      lastHandledSyncedAt = syncedAt
-      void waitFor(systemIOActor, (state) =>
-        state.matches(SystemIOMachineStates.idle)
-      )
-        .then(() => {
-          if (disposed || lastHandledSyncedAt !== syncedAt) {
-            return
-          }
-          systemIOActor.send({
-            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-          })
-        })
-        .catch(reportRejection)
-    })
-
-    return () => {
-      disposed = true
-      disposeCloudSyncRefreshEffect()
-    }
-  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {

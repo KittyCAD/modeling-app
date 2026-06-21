@@ -16,8 +16,9 @@ export interface DisposableLike {
 
 export type RegistryItemLifecycleCleanup = DisposableLike | (() => void)
 
-export type RegistryItemLifecycleHook =
-  () => void | RegistryItemLifecycleCleanup
+export type RegistryItemLifecycleHook = () =>
+  | RegistryItemLifecycleCleanup
+  | undefined
 
 /**
  * Value-spec contributions may be static values or live reactive values.
