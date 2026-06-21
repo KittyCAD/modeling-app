@@ -1,8 +1,17 @@
-import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
+import { useSignals } from '@preact/signals-react/runtime'
+import {
+  COMMAND_PALETTE_HOTKEY,
+  COMMAND_PALETTE_OPEN_COMMAND_ID,
+} from '@src/components/CommandBar/constants'
 import { CustomIcon } from '@src/components/CustomIcon'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
 import { memo } from 'react'
 
 type CommandBarOpenButtonProps = {
@@ -12,8 +21,21 @@ type CommandBarOpenButtonProps = {
 export const CommandBarOpenButton = memo(function CommandBarOpenButton({
   app,
 }: CommandBarOpenButtonProps) {
+  useSignals()
   const platform = usePlatform()
   const { commands } = app
+  const keymap = app.registry.optional(keymapService)
+  const commandPaletteKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          COMMAND_PALETTE_OPEN_COMMAND_ID,
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [COMMAND_PALETTE_HOTKEY],
+    platform
+  )
 
   return (
     <button
@@ -25,9 +47,11 @@ export const CommandBarOpenButton = memo(function CommandBarOpenButton({
     >
       <CustomIcon name="command" className="w-5 h-5" />
       <span>Commands</span>
-      <kbd className="hidden sm:block dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
-        {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platform)}
-      </kbd>
+      {commandPaletteKeybinding && (
+        <kbd className="hidden sm:block dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
+          {commandPaletteKeybinding}
+        </kbd>
+      )}
     </button>
   )
 })

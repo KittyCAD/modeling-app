@@ -1,4 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { Fragment, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -13,7 +14,14 @@ import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { keymapService } from '@src/registry/contracts/keymap'
+import { platform } from '@src/lib/utils'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 
 const PLUGINS_FEATURE_FLAG = 'plugins'
 
@@ -29,6 +37,7 @@ function isSettingsTab(tab: string | null): tab is SettingsTab {
 }
 
 export const Settings = () => {
+  useSignals()
   const app = useApp()
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
@@ -54,6 +63,17 @@ export const Settings = () => {
       : requestedSettingsTab
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const settingsSearchKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.search.focusSettings,
+          ['settings-open'],
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : undefined,
+    platform()
+  )
 
   useEffect(() => {
     if (!keymap) {
@@ -121,7 +141,10 @@ export const Settings = () => {
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar showPlugins={showPluginsTab} />
+                <SettingsSearchBar
+                  showPlugins={showPluginsTab}
+                  keybinding={settingsSearchKeybinding}
+                />
                 <button
                   type="button"
                   onClick={close}
