@@ -445,14 +445,14 @@ fn constrainable_line_from_kcl_value(
     constrainable_line_from_unsolved_segment(segment, function_name, range)
 }
 
-fn angle_sector(sector: TyF64, range: crate::SourceRange) -> Result<AngleSector, KclError> {
+fn angle_sector(sector: TyF64, function_name: &str, range: crate::SourceRange) -> Result<AngleSector, KclError> {
     match sector.n {
         1.0 => Ok(AngleSector::One),
         2.0 => Ok(AngleSector::Two),
         3.0 => Ok(AngleSector::Three),
         4.0 => Ok(AngleSector::Four),
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle() sector must be 1, 2, 3, or 4".to_owned(),
+            format!("{function_name}() sector must be 1, 2, 3, or 4"),
             vec![range],
         ))),
     }
@@ -5139,52 +5139,21 @@ fn axis_constraint_points(
     Ok(KclValue::none())
 }
 
-pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let line_array_ty = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2));
-    let sector_ty = RuntimeType::count();
-    let label_position = get_constraint_label_position(exec_state, &args, "angle")?;
-    let (lines, mode): (Vec<KclValue>, AngleConstraintMode) =
-        if let Some(lines) = args.get_kw_arg_opt("lines", &line_array_ty, exec_state)? {
-            let sector = args
-                .get_kw_arg_opt::<TyF64>("sector", &sector_ty, exec_state)?
-                .unwrap_or_else(|| TyF64::count(1.0));
-            let inverse = args
-                .get_kw_arg_opt::<bool>("inverse", &RuntimeType::bool(), exec_state)?
-                .unwrap_or(false);
-            (
-                lines,
-                AngleConstraintMode::PointsAtAngle {
-                    sector: angle_sector(sector, args.source_range)?,
-                    inverse,
-                },
-            )
-        } else {
-            if args
-                .get_kw_arg_opt::<TyF64>("sector", &sector_ty, exec_state)?
-                .is_some()
-                || args
-                    .get_kw_arg_opt::<bool>("inverse", &RuntimeType::bool(), exec_state)?
-                    .is_some()
-            {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "angle() sector and inverse require the labelled lines argument".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
-            (
-                args.get_unlabeled_kw_arg("lines", &line_array_ty, exec_state)?,
-                AngleConstraintMode::LinesAtAngle,
-            )
-        };
-
+fn angle_constraint_from_lines(
+    lines: Vec<KclValue>,
+    mode: AngleConstraintMode,
+    label_position: Option<Point2d<Number>>,
+    function_name: &str,
+    args: &Args,
+) -> Result<KclValue, KclError> {
     let [line0, line1]: [KclValue; 2] = lines.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input lines".to_owned(),
             vec![args.source_range],
         ))
     })?;
-    let line0 = constrainable_line_from_kcl_value(&line0, "angle", args.source_range)?;
-    let line1 = constrainable_line_from_kcl_value(&line1, "angle", args.source_range)?;
+    let line0 = constrainable_line_from_kcl_value(&line0, function_name, args.source_range)?;
+    let line1 = constrainable_line_from_kcl_value(&line1, function_name, args.source_range)?;
 
     let sketch_constraint = SketchConstraint {
         kind: SketchConstraintKind::Angle {
@@ -5198,6 +5167,34 @@ pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     Ok(KclValue::SketchConstraint {
         value: Box::new(sketch_constraint),
     })
+}
+
+pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let line_array_ty = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2));
+    let label_position = get_constraint_label_position(exec_state, &args, "angle")?;
+    let lines = args.get_unlabeled_kw_arg("lines", &line_array_ty, exec_state)?;
+    angle_constraint_from_lines(lines, AngleConstraintMode::LinesAtAngle, label_position, "angle", &args)
+}
+
+pub async fn angle_dimension(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let line_array_ty = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2));
+    let sector_ty = RuntimeType::count();
+    let label_position = get_constraint_label_position(exec_state, &args, "angleDimension")?;
+    let lines = args.get_kw_arg("lines", &line_array_ty, exec_state)?;
+    let sector = args.get_kw_arg::<TyF64>("sector", &sector_ty, exec_state)?;
+    let inverse = args
+        .get_kw_arg_opt::<bool>("inverse", &RuntimeType::bool(), exec_state)?
+        .unwrap_or(false);
+    angle_constraint_from_lines(
+        lines,
+        AngleConstraintMode::PointsAtAngle {
+            sector: angle_sector(sector, "angleDimension", args.source_range)?,
+            inverse,
+        },
+        label_position,
+        "angleDimension",
+        &args,
+    )
 }
 
 async fn lines_at_angle(

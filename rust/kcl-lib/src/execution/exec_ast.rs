@@ -271,7 +271,7 @@ fn intersection_of_initial_lines(
     let denom = vec2_cross(r, s);
     if denom.abs() <= 1e-9 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle(lines = ..., sector = ...) requires non-parallel lines".to_owned(),
+            "angleDimension(lines = ..., sector = ...) requires non-parallel lines".to_owned(),
             vec![range],
         )));
     }
@@ -381,7 +381,7 @@ fn representative_angle_endpoint(
     let endpoint_delta = if endpoint_index == 1 { end_delta } else { start_delta };
     if vec2_len(endpoint_delta) <= 1e-9 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "angle(lines = ..., sector = ...) requires each line to have an endpoint away from the intersection"
+            "angleDimension(lines = ..., sector = ...) requires each line to have an endpoint away from the intersection"
                 .to_owned(),
             vec![range],
         )));
@@ -6144,13 +6144,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_with_sector_allows_missing_unlabeled_input() {
+    async fn angle_dimension_with_sector_allows_missing_unlabeled_input() {
         parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  angle(lines = [line1, line2], sector = 2) == 60deg
+  angleDimension(lines = [line1, line2], sector = 2) == 60deg
 }
 "#,
         )
@@ -6159,43 +6159,34 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_defaults_to_sector_one() {
-        let result = parse_execute(
+    async fn angle_dimension_requires_sector() {
+        let err = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(lines = [line1, line2]) == 60deg
+  angleDimension(lines = [line1, line2]) == 60deg
 }
 "#,
         )
         .await
-        .unwrap();
-        let angle = result
-            .exec_state
-            .global
-            .root_module_artifacts
-            .scene_objects
-            .iter()
-            .find_map(|object| match &object.kind {
-                ObjectKind::Constraint {
-                    constraint: crate::front::Constraint::Angle(angle),
-                } => Some(angle),
-                _ => None,
-            })
-            .unwrap();
-        assert_eq!(angle.sector, Some(1));
-        assert_eq!(angle.inverse, Some(false));
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("The `angleDimension` function requires a keyword argument `sector`"),
+            "unexpected error: {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_accepts_label_position() {
+    async fn angle_dimension_accepts_label_position() {
         let result = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm]) == 60deg
+  angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm]) == 60deg
 }
 "#,
         )
@@ -6220,16 +6211,16 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_accepts_all_four_sectors() {
+    async fn angle_dimension_accepts_all_four_sectors() {
         parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(lines = [line1, line2], sector = 1) == 60deg
-  angle(lines = [line1, line2], sector = 2) == 120deg
-  angle(lines = [line1, line2], sector = 3) == 60deg
-  angle(lines = [line1, line2], sector = 4) == 120deg
+  angleDimension(lines = [line1, line2], sector = 1) == 60deg
+  angleDimension(lines = [line1, line2], sector = 2) == 120deg
+  angleDimension(lines = [line1, line2], sector = 3) == 60deg
+  angleDimension(lines = [line1, line2], sector = 4) == 120deg
 }
 "#,
         )
@@ -6238,13 +6229,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_accepts_inverse_angle_for_sector() {
+    async fn angle_dimension_accepts_inverse_angle_for_sector() {
         let result = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(lines = [line1, line2], sector = 1, inverse = true) == 360deg - 60deg
+  angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 360deg - 60deg
 }
 "#,
         )
@@ -6268,35 +6259,13 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_wins_when_both_are_supplied() {
-        let err = parse_execute(
-            r#"
-sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 4mm, var 0mm], end = [var 2mm, var 3mm])
-  line3 = line(start = [var 0mm, var 1mm], end = [var 1mm, var 1mm])
-  line4 = line(start = [var 0mm, var 2mm], end = [var 1mm, var 3mm])
-  angle([line1, line2], lines = [line3, line4], sector = 5) == 60deg
-}
-"#,
-        )
-        .await
-        .unwrap_err();
-
-        assert!(
-            err.to_string().contains("angle() sector must be 1, 2, 3, or 4"),
-            "unexpected error: {err:?}"
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_rejects_invalid_sector() {
+    async fn angle_dimension_rejects_invalid_sector() {
         let err = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  angle(lines = [line1, line2], sector = 5) == 60deg
+  angleDimension(lines = [line1, line2], sector = 5) == 60deg
 }
 "#,
         )
@@ -6304,19 +6273,20 @@ sketch(on = XY) {
         .unwrap_err();
 
         assert!(
-            err.to_string().contains("angle() sector must be 1, 2, 3, or 4"),
+            err.to_string()
+                .contains("angleDimension() sector must be 1, 2, 3, or 4"),
             "unexpected error: {err:?}"
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_labelled_lines_rejects_parallel_lines() {
+    async fn angle_dimension_rejects_parallel_lines() {
         let err = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
-  angle(lines = [line1, line2], sector = 2) == 60deg
+  angleDimension(lines = [line1, line2], sector = 2) == 60deg
 }
 "#,
         )
@@ -6325,34 +6295,44 @@ sketch(on = XY) {
 
         assert!(
             err.to_string()
-                .contains("angle(lines = ..., sector = ...) requires non-parallel lines"),
+                .contains("angleDimension(lines = ..., sector = ...) requires non-parallel lines"),
             "unexpected error: {err:?}"
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_sector_requires_labelled_lines() {
-        let err = parse_execute(
+    async fn angle_accepts_label_position() {
+        let result = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  angle([line1, line2], sector = 2) == 60deg
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
 }
 "#,
         )
         .await
-        .unwrap_err();
-
-        assert!(
-            err.to_string()
-                .contains("angle() sector and inverse require the labelled lines argument"),
-            "unexpected error: {err:?}"
-        );
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        let label_position = angle.label_position.as_ref().unwrap();
+        assert_eq!(label_position.x.value, 10.0);
+        assert_eq!(label_position.y.value, 11.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_requires_unlabeled_or_labelled_lines() {
+    async fn angle_requires_unlabeled_lines() {
         parse_execute(
             r#"
 sketch(on = XY) {

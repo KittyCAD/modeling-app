@@ -143,6 +143,7 @@ const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
 const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
+const ANGLE_DIMENSION_FN: &str = "angleDimension";
 const ANGLE_LINES_PARAM: &str = "lines";
 const ANGLE_SECTOR_PARAM: &str = "sector";
 const ANGLE_INVERSE_PARAM: &str = "inverse";
@@ -3842,8 +3843,12 @@ impl FrontendState {
             non_code_meta: Default::default(),
         })));
 
-        let has_explicit_angle_mode = angle.sector.is_some() || angle.inverse.is_some();
-        let mut arguments = if has_explicit_angle_mode {
+        if angle.inverse == Some(true) && angle.sector.is_none() {
+            return Err(KclError::refactor("Angle inverse requires an angle sector".to_owned()));
+        }
+
+        let uses_angle_dimension = angle.sector.is_some();
+        let mut arguments = if uses_angle_dimension {
             vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_LINES_PARAM)),
                 arg: lines_ast.clone(),
@@ -3866,12 +3871,12 @@ impl FrontendState {
             });
         }
 
-        if let Some(inverse) = angle.inverse {
+        if angle.inverse == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
                 arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                    value: ast::LiteralValue::Bool(inverse),
-                    raw: inverse.to_string(),
+                    value: ast::LiteralValue::Bool(true),
+                    raw: true.to_string(),
                     digest: None,
                 }))),
             });
@@ -3885,8 +3890,12 @@ impl FrontendState {
         }
 
         let call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
-            unlabeled: (!has_explicit_angle_mode).then_some(lines_ast),
+            callee: ast::Node::no_src(ast_sketch2_name(if uses_angle_dimension {
+                ANGLE_DIMENSION_FN
+            } else {
+                ANGLE_FN
+            })),
+            unlabeled: (!uses_angle_dimension).then_some(lines_ast),
             arguments,
             digest: None,
             non_code_meta: Default::default(),
@@ -6000,14 +6009,27 @@ fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path
     }
 }
 
+fn is_angle_constraint_call_name(name: &str) -> bool {
+    matches!(name, ANGLE_FN | ANGLE_DIMENSION_FN)
+}
+
+fn is_constraint_call_name(name: &str) -> bool {
+    matches!(
+        name,
+        DISTANCE_FN
+            | HORIZONTAL_DISTANCE_FN
+            | VERTICAL_DISTANCE_FN
+            | RADIUS_FN
+            | DIAMETER_FN
+            | ANGLE_FN
+            | ANGLE_DIMENSION_FN
+    )
+}
+
 fn constraint_supports_label_position(part: &ast::BinaryPart) -> bool {
     matches!(
         part,
-        ast::BinaryPart::CallExpressionKw(call)
-            if matches!(
-                call.callee.name.name.as_str(),
-                DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
-            )
+        ast::BinaryPart::CallExpressionKw(call) if is_constraint_call_name(call.callee.name.name.as_str())
     )
 }
 
@@ -6315,11 +6337,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let left_is_constraint = matches!(
                     &binary_expr.left,
-                    ast::BinaryPart::CallExpressionKw(call)
-                        if matches!(
-                            call.callee.name.name.as_str(),
-                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
-                        )
+                    ast::BinaryPart::CallExpressionKw(call) if is_constraint_call_name(call.callee.name.name.as_str())
                 );
                 if left_is_constraint {
                     binary_expr.right = value.clone();
@@ -6335,12 +6353,12 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 let left_is_angle = matches!(
                     &binary_expr.left,
                     ast::BinaryPart::CallExpressionKw(existing_call)
-                        if existing_call.callee.name.name == ANGLE_FN
+                        if is_angle_constraint_call_name(existing_call.callee.name.name.as_str())
                 );
                 let right_is_angle = matches!(
                     &binary_expr.right,
                     ast::BinaryPart::CallExpressionKw(existing_call)
-                        if existing_call.callee.name.name == ANGLE_FN
+                        if is_angle_constraint_call_name(existing_call.callee.name.name.as_str())
                 );
 
                 match (left_is_angle, right_is_angle) {
@@ -11022,7 +11040,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(lines = [line1, line2]) == 60deg
+  angle([line1, line2]) == 60deg
 }
 ";
 
@@ -11066,7 +11084,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
-  angle(lines = [line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
 }
 "
         );
@@ -11089,7 +11107,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  60deg == angle(lines = [line1, line2])
+  60deg == angleDimension(lines = [line1, line2], sector = 1)
 }
 ";
 
@@ -11133,7 +11151,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
-  60deg == angle(lines = [line1, line2], labelPosition = [10mm, 11mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
 }
 "
         );
@@ -11214,12 +11232,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  angle(
-  lines = [line2, line1],
-  sector = 3,
-  inverse = false,
-  labelPosition = [10mm, 11mm],
-) == 60deg
+  angleDimension(lines = [line2, line1], sector = 3, labelPosition = [10mm, 11mm]) == 60deg
 }
 "
         );
@@ -11293,7 +11306,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
-  60deg == angle(lines = [line2, line1], sector = 3, inverse = false)
+  60deg == angleDimension(lines = [line2, line1], sector = 3)
 }
 "
         );
@@ -13801,7 +13814,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_lines_angle_with_sector_uses_labelled_lines() {
+    async fn test_lines_angle_with_sector_uses_angle_dimension() {
         let initial_source = "\
 sketch(on = XY) {
   line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
@@ -13855,7 +13868,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
-  angle(
+  angleDimension(
   lines = [line1, line2],
   sector = 1,
   inverse = true,
