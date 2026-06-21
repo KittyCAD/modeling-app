@@ -1,4 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -19,6 +20,12 @@ import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -172,10 +179,23 @@ function ProjectMenuPopover({
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
+  useSignals()
   const { machineManager, commands, settings } = app
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
+  const keymap = app.registry.optional(keymapService)
+  const projectSettingsKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          'zds.settings.open',
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [`mod+${isDesktop() ? '' : 'shift'}+,`],
+    platform
+  )
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
@@ -204,9 +224,9 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">
-                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
-              </kbd>
+              {projectSettingsKeybinding && (
+                <kbd className="hotkey">{projectSettingsKeybinding}</kbd>
+              )}
             </>
           ),
           onClick: () => {
