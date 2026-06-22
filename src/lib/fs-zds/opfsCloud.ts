@@ -87,6 +87,8 @@ export {
   projectManifestsEqual,
 } from '@src/lib/fs-zds/opfsCloud/projectArchive'
 
+export type OpfsCloudConflictResolution = 'local' | 'cloud'
+
 const SYNC_DEBOUNCE_MS = 2500
 const SYNC_RETRY_MS = 30_000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
@@ -1036,6 +1038,82 @@ async function markProjectSynced(
     lastFailure: undefined,
     lastFailureAt: undefined,
   })
+}
+
+async function deleteConflictCopy(conflictProjectPath: string) {
+  await clearOutboxEntriesForProject(conflictProjectPath)
+  await deleteProjectMetadata(conflictProjectPath)
+  if (await exists(conflictProjectPath)) {
+    await localFs.rm(conflictProjectPath, { recursive: true })
+  }
+}
+
+async function applyCloudDataForConflict(metadata: ProjectMetadata) {
+  const conflict = metadata.conflict
+  if (!conflict) {
+    return
+  }
+
+  const remoteFiles = await collectLocalProjectFiles(
+    conflict.conflictProjectPath
+  )
+  const remoteManifest = await projectManifestFromFiles(remoteFiles)
+  await replaceLocalProjectWithFiles(metadata.localProjectPath, remoteFiles)
+  await clearOutboxEntriesForProject(metadata.localProjectPath)
+  await deleteConflictCopy(conflict.conflictProjectPath)
+  await markProjectSynced(metadata, remoteManifest, {
+    revision: conflict.remoteRevision,
+  })
+}
+
+async function applyLocalDataForConflict(metadata: ProjectMetadata) {
+  const conflict = metadata.conflict
+  if (!metadata.remoteProjectId || !conflict) {
+    return Promise.reject(
+      new Error('Cloud conflict cannot be resolved without a remote project.')
+    )
+  }
+
+  const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
+  const localManifest = await projectManifestFromFiles(localFiles)
+  const updated = await updateRemoteProject({
+    config,
+    projectPath: metadata.localProjectPath,
+    projectId: metadata.remoteProjectId,
+    files: localFiles,
+    expectedRevision: conflict.remoteRevision ?? metadata.remoteRevision,
+  })
+  await clearOutboxEntriesForProject(metadata.localProjectPath)
+  await deleteConflictCopy(conflict.conflictProjectPath)
+  await markProjectSynced(
+    metadata,
+    localManifest,
+    remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
+  )
+}
+
+export async function resolveOpfsCloudProjectConflict(
+  projectPath: string,
+  resolution: OpfsCloudConflictResolution
+) {
+  const metadata = await getProjectMetadata(projectPath)
+  if (!metadata?.conflict) {
+    return
+  }
+
+  try {
+    if (resolution === 'cloud') {
+      await applyCloudDataForConflict(metadata)
+    } else {
+      await applyLocalDataForConflict(metadata)
+    }
+    await refreshPendingCount()
+    scheduleSync(0)
+  } catch (error) {
+    await markProjectFailure(metadata, error)
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw error
+  }
 }
 
 async function hydrateCleanLocalProjectTitle(

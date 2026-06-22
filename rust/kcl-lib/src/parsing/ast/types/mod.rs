@@ -4116,6 +4116,11 @@ pub struct Parameter {
     /// Whether it's experimental.
     #[serde(default, skip_serializing_if = "is_false")]
     pub experimental: bool,
+    /// If true, this parameter is deprecated regardless of the KCL version. Use
+    /// `deprecated_since` instead to deprecate the parameter only at or after a
+    /// particular version. At most one of the two may be set.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub deprecated: bool,
     /// If set, this parameter is deprecated as of the given KCL version (e.g.,
     /// "2.0"). The parser validates that this is a dotted integer version;
     /// downstream code reparses it into a `VersionConstraint`.
@@ -4863,6 +4868,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4885,6 +4891,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4908,6 +4915,7 @@ cylinder = startSketchOn(-XZ)
                     params: vec![
                         Parameter {
                             experimental: Default::default(),
+                            deprecated: false,
                             deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
@@ -4920,6 +4928,7 @@ cylinder = startSketchOn(-XZ)
                         },
                         Parameter {
                             experimental: Default::default(),
+                            deprecated: false,
                             deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),

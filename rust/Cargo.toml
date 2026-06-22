@@ -11,7 +11,6 @@ members = [
   "kcl-python-bindings",
   "kcl-syntax",
   "kcl-test-server",
-  "kcl-to-core",
   "kcl-wasm-lib",
 ]
 
