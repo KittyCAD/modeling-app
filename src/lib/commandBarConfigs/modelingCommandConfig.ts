@@ -257,7 +257,7 @@ export type ModelingCommandSchema = {
     length?: KclCommandValue
     to?: Selections
     symmetric?: boolean
-    direction?: KclCommandValue | Selections
+    direction?: Selections
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
@@ -1106,10 +1106,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       direction: {
-        inputType: 'vector3d',
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge'],
+        multiple: false,
+        clearSelectionFirst: true,
         required: false,
         status: 'experimental',
-        defaultValue: '[0, 0, 1]',
       },
       bidirectionalLength: {
         inputType: 'kcl',

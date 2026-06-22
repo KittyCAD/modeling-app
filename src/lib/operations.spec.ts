@@ -447,59 +447,6 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
     })
 
-    it('preserves vector direction in the command defaults', async () => {
-      const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      const code =
-        'extrude001 = extrude(profile001, length = 10, direction = [1, 0, 1])'
-      const operation = stdlib('extrude')
-      if (operation.type !== 'StdLibCall') {
-        throw new Error('Expected operation to be a StdLibCall')
-      }
-      operation.unlabeledArg = {
-        value: {
-          type: 'Sketch',
-          value: { artifactId: 'path-id' },
-        },
-        sourceRange: rangeOfText(code, 'profile001'),
-      }
-      operation.labeledArgs = {
-        length: {
-          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
-          sourceRange: rangeOfText(code, '10'),
-        },
-        direction: {
-          value: {
-            type: 'Array',
-            value: [
-              { type: 'Number', value: 1, ty: { type: 'Any' } },
-              { type: 'Number', value: 0, ty: { type: 'Any' } },
-              { type: 'Number', value: 1, ty: { type: 'Any' } },
-            ],
-          },
-          sourceRange: rangeOfText(code, '[1, 0, 1]'),
-        },
-      }
-
-      const result = await enterEditFlow({
-        operation,
-        code,
-        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
-        rustContext,
-      })
-      if (result instanceof Error) {
-        throw result
-      }
-      if (result.type !== 'Find and select command') {
-        throw new Error(`Expected edit flow event, got ${result.type}`)
-      }
-
-      const argDefaultValues = result.data.argDefaultValues as {
-        direction?: { valueText: string }
-      }
-      expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.direction?.valueText).toBe('[1, 0, 1]')
-    })
-
     it('preserves tagged segment direction in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =

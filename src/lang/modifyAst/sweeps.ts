@@ -58,14 +58,6 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 
-type ExtrudeDirection = KclCommandValue | Selections
-
-function isSelectionDirection(
-  direction: ExtrudeDirection
-): direction is Selections {
-  return 'graphSelections' in direction
-}
-
 export function addExtrude({
   ast,
   artifactGraph,
@@ -94,7 +86,7 @@ export function addExtrude({
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
-  direction?: ExtrudeDirection
+  direction?: Selections
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
@@ -200,25 +192,19 @@ export function addExtrude({
       : []
   let directionExpr: LabeledArg[] = []
   if (direction) {
-    if (isSelectionDirection(direction)) {
-      const directionResult = getAxisExpression(
-        undefined,
-        direction,
-        modifiedAst,
-        wasmInstance,
-        artifactGraph,
-        mNodeToEdit
-      )
-      if (err(directionResult)) return directionResult
-      modifiedAst = directionResult.modifiedAst
-      directionExpr = [
-        createLabeledArg('direction', directionResult.generatedAxis),
-      ]
-    } else {
-      directionExpr = [
-        createLabeledArg('direction', valueOrVariable(direction)),
-      ]
-    }
+    const directionResult = getAxisExpression(
+      undefined,
+      direction,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph,
+      mNodeToEdit
+    )
+    if (err(directionResult)) return directionResult
+    modifiedAst = directionResult.modifiedAst
+    directionExpr = [
+      createLabeledArg('direction', directionResult.generatedAxis),
+    ]
   }
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
@@ -284,14 +270,6 @@ export function addExtrude({
   // Insert variables for labeled arguments if provided
   if (length && 'variableName' in length && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
-  }
-  if (
-    direction &&
-    !isSelectionDirection(direction) &&
-    'variableName' in direction &&
-    direction.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(direction, modifiedAst, mNodeToEdit)
   }
   if (
     bidirectionalLength &&

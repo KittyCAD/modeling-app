@@ -146,38 +146,6 @@ profile002 = rectangle(
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add an extrude call with a vector direction', async () => {
-      const { ast, sketches, artifactGraph } =
-        await getAstAndSketchSelectionsEngineless(
-          circleProfileCode,
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-      const length = await getKclCommandValue(
-        '1',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const direction = await getKclCommandValue(
-        '[1, 0, 1]',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const result = addExtrude({
-        ast,
-        sketches,
-        length,
-        direction,
-        artifactGraph,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `extrude001 = extrude(profile001, length = 1, direction = [1, 0, 1])`
-      )
-    })
-
     it('should add an extrude call with a segment direction', async () => {
       const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelectionsEngineless(

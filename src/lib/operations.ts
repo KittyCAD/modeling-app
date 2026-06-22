@@ -275,45 +275,29 @@ async function extractOptionalKclArrayArgument(
   return extractKclArgument(code, operation, argName, rustContext, true, true)
 }
 
-async function extractExtrudeDirectionArgument(
-  code: string,
+function extractExtrudeDirectionArgument(
   operation: StdLibCallOp,
-  artifactGraph: ArtifactGraph,
-  rustContext: RustContext
-): Promise<
-  ModelingCommandSchema['Extrude']['direction'] | undefined | { error: string }
-> {
+  artifactGraph: ArtifactGraph
+):
+  | ModelingCommandSchema['Extrude']['direction']
+  | undefined
+  | {
+      error: string
+    } {
   const directionArg = operation.labeledArgs?.direction
   if (!directionArg?.sourceRange) {
     return undefined
   }
 
-  if (
-    directionArg.value.type === 'TagIdentifier' ||
-    directionArg.value.type === 'Segment' ||
-    directionArg.value.type === 'Uuid'
-  ) {
-    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-      directionArg,
-      artifactGraph
-    )
-    if (!err(axisEdgeSelection) && axisEdgeSelection.edge) {
-      return axisEdgeSelection.edge
-    }
-  }
-
-  const direction = await extractKclArgument(
-    code,
-    operation,
-    'direction',
-    rustContext,
-    true
+  const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+    directionArg,
+    artifactGraph
   )
-  if (!('error' in direction)) {
-    return direction
+  if (!err(axisEdgeSelection) && axisEdgeSelection.edge) {
+    return axisEdgeSelection.edge
   }
 
-  return { error: 'Missing or invalid direction argument' }
+  return { error: 'Missing or invalid direction edge selection' }
 }
 
 /**
@@ -426,11 +410,9 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
-  const directionResult = await extractExtrudeDirectionArgument(
-    code,
+  const directionResult = extractExtrudeDirectionArgument(
     operation,
-    artifactGraph,
-    rustContext
+    artifactGraph
   )
   if (directionResult && 'error' in directionResult) {
     return { reason: directionResult.error }
