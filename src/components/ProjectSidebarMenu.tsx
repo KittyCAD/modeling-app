@@ -1,4 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -17,7 +18,14 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -68,6 +76,7 @@ const ProjectSidebarMenu = ({
     isDesktopApp: isDesktop(),
     hasOpfsCloudFeature,
   })
+  const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
@@ -100,7 +109,7 @@ const ProjectSidebarMenu = ({
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
-          {project?.name ? project.name : APP_NAME}
+          {projectDisplayName}
         </span>
       )}
       {children}
@@ -170,10 +179,23 @@ function ProjectMenuPopover({
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
+  useSignals()
   const { machineManager, commands, settings } = app
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
+  const keymap = app.registry.optional(keymapService)
+  const projectSettingsKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          'zds.settings.open',
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [`mod+${isDesktop() ? '' : 'shift'}+,`],
+    platform
+  )
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
@@ -202,9 +224,9 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">
-                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
-              </kbd>
+              {projectSettingsKeybinding && (
+                <kbd className="hotkey">{projectSettingsKeybinding}</kbd>
+              )}
             </>
           ),
           onClick: () => {
@@ -400,8 +422,9 @@ export function ProjectBreadcrumbButton({
   // Breadcrumb for project and project-relative file path
   const relativeFilePath = getProjectRelativeFilePath(project, file)
   const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
+  const projectDisplayName = project ? getProjectDisplayName(project) : ''
   const breadCrumb = {
-    projectName: project?.name || '',
+    projectName: projectDisplayName,
     sep: ' / ',
     filePath: formattedRelativeFilePath,
   }
@@ -450,7 +473,7 @@ export function ProjectBreadcrumbButton({
       data-testid="project-sidebar-toggle"
     >
       <div className="flex min-w-0 items-baseline py-0.5 text-sm">
-        {project?.name && (
+        {project && (
           <>
             <span
               ref={projectNameRef}

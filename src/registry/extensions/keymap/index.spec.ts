@@ -349,6 +349,38 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('handles default undo and redo keybindings from CodeMirror while the editor is focused', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+
+    keymap.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+    keymap.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+
+    expect(
+      keymap.handleKeyDown(
+        new KeyboardEvent('keydown', {
+          key: 'z',
+          ctrlKey: true,
+          metaKey: true,
+        }),
+        { source: 'codeMirror' }
+      )
+    ).toBe(true)
+    expect(
+      keymap.handleKeyDown(
+        new KeyboardEvent('keydown', {
+          key: 'z',
+          ctrlKey: true,
+          metaKey: true,
+          shiftKey: true,
+        }),
+        { source: 'codeMirror' }
+      )
+    ).toBe(true)
+
+    registry[Symbol.dispose]()
+  })
+
   it('keeps editor focus priority until focus moves outside editable content', () => {
     const registry = createRegistryWithKeymapItems([
       {
