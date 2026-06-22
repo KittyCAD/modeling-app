@@ -1144,8 +1144,7 @@ dependencies = [
 [[package]]
 name = "ezpz"
 version = "0.2.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0928f6a0ebd0cbc7ecb75d2457a84de6931cb20201e118cda73cfc16514ce283"
+source = "git+https://github.com/KittyCAD/ezpz.git?branch=david%2Fadaptive-damping#eba1309671a5e1a8786565e61748b36b4dd427bb"
 dependencies = [
  "faer",
  "indexmap 2.14.0",
