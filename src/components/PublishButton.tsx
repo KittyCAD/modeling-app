@@ -2,6 +2,7 @@ import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
+import type { KclManager } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import {
@@ -28,12 +29,18 @@ export const PublishButton = memo(function PublishButton({
 }: PublishButtonProps) {
   useSignals()
   const project = app.projectSignal.value?.projectIORefSignal.value
+  const kclManager = app.projectSignal.value?.executingEditor.value
+
+  if (!kclManager) {
+    return null
+  }
 
   return (
     <Popover className="relative hidden sm:flex">
       {(popover) => (
         <PublishPopoverContent
           app={app}
+          kclManager={kclManager}
           project={project}
           close={() => popover.close()}
           open={popover.open}
@@ -45,18 +52,19 @@ export const PublishButton = memo(function PublishButton({
 
 function PublishPopoverContent({
   app,
+  kclManager,
   project,
   close,
   open,
 }: {
   app: App
+  kclManager: KclManager
   project: Project | undefined
   close: () => void
   open: boolean
 }) {
   useSignals()
   const { auth } = app
-  const { kclManager } = app.singletons
   const ast = kclManager.astSignal.value
   const kclEmpty = kclManager.isAstBodyEmpty(ast)
   const hasKclErrors = kclManager.hasErrors()

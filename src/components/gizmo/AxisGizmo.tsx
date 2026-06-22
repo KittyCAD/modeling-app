@@ -185,7 +185,6 @@ export default function AxisGizmo() {
       isDisposed = true
       isPointerOverRef.current = false
       isHoverRefreshPausedRef.current = false
-      renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
       kclManager.sceneInfra.camControls.cameraChange.remove(animate)

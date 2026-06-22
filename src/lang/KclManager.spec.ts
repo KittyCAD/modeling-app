@@ -485,6 +485,43 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).toHaveBeenCalledWith('second')
   })
 
+  it('ignores delayed disk watcher events from its own app writes', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('base')
+    const path = '/tmp/kcl-manager-own-write-watch-test.kcl'
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+
+    kclManager.path = path
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    ;(kclManager as any).markFileCodeAsSynced('base')
+    vi.spyOn(File.ioImplementations, 'read')
+      .mockResolvedValueOnce('base')
+      .mockResolvedValueOnce('base')
+
+    kclManager.updateCodeEditor('saved by app', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await flushPromises()
+
+    expect(writeSpy).toHaveBeenCalledWith('saved by app')
+    expect(kclManager.code).toBe('saved by app')
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', path)
+    await flushPromises()
+
+    expect(kclManager.code).toBe('saved by app')
+    expect(updateCodeEditorSpy).toHaveBeenCalledTimes(1)
+  })
+
   it('reloads clean editor state from disk watcher updates', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
 

@@ -898,6 +898,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             requestedProjectName: string
             override?: boolean
             requestedFileNameWithExtension: string
+            navigateToFile?: boolean
             requestedSubRoute?: string
           }
         }) => {
@@ -923,6 +924,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             ...message,
             projectName: input.requestedProjectName,
             fileName: input.requestedFileNameWithExtension || '',
+            navigateToFile: input.navigateToFile ?? true,
             subRoute: input.requestedSubRoute || '',
           }
         }

@@ -6,7 +6,14 @@ import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { reportRejection } from '@src/lib/trap'
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
+import {
+  createContext,
+  use,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import type { MutableRefObject } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
@@ -263,15 +270,19 @@ export const ModelingMachineProvider = ({
   }, [modelingActor])
 
   // Give the state back to the kclManager.
-  useEffect(() => {
+  useLayoutEffect(() => {
+    commands.actor.send({ type: 'Set kclManager', data: kclManager })
+  }, [commands.actor, kclManager])
+
+  useLayoutEffect(() => {
     kclManager.modelingSend = modelingSend
   }, [modelingSend, kclManager])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     kclManager.modelingState = modelingState
   }, [modelingState, kclManager])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     kclManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges, kclManager])
 

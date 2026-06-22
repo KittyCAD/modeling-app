@@ -1,8 +1,9 @@
 import ReactJsonView from '@microlink/react-json-view'
 
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-import { useExecutingEditor } from '@src/lib/boot'
+import { useOptionalExecutingEditor } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 
 export function LogsPane(props: AreaTypeComponentProps) {
@@ -24,8 +25,11 @@ export function LogsPane(props: AreaTypeComponentProps) {
   )
 }
 export const LogsPaneContent = () => {
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
   const theme = useResolvedTheme()
+  if (!kclManager) {
+    return <NoExecutingFileEmptyState />
+  }
   const logs = kclManager.logsSignal.value
   return (
     <div className="overflow-hidden">

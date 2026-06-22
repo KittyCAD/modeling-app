@@ -248,6 +248,29 @@ describe('ProjectExplorer', () => {
     expect(container.childNodes.length).toBe(1)
     expect(file.innerText).toBe('main.kcl')
   })
+  it('should render project files without an executing file', () => {
+    project.children = [oneFile]
+    render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={undefined}
+        executingFilePath={undefined}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+    const file = screen.getByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(file.innerText).toBe('main.kcl')
+  })
   it('should render two files A-Z', () => {
     project.children = [createFile('main.kcl'), createFile('dog.kcl')]
     render(

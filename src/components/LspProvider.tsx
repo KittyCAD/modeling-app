@@ -46,8 +46,8 @@ export function projectBasename(filePath: string, projectPath: string): string {
   return trimmedStr
 }
 
-function getDocumentUri(currentFilePath: string) {
-  return `file:///${currentFilePath}`
+function fileUri(filePath: string, projectPath: string | null): string {
+  return `file:///${projectBasename(filePath, projectPath || '')}`
 }
 
 type LspContext = {
@@ -143,7 +143,10 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     return {
       currentFilePath,
-      documentUri: getDocumentUri(currentFilePath),
+      documentUri: fileUri(
+        activePath || PROJECT_ENTRYPOINT,
+        activeProjectPath || null
+      ),
       text: activeCode ?? kclManager.code,
     }
   }, [activeCode, activePath, activeProjectPath, kclManager])
@@ -159,7 +162,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       // Set up the lsp plugin.
       const lsp = kcl({
         documentUri:
-          activeDocument?.documentUri ?? getDocumentUri(PROJECT_ENTRYPOINT),
+          activeDocument?.documentUri ?? fileUri(PROJECT_ENTRYPOINT, null),
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
         processLspNotification: (
@@ -254,7 +257,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       const lsp = copilotPlugin(
         {
           documentUri:
-            activeDocument?.documentUri ?? getDocumentUri(PROJECT_ENTRYPOINT),
+            activeDocument?.documentUri ?? fileUri(PROJECT_ENTRYPOINT, null),
           workspaceFolders: getWorkspaceFolders(),
           client: copilotLspClient,
           allowHTMLContent: true,
@@ -296,11 +299,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
         textDocument: {
-          uri: `file:///${currentFilePath}`,
+          uri: fileUri(currentFilePath, null),
         },
       })
     })
-    kclManager?.clearGlobalHistory()
+    kclManager?.clearProjectHistory()
 
     if (redirect) {
       void navigate(PATHS.HOME)
@@ -330,7 +333,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       lspClients.forEach((lspClient) => {
         lspClient.textDocumentDidOpen({
           textDocument: {
-            uri: getDocumentUri(filename),
+            uri: fileUri(file?.path || PROJECT_ENTRYPOINT, project?.path || ''),
             languageId: 'kcl',
             version: 1,
             text,
@@ -352,7 +355,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidOpen({
         textDocument: {
-          uri: getDocumentUri(currentFilePath),
+          uri: fileUri(filePath || PROJECT_ENTRYPOINT, projectPath),
           languageId: 'kcl',
           version: 1,
           text,
@@ -369,7 +372,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
         textDocument: {
-          uri: `file:///${currentFilePath}`,
+          uri: fileUri(currentFilePath, null),
         },
       })
     })

@@ -14,16 +14,20 @@ import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
+import { useExecutingFileCommands } from '@src/hooks/useExecutingFileCommands'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
+import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
@@ -75,10 +79,255 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
+  const kclManager = useOptionalExecutingEditor()
+  useExecutingFileCommands()
+  useProjectRouteCommands()
+
+  if (!kclManager) {
+    return <OpenedProjectWithoutExecutingFile />
+  }
+
+  return <OpenedProjectWithExecutingFile kclManager={kclManager} />
+}
+
+function useProjectRouteCommands() {
+  const { commands } = useApp()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const filePath = useAbsoluteFilePath()
+
+  useEffect(() => {
+    if (!filePath) {
+      return
+    }
+
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+
+    const routeCommands = [
+      RouteTelemetryCommand,
+      RouteHomeCommand,
+      RouteSettingsCommand,
+    ]
+    commands.send({
+      type: 'Add commands',
+      data: {
+        commands: routeCommands,
+      },
+    })
+
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: {
+          commands: routeCommands,
+        },
+      })
+    }
+  }, [commands, filePath, location, navigate])
+}
+
+function OpenedProjectWithoutExecutingFile() {
   useSignals()
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
     useApp()
-  const kclManager = useExecutingEditor()
+  const defaultAreaLibrary = useDefaultAreaLibrary()
+  const defaultActionLibrary = useDefaultActionLibrary()
+  const settingsActor = settings.actor
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
+  const lastOperation = useLastOperation()
+  const projects = useFolders()
+  const { onProjectOpen } = useLspContext()
+  const networkHealthStatus = useNetworkHealthStatus()
+  const networkMachineStatus = useNetworkMachineStatus()
+  const [searchParams] = useSearchParams()
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
+
+  useEffect(() => {
+    if (
+      projects &&
+      projects.length > 0 &&
+      projects.every((p: Project) => p.name !== projectName) &&
+      [
+        SystemIOMachineStates.creatingProject,
+        SystemIOMachineStates.renamingProject,
+        SystemIOMachineStates.importFileFromURL,
+      ].includes(lastOperation) === false
+    ) {
+      void navigate(PATHS.HOME)
+    }
+
+    if (projects && projects.length === 0) {
+      void navigate(PATHS.HOME)
+    }
+  }, [projects, lastOperation, navigate, projectName])
+
+  useEffect(() => {
+    onProjectOpen({ name: projectName, path: projectPath }, null)
+  }, [onProjectOpen, projectName, projectPath])
+
+  const settingsValues = settings.useSettings()
+  const machineApiEnabled = settingsValues.app.machineApi.current
+  const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarGlobalItemsValueSpec).value,
+    ['file']
+  )
+  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarLocalItemsValueSpec).value,
+    ['file']
+  )
+  const authToken = auth.useToken()
+  const onboardingStatusSetting = settingsValues.app.onboardingStatus
+  const onboardingStatus =
+    onboardingStatusSetting.current || onboardingStatusSetting.default
+
+  useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
+
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
+
+  useEffect(() => {
+    if (window.electron) {
+      window.electron
+        .createModelingPageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
+    }
+  }, [])
+
+  useEffect(() => {
+    billing.send({ type: BillingTransition.Update, apiToken: authToken })
+  }, [authToken, billing])
+
+  const href = 'href' in location ? location.href : ''
+
+  useEffect(() => {
+    const needsOnboarded =
+      !window.electron &&
+      authToken &&
+      searchParams.size === 0 &&
+      needsToOnboard(location, onboardingStatus)
+
+    if (needsOnboarded) {
+      toast.success(
+        () =>
+          TutorialRequestToast({
+            onboardingStatus: onboardingStatusSetting.current,
+            navigate,
+            accountUrl: withSiteBaseURL('/account'),
+            systemIOActor,
+            settingsActor,
+          }),
+        {
+          id: ONBOARDING_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+          style: { maxInlineSize: 'min(900px, 100%)' },
+        }
+      )
+    }
+  }, [
+    onboardingStatusSetting,
+    href,
+    navigate,
+    searchParams.size,
+    authToken,
+    systemIOActor,
+    settingsActor,
+    location,
+    onboardingStatus,
+  ])
+
+  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
+    () =>
+      getOpenPanes({ rootLayout: layout.signal.value }).includes(
+        DefaultLayoutPaneID.TTC
+      )
+        ? [
+            {
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
+            },
+          ]
+        : [],
+    [layout.signal.value]
+  )
+
+  const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
+    (x) => {
+      if ('useNotifications' in x) {
+        const obj = x.useNotifications?.()
+        return obj !== undefined && Boolean(obj.value)
+      }
+      return false
+    }
+  )
+
+  return (
+    <div className="h-screen flex flex-col overflow-hidden select-none">
+      <div className="relative flex flex-1 flex-col">
+        <div className="relative flex items-center flex-col">
+          <AppHeader
+            className="transition-opacity transition-duration-75"
+            project={project?.projectIORefSignal.value}
+            file={undefined}
+            enableMenu={true}
+            nativeFileMenuCreated={nativeFileMenuCreated}
+          />
+        </div>
+        <ModalContainer />
+        <section className="pointer-events-auto flex-1">
+          <LayoutRootNode
+            layout={layout.signal.value || defaultLayout}
+            getLayout={layout.get}
+            setLayout={layout.set}
+            areaLibrary={defaultAreaLibrary}
+            actionLibrary={defaultActionLibrary}
+            showDebugPanel={settingsValues.debug.showPanel.current}
+            notifications={notifications}
+            artifactGraph={new Map()}
+          />
+        </section>
+        <StatusBar
+          globalItems={[
+            networkHealthStatus,
+            ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
+            ...defaultGlobalStatusBarItems({
+              autoUpdateDownloadProgress,
+              autoUpdateReady,
+              onRestartToUpdate: () => {
+                window.electron?.appRestart()
+              },
+            }),
+            ...registryGlobalStatusBarItems,
+          ]}
+          localItems={[
+            ...registryLocalStatusBarItems,
+            ...zookeeperLocalStatusBarItems,
+            ...defaultLocalStatusBarItems,
+          ]}
+        />
+      </div>
+    </div>
+  )
+}
+
+function OpenedProjectWithExecutingFile({
+  kclManager,
+}: {
+  kclManager: KclManager
+}) {
+  useSignals()
+  const { auth, billing, settings, layout, project, systemIOActor, registry } =
+    useApp()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
@@ -100,6 +349,8 @@ export function OpenedProject() {
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
+  const executingPath = project?.executingPath ?? null
+  const executingFile = executingPath ? project?.executingFileEntry.value : null
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
@@ -174,9 +425,9 @@ export function OpenedProject() {
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      project?.executingPath ? project.executingFileEntry.value : null
+      executingFile ?? null
     )
-  }, [onProjectOpen, projectName, projectPath, project])
+  }, [onProjectOpen, projectName, projectPath, executingPath, executingFile])
 
   useHotKeyListener(kclManager)
 

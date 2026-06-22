@@ -1,20 +1,22 @@
 import { Menu } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import type { KclManager } from '@src/lang/KclManager'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { reportRejection, trap } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
 
-type ExecutingEditor = ReturnType<typeof useExecutingEditor>
+type ExecutingEditor = KclManager
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -45,11 +47,27 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
   const editorParent = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    editorParent.current?.appendChild(kclManager.editorView.dom)
-  }, [kclManager.editorView.dom])
+  useLayoutEffect(() => {
+    const parent = editorParent.current
+    if (!kclManager || !parent) {
+      return
+    }
+
+    const editorDom = kclManager.editorView.dom
+    parent.replaceChildren(editorDom)
+
+    return () => {
+      if (editorDom.parentElement === parent) {
+        parent.removeChild(editorDom)
+      }
+    }
+  }, [kclManager])
+
+  if (!kclManager) {
+    return <NoExecutingFileEmptyState />
+  }
 
   return (
     <div className="relative">
@@ -83,9 +101,39 @@ function copyKclCodeToClipboard(kclManager: ExecutingEditor) {
 
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
-  const kclManager = useExecutingEditor()
-  const platform = usePlatform()
+  const kclManager = useOptionalExecutingEditor()
   const settingsActor = settings.actor
+
+  if (kclManager) {
+    return (
+      <KclEditorMenuWithExecutingFile
+        kclManager={kclManager}
+        commands={commands}
+        settingsActor={settingsActor}
+      />
+    )
+  }
+
+  return (
+    <HeaderMenu>
+      <KclEditorMenuSharedItems
+        commands={commands}
+        settingsActor={settingsActor}
+      />
+    </HeaderMenu>
+  )
+}
+
+function KclEditorMenuWithExecutingFile({
+  kclManager,
+  commands,
+  settingsActor,
+}: {
+  kclManager: ExecutingEditor
+  commands: ReturnType<typeof useApp>['commands']
+  settingsActor: ReturnType<typeof useApp>['settings']['actor']
+}) {
+  const platform = usePlatform()
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
@@ -128,6 +176,23 @@ export const KclEditorMenu = () => {
           </button>
         </Menu.Item>
       )}
+      <KclEditorMenuSharedItems
+        commands={commands}
+        settingsActor={settingsActor}
+      />
+    </HeaderMenu>
+  )
+}
+
+function KclEditorMenuSharedItems({
+  commands,
+  settingsActor,
+}: {
+  commands: ReturnType<typeof useApp>['commands']
+  settingsActor: ReturnType<typeof useApp>['settings']['actor']
+}) {
+  return (
+    <>
       <Menu.Item>
         <a
           className={styles.button}
@@ -187,6 +252,6 @@ export const KclEditorMenu = () => {
           </small>
         </a>
       </Menu.Item>
-    </HeaderMenu>
+    </>
   )
 }

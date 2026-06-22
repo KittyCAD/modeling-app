@@ -6,20 +6,24 @@ import type { Path } from '@rust/kcl-lib/bindings/Path'
 
 import { ActionButton } from '@src/components/ActionButton'
 import Loading from '@src/components/Loading'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import Tooltip from '@src/components/Tooltip'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { VariableMap } from '@src/lang/wasm'
 import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
-import { useExecutingEditor } from '@src/lib/boot'
+import { useOptionalExecutingEditor } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { Suspense, use } from 'react'
 
 export const MemoryPaneMenu = () => {
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
+  if (!kclManager) {
+    return null
+  }
   const variables = kclManager.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
@@ -73,8 +77,27 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 }
 
 export const MemoryPaneContents = () => {
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
   const theme = useResolvedTheme()
+  if (!kclManager) {
+    return <NoExecutingFileEmptyState />
+  }
+
+  return (
+    <MemoryPaneContentsWithExecutingFile
+      kclManager={kclManager}
+      theme={theme}
+    />
+  )
+}
+
+function MemoryPaneContentsWithExecutingFile({
+  kclManager,
+  theme,
+}: {
+  kclManager: NonNullable<ReturnType<typeof useOptionalExecutingEditor>>
+  theme: ReturnType<typeof useResolvedTheme>
+}) {
   const variables = kclManager.variablesSignal.value
   const { state } = useModelingContext()
   const wasmInstance = use(kclManager.wasmInstancePromise)

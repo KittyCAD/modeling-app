@@ -3,7 +3,9 @@ import { AstExplorer } from '@src/components/AstExplorer'
 import { DebugArtifactGraph } from '@src/components/DebugArtifactGraph'
 import { DebugSelections } from '@src/components/DebugSelections'
 import { EngineCommands } from '@src/components/EngineCommands'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { useOptionalExecutingEditor } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 
 export function DebugPane(props: AreaTypeComponentProps) {
@@ -26,6 +28,11 @@ export function DebugPane(props: AreaTypeComponentProps) {
 }
 
 export const DebugPaneContent = () => {
+  const kclManager = useOptionalExecutingEditor()
+  if (!kclManager) {
+    return <NoExecutingFileEmptyState />
+  }
+
   return (
     <div className="relative">
       <section

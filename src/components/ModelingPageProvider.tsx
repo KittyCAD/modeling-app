@@ -1,7 +1,7 @@
 import { EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import React, { use, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -13,12 +13,10 @@ import {
 import { sourceRangeToUtf16 } from '@src/lang/errors'
 import { useApp, useExecutingEditor } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
-import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
-import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
@@ -65,7 +63,6 @@ export const ModelingPageProvider = ({
   const kclManager = useExecutingEditor()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
-  const location = useLocation()
   const token = auth.useToken()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
@@ -159,43 +156,6 @@ export const ModelingPageProvider = ({
     kclManager.code,
     kclManager.pendingFeatureTreeSourceSelection,
   ])
-
-  // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
-  // This will register the commands to route to Telemetry, Home, and Settings.
-  useEffect(() => {
-    if (file?.path === undefined) {
-      return
-    }
-
-    const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
-
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commands.send({
-      type: 'Add commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteSettingsCommand,
-          RouteHomeCommand,
-        ],
-      },
-    })
-    return () => {
-      commands.send({
-        type: 'Remove commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteHomeCommand,
-            RouteSettingsCommand,
-          ],
-        },
-      })
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [location])
 
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,

@@ -1,6 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
@@ -10,7 +10,7 @@ import { layoutActionLibraryValueSpec } from '@src/registry/contracts/layout'
 export const useDefaultActionLibrary = () => {
   useSignals()
   const { commands, settings, registry } = useApp()
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const registeredActionLibrary = registry.signal(
     layoutActionLibraryValueSpec
@@ -21,8 +21,11 @@ export const useDefaultActionLibrary = () => {
       useHidden: () => false,
       useDisabled: () => {
         const engineIsReady = useReliesOnEngine(
-          kclManager.isExecutingSignal.value ?? false
+          kclManager?.isExecutingSignal.value ?? false
         )
+        if (!kclManager) {
+          return 'Select an executing file first'
+        }
         return engineIsReady ? 'Need engine connection to export' : undefined
       },
       shortcut: 'Ctrl + Shift + E',
@@ -44,7 +47,8 @@ export const useDefaultActionLibrary = () => {
     },
     share: {
       useHidden: () => !isMobile(),
-      useDisabled: () => undefined,
+      useDisabled: () =>
+        kclManager ? undefined : 'Select an executing file first',
       shortcut: 'Mod + Alt + S',
       execute: () =>
         commands.actor.send({
@@ -65,6 +69,9 @@ export const useDefaultActionLibrary = () => {
     make: {
       useDisabled: () => {
         const { machineManager } = useApp()
+        if (!kclManager) {
+          return 'Select an executing file first'
+        }
         return machineManager.noMachinesReason()
       },
       shortcut: 'Ctrl + Shift + M',

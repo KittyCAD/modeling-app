@@ -1,6 +1,7 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ContextMenuItem } from '@src/components/ContextMenu'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -13,7 +14,11 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import {
+  useApp,
+  useExecutingEditor,
+  useOptionalExecutingEditor,
+} from '@src/lib/boot'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -32,7 +37,24 @@ type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
-  const kclManager = useExecutingEditor()
+  const kclManager = useOptionalExecutingEditor()
+  if (!kclManager) {
+    return (
+      <LayoutPanel
+        title={props.layout.label}
+        id={`${props.layout.id}-pane`}
+        className="border-none"
+      >
+        <LayoutPanelHeader
+          id={props.layout.id}
+          icon="model"
+          title={props.layout.label}
+        />
+        <NoExecutingFileEmptyState />
+      </LayoutPanel>
+    )
+  }
+
   const execState = kclManager.execStateSignal.value
   const artifactGraph = execState.artifactGraph
   const operations = getAllOperations(execState.operations)

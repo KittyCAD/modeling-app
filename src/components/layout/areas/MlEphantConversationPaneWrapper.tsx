@@ -1,12 +1,16 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { NoExecutingFileEmptyState } from '@src/components/NoExecutingFileEmptyState'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useApp, useExecutingEditor } from '@src/lib/boot'
+import type { KclManager } from '@src/lang/KclManager'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { PATHS, toProjectRelativePath } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
@@ -18,10 +22,13 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   SystemIOMachineEvents,
+  normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
+  waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
@@ -46,17 +53,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
 function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, project, systemIOActor } = app
-  const kclManager = useExecutingEditor()
-  const settingsValues = settings.useSettings()
-  const user = auth.useUser()
-  const token = auth.useToken()
-  const {
-    context: contextModeling,
-    send: sendModeling,
-    theProject,
-  } = useModelingContext()
-  const loaderFile = project?.executingFileEntry.value
+  const kclManager = useOptionalExecutingEditor()
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useEffect(() => {
@@ -72,6 +69,63 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
+  if (!kclManager) {
+    return <MlEphantConversationPaneWithoutExecutingFile {...props} />
+  }
+
+  return (
+    <MlEphantConversationPaneWithExecutingFile
+      {...props}
+      kclManager={kclManager}
+      mlEphantManagerActor={mlEphantManagerActor}
+    />
+  )
+}
+
+function MlEphantConversationPaneWithoutExecutingFile(
+  props: AreaTypeComponentProps
+) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="sparkles"
+        title="Zookeeper"
+        onClose={props.onClose}
+        Menu={MlEphantConversationMenu}
+      />
+      <NoExecutingFileEmptyState />
+    </LayoutPanel>
+  )
+}
+
+function MlEphantConversationPaneWithExecutingFile({
+  kclManager,
+  mlEphantManagerActor,
+  ...props
+}: AreaTypeComponentProps & {
+  kclManager: KclManager
+  mlEphantManagerActor: ReturnType<
+    typeof MlEphantManagerReactContext.useActorRef
+  >
+}) {
+  const app = useApp()
+  const { auth, billing, settings, project, systemIOActor } = app
+  const navigate = useNavigate()
+  const settingsValues = settings.useSettings()
+  const user = auth.useUser()
+  const token = auth.useToken()
+  const {
+    context: contextModeling,
+    send: sendModeling,
+    theProject,
+  } = useModelingContext()
+  const loaderFile = project?.executingFileEntry.value
+
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
     kclManager.engineCommandManager,
@@ -79,18 +133,45 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       const payload = prepareMlEphantNewFileRequest(requestProps)
 
       if (payload) {
-        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+        const executingRelativePath =
+          project?.executingPath && project.path
+            ? normalizeKCLFileDeletePath(
+                toProjectRelativePath(project.path, project.executingPath)
+              )
+            : undefined
+        const deletesExecutingFile =
+          executingRelativePath !== undefined &&
+          payload.filesToDelete.some(
+            (file) =>
+              normalizeKCLFileDeletePath(file.requestedFileName) ===
+              executingRelativePath
+          )
+
+        kclManager.mlEphantManagerMachineBulkManipulatingFileSystem =
+          !deletesExecutingFile
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
             files: payload.files,
             filesToDelete: payload.filesToDelete,
             override: true,
+            navigateToFile: false,
             requestedProjectName: payload.requestedProjectName,
             requestedFileNameWithExtension:
               payload.requestedFileNameWithExtension ?? '',
           },
         })
+
+        if (!deletesExecutingFile || !project) {
+          return
+        }
+
+        waitForIdleState({ systemIOActor })
+          .then(async () => {
+            await app.projectSession.setExecutingEditorHandle(undefined)
+            void navigate(`${PATHS.FILE}/${encodeURIComponent(project.path)}`)
+          })
+          .catch(reportRejection)
       }
     }
   )

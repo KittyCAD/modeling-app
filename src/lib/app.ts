@@ -69,7 +69,6 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
@@ -688,18 +687,6 @@ export class App implements AppSubsystems {
       rustContext: this.rustContext,
       keymap: this.registry.get(keymapService),
     })
-
-    this.registry.reconfigure(appRegistryServicesSlot, [
-      defineRegistryItem({
-        id: 'app.runtime-services',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            kclManager.executingEditorService
-          ),
-        ],
-      }),
-    ])
 
     if (typeof window !== 'undefined') {
       // Accessible for tests mostly

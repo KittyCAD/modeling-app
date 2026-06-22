@@ -5,11 +5,12 @@ export function useAbsoluteFilePath() {
   const app = useApp()
 
   const executingPath = app.project?.executingPathSignal.value?.value
+  const projectPath = app.project?.path
+  const targetPath = executingPath ?? projectPath
 
-  if (!executingPath) {
-    console.warn('bug: executingPath undefined, not navigating')
+  if (!targetPath) {
     return
   }
 
-  return PATHS.FILE + '/' + encodeURIComponent(executingPath)
+  return PATHS.FILE + '/' + encodeURIComponent(targetPath)
 }

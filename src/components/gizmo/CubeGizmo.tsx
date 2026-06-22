@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 
+const MAX_RENDERER_CREATE_ATTEMPTS = 3
+
 export default function CubeGizmo() {
   const { settings } = useApp()
   const kclManager = useExecutingEditor()
@@ -27,15 +29,39 @@ export default function CubeGizmo() {
 
   // onMount
   useEffect(() => {
-    if (canvasRef.current) {
-      renderer.current = new GizmoRenderer(
-        canvasRef.current,
-        initialIsPerspectiveRef.current,
-        initialResolvedThemeRef.current,
-        kclManager.sceneInfra
-      )
+    let isDisposed = false
+    let raf = -1
+    let attempts = 0
+
+    const createRenderer = () => {
+      if (isDisposed || renderer.current || !canvasRef.current) {
+        return
+      }
+
+      try {
+        renderer.current = new GizmoRenderer(
+          canvasRef.current,
+          initialIsPerspectiveRef.current,
+          initialResolvedThemeRef.current,
+          kclManager.sceneInfra
+        )
+      } catch (error) {
+        attempts += 1
+        if (attempts < MAX_RENDERER_CREATE_ATTEMPTS) {
+          raf = requestAnimationFrame(createRenderer)
+          return
+        }
+        console.warn('Unable to initialize cube gizmo renderer.', error)
+      }
     }
+
+    raf = requestAnimationFrame(createRenderer)
+
     return () => {
+      isDisposed = true
+      if (raf > -1) {
+        cancelAnimationFrame(raf)
+      }
       renderer.current?.dispose()
       renderer.current = null
     }

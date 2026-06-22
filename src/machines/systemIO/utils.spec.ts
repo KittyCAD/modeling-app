@@ -256,6 +256,29 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.filesToDelete).toEqual([
       { requestedFileName: 'old.kcl' },
     ])
+    expect(preparedPayload?.deletesFocusedFile).toBe(false)
+  })
+
+  it('marks Zookeeper edit requests that delete the focused file', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      filesToDelete: [{ requestedFileName: 'main.kcl' }],
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'other.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.deletesFocusedFile).toBe(true)
   })
 
   it('matches explicit Zookeeper delete signals across path separators', () => {

@@ -9,7 +9,7 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { OpenedProject } from '@src/components/OpenedProject'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { useApp } from '@src/lib/boot'
+import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
@@ -60,23 +60,7 @@ export const Router = () => {
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,
-              element: (
-                <ModelingPageProvider>
-                  <Suspense
-                    fallback={
-                      <div className="absolute inset-0 grid place-content-center">
-                        <Loading>Loading Design Studio...</Loading>
-                      </div>
-                    }
-                  >
-                    <ModelingMachineProvider>
-                      <Outlet />
-                      <OpenedProject />
-                      <CommandBar />
-                    </ModelingMachineProvider>
-                  </Suspense>
-                </ModelingPageProvider>
-              ),
+              element: <ProjectRouteElement />,
               children: [
                 {
                   id: PATHS.FILE + 'SETTINGS',
@@ -170,5 +154,46 @@ export const Router = () => {
       <MachineApiController />
       <RouterProvider router={router} />
     </NetworkContext.Provider>
+  )
+}
+
+function ProjectRouteElement() {
+  useSignals()
+  const app = useApp()
+  const executingEditor = useOptionalExecutingEditor()
+  const pendingExecutingEditorHandle =
+    app.projectSession.executingEditorHandle.value
+  const isLoadingExecutingEditor =
+    !executingEditor && Boolean(pendingExecutingEditorHandle)
+  const content = (
+    <Suspense
+      fallback={
+        <div className="absolute inset-0 grid place-content-center">
+          <Loading>Loading Design Studio...</Loading>
+        </div>
+      }
+    >
+      {isLoadingExecutingEditor ? (
+        <div className="absolute inset-0 grid place-content-center">
+          <Loading>Loading executing file...</Loading>
+        </div>
+      ) : (
+        <>
+          <Outlet />
+          <OpenedProject />
+          <CommandBar />
+        </>
+      )}
+    </Suspense>
+  )
+
+  if (!executingEditor) {
+    return content
+  }
+
+  return (
+    <ModelingPageProvider>
+      <ModelingMachineProvider>{content}</ModelingMachineProvider>
+    </ModelingPageProvider>
   )
 }

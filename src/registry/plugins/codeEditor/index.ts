@@ -47,8 +47,8 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
     },
     app.singletons.kclManager,
     {
-      enabled: !!currentProject,
-      registerToCodeMirror: !!currentProject,
+      enabled: !!currentProject && !!executionService,
+      registerToCodeMirror: !!currentProject && !!executionService,
     }
   )
 

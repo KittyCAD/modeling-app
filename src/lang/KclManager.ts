@@ -216,6 +216,8 @@ type DirectSketchHistoryMarker = {
   entryId: number
 }
 
+const APP_WRITE_WATCH_SUPPRESS_MS = 2_000
+
 type MinimalDocumentChange = {
   from: number
   to: number
@@ -283,6 +285,7 @@ interface SystemDeps {
   settings: SettingsActorType
   commandBar: CommandBarActorType
   projectPath: Signal<string>
+  projectHistory?: HistoryView
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   keymap?: KeymapService
@@ -311,6 +314,7 @@ window.EditorView = EditorView
 export class ZDSProject {
   private nextFileId = 0
   files: File[] = []
+  public readonly projectHistory = new HistoryView([fsHistoryExtension()])
   get path() {
     return this.projectIORefSignal.value.path
   }
@@ -370,6 +374,8 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.#executingPath.value = null
+      this.projectHistory.clearLocalHistoryTarget()
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -381,6 +387,7 @@ export class ZDSProject {
       // TODO: Reconfigure the editor to be an executing one
     }
     this.#executingPath.value = foundPathSignal[0]
+    this.projectHistory.registerLocalHistoryTarget(found.editorView)
   }
   findEditor(path: string) {
     return this.editors
@@ -431,6 +438,7 @@ export class ZDSProject {
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       projectPath: computed(() => this.projectIORefSignal.value.path),
+      projectHistory: this.projectHistory,
     }
 
     if (providedEditor) {
@@ -499,15 +507,21 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
+    if (this.#executingPath.value === foundPathSignal[0]) {
+      this.#executingPath.value = null
+      this.projectHistory.clearLocalHistoryTarget()
+    }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    this.projectHistory.clearLocalHistoryTarget()
     for (const editor of this.editors.values()) {
       editor.close()
     }
     this.editors.clear()
+    this.#executingPath.value = null
   }
 
   /** Handle updates from the disk representation of the project */
@@ -724,7 +738,7 @@ export class KclManager extends File {
   // CORE STATE
 
   private readonly _editorView: EditorView
-  private readonly _globalHistoryView: HistoryView
+  private readonly _projectHistory: HistoryView
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -863,8 +877,8 @@ export class KclManager extends File {
   undoListenerEffect = EditorView.updateListener.of((vu) => {
     const localUndo = undoDepth(vu.state)
     const localRedo = redoDepth(vu.state)
-    const globalUndo = undoDepth(this._globalHistoryView.state)
-    const globalRedo = redoDepth(this._globalHistoryView.state)
+    const globalUndo = undoDepth(this._projectHistory.state)
+    const globalRedo = redoDepth(this._projectHistory.state)
 
     this.undoDepth.value = localUndo + globalUndo
     this.redoDepth.value = localRedo + globalRedo
@@ -916,15 +930,27 @@ export class KclManager extends File {
     ) {
       return
     }
+    if (this.writingPromise.value) {
+      return
+    }
+    if (_eventType === 'unlink') {
+      return
+    }
+
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
     File.ioImplementations
       .read(path)
       .then((code) => {
+        const diskCode = normalizeLineEndings(code)
         if (requestedDocumentVersion !== this._documentVersion) {
           return
         }
+        if (this.shouldIgnoreRecentAppWriteWatchEvent(diskCode)) {
+          return
+        }
+
         const isInSketchMode =
           this.modelingState?.matches('Sketch') ||
           this.modelingState?.matches('sketchSolveMode')
@@ -998,6 +1024,7 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private suppressDiskReloadUntil = 0
   private settingsSubscription: Subscription | undefined = undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
@@ -1891,7 +1918,8 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
+    this._projectHistory =
+      this.systemDeps.projectHistory ?? new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
@@ -1900,7 +1928,9 @@ export class KclManager extends File {
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
-    this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+    if (!this.systemDeps.projectHistory) {
+      this._projectHistory.registerLocalHistoryTarget(this._editorView)
+    }
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1941,6 +1971,20 @@ export class KclManager extends File {
 
   private hasUnsavedLocalChanges() {
     return !isCodeTheSame(this.code, this._lastKnownFileCode)
+  }
+
+  private shouldIgnoreRecentAppWriteWatchEvent(diskCode: string) {
+    if (this.writingPromise.value) {
+      return true
+    }
+    if (Date.now() >= this.suppressDiskReloadUntil) {
+      return false
+    }
+
+    return (
+      isCodeTheSame(diskCode, this._lastKnownFileCode) ||
+      !this.hasUnsavedLocalChanges()
+    )
   }
 
   private persistRecoverySnapshot() {
@@ -2594,8 +2638,11 @@ export class KclManager extends File {
   get state() {
     return this.editorState
   }
+  get projectHistory() {
+    return this._projectHistory
+  }
   get globalHistoryView() {
-    return this._globalHistoryView
+    return this.projectHistory
   }
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
@@ -2851,14 +2898,17 @@ export class KclManager extends File {
       ],
     })
   }
+  addProjectHistoryEvent(spec: TransactionSpecNoChanges) {
+    this._projectHistory.dispatch(spec)
+  }
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
-    this._globalHistoryView.dispatch(spec)
+    this.addProjectHistoryEvent(spec)
   }
   undo() {
-    this._globalHistoryView.undo(this._editorView)
+    this._projectHistory.undo(this._editorView)
   }
   redo() {
-    this._globalHistoryView.redo(this._editorView)
+    this._projectHistory.redo(this._editorView)
   }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
@@ -2877,25 +2927,28 @@ export class KclManager extends File {
       ],
     })
   }
-  clearGlobalHistory() {
-    this._globalHistoryView.dispatch(
+  clearProjectHistory() {
+    this._projectHistory.dispatch(
       {
-        effects: [this._globalHistoryView.historyCompartment.reconfigure([])],
+        effects: [this._projectHistory.historyCompartment.reconfigure([])],
       },
       { shouldForwardToLocalHistory: false }
     )
 
     // Add history back
-    this._globalHistoryView.dispatch(
+    this._projectHistory.dispatch(
       {
         effects: [
-          this._globalHistoryView.historyCompartment.reconfigure([
+          this._projectHistory.historyCompartment.reconfigure([
             createHistoryExtension(this.sketchCheckpointLimit),
           ]),
         ],
       },
       { shouldForwardToLocalHistory: false }
     )
+  }
+  clearGlobalHistory() {
+    this.clearProjectHistory()
   }
 
   private reconfigureHistoryLimit(checkpointLimit: number) {
@@ -2912,10 +2965,10 @@ export class KclManager extends File {
       annotations: [Transaction.addToHistory.of(false)],
     })
 
-    this._globalHistoryView.dispatch(
+    this._projectHistory.dispatch(
       {
         effects: [
-          this._globalHistoryView.historyCompartment.reconfigure([
+          this._projectHistory.historyCompartment.reconfigure([
             createHistoryExtension(this.sketchCheckpointLimit),
           ]),
         ],
@@ -3457,10 +3510,14 @@ export class KclManager extends File {
 
     this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
     this.unwatch()
+    this.suppressDiskReloadUntil = Date.now() + APP_WRITE_WATCH_SUPPRESS_MS
 
+    const writePromise = this.write(newCode)
+    this.writingPromise.value = writePromise
     try {
-      await this.write(newCode)
+      await writePromise
       this.markFileCodeAsSynced(newCode)
+      this.suppressDiskReloadUntil = Date.now() + APP_WRITE_WATCH_SUPPRESS_MS
 
       // After a cooldown, start watching this file again on disk.
       this.timeoutRewatch = setTimeout(() => {
@@ -3472,6 +3529,10 @@ export class KclManager extends File {
       console.warn('error saving file', err)
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
+    } finally {
+      if (this.writingPromise.value === writePromise) {
+        this.writingPromise.value = null
+      }
     }
   }
 

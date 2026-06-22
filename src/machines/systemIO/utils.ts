@@ -414,10 +414,21 @@ export const prepareMlEphantNewFileRequest = ({
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
     ? rawRelativePath.slice(fsZds.sep.length)
     : rawRelativePath
+  const normalizedRequestedFileName = normalizeKCLFileDeletePath(
+    requestedFileNameWithExtension
+  )
+  const deletesFocusedFile =
+    normalizedRequestedFileName.length > 0 &&
+    filesToDelete.some(
+      (file) =>
+        normalizeKCLFileDeletePath(file.requestedFileName) ===
+        normalizedRequestedFileName
+    )
 
   return {
     files: requestedFiles,
     filesToDelete,
+    deletesFocusedFile,
     requestedProjectName: projectNameCurrentlyOpened,
     requestedFileNameWithExtension,
   }

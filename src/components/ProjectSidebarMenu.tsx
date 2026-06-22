@@ -9,8 +9,13 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
+import {
+  findClearExecutingFileCommand,
+  findSetExecutingFileCommand,
+} from '@src/hooks/useExecutingFileCommands'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
+import { useOptionalExecutingEditor } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
@@ -170,6 +175,7 @@ function ProjectMenuPopover({
   onHomeNavigate: () => void
 }) {
   const { machineManager, commands, settings } = app
+  const kclManager = useOptionalExecutingEditor()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
@@ -183,10 +189,14 @@ function ProjectMenuPopover({
     groupId: 'application',
   }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
+  const getCommand = (obj: { name: string; groupId: string }) =>
+    commandList.find((c) => c.name === obj.name && c.groupId === obj.groupId)
   const findCommand = (obj: { name: string; groupId: string }) =>
-    Boolean(
-      commandList.find((c) => c.name === obj.name && c.groupId === obj.groupId)
-    )
+    Boolean(getCommand(obj))
+  const isCommandEnabled = (obj: { name: string; groupId: string }) => {
+    const command = getCommand(obj)
+    return Boolean(command && !command.disabled)
+  }
   const machineCount = machineManager.machines.length
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
@@ -213,6 +223,29 @@ function ProjectMenuPopover({
                 : PATHS.HOME + PATHS.SETTINGS_PROJECT
             void navigate(targetPath)
           },
+        },
+        'break',
+        {
+          id: 'set-executing-file',
+          Element: 'button',
+          children: 'Set executing file',
+          disabled: !isCommandEnabled(findSetExecutingFileCommand),
+          onClick: () =>
+            commands.send({
+              type: 'Find and select command',
+              data: findSetExecutingFileCommand,
+            }),
+        },
+        {
+          id: 'clear-executing-file',
+          Element: 'button',
+          children: 'Clear executing file',
+          disabled: !isCommandEnabled(findClearExecutingFileCommand),
+          onClick: () =>
+            commands.send({
+              type: 'Find and select command',
+              data: findClearExecutingFileCommand,
+            }),
         },
         'break',
         {
@@ -246,12 +279,14 @@ function ProjectMenuPopover({
                   position="right"
                   wrapperClassName="!max-w-none min-w-fit"
                 >
-                  Awaiting engine connection
+                  {kclManager
+                    ? 'Awaiting engine connection'
+                    : 'Select an executing file first'}
                 </Tooltip>
               )}
             </>
           ),
-          disabled: !findCommand(exportCommandInfo),
+          disabled: !kclManager || !findCommand(exportCommandInfo),
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -294,12 +329,15 @@ function ProjectMenuPopover({
                   position="right"
                   wrapperClassName="!max-w-none min-w-fit"
                 >
-                  Awaiting engine connection
+                  {kclManager
+                    ? 'Awaiting engine connection'
+                    : 'Select an executing file first'}
                 </Tooltip>
               )}
             </>
           ),
-          disabled: !findCommand(makeCommandInfo) || machineCount === 0,
+          disabled:
+            !kclManager || !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
             commands.send({
               type: 'Find and select command',
@@ -331,6 +369,7 @@ function ProjectMenuPopover({
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
       onHomeNavigate,
+      kclManager,
       onProjectClose,
       isDesktop,
       homeNavigationEnabled,
@@ -397,7 +436,11 @@ export function ProjectBreadcrumbButton({
   file?: FileEntry
 }) {
   // Breadcrumb for project and project-relative file path
-  const relativeFilePath = getProjectRelativeFilePath(project, file)
+  const relativeFilePath = file
+    ? getProjectRelativeFilePath(project, file)
+    : project
+      ? 'No executing file'
+      : APP_NAME
   const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
   const breadCrumb = {
     projectName: project?.name || '',

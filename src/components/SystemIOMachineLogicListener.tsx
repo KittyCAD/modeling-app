@@ -4,6 +4,7 @@ import { useApp, useOptionalExecutingEditor } from '@src/lib/boot'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -163,14 +164,21 @@ export function SystemIOMachineLogicListener() {
         projectDirectoryPath,
         requestedProjectName.name
       )
+      const shouldNavigateToDefaultFile =
+        lastOperation === SystemIOMachineStates.creatingProject
+      const requestedFilePath = shouldNavigateToDefaultFile
+        ? joinOSPaths(projectPathWithoutSpecificKCLFile, PROJECT_ENTRYPOINT)
+        : projectPathWithoutSpecificKCLFile
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
-        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
+        safeEncodeForRouterPaths(requestedFilePath),
         requestedProjectName.subRoute || ''
       )
       safestNavigateToFile({
         requestedPath,
-        requestedFilePathWithExtension: null,
+        requestedFilePathWithExtension: shouldNavigateToDefaultFile
+          ? requestedFilePath
+          : null,
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

@@ -140,6 +140,7 @@ export const systemIOMachine = setup({
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
+            navigateToFile?: boolean
             override?: boolean
             requestedSubRoute?: string
           }
@@ -160,7 +161,11 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string }
+          output: {
+            projectName: string
+            fileName: string
+            navigateToFile: boolean
+          }
         }
       | {
           type: SystemIOMachineEvents.importFileFromURL
@@ -650,6 +655,7 @@ export const systemIOMachine = setup({
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
+            navigateToFile?: boolean
             requestedSubRoute?: string
           }
         }): Promise<{
@@ -657,8 +663,15 @@ export const systemIOMachine = setup({
           fileName: string
           projectName: string
           subRoute: string
+          navigateToFile: boolean
         }> => {
-          return { message: '', fileName: '', projectName: '', subRoute: '' }
+          return {
+            message: '',
+            fileName: '',
+            projectName: '',
+            subRoute: '',
+            navigateToFile: true,
+          }
         }
       ),
     [SystemIOMachineActors.renameFolder]: fromPromise(
@@ -1679,6 +1692,7 @@ export const systemIOMachine = setup({
             override: event.data.override,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
+            navigateToFile: event.data.navigateToFile ?? true,
             requestedSubRoute: event.data.requestedSubRoute,
           }
         },
@@ -1686,14 +1700,25 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
-              requestedFileName: ({ event }) => {
+              lastOperation:
+                SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
+              requestedFileName: ({ context, event }) => {
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
                 )
                 const output = (
-                  event as { output: { projectName: string; fileName: string } }
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      navigateToFile: boolean
+                    }
+                  }
                 ).output
+                if (!output.navigateToFile) {
+                  return context.requestedFileName
+                }
                 // Gotcha: file could have an ending of .kcl...
                 const file = output.fileName.endsWith('.kcl')
                   ? output.fileName
