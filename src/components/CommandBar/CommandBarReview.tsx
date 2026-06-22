@@ -139,6 +139,19 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           <CommandBarDivider />
         </>
       )}
+      {selectedCommand?.status === 'deprecated' && (
+        <>
+          <p className="px-4 py-2 text-sm">
+            <span className="font-bold">Warning: </span>
+            <span>
+              this command is deprecated and may be removed in a future version
+              of Zoo Design Studio. Prefer the recommended replacement when one
+              is available.
+            </span>
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
           <div className="px-4 flex flex-wrap gap-2 items-center">

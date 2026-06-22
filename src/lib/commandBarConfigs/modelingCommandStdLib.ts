@@ -556,6 +556,18 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
   })
 }
 
+export function stdLibCommandStatus(stdLibName: StdLibCommandName) {
+  const stdLibCommand = STD_LIB_COMMANDS[stdLibName]
+
+  if (stdLibCommand.experimental) {
+    return 'experimental' as const
+  }
+  if (stdLibCommand.deprecated || stdLibCommand.deprecatedSince !== null) {
+    return 'deprecated' as const
+  }
+  return undefined
+}
+
 export function modelingStdLibCommandStatus(
   commandName: keyof typeof modelingCommandStdLibDriftConfig
 ) {
@@ -563,7 +575,5 @@ export function modelingStdLibCommandStatus(
     commandName
   ] as StdLibCommandDriftConfig
 
-  return STD_LIB_COMMANDS[driftConfig.stdLibName].experimental
-    ? ('experimental' as const)
-    : undefined
+  return stdLibCommandStatus(driftConfig.stdLibName)
 }

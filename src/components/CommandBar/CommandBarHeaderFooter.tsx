@@ -58,6 +58,23 @@ function CommandBarHeaderFooter({
     typeof currentArgument?.required === 'function'
       ? currentArgument.required(commandBarState.context)
       : currentArgument?.required
+  const selectedCommandStatusBadge =
+    selectedCommand?.status === 'experimental'
+      ? {
+          icon: 'beaker' as const,
+          label: 'Experimental',
+          className: selectedCommand.mlBranding
+            ? 'border-ml-green dark:text-ml-green'
+            : 'border-primary dark:text-primary',
+        }
+      : selectedCommand?.status === 'deprecated'
+        ? {
+            icon: 'triangleExclamation' as const,
+            label: 'Deprecated',
+            className:
+              'border-warn-80 text-warn-80 dark:border-warn-40 dark:text-warn-40',
+          }
+        : undefined
 
   useHotkeys(
     'alt',
@@ -123,16 +140,19 @@ function CommandBarHeaderFooter({
               >
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
-              {selectedCommand.status === 'experimental' ? (
+              {selectedCommandStatusBadge ? (
                 <span
-                  className={`text-xs rounded-full  ml-2 px-1 py-1 border ${selectedCommand.mlBranding ? 'border-ml-green dark:text-ml-green' : 'border-primary dark:text-primary'}`}
+                  className={`text-xs rounded-full  ml-2 px-1 py-1 border ${selectedCommandStatusBadge.className}`}
                 >
-                  <CustomIcon name="beaker" className="w-4 h-4" />
+                  <CustomIcon
+                    name={selectedCommandStatusBadge.icon}
+                    className="w-4 h-4"
+                  />
                   <Tooltip
                     position="bottom-right"
                     contentClassName="max-w-none flex items-center"
                   >
-                    <span>Experimental</span>
+                    <span>{selectedCommandStatusBadge.label}</span>
                   </Tooltip>
                 </span>
               ) : (

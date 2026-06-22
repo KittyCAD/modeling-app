@@ -47,7 +47,12 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
-type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+type CommandStatus =
+  | 'active'
+  | 'development'
+  | 'inactive'
+  | 'experimental'
+  | 'deprecated'
 type CommandArgumentRequired<C> =
   | boolean
   | ((

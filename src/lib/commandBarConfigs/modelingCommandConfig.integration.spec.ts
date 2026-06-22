@@ -14,6 +14,7 @@ import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
+  stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
@@ -310,6 +311,7 @@ describe('stdlib command arg derivation', () => {
   it('derives command status from KCL stdlib metadata', () => {
     expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
     expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
+    expect(stdLibCommandStatus('startSketchOn')).toBe('deprecated')
   })
 })
 
