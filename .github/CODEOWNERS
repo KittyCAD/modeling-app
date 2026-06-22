@@ -7,8 +7,8 @@
 /rust/                            @KittyCAD/kcl
 
 # ZDS-KCL bridge
-/rust/**/frontend.rs              @KittyCAD/frontend
-/rust/**/frontend/                @KittyCAD/frontend
+/rust/**/frontend.rs              @KittyCAD/frontend @KittyCAD/kcl
+/rust/**/frontend/                @KittyCAD/frontend @KittyCAD/kcl
 
 # KCL Dependencies
 Cargo.toml                        @KittyCAD/frontend @KittyCAD/kcl

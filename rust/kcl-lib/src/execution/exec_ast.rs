@@ -5783,6 +5783,7 @@ mod test {
 
     use super::*;
     use crate::ExecutorSettings;
+    use crate::engine::engine_manager;
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
@@ -5997,16 +5998,7 @@ d = b + c
             .unwrap();
 
         let exec_ctxt = ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new()
-                    .map_err(|err| {
-                        internal_err(
-                            format!("Failed to create mock engine connection: {err}"),
-                            SourceRange::default(),
-                        )
-                    })
-                    .unwrap(),
-            )),
+            engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
