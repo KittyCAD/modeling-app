@@ -59,4 +59,51 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('default_file = "main.kcl"')
     expect(projectToml).toContain('title = "Human Project"')
   })
+
+  it('treats serialized ENOENT strings as missing project.toml metadata', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    const originalReadFile = fsZds.readFile
+    let hasThrownSerializedEnoent = false
+    fsZds.readFile = (async (filePath: string, options?: unknown) => {
+      if (
+        !hasThrownSerializedEnoent &&
+        filePath.endsWith(`/${PROJECT_SETTINGS_FILE_NAME}`)
+      ) {
+        hasThrownSerializedEnoent = true
+        return Promise.reject(
+          `ENOENT: no such file or directory, open '${filePath}'`
+        )
+      }
+
+      return originalReadFile(filePath, options as never)
+    }) as typeof fsZds.readFile
+
+    try {
+      const project = await createNewProjectDirectory(
+        'Serialized ENOENT',
+        wasmInstance,
+        undefined,
+        {
+          settings: {
+            project: {
+              directory: projectDirectoryPath,
+            },
+          },
+        }
+      )
+
+      const projectToml = await fsZds.readFile(
+        fsZds.join(project.path, PROJECT_SETTINGS_FILE_NAME),
+        { encoding: 'utf-8' }
+      )
+
+      expect(hasThrownSerializedEnoent).toBe(true)
+      expect(project.title).toBe('Serialized ENOENT')
+      expect(projectToml).toContain('title = "Serialized ENOENT"')
+    } finally {
+      fsZds.readFile = originalReadFile
+    }
+  })
 })
