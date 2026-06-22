@@ -239,7 +239,7 @@ impl WebSocketTransport {
                                 resp: _debug @ OkWebSocketResponseData::Debug { .. },
                                 ..
                             }) => {
-                                // Deletd, I don't think this was ever used.
+                                // Deleted, I don't think this was ever used.
                             }
                             _ => {}
                         }
