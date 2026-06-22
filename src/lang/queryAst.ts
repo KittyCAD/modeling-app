@@ -43,6 +43,7 @@ import type {
   SegmentArtifact,
   SourceRange,
   SyntaxType,
+  UnaryExpression,
   VariableDeclaration,
   VariableDeclarator,
   VariableMap,
@@ -69,7 +70,6 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
