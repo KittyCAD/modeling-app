@@ -1,4 +1,3 @@
-import { STD_LIB_COMMANDS } from '@rust/kcl-lib/bindings/StdLibCommands'
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -16,6 +15,7 @@ import {
   modelingStdLibCommandStatus,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'

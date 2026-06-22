@@ -2,7 +2,7 @@ import {
   STD_LIB_COMMANDS,
   type StdLibCommandArg,
   type StdLibCommandName,
-} from '@rust/kcl-lib/bindings/StdLibCommands'
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'

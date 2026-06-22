@@ -1,7 +1,7 @@
 import type {
   STD_LIB_COMMANDS,
   StdLibCommandName,
-} from '@rust/kcl-lib/bindings/StdLibCommands'
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
