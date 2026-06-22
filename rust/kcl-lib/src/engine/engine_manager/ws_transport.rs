@@ -428,6 +428,7 @@ impl EngineTransport for WebSocketTransport {
         while current_time.elapsed().as_secs() < response_timeout {
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
+                // Get the API call ID from session data if available
                 let session_data = self.session_data.read().await;
                 let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
                 let api_call_id_msg = if let Some(ref id) = api_call_id {
@@ -436,6 +437,7 @@ impl EngineTransport for WebSocketTransport {
                     String::new()
                 };
 
+                // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
                     return Err(KclError::new_engine(KclErrorDetails::new(
@@ -453,11 +455,13 @@ impl EngineTransport for WebSocketTransport {
                 }
             }
 
+            // We cannot pop here or it will break the artifact graph.
             if let Some(resp) = self.responses.responses.read().await.get(&cmd_id) {
                 return Ok(resp.clone());
             }
         }
 
+        // Get the API call ID from session data if available for timeout error
         let session_data = self.session_data.read().await;
         let api_call_id_msg = if let Some(session) = session_data.as_ref() {
             format!(" (API call ID: {})", session.api_call_id)

@@ -1,3 +1,5 @@
+//! Functions for setting up our WebSocket and WebRTC connections for communications with the
+//! engine.
 use std::collections::HashMap;
 use std::sync::Arc;
 
