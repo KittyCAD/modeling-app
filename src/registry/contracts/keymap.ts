@@ -5,6 +5,7 @@ import {
   provide,
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
+import { type Platform, isArray } from '@src/lib/utils'
 
 export const BASE_KEYMAP_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
@@ -13,9 +14,12 @@ export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
 export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
+export const HOME_KEYMAP_SCOPE = 'home'
 export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE = 'project-explorer.focused'
 export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
   'project-explorer.renaming'
+export const KEYMAP_SCHEMA_VERSION = 1
+export const USER_KEYMAP_SOURCE = 'User'
 
 export type KeymapArguments =
   | null
@@ -39,6 +43,13 @@ export type KeymapBinding = {
   arguments?: KeymapArguments
   scopes?: readonly string[]
   title?: string
+  hidden?: boolean
+  userBindingCommand?: string
+}
+
+export type PersistedKeymap = {
+  version: typeof KEYMAP_SCHEMA_VERSION
+  bindings: readonly KeymapBinding[]
 }
 
 export type KeymapItem = KeymapBinding & {
@@ -80,10 +91,16 @@ export type KeymapSource = 'global' | 'codeMirror'
 
 export type KeymapService = {
   keymap: ReadonlySignal<KeymapTree>
+  persistedKeymap: ReadonlySignal<PersistedKeymap>
   partialMatch: ReadonlySignal<boolean>
   applyScope: (scopeName: string) => void
   removeScope: (scopeName: string) => void
   getCurrentScopes: () => readonly string[]
+  savePersistedKeymap: (keymap: PersistedKeymap) => Promise<void>
+  addUserBinding: (binding: KeymapBinding) => Promise<void>
+  removeUserBinding: (index: number) => Promise<void>
+  unbind: (item: KeymapItem) => Promise<void>
+  suspendListening: () => () => void
   handleKeyDown: (
     event: KeyboardEvent,
     options: { source: KeymapSource }
@@ -99,6 +116,56 @@ const createKeymapTreeNode = (): KeymapTreeNode => ({
   items: [],
   scopes: new Set(),
 })
+
+const LOWER_CASE_LETTER = /[a-z]/
+const WHITESPACE = /\s+/g
+const KEYMAP_KEYSTROKE_SEPARATOR = ' '
+
+export function keymapKeystrokesDisplay(
+  keystrokes: readonly string[] | undefined,
+  platform: Platform
+): string | undefined {
+  const display = (keystrokes ?? [])
+    .map((chord) => keymapChordDisplay(chord, platform))
+    .filter((chordDisplay): chordDisplay is string => !!chordDisplay)
+    .join(KEYMAP_KEYSTROKE_SEPARATOR)
+
+  return display || undefined
+}
+
+export function keymapChordDisplay(
+  chord: string | undefined,
+  platform: Platform
+): string | undefined {
+  if (!chord) {
+    return undefined
+  }
+
+  const isMac = platform === 'macos'
+  const isWindows = platform === 'windows'
+  const meta = isWindows ? 'Win' : 'Super'
+  const outputSeparator = isMac ? '' : '+'
+
+  return chord
+    .split('+')
+    .map((word) => word.trim().toLocaleLowerCase())
+    .map((word) => {
+      if (word === 'escape' || word === 'esc') {
+        return 'Esc'
+      }
+      if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
+        return word.toUpperCase()
+      }
+      return word
+    })
+    .join(outputSeparator)
+    .replaceAll(WHITESPACE, ' ')
+    .replaceAll('mod', isMac ? '⌘' : 'Ctrl')
+    .replaceAll('meta', isMac ? '⌘' : meta)
+    .replaceAll('ctrl', isMac ? '^' : 'Ctrl')
+    .replaceAll('shift', isMac ? '⬆' : 'Shift')
+    .replaceAll('alt', isMac ? '⌥' : 'Alt')
+}
 
 export function normalizeKeymapChord(chord: string) {
   return chord
@@ -123,13 +190,13 @@ export function normalizeEventKey(event: KeyboardEventKeyInput) {
 }
 
 function normalizeEventKeyValue(key: string) {
-  if (key.length === 1) {
-    return key.toLowerCase()
-  }
-
   const normalized = key.toLowerCase()
   if (normalized === ' ') {
     return 'space'
+  }
+
+  if (normalized.length === 1) {
+    return normalized
   }
 
   return normalized
@@ -236,6 +303,30 @@ export function keymapBindingCanCollideWithTyping(binding: KeymapBinding) {
   )
 }
 
+export function createEmptyPersistedKeymap(): PersistedKeymap {
+  return {
+    version: KEYMAP_SCHEMA_VERSION,
+    bindings: [],
+  }
+}
+
+export function isUnboundKeymapCommand(command: string) {
+  return command.startsWith('-')
+}
+
+export function getBoundKeymapCommand(command: string) {
+  return isUnboundKeymapCommand(command) ? command.slice(1) : command
+}
+
+export function createUnbindBinding(item: KeymapItem): KeymapBinding {
+  return {
+    command: `-${item.command}`,
+    keystrokes: item.keystrokes,
+    arguments: item.arguments,
+    scopes: item.scopes,
+  }
+}
+
 function insertKeymapItem(root: KeymapTreeNode, item: KeymapItem) {
   let node = root
   addItemScopesToNode(node, item)
@@ -266,6 +357,10 @@ export function createKeymapTree(items: readonly KeymapItem[]): KeymapTree {
   const root = createKeymapTreeNode()
 
   for (const item of items) {
+    if (isUnboundKeymapCommand(item.command)) {
+      continue
+    }
+
     insertKeymapItem(root, item)
   }
 
@@ -302,6 +397,112 @@ export function createKeymapItemsFromContributions(
   })
 }
 
+export function resolveKeymapItems(
+  contributedItems: readonly KeymapItem[],
+  persistedKeymap: PersistedKeymap
+): readonly KeymapItem[] {
+  let resolvedItems = [...contributedItems]
+
+  for (const [index, binding] of persistedKeymap.bindings.entries()) {
+    if (isUnboundKeymapCommand(binding.command)) {
+      resolvedItems = resolvedItems.filter(
+        (item) => !doesKeymapUnbindBindingMatchItem(binding, item)
+      )
+      continue
+    }
+
+    let appliedOverride = false
+    resolvedItems = resolvedItems.map((item) => {
+      if (!doesKeymapBindingOverrideItem(binding, item)) {
+        return item
+      }
+
+      appliedOverride = true
+      return createUserOverriddenKeymapItem(item, binding)
+    })
+
+    if (appliedOverride) {
+      continue
+    }
+
+    resolvedItems.push({
+      ...binding,
+      id: `user.${index}.${binding.command}`,
+      title: binding.title ?? binding.command,
+      source: USER_KEYMAP_SOURCE,
+      scopes: binding.scopes,
+    })
+  }
+
+  return resolvedItems
+}
+
+function createUserOverriddenKeymapItem(
+  item: KeymapItem,
+  binding: KeymapBinding
+): KeymapItem {
+  if (isKeymapLinkedUserBinding(item, binding)) {
+    return {
+      ...item,
+      keystrokes: binding.keystrokes,
+      source: USER_KEYMAP_SOURCE,
+    }
+  }
+
+  return {
+    ...item,
+    ...binding,
+    id: item.id,
+    title: binding.title ?? item.title,
+    source: USER_KEYMAP_SOURCE,
+    scopes: binding.scopes,
+  }
+}
+
+export function doesKeymapBindingOverrideItem(
+  binding: KeymapBinding,
+  item: KeymapItem
+) {
+  return (
+    binding.command === getKeymapItemUserBindingCommand(item) &&
+    areKeymapArgumentsEqual(binding.arguments, item.arguments)
+  )
+}
+
+export function doesKeymapUnbindBindingMatchItem(
+  binding: KeymapBinding,
+  item: KeymapItem
+) {
+  const commandsMatch =
+    getBoundKeymapCommand(binding.command) ===
+    getKeymapItemUserBindingCommand(item)
+  if (
+    commandsMatch &&
+    item.userBindingCommand !== undefined &&
+    areKeymapArgumentsEqual(binding.arguments, item.arguments)
+  ) {
+    return true
+  }
+
+  return (
+    commandsMatch &&
+    areKeymapArgumentsEqual(binding.arguments, item.arguments) &&
+    areKeymapKeystrokesEqual(binding.keystrokes, item.keystrokes)
+  )
+}
+
+function getKeymapItemUserBindingCommand(item: KeymapItem) {
+  return item.userBindingCommand ?? item.command
+}
+
+function isKeymapLinkedUserBinding(item: KeymapItem, binding: KeymapBinding) {
+  return (
+    item.hidden === true &&
+    item.userBindingCommand !== undefined &&
+    item.userBindingCommand === binding.command
+  )
+}
+
 export function areKeymapScopesEqual(
   a: readonly string[] | undefined,
   b: readonly string[] | undefined
@@ -321,6 +522,35 @@ export function getNormalizedKeymapScopes(
     .map((scope) => scope.trim())
     .filter(Boolean)
     .toSorted()
+}
+
+export function areKeymapArgumentsEqual(
+  a: KeymapArguments | undefined,
+  b: KeymapArguments | undefined
+): boolean {
+  if (a === b) return true
+  if (a === undefined || b === undefined) return false
+  if (isArray(a) || isArray(b)) {
+    const aArray = a as readonly KeymapArguments[]
+    const bArray = b as readonly KeymapArguments[]
+    return (
+      isArray(a) &&
+      isArray(b) &&
+      aArray.length === bArray.length &&
+      aArray.every((value, index) =>
+        areKeymapArgumentsEqual(value, bArray[index])
+      )
+    )
+  }
+  if (typeof a === 'object' && typeof b === 'object' && a && b) {
+    const aKeys = Object.keys(a)
+    const bKeys = Object.keys(b)
+    return (
+      aKeys.length === bKeys.length &&
+      aKeys.every((key) => areKeymapArgumentsEqual(a[key], b[key]))
+    )
+  }
+  return false
 }
 
 const DEFAULT_KEYMAP_SCOPE_PRIORITY = 0

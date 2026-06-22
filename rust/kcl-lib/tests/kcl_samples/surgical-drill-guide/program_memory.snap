@@ -24,7 +24,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -51,6 +52,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "parentSolid": {
         "solidId": "[uuid]",
         "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
           "[uuid]"
         ]
@@ -145,7 +147,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -172,6 +175,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "parentSolid": {
         "solidId": "[uuid]",
         "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
           "[uuid]"
         ]
@@ -440,6 +444,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "parentSolid": {
             "solidId": "[uuid]",
             "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]"
             ]
@@ -537,6 +542,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "parentSolid": {
           "solidId": "[uuid]",
           "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]"
           ]
@@ -675,6 +681,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -791,6 +798,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -868,6 +876,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "parentSolid": {
                   "solidId": "[uuid]",
                   "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
                     "[uuid]"
                   ]
@@ -987,6 +996,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "parentSolid": {
             "solidId": "[uuid]",
             "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]"
             ]
@@ -1084,6 +1094,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "parentSolid": {
           "solidId": "[uuid]",
           "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]"
           ]
@@ -1222,6 +1233,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1338,6 +1350,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
                     ]
@@ -1415,6 +1428,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "parentSolid": {
                   "solidId": "[uuid]",
                   "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
                     "[uuid]"
                   ]
@@ -3907,6 +3921,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -4340,6 +4364,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd005": {
+          "type": "TagIdentifier",
+          "value": "capEnd005"
+        },
+        "capStart003": {
+          "type": "TagIdentifier",
+          "value": "capStart003"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -5402,6 +5436,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd002": {
+          "type": "TagIdentifier",
+          "value": "capEnd002"
+        },
+        "capStart002": {
+          "type": "TagIdentifier",
+          "value": "capStart002"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -6571,6 +6615,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -8716,6 +8770,12 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd004": {
+          "type": "TagIdentifier",
+          "value": "capEnd004"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -8772,7 +8832,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -8886,7 +8947,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -9025,7 +9087,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -9138,7 +9201,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -9212,7 +9276,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },
@@ -9286,6 +9351,12 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd003": {
+          "type": "TagIdentifier",
+          "value": "capEnd003"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -9342,7 +9413,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -9456,7 +9528,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -9595,7 +9668,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -9708,7 +9782,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
@@ -9782,7 +9857,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
               },

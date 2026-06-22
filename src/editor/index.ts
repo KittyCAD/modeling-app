@@ -40,6 +40,7 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { createHistoryExtension } from '@src/editor/historyConfig'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 import { blurOnEscape } from '@src/editor/plugins/blurOnEsc'
+import { diagnosticTooltipCloseButton } from '@src/editor/plugins/diagnosticTooltipCloseButton'
 import { executionEffectsExtension } from '@src/editor/plugins/execution'
 import { operationsExtension } from '@src/editor/plugins/operations'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
@@ -101,6 +102,7 @@ export function baseEditorExtensions() {
     themeCompartment.of(Prec.highest([])),
     rectangularSelection(),
     dropCursor(),
+    diagnosticTooltipCloseButton(),
     blurOnEscape,
     interact({
       rules: [

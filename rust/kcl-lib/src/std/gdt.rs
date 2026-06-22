@@ -114,7 +114,11 @@ enum GdtFeatureControlKind {
     Straightness,
     Circularity,
     Cylindricity,
-    Profile,
+    Concentricity,
+    Symmetry,
+    Runout,
+    ProfileLine,
+    ProfileSurface,
     Position,
     Angularity,
     Perpendicularity,
@@ -133,6 +137,16 @@ struct GdtFeatureControlParams {
     font_size: Option<TyF64>,
 }
 
+struct GdtProfileCommonParams {
+    datums: Option<Vec<String>>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    font_size: Option<TyF64>,
+}
+
 impl GdtFeatureControlKind {
     fn label(self) -> &'static str {
         match self {
@@ -140,7 +154,11 @@ impl GdtFeatureControlKind {
             Self::Straightness => "Straightness",
             Self::Circularity => "Circularity",
             Self::Cylindricity => "Cylindricity",
-            Self::Profile => "Profile",
+            Self::Concentricity => "Concentricity",
+            Self::Symmetry => "Symmetry",
+            Self::Runout => "Runout",
+            Self::ProfileLine => "Profile line",
+            Self::ProfileSurface => "Profile surface",
             Self::Position => "Position",
             Self::Angularity => "Angularity",
             Self::Perpendicularity => "Perpendicularity",
@@ -154,12 +172,27 @@ impl GdtFeatureControlKind {
             Self::Straightness => MbdSymbol::Straightness,
             Self::Circularity => MbdSymbol::Roundness,
             Self::Cylindricity => MbdSymbol::Cylindricity,
-            Self::Profile => MbdSymbol::ProfileOfLine,
+            Self::Concentricity => MbdSymbol::Concentricity,
+            Self::Symmetry => MbdSymbol::Symmetry,
+            Self::Runout => MbdSymbol::Runout,
+            Self::ProfileLine => MbdSymbol::ProfileOfLine,
+            Self::ProfileSurface => MbdSymbol::SurfaceProfile,
             Self::Position => MbdSymbol::Position,
             Self::Angularity => MbdSymbol::Angularity,
             Self::Perpendicularity => MbdSymbol::Perpendicularity,
             Self::Parallelism => MbdSymbol::Parallelism,
         }
+    }
+
+    fn diameter_symbol(self) -> Option<MbdSymbol> {
+        match self {
+            Self::Concentricity => Some(MbdSymbol::Diameter),
+            _ => None,
+        }
+    }
+
+    fn requires_datums(self) -> bool {
+        matches!(self, Self::Concentricity | Self::Symmetry | Self::Runout)
     }
 }
 
@@ -464,13 +497,18 @@ pub async fn cylindricity(exec_state: &mut ExecState, args: Args) -> Result<KclV
     Ok(annotations.into())
 }
 
-pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let edges: Vec<EdgeReference> = args.get_kw_arg(
+pub async fn concentricity(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
         "edges",
         &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+    let datums: Vec<String> = args.get_kw_arg(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
         exec_state,
@@ -484,11 +522,11 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = create_feature_control_annotations(
-        GdtFeatureControlKind::Profile,
+        GdtFeatureControlKind::Concentricity,
         GdtFeatureControlParams {
-            faces: Vec::new(),
-            edges,
-            datums,
+            faces: faces.unwrap_or_default(),
+            edges: edges.unwrap_or_default(),
+            datums: Some(datums),
             tolerance,
             precision,
             frame_position,
@@ -501,6 +539,237 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     )
     .await?;
     Ok(annotations.into())
+}
+
+pub async fn symmetry(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Vec<String> = args.get_kw_arg(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = create_feature_control_annotations(
+        GdtFeatureControlKind::Symmetry,
+        GdtFeatureControlParams {
+            faces: faces.unwrap_or_default(),
+            edges: edges.unwrap_or_default(),
+            datums: Some(datums),
+            tolerance,
+            precision,
+            frame_position,
+            frame_plane,
+            leader_scale,
+            font_size,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Vec<String> = args.get_kw_arg(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotations = create_feature_control_annotations(
+        GdtFeatureControlKind::Runout,
+        GdtFeatureControlParams {
+            faces: faces.unwrap_or_default(),
+            edges: edges.unwrap_or_default(),
+            datums: Some(datums),
+            tolerance,
+            precision,
+            frame_position,
+            frame_plane,
+            leader_scale,
+            font_size,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn profile_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let edges: Vec<EdgeReference> = args.get_kw_arg(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let params = profile_common_params(&args, exec_state)?;
+
+    let annotations = inner_profile_line(edges, params, exec_state, &args).await?;
+    Ok(annotations.into())
+}
+
+pub async fn profile_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Vec<TagIdentifier> = args.get_kw_arg(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let params = profile_common_params(&args, exec_state)?;
+
+    let annotations = inner_profile_surface(faces, params, exec_state, &args).await?;
+    Ok(annotations.into())
+}
+
+/// Backwards-compatible implementation for the historical `gdt::profile` KCL function.
+///
+/// New KCL should call `gdt::profileLine` for edges or `gdt::profileSurface` for faces.
+/// Keep the dispatch explicit so invalid combinations produce semantic KCL errors
+/// instead of silently choosing one entity type.
+pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+
+    let annotations = match (edges, faces) {
+        (Some(edges), None) => {
+            let params = profile_common_params(&args, exec_state)?;
+            inner_profile_line(edges, params, exec_state, &args).await?
+        }
+        (None, Some(faces)) => {
+            let params = profile_common_params(&args, exec_state)?;
+            inner_profile_surface(faces, params, exec_state, &args).await?
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Profile cannot combine `edges` and `faces`. Use `profileLine` for edges or `profileSurface` for faces."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Profile requires either `edges` for `profileLine` or `faces` for `profileSurface`.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+    };
+
+    Ok(annotations.into())
+}
+
+fn profile_common_params(args: &Args, exec_state: &mut ExecState) -> Result<GdtProfileCommonParams, KclError> {
+    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    Ok(GdtProfileCommonParams {
+        datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        font_size,
+    })
+}
+
+async fn inner_profile_line(
+    edges: Vec<EdgeReference>,
+    params: GdtProfileCommonParams,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    create_feature_control_annotations(
+        GdtFeatureControlKind::ProfileLine,
+        GdtFeatureControlParams {
+            faces: Vec::new(),
+            edges,
+            datums: params.datums,
+            tolerance: params.tolerance,
+            precision: params.precision,
+            frame_position: params.frame_position,
+            frame_plane: params.frame_plane,
+            leader_scale: params.leader_scale,
+            font_size: params.font_size,
+        },
+        exec_state,
+        args,
+    )
+    .await
+}
+
+async fn inner_profile_surface(
+    faces: Vec<TagIdentifier>,
+    params: GdtProfileCommonParams,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    create_feature_control_annotations(
+        GdtFeatureControlKind::ProfileSurface,
+        GdtFeatureControlParams {
+            faces,
+            edges: Vec::new(),
+            datums: params.datums,
+            tolerance: params.tolerance,
+            precision: params.precision,
+            frame_position: params.frame_position,
+            frame_plane: params.frame_plane,
+            leader_scale: params.leader_scale,
+            font_size: params.font_size,
+        },
+        exec_state,
+        args,
+    )
+    .await
 }
 
 pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1043,8 +1312,15 @@ async fn create_feature_control_annotations(
 
     let precision = resolve_precision(precision, args)?;
     let datums = resolve_datums(datums, args, kind.label())?;
+    if kind.requires_datums() && datums.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{} requires at least one datum.", kind.label()),
+            vec![args.source_range],
+        )));
+    }
     let frame_plane = resolve_gdt_frame_plane(frame_plane, exec_state, args).await?;
     let symbol = kind.symbol();
+    let diameter_symbol = kind.diameter_symbol();
 
     let mut annotations = Vec::with_capacity(faces.len() + edges.len());
     for face in &faces {
@@ -1052,6 +1328,7 @@ async fn create_feature_control_annotations(
         create_feature_control_annotation(
             face_id,
             symbol,
+            diameter_symbol,
             &tolerance,
             &datums,
             precision,
@@ -1070,6 +1347,7 @@ async fn create_feature_control_annotations(
         create_feature_control_annotation(
             edge_id,
             symbol,
+            diameter_symbol,
             &tolerance,
             &datums,
             precision,
@@ -1091,6 +1369,7 @@ async fn create_feature_control_annotations(
 async fn create_feature_control_annotation(
     entity_id: uuid::Uuid,
     symbol: MbdSymbol,
+    diameter_symbol: Option<MbdSymbol>,
     tolerance: &TyF64,
     datums: &[char],
     precision: u32,
@@ -1105,7 +1384,12 @@ async fn create_feature_control_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let display_units = exec_state.length_unit();
-    let control_frame = gdt_control_frame(symbol, tolerance.to_length_units(display_units), datums);
+    let control_frame = gdt_control_frame(
+        symbol,
+        diameter_symbol,
+        tolerance.to_length_units(display_units),
+        datums,
+    );
     let feature_control = AnnotationFeatureControl::builder()
         .entity_id(entity_id)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
@@ -1146,25 +1430,34 @@ async fn create_feature_control_annotation(
     Ok(())
 }
 
-fn gdt_control_frame(symbol: MbdSymbol, tolerance: f64, datums: &[char]) -> AnnotationMbdControlFrame {
+fn gdt_control_frame(
+    symbol: MbdSymbol,
+    diameter_symbol: Option<MbdSymbol>,
+    tolerance: f64,
+    datums: &[char],
+) -> AnnotationMbdControlFrame {
     match datums {
         [] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .build(),
         [primary] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .primary_datum(*primary)
             .build(),
         [primary, secondary] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .primary_datum(*primary)
             .secondary_datum(*secondary)
             .build(),
         [primary, secondary, tertiary] => AnnotationMbdControlFrame::builder()
             .symbol(symbol)
+            .maybe_diameter_symbol(diameter_symbol)
             .tolerance(tolerance)
             .primary_datum(*primary)
             .secondary_datum(*secondary)
@@ -1823,6 +2116,160 @@ gdt::angularity(edges = [stampedRegion.tags.controlledSurface], tolerance = 0.1m
         Ok(())
     }
 
+    const GDT_PROFILE_LINE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_GENERIC_LINE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::profile(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_SURFACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+gdt::profileSurface(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_GENERIC_SURFACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+cylinderSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+gdt::profile(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+"#;
+
+    const GDT_PROFILE_BOTH_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::profile(edges = [profileEdge], faces = [top], tolerance = 0.05mm)
+"#;
+
+    const GDT_PROFILE_MISSING_ENTITIES_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+gdt::profile(tolerance = 0.05mm)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_line_uses_profile_of_line_symbol() -> Result<(), KclError> {
+        let cases = [
+            ("specific profileLine", GDT_PROFILE_LINE_KCL),
+            ("generic profile with edges", GDT_PROFILE_GENERIC_LINE_KCL),
+        ];
+
+        for (label, code) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::ProfileOfLine)?;
+
+            assert_close(control_frame.tolerance, 0.05);
+            assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_surface_uses_surface_profile_symbol() -> Result<(), KclError> {
+        let cases = [
+            ("specific profileSurface", GDT_PROFILE_SURFACE_KCL),
+            ("generic profile with faces", GDT_PROFILE_GENERIC_SURFACE_KCL),
+        ];
+
+        for (label, code) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::SurfaceProfile)?;
+
+            assert_close(control_frame.tolerance, 0.05);
+            assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_requires_edges_or_faces() {
+        assert_eq!(
+            parse_execute(GDT_PROFILE_MISSING_ENTITIES_KCL)
+                .await
+                .unwrap_err()
+                .message(),
+            "Profile requires either `edges` for `profileLine` or `faces` for `profileSurface`.",
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_profile_rejects_combined_edges_and_faces() {
+        assert_eq!(
+            parse_execute(GDT_PROFILE_BOTH_KCL).await.unwrap_err().message(),
+            "Profile cannot combine `edges` and `faces`. Use `profileLine` for edges or `profileSurface` for faces.",
+        );
+    }
+
     // Mirrors the gdt::circularity doc examples: annotate a cylinder's circular
     // edge and its curved wall. Runs in mock mode, so it validates parsing, name
     // resolution, and that the control frame uses the Roundness (circularity)
@@ -1957,6 +2404,305 @@ gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm,
             assert_close(control_frame.tolerance, expected_tolerance);
             // Cylindricity is a form tolerance and never references datums.
             assert!(control_frame.primary_datum.is_none(), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    // Uses the GD&T Basics stepped-shaft example: reference feature B is
+    // controlled relative to datum feature A. Runs in mock mode, so it validates
+    // parsing, name resolution, and that the control frame uses the
+    // Concentricity symbol with a diameter tolerance zone and datum reference.
+    const GDT_CONCENTRICITY_REFERENCE_FEATURE_B_FACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+datumASketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumA = extrude(region(point = datumASketch.perimeter.center, sketch = datumASketch), length = 16mm)
+
+referenceFeatureBSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm)
+  |> translate(z = -12mm)
+
+gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
+gdt::concentricity(faces = [referenceFeatureB.sketch.tags.perimeter], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
+"#;
+
+    const GDT_CONCENTRICITY_REFERENCE_FEATURE_B_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+datumASketch = sketch(on = XY) {
+  perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumA = extrude(region(point = datumASketch.perimeter.center, sketch = datumASketch), length = 16mm)
+
+referenceFeatureBSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm, tagEnd = $endB)
+  |> translate(z = -12mm)
+endEdgeB = getCommonEdge(faces = [referenceFeatureB.sketch.tags.perimeter, endB])
+
+gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
+gdt::concentricity(edges = [endEdgeB], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_concentricity_uses_concentricity_symbol_with_diameter_zone_and_datums() -> Result<(), KclError> {
+        let cases = [
+            (
+                "reference feature B face",
+                GDT_CONCENTRICITY_REFERENCE_FEATURE_B_FACE_KCL,
+                0.2,
+            ),
+            (
+                "reference feature B edge",
+                GDT_CONCENTRICITY_REFERENCE_FEATURE_B_EDGE_KCL,
+                0.2,
+            ),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::Concentricity)?;
+
+            assert_eq!(
+                control_frame.diameter_symbol,
+                Some(MbdSymbol::Diameter),
+                "case: {label}"
+            );
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
+            assert!(control_frame.secondary_datum.is_none(), "case: {label}");
+            assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
+        }
+        Ok(())
+    }
+
+    // Models the GD&T Basics latch-block groove example as closely as the
+    // current datum API allows. Each test annotates one groove floor target
+    // so KCL emits one symmetry feature control frame.
+    const GDT_SYMMETRY_LATCH_BLOCK_GROOVE_FACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+latchProfile = sketch(on = XZ) {
+  bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
+  datumWidthFace = line(start = [var 20mm, var -10mm], end = [var 20mm, var 10mm])
+  topRight = line(start = [var 20mm, var 10mm], end = [var 5mm, var 10mm])
+  rightGrooveWall = line(start = [var 5mm, var 10mm], end = [var 5mm, var 3mm])
+  grooveFloor = line(start = [var 5mm, var 3mm], end = [var -5mm, var 3mm])
+  leftGrooveWall = line(start = [var -5mm, var 3mm], end = [var -5mm, var 10mm])
+  topLeft = line(start = [var -5mm, var 10mm], end = [var -20mm, var 10mm])
+  leftSide = line(start = [var -20mm, var 10mm], end = [var -20mm, var -10mm])
+  coincident([bottom.end, datumWidthFace.start])
+  coincident([datumWidthFace.end, topRight.start])
+  coincident([topRight.end, rightGrooveWall.start])
+  coincident([rightGrooveWall.end, grooveFloor.start])
+  coincident([grooveFloor.end, leftGrooveWall.start])
+  coincident([leftGrooveWall.end, topLeft.start])
+  coincident([topLeft.end, leftSide.start])
+  coincident([leftSide.end, bottom.start])
+  horizontal(bottom)
+  vertical(datumWidthFace)
+  horizontal(topRight)
+  vertical(rightGrooveWall)
+  horizontal(grooveFloor)
+  vertical(leftGrooveWall)
+  horizontal(topLeft)
+  vertical(leftSide)
+}
+
+latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
+latchBlock = extrude(latchBlockRegion, length = 12mm)
+
+gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
+gdt::symmetry(faces = [latchBlock.sketch.tags.grooveFloor], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
+"#;
+
+    const GDT_SYMMETRY_LATCH_BLOCK_GROOVE_EDGE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+latchProfile = sketch(on = XZ) {
+  bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
+  datumWidthFace = line(start = [var 20mm, var -10mm], end = [var 20mm, var 10mm])
+  topRight = line(start = [var 20mm, var 10mm], end = [var 5mm, var 10mm])
+  rightGrooveWall = line(start = [var 5mm, var 10mm], end = [var 5mm, var 3mm])
+  grooveFloor = line(start = [var 5mm, var 3mm], end = [var -5mm, var 3mm])
+  leftGrooveWall = line(start = [var -5mm, var 3mm], end = [var -5mm, var 10mm])
+  topLeft = line(start = [var -5mm, var 10mm], end = [var -20mm, var 10mm])
+  leftSide = line(start = [var -20mm, var 10mm], end = [var -20mm, var -10mm])
+  coincident([bottom.end, datumWidthFace.start])
+  coincident([datumWidthFace.end, topRight.start])
+  coincident([topRight.end, rightGrooveWall.start])
+  coincident([rightGrooveWall.end, grooveFloor.start])
+  coincident([grooveFloor.end, leftGrooveWall.start])
+  coincident([leftGrooveWall.end, topLeft.start])
+  coincident([topLeft.end, leftSide.start])
+  coincident([leftSide.end, bottom.start])
+  horizontal(bottom)
+  vertical(datumWidthFace)
+  horizontal(topRight)
+  vertical(rightGrooveWall)
+  horizontal(grooveFloor)
+  vertical(leftGrooveWall)
+  horizontal(topLeft)
+  vertical(leftSide)
+}
+
+latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
+latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
+grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
+
+gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
+gdt::symmetry(edges = [grooveFloorFrontEdge], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_symmetry_uses_symmetry_symbol_with_datums_for_face() -> Result<(), KclError> {
+        let commands = gdt_commands(GDT_SYMMETRY_LATCH_BLOCK_GROOVE_FACE_KCL).await;
+        let control_frames: Vec<_> = commands
+            .iter()
+            .filter_map(|command| {
+                feature_control(command)
+                    .ok()
+                    .and_then(|feature_control| feature_control.control_frame.as_ref())
+                    .filter(|control_frame| control_frame.symbol == MbdSymbol::Symmetry)
+            })
+            .collect();
+
+        assert_eq!(control_frames.len(), 1);
+        let control_frame = control_frames[0];
+        assert_eq!(control_frame.diameter_symbol, None);
+        assert_close(control_frame.tolerance, 0.2);
+        assert_eq!(control_frame.primary_datum, Some('A'));
+        assert!(control_frame.secondary_datum.is_none());
+        assert!(control_frame.tertiary_datum.is_none());
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_symmetry_uses_symmetry_symbol_with_datums_for_edge() -> Result<(), KclError> {
+        let commands = gdt_commands(GDT_SYMMETRY_LATCH_BLOCK_GROOVE_EDGE_KCL).await;
+        let control_frames: Vec<_> = commands
+            .iter()
+            .filter_map(|command| {
+                feature_control(command)
+                    .ok()
+                    .and_then(|feature_control| feature_control.control_frame.as_ref())
+                    .filter(|control_frame| control_frame.symbol == MbdSymbol::Symmetry)
+            })
+            .collect();
+
+        assert_eq!(control_frames.len(), 1);
+        let control_frame = control_frames[0];
+        assert_eq!(control_frame.diameter_symbol, None);
+        assert_close(control_frame.tolerance, 0.2);
+        assert_eq!(control_frame.primary_datum, Some('A'));
+        assert!(control_frame.secondary_datum.is_none());
+        assert!(control_frame.tertiary_datum.is_none());
+        Ok(())
+    }
+
+    // Covers the gdt::runout doc example plus a face-based variant. Runs in mock mode, so it validates
+    // parsing, name resolution, and that the control frame uses the Runout
+    // symbol with a datum reference and no diameter symbol.
+    const GDT_RUNOUT_STEPPED_SHAFT_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+annotationPlane = offsetPlane(XZ, offset = 24mm)
+
+controlledSketch = sketch(on = YZ) {
+  upperPerimeter = arc(start = [var 10mm, var 0mm], end = [var -10mm, var 0mm], center = [var 0mm, var 0mm])
+  lowerPerimeter = arc(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([upperPerimeter.end, lowerPerimeter.start])
+  coincident([lowerPerimeter.end, upperPerimeter.start])
+}
+
+controlledShaft = extrude(
+  region(point = [0mm, 1mm], sketch = controlledSketch),
+  length = -58mm,
+  tagStart = $controlledShoulder,
+  tagEnd = $controlledFreeEnd
+)
+
+controlledUpperShoulderEdge = getCommonEdge(faces = [
+  controlledShaft.sketch.tags.upperPerimeter,
+  controlledShoulder
+])
+
+datumSketch = sketch(on = YZ) {
+  perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumShaft = extrude(
+  region(point = datumSketch.perimeter.center, sketch = datumSketch),
+  length = 36mm,
+  tagEnd = $datumEnd
+)
+
+gdt::datum(
+  face = datumShaft.sketch.tags.perimeter,
+  name = "A",
+  framePosition = [18mm, -28mm],
+  framePlane = annotationPlane,
+  leaderScale = 1.15,
+  fontSize = 6mm
+)
+
+gdt::runout(
+  edges = [controlledUpperShoulderEdge],
+  tolerance = 0.2mm,
+  datums = ["A"],
+  precision = 1,
+  framePosition = [12mm, 48mm],
+  framePlane = annotationPlane,
+  leaderScale = 1.15,
+  fontSize = 6mm
+)
+"#;
+
+    const GDT_RUNOUT_FACE_KCL: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+datumSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+datumShaft = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 18mm)
+
+controlledSketch = sketch(on = XY) {
+  perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+controlledShaft = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 16mm)
+  |> translate(z = -16mm)
+
+gdt::datum(face = datumShaft.sketch.tags.perimeter, name = "A", framePosition = [12mm, -14mm], framePlane = XZ)
+gdt::runout(faces = [controlledShaft.sketch.tags.perimeter], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_runout_uses_runout_symbol_with_axis_datum() -> Result<(), KclError> {
+        let cases = [
+            ("stepped shaft", GDT_RUNOUT_STEPPED_SHAFT_KCL, 0.2),
+            ("controlled face", GDT_RUNOUT_FACE_KCL, 0.2),
+        ];
+
+        for (label, code, expected_tolerance) in cases {
+            let commands = gdt_commands(code).await;
+            let control_frame = find_control_frame_with_symbol(&commands, MbdSymbol::Runout)?;
+
+            assert!(control_frame.diameter_symbol.is_none(), "case: {label}");
+            assert_close(control_frame.tolerance, expected_tolerance);
+            assert_eq!(control_frame.primary_datum, Some('A'), "case: {label}");
             assert!(control_frame.secondary_datum.is_none(), "case: {label}");
             assert!(control_frame.tertiary_datum.is_none(), "case: {label}");
         }

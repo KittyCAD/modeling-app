@@ -13,6 +13,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
   handleSelectionBatch,
@@ -1194,6 +1195,57 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
   // Build the index locally instead of using engineCommandManager
   const artifactIndex = buildArtifactIndex(___artifactGraph)
 
+  function createPrimitiveEngineCommandManager({
+    parentEntityId,
+    primitiveIndex,
+    primitiveType,
+  }: {
+    parentEntityId: string
+    primitiveIndex: number
+    primitiveType: 'edge' | 'face'
+  }) {
+    return {
+      sendSceneCommand: vi.fn(async ({ cmd }: any) => {
+        if (cmd.type === 'entity_get_primitive_index') {
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_primitive_index',
+                  data: {
+                    entity_type: primitiveType,
+                    primitive_index: primitiveIndex,
+                  },
+                },
+              },
+            },
+          }
+        }
+
+        if (cmd.type === 'entity_get_parent_id') {
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: {
+                    entity_id: parentEntityId,
+                  },
+                },
+              },
+            },
+          }
+        }
+
+        throw new Error(`Unexpected command ${cmd.type}`)
+      }),
+    }
+  }
+
   const cases = [
     [
       'basic segment selection',
@@ -1334,6 +1386,151 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }
     }
   )
+
+  test('prefers adjacent/opposite edge references over primitive index references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const edgeArtifact = ___artifactGraph.get(
+      'b197cdad-d60f-4e3c-afdd-58e6f1c323f1'
+    )
+    const segmentArtifact = ___artifactGraph.get(
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
+    )
+    const sweepArtifact = ___artifactGraph.get(
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
+    )
+    if (
+      edgeArtifact?.type !== 'sweepEdge' ||
+      segmentArtifact?.type !== 'segment' ||
+      sweepArtifact?.type !== 'sweep'
+    ) {
+      throw new Error('Expected sweep edge fixture artifacts')
+    }
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: edgeArtifact,
+          codeRef: segmentArtifact.codeRef,
+        },
+      ],
+      enginePrimitives: [],
+      artifactGraph: ___artifactGraph,
+      engineCommandManager: createPrimitiveEngineCommandManager({
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(references).toHaveLength(1)
+    expect(references[0].code).toBe('getNextAdjacentEdge(seg01)')
+  })
+
+  test('prefers directly tagged swept face references over primitive index references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const wallArtifact = ___artifactGraph.get(
+      '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a'
+    )
+    const segmentArtifact = ___artifactGraph.get(
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
+    )
+    const sweepArtifact = ___artifactGraph.get(
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
+    )
+    if (
+      wallArtifact?.type !== 'wall' ||
+      segmentArtifact?.type !== 'segment' ||
+      sweepArtifact?.type !== 'sweep'
+    ) {
+      throw new Error('Expected swept wall face fixture artifacts')
+    }
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: wallArtifact,
+          codeRef: segmentArtifact.codeRef,
+        },
+      ],
+      enginePrimitives: [
+        {
+          type: 'enginePrimitive',
+          entityId: wallArtifact.id,
+          parentEntityId: sweepArtifact.id,
+          primitiveIndex: 3,
+          primitiveType: 'face',
+        },
+      ],
+      artifactGraph: ___artifactGraph,
+      engineCommandManager: createPrimitiveEngineCommandManager({
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: 3,
+        primitiveType: 'face',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(references).toHaveLength(1)
+    expect(references[0].code).toBe('seg01')
+  })
+
+  test('prefers directly tagged edge references over primitive index references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const segmentArtifact = ___artifactGraph.get(
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
+    )
+    const sweepArtifact = ___artifactGraph.get(
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
+    )
+    if (
+      segmentArtifact?.type !== 'segment' ||
+      sweepArtifact?.type !== 'sweep'
+    ) {
+      throw new Error('Expected tagged segment fixture artifacts')
+    }
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: segmentArtifact,
+          codeRef: segmentArtifact.codeRef,
+        },
+      ],
+      enginePrimitives: [
+        {
+          type: 'enginePrimitive',
+          entityId: segmentArtifact.id,
+          parentEntityId: sweepArtifact.id,
+          primitiveIndex: 1,
+          primitiveType: 'edge',
+        },
+      ],
+      artifactGraph: ___artifactGraph,
+      engineCommandManager: createPrimitiveEngineCommandManager({
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: 1,
+        primitiveType: 'edge',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(
+      references.find((reference) => reference.label === 'Edge')?.code
+    ).toBe('seg01')
+  })
 })
 
 describe('findLastRangeStartingBefore', () => {

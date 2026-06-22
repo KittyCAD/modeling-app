@@ -1,4 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,49 +9,107 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { App } from '@src/lib/app'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: Project
   file?: FileEntry
+  hasOpfsCloudFeature?: boolean
+  app?: App
+  absoluteFilePath?: string
+  onProjectClose?: ProjectCloseHandler
+  onHomeNavigate?: () => void
+}
+
+type ProjectCloseHandler = (
+  file: FileEntry | null,
+  projectPath: string | null,
+  redirect: boolean
+) => void
+
+const noopProjectClose: ProjectCloseHandler = () => undefined
+const noopHomeNavigate = () => undefined
+
+export function canNavigateHome({
+  isDesktopApp,
+  hasOpfsCloudFeature,
+}: {
+  isDesktopApp: boolean
+  hasOpfsCloudFeature: boolean
+}) {
+  return isDesktopApp || hasOpfsCloudFeature
 }
 
 const ProjectSidebarMenu = ({
   project,
   file,
   enableMenu = false,
+  hasOpfsCloudFeature = false,
+  app,
+  absoluteFilePath,
+  onProjectClose = noopProjectClose,
+  onHomeNavigate = noopHomeNavigate,
   children,
 }: ProjectSidebarMenuProps) => {
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset =
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
+  const homeNavigationEnabled = canNavigateHome({
+    isDesktopApp: isDesktop(),
+    hasOpfsCloudFeature,
+  })
+  const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
+
   return (
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home">
-        <AppLogoLink project={project} file={file} />
-        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
+        <AppLogoLink
+          project={project}
+          file={file}
+          enabled={homeNavigationEnabled}
+          onProjectClose={onProjectClose}
+          onHomeNavigate={onHomeNavigate}
+        />
+        {homeNavigationEnabled && (
+          <Tooltip position="bottom-left">Go home</Tooltip>
+        )}
       </div>
       {enableMenu ? (
-        <ProjectMenuPopover project={project} file={file} />
+        app ? (
+          <ProjectMenuPopover
+            app={app}
+            project={project}
+            file={file}
+            filePath={absoluteFilePath}
+            homeNavigationEnabled={homeNavigationEnabled}
+            onProjectClose={onProjectClose}
+            onHomeNavigate={onHomeNavigate}
+          />
+        ) : null
       ) : (
         <span
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
-          {project?.name ? project.name : APP_NAME}
+          {projectDisplayName}
         </span>
       )}
       {children}
@@ -61,17 +120,21 @@ const ProjectSidebarMenu = ({
 function AppLogoLink({
   project,
   file,
+  enabled,
+  onProjectClose,
+  onHomeNavigate,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  enabled: boolean
+  onProjectClose: ProjectCloseHandler
+  onHomeNavigate: () => void
 }) {
-  const { kclManager } = useSingletons()
-  const { onProjectClose } = useLspContext()
   const wrapperClassName =
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  if (!window.electron) {
+  if (!enabled) {
     return (
       <div
         data-testid="app-logo"
@@ -88,7 +151,7 @@ function AppLogoLink({
       data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
-        kclManager.switchedFiles = true
+        onHomeNavigate()
       }}
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
@@ -100,23 +163,43 @@ function AppLogoLink({
 }
 
 function ProjectMenuPopover({
+  app,
   project,
   file,
+  filePath,
+  homeNavigationEnabled,
+  onProjectClose,
+  onHomeNavigate,
 }: {
+  app: App
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  filePath?: string
+  homeNavigationEnabled: boolean
+  onProjectClose: ProjectCloseHandler
+  onHomeNavigate: () => void
 }) {
-  const { machineManager, commands, settings } = useApp()
-  const { kclManager } = useSingletons()
+  useSignals()
+  const { machineManager, commands, settings } = app
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
-  const filePath = useAbsoluteFilePath()
+  const keymap = app.registry.optional(keymapService)
+  const projectSettingsKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          'zds.settings.open',
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [`mod+${isDesktop() ? '' : 'shift'}+,`],
+    platform
+  )
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
 
-  const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const exportProjectZipCommandInfo = {
     name: 'export-project-zip',
@@ -141,9 +224,9 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">
-                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
-              </kbd>
+              {projectSettingsKeybinding && (
+                <kbd className="hotkey">{projectSettingsKeybinding}</kbd>
+              )}
             </>
           ),
           onClick: () => {
@@ -252,10 +335,10 @@ function ProjectMenuPopover({
           id: 'go-home',
           Element: 'button',
           children: 'Go to Home',
-          className: !isDesktop() ? 'hidden' : '',
+          className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
-            kclManager.switchedFiles = true
+            onHomeNavigate()
           },
         },
       ].filter(
@@ -270,102 +353,16 @@ function ProjectMenuPopover({
       machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
-      kclManager.engineCommandManager,
+      onHomeNavigate,
       onProjectClose,
       isDesktop,
+      homeNavigationEnabled,
     ]
   )
 
-  // Breadcrumb for project and project-relative file path
-  const relativeFilePath = getProjectRelativeFilePath(project, file)
-  const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
-  const breadCrumb = {
-    projectName: project?.name || '',
-    sep: ' / ',
-    filePath: formattedRelativeFilePath,
-  }
-  const breadCrumbTooltip = breadCrumb.projectName
-    ? `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filePath}`
-    : breadCrumb.filePath
-  const projectNameRef = useRef<HTMLSpanElement>(null)
-  const filePathRef = useRef<HTMLSpanElement>(null)
-  const [isBreadCrumbTruncated, setIsBreadCrumbTruncated] = useState(false)
-
-  useEffect(() => {
-    const isTruncated = (element: HTMLElement | null) =>
-      Boolean(element && element.scrollWidth > element.clientWidth)
-
-    const updateTruncatedState = () => {
-      setIsBreadCrumbTruncated(
-        isTruncated(projectNameRef.current) || isTruncated(filePathRef.current)
-      )
-    }
-
-    updateTruncatedState()
-
-    const resizeObserver =
-      typeof ResizeObserver !== 'undefined'
-        ? new ResizeObserver(updateTruncatedState)
-        : null
-
-    if (projectNameRef.current) {
-      resizeObserver?.observe(projectNameRef.current)
-    }
-    if (filePathRef.current) {
-      resizeObserver?.observe(filePathRef.current)
-    }
-
-    window.addEventListener('resize', updateTruncatedState)
-
-    return () => {
-      resizeObserver?.disconnect()
-      window.removeEventListener('resize', updateTruncatedState)
-    }
-  }, [breadCrumb.filePath, breadCrumb.projectName])
-
   return (
     <Popover className="relative min-w-0">
-      <Popover.Button
-        className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
-        data-testid="project-sidebar-toggle"
-      >
-        <div className="flex min-w-0 items-baseline py-0.5 text-sm">
-          {project?.name && (
-            <>
-              <span
-                ref={projectNameRef}
-                className="hidden whitespace-nowrap md:block max-w-80 truncate"
-                data-testid="app-header-project-name"
-              >
-                {breadCrumb.projectName}
-              </span>
-              <span className="hidden whitespace-pre md:inline">
-                {breadCrumb.sep}
-              </span>
-            </>
-          )}
-          <span
-            ref={filePathRef}
-            className="min-w-0 truncate text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
-            data-testid="app-header-file-name"
-          >
-            {breadCrumb.filePath}
-          </span>
-        </div>
-        <CustomIcon
-          name="caretDown"
-          className="w-4 h-4 shrink-0 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
-        />
-        {isBreadCrumbTruncated && (
-          <Tooltip
-            position="bottom-left"
-            hoverOnly
-            contentClassName="max-w-[min(80vw,48rem)] break-all text-left"
-          >
-            {breadCrumbTooltip}
-          </Tooltip>
-        )}
-      </Popover.Button>
+      <ProjectBreadcrumbButton project={project} file={file} />
 
       <Transition
         enter="duration-100 ease-out"
@@ -412,6 +409,106 @@ function ProjectMenuPopover({
         </Popover.Panel>
       </Transition>
     </Popover>
+  )
+}
+
+export function ProjectBreadcrumbButton({
+  project,
+  file,
+}: {
+  project?: IndexLoaderData['project']
+  file?: IndexLoaderData['file']
+}) {
+  // Breadcrumb for project and project-relative file path
+  const relativeFilePath = getProjectRelativeFilePath(project, file)
+  const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
+  const projectDisplayName = project ? getProjectDisplayName(project) : ''
+  const breadCrumb = {
+    projectName: projectDisplayName,
+    sep: ' / ',
+    filePath: formattedRelativeFilePath,
+  }
+  const breadCrumbTooltip = breadCrumb.projectName
+    ? `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filePath}`
+    : breadCrumb.filePath
+  const projectNameRef = useRef<HTMLSpanElement>(null)
+  const filePathRef = useRef<HTMLSpanElement>(null)
+  const [isBreadCrumbTruncated, setIsBreadCrumbTruncated] = useState(false)
+
+  useEffect(() => {
+    const isTruncated = (element: HTMLElement | null) =>
+      Boolean(element && element.scrollWidth > element.clientWidth)
+
+    const updateTruncatedState = () => {
+      setIsBreadCrumbTruncated(
+        isTruncated(projectNameRef.current) || isTruncated(filePathRef.current)
+      )
+    }
+
+    updateTruncatedState()
+
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(updateTruncatedState)
+        : null
+
+    if (projectNameRef.current) {
+      resizeObserver?.observe(projectNameRef.current)
+    }
+    if (filePathRef.current) {
+      resizeObserver?.observe(filePathRef.current)
+    }
+
+    window.addEventListener('resize', updateTruncatedState)
+
+    return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', updateTruncatedState)
+    }
+  }, [breadCrumb.filePath, breadCrumb.projectName])
+
+  return (
+    <Popover.Button
+      className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+      data-testid="project-sidebar-toggle"
+    >
+      <div className="flex min-w-0 items-baseline py-0.5 text-sm">
+        {project && (
+          <>
+            <span
+              ref={projectNameRef}
+              className="hidden whitespace-nowrap md:block max-w-80 truncate"
+              data-testid="app-header-project-name"
+            >
+              {breadCrumb.projectName}
+            </span>
+            <span className="hidden whitespace-pre md:inline">
+              {breadCrumb.sep}
+            </span>
+          </>
+        )}
+        <span
+          ref={filePathRef}
+          className="min-w-0 truncate text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
+          data-testid="app-header-file-name"
+        >
+          {breadCrumb.filePath}
+        </span>
+      </div>
+      <CustomIcon
+        name="caretDown"
+        className="w-4 h-4 shrink-0 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+      />
+      {isBreadCrumbTruncated && (
+        <Tooltip
+          position="bottom-left"
+          hoverOnly
+          contentClassName="max-w-[min(80vw,48rem)] break-all text-left"
+        >
+          {breadCrumbTooltip}
+        </Tooltip>
+      )}
+    </Popover.Button>
   )
 }
 

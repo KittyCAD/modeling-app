@@ -320,9 +320,12 @@ export function addSweep({
   wasmInstance,
   sectional,
   relativeTo,
+  translateProfileToPath,
+  orientProfilePerpendicular,
   tagStart,
   tagEnd,
   bodyType,
+  version,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -332,9 +335,12 @@ export function addSweep({
   wasmInstance: ModuleType
   sectional?: boolean
   relativeTo?: SweepRelativeTo
+  translateProfileToPath?: boolean
+  orientProfilePerpendicular?: boolean
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -345,18 +351,43 @@ export function addSweep({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const isEditing = Boolean(mNodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const res = getFacesExprsFromSelection(
+    modifiedAst,
     sketches,
     artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
-  if (err(vars)) {
-    return vars
+  if (err(res)) return res
+  modifiedAst = res.modifiedAst
+  vars.exprs.push(...res.exprs)
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
@@ -402,9 +433,47 @@ export function addSweep({
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
       : []
-  const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
-    : []
+  // `relativeTo` is legacy for new sweep calls; only preserve or update it when
+  // editing existing code that already depends on that argument.
+  const relativeToExpr =
+    relativeTo && isEditing
+      ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
+      : []
+  // New sweep calls should explicitly use the current recommended behavior:
+  // version = 2, translateProfileToPath = false, and orientProfilePerpendicular = false.
+  // When editing, omit missing args so old sweep code is not silently upgraded.
+  const translateProfileToPathExpr =
+    translateProfileToPath !== undefined
+      ? [
+          createLabeledArg(
+            'translateProfileToPath',
+            createLiteral(translateProfileToPath, wasmInstance)
+          ),
+        ]
+      : isEditing
+        ? []
+        : [
+            createLabeledArg(
+              'translateProfileToPath',
+              createLiteral(false, wasmInstance)
+            ),
+          ]
+  const orientProfilePerpendicularExpr =
+    orientProfilePerpendicular !== undefined
+      ? [
+          createLabeledArg(
+            'orientProfilePerpendicular',
+            createLiteral(orientProfilePerpendicular, wasmInstance)
+          ),
+        ]
+      : isEditing
+        ? []
+        : [
+            createLabeledArg(
+              'orientProfilePerpendicular',
+              createLiteral(false, wasmInstance)
+            ),
+          ]
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -414,6 +483,11 @@ export function addSweep({
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
+  const versionExpr = version
+    ? [createLabeledArg('version', valueOrVariable(version))]
+    : isEditing
+      ? []
+      : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
@@ -423,7 +497,14 @@ export function addSweep({
     ...tagStartExpr,
     ...tagEndExpr,
     ...bodyTypeExpr,
+    ...versionExpr,
+    ...translateProfileToPathExpr,
+    ...orientProfilePerpendicularExpr,
   ])
+
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

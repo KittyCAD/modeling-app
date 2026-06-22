@@ -3,6 +3,7 @@ import {
   addAngularityGdt,
   addAnnotationGdt,
   addCircularityGdt,
+  addConcentricityGdt,
   addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
@@ -11,7 +12,9 @@ import {
   addPerpendicularityGdt,
   addPositionGdt,
   addProfileGdt,
+  addRunoutGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
   getNextAvailableDatumName,
   getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'
@@ -1088,7 +1091,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addProfileGdt', () => {
-    it('should add a profile annotation to a selected edge', async () => {
+    it('should add a profile line annotation to a selected edge', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
@@ -1114,7 +1117,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addProfileGdt({
         ast,
         artifactGraph,
-        edges: createSelectionFromArtifacts([edge], artifactGraph),
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1128,7 +1131,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         throw newCode
       }
 
-      expect(newCode).toContain('gdt::profile(')
+      expect(newCode).toContain('gdt::profileLine(')
+      expect(newCode).not.toContain('gdt::profile(')
       expect(newCode).toMatch(
         /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
       )
@@ -1136,6 +1140,95 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it.each([
+      { label: 'cap', sourceCode: box, artifactType: 'cap' },
+      { label: 'wall', sourceCode: box, artifactType: 'wall' },
+      {
+        label: 'edge cut',
+        sourceCode: boxWithOneTagAndChamfer,
+        artifactType: 'edgeCut',
+      },
+    ])(
+      'should add a profile surface annotation to a selected $label face',
+      async ({ sourceCode, artifactType }) => {
+        const { artifactGraph, ast } = await executeCode(
+          sourceCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const face = [...artifactGraph.values()].find(
+          (artifact) => artifact.type === artifactType
+        )
+        if (!face) {
+          throw new Error(`Expected a ${artifactType} face`)
+        }
+
+        const tolerance = await getKclCommandValue(
+          '0.1mm',
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+        const result = addProfileGdt({
+          ast,
+          artifactGraph,
+          objects: createSelectionFromArtifacts([face], artifactGraph),
+          tolerance,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) {
+          throw result
+        }
+
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) {
+          throw newCode
+        }
+
+        expect(newCode).toContain('gdt::profileSurface(')
+        expect(newCode).not.toContain('gdt::profile(')
+        expect(newCode).toContain('faces = [')
+        expect(newCode).toContain('tolerance = 0.1mm')
+
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
+
+    it('should reject mixed face and edge selections', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addProfileGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+
+      expect(err(result)).toBe(true)
+      expect(result).toBeInstanceOf(Error)
+      expect((result as Error).message).toContain(
+        'Profile requires either faces or edges, not both'
+      )
     })
   })
 
@@ -1461,6 +1554,168 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [')
       expect(newCode).toContain('edges = [')
       expect(newCode).toContain('datums = ["A", "B"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addConcentricityGdt', () => {
+    it('should add concentricity annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const datums = await getKclCommandValue(
+        '["A"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addConcentricityGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::concentricity(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addSymmetryGdt', () => {
+    it('should add symmetry annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const datums = await getKclCommandValue(
+        '["A"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addSymmetryGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::symmetry(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addRunoutGdt', () => {
+    it('should add runout annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const datums = await getKclCommandValue(
+        '["A"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addRunoutGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::runout(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A"]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
