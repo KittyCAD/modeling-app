@@ -21,6 +21,7 @@ import {
   normalizeRelativePath,
 } from '@src/lib/fs-zds/opfsCloud/paths'
 import {
+  getRemoteProjectTitleForProjectToml,
   parseProjectArchive,
   projectManifestFromFiles,
   projectManifestsEqual,
@@ -431,6 +432,29 @@ async function writeLocalProjectTitle(projectPath: string, title: string) {
   )
 }
 
+async function ensureLocalProjectTitle(projectPath: string, title?: string) {
+  if (!title?.trim()) {
+    return false
+  }
+
+  return updateLocalProjectToml(projectPath, (projectToml) =>
+    getProjectTitleFromProjectTomlContents(projectToml)
+      ? projectToml
+      : setProjectTitleInProjectTomlContents(projectToml, title)
+  )
+}
+
+async function readLocalProjectTitle(projectPath: string) {
+  const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  if (!(await exists(projectTomlPath))) {
+    return undefined
+  }
+
+  return getProjectTitleFromProjectTomlContents(
+    await localFs.readFile(projectTomlPath, { encoding: 'utf-8' })
+  )
+}
+
 async function writeLocalProjectCloudProjectId(
   projectPath: string,
   projectId: string
@@ -727,6 +751,17 @@ export async function ensureOpfsCloudProjectLocallySynced(
     knownLocalProjectPath &&
     (await exists(knownLocalProjectPath))
   ) {
+    if (!(await readLocalProjectTitle(knownLocalProjectPath))) {
+      const remoteProject = await getRemoteProject(config, projectId)
+      const nextMetadata = await hydrateCleanLocalProjectTitle(
+        knownLocalMetadata,
+        getRemoteProjectTitleForProjectToml(remoteProject.title)
+      )
+      if (nextMetadata !== knownLocalMetadata) {
+        scheduleSync(0)
+        return localProjectFromMetadata(nextMetadata)
+      }
+    }
     scheduleSync(0)
     return localProjectFromMetadata(knownLocalMetadata)
   }
@@ -749,6 +784,10 @@ export async function ensureOpfsCloudProjectLocallySynced(
       remoteProjectId: projectId,
       tombstone: false,
     }
+    await ensureLocalProjectTitle(
+      existingProjectPath,
+      getRemoteProjectTitleForProjectToml(remoteProject.title)
+    )
     await putProjectMetadata(nextMetadata)
     scheduleSync(0)
     return localProjectFromMetadata(nextMetadata)
@@ -1081,20 +1120,15 @@ async function hydrateCleanLocalProjectTitle(
   metadata: ProjectMetadata,
   remoteTitle?: string
 ) {
-  if (!remoteTitle?.trim() || !(await exists(metadata.localProjectPath))) {
+  if (!(await exists(metadata.localProjectPath))) {
     return metadata
   }
+  const projectTitle = getRemoteProjectTitleForProjectToml(remoteTitle)
 
-  const projectTomlPath = localFs.join(
-    metadata.localProjectPath,
-    PROJECT_SETTINGS_FILE_NAME
+  const existingProjectTitle = await readLocalProjectTitle(
+    metadata.localProjectPath
   )
-  const existingProjectToml = (await exists(projectTomlPath))
-    ? await localFs.readFile(projectTomlPath, { encoding: 'utf-8' })
-    : ''
-  if (
-    getProjectTitleFromProjectTomlContents(existingProjectToml) === remoteTitle
-  ) {
+  if (existingProjectTitle === projectTitle) {
     return metadata
   }
 
@@ -1109,7 +1143,7 @@ async function hydrateCleanLocalProjectTitle(
 
   const titleChanged = await writeLocalProjectTitle(
     metadata.localProjectPath,
-    remoteTitle
+    projectTitle
   )
   if (!titleChanged) {
     return metadata
@@ -1169,7 +1203,10 @@ async function markProjectConflict(
 
   await replaceLocalProjectWithFiles(
     conflictProjectPath,
-    withProjectTitleInArchiveFiles(remoteFiles, remoteTitle)
+    withProjectTitleInArchiveFiles(
+      remoteFiles,
+      getRemoteProjectTitleForProjectToml(remoteTitle)
+    )
   )
 
   await putProjectMetadata({
@@ -1366,8 +1403,6 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         metadata.remoteProjectId
       )
     }
-    const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
-    const localManifest = await projectManifestFromFiles(localFiles)
 
     let remoteProject: RemoteProject | undefined
     let remoteRevision: Revision | undefined
@@ -1376,6 +1411,18 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     if (metadata.remoteProjectId) {
       remoteProject = await getRemoteProject(config, metadata.remoteProjectId)
       remoteRevision = getRevision(remoteProject)
+    }
+
+    await ensureLocalProjectTitle(
+      metadata.localProjectPath,
+      remoteProject
+        ? getRemoteProjectTitleForProjectToml(remoteProject.title)
+        : metadata.projectName
+    )
+    const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
+    const localManifest = await projectManifestFromFiles(localFiles)
+
+    if (metadata.remoteProjectId) {
       remoteChanged =
         Boolean(metadata.remoteRevision && remoteRevision) &&
         metadata.remoteRevision !== remoteRevision

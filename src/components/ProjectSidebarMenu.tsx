@@ -81,6 +81,7 @@ const ProjectSidebarMenu = ({
     isDesktopApp: isDesktop(),
     hasOpfsCloudFeature,
   })
+  const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
@@ -113,7 +114,7 @@ const ProjectSidebarMenu = ({
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
-          {project?.name ? project.name : APP_NAME}
+          {projectDisplayName}
         </span>
       )}
       {children}
@@ -471,8 +472,9 @@ export function ProjectBreadcrumbButton({
   // Breadcrumb for project and project-relative file path
   const relativeFilePath = getProjectRelativeFilePath(project, file)
   const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
+  const projectDisplayName = project ? getProjectDisplayName(project) : ''
   const breadCrumb = {
-    projectName: project?.name || '',
+    projectName: projectDisplayName,
     sep: ' / ',
     filePath: formattedRelativeFilePath,
   }
@@ -521,7 +523,7 @@ export function ProjectBreadcrumbButton({
       data-testid="project-sidebar-toggle"
     >
       <div className="flex min-w-0 items-baseline py-0.5 text-sm">
-        {project?.name && (
+        {project && (
           <>
             <span
               ref={projectNameRef}
