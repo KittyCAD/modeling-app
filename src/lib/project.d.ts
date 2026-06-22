@@ -1,3 +1,5 @@
+import type { ProjectMetadata } from '@src/lib/fs-zds/opfsCloud'
+
 /**
  * The permissions of a file.
  */
@@ -59,6 +61,11 @@ export type Project = {
    * Cloud project id when this local project is bound to a remote project.
    */
   cloudProjectId?: string
+  /**
+   * Cloud sync conflict metadata when this local project needs manual
+   * resolution against a remote version.
+   */
+  cloudConflict?: ProjectMetadata['conflict']
   /**
    * Absolute path most likely to main.kcl within the project
    */

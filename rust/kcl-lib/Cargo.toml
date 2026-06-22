@@ -127,6 +127,7 @@ walkdir = "2.5.0"
 web-time = "1.1"
 winnow = "1.0"
 zip = { workspace = true }
+bon = "3.9.3"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { workspace = true, features = ["full"] }

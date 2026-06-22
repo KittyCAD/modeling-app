@@ -9,6 +9,7 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { isErr } from '@src/lib/trap'
@@ -75,7 +76,10 @@ export async function createProjectZipArchive({
   }
 
   const zip = new JSZip()
-  const archiveRoot = sanitizeProjectName(project.name || 'project', 'project')
+  const archiveRoot = sanitizeProjectName(
+    getProjectDisplayName(project),
+    'project'
+  )
   for (const entry of entries) {
     const archivePath = `${archiveRoot}/${entry.relativePath}`
     zip.file(archivePath, entry.data, { binary: true })

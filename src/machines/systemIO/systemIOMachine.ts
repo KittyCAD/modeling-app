@@ -74,6 +74,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileName: string
             requestedSubRoute?: string
+            onProjectLoaderComplete?: () => void
           }
         }
       | {
@@ -142,6 +143,8 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onFileSystemSuccess?: () => void
+            onSuccess?: () => void
           }
         }
       | {
@@ -160,7 +163,12 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string }
+          output: {
+            projectName: string
+            fileName: string
+            shouldNavigate: boolean
+            onProjectLoaderComplete?: () => void
+          }
         }
       | {
           type: SystemIOMachineEvents.importFileFromURL
@@ -387,6 +395,9 @@ export const systemIOMachine = setup({
           project: event.data.requestedProjectName,
           file: event.data.requestedFileName,
           subRoute: event.data.requestedSubRoute,
+          ...(event.data.onProjectLoaderComplete
+            ? { onProjectLoaderComplete: event.data.onProjectLoaderComplete }
+            : {}),
         }
       },
     }),
@@ -616,7 +627,12 @@ export const systemIOMachine = setup({
           projectName: string
           subRoute: string
         }> => {
-          return { message: '', fileName: '', projectName: '', subRoute: '' }
+          return {
+            message: '',
+            fileName: '',
+            projectName: '',
+            subRoute: '',
+          }
         }
       ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
@@ -650,15 +666,26 @@ export const systemIOMachine = setup({
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
+            override?: boolean
             requestedSubRoute?: string
+            onFileSystemSuccess?: () => void
+            onSuccess?: () => void
           }
         }): Promise<{
           message: string
           fileName: string
           projectName: string
           subRoute: string
+          shouldNavigate: boolean
+          onProjectLoaderComplete?: () => void
         }> => {
-          return { message: '', fileName: '', projectName: '', subRoute: '' }
+          return {
+            message: '',
+            fileName: '',
+            projectName: '',
+            subRoute: '',
+            shouldNavigate: true,
+          }
         }
       ),
     [SystemIOMachineActors.renameFolder]: fromPromise(
@@ -1284,7 +1311,7 @@ export const systemIOMachine = setup({
                 ).output
                 return { name: output.projectName }
               },
-              requestedFileName: ({ event }) => {
+              requestedFileName: ({ context, event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
                 const output = (
                   event as {
@@ -1680,25 +1707,45 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
+            onFileSystemSuccess: event.data.onFileSystemSuccess,
+            onSuccess: event.data.onSuccess,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
-              requestedFileName: ({ event }) => {
+              requestedFileName: ({ context, event }) => {
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
                 )
                 const output = (
-                  event as { output: { projectName: string; fileName: string } }
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      shouldNavigate: boolean
+                      onProjectLoaderComplete?: () => void
+                    }
+                  }
                 ).output
+                if (!output.shouldNavigate) {
+                  return context.requestedFileName
+                }
                 // Gotcha: file could have an ending of .kcl...
                 const file = output.fileName.endsWith('.kcl')
                   ? output.fileName
                   : output.fileName + '.kcl'
-                return { project: output.projectName, file }
+                return {
+                  project: output.projectName,
+                  file,
+                  ...(output.onProjectLoaderComplete
+                    ? {
+                        onProjectLoaderComplete: output.onProjectLoaderComplete,
+                      }
+                    : {}),
+                }
               },
             }),
             SystemIOMachineActions.toastSuccess,

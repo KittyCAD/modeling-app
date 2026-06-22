@@ -11,7 +11,6 @@ import { roundOffWithUnits } from '@src/lib/utils'
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 // TODO: remove the need for this selector once we decouple all actors from React
@@ -178,9 +177,6 @@ function CommandBarVector2DInput({
   // DOM access for focus and keyboard navigation
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
-
-  // Close the command bar
-  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
 
   // Focus and select the first input on mount
   useEffect(() => {
