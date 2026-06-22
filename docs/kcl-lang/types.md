@@ -101,7 +101,7 @@ This is also useful when you create the body in a function and need to refer to 
 
 Tags are scoped globally if declared in the root context. For bodies, you can use the tag anywhere in the file. For sketches, always use the segment name directly.
 
-For backward compatibility reasons, tags may leak outside of function scopes, which can be confusing about which geometry you're trying to refer to.
+For backward compatibility reasons, tags may leak outside of function scopes and be updated (i.e. re-bound to the face of a different body), which can be confusing about which geometry you're trying to refer to.
 
 For this reason, it's strongly preferred to use dot notation on the body, as in `extrude001.faces.capEnd001` for an end-cap face or `region001.tags.line4` for a wall face.
 
