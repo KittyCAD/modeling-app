@@ -1,7 +1,9 @@
 import { projectSkeletonCreate } from '@src/lang/project'
 import type { App } from '@src/lib/app'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
-import { getInitialDefaultDir } from '@src/lib/desktop'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS, getRouterSearchFromRequestUrl } from '@src/lib/paths'
 import { webHomeRouteEnabled } from '@src/lib/routeLoaderUtils'
@@ -13,6 +15,10 @@ import { redirect } from 'react-router-dom'
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
 type EmptyLoaderData = Record<string, never>
+
+function projectFileRedirectPath(projectPath: string, fileName: string) {
+  return `${PATHS.FILE}/${encodeURIComponent(fsZds.join(projectPath, fileName))}`
+}
 
 /**
  * The base loader is used to reroute `/` root path requests,
@@ -60,25 +66,33 @@ export const baseLoader =
     // We have to create and/or navigate to a project on web.
     try {
       await fsZds.stat(requestedProjectPath)
-      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(
+      let fileURLPath = `${PATHS.FILE}/${encodeURIComponent(
         requestedProjectPath
       )}`
+      try {
+        await fsZds.stat(fsZds.join(requestedProjectPath, PROJECT_ENTRYPOINT))
+        fileURLPath = projectFileRedirectPath(
+          requestedProjectPath,
+          PROJECT_ENTRYPOINT
+        )
+      } catch (e) {
+        if (e !== 'ENOENT') {
+          return Promise.reject(e)
+        }
+      }
       return redirect(fileURLPath + routerSearch)
     } catch {
       await projectSkeletonCreate(
-        fsZds.resolve(
-          await getInitialDefaultDir(),
-          DEFAULT_WEB_PROJECT_NAME,
-          'main.kcl'
-        ),
+        fsZds.join(requestedProjectPath, PROJECT_ENTRYPOINT),
         settings.settings.modeling.defaultUnit.current ??
           DEFAULT_DEFAULT_LENGTH_UNIT,
         wasmInstance
       )
 
-      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(
-        requestedProjectPath
-      )}`
+      const fileURLPath = projectFileRedirectPath(
+        requestedProjectPath,
+        PROJECT_ENTRYPOINT
+      )
       return redirect(fileURLPath + routerSearch)
     }
   }
