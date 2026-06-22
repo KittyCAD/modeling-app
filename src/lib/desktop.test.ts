@@ -106,4 +106,51 @@ describe('createNewProjectDirectory', () => {
       fsZds.readFile = originalReadFile
     }
   })
+
+  it('treats Electron ENOENT errors as missing project.toml metadata', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    const originalReadFile = fsZds.readFile
+    let hasThrownElectronEnoent = false
+    fsZds.readFile = (async (filePath: string, options?: unknown) => {
+      if (
+        !hasThrownElectronEnoent &&
+        filePath.endsWith(`/${PROJECT_SETTINGS_FILE_NAME}`)
+      ) {
+        hasThrownElectronEnoent = true
+        return Promise.reject(
+          new Error(`ENOENT: no such file or directory, open '${filePath}'`)
+        )
+      }
+
+      return originalReadFile(filePath, options as never)
+    }) as typeof fsZds.readFile
+
+    try {
+      const project = await createNewProjectDirectory(
+        'Electron ENOENT',
+        wasmInstance,
+        undefined,
+        {
+          settings: {
+            project: {
+              directory: projectDirectoryPath,
+            },
+          },
+        }
+      )
+
+      const projectToml = await fsZds.readFile(
+        fsZds.join(project.path, PROJECT_SETTINGS_FILE_NAME),
+        { encoding: 'utf-8' }
+      )
+
+      expect(hasThrownElectronEnoent).toBe(true)
+      expect(project.title).toBe('Electron ENOENT')
+      expect(projectToml).toContain('title = "Electron ENOENT"')
+    } finally {
+      fsZds.readFile = originalReadFile
+    }
+  })
 })

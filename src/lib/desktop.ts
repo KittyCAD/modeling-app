@@ -90,8 +90,10 @@ function isPathNotFoundError(error: unknown) {
     (typeof error === 'string' && error.startsWith('ENOENT')) ||
     (typeof error === 'object' &&
       error !== null &&
-      'code' in error &&
-      error.code === 'ENOENT')
+      (('code' in error && error.code === 'ENOENT') ||
+        ('message' in error &&
+          typeof error.message === 'string' &&
+          error.message.startsWith('ENOENT'))))
   )
 }
 
@@ -663,7 +665,7 @@ export async function writeProjectTitleToProjectToml(
       encoding: 'utf-8',
     })
   } catch (error) {
-    if (error !== 'ENOENT') {
+    if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
     }
   }
