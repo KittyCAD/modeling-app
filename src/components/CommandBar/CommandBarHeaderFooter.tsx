@@ -217,6 +217,20 @@ function CommandBarHeaderFooter({
                         </Tooltip>
                       </span>
                     )}
+                    {arg.status === 'deprecated' && (
+                      <span className="inline-flex items-center text-warn-80 dark:text-warn-40">
+                        <CustomIcon
+                          name="triangleExclamation"
+                          className="w-3.5 h-3.5"
+                        />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>{arg.statusMessage ?? 'Deprecated'}</span>
+                        </Tooltip>
+                      </span>
+                    )}
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
                       data-test-name="arg-name"

@@ -22,6 +22,11 @@ export type StdLibCommandDriftConfig = {
    */
   omittedStdLibArgs?: readonly string[]
   /**
+   * Deprecated KCL stdlib arguments intentionally still exposed by the command
+   * bar for backwards-compatible point-and-click flows.
+   */
+  deprecatedStdLibArgs?: readonly string[]
+  /**
    * KCL stdlib argument names that are exposed under a different command-bar
    * argument name.
    */
@@ -46,6 +51,7 @@ type StdLibCommandArgOverride = Partial<
 
 type StdLibCommandArgsOptions = {
   omitted?: readonly string[]
+  includeDeprecated?: readonly string[]
   argAliases?: Readonly<Record<string, string>>
   overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
   includeEditFlowArgs?: boolean
@@ -78,10 +84,27 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   return 'kcl'
 }
 
+const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
+  if (arg.deprecatedSince === null) {
+    return undefined
+  }
+
+  return [`Deprecated as of KCL ${arg.deprecatedSince}.`, arg.docs?.trim()]
+    .filter(Boolean)
+    .join(' ')
+}
+
 const stdLibArgBaseConfig = (arg: StdLibCommandArg) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
-  ...(arg.experimental ? ({ status: 'experimental' } as const) : {}),
+  ...(arg.experimental
+    ? ({ status: 'experimental' } as const)
+    : arg.deprecatedSince !== null
+      ? ({
+          status: 'deprecated',
+          statusMessage: stdLibArgDeprecatedMessage(arg),
+        } as const)
+      : {}),
 })
 
 const commandBarEditFlowArgs: Record<string, StdLibCommandArgOverride> = {
@@ -121,9 +144,12 @@ export function stdLibCommandArgs<CommandArgs extends object>(
   options: StdLibCommandArgsOptions = {}
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
+  const includeDeprecated = new Set(options.includeDeprecated ?? [])
   const args: Record<string, Record<string, unknown>> = Object.fromEntries(
     STD_LIB_COMMANDS[stdLibName].args
-      .filter((arg) => arg.deprecatedSince === null)
+      .filter(
+        (arg) => arg.deprecatedSince === null || includeDeprecated.has(arg.name)
+      )
       .filter((arg) => !omitted.has(arg.name))
       .map((arg) => {
         const commandArgName = options.argAliases?.[arg.name] ?? arg.name
@@ -164,6 +190,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'sweep',
     editFlow: true,
     flowArgOrder: ['sketches', 'path', 'bodyType'],
+    deprecatedStdLibArgs: ['relativeTo'],
     omittedStdLibArgs: ['tolerance'],
   },
   Loft: {
@@ -549,6 +576,7 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
 
   return stdLibCommandArgs<CommandArgs>(driftConfig.stdLibName, {
     omitted: driftConfig.omittedStdLibArgs,
+    includeDeprecated: driftConfig.deprecatedStdLibArgs,
     argAliases: driftConfig.argAliases,
     overrides: options.overrides,
     includeEditFlowArgs: driftConfig.editFlow,

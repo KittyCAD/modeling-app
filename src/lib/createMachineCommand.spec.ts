@@ -20,6 +20,7 @@ type TestCommandSchema = {
   WithArguments: {
     availableArg?: string
     experimentalArg?: string
+    deprecatedArg?: string
   }
 }
 
@@ -57,6 +58,11 @@ const commandBarConfig = {
         inputType: 'string',
         required: false,
         status: 'experimental',
+      },
+      deprecatedArg: {
+        inputType: 'string',
+        required: false,
+        status: 'deprecated',
       },
     },
   },
@@ -172,6 +178,10 @@ describe('createMachineCommand', () => {
       args: {
         availableArg: {
           hidden: undefined,
+        },
+        deprecatedArg: {
+          hidden: undefined,
+          status: 'deprecated',
         },
         experimentalArg: {
           hidden: true,

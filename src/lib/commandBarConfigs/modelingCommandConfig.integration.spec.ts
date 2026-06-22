@@ -222,6 +222,20 @@ describe('Sweep-like bodyType argument', () => {
     })
   })
 
+  it('marks the legacy relativeTo argument as deprecated', () => {
+    const commandConfig = modelingMachineCommandConfig.Sweep
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(commandConfig.args?.relativeTo).toMatchObject({
+      inputType: 'options',
+      status: 'deprecated',
+      statusMessage:
+        "Deprecated as of KCL 2.0. Please use 'translateProfileToPath' and 'orientProfilePerpendicular'. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.",
+    })
+  })
+
   it('requires bodyType for sweep segment profiles after the path is selected', () => {
     expect(
       bodyTypeRequiredForCommand('Sweep', {
@@ -341,9 +355,15 @@ describe('modeling command stdlib drift', () => {
       ).toBeDefined()
 
       const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+      const deprecatedStdLibArgs = new Set(
+        driftConfig.deprecatedStdLibArgs ?? []
+      )
       const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
       const expectedStdLibArgOrder = stdLibCommand.args
-        .filter((arg) => arg.deprecatedSince === null)
+        .filter(
+          (arg) =>
+            arg.deprecatedSince === null || deprecatedStdLibArgs.has(arg.name)
+        )
         .filter((arg) => !omittedStdLibArgs.has(arg.name))
         .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
       const expectedArgs = uniqueSorted([
