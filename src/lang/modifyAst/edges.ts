@@ -1094,6 +1094,25 @@ function isExtrude(callee: string): boolean {
   return callee === 'extrude'
 }
 
+function isGdtEdgeCommand(callee: string): boolean {
+  return [
+    'straightness',
+    'circularity',
+    'cylindricity',
+    'profile',
+    'profileLine',
+    'position',
+    'distance',
+    'angularity',
+    'concentricity',
+    'symmetry',
+    'runout',
+    'perpendicularity',
+    'parallelism',
+    'annotation',
+  ].includes(callee)
+}
+
 function isDeprecatedEdgeStdlib(calleeName: string | undefined): boolean {
   return Boolean(calleeName && DEPRECATED_EDGE_STDLIB.includes(calleeName))
 }
@@ -1113,6 +1132,15 @@ function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
     return tagsArg.arg.elements ?? null
   }
   return [tagsArg.arg]
+}
+
+function getEdgesElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
+  const edgesArg = call.arguments?.find((a) => getLabelName(a) === 'edges')
+  if (!edgesArg?.arg) return null
+  if (edgesArg.arg.type === 'ArrayExpression') {
+    return edgesArg.arg.elements ?? null
+  }
+  return [edgesArg.arg]
 }
 
 function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
@@ -1273,7 +1301,7 @@ function findFilletChamferCallsToFixUnified(
               callSourceRangeMatches(m, call.start, call.end, moduleId)
             )
             const tagEntry = directMeta?.tags?.find(
-              (t) => t.tagIdentifier === tagName
+              (t: { tagIdentifier: string }) => t.tagIdentifier === tagName
             )
             if (tagEntry) {
               orderedPayloads.push({ side_faces: tagEntry.faceIds })
@@ -1342,6 +1370,12 @@ interface RevolveHelixCallToFix {
 interface ExtrudeToCallToFix {
   range: [number, number, number]
   faceIds: [string, string]
+  pathToCall?: PathToNode
+}
+
+interface GdtEdgesCallToFix {
+  range: [number, number, number]
+  orderedPayloads: FilletEdgeRefPayload[]
   pathToCall?: PathToNode
 }
 
@@ -1442,6 +1476,69 @@ export function findExtrudeToCallsToFix(
   return results
 }
 
+export function findGdtEdgesCallsToFix(
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph: ArtifactGraph
+): GdtEdgesCallToFix[] {
+  const results: GdtEdgesCallToFix[] = []
+
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
+
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (!calleeName || !isGdtEdgeCommand(calleeName)) return
+
+      const elements = getEdgesElementsFromCall(call)
+      if (!elements?.length) return
+
+      const orderedPayloads: FilletEdgeRefPayload[] = []
+      let hasUnconvertedEdgesElement = false
+
+      for (const el of elements) {
+        if (el.type === 'ObjectExpression') continue
+
+        const inner = getCallFromExpr(el)
+        if (!inner) {
+          hasUnconvertedEdgesElement = true
+          continue
+        }
+
+        const innerCallee = getCalleeName(inner)
+        if (!isDeprecatedEdgeStdlib(innerCallee)) {
+          hasUnconvertedEdgesElement = true
+          continue
+        }
+
+        const meta = edgeRefactorMetadata.find((m) =>
+          sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
+        )
+        if (!meta) {
+          hasUnconvertedEdgesElement = true
+          continue
+        }
+
+        orderedPayloads.push({
+          side_faces: meta.faceIds,
+          end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+        })
+      }
+
+      if (hasUnconvertedEdgesElement || orderedPayloads.length === 0) return
+
+      results.push({
+        range: [call.start, call.end, call.moduleId],
+        orderedPayloads,
+        pathToCall: pathToNode,
+      })
+    },
+  })
+
+  return results
+}
+
 function refactorRevolveHelixAxisToEdgeRefInPlace(
   modifiedAst: Node<Program>,
   toFix: RevolveHelixCallToFix[],
@@ -1514,6 +1611,67 @@ function refactorExtrudeToToEdgeSpecifierInPlace(
   return modifiedAst
 }
 
+function refactorGdtEdgesToEdgeSpecifiersInPlace(
+  modifiedAst: Node<Program>,
+  toFix: GdtEdgesCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+
+  for (let index = 0; index < toFix.length; index++) {
+    const { orderedPayloads, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    let nextAst = structuredClone(modifiedAst)
+    const edgeRefExprs: Expr[] = []
+    let failedToCreateEdgeRef = false
+
+    for (const payload of orderedPayloads) {
+      const result = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        nextAst,
+        artifactGraph
+      )
+      if (err(result)) {
+        failedToCreateEdgeRef = true
+        break
+      }
+      edgeRefExprs.push(result.expr)
+      nextAst = result.modifiedAst
+    }
+
+    if (failedToCreateEdgeRef || edgeRefExprs.length === 0) continue
+
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      nextAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (err(nodeResult)) continue
+
+    const callNode = nodeResult.node
+    const existingEdgeRefs = getExistingEdgeRefsFromCall(callNode).filter(
+      (expr) => expr.type === 'ObjectExpression'
+    )
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => getLabelName(a) !== 'edges'
+    )
+    newArgs.push(
+      createLabeledArg(
+        'edges',
+        createArrayExpression([...edgeRefExprs, ...existingEdgeRefs])
+      )
+    )
+    callNode.arguments = newArgs
+    modifiedAst = nextAst
+  }
+
+  return modifiedAst
+}
+
 export function refactorZ0006Unified(
   ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1532,10 +1690,16 @@ export function refactorZ0006Unified(
     edgeRefactorMetadata
   )
   const toFixExtrudeTo = findExtrudeToCallsToFix(ast, edgeRefactorMetadata)
+  const toFixGdtEdges = findGdtEdgesCallsToFix(
+    ast,
+    edgeRefactorMetadata,
+    artifactGraph
+  )
   if (
     toFixFilletChamfer.length === 0 &&
     toFixRevolveHelix.length === 0 &&
-    toFixExtrudeTo.length === 0
+    toFixExtrudeTo.length === 0 &&
+    toFixGdtEdges.length === 0
   ) {
     return new Error('No Z0006 fixes to apply')
   }
@@ -1609,6 +1773,18 @@ export function refactorZ0006Unified(
     modifiedAst,
     toFixExtrudeTo,
     toFixExtrudeTo.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  modifiedAst = refactorGdtEdgesToEdgeSpecifiersInPlace(
+    modifiedAst,
+    toFixGdtEdges,
+    toFixGdtEdges.map((item) =>
       item.pathToCall?.length
         ? item.pathToCall
         : getNodePathFromSourceRange(ast, item.range)

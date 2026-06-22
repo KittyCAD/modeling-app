@@ -1,5 +1,6 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, or extrude `to` argument.
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, extrude `to`, or GD&T `edges`
+//! arguments.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -48,6 +49,26 @@ fn is_extrude(callee_name: &str) -> bool {
     callee_name == "extrude"
 }
 
+fn is_gdt_edge_command(callee_name: &str) -> bool {
+    matches!(
+        callee_name,
+        "straightness"
+            | "circularity"
+            | "cylindricity"
+            | "profile"
+            | "profileLine"
+            | "position"
+            | "distance"
+            | "angularity"
+            | "concentricity"
+            | "symmetry"
+            | "runout"
+            | "perpendicularity"
+            | "parallelism"
+            | "annotation"
+    )
+}
+
 /// Axis argument for revolve/helix: axis = getOppositeEdge(...) etc.
 fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
     let axis_arg = call
@@ -70,6 +91,14 @@ fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
     DEPRECATED_EDGE_STDLIB.contains(&callee_name)
 }
 
+fn is_deprecated_edge_stdlib_expr(expr: &Expr) -> bool {
+    if let Expr::CallExpressionKw(inner) = expr {
+        is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+    } else {
+        false
+    }
+}
+
 /// Elements to check for deprecated/direct usage: from tags = [a, b] or tags = singleExpr.
 fn get_tags_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
     let tags_arg = call
@@ -77,6 +106,18 @@ fn get_tags_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
         .iter()
         .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "tags")?;
     Some(match &tags_arg.arg {
+        Expr::ArrayExpression(arr) => arr.elements.iter().collect(),
+        single => vec![single],
+    })
+}
+
+/// Elements to check for deprecated usage in GD&T: from edges = [a, b] or edges = singleExpr.
+fn get_edges_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
+    let edges_arg = call
+        .arguments
+        .iter()
+        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "edges")?;
+    Some(match &edges_arg.arg {
         Expr::ArrayExpression(arr) => arr.elements.iter().collect(),
         single => vec![single],
     })
@@ -102,13 +143,7 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
             return Ok(findings);
         };
         if !elements.is_empty() {
-            let any_deprecated = elements.iter().any(|el| {
-                if let Expr::CallExpressionKw(inner) = el {
-                    is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
-                } else {
-                    false
-                }
-            });
+            let any_deprecated = elements.iter().any(|el| is_deprecated_edge_stdlib_expr(el));
             let any_direct = elements.iter().any(|el| is_direct_tag_ref(el));
             if any_deprecated || any_direct {
                 let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
@@ -137,6 +172,19 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
             "extrude uses 'to' with deprecated stdlib; prefer edge specifier { sideFaces = [...] }".to_string(),
+            pos,
+            None,
+        ));
+    } else if is_gdt_edge_command(callee_name)
+        && let Some(elements) = get_edges_elements(call_node)
+        && elements.iter().any(|el| is_deprecated_edge_stdlib_expr(el))
+    {
+        let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+        findings.push(Z0006.at(
+            format!(
+                "gdt::{} uses 'edges' with deprecated stdlib; prefer edge specifier objects",
+                callee_name
+            ),
             pos,
             None,
         ));
@@ -294,5 +342,29 @@ mod tests {
             z0006[0].description.contains("to") || z0006[0].description.contains("sideFaces"),
             "description should mention to or sideFaces"
         );
+    }
+
+    #[test]
+    fn z0006_fires_for_gdt_with_deprecated_edges() {
+        let kcl = r#"gdt::straightness(edges = [getCommonEdge(faces = [face1, face2])], tolerance = 0.1mm)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for GD&T with deprecated edges");
+        assert!(
+            z0006[0].description.contains("edges"),
+            "description should mention edges"
+        );
+    }
+
+    #[test]
+    fn z0006_does_not_fire_for_gdt_direct_edge() {
+        let kcl = r#"gdt::straightness(edges = [edge1], tolerance = 0.1mm)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert!(z0006.is_empty(), "Z0006 should not fire for GD&T direct edge refs");
     }
 }
