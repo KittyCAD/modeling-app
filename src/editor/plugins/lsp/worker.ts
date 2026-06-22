@@ -26,8 +26,16 @@ const fromServer: FromServer | Error = FromServer.create()
 
 // Initialise the wasm module.
 const initialise = async (wasmUrl: string) => {
-  const input = await fetch(wasmUrl)
+  console.info('LSP worker wasm URL', wasmUrl)
+  const input = await fetch(wasmUrl, { cache: 'no-store' })
+  console.info('LSP worker wasm response', {
+    ok: input.ok,
+    status: input.status,
+    contentType: input.headers.get('content-type'),
+    contentLength: input.headers.get('content-length'),
+  })
   const buffer = await input.arrayBuffer()
+  console.info('LSP worker wasm bytes', buffer.byteLength)
   return init(buffer)
 }
 
@@ -94,7 +102,12 @@ onmessage = function (event: MessageEvent) {
           }
         })
         .catch((error) => {
-          console.error('Worker: Error loading wasm module', worker, error)
+          console.error('Worker: Error loading wasm module', worker, {
+            name: error instanceof Error ? error.name : undefined,
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            error,
+          })
         })
       break
     case LspWorkerEventType.Call:

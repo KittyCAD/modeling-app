@@ -898,6 +898,7 @@ export const readAppSettingsFile = async (
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   let settingsPath = await getAppSettingsFilePath()
+  console.info('[settings] app settings file path:', settingsPath)
   const initialProjectDirConfig: { [key: string]: JsonValue } = {
     directory: await getInitialDefaultDir(),
   }
@@ -962,6 +963,7 @@ export const readAppSettingsFile = async (
 export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) return Promise.reject(tomlStr)
+  console.info('[settings] writing app settings to:', appSettingsFilePath)
   return fsZds.writeFile(appSettingsFilePath, new TextEncoder().encode(tomlStr))
 }
 

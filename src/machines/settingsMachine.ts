@@ -582,8 +582,11 @@ export const settingsMachine = setup({
         },
         onError: {
           target: 'idle',
-          actions: () => {
-            console.error('Error persisting settings')
+          actions: ({ event }) => {
+            console.error(
+              'Error persisting settings',
+              'error' in event ? event.error : event
+            )
           },
         },
         input: ({ context, event }) => {
