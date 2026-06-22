@@ -58,6 +58,8 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v8
 
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
       - name: Copy prepared ts-rs bindings
         run: |
           ls -R prepared-ts-rs-bindings
