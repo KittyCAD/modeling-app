@@ -312,6 +312,12 @@ description: Variables in memory after executing hammer.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

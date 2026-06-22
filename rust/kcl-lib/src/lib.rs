@@ -148,6 +148,7 @@ pub mod exec {
     pub use crate::execution::ArtifactCommand;
     pub use crate::execution::DefaultPlanes;
     pub use crate::execution::IdGenerator;
+    pub use crate::execution::KclObjectKind;
     pub use crate::execution::KclValue;
     pub use crate::execution::Operation;
     pub use crate::execution::PlaneKind;
