@@ -335,20 +335,26 @@ impl FunctionSource {
                     arg.source_range,
                 );
             }
-            if let Some(since) = &param.deprecated_since
+            // `deprecated` deprecates the parameter for all versions, whereas
+            // `deprecated_since` only deprecates it at or after a given version.
+            let deprecation_suffix = if param.deprecated {
+                Some("is deprecated, see the docs for a recommended replacement".to_owned())
+            } else if let Some(since) = &param.deprecated_since
                 && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
             {
+                Some(format!(
+                    "is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                ))
+            } else {
+                None
+            };
+            if let Some(suffix) = deprecation_suffix {
                 let qualified = match &fn_name {
                     Some(f) => format!("`{f}({label})`"),
                     None => format!("`{label}`"),
                 };
                 exec_state.warn(
-                    CompilationIssue::err(
-                        arg.source_range,
-                        format!(
-                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
-                        ),
-                    ),
+                    CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}")),
                     annotations::WARN_DEPRECATED,
                 );
             }
@@ -997,6 +1003,7 @@ fn type_check_params_kw(
         match fn_def.named_args.get(&label) {
             Some(NamedParam {
                 experimental: _,
+                deprecated: _,
                 deprecated_since: _,
                 default_value: def,
                 ty,
@@ -1261,6 +1268,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated: false,
                 deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
@@ -1272,6 +1280,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated: false,
                 deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
@@ -1797,5 +1806,60 @@ topFromRegion = profileRegion.tags.top
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
         assert_eq!(warnings[0].severity, Severity::Warning);
         assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
+    }
+
+    fn deprecation_warnings(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("is deprecated"))
+            .collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_param_deprecated_for_all_versions_warns() {
+        // `@(deprecated = true)` deprecates the parameter regardless of the KCL
+        // version, so even on the latest version the call should warn.
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @a: number,
+  @(deprecated = true)
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(
+            warnings[0].message.contains("`f(oldArg)` is deprecated"),
+            "found {}",
+            warnings[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_passing_deprecated_param_does_not_warn() {
+        let program = r#"fn f(
+  @a: number,
+  @(deprecated = true)
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert!(
+            warnings.is_empty(),
+            "unused deprecated parameter should not warn: {warnings:#?}"
+        );
     }
 }

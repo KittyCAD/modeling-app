@@ -200,6 +200,8 @@ where
 #[derive(Debug, Clone, PartialEq)]
 pub struct NamedParam {
     pub experimental: bool,
+    /// If true, this parameter is deprecated regardless of the KCL version.
+    pub deprecated: bool,
     /// Constraint marking the KCL version at or after which this parameter is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
@@ -290,6 +292,7 @@ impl FunctionSource {
                 p.identifier.name.clone(),
                 NamedParam {
                     experimental: p.experimental,
+                    deprecated: p.deprecated,
                     deprecated_since: p.deprecated_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),

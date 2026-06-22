@@ -117,4 +117,27 @@ describe('ProjectCard', () => {
       )
     )
   })
+
+  test('opens the cloud conflict dialog from conflicted project cards', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        cloudConflict: {
+          conflictProjectPath: '/projects/old-cloud-title conflict',
+          createdAt: new Date(now).toISOString(),
+          remoteRevision: 'revision-123',
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-conflict-badge')).toHaveTextContent(
+      'Inspect Conflicts'
+    )
+
+    fireEvent.click(screen.getByTestId('project-link'))
+
+    expect(screen.getByTestId('cloud-conflict-dialog')).toBeInTheDocument()
+    expect(screen.getByText('Use local data')).toBeInTheDocument()
+    expect(screen.getByText('Use cloud data')).toBeInTheDocument()
+  })
 })
