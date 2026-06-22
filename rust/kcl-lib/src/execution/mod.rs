@@ -68,8 +68,8 @@ use crate::NodePath;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
-use crate::engine::EngineManager;
 use crate::engine::GridScaleBehavior;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::cache::CacheInformation;
@@ -795,7 +795,7 @@ pub enum ContextType {
 /// as this uses `Arc` under the hood.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
-    pub engine: Arc<Box<dyn EngineManager>>,
+    pub engine: Arc<EngineManager>,
     pub engine_batch: EngineBatchContext,
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
@@ -947,7 +947,7 @@ impl ExecutorSettings {
 impl ExecutorContext {
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
-        engine: Arc<Box<dyn EngineManager>>,
+        engine: Arc<EngineManager>,
         fs: Arc<FileManager>,
         settings: ExecutorSettings,
     ) -> Self {
@@ -974,7 +974,7 @@ impl ExecutorContext {
 
     /// Create a new live executor context from an engine using the local file manager.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_with_engine(engine: Arc<Box<dyn EngineManager>>, settings: ExecutorSettings) -> Self {
+    pub fn new_with_engine(engine: Arc<EngineManager>, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, Arc::new(FileManager::new()), settings)
     }
 
@@ -1004,22 +1004,21 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
-            crate::engine::conn::EngineConnection::new(ws, settings.heartbeats).await?,
-        ));
+        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, fs, settings)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
@@ -1029,7 +1028,7 @@ impl ExecutorContext {
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new_mock(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new_mock(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
@@ -1047,16 +1046,10 @@ impl ExecutorContext {
         fs_manager: crate::fs::wasm::FileSystemManager,
         settings: ExecutorSettings,
     ) -> Result<Self, String> {
-        use crate::mock_engine;
-
-        let mock_engine = Arc::new(Box::new(
-            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
-        ) as Box<dyn EngineManager>);
-
         let fs = Arc::new(FileManager::new(fs_manager));
 
         Ok(ExecutorContext {
-            engine: mock_engine,
+            engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
@@ -1066,7 +1059,7 @@ impl ExecutorContext {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
+    pub fn new_forwarded_mock(engine: Arc<EngineManager>) -> Self {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
@@ -2174,14 +2167,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
-            |err| {
-                KclError::new_internal(crate::errors::KclErrorDetails::new(
-                    format!("Failed to create mock engine connection: {err}"),
-                    vec![SourceRange::default()],
-                ))
-            },
-        )?)),
+        engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
@@ -2312,7 +2298,7 @@ mod tests {
 
         let program = crate::Program::parse_no_errs(main_code).unwrap();
         let ctx = ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
@@ -2340,10 +2326,7 @@ mod tests {
         cache::bust_cache().await;
         clear_mem_cache().await;
 
-        let ctx = ExecutorContext::new_with_engine(
-            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
-            Default::default(),
-        );
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(code).unwrap();
         ctx.run_with_caching(program.clone()).await.unwrap();
         let cached = ctx.run_with_caching(program).await.unwrap();
@@ -3738,10 +3721,7 @@ solid7 = extrude(r7, length = width)
         cache::bust_cache().await;
         clear_mem_cache().await;
 
-        let ctx = ExecutorContext::new_with_engine(
-            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
-            Default::default(),
-        );
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(
             r#"sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
