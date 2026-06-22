@@ -960,13 +960,13 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   let axis: string | undefined
   let edge: Selections | undefined
   const axisValue = opArg.value
-  const buildEdgeSelectionFromArtifactId = (
-    artifactId: string
+  const buildEdgeSelectionFromSegmentId = (
+    segmentId: string
   ): Selections | Error => {
     const artifact = getArtifactOfTypes(
       {
-        key: artifactId,
-        types: ['segment', 'sweepEdge'],
+        key: segmentId,
+        types: ['segment'],
       },
       artifactGraph
     )
@@ -974,22 +974,11 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       return new Error("Couldn't find related edge artifact")
     }
 
-    let codeRef
-    if (artifact.type === 'sweepEdge') {
-      const sweepEdgeCodeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-      if (err(sweepEdgeCodeRef)) {
-        return new Error("Couldn't find related edge code ref")
-      }
-      codeRef = sweepEdgeCodeRef
-    } else {
-      codeRef = artifact.codeRef
-    }
-
     return {
       graphSelections: [
         {
           artifact,
-          codeRef,
+          codeRef: artifact.codeRef,
         },
       ],
       otherSelections: [],
@@ -1019,11 +1008,9 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       return new Error('Bad direction vector for axis')
     }
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
-    // tagged edge or segment case
+    // segment case
     axisOrEdge = 'Edge'
-    const edgeSelection = buildEdgeSelectionFromArtifactId(
-      axisValue.artifact_id
-    )
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
     if (err(edgeSelection)) {
       return edgeSelection
     }
@@ -1031,9 +1018,7 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'Segment') {
     // segment case from sketch-solve member expressions (for example: sketch001.line5)
     axisOrEdge = 'Edge'
-    const edgeSelection = buildEdgeSelectionFromArtifactId(
-      axisValue.artifact_id
-    )
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
     if (err(edgeSelection)) {
       return edgeSelection
     }
@@ -1041,11 +1026,31 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge case
     axisOrEdge = 'Edge'
-    const edgeSelection = buildEdgeSelectionFromArtifactId(axisValue.value)
-    if (err(edgeSelection)) {
-      return edgeSelection
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
     }
-    edge = edgeSelection
+
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) {
+      return new Error("Couldn't find related edge code ref")
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
   } else {
     return new Error('The type of the axis argument is unsupported')
   }

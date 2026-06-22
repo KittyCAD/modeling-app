@@ -275,31 +275,6 @@ async function extractOptionalKclArrayArgument(
   return extractKclArgument(code, operation, argName, rustContext, true, true)
 }
 
-function extractExtrudeDirectionArgument(
-  operation: StdLibCallOp,
-  artifactGraph: ArtifactGraph
-):
-  | ModelingCommandSchema['Extrude']['direction']
-  | undefined
-  | {
-      error: string
-    } {
-  const directionArg = operation.labeledArgs?.direction
-  if (!directionArg?.sourceRange) {
-    return undefined
-  }
-
-  const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
-    directionArg,
-    artifactGraph
-  )
-  if (!err(axisEdgeSelection) && axisEdgeSelection.edge) {
-    return axisEdgeSelection.edge
-  }
-
-  return { error: 'Missing or invalid direction edge selection' }
-}
-
 /**
  * Gather up the a Parameter operation's data
  * to be used in the command bar edit flow.
@@ -410,14 +385,17 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
-  const directionResult = extractExtrudeDirectionArgument(
-    operation,
-    artifactGraph
-  )
-  if (directionResult && 'error' in directionResult) {
-    return { reason: directionResult.error }
+  let direction: ModelingCommandSchema['Extrude']['direction'] | undefined
+  if ('direction' in operation.labeledArgs && operation.labeledArgs.direction) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      operation.labeledArgs.direction,
+      artifactGraph
+    )
+    if (err(axisEdgeSelection) || !axisEdgeSelection.edge) {
+      return { reason: 'Missing or invalid direction edge selection' }
+    }
+    direction = axisEdgeSelection.edge
   }
-  const direction = directionResult
 
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
