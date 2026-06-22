@@ -29,9 +29,11 @@ struct StdLibCommandShape {
 struct StdLibCommandArgShape {
     name: String,
     ty: Option<String>,
+    docs: Option<String>,
     required: bool,
     special: bool,
     experimental: bool,
+    deprecated: bool,
     deprecated_since: Option<String>,
 }
 
@@ -61,9 +63,11 @@ fn export_bindings_stdlib_commands() {
                         .map(|arg| StdLibCommandArgShape {
                             name: arg.name.clone(),
                             ty: arg.ty.clone(),
+                            docs: arg.docs.clone(),
                             required: arg.kind.required(),
                             special: matches!(arg.kind, ArgKind::Special),
                             experimental: arg.experimental,
+                            deprecated: arg.deprecated,
                             deprecated_since: arg.deprecated_since.as_ref().map(ToString::to_string),
                         })
                         .collect(),

@@ -85,11 +85,16 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
 }
 
 const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
-  if (arg.deprecatedSince === null) {
+  if (!arg.deprecated && arg.deprecatedSince === null) {
     return undefined
   }
 
-  return [`Deprecated as of KCL ${arg.deprecatedSince}.`, arg.docs?.trim()]
+  return [
+    arg.deprecatedSince === null
+      ? 'Deprecated.'
+      : `Deprecated as of KCL ${arg.deprecatedSince}.`,
+    arg.docs?.trim(),
+  ]
     .filter(Boolean)
     .join(' ')
 }
@@ -99,7 +104,7 @@ const stdLibArgBaseConfig = (arg: StdLibCommandArg) => ({
   required: arg.required,
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
-    : arg.deprecatedSince !== null
+    : arg.deprecated || arg.deprecatedSince !== null
       ? ({
           status: 'deprecated',
           statusMessage: stdLibArgDeprecatedMessage(arg),
@@ -148,7 +153,9 @@ export function stdLibCommandArgs<CommandArgs extends object>(
   const args: Record<string, Record<string, unknown>> = Object.fromEntries(
     STD_LIB_COMMANDS[stdLibName].args
       .filter(
-        (arg) => arg.deprecatedSince === null || includeDeprecated.has(arg.name)
+        (arg) =>
+          (!arg.deprecated && arg.deprecatedSince === null) ||
+          includeDeprecated.has(arg.name)
       )
       .filter((arg) => !omitted.has(arg.name))
       .map((arg) => {

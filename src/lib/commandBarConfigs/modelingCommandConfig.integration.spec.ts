@@ -232,7 +232,7 @@ describe('Sweep-like bodyType argument', () => {
       inputType: 'options',
       status: 'deprecated',
       statusMessage:
-        "Deprecated as of KCL 2.0. Please use 'translateProfileToPath' and 'orientProfilePerpendicular'. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.",
+        "Deprecated. Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.",
     })
   })
 
@@ -362,7 +362,8 @@ describe('modeling command stdlib drift', () => {
       const expectedStdLibArgOrder = stdLibCommand.args
         .filter(
           (arg) =>
-            arg.deprecatedSince === null || deprecatedStdLibArgs.has(arg.name)
+            (!arg.deprecated && arg.deprecatedSince === null) ||
+            deprecatedStdLibArgs.has(arg.name)
         )
         .filter((arg) => !omittedStdLibArgs.has(arg.name))
         .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
