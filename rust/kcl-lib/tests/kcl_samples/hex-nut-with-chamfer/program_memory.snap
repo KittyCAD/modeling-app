@@ -368,6 +368,16 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "chamferEndFace": {
+          "type": "TagIdentifier",
+          "value": "chamferEndFace"
+        },
+        "chamferStartFace": {
+          "type": "TagIdentifier",
+          "value": "chamferStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -531,6 +541,16 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "chamferEndFace": {
+          "type": "TagIdentifier",
+          "value": "chamferEndFace"
+        },
+        "chamferStartFace": {
+          "type": "TagIdentifier",
+          "value": "chamferStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

@@ -25,6 +25,7 @@ pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::KclObjectFields;
+pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
@@ -647,6 +648,12 @@ impl TagIdentifier {
 
     pub fn geometry(&self) -> Option<Geometry> {
         self.get_cur_info().map(|info| info.geometry.clone())
+    }
+
+    pub(crate) fn is_body_created_tag(&self) -> bool {
+        self.get_cur_info().is_some_and(|info| {
+            matches!(&info.geometry, Geometry::Solid(_)) && info.path.is_none() && info.surface.is_some()
+        })
     }
 }
 
