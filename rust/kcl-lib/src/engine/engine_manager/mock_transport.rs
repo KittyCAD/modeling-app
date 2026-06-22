@@ -14,39 +14,23 @@ use kittycad_modeling_cmds::ModelingCmd;
 use uuid::Uuid;
 
 use super::EngineTransport;
+use super::ResponseInformation;
 use super::TransportCloseError;
 use crate::SourceRange;
 use crate::errors::KclError;
 
 /// Doesn't actually connect to the engine.
-pub struct MockTransport;
-
-impl MockTransport {
-    pub fn new() -> Self {
-        Self
-    }
+pub struct MockTransport {
+    responses: ResponseInformation,
 }
 
-#[async_trait::async_trait]
-impl EngineTransport for MockTransport {
-    async fn inner_fire_modeling_cmd(
-        &self,
-        _cmd_id: Uuid,
-        _source_range: SourceRange,
-        _cmd: WebSocketRequest,
-        _id_to_source_range: HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        Ok(())
+impl MockTransport {
+    pub fn new(responses: ResponseInformation) -> Self {
+        Self { responses }
     }
 
-    async fn inner_send_modeling_cmd(
-        &self,
-        id: Uuid,
-        _source_range: SourceRange,
-        cmd: WebSocketRequest,
-        _id_to_source_range: HashMap<Uuid, SourceRange>,
-    ) -> Result<WebSocketResponse, KclError> {
-        let response = match cmd {
+    fn response_for_cmd(id: Uuid, cmd: WebSocketRequest) -> WebSocketResponse {
+        match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                 ref requests,
                 batch_id: _,
@@ -95,9 +79,33 @@ impl EngineTransport for MockTransport {
                 },
                 success: true,
             }),
-        };
+        }
+    }
+}
 
-        Ok(response)
+#[async_trait::async_trait]
+impl EngineTransport for MockTransport {
+    async fn inner_fire_modeling_cmd(
+        &self,
+        cmd_id: Uuid,
+        _source_range: SourceRange,
+        cmd: WebSocketRequest,
+        _id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        let response = Self::response_for_cmd(cmd_id, cmd);
+        self.responses.add(cmd_id, response).await;
+
+        Ok(())
+    }
+
+    async fn inner_send_modeling_cmd(
+        &self,
+        id: Uuid,
+        _source_range: SourceRange,
+        cmd: WebSocketRequest,
+        _id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<WebSocketResponse, KclError> {
+        Ok(Self::response_for_cmd(id, cmd))
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {

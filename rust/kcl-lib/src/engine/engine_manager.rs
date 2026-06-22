@@ -177,7 +177,7 @@ impl EngineManager {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
         Self {
-            transport: Arc::new(Box::new(mock_transport::MockTransport::new())),
+            transport: Arc::new(Box::new(mock_transport::MockTransport::new(responses.clone()))),
             responses,
             pending_errors,
             socket_health,
