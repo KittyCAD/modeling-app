@@ -84,8 +84,11 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   return 'kcl'
 }
 
+const isDeprecatedStdLibArg = (arg: StdLibCommandArg) =>
+  arg.deprecated || arg.deprecatedSince !== null
+
 const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
-  if (!arg.deprecated && arg.deprecatedSince === null) {
+  if (!isDeprecatedStdLibArg(arg)) {
     return undefined
   }
 
@@ -99,15 +102,27 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
     .join(' ')
 }
 
-const stdLibArgBaseConfig = (arg: StdLibCommandArg) => ({
+const hasExistingEditFlowArgument = (
+  context: { argumentsToSubmit: Record<string, unknown> },
+  argName: string
+) =>
+  Boolean(context.argumentsToSubmit.nodeToEdit) &&
+  context.argumentsToSubmit[argName] !== undefined
+
+const stdLibArgBaseConfig = (
+  arg: StdLibCommandArg,
+  commandArgName: string
+) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
-    : arg.deprecated || arg.deprecatedSince !== null
+    : isDeprecatedStdLibArg(arg)
       ? ({
           status: 'deprecated',
           statusMessage: stdLibArgDeprecatedMessage(arg),
+          hidden: (context: { argumentsToSubmit: Record<string, unknown> }) =>
+            !hasExistingEditFlowArgument(context, commandArgName),
         } as const)
       : {}),
 })
@@ -153,9 +168,7 @@ export function stdLibCommandArgs<CommandArgs extends object>(
   const args: Record<string, Record<string, unknown>> = Object.fromEntries(
     STD_LIB_COMMANDS[stdLibName].args
       .filter(
-        (arg) =>
-          (!arg.deprecated && arg.deprecatedSince === null) ||
-          includeDeprecated.has(arg.name)
+        (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
       )
       .filter((arg) => !omitted.has(arg.name))
       .map((arg) => {
@@ -163,7 +176,7 @@ export function stdLibCommandArgs<CommandArgs extends object>(
         return [
           commandArgName,
           {
-            ...stdLibArgBaseConfig(arg),
+            ...stdLibArgBaseConfig(arg, commandArgName),
             ...(options.overrides?.[commandArgName] ?? {}),
           },
         ]

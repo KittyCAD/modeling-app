@@ -1,5 +1,6 @@
-use serde::Serialize;
 use std::collections::BTreeMap;
+
+use serde::Serialize;
 use ts_rs::TS;
 
 use super::kcl_doc;

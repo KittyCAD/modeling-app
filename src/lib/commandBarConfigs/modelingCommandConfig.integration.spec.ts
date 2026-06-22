@@ -16,7 +16,10 @@ import {
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
-import type { KclCommandValue } from '@src/lib/commandTypes'
+import type {
+  CommandArgumentConfig,
+  KclCommandValue,
+} from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -401,6 +404,53 @@ describe('modeling command stdlib drift', () => {
           actualFlowArgOrder,
           `${commandName} command-bar flow arg order drifted from the legacy command-bar order.`
         ).toEqual(driftConfig.flowArgOrder)
+      }
+    }
+  })
+
+  it('only shows deprecated args when editing a command that already has them', () => {
+    for (const commandName of Object.keys(modelingCommandStdLibDriftConfig)) {
+      const commandConfig =
+        modelingMachineCommandConfig[
+          commandName as keyof typeof modelingMachineCommandConfig
+        ]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const commandArgs = (commandConfig.args ?? {}) as Record<
+        string,
+        CommandArgumentConfig<unknown, ModelingMachineContext>
+      >
+
+      for (const [argName, arg] of Object.entries(commandArgs)) {
+        if (arg.status !== 'deprecated') {
+          continue
+        }
+
+        const hidden = arg.hidden
+        expect(
+          typeof hidden,
+          `${commandName}.${argName} should have a hidden predicate`
+        ).toBe('function')
+        if (typeof hidden !== 'function') {
+          continue
+        }
+
+        expect(hidden({ argumentsToSubmit: {} })).toBe(true)
+        expect(
+          hidden({
+            argumentsToSubmit: { nodeToEdit: [] },
+          })
+        ).toBe(true)
+        expect(
+          hidden({
+            argumentsToSubmit: {
+              nodeToEdit: [],
+              [argName]: 'existing',
+            },
+          })
+        ).toBe(false)
       }
     }
   })
