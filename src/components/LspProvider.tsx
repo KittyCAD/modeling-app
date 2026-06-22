@@ -46,6 +46,10 @@ export function projectBasename(filePath: string, projectPath: string): string {
   return trimmedStr
 }
 
+function getDocumentUri(currentFilePath: string) {
+  return `file:///${currentFilePath}`
+}
+
 type LspContext = {
   lspClients: LanguageServerClient[]
   copilotLSP: Extension | null
@@ -74,6 +78,9 @@ export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useApp()
   const kclManager = useOptionalExecutingEditor()
+  const activeCode = kclManager?.codeSignal.value
+  const activePath = kclManager?.path
+  const activeProjectPath = kclManager?.systemDeps.projectPath.value
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -123,18 +130,23 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     token,
   ])
 
-  useMemo(() => {
-    if (!window.electron && isKclLspReady && kclLspClient && kclManager?.code) {
-      kclLspClient.textDocumentDidOpen({
-        textDocument: {
-          uri: `file:///${PROJECT_ENTRYPOINT}`,
-          languageId: 'kcl',
-          version: 1,
-          text: kclManager.code,
-        },
-      })
+  const activeDocument = useMemo(() => {
+    if (!kclManager) {
+      return null
     }
-  }, [kclLspClient, isKclLspReady, kclManager?.code])
+
+    const currentFilePath =
+      projectBasename(
+        activePath || PROJECT_ENTRYPOINT,
+        activeProjectPath || ''
+      ) || PROJECT_ENTRYPOINT
+
+    return {
+      currentFilePath,
+      documentUri: getDocumentUri(currentFilePath),
+      text: activeCode ?? kclManager.code,
+    }
+  }, [activeCode, activePath, activeProjectPath, kclManager])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -146,7 +158,8 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isKclLspReady && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kcl({
-        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+        documentUri:
+          activeDocument?.documentUri ?? getDocumentUri(PROJECT_ENTRYPOINT),
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
         processLspNotification: (
@@ -174,7 +187,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady])
+  }, [activeDocument?.documentUri, kclLspClient, isKclLspReady])
 
   useEffect(() => {
     // New code to just update the CodeMirror extensions directly.
@@ -240,7 +253,8 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       // Set up the lsp plugin.
       const lsp = copilotPlugin(
         {
-          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+          documentUri:
+            activeDocument?.documentUri ?? getDocumentUri(PROJECT_ENTRYPOINT),
           workspaceFolders: getWorkspaceFolders(),
           client: copilotLspClient,
           allowHTMLContent: true,
@@ -255,7 +269,12 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspReady, kclManager])
+  }, [
+    activeDocument?.documentUri,
+    copilotLspClient,
+    isCopilotLspReady,
+    kclManager,
+  ])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {
@@ -306,13 +325,15 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         file?.path || PROJECT_ENTRYPOINT,
         project?.path || ''
       )
+      const text =
+        activeDocument?.currentFilePath === filename ? activeDocument.text : ''
       lspClients.forEach((lspClient) => {
         lspClient.textDocumentDidOpen({
           textDocument: {
-            uri: `file:///${filename}`,
+            uri: getDocumentUri(filename),
             languageId: 'kcl',
             version: 1,
-            text: '',
+            text,
           },
         })
       })
@@ -324,13 +345,17 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       filePath || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
+    const text =
+      activeDocument?.currentFilePath === currentFilePath
+        ? activeDocument.text
+        : ''
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidOpen({
         textDocument: {
-          uri: `file:///${currentFilePath}`,
+          uri: getDocumentUri(currentFilePath),
           languageId: 'kcl',
           version: 1,
-          text: '',
+          text,
         },
       })
     })

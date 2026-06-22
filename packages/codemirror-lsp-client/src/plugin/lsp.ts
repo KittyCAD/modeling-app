@@ -161,7 +161,10 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   private getDocUri(view = this.view) {
-    return URI.file(this.getDocPath(view)).toString()
+    const docPath = this.getDocPath(view)
+    return docPath.startsWith('file://')
+      ? docPath
+      : URI.file(docPath).toString()
   }
 
   private getLanguageId(view = this.view) {
