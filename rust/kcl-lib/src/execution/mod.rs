@@ -212,21 +212,21 @@ impl ControlFlowKind {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
     /// Use [control_continue] or [Self::into_value] to get the value.
-    value: KclValue,
+    value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
     pub(crate) fn continue_(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Continue,
         }
     }
 
     pub(crate) fn exit(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Exit,
         }
     }
@@ -239,7 +239,7 @@ impl KclValueControlFlow {
     }
 
     pub(crate) fn into_value(self) -> KclValue {
-        self.value
+        *self.value
     }
 }
 

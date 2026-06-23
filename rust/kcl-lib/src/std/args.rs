@@ -1,4 +1,5 @@
 use std::num::NonZeroU32;
+use std::ops::Deref;
 
 use anyhow::Result;
 use kcmc::shared::BodyType;
@@ -161,7 +162,7 @@ impl Args {
         match self.labeled.get(label) {
             None => return Ok(None),
             Some(a) => {
-                if let KclValue::KclNone { .. } = &a.value {
+                if let KclValue::KclNone { .. } = a.value.deref() {
                     return Ok(None);
                 }
             }
