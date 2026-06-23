@@ -516,6 +516,44 @@ async fn resolve_as_face_id(value: &TagOrUuid, exec_state: &mut ExecState, args:
     }
 }
 
+async fn resolve_as_face_ids(
+    value: &TagOrUuid,
+    solid: Option<&Solid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<Uuid>, KclError> {
+    match value {
+        TagOrUuid::Uuid(uuid) => Ok(vec![*uuid]),
+        TagOrUuid::Tag(tag) => {
+            let infos = tag.get_all_cur_info();
+            if !infos.is_empty() {
+                let face_ids = infos
+                    .iter()
+                    .map(|info| {
+                        info.surface
+                            .as_ref()
+                            .map(ExtrudeSurface::face_id)
+                            .or_else(|| solid.and_then(|solid| face_id_for_tag_info_from_solid(info.id, solid)))
+                    })
+                    .collect::<Option<Vec<_>>>();
+                if let Some(face_ids) = face_ids {
+                    return Ok(face_ids);
+                }
+            }
+
+            Ok(vec![resolve_as_face_id(value, exec_state, args).await?])
+        }
+    }
+}
+
+fn face_id_for_tag_info_from_solid(tag_info_id: Uuid, solid: &Solid) -> Option<Uuid> {
+    solid
+        .value
+        .iter()
+        .find(|surface| surface.get_id() == tag_info_id)
+        .map(ExtrudeSurface::face_id)
+}
+
 async fn resolve_as_adjacent_face_or_tag_id(
     value: &TagOrUuid,
     exec_state: &mut ExecState,
@@ -547,22 +585,74 @@ async fn resolve_as_edge_faces(
 
 pub(crate) async fn resolve_edge_specifier_with_face_tags(
     unresolved: &UnresolvedEdgeSpecifier,
+    solid: Option<&Solid>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<kcmc::shared::EdgeSpecifier, KclError> {
-    let mut side_faces = Vec::with_capacity(unresolved.side_faces.len());
+    let mut references = resolve_edge_specifiers_with_face_tags(unresolved, solid, exec_state, args).await?;
+    if references.len() != 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "edge specifier resolved to multiple edge references where exactly one was expected".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    Ok(references.remove(0))
+}
+
+async fn resolve_edge_specifiers_with_face_tags(
+    unresolved: &UnresolvedEdgeSpecifier,
+    solid: Option<&Solid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
+    let mut side_face_groups = Vec::with_capacity(unresolved.side_faces.len());
     for value in &unresolved.side_faces {
-        side_faces.push(resolve_as_face_id(value, exec_state, args).await?);
+        side_face_groups.push(resolve_as_face_ids(value, solid, exec_state, args).await?);
     }
-    let mut end_faces = Vec::with_capacity(unresolved.end_faces.len());
+    let mut end_face_groups = Vec::with_capacity(unresolved.end_faces.len());
     for value in &unresolved.end_faces {
-        end_faces.push(resolve_as_face_id(value, exec_state, args).await?);
+        end_face_groups.push(resolve_as_face_ids(value, solid, exec_state, args).await?);
     }
-    Ok(kcmc::shared::EdgeSpecifier::builder()
-        .side_faces(side_faces)
-        .end_faces(end_faces)
-        .maybe_index(unresolved.index)
-        .build())
+
+    // TODO(face-api): Once modeling-commands can represent grouped logical face
+    // references, pass these groups through as one engine payload instead of
+    // expanding them into several flat EdgeSpecifier payloads.
+    // See https://github.com/KittyCAD/modeling-api/issues/1252.
+    let side_face_combinations = face_id_combinations(&side_face_groups);
+    let end_face_combinations = face_id_combinations(&end_face_groups);
+    let mut references = Vec::with_capacity(side_face_combinations.len() * end_face_combinations.len());
+    for side_faces in side_face_combinations {
+        for end_faces in &end_face_combinations {
+            references.push(
+                kcmc::shared::EdgeSpecifier::builder()
+                    .side_faces(side_faces.clone())
+                    .end_faces(end_faces.clone())
+                    .maybe_index(unresolved.index)
+                    .build(),
+            );
+        }
+    }
+    Ok(references)
+}
+
+fn face_id_combinations(groups: &[Vec<Uuid>]) -> Vec<Vec<Uuid>> {
+    if groups.is_empty() {
+        return vec![Vec::new()];
+    }
+
+    let mut combinations = vec![Vec::new()];
+    for group in groups {
+        let mut next = Vec::with_capacity(combinations.len() * group.len());
+        for combination in &combinations {
+            for face_id in group {
+                let mut new_combination = combination.clone();
+                new_combination.push(*face_id);
+                next.push(new_combination);
+            }
+        }
+        combinations = next;
+    }
+    combinations
 }
 
 pub(crate) async fn resolve_edge_specifier_with_adjacent_faces_or_tag_ids(
@@ -587,6 +677,7 @@ pub(crate) async fn resolve_edge_specifier_with_adjacent_faces_or_tag_ids(
 
 pub(crate) async fn parse_edge_refs_to_references(
     edge_refs: Vec<KclValue>,
+    solid: Option<&Solid>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
@@ -600,7 +691,7 @@ pub(crate) async fn parse_edge_refs_to_references(
     let mut edge_references = Vec::with_capacity(edge_refs.len());
     for edge_ref_value in &edge_refs {
         let spec = parse_edge_specifier_value(edge_ref_value, args)?;
-        edge_references.push(resolve_edge_specifier_with_face_tags(&spec, exec_state, args).await?);
+        edge_references.extend(resolve_edge_specifiers_with_face_tags(&spec, solid, exec_state, args).await?);
     }
     Ok(edge_references)
 }
