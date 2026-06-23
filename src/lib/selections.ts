@@ -36,7 +36,6 @@ import {
   getLastVariable,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
-  getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   isSingleCursorInPipe,
