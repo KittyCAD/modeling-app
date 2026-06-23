@@ -3,6 +3,7 @@ import { EditorSelection } from '@codemirror/state'
 import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
+  RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -108,18 +109,6 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-type RegionGetResolvableIntersectionInfo = {
-  segment: ArtifactId
-  intersection_segment: ArtifactId
-  intersection_index: number
-  intersection_count: number
-  curve_clockwise: boolean
-}
-type RegionGetResolvableIntersectionInfoResponse = {
-  type: 'region_get_resolvable_intersection_info'
-  data: RegionGetResolvableIntersectionInfo
-}
-
 async function getParentEntityIdForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
@@ -149,18 +138,13 @@ async function getResolvableIntersectionInfoForRegion(
       type: 'region_get_resolvable_intersection_info',
       region_id: regionId,
     },
-  } as unknown as WebSocketRequest)
+  })
   if (!isModelingResponse(response)) return null
   const regionInfoResponse = response.resp.data.modeling_response
-  if (
-    (regionInfoResponse as { type: string }).type !==
-    'region_get_resolvable_intersection_info'
-  ) {
+  if (regionInfoResponse.type !== 'region_get_resolvable_intersection_info') {
     return null
   }
-  return (
-    regionInfoResponse as unknown as RegionGetResolvableIntersectionInfoResponse
-  ).data
+  return regionInfoResponse.data
 }
 
 function getSegmentArtifactForRegionSegment(
