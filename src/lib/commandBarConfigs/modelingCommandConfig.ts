@@ -279,9 +279,12 @@ export type ModelingCommandSchema = {
     sectional?: boolean
     // TODO: figure out if we should expose `tolerance` or not
     relativeTo?: SweepRelativeTo
+    translateProfileToPath?: boolean
+    orientProfilePerpendicular?: boolean
     tagStart?: string
     tagEnd?: string
     bodyType?: KclPreludeBodyType
+    version?: KclCommandValue
   }
   Loft: {
     // Enables editing workflow
@@ -1200,6 +1203,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Trajectory Curve', value: 'TRAJECTORY' },
         ],
       },
+      translateProfileToPath: {
+        inputType: 'boolean',
+        required: false,
+      },
+      orientProfilePerpendicular: {
+        inputType: 'boolean',
+        required: false,
+      },
       tagStart: {
         inputType: 'tagDeclarator',
         required: false,
@@ -1212,6 +1223,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
+      },
+      version: {
+        inputType: 'kcl',
+        description:
+          'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+        defaultValue: '2',
+        required: false,
+        status: 'experimental',
       },
     },
   },

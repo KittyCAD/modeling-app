@@ -27,7 +27,7 @@ For example:
 
 ```kcl
 // The settings attribute.
-@settings(defaultLengthUnit = in)
+@settings(kclVersion = 2.0, defaultLengthUnit = in)
 
 // The rest of your KCL code goes below...
 
@@ -45,5 +45,6 @@ Valid properties are:
 - `experimentalFeatures`: how experimental features are handled within this file.
   - Accepted values: `allow` (experimental features can be used freely), `warn` (experimental features
   cause a warning), `deny` (the default, experimental features cause an error).
+- `kclVersion`: the version of the KCL language and standard libary to execute with.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).

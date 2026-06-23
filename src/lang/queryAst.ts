@@ -2431,6 +2431,56 @@ export function getSketchSegmentNameFromSourceSurface(
   return null
 }
 
+export function getRegionSketchTagExprFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  segmentArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput || sweepInput.type !== 'Name') {
+    return null
+  }
+
+  const segmentId =
+    segmentArtifact.type === 'segment'
+      ? segmentArtifact.id
+      : segmentArtifact.type === 'sweepEdge'
+        ? segmentArtifact.segId
+        : segmentArtifact.type === 'wall'
+          ? segmentArtifact.segId
+          : null
+  if (!segmentId) {
+    return null
+  }
+
+  return getRegionTagExprFromSegmentId(
+    ast,
+    segmentId,
+    artifactGraph,
+    wasmInstance,
+    sweepInput.name.name
+  )
+}
+
 /**
  * Builds a region-tag member expression for a sketch-solve segment, e.g.
  * region001.tags.line2.

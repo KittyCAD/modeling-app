@@ -1527,6 +1527,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "capEnd001": {
+              "type": "TagIdentifier",
+              "value": "capEnd001"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1683,6 +1689,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "capEnd001": {
+              "type": "TagIdentifier",
+              "value": "capEnd001"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
