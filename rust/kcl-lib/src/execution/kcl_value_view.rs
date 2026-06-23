@@ -52,7 +52,6 @@ pub enum KclValueView {
     // An array where all values have a shared type (not necessarily the same principal type).
     HomArray {
         value: Vec<KclValueView>,
-        // The type of values, not the array type.
     },
     Object {
         value: KclObjectFields,
@@ -99,15 +98,6 @@ pub enum KclValueView {
     KclNone {
         value: KclNone,
     },
-}
-
-impl KclValueView {
-    #[allow(unused)]
-    pub(crate) fn none() -> Self {
-        Self::KclNone {
-            value: Default::default(),
-        }
-    }
 }
 
 impl From<KclValue> for KclValueView {
