@@ -118,6 +118,12 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
