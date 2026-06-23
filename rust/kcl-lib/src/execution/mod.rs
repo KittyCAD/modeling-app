@@ -250,6 +250,7 @@ impl KclValueControlFlow {
 ///
 /// Normally, you don't construct this directly. Use the `early_return!` macro.
 #[must_use = "You should always handle the control flow value when it is returned"]
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub(crate) enum EarlyReturn {
     /// A normal value with control flow.
