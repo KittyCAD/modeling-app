@@ -117,11 +117,9 @@ use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
-use crate::std::utils::vec2_add;
-use crate::std::utils::vec2_cross;
+use crate::std::utils::intersect_lines_2d;
 use crate::std::utils::vec2_dot;
 use crate::std::utils::vec2_len;
-use crate::std::utils::vec2_scale;
 use crate::std::utils::vec2_sub;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
@@ -240,27 +238,6 @@ fn push_hidden_sketch_point(
         x_id.to_constraint_id(range)?,
         y_id.to_constraint_id(range)?,
     ))
-}
-
-fn intersection_of_initial_lines(
-    line0: ([f64; 2], [f64; 2]),
-    line1: ([f64; 2], [f64; 2]),
-    range: SourceRange,
-) -> Result<[f64; 2], KclError> {
-    let p = line0.0;
-    let r = vec2_sub(line0.1, line0.0);
-    let q = line1.0;
-    let s = vec2_sub(line1.1, line1.0);
-    let denom = vec2_cross(r, s);
-    if denom.abs() <= 1e-9 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "angleDimension(lines = ..., sector = ...) requires non-parallel lines".to_owned(),
-            vec![range],
-        )));
-    }
-
-    let t = vec2_cross(vec2_sub(q, p), s) / denom;
-    Ok(vec2_add(p, vec2_scale(r, t)))
 }
 
 fn front_angle_sector(sector: AngleSector) -> u8 {
@@ -4014,8 +3991,13 @@ impl Node<BinaryExpression> {
                                         range,
                                         "angle line1",
                                     )?;
-                                    let initial_vertex =
-                                        intersection_of_initial_lines(initial_line0, initial_line1, range)?;
+                                    let Some(initial_vertex) = intersect_lines_2d(initial_line0, initial_line1) else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "angleDimension(lines = ..., sector = ...) requires non-parallel lines"
+                                                .to_owned(),
+                                            vec![range],
+                                        )));
+                                    };
                                     let (line0_representative, line0_direction) =
                                         representative_angle_endpoint(line0, initial_line0, initial_vertex, range)?;
                                     let (line1_representative, line1_direction) =

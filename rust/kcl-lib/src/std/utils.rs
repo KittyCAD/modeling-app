@@ -79,6 +79,27 @@ pub(crate) fn vec2_len(a: [f64; 2]) -> f64 {
     libm::hypot(a[0], a[1])
 }
 
+/// Intersect two infinite 2D lines.
+///
+/// Each line is represented by two `[x, y]` points on the line. The points are
+/// not treated as finite segment endpoints.
+///
+/// Returns the intersection point, or `None` when the lines are parallel or
+/// nearly parallel.
+pub(crate) fn intersect_lines_2d(line0: ([f64; 2], [f64; 2]), line1: ([f64; 2], [f64; 2])) -> Option<[f64; 2]> {
+    let p = line0.0;
+    let r = vec2_sub(line0.1, line0.0);
+    let q = line1.0;
+    let s = vec2_sub(line1.1, line1.0);
+    let denom = vec2_cross(r, s);
+    if denom.abs() <= 1e-9 {
+        return None;
+    }
+
+    let t = vec2_cross(vec2_sub(q, p), s) / denom;
+    Some(vec2_add(p, vec2_scale(r, t)))
+}
+
 /// Get the angle between these points
 pub(crate) fn between(a: Coords2d, b: Coords2d) -> Angle {
     let x = b[0] - a[0];
