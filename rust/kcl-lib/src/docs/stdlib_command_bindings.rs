@@ -86,7 +86,7 @@ fn export_bindings_stdlib_commands() {
     // module with `as const` for literal command and argument names.
     let json = serde_json::to_string_pretty(&commands).unwrap();
     let out_dir = ts_config.out_dir();
-    std::fs::create_dir_all(&out_dir).unwrap();
+    std::fs::create_dir_all(out_dir).unwrap();
     std::fs::write(
         out_dir.join("StdLibCommands.ts"),
         format!(
