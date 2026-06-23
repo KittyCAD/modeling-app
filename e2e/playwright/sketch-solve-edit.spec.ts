@@ -129,12 +129,6 @@ newSketch = sketch(on = XZ) {
 }
 `
 
-function withDefaultLengthUnitInches(code: string): string {
-  return `@settings(defaultLengthUnit = in)
-    
-${code}`
-}
-
 test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test("can edit an existing sketch and edit it's segments", async ({
     page,
@@ -2044,8 +2038,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   perpendicular([line1, line2])
   horizontal(line3)
 }`
-
-  const squareInches = withDefaultLengthUnitInches(square)
 
   test('can extrude sketch regions', async ({
     page,
