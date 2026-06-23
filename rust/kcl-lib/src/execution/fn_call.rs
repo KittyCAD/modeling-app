@@ -135,22 +135,19 @@ impl Args<Desugared> {
 #[derive(Debug, Clone)]
 pub struct Arg {
     /// The evaluated argument.
-    pub value: Box<KclValue>,
+    pub value: KclValue,
     /// The source range of the unevaluated argument.
     pub source_range: SourceRange,
 }
 
 impl Arg {
     pub fn new(value: KclValue, source_range: SourceRange) -> Self {
-        Self {
-            value: Box::new(value),
-            source_range,
-        }
+        Self { value, source_range }
     }
 
     pub fn synthetic(value: KclValue) -> Self {
         Self {
-            value: Box::new(value),
+            value,
             source_range: SourceRange::synthetic(),
         }
     }
@@ -386,12 +383,7 @@ impl FunctionSource {
             let op_labeled_args = args
                 .labeled
                 .iter()
-                .map(|(k, arg)| {
-                    (
-                        k.clone(),
-                        OpArg::new(OpKclValue::from(arg.value.deref()), arg.source_range),
-                    )
-                })
+                .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
@@ -400,7 +392,7 @@ impl FunctionSource {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
                         .unlabeled_kw_arg_unconverted()
-                        .map(|arg| OpArg::new(OpKclValue::from(arg.value.deref()), arg.source_range)),
+                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
@@ -415,7 +407,7 @@ impl FunctionSource {
                         function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
-                            .map(|arg| OpArg::new(OpKclValue::from(arg.value.deref()), arg.source_range)),
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
                     node_path: NodePath::placeholder(),
@@ -582,7 +574,7 @@ fn face_tag_names_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> V
     args.labeled
         .iter()
         .filter(|(label, _)| matches!(label.as_str(), "tag" | "tagStart" | "tagEnd"))
-        .filter_map(|(_, arg)| match arg.value.deref() {
+        .filter_map(|(_, arg)| match &arg.value {
             KclValue::TagDeclarator(tag) => Some(tag.name.clone()),
             _ => None,
         })
@@ -926,7 +918,7 @@ fn type_check_params_kw(
                 // warned about once for the function definition.
                 let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
-                let arg_value_res = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
+                arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
                     KclError::new_argument(KclErrorDetails::new(
                         format!(
                             "The input argument of {} requires {}",
@@ -937,8 +929,7 @@ fn type_check_params_kw(
                         ),
                         vec![arg.source_range],
                     ))
-                });
-                arg.value = Box::new(arg_value_res?);
+                })?;
             }
             result.unlabeled = vec![(None, arg)]
         } else {
@@ -965,10 +956,10 @@ fn type_check_params_kw(
                     None,
                     Arg {
                         source_range,
-                        value: Box::new(KclValue::HomArray {
-                            value: args.unlabeled.drain(..).map(|(_, a)| *a.value).collect(),
+                        value: KclValue::HomArray {
+                            value: args.unlabeled.drain(..).map(|(_, a)| a.value).collect(),
                             ty: RuntimeType::any(),
-                        }),
+                        },
                     },
                 )]
             }
@@ -1020,14 +1011,14 @@ fn type_check_params_kw(
                 ty,
             }) => {
                 // For optional args, passing None should be the same as not passing an arg.
-                if !(def.is_some() && matches!(arg.value.deref(), KclValue::KclNone { .. })) {
+                if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
                         // Suppress warnings about types because they should
                         // only be warned about once for the function
                         // definition.
                         let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
-                        arg.value = Box::new(arg
+                        arg.value = arg
                                 .value
                                 .coerce(
                                     &rty,
@@ -1047,7 +1038,7 @@ fn type_check_params_kw(
                                         message,
                                         vec![arg.source_range],
                                     ))
-                                })?);
+                                })?;
                     }
                     result.labeled.insert(label, arg);
                 }
@@ -1114,7 +1105,7 @@ fn assign_args_to_params_kw(
             Some(arg) => {
                 exec_state.mut_stack().add(
                     name.clone(),
-                    arg.value.clone().deref().to_owned(),
+                    arg.value.clone(),
                     arg.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
                 )?;
             }
@@ -1145,7 +1136,7 @@ fn assign_args_to_params_kw(
         };
         exec_state.mut_stack().add(
             param_name.clone(),
-            unlabeled.value.clone().deref().to_owned(),
+            unlabeled.value.clone(),
             unlabeled.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
         )?;
     }
