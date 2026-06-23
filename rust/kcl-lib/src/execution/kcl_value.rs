@@ -83,8 +83,7 @@ impl KclObjectKind {
 }
 
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum KclValue {
     Uuid {
@@ -130,7 +129,6 @@ pub enum KclValue {
         value: KclObjectFields,
         constrainable: bool,
         #[serde(default, skip_serializing_if = "KclObjectKind::is_default")]
-        #[ts(skip)]
         object_kind: KclObjectKind,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -165,7 +163,6 @@ pub enum KclValue {
     ImportedGeometry(ImportedGeometry),
     Function {
         #[serde(serialize_with = "function_value_stub")]
-        #[ts(type = "null")]
         value: Box<FunctionSource>,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -175,7 +172,6 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
-    #[ts(skip)]
     Type {
         #[serde(skip)]
         value: TypeDef,
