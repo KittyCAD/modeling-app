@@ -2112,7 +2112,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
-        'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
+        'region(segments = [sketch001.line4, sketch001.line1])'
       )
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
@@ -2143,83 +2143,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.not.toContain('region(')
       await editor.expectEditor.toContain(square, { shouldNormalise: true })
-    })
-  })
-
-  test('can extrude sketch regions with defaultLengthUnit = inches', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
-
-    await test.step('Set up scene with a closed sketch block in inches', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, squareInches)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
-    })
-
-    await test.step('Extrude region by clicking center', async () => {
-      await toolbar.extrudeButton.click()
-      await clickCenter()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step('Expect extrusion uses inches for region point', async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-      await editor.expectEditor.toContain(
-        'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
-      )
-      await editor.expectEditor.toContain(
-        'extrude001 = extrude(region001, length = 5)'
-      )
-      await expect(
-        page.locator('.cm-lint-marker-error').first()
-      ).not.toBeInViewport()
     })
   })
 
