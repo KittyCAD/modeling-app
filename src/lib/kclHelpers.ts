@@ -136,7 +136,8 @@ export async function getCalculatedKclExpressionValue(
     return formatted
   })()
   // Prefer the formatted value with units.  Fallback to the raw value.
-  const resultRawValue = varValue?.value
+  const resultRawValue =
+    varValue && 'value' in varValue ? varValue.value : undefined
   const valueAsString = resultValueWithUnits
     ? resultValueWithUnits
     : typeof resultRawValue === 'number'
