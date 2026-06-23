@@ -117,6 +117,12 @@ use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
+use crate::std::utils::vec2_add;
+use crate::std::utils::vec2_cross;
+use crate::std::utils::vec2_dot;
+use crate::std::utils::vec2_len;
+use crate::std::utils::vec2_scale;
+use crate::std::utils::vec2_sub;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
@@ -234,30 +240,6 @@ fn push_hidden_sketch_point(
         x_id.to_constraint_id(range)?,
         y_id.to_constraint_id(range)?,
     ))
-}
-
-fn vec2_sub(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
-    [a[0] - b[0], a[1] - b[1]]
-}
-
-fn vec2_add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
-    [a[0] + b[0], a[1] + b[1]]
-}
-
-fn vec2_scale(a: [f64; 2], scale: f64) -> [f64; 2] {
-    [a[0] * scale, a[1] * scale]
-}
-
-fn vec2_cross(a: [f64; 2], b: [f64; 2]) -> f64 {
-    a[0] * b[1] - a[1] * b[0]
-}
-
-fn vec2_dot(a: [f64; 2], b: [f64; 2]) -> f64 {
-    a[0] * b[0] + a[1] * b[1]
-}
-
-fn vec2_len(a: [f64; 2]) -> f64 {
-    libm::hypot(a[0], a[1])
 }
 
 fn intersection_of_initial_lines(

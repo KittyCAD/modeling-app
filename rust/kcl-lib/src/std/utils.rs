@@ -55,6 +55,30 @@ pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
     ((b[0] - a[0]).squared() + (b[1] - a[1]).squared()).sqrt()
 }
 
+pub(crate) fn vec2_sub(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+    [a[0] - b[0], a[1] - b[1]]
+}
+
+pub(crate) fn vec2_add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+    [a[0] + b[0], a[1] + b[1]]
+}
+
+pub(crate) fn vec2_scale(a: [f64; 2], scale: f64) -> [f64; 2] {
+    [a[0] * scale, a[1] * scale]
+}
+
+pub(crate) fn vec2_cross(a: [f64; 2], b: [f64; 2]) -> f64 {
+    a[0] * b[1] - a[1] * b[0]
+}
+
+pub(crate) fn vec2_dot(a: [f64; 2], b: [f64; 2]) -> f64 {
+    a[0] * b[0] + a[1] * b[1]
+}
+
+pub(crate) fn vec2_len(a: [f64; 2]) -> f64 {
+    libm::hypot(a[0], a[1])
+}
+
 /// Get the angle between these points
 pub(crate) fn between(a: Coords2d, b: Coords2d) -> Angle {
     let x = b[0] - a[0];
