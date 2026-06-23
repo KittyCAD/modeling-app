@@ -1,4 +1,4 @@
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])

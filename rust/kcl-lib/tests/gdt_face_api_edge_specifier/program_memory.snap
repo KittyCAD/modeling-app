@@ -52,10 +52,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 73,
-            "end": 78,
+            "commentStart": 61,
+            "end": 66,
             "moduleId": 0,
-            "start": 73,
+            "start": 61,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -66,10 +66,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 143,
-            "end": 148,
+            "commentStart": 131,
+            "end": 136,
             "moduleId": 0,
-            "start": 143,
+            "start": 131,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 215,
-            "end": 220,
+            "commentStart": 203,
+            "end": 208,
             "moduleId": 0,
-            "start": 215,
+            "start": 203,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 287,
-            "end": 292,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 287,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 737,
-            "end": 749,
+            "commentStart": 725,
+            "end": 737,
             "moduleId": 0,
-            "start": 737,
+            "start": 725,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -133,10 +133,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 73,
-              "end": 78,
+              "commentStart": 61,
+              "end": 66,
               "moduleId": 0,
-              "start": 73,
+              "start": 61,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -157,10 +157,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 143,
-              "end": 148,
+              "commentStart": 131,
+              "end": 136,
               "moduleId": 0,
-              "start": 143,
+              "start": 131,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -181,10 +181,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 215,
-              "end": 220,
+              "commentStart": 203,
+              "end": 208,
               "moduleId": 0,
-              "start": 215,
+              "start": 203,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -205,10 +205,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 287,
-              "end": 292,
+              "commentStart": 275,
+              "end": 280,
               "moduleId": 0,
-              "start": 287,
+              "start": 275,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -316,10 +316,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 73,
-            "end": 78,
+            "commentStart": 61,
+            "end": 66,
             "moduleId": 0,
-            "start": 73,
+            "start": 61,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -340,10 +340,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 143,
-            "end": 148,
+            "commentStart": 131,
+            "end": 136,
             "moduleId": 0,
-            "start": 143,
+            "start": 131,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -364,10 +364,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 215,
-            "end": 220,
+            "commentStart": 203,
+            "end": 208,
             "moduleId": 0,
-            "start": 215,
+            "start": 203,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -388,10 +388,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 287,
-            "end": 292,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 287,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -980,10 +980,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 73,
-                    "end": 78,
+                    "commentStart": 61,
+                    "end": 66,
                     "moduleId": 0,
-                    "start": 73,
+                    "start": 61,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1004,10 +1004,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 143,
-                    "end": 148,
+                    "commentStart": 131,
+                    "end": 136,
                     "moduleId": 0,
-                    "start": 143,
+                    "start": 131,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1028,10 +1028,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 215,
-                    "end": 220,
+                    "commentStart": 203,
+                    "end": 208,
                     "moduleId": 0,
-                    "start": 215,
+                    "start": 203,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1052,10 +1052,10 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 287,
-                    "end": 292,
+                    "commentStart": 275,
+                    "end": 280,
                     "moduleId": 0,
-                    "start": 287,
+                    "start": 275,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },

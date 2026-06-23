@@ -158,7 +158,8 @@ description: Artifact commands gdt_face_api_edge_specifier.kcl
         "query_point": {
           "x": 5.0,
           "y": 5.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

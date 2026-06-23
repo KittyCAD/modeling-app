@@ -2125,7 +2125,7 @@ description: Result of parsing gdt_face_api_edge_specifier.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": "experimentalFeatures",
+              "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
@@ -2133,22 +2133,17 @@ description: Result of parsing gdt_face_api_edge_specifier.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "abs_path": false,
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
+              "raw": "2.0",
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],
