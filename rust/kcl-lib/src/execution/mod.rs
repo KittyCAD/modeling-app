@@ -27,6 +27,7 @@ use indexmap::IndexMap;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub use kcl_value_presentation::KclValuePresentation;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -76,7 +77,6 @@ use crate::execution::cache::CacheInformation;
 use crate::execution::cache::CacheResult;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
-use crate::execution::kcl_value_presentation::KclValuePresentation;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -2249,7 +2249,6 @@ mod tests {
     use crate::exec::NumericType;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
-    use kcl_value_presentation::KclValuePresentation;
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -2260,7 +2259,7 @@ mod tests {
     async fn execute_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValuePresentation> {
         execute_outcome_with_backend(code, backend).await.variables
     }
 
@@ -2286,18 +2285,14 @@ mod tests {
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let error = ctx.run(&program, &mut exec_state).await.unwrap_err();
         ctx.close().await;
-        error
-            .variables
-            .into_iter()
-            .map(|(k, v)| (k, KclValuePresentation::from(v)))
-            .collect()
+        error.variables
     }
 
     async fn execute_project_variables_with_backend(
         main_code: &str,
         files: &[(&str, &str)],
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValuePresentation> {
         let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
         for (name, contents) in files {
             tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
@@ -2328,7 +2323,7 @@ mod tests {
     async fn run_with_caching_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValuePresentation> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         cache::bust_cache().await;
         clear_mem_cache().await;
@@ -2347,7 +2342,7 @@ mod tests {
     async fn run_mock_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValuePresentation> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         clear_mem_cache().await;
 
@@ -2377,9 +2372,12 @@ mod tests {
         keys
     }
 
-    fn assert_number_variable(variables: &IndexMap<String, KclValue>, key: &str, expected: f64) {
+    fn assert_number_variable(variables: &IndexMap<String, KclValuePresentation>, key: &str, expected: f64) {
         let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
-        assert_eq!(value.as_f64().unwrap(), expected, "{key}: {value:?}");
+        let KclValuePresentation::Number { value, .. } = value else {
+            panic!("expected `{key}` to be a number, got {value:?}");
+        };
+        assert_eq!(*value, expected, "{key}: {value:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3596,12 +3594,12 @@ w = f() + f()
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+        assert_number_variable(&result.variables, "x", 2.0);
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
-        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+        assert_number_variable(&result.variables, "z", 3.0);
 
         ctx.close().await;
         ctx2.close().await;

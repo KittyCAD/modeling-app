@@ -13,9 +13,9 @@ use crate::ExecState;
 use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
-use crate::exec::KclValue;
 use crate::execution::ArtifactGraph;
 use crate::execution::EnvironmentRef;
+use crate::execution::KclValuePresentation;
 use crate::execution::ModuleArtifactState;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
@@ -436,7 +436,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 #[must_use]
 fn common_snapshots(
     test: &Test,
-    variables: IndexMap<String, KclValue>,
+    variables: IndexMap<String, KclValuePresentation>,
     #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
         IndexMap<Uuid, WebSocketResponse>,
     >,

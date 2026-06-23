@@ -20,8 +20,8 @@ use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
+use crate::execution::KclValuePresentation;
 use crate::execution::OperationsByModule;
-use crate::execution::kcl_value_presentation::KclValuePresentation;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -290,11 +290,7 @@ impl KclErrorWithOutputs {
         KclErrorWithOutputs {
             error,
             non_fatal: outcome.issues,
-            variables: outcome
-                .variables
-                .into_iter()
-                .map(|(k, v)| (k, KclValuePresentation::from(v)))
-                .collect(),
+            variables: outcome.variables,
             operations: outcome.operations,
             _artifact_commands: Default::default(),
             artifact_graph: outcome.artifact_graph,

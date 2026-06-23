@@ -10,7 +10,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorContext;
-use crate::execution::KclValue;
+use crate::execution::KclValuePresentation;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::geometry::GetTangentialInfoFromPathsResult;
 use crate::execution::geometry::Path;
@@ -108,7 +108,7 @@ pub fn transpile_all_old_sketches_to_new(
     // Convert sketches in variables.
     let mut sketch_blocks = HashMap::with_capacity(exec_outcome.variables.len());
     for variable in &exec_outcome.variables {
-        if let KclValue::Sketch { .. } = &variable.1 {
+        if let KclValuePresentation::Sketch { .. } = &variable.1 {
             // This variable contains a sketch that needs to be transpiled
             let sketch_block = transpile_old_sketch_to_new_ast(exec_outcome, program, variable.0, fail_fast)?;
             sketch_blocks.insert(variable.0.clone(), sketch_block);
@@ -864,7 +864,7 @@ fn get_sketch_from_exec_outcome(exec_outcome: &ExecOutcome, variable_name: &str)
     })?;
 
     match value {
-        KclValue::Sketch { value } => Ok(*value.clone()),
+        KclValuePresentation::Sketch { value } => Ok(*value.clone()),
         _ => Err(KclError::new_internal(KclErrorDetails::new(
             format!("Variable '{}' is not a Sketch", variable_name),
             vec![],

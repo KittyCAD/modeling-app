@@ -10,7 +10,6 @@ use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Helix;
 use crate::execution::ImportedGeometry;
-use crate::execution::Metadata;
 use crate::execution::Plane;
 use crate::execution::Sketch;
 use crate::execution::SketchConstraint;
@@ -114,23 +113,23 @@ impl KclValuePresentation {
 impl From<KclValue> for KclValuePresentation {
     fn from(full: KclValue) -> Self {
         match full {
-            KclValue::Uuid { value, meta } => KclValuePresentation::Uuid { value },
-            KclValue::Bool { value, meta } => KclValuePresentation::Bool { value },
-            KclValue::Number { value, ty, meta } => KclValuePresentation::Number { value, ty },
-            KclValue::String { value, meta } => KclValuePresentation::String { value },
+            KclValue::Uuid { value, .. } => KclValuePresentation::Uuid { value },
+            KclValue::Bool { value, .. } => KclValuePresentation::Bool { value },
+            KclValue::Number { value, ty, .. } => KclValuePresentation::Number { value, ty },
+            KclValue::String { value, .. } => KclValuePresentation::String { value },
             KclValue::SketchVar { value } => KclValuePresentation::SketchVar { value },
             KclValue::SketchConstraint { value } => KclValuePresentation::SketchConstraint { value },
-            KclValue::Tuple { value, meta } => KclValuePresentation::Tuple {
+            KclValue::Tuple { value, .. } => KclValuePresentation::Tuple {
                 value: value.into_iter().map(KclValuePresentation::from).collect(),
             },
-            KclValue::HomArray { value, ty } => KclValuePresentation::HomArray {
+            KclValue::HomArray { value, .. } => KclValuePresentation::HomArray {
                 value: value.into_iter().map(KclValuePresentation::from).collect(),
             },
             KclValue::Object {
                 value,
                 constrainable,
                 object_kind,
-                meta,
+                ..
             } => KclValuePresentation::Object {
                 value: value
                     .into_iter()
@@ -144,20 +143,16 @@ impl From<KclValue> for KclValuePresentation {
             KclValue::GdtAnnotation { value } => KclValuePresentation::GdtAnnotation { value },
             KclValue::Plane { value } => KclValuePresentation::Plane { value },
             KclValue::Face { value } => KclValuePresentation::Face { value },
-            KclValue::BoundedEdge { value, meta } => KclValuePresentation::BoundedEdge { value },
+            KclValue::BoundedEdge { value, .. } => KclValuePresentation::BoundedEdge { value },
             KclValue::Segment { value } => KclValuePresentation::Segment { value },
             KclValue::Sketch { value } => KclValuePresentation::Sketch { value },
             KclValue::Solid { value } => KclValuePresentation::Solid { value },
             KclValue::Helix { value } => KclValuePresentation::Helix { value },
             KclValue::ImportedGeometry(imported_geometry) => KclValuePresentation::ImportedGeometry(imported_geometry),
-            KclValue::Function { value, meta } => KclValuePresentation::Function { value },
-            KclValue::Module { value, meta } => KclValuePresentation::Module { value },
-            KclValue::Type {
-                value,
-                experimental,
-                meta,
-            } => KclValuePresentation::Type { value },
-            KclValue::KclNone { value, meta } => KclValuePresentation::KclNone { value },
+            KclValue::Function { .. } => KclValuePresentation::Function {},
+            KclValue::Module { value, .. } => KclValuePresentation::Module { value },
+            KclValue::Type { experimental, .. } => KclValuePresentation::Type { experimental },
+            KclValue::KclNone { value, .. } => KclValuePresentation::KclNone { value },
         }
     }
 }
