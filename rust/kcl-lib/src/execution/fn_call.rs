@@ -1176,6 +1176,7 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
+    use crate::engine::engine_manager::EngineManager;
     use crate::errors::Severity;
     use crate::execution::ContextType;
     use crate::execution::EnvironmentRef;
@@ -1375,7 +1376,7 @@ mod test {
                 })
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
-                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine: Arc::new(EngineManager::new_mock()),
                 engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
