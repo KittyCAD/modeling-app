@@ -65,7 +65,7 @@ pub enum KclObjectKind {
 }
 
 impl KclObjectKind {
-    fn is_default(&self) -> bool {
+    pub(crate) fn is_default(&self) -> bool {
         match self {
             KclObjectKind::Default => true,
             KclObjectKind::SketchTags { .. } => false,

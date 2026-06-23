@@ -76,6 +76,7 @@ use crate::execution::cache::CacheInformation;
 use crate::execution::cache::CacheResult;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
+use crate::execution::kcl_value_presentation::KclValuePresentation;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -143,6 +144,7 @@ mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
+pub(crate) mod kcl_value_presentation;
 mod memory;
 mod modeling;
 mod sketch_solve;
@@ -294,7 +296,7 @@ impl PreserveMem {
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
-    pub variables: IndexMap<String, KclValue>,
+    pub variables: IndexMap<String, KclValuePresentation>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,
@@ -2247,6 +2249,7 @@ mod tests {
     use crate::exec::NumericType;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
+    use kcl_value_presentation::KclValuePresentation;
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -2277,13 +2280,17 @@ mod tests {
     async fn execute_error_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValuePresentation> {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let error = ctx.run(&program, &mut exec_state).await.unwrap_err();
         ctx.close().await;
-        error.variables
+        error
+            .variables
+            .into_iter()
+            .map(|(k, v)| (k, KclValuePresentation::from(v)))
+            .collect()
     }
 
     async fn execute_project_variables_with_backend(
@@ -2364,7 +2371,7 @@ mod tests {
         outcome.variables
     }
 
-    fn sorted_variable_keys(variables: &IndexMap<String, KclValue>) -> Vec<String> {
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValuePresentation>) -> Vec<String> {
         let mut keys = variables.keys().cloned().collect::<Vec<_>>();
         keys.sort();
         keys
