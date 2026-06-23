@@ -1204,6 +1204,10 @@ pub struct Solid {
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// Tag identifiers for the faces of this body, declared via tag arguments
+    /// (e.g. `tag`, `tagStart`, `tagEnd`) on the call that created it.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub faces: IndexMap<String, TagIdentifier>,
     /// How this solid was created.
     #[serde(rename = "sketch")]
     pub creator: SolidCreator,

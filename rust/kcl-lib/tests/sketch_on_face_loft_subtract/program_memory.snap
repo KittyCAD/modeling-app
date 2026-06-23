@@ -871,6 +871,12 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "theEnd": {
+          "type": "TagIdentifier",
+          "value": "theEnd"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

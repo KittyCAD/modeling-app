@@ -57,6 +57,7 @@ use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
+use crate::execution::kcl_value::KclObjectKind;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::SKETCH_PREFIX;
 use crate::execution::memory::{self};
@@ -2290,6 +2291,7 @@ impl Node<SketchBlock> {
         let return_value = KclValue::Object {
             value: properties,
             constrainable: Default::default(),
+            object_kind: KclObjectKind::Default,
             meta: vec![metadata],
         };
         Ok(if self.is_being_edited {
@@ -2479,6 +2481,7 @@ impl Node<SketchBlock> {
         let meta_value = KclValue::Object {
             value: meta_map,
             constrainable: false,
+            object_kind: KclObjectKind::Default,
             meta: vec![Metadata {
                 source_range: SourceRange::from(self),
             }],
@@ -3512,8 +3515,31 @@ impl Node<MemberExpression> {
                     None,
                 )),
             },
-            (KclValue::Object { value: map, .. }, Property::String(property), false) => {
+            (
+                KclValue::Object {
+                    value: map,
+                    object_kind,
+                    ..
+                },
+                Property::String(property),
+                false,
+            ) => {
                 if let Some(value) = map.get(&property) {
+                    if object_kind
+                        .deprecated_solid_tag_names()
+                        .iter()
+                        .any(|tag_name| tag_name == &property)
+                    {
+                        exec_state.warn(
+                            CompilationIssue::err(
+                                SourceRange::from(self),
+                                format!(
+                                    "Accessing solid-created face `{property}` through sketch tags is deprecated. Use the body's faces instead, e.g. `body.faces.{property}`."
+                                ),
+                            ),
+                            annotations::WARN_DEPRECATED,
+                        );
+                    }
                     Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
@@ -3591,11 +3617,26 @@ impl Node<MemberExpression> {
                 }
                 .continue_())
             }
+            (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "faces" => {
+                Ok(KclValue::Object {
+                    meta: vec![Metadata {
+                        source_range: SourceRange::from(self.clone()),
+                    }],
+                    value: solid
+                        .faces
+                        .iter()
+                        .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
+                        .collect(),
+                    constrainable: false,
+                    object_kind: KclObjectKind::Default,
+                }
+                .continue_())
+            }
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
-                        "Property `{prop}` not found on {}. You can get a solid's tags through its sketch, as in, `exampleSolid.sketch.tags`.",
+                        "Property `{prop}` not found on {}. You can get a solid's faces through `exampleSolid.faces`, or its sketch tags through `exampleSolid.sketch.tags`.",
                         geometry.human_friendly_type()
                     ),
                     vec![self.clone().into()],
@@ -3611,6 +3652,14 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
                 constrainable: false,
+                object_kind: KclObjectKind::SketchTags {
+                    deprecated_solid_tag_names: sk
+                        .tags
+                        .iter()
+                        .filter(|(_, tag)| tag.is_body_created_tag())
+                        .map(|(name, _)| name.to_owned())
+                        .collect(),
+                },
             }
             .continue_()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
@@ -5631,6 +5680,7 @@ impl Node<UnaryExpression> {
                             value,
                             meta: meta.clone(),
                             constrainable: false,
+                            object_kind: KclObjectKind::Default,
                         }
                         .continue_())
                     }
@@ -5876,6 +5926,7 @@ impl Node<ObjectExpression> {
                 source_range: self.into(),
             }],
             constrainable: false,
+            object_kind: KclObjectKind::Default,
         }
         .continue_())
     }
@@ -6056,6 +6107,7 @@ mod test {
 
     use super::*;
     use crate::ExecutorSettings;
+    use crate::engine::engine_manager;
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
@@ -6553,16 +6605,7 @@ d = b + c
             .unwrap();
 
         let exec_ctxt = ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new()
-                    .map_err(|err| {
-                        internal_err(
-                            format!("Failed to create mock engine connection: {err}"),
-                            SourceRange::default(),
-                        )
-                    })
-                    .unwrap(),
-            )),
+            engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {

@@ -12,6 +12,22 @@ interface MetaFileDirectoryData {
   mtimeMs: number
 }
 
+function createDirectoryMetadata(): MetaFileDirectoryData {
+  return {
+    mtimeMs: new Date().getTime(),
+  }
+}
+
+async function writeDirectoryMetadata(
+  metaFilePath: string,
+  metadata: MetaFileDirectoryData
+) {
+  await writeFile(
+    path.resolve(metaFilePath),
+    new TextEncoder().encode(JSON.stringify(metadata))
+  )
+}
+
 const isMetaFileDirectoryData = (x: unknown): x is MetaFileDirectoryData => {
   return (
     typeof x === 'object' &&
@@ -213,35 +229,25 @@ const stat = async (targetPath: string): Promise<IStat> => {
   // update it as necessary. For now it will only store: creation and
   // modification time.
   const metaFilePath = path.resolve(targetPath, META_FILE)
-  let json
+  let obj
   try {
-    json = await readFile(metaFilePath, { encoding: 'utf-8' })
+    const json = await readFile(metaFilePath, { encoding: 'utf-8' })
+    try {
+      obj = JSON.parse(json)
+    } catch {
+      obj = undefined
+    }
   } catch (e: unknown) {
-    if (typeof e !== 'string') {
+    if (e !== 'ENOENT') {
       // eslint-disable-next-line suggest-no-throw/suggest-no-throw
       throw e
     }
-
-    // The metafile didn't exist in the first place. Let's create it.
-    if (e === 'ENOENT') {
-      await writeFile(
-        path.resolve(metaFilePath),
-        new TextEncoder().encode(
-          JSON.stringify({
-            mtimeMs: new Date().getTime(),
-          })
-        )
-      )
-    }
-
-    // This will work now.
-    json = await readFile(metaFilePath, { encoding: 'utf-8' })
   }
 
-  const obj = JSON.parse(json)
-  if (!isMetaFileDirectoryData(obj))
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new Error(`Corrupt ${META_FILE} file`)
+  if (!isMetaFileDirectoryData(obj)) {
+    obj = createDirectoryMetadata()
+    await writeDirectoryMetadata(metaFilePath, obj)
+  }
 
   return {
     dev: 0,
@@ -432,11 +438,7 @@ const writeFile = async (
 
   await writeFile(
     path.resolve(targetPath, '..', META_FILE),
-    new TextEncoder().encode(
-      JSON.stringify({
-        mtimeMs: new Date().getTime(),
-      })
-    )
+    new TextEncoder().encode(JSON.stringify(createDirectoryMetadata()))
   )
 
   return undefined

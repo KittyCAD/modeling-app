@@ -179,6 +179,7 @@ fn substitute_sketch_var(
         KclValue::Object {
             value,
             constrainable,
+            object_kind,
             meta,
         } => {
             let subbed = value
@@ -191,6 +192,7 @@ fn substitute_sketch_var(
             Ok(KclValue::Object {
                 value: subbed,
                 constrainable,
+                object_kind,
                 meta,
             })
         }
