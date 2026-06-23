@@ -878,6 +878,19 @@ export function getSketchBlockForPathArtifact(
   return sketchBlock
 }
 
+export function getOriginalSegmentArtifact(
+  segmentId: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | undefined {
+  const segment = artifactGraph.get(segmentId)
+  if (!segment || segment.type !== 'segment') return undefined
+
+  if (!segment.originalSegId) return segment
+
+  const originalSegment = artifactGraph.get(segment.originalSegId)
+  return originalSegment?.type === 'segment' ? originalSegment : segment
+}
+
 export function getSketchBlockForArtifact(
   artifact: Artifact | undefined,
   artifactGraph: ArtifactGraph

@@ -54,7 +54,9 @@ import {
   getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
+  getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSweepArtifactFromSelection,
   getSweepFromSuspectedSweepSurface,
@@ -146,32 +148,16 @@ async function getResolvableIntersectionInfoForRegion(
   return regionInfoResponse.data
 }
 
-function getSegmentArtifactForRegionSegment(
-  segmentId: ArtifactId,
-  artifactGraph: ArtifactGraph
-) {
-  const segment = artifactGraph.get(segmentId)
-  if (!segment || segment.type !== 'segment') return null
-
-  if (!segment.originalSegId) return segment
-
-  const originalSegment = artifactGraph.get(segment.originalSegId)
-  return originalSegment?.type === 'segment' ? originalSegment : segment
-}
-
 function getSketchIdForRegionInfo(
   regionInfo: RegionGetResolvableIntersectionInfo,
   artifactGraph: ArtifactGraph
 ): ArtifactId | null {
   const segmentIds = [regionInfo.segment, regionInfo.intersection_segment]
   for (const segmentId of segmentIds) {
-    const segment = getSegmentArtifactForRegionSegment(segmentId, artifactGraph)
+    const segment = getOriginalSegmentArtifact(segmentId, artifactGraph)
     if (!segment) continue
 
-    const path = artifactGraph.get(segment.pathId)
-    if (!path || path.type !== 'path') continue
-
-    const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
+    const sketch = getSketchBlockForArtifact(segment, artifactGraph)
     if (sketch) return sketch.id
   }
 

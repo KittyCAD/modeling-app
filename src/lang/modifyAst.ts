@@ -56,6 +56,10 @@ import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
 import {
+  getOriginalSegmentArtifact,
+  getSketchBlockForArtifact,
+} from '@src/lang/std/artifactGraph'
+import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
   type getConstraintInfoKw as GetConstraintInfoKwFn,
 } from '@src/lang/std/sketch'
@@ -1069,29 +1073,22 @@ function getSegmentExprForEngineRegion({
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
 }): Error | Expr {
-  const segmentArtifact = artifactGraph.get(segmentId)
-  if (!segmentArtifact || segmentArtifact.type !== 'segment') {
+  const segmentArtifact = getOriginalSegmentArtifact(segmentId, artifactGraph)
+  if (!segmentArtifact) {
     return new Error("Couldn't retrieve region segment artifact")
   }
 
-  const originalSegmentId = segmentArtifact.originalSegId ?? segmentArtifact.id
-  const originalSegmentArtifact = artifactGraph.get(originalSegmentId)
-  if (!originalSegmentArtifact || originalSegmentArtifact.type !== 'segment') {
-    return new Error("Couldn't retrieve original region segment artifact")
-  }
-
-  const pathArtifact = artifactGraph.get(originalSegmentArtifact.pathId)
-  if (!pathArtifact || pathArtifact.type !== 'path') {
-    return new Error("Couldn't retrieve region segment path artifact")
-  }
-
-  if (pathArtifact.sketchBlockId !== sketchId) {
+  const sketchArtifact = getSketchBlockForArtifact(
+    segmentArtifact,
+    artifactGraph
+  )
+  if (sketchArtifact?.id !== sketchId) {
     return new Error('Region segment is not part of the selected sketch')
   }
 
   const segmentVarName = getSketchSegmentName(
     modifiedAst,
-    originalSegmentArtifact.id,
+    segmentArtifact.id,
     artifactGraph,
     wasmInstance
   )
