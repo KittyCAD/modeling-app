@@ -61,6 +61,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_inputs = super::fillet::parse_tagged_edge_inputs(
         edge_refs,
         tags,
+        Some(solid.as_ref()),
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to chamfer edges",

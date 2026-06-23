@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart fillet_ambiguous_region_edge_specifier_broad.kcl
+extension: md
+snapshot_kind: binary
+---
