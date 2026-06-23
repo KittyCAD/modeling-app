@@ -13,7 +13,6 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
-  getEngineRegionSelectionFromEntity,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -1717,14 +1716,8 @@ describe('getSelectionTypeDisplayText', () => {
         {
           type: 'engineRegion',
           id: 'region-1',
+          point: { x: 0, y: 0 },
           sketchId: 'sketch-1',
-          resolvableIntersectionInfo: {
-            segment: 'segment-1',
-            intersection_segment: 'segment-2',
-            intersection_index: 0,
-            intersection_count: 1,
-            curve_clockwise: false,
-          },
         } as any,
       ],
     }
@@ -1772,70 +1765,6 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
-  })
-})
-
-describe('getEngineRegionSelectionFromEntity', () => {
-  test('uses the resolver API to build segment-based region selections', async () => {
-    const artifactGraph = new Map([
-      ['sketch-block-1', { type: 'sketchBlock', id: 'sketch-block-1' }],
-      [
-        'path-1',
-        {
-          type: 'path',
-          id: 'path-1',
-          sketchBlockId: 'sketch-block-1',
-        },
-      ],
-      ['segment-1', { type: 'segment', id: 'segment-1', pathId: 'path-1' }],
-      ['segment-2', { type: 'segment', id: 'segment-2', pathId: 'path-1' }],
-    ]) as unknown as ArtifactGraph
-    const sendSceneCommand = vi.fn().mockResolvedValue({
-      success: true,
-      resp: {
-        type: 'modeling',
-        data: {
-          modeling_response: {
-            type: 'region_get_resolvable_intersection_info',
-            data: {
-              segment: 'segment-1',
-              intersection_segment: 'segment-2',
-              intersection_index: 0,
-              intersection_count: 2,
-              curve_clockwise: true,
-            },
-          },
-        },
-      },
-    })
-
-    const selection = await getEngineRegionSelectionFromEntity(
-      'region-1',
-      artifactGraph,
-      { sendSceneCommand } as any
-    )
-
-    expect(sendSceneCommand).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'region_get_resolvable_intersection_info',
-          region_id: 'region-1',
-        },
-      })
-    )
-    expect(selection).toEqual({
-      type: 'engineRegion',
-      id: 'region-1',
-      sketchId: 'sketch-block-1',
-      resolvableIntersectionInfo: {
-        segment: 'segment-1',
-        intersection_segment: 'segment-2',
-        intersection_index: 0,
-        intersection_count: 2,
-        curve_clockwise: true,
-      },
-    })
   })
 })
 
