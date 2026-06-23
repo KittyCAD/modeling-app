@@ -1,6 +1,6 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
-import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -16,6 +16,10 @@ import { isErr } from '@src/lib/trap'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  getZookeeperEditPatchFromToolOutput,
+  isZookeeperProjectEntrypointPath,
+} from '@src/lib/zookeeperEditPatch'
 import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -133,7 +137,12 @@ export type SystemIOContext = SystemIOInput & {
    * if we used a string the useEffect would not change
    */
   requestedProjectName: { name: string; subRoute?: string }
-  requestedFileName: { project: string; file: string; subRoute?: string }
+  requestedFileName: {
+    project: string
+    file: string
+    subRoute?: string
+    onProjectLoaderComplete?: () => void
+  }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
   requestedTextToCadGeneration: {
@@ -228,6 +237,13 @@ export const determineProjectFilePathFromPrompt = (
   return finalPath
 }
 
+const normalizeRelativePath = (filePath: string) => filePath.replace(/\\/g, '/')
+
+const normalizePathForComparison = (filePath: string) => {
+  const normalized = normalizeRelativePath(fsZds.resolve(filePath))
+  return fsZds.sep === '\\' ? normalized.toLowerCase() : normalized
+}
+
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
@@ -255,6 +271,23 @@ export const collectProjectFiles = async (args: {
   if (args.projectContext) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
+    const selectedAbsolutePath = args.selectedFilePath
+      ? normalizePathForComparison(args.selectedFilePath)
+      : undefined
+    const selectedRelativePath = args.selectedFilePath
+      ? normalizeRelativePath(
+          fsZds.relative(basePath, args.selectedFilePath) ?? ''
+        )
+      : undefined
+    const isSelectedFilePath = (absolutePath: string) => {
+      if (!args.selectedFilePath) return false
+
+      return (
+        normalizePathForComparison(absolutePath) === selectedAbsolutePath ||
+        normalizeRelativePath(fsZds.relative(basePath, absolutePath) ?? '') ===
+          selectedRelativePath
+      )
+    }
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
     const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
@@ -264,7 +297,7 @@ export const collectProjectFiles = async (args: {
       filePromises.push(
         Promise.resolve()
           .then(() =>
-            args.selectedFilePath === absolutePathToFileNameWithExtension
+            isSelectedFilePath(absolutePathToFileNameWithExtension)
               ? new TextEncoder().encode(args.selectedFileContents)
               : fsZds.readFile(absolutePathToFileNameWithExtension)
           )
@@ -380,11 +413,12 @@ export const mlConversationsToJson = (
 }
 
 export const prepareMlEphantNewFileRequest = ({
+  fallbackFilePath,
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
   filesToDelete = [],
-}: MlEphantNewFileRequestProps) => {
+}: MlEphantNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
     toolOutput.type !== 'edit_kcl_code'
@@ -408,17 +442,54 @@ export const prepareMlEphantNewFileRequest = ({
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
   // project-relative, matching what the field name promises.
   const rawRelativePath = getFilePathRelativeToProject(
-    fileFocusedOnInEditor?.path || '',
+    fileFocusedOnInEditor?.path || fallbackFilePath || '',
     projectNameCurrentlyOpened
   )
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
     ? rawRelativePath.slice(fsZds.sep.length)
     : rawRelativePath
+  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
+  const zookeeperEditPatch = rawZookeeperEditPatch
+    ? {
+        ...rawZookeeperEditPatch,
+        changed_files: rawZookeeperEditPatch.changed_files?.filter(
+          (file) =>
+            file.status !== 'deleted' ||
+            !isZookeeperProjectEntrypointPath(file.path)
+        ),
+      }
+    : undefined
+  const filesToDeleteByPath = new Map<string, RequestedKCLFileDelete>()
+
+  for (const file of filesToDelete) {
+    if (isZookeeperProjectEntrypointPath(file.requestedFileName)) continue
+    filesToDeleteByPath.set(
+      normalizeKCLFileDeletePath(file.requestedFileName),
+      file
+    )
+  }
+
+  for (const file of zookeeperEditPatch?.changed_files ?? []) {
+    if (file.status !== 'deleted') continue
+    filesToDeleteByPath.set(normalizeKCLFileDeletePath(file.path), {
+      requestedFileName: file.path,
+    })
+  }
+
+  const normalizedRequestedFileName = normalizeKCLFileDeletePath(
+    requestedFileNameWithExtension
+  )
+  const requestedFileWasDeleted =
+    normalizedRequestedFileName.length > 0 &&
+    filesToDeleteByPath.has(normalizedRequestedFileName)
 
   return {
     files: requestedFiles,
-    filesToDelete,
+    filesToDelete: Array.from(filesToDeleteByPath.values()),
     requestedProjectName: projectNameCurrentlyOpened,
-    requestedFileNameWithExtension,
+    requestedFileNameWithExtension: requestedFileWasDeleted
+      ? PROJECT_ENTRYPOINT
+      : requestedFileNameWithExtension,
+    zookeeperEditPatch,
   }
 }

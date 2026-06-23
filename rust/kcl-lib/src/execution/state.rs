@@ -12,7 +12,6 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
-use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
@@ -20,6 +19,7 @@ use crate::NodePath;
 use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -1050,7 +1050,7 @@ impl ExecState {
 
     pub(crate) async fn build_artifact_graph(
         &mut self,
-        engine: &Arc<Box<dyn EngineManager>>,
+        engine: &Arc<EngineManager>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         let mut new_commands = Vec::new();

@@ -223,6 +223,12 @@ description: Variables in memory after executing countersunk-plate.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "topFace": {
+          "type": "TagIdentifier",
+          "value": "topFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2880,6 +2886,12 @@ description: Variables in memory after executing countersunk-plate.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "topFace": {
+          "type": "TagIdentifier",
+          "value": "topFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3336,6 +3348,12 @@ description: Variables in memory after executing countersunk-plate.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "topFace": {
+          "type": "TagIdentifier",
+          "value": "topFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

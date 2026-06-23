@@ -1,4 +1,5 @@
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 
 export type OptimisticProjectRename = {
   title: string
@@ -59,6 +60,7 @@ export function pruneSettledOptimisticProjectRenames(
       optimisticProjectRenames[project.cloudProjectId]
     if (
       optimisticProjectRename &&
+      getProjectDisplayName(project) === optimisticProjectRename.title &&
       (project.metadata?.modified ?? Number.NEGATIVE_INFINITY) >=
         optimisticProjectRename.modified
     ) {

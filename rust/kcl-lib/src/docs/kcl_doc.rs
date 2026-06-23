@@ -876,6 +876,8 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Whether this argument is deprecated regardless of the KCL version.
+    pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
 }
@@ -916,6 +918,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
         };
 

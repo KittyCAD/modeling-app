@@ -26,12 +26,13 @@ afterEach(() => {
 
 const now = Date.now()
 const projectWellFormed = {
-  name: 'Simple Box',
-  path: '/some/path/Simple Box',
+  name: '550e8400-e29b-41d4-a716-446655440000',
+  title: 'Simple Box',
+  path: '/some/path/550e8400-e29b-41d4-a716-446655440000',
   children: [
     {
       name: 'main.kcl',
-      path: '/some/path/Simple Box/main.kcl',
+      path: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
       children: [],
     },
   ],
@@ -46,12 +47,12 @@ const projectWellFormed = {
   },
   kcl_file_count: 1,
   directory_count: 0,
-  default_file: '/some/path/Simple Box/main.kcl',
+  default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
 } satisfies Project
 
 const nestedFile = {
   name: 'nested-part.kcl',
-  path: '/some/path/Simple Box/parts/generated/nested-part.kcl',
+  path: '/some/path/550e8400-e29b-41d4-a716-446655440000/parts/generated/nested-part.kcl',
   children: null,
 } satisfies FileEntry
 
@@ -83,9 +84,7 @@ describe('ProjectSidebarMenu tests', () => {
   test('Disables popover menu by default', () => {
     renderWithRouter(<ProjectSidebarMenu project={projectWellFormed} />)
 
-    expect(screen.getByTestId('project-name')).toHaveTextContent(
-      projectWellFormed.name
-    )
+    expect(screen.getByTestId('project-name')).toHaveTextContent('Simple Box')
   })
 
   test('Links the logo to Home when home navigation is enabled', () => {
