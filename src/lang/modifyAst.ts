@@ -1133,8 +1133,20 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error("Couldn't retrieve sketch block variable")
     }
 
+    const {
+      segment,
+      intersection_segment: intersectionSegment,
+      intersection_count: intersectionCount,
+      intersection_index: intersectionIndex,
+      curve_clockwise: curveClockwise,
+    } = regionSelection.resolvableIntersectionInfo
+    const segmentIds =
+      segment === intersectionSegment
+        ? [segment]
+        : [segment, intersectionSegment]
+
     const segmentExprs: Expr[] = []
-    for (const segmentId of regionSelection.segmentIds) {
+    for (const segmentId of segmentIds) {
       const segmentExpr = getSegmentExprForEngineRegion({
         segmentId,
         sketchId: regionSelection.sketchId,
@@ -1152,18 +1164,16 @@ export function insertRegionVariablesAndOffsetPathToNode({
     const labeledArgs = [
       createLabeledArg('segments', createArrayExpression(segmentExprs)),
     ]
-    if (
-      regionSelection.intersectionIndex !== undefined &&
-      regionSelection.intersectionIndex !== -1
-    ) {
+    // KCL uses omitted/-1 intersectionIndex as the default single-intersection case.
+    if (intersectionCount > 1 && intersectionIndex !== -1) {
       labeledArgs.push(
         createLabeledArg(
           'intersectionIndex',
-          createLiteral(regionSelection.intersectionIndex, wasmInstance)
+          createLiteral(intersectionIndex, wasmInstance)
         )
       )
     }
-    if (regionSelection.curveClockwise) {
+    if (curveClockwise) {
       labeledArgs.push(createLabeledArg('direction', createLocalName('CW')))
     }
 

@@ -107,10 +107,16 @@ function createEngineRegionSelectionForSketch({
   artifactGraph,
   sketchId,
   id = 'region-1',
+  intersectionIndex = 0,
+  intersectionCount = 1,
+  curveClockwise = false,
 }: {
   artifactGraph: ArtifactGraph
   sketchId: string
   id?: string
+  intersectionIndex?: number
+  intersectionCount?: number
+  curveClockwise?: boolean
 }): EngineRegionSelection {
   const segmentIds = [...artifactGraph.values()]
     .filter((artifact) => {
@@ -124,15 +130,23 @@ function createEngineRegionSelectionForSketch({
   if (segmentIds.length === 0) {
     throw new Error('Sketch segment artifacts not found')
   }
+  const segment = segmentIds[0]
+  if (!segment) {
+    throw new Error('Sketch segment artifact not found')
+  }
+  const intersectionSegment = segmentIds[1] ?? segment
 
   return {
     type: 'engineRegion',
     id,
     sketchId,
-    segmentIds:
-      segmentIds.length === 1
-        ? [segmentIds[0]]
-        : [segmentIds[0], segmentIds[1]],
+    resolvableIntersectionInfo: {
+      segment,
+      intersection_segment: intersectionSegment,
+      intersection_index: intersectionIndex,
+      intersection_count: intersectionCount,
+      curve_clockwise: curveClockwise,
+    },
   }
 }
 
@@ -326,6 +340,47 @@ extrude002 = extrude(seg01, length = 3)`)
         `hidden001 = hide(s)
 region001 = region(segments = [s.line1, s.line2])
 extrude001 = extrude(region001, length = 1)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should emit intersectionIndex only for ambiguous sketch region intersections', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+            intersectionIndex: 0,
+            intersectionCount: 2,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(segments = [s.line1, s.line2], intersectionIndex = 0)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })

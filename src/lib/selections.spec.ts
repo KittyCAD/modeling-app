@@ -1718,7 +1718,13 @@ describe('getSelectionTypeDisplayText', () => {
           type: 'engineRegion',
           id: 'region-1',
           sketchId: 'sketch-1',
-          segmentIds: ['segment-1', 'segment-2'],
+          resolvableIntersectionInfo: {
+            segment: 'segment-1',
+            intersection_segment: 'segment-2',
+            intersection_index: 0,
+            intersection_count: 1,
+            curve_clockwise: false,
+          },
         } as any,
       ],
     }
@@ -1821,10 +1827,14 @@ describe('getEngineRegionSelectionFromEntity', () => {
     expect(selection).toEqual({
       type: 'engineRegion',
       id: 'region-1',
-      segmentIds: ['segment-1', 'segment-2'],
       sketchId: 'sketch-block-1',
-      intersectionIndex: 0,
-      curveClockwise: true,
+      resolvableIntersectionInfo: {
+        segment: 'segment-1',
+        intersection_segment: 'segment-2',
+        intersection_index: 0,
+        intersection_count: 2,
+        curve_clockwise: true,
+      },
     })
   })
 })

@@ -1,4 +1,7 @@
-import type { EntityType } from '@kittycad/lib'
+import type {
+  EntityType,
+  RegionGetResolvableIntersectionInfo,
+} from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
@@ -35,9 +38,7 @@ export interface EngineRegionSelection {
   type: 'engineRegion'
   id: string
   sketchId: ArtifactId
-  segmentIds: [ArtifactId, ...ArtifactId[]]
-  intersectionIndex?: number
-  curveClockwise?: boolean
+  resolvableIntersectionInfo: RegionGetResolvableIntersectionInfo
 }
 
 export type NonCodeSelection =

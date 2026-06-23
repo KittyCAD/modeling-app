@@ -210,24 +210,11 @@ export async function getEngineRegionSelectionFromEntity(
   const sketchId = getSketchIdForRegionInfo(regionInfo, artifactGraph)
   if (!sketchId) return null
 
-  const segmentIds =
-    regionInfo.segment === regionInfo.intersection_segment
-      ? ([regionInfo.segment] as [ArtifactId])
-      : ([regionInfo.segment, regionInfo.intersection_segment] as [
-          ArtifactId,
-          ArtifactId,
-        ])
-
   return {
     type: 'engineRegion',
     id: regionEntityId,
-    segmentIds,
     sketchId,
-    intersectionIndex:
-      regionInfo.intersection_count > 1
-        ? regionInfo.intersection_index
-        : undefined,
-    curveClockwise: regionInfo.curve_clockwise,
+    resolvableIntersectionInfo: regionInfo,
   }
 }
 
