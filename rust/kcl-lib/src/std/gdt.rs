@@ -298,7 +298,8 @@ async fn parse_gdt_edges_arg(exec_state: &mut ExecState, args: &Args) -> Result<
     for edge_value in &edges {
         if edge::is_edge_specifier_object(edge_value) {
             let unresolved = edge::parse_edge_specifier_value(edge_value, args)?;
-            let edge_reference = edge::resolve_edge_specifier_with_face_tags(&unresolved, exec_state, args).await?;
+            let edge_reference =
+                edge::resolve_edge_specifier_with_face_tags(&unresolved, None, exec_state, args).await?;
             parsed_edges.push(GdtEdgeReference::Specifier(edge_reference));
         } else if let Some(edge) = EdgeReference::from_kcl_val(edge_value) {
             parsed_edges.push(GdtEdgeReference::Entity(edge));
