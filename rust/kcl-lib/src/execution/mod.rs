@@ -27,7 +27,7 @@ use indexmap::IndexMap;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
-pub use kcl_value_presentation::KclValuePresentation;
+pub use kcl_value_view::KclValueView;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -144,7 +144,7 @@ mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
-pub(crate) mod kcl_value_presentation;
+pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
 mod sketch_solve;
@@ -296,7 +296,7 @@ impl PreserveMem {
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
-    pub variables: IndexMap<String, KclValuePresentation>,
+    pub variables: IndexMap<String, KclValueView>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,
@@ -2259,7 +2259,7 @@ mod tests {
     async fn execute_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValuePresentation> {
+    ) -> IndexMap<String, KclValueView> {
         execute_outcome_with_backend(code, backend).await.variables
     }
 
@@ -2279,7 +2279,7 @@ mod tests {
     async fn execute_error_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValuePresentation> {
+    ) -> IndexMap<String, KclValueView> {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -2292,7 +2292,7 @@ mod tests {
         main_code: &str,
         files: &[(&str, &str)],
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValuePresentation> {
+    ) -> IndexMap<String, KclValueView> {
         let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
         for (name, contents) in files {
             tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
@@ -2323,7 +2323,7 @@ mod tests {
     async fn run_with_caching_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValuePresentation> {
+    ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         cache::bust_cache().await;
         clear_mem_cache().await;
@@ -2342,7 +2342,7 @@ mod tests {
     async fn run_mock_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValuePresentation> {
+    ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         clear_mem_cache().await;
 
@@ -2366,15 +2366,15 @@ mod tests {
         outcome.variables
     }
 
-    fn sorted_variable_keys(variables: &IndexMap<String, KclValuePresentation>) -> Vec<String> {
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValueView>) -> Vec<String> {
         let mut keys = variables.keys().cloned().collect::<Vec<_>>();
         keys.sort();
         keys
     }
 
-    fn assert_number_variable(variables: &IndexMap<String, KclValuePresentation>, key: &str, expected: f64) {
+    fn assert_number_variable(variables: &IndexMap<String, KclValueView>, key: &str, expected: f64) {
         let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
-        let KclValuePresentation::Number { value, .. } = value else {
+        let KclValueView::Number { value, .. } = value else {
             panic!("expected `{key}` to be a number, got {value:?}");
         };
         assert_eq!(*value, expected, "{key}: {value:?}");

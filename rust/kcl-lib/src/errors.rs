@@ -20,7 +20,7 @@ use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
-use crate::execution::KclValuePresentation;
+use crate::execution::KclValueView;
 use crate::execution::OperationsByModule;
 use crate::front::Number;
 use crate::front::Object;
@@ -215,7 +215,7 @@ pub struct KclErrorWithOutputs {
     pub non_fatal: Vec<CompilationIssue>,
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
-    pub variables: IndexMap<String, KclValuePresentation>,
+    pub variables: IndexMap<String, KclValueView>,
     pub operations: OperationsByModule,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
     // reason.
@@ -249,11 +249,11 @@ impl KclErrorWithOutputs {
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
     ) -> Self {
-        let variables_presentational = variables.into_iter().map(|(k, v)| (k, v.into())).collect();
+        let variables_view = variables.into_iter().map(|(k, v)| (k, v.into())).collect();
         Self {
             error,
             non_fatal,
-            variables: variables_presentational,
+            variables: variables_view,
             operations,
             _artifact_commands: artifact_commands,
             artifact_graph,

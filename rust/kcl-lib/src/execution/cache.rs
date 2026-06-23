@@ -14,7 +14,7 @@ use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecutorSettings;
-use crate::execution::KclValuePresentation;
+use crate::execution::KclValueView;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
@@ -123,7 +123,7 @@ impl GlobalState {
             .exec_state
             .variables(self.main.result_env)?
             .into_iter()
-            .map(|(key, value)| (key, KclValuePresentation::from(value)))
+            .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
         Ok(ExecOutcome {
             variables,

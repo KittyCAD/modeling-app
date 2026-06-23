@@ -108,7 +108,7 @@ pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
-pub use execution::KclValuePresentation;
+pub use execution::KclValueView;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
@@ -158,7 +158,7 @@ pub mod exec {
     pub use crate::execution::IdGenerator;
     pub use crate::execution::KclObjectKind;
     pub use crate::execution::KclValue;
-    pub use crate::execution::KclValuePresentation;
+    pub use crate::execution::KclValueView;
     pub use crate::execution::Operation;
     pub use crate::execution::PlaneKind;
     pub use crate::execution::Sketch;

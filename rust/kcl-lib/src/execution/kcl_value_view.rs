@@ -20,13 +20,13 @@ use crate::execution::types::NumericType;
 use crate::parsing::ast::types::KclNone;
 use crate::parsing::ast::types::TagDeclarator;
 
-pub type KclObjectFields = HashMap<String, KclValuePresentation>;
+pub type KclObjectFields = HashMap<String, KclValueView>;
 
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum KclValuePresentation {
+pub enum KclValueView {
     Uuid {
         value: ::uuid::Uuid,
     },
@@ -47,11 +47,11 @@ pub enum KclValuePresentation {
         value: Box<SketchConstraint>,
     },
     Tuple {
-        value: Vec<KclValuePresentation>,
+        value: Vec<KclValueView>,
     },
     // An array where all values have a shared type (not necessarily the same principal type).
     HomArray {
-        value: Vec<KclValuePresentation>,
+        value: Vec<KclValueView>,
         // The type of values, not the array type.
     },
     Object {
@@ -101,7 +101,7 @@ pub enum KclValuePresentation {
     },
 }
 
-impl KclValuePresentation {
+impl KclValueView {
     #[allow(unused)]
     pub(crate) fn none() -> Self {
         Self::KclNone {
@@ -110,49 +110,46 @@ impl KclValuePresentation {
     }
 }
 
-impl From<KclValue> for KclValuePresentation {
+impl From<KclValue> for KclValueView {
     fn from(full: KclValue) -> Self {
         match full {
-            KclValue::Uuid { value, .. } => KclValuePresentation::Uuid { value },
-            KclValue::Bool { value, .. } => KclValuePresentation::Bool { value },
-            KclValue::Number { value, ty, .. } => KclValuePresentation::Number { value, ty },
-            KclValue::String { value, .. } => KclValuePresentation::String { value },
-            KclValue::SketchVar { value } => KclValuePresentation::SketchVar { value },
-            KclValue::SketchConstraint { value } => KclValuePresentation::SketchConstraint { value },
-            KclValue::Tuple { value, .. } => KclValuePresentation::Tuple {
-                value: value.into_iter().map(KclValuePresentation::from).collect(),
+            KclValue::Uuid { value, .. } => KclValueView::Uuid { value },
+            KclValue::Bool { value, .. } => KclValueView::Bool { value },
+            KclValue::Number { value, ty, .. } => KclValueView::Number { value, ty },
+            KclValue::String { value, .. } => KclValueView::String { value },
+            KclValue::SketchVar { value } => KclValueView::SketchVar { value },
+            KclValue::SketchConstraint { value } => KclValueView::SketchConstraint { value },
+            KclValue::Tuple { value, .. } => KclValueView::Tuple {
+                value: value.into_iter().map(KclValueView::from).collect(),
             },
-            KclValue::HomArray { value, .. } => KclValuePresentation::HomArray {
-                value: value.into_iter().map(KclValuePresentation::from).collect(),
+            KclValue::HomArray { value, .. } => KclValueView::HomArray {
+                value: value.into_iter().map(KclValueView::from).collect(),
             },
             KclValue::Object {
                 value,
                 constrainable,
                 object_kind,
                 ..
-            } => KclValuePresentation::Object {
-                value: value
-                    .into_iter()
-                    .map(|(k, v)| (k, KclValuePresentation::from(v)))
-                    .collect(),
+            } => KclValueView::Object {
+                value: value.into_iter().map(|(k, v)| (k, KclValueView::from(v))).collect(),
                 constrainable,
                 object_kind,
             },
-            KclValue::TagIdentifier(tag_identifier) => KclValuePresentation::TagIdentifier(tag_identifier),
-            KclValue::TagDeclarator(node) => KclValuePresentation::TagDeclarator(node),
-            KclValue::GdtAnnotation { value } => KclValuePresentation::GdtAnnotation { value },
-            KclValue::Plane { value } => KclValuePresentation::Plane { value },
-            KclValue::Face { value } => KclValuePresentation::Face { value },
-            KclValue::BoundedEdge { value, .. } => KclValuePresentation::BoundedEdge { value },
-            KclValue::Segment { value } => KclValuePresentation::Segment { value },
-            KclValue::Sketch { value } => KclValuePresentation::Sketch { value },
-            KclValue::Solid { value } => KclValuePresentation::Solid { value },
-            KclValue::Helix { value } => KclValuePresentation::Helix { value },
-            KclValue::ImportedGeometry(imported_geometry) => KclValuePresentation::ImportedGeometry(imported_geometry),
-            KclValue::Function { .. } => KclValuePresentation::Function {},
-            KclValue::Module { value, .. } => KclValuePresentation::Module { value },
-            KclValue::Type { experimental, .. } => KclValuePresentation::Type { experimental },
-            KclValue::KclNone { value, .. } => KclValuePresentation::KclNone { value },
+            KclValue::TagIdentifier(tag_identifier) => KclValueView::TagIdentifier(tag_identifier),
+            KclValue::TagDeclarator(node) => KclValueView::TagDeclarator(node),
+            KclValue::GdtAnnotation { value } => KclValueView::GdtAnnotation { value },
+            KclValue::Plane { value } => KclValueView::Plane { value },
+            KclValue::Face { value } => KclValueView::Face { value },
+            KclValue::BoundedEdge { value, .. } => KclValueView::BoundedEdge { value },
+            KclValue::Segment { value } => KclValueView::Segment { value },
+            KclValue::Sketch { value } => KclValueView::Sketch { value },
+            KclValue::Solid { value } => KclValueView::Solid { value },
+            KclValue::Helix { value } => KclValueView::Helix { value },
+            KclValue::ImportedGeometry(imported_geometry) => KclValueView::ImportedGeometry(imported_geometry),
+            KclValue::Function { .. } => KclValueView::Function {},
+            KclValue::Module { value, .. } => KclValueView::Module { value },
+            KclValue::Type { experimental, .. } => KclValueView::Type { experimental },
+            KclValue::KclNone { value, .. } => KclValueView::KclNone { value },
         }
     }
 }

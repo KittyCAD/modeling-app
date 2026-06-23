@@ -32,7 +32,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
-use crate::execution::KclValuePresentation;
+use crate::execution::KclValueView;
 use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
@@ -480,7 +480,7 @@ impl ExecState {
             .mod_local
             .variables(main_ref)?
             .into_iter()
-            .map(|(key, value)| (key, KclValuePresentation::from(value)))
+            .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
         Ok(ExecOutcome {
             variables,
