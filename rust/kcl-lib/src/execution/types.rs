@@ -1517,6 +1517,7 @@ impl KclValue {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
                         constrainable: false,
+                        object_kind: Default::default(),
                     })
                 }
                 _ => Err(self.into()),
@@ -1560,6 +1561,7 @@ impl KclValue {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
                         constrainable: false,
+                        object_kind: Default::default(),
                     })
                 }
                 _ => Err(self.into()),
@@ -1738,12 +1740,14 @@ impl KclValue {
                     // Note that we don't check for constrainability, coercing to a constrainable object
                     // adds that property.
                     constrainable,
+                    object_kind: Default::default(),
                 })
             }
             KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Object {
                 value: HashMap::new(),
                 meta: meta.clone(),
                 constrainable,
+                object_kind: Default::default(),
             }),
             _ => Err(self.into()),
         }
@@ -1846,6 +1850,7 @@ mod test {
                 value: crate::execution::KclObjectFields::new(),
                 meta: Vec::new(),
                 constrainable: false,
+                object_kind: Default::default(),
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
@@ -2001,6 +2006,7 @@ mod test {
                 value: HashMap::new(),
                 meta: Vec::new(),
                 constrainable: false,
+                object_kind: Default::default(),
             },
             &mut exec_state,
         );
@@ -2015,6 +2021,7 @@ mod test {
             value: HashMap::new(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let obj1 = KclValue::Object {
             value: [(
@@ -2027,6 +2034,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let obj2 = KclValue::Object {
             value: [
@@ -2057,6 +2065,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
 
         let ty0 = RuntimeType::Object(vec![], false);
@@ -2376,6 +2385,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let a3d = KclValue::Object {
             value: [
@@ -2429,6 +2439,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
 
         let ty2d = RuntimeType::Primitive(PrimitiveType::Axis2d);

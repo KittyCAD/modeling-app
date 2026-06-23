@@ -318,9 +318,9 @@ dependencies = [
 
 [[package]]
 name = "bon"
-version = "3.9.1"
+version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f47dbe92550676ee653353c310dfb9cf6ba17ee70396e1f7cf0a2020ad49b2fe"
+checksum = "a602c73c7b0148ec6d12af6fd5cc7a46e2eacc8878271a999abac56eed12f561"
 dependencies = [
  "bon-macros",
  "rustversion",
@@ -328,9 +328,9 @@ dependencies = [
 
 [[package]]
 name = "bon-macros"
-version = "3.9.1"
+version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "519bd3116aeeb42d5372c29d982d16d0170d3d4a5ed85fc7dd91642ffff3c67c"
+checksum = "6dee98b0db6a962de883bf5d20362dee4d7ca0d12fe39a7c6c73c844e1cd7c1f"
 dependencies = [
  "darling",
  "ident_case",
@@ -2363,6 +2363,7 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "base64",
+ "bon",
  "chrono",
  "clap",
  "console_error_panic_hook",
@@ -2475,20 +2476,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
-]
-
-[[package]]
-name = "kcl-to-core"
-version = "0.1.165"
-dependencies = [
- "anyhow",
- "async-trait",
- "indexmap 2.14.0",
- "kcl-lib",
- "kittycad",
- "kittycad-modeling-cmds",
- "tokio",
- "uuid",
 ]
 
 [[package]]
@@ -3729,8 +3716,9 @@ dependencies = [
 
 [[package]]
 name = "pulp"
-version = "0.22.2"
-source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
+version = "0.22.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "046aa45b989642ec2e4717c8e72d677b13edd831a4d3b6cf37d9a3e54912496a"
 dependencies = [
  "bytemuck",
  "cfg-if",
@@ -3745,8 +3733,9 @@ dependencies = [
 
 [[package]]
 name = "pulp-wasm-simd-flag"
-version = "0.1.0"
-source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d8f70e07b9c3962945a74e59ca1c511bba65b6419468acc217c457d93f3c740"
 
 [[package]]
 name = "pxfm"
@@ -5242,7 +5231,6 @@ dependencies = [
  "signal-hook-registry",
  "socket2 0.6.3",
  "tokio-macros",
- "tracing",
  "windows-sys 0.61.2",
 ]
 
