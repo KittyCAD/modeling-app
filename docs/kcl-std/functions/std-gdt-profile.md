@@ -10,7 +10,7 @@ GD&T profile annotation specifying how much edges or faces may deviate from thei
 ```kcl
 gdt::profile(
   tolerance: number(Length),
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   faces?: [TaggedFace; 1+],
   datums?: [string; 1+],
   precision?: number(_),
@@ -36,7 +36,7 @@ or neither, is a KCL error.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount of deviation from an ideal profile that is acceptable. | Yes |
-| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both. | No |
+| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated with profile of a surface. Provide either `edges` or `faces`, but not both. | No |
 | `datums` | [[`string`](/docs/kcl-std/types/std-types-string); 1+] | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
