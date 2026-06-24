@@ -5,7 +5,6 @@ import type { KclManager } from '@src/lang/KclManager'
 import { addFillet } from '@src/lang/modifyAst/edges'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import type { Expr } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -101,7 +100,7 @@ describeWithEngine('edges sketch block face api regression', () => {
         {
           artifact: wall,
           codeRef: codeRefs[0],
-        } as ResolvedGraphSelection,
+        },
         artifactGraph,
         instanceInThisFile
       )

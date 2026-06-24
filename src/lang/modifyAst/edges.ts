@@ -535,7 +535,7 @@ function buildEdgeExpr(
     )
   }
   const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    resolved as { artifact: Artifact; codeRef: CodeRef },
+    resolved,
     artifactGraph
   )
   if (err(sourceSurfaceArtifact)) {
@@ -878,7 +878,7 @@ export function createEdgeRefObjectExpression(
         {
           artifact: faceArtifact,
           codeRef: codeRefs[0],
-        } as ResolvedGraphSelection,
+        },
         artifactGraph,
         wasmInstance
       )
@@ -914,7 +914,7 @@ export function createEdgeRefObjectExpression(
         {
           artifact: endFaceArtifact,
           codeRef: codeRefs[0],
-        } as ResolvedGraphSelection,
+        },
         artifactGraph,
         wasmInstance
       )
@@ -1880,7 +1880,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           : (() => {
               const er = edgeSelectionToEntityReference(
                 {
-                  ...(resolved as ResolvedGraphSelection),
+                  ...resolved,
                   artifact: resolved.artifact,
                 },
                 artifactGraph
@@ -1926,7 +1926,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       if (!faceArtifact) continue
 
       const faceCodeRef =
-        getFaceCodeRef(faceArtifact as Parameters<typeof getFaceCodeRef>[0]) ??
+        getFaceCodeRef(faceArtifact) ??
         getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)?.[0]
       if (!faceCodeRef) continue
 
@@ -2261,7 +2261,7 @@ export function groupSelectionsByBodyAndAddTags(
         )
         if (fromParent?.artifact && fromParent.codeRef) {
           if (fromParent.artifact.type === 'sweep') {
-            sweepArtifact = fromParent.artifact as SweepArtifact
+            sweepArtifact = fromParent.artifact
           } else if (fromParent.artifact.type === 'compositeSolid') {
             // Shell/boolean body: same codeRef/id wiring as sweep for edgeId(solid, index)
             sweepArtifact = fromParent.artifact as unknown as SweepArtifact
@@ -2415,7 +2415,7 @@ export function groupSelectionsByBodyAndAddTags(
           primitiveSelectionsByBody.get(bodyKey)?.bodySelection
         if (primitiveBody?.artifact) {
           if (primitiveBody.artifact.type === 'sweep') {
-            sweepResult = primitiveBody.artifact as SweepArtifact
+            sweepResult = primitiveBody.artifact
           } else if (primitiveBody.artifact.type === 'compositeSolid') {
             sweepResult = primitiveBody.artifact as unknown as SweepArtifact
           } else {
@@ -2433,7 +2433,7 @@ export function groupSelectionsByBodyAndAddTags(
         primitiveSelectionsByBody.get(bodyKey)?.bodySelection
       if (!primitiveBody?.artifact) continue
       if (primitiveBody.artifact.type === 'sweep') {
-        sweepResult = primitiveBody.artifact as SweepArtifact
+        sweepResult = primitiveBody.artifact
       } else if (primitiveBody.artifact.type === 'compositeSolid') {
         sweepResult = primitiveBody.artifact as unknown as SweepArtifact
       } else {

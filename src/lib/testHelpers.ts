@@ -63,9 +63,7 @@ export async function getAstAndSketchSelections(
   }
 
   const sketches = createSelectionFromPathArtifact(
-    artifacts.slice(count ? -count : undefined) as (Artifact & {
-      codeRef: CodeRef
-    })[],
+    artifacts.slice(count ? -count : undefined),
     artifactGraph
   )
   return { artifactGraph, ast, sketches }

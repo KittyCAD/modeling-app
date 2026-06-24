@@ -250,7 +250,7 @@ helix001 = helix(
           {
             artifact: segment,
             codeRef: segment!.codeRef,
-          } as any,
+          },
         ],
         otherSelections: [],
       }

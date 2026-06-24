@@ -93,7 +93,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       }
 
       await toolbar.revolveButton.click()
-      await cmdBar.expectState(state as CmdBarSerialised)
+      await cmdBar.expectState(state)
 
       await clickProfile()
 
@@ -102,7 +102,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       state.headerArguments.Profiles = '1 profile'
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state as CmdBarSerialised)
+      await cmdBar.expectState(state)
 
       // Select Edge option
       await cmdBar.selectOption({ name: 'Edge' }).click()
@@ -122,7 +122,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       state.headerArguments.Edge = '1 edge'
       state.highlightedHeaderArg = 'angle'
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state as CmdBarSerialised)
+      await cmdBar.expectState(state)
 
       // Move to review stage
       state.currentArgKey = ''
@@ -209,7 +209,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       state.headerArguments.Profiles = '1 profile'
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state as CmdBarSerialised)
+      await cmdBar.expectState(state)
 
       // Select Edge option
       await cmdBar.selectOption({ name: 'Edge' }).click()
@@ -228,7 +228,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       state.headerArguments.Edge = '1 edge'
       state.highlightedHeaderArg = 'angle'
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state as CmdBarSerialised)
+      await cmdBar.expectState(state)
 
       // Move to review stage
       state.currentArgKey = ''
@@ -246,7 +246,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.submit()
 
       // Assert we have a revolve in the code (the second one; first was removed to avoid order-dependent lint)
-      const code = await editor.getCurrentCode()
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`axis = seg03`)
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)

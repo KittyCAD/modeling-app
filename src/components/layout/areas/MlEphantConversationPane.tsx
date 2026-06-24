@@ -85,10 +85,6 @@ export const MlEphantConversationPane = (props: {
   const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.modeOptions
   })
-  const attachmentsLoadedForCurrentPrompt = useSelector(
-    props.mlEphantManagerActor,
-    (actor) => actor.context.attachmentsLoadedForCurrentPrompt
-  )
   const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.defaultMode
   })
@@ -501,8 +497,6 @@ export const MlEphantConversationPane = (props: {
   }, [searchParams, setSearchParams])
 
   const userBlockedOnPaymentReason = props.user?.block_message
-  const isLoadingAttachments =
-    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
   const wasPromptRunningRef = useRef(false)
 
   useEffect(() => {

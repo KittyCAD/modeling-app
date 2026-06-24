@@ -1628,9 +1628,7 @@ describe('pattern copy selection highlighting', () => {
       nodePath: [],
     },
   } as unknown as Artifact
-  const artifactGraph = new Map([
-    [patternArtifact.id, patternArtifact],
-  ]) as ArtifactGraph
+  const artifactGraph = new Map([[patternArtifact.id, patternArtifact]])
 
   test('maps pattern code selections to copied engine entities', () => {
     const selections: Selection[] = [
@@ -1861,7 +1859,7 @@ describe('getSelectionTypeDisplayText', () => {
           subType: 'region',
         } as unknown as Artifact,
       ],
-    ]) as ArtifactGraph
+    ])
     const selection: Selections = {
       graphSelections: [
         { entityRef: { type: 'solid2d', solid2d_id: 'path-1' }, codeRef },
@@ -1884,7 +1882,7 @@ describe('getSelectionTypeDisplayText', () => {
           type: 'sweep',
         } as unknown as Artifact,
       ],
-    ]) as ArtifactGraph
+    ])
     const selection: Selections = {
       graphSelections: [
         { entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' }, codeRef },
@@ -1907,7 +1905,7 @@ describe('getSelectionTypeDisplayText', () => {
           type: 'helix',
         } as unknown as Artifact,
       ],
-    ]) as ArtifactGraph
+    ])
     const selection: Selections = {
       graphSelections: [
         { entityRef: { type: 'solid2d_edge', edge_id: 'helix-1' }, codeRef },

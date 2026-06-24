@@ -36,9 +36,7 @@ import {
   getCapCodeRef,
   getCapForPathId,
   getFaceCodeRef,
-  getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
-import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -1004,32 +1002,6 @@ export function getPlaneExprFromSelection({
 }
 
 // Utilities
-
-function getSolidSelectionsFromFaceSelections(
-  faces: Selections,
-  artifactGraph: ArtifactGraph
-): Selections {
-  return {
-    graphSelections: faces.graphSelections.flatMap((face) => {
-      if (!face.artifact) {
-        return []
-      }
-      const sweep = getSweepFromSuspectedSweepSurface(
-        face.artifact.id,
-        artifactGraph
-      )
-      if (err(sweep) || !sweep) {
-        return []
-      }
-
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
-    }),
-    otherSelections: [],
-  }
-}
 
 export function getFacesExprsFromSelection(
   ast: Node<Program>,

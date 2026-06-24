@@ -1,4 +1,3 @@
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
@@ -102,9 +101,7 @@ describe('modelingMachine.test.ts', () => {
     SetAngleLengthModal: vi.fn(),
   }))
 
-  const toastErrorSpy = vi
-    .spyOn(toast, 'error')
-    .mockImplementation(() => '' as any)
+  const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
 
   // Add this function before the test cases
   // Utility function to wait for a condition to be met
@@ -1562,8 +1559,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })
@@ -1638,8 +1634,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })
