@@ -12,7 +12,12 @@ import {
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import { resolveToCodeRef } from '@src/lang/queryAst'
-import { type Name, assertParse, recast } from '@src/lang/wasm'
+import {
+  type Name,
+  assertParse,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -1579,7 +1584,7 @@ t = sketch(on = plane001) {
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const loft = operations.find(
+      const loft = getAllOperations(operations).find(
         (op) => op.type === 'StdLibCall' && op.name === 'loft'
       )
       if (!loft || loft.type !== 'StdLibCall') throw new Error('Op not found')
@@ -2369,7 +2374,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
           ast,
           rustContextInThisFile
         )
-        const op = operations.find(
+        const op = getAllOperations(operations).find(
           (o) => o.type === 'StdLibCall' && o.name === 'helix'
         )
         if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
@@ -2402,7 +2407,7 @@ helix001 = helix(
         ast,
         rustContextInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'helix'
       )
       if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
@@ -2445,7 +2450,7 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
         ast,
         rustContextInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'revolve'
       )
       if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
@@ -2483,7 +2488,7 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
         ast,
         rustContextInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'extrude'
       )
       if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.bodyType) {

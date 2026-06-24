@@ -14,7 +14,7 @@ import {
   getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
@@ -820,7 +820,7 @@ chamfer001 = chamfer(
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const op = operations.find(
+      const op = getAllOperations(operations).find(
         (o) => o.type === 'StdLibCall' && o.name === 'chamfer'
       )
       if (
