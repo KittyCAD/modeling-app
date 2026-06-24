@@ -405,20 +405,28 @@ export function addSweep({
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
-  const res = getFacesExprsFromSelection(
+  const faceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter((selection) => {
+      const resolved = resolveToCodeRef(selection, artifactGraph)
+      return resolved?.artifact != null && isFaceArtifact(resolved.artifact)
+    }),
+    otherSelections: [],
+  }
+  const faceExprs = getFacesExprsFromSelection(
     modifiedAst,
-    sketches,
+    faceSelections,
     artifactGraph,
     wasmInstance
   )
-  if (err(res)) return res
-  modifiedAst = res.modifiedAst
-  vars.exprs.push(...res.exprs)
+  if (err(faceExprs)) return faceExprs
+  modifiedAst = faceExprs.modifiedAst
+  vars.exprs.push(...faceExprs.exprs)
 
   const nonFaceSelections: Selections = {
-    graphSelections: sketches.graphSelections.filter(
-      (selection) => !isFaceArtifact(selection.artifact)
-    ),
+    graphSelections: sketches.graphSelections.filter((selection) => {
+      const resolved = resolveToCodeRef(selection, artifactGraph)
+      return !resolved?.artifact || !isFaceArtifact(resolved.artifact)
+    }),
     otherSelections: sketches.otherSelections,
   }
   if (nonFaceSelections.graphSelections.length > 0) {

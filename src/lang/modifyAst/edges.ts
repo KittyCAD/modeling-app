@@ -1857,6 +1857,7 @@ export function refactorZ0006Unified(
   }
 
   let modifiedAst = structuredClone(ast)
+  let appliedFilletChamferFix = false
 
   for (const {
     range,
@@ -1866,22 +1867,28 @@ export function refactorZ0006Unified(
   } of toFixFC) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
     const edgeRefExprs: Expr[] = []
+    let nextAst = structuredClone(modifiedAst)
+    let failedToCreateEdgeRef = false
     for (const payload of orderedPayloads) {
       const result = createEdgeRefObjectExpression(
         payload,
         wasmInstance,
-        modifiedAst,
+        nextAst,
         artifactGraph,
         undefined,
         undefined,
         tagsBaseExpr
       )
-      if (err(result)) continue
+      if (err(result)) {
+        failedToCreateEdgeRef = true
+        break
+      }
       edgeRefExprs.push(result.expr)
-      modifiedAst = result.modifiedAst
+      nextAst = result.modifiedAst
     }
+    if (failedToCreateEdgeRef) continue
     const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
-      modifiedAst,
+      nextAst,
       path,
       wasmInstance,
       ['CallExpressionKw']
@@ -1902,6 +1909,19 @@ export function refactorZ0006Unified(
     )
     newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
     callNode.arguments = newArgs
+    modifiedAst = nextAst
+    appliedFilletChamferFix = true
+  }
+
+  if (
+    toFixFC.length > 0 &&
+    !appliedFilletChamferFix &&
+    toFixRH.length === 0 &&
+    toFixET.length === 0 &&
+    toFixGdtEdges.length === 0 &&
+    toFixGdtDistanceEndpoints.length === 0
+  ) {
+    return new Error('No Z0006 fixes to apply')
   }
 
   const pathListRH = toFixRH.map((t) =>

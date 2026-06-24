@@ -1624,6 +1624,16 @@ function getSplitOutputExprFromSelection(
             artifactGraph
           )
         : null
+  if (resolvedSelection?.artifact?.type === 'path') {
+    const inputExpr = getMultiOutputExtrudeInputExprFromPath(
+      resolvedSelection.artifact,
+      ast,
+      wasmInstance
+    )
+    if (inputExpr) {
+      return inputExpr
+    }
+  }
   const inferredOutputIndex =
     artifact?.type === 'sweep' && artifact.subType === 'extrusion'
       ? getMultiRegionExtrudeOutputIndex(
@@ -1666,6 +1676,55 @@ function getSplitOutputExprFromSelection(
     createLiteral(outputIndex, wasmInstance),
     true
   )
+}
+
+function getMultiOutputExtrudeInputExprFromPath(
+  artifact: Artifact,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (artifact.type !== 'path' || !('codeRef' in artifact)) {
+    return null
+  }
+
+  const inputName = getVariableNameFromNodePath(
+    artifact.codeRef.pathToNode,
+    ast,
+    wasmInstance
+  )
+  if (!inputName) {
+    return null
+  }
+
+  for (const statement of ast.body) {
+    if (
+      statement.type !== 'VariableDeclaration' ||
+      statement.declaration.init.type !== 'CallExpressionKw'
+    ) {
+      continue
+    }
+
+    const call = statement.declaration.init
+    if (
+      call.callee.type !== 'Name' ||
+      call.callee.name.name !== 'extrude' ||
+      call.unlabeled?.type !== 'ArrayExpression'
+    ) {
+      continue
+    }
+
+    for (const [index, element] of call.unlabeled.elements.entries()) {
+      if (element.type === 'Name' && element.name.name === inputName) {
+        return createMemberExpression(
+          statement.declaration.id.name,
+          createLiteral(index, wasmInstance),
+          true
+        )
+      }
+    }
+  }
+
+  return null
 }
 
 function getMultiRegionExtrudeOutputIndex(

@@ -1490,10 +1490,8 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           '1',
           rustContextInThisFile
         )) as KclCommandValue
-        const id = rustContextInThisFile.getDefaultPlaneId(name)
-        if (err(id)) {
-          throw id
-        }
+        const idResult = rustContextInThisFile.getDefaultPlaneId(name)
+        const id = err(idResult) ? name : idResult
         const plane: Selections = {
           graphSelections: [],
           otherSelections: [{ name, id }],
