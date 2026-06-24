@@ -492,17 +492,13 @@ function findWedgeIndexForRays(
   )
 }
 
-function getBaseWedgeIndex(angleContext: DimensionAngleDraftContext): number {
-  return angleContext.baseWedgeIndex
-}
-
 function getHoveredWedgeIndex(
   mousePoint: Coords2d,
   angleContext: DimensionAngleDraftContext
 ): number {
   const mouseDirection = subVec(mousePoint, angleContext.vertex)
   if (length2d(mouseDirection) === 0) {
-    return getBaseWedgeIndex(angleContext)
+    return angleContext.baseWedgeIndex
   }
 
   const wedges = getAngleWedges(angleContext)
@@ -517,7 +513,7 @@ function getHoveredWedgeIndex(
     return hoveredIndex
   }
 
-  return getBaseWedgeIndex(angleContext)
+  return angleContext.baseWedgeIndex
 }
 
 function invertAngleSelection(
@@ -540,7 +536,7 @@ function getWedgeSelection(
   const wedges = getAngleWedges(angleContext)
   return (
     wedges[wedgeIndex]?.selection ??
-    wedges[getBaseWedgeIndex(angleContext)]?.selection
+    wedges[angleContext.baseWedgeIndex]?.selection
   )
 }
 
@@ -548,7 +544,7 @@ export function getDimensionAngleSelection(
   mousePoint: Coords2d,
   angleContext: DimensionAngleDraftContext
 ): DimensionAngleSelection {
-  const baseWedgeIndex = getBaseWedgeIndex(angleContext)
+  const baseWedgeIndex = angleContext.baseWedgeIndex
   const hoveredWedgeIndex = getHoveredWedgeIndex(mousePoint, angleContext)
   const baseSelection = getWedgeSelection(angleContext, baseWedgeIndex)
 
