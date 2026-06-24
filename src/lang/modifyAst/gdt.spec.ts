@@ -674,6 +674,58 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::straightness(')
       expect(newCode).toContain('faces = [')
       expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness to a point-and-click edge selection using face API syntax', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: edge.commonSurfaceIds,
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::straightness(')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('faces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1133,9 +1185,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       expect(newCode).toContain('gdt::profileLine(')
       expect(newCode).not.toContain('gdt::profile(')
-      expect(newCode).toMatch(
-        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
-      )
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('datums = ["A", "B"]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
@@ -1322,9 +1374,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       }
 
       expect(newCode).toContain('gdt::distance(')
-      expect(newCode).toMatch(
-        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
-      )
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1378,7 +1430,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('edges = [')
       expect(newCode).not.toContain('from = ')
       expect(newCode).not.toContain('to = ')
-      expect(newCode.match(/getCommonEdge/g)?.length).toBeGreaterThanOrEqual(3)
+      expect(newCode.match(/sideFaces = \[/g)?.length).toBeGreaterThanOrEqual(3)
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
