@@ -32,6 +32,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::KclValueView;
 use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
@@ -475,8 +476,14 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
+        let variables = self
+            .mod_local
+            .variables(main_ref)?
+            .into_iter()
+            .map(|(key, value)| (key, KclValueView::from(value)))
+            .collect();
         Ok(ExecOutcome {
-            variables: self.mod_local.variables(main_ref)?,
+            variables,
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,

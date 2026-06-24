@@ -101,6 +101,7 @@ enum DistanceEntity {
     Face(Box<Face>),
     TaggedFace(Box<TagIdentifier>),
     Edge(EdgeReference),
+    Specifier(kcmc::shared::EdgeSpecifier),
 }
 
 #[derive(Debug, Clone)]
@@ -229,6 +230,11 @@ impl DistanceEntity {
                 edge_reference: None,
                 entity_pos: KPoint2d { x: 0.5, y: 0.0 },
             }),
+            DistanceEntity::Specifier(edge_reference) => Ok(DistanceEndpoint {
+                entity_id: None,
+                edge_reference: Some(edge_reference.clone()),
+                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+            }),
         }
     }
 }
@@ -244,12 +250,31 @@ impl<'a> FromKclValue<'a> for DistanceEntity {
     }
 }
 
-fn distance_entity_type() -> RuntimeType {
-    RuntimeType::Union(vec![
-        RuntimeType::face(),
-        RuntimeType::tagged_face(),
-        RuntimeType::edge(),
-    ])
+async fn parse_distance_entity_arg(
+    arg_name: &str,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<DistanceEntity>, KclError> {
+    let Some(value): Option<KclValue> = args.get_kw_arg_opt(arg_name, &RuntimeType::any(), exec_state)? else {
+        return Ok(None);
+    };
+
+    if edge::is_edge_specifier_object(&value) {
+        let unresolved = edge::parse_edge_specifier_value(&value, args)?;
+        let edge_reference = edge::resolve_edge_specifier_with_face_tags(&unresolved, exec_state, args).await?;
+        return Ok(Some(DistanceEntity::Specifier(edge_reference)));
+    }
+
+    DistanceEntity::from_kcl_val(&value)
+        .map(Some)
+        .ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                format!(
+                    "`{arg_name}` must be a face, tagged face, tagged edge, edge UUID, or edge specifier object (e.g. {{ sideFaces = [...], endFaces = [...], index = 0 }})"
+                ),
+                vec![args.source_range],
+            ))
+        })
 }
 
 async fn parse_gdt_edges_arg(exec_state: &mut ExecState, args: &Args) -> Result<Vec<GdtEdgeReference>, KclError> {
@@ -825,8 +850,8 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 }
 
 pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let from: Option<DistanceEntity> = args.get_kw_arg_opt("from", &distance_entity_type(), exec_state)?;
-    let to: Option<DistanceEntity> = args.get_kw_arg_opt("to", &distance_entity_type(), exec_state)?;
+    let from = parse_distance_entity_arg("from", exec_state, &args).await?;
+    let to = parse_distance_entity_arg("to", exec_state, &args).await?;
     let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
@@ -2081,6 +2106,51 @@ __GDT_CALL__
       sideFaces = [region001.tags.line1, capStart001]
     }
   ],
+  tolerance = 0.1mm,
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)"#,
+        );
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let options = annotation_options(&commands[annotation_index])?;
+        let dimension = options
+            .dimension
+            .as_ref()
+            .expect("expected new_annotation command to have a dimension");
+        assert!(dimension.from_entity_id.is_none());
+        assert!(dimension.to_entity_id.is_none());
+        assert_eq!(
+            dimension
+                .from_edge_reference
+                .as_ref()
+                .expect("expected from_edge_reference")
+                .side_faces
+                .len(),
+            2
+        );
+        assert_eq!(
+            dimension
+                .to_edge_reference
+                .as_ref()
+                .expect("expected to_edge_reference")
+                .side_faces
+                .len(),
+            2
+        );
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_from_to_accept_face_api_edge_specifiers() -> Result<(), KclError> {
+        let code = gdt_face_api_edge_kcl(
+            r#"gdt::distance(
+  from = {
+    sideFaces = [region001.tags.line1, capStart001]
+  },
+  to = {
+    sideFaces = [region001.tags.line3, capStart001]
+  },
   tolerance = 0.1mm,
   framePosition = [12mm, 8mm],
   framePlane = XZ,

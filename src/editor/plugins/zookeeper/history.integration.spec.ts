@@ -673,6 +673,68 @@ describe('Zookeeper project history integration', () => {
     expect(harness.kclManager.code).toBe('large = 130\n')
   })
 
+  it('keeps active-file manual undo after replaying multi-file Zookeeper redo from another file', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'main = true\n',
+      'largeBox.kcl': 'large = 100\n',
+      'mediumBox.kcl': 'medium = 50\n',
+    })
+    const largePath = fsZds.join(harness.projectPath, 'largeBox.kcl')
+    const mediumPath = fsZds.join(harness.projectPath, 'mediumBox.kcl')
+    const switchToFile = async (path: string) => {
+      await KclManager.fromFile(
+        new File(path),
+        harness.kclManager.systemDeps,
+        harness.kclManager
+      )
+    }
+
+    await switchToFile(largePath)
+    addManualEdit(harness.kclManager, 'large = 110\n')
+    await writeText(largePath, 'large = 110\n')
+    await writeText(largePath, 'large = 120\n')
+    await writeText(mediumPath, 'medium = 60\n')
+    harness.kclManager.addGlobalHistoryEventWithCodeChange(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: largePath,
+        patch: {
+          run_id: 'inactive-zookeeper-redo-after-manual',
+          changed_files: [
+            modifiedFile('largeBox.kcl', 'large = 110\n', 'large = 120\n'),
+            modifiedFile('mediumBox.kcl', 'medium = 50\n', 'medium = 60\n'),
+          ],
+        },
+      }),
+      'large = 120\n'
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe('large = 110\n')
+    await expect(fsZds.readFile(largePath, 'utf8')).resolves.toBe(
+      'large = 110\n'
+    )
+
+    await switchToFile(mediumPath)
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.path).toBe(mediumPath)
+    expect(harness.kclManager.code).toBe('medium = 60\n')
+    await expect(fsZds.readFile(largePath, 'utf8')).resolves.toBe(
+      'large = 120\n'
+    )
+
+    await switchToFile(largePath)
+    expect(harness.kclManager.code).toBe('large = 120\n')
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe('large = 110\n')
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe('large = 100\n')
+  })
+
   it('abandons undone multi-file Zookeeper redo after a new manual edit', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'value = 0\n',
