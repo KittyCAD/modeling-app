@@ -68,6 +68,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 RuntimeType::sketch(),
                 RuntimeType::face(),
                 RuntimeType::tagged_face(),
+                RuntimeType::tagged_edge(),
+                RuntimeType::Primitive(PrimitiveType::Edge),
                 RuntimeType::segment(),
             ])),
             ArrayLen::Minimum(1),
@@ -686,6 +688,8 @@ async fn inner_extrude(
                 face_id: face.id,
                 solid_id: face.parent_solid.solid_id,
             },
+            Extrudable::EdgeTag(_) => BeingExtruded::Sketch,
+            Extrudable::Edge(_) => BeingExtruded::Sketch,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(

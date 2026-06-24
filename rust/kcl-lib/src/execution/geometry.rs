@@ -1031,6 +1031,10 @@ pub enum Extrudable {
     FaceTag(FaceTag),
     /// Face.
     Face(Box<Face>),
+    /// Tagged Edge.
+    EdgeTag(Box<TagIdentifier>),
+    /// Edge.
+    Edge(Uuid),
 }
 
 impl Extrudable {
@@ -1045,6 +1049,14 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
             Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
             Extrudable::Face(face) => Ok(face.id),
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
+                Some(info) => Ok(info.id),
+                None => Err(KclError::new_type(KclErrorDetails::new(
+                    "Could not find a valid id to extrude".to_owned(),
+                    vec![args.source_range],
+                ))),
+            },
+            Extrudable::Edge(edge) => Ok(*edge),
         }
     }
 
@@ -1057,6 +1069,19 @@ impl Extrudable {
                 None => None,
             },
             Extrudable::Face(_) => None,
+            Extrudable::EdgeTag(tag_identifier) => match tag_identifier.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
+                None => {
+                    #[cfg(target_arch = "wasm32")]
+web_sys::console::log_1(&format!("SKETCH IS NONE EDGE TAG").into());
+                    None},
+            },
+            Extrudable::Edge(_) => {
+                
+                #[cfg(target_arch = "wasm32")]
+web_sys::console::log_1(&format!("SKETCH IS NONE EDGE").into());
+None},
         }
     }
 
@@ -1075,6 +1100,15 @@ impl Extrudable {
                 Some(is_closed) => is_closed,
                 None => ProfileClosed::Maybe,
             },
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
+                _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Edge(_) => ProfileClosed::Maybe,
         }
     }
 }

@@ -288,6 +288,8 @@ async fn inner_sweep(
                 face_id: face.id,
                 solid_id: face.parent_solid.solid_id,
             },
+            Extrudable::EdgeTag(_) => BeingExtruded::Sketch,
+            Extrudable::Edge(_) => BeingExtruded::Sketch,
         };
 
         if let Some(post_extr_sketch) = sketch.as_sketch() {
