@@ -1336,8 +1336,18 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
+      const seenSegmentIds = new Set<string>()
       const edges = [...artifactGraph.values()]
-        .filter((artifact) => artifact.type === 'sweepEdge')
+        .filter((artifact) => {
+          if (
+            artifact.type !== 'sweepEdge' ||
+            seenSegmentIds.has(artifact.segId)
+          ) {
+            return false
+          }
+          seenSegmentIds.add(artifact.segId)
+          return true
+        })
         .slice(0, 3)
       if (edges.length !== 3) {
         throw new Error('Expected three sweep edges')

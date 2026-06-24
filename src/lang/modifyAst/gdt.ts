@@ -18,6 +18,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
 import {
   type ResolvedGraphSelection,
+  getArtifactOfTypes,
   getCapForPathId,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
@@ -43,9 +44,32 @@ function resolveSelectionsForTags(
   ) => boolean
 ): ResolvedGraphSelection[] {
   return selections.graphSelections.flatMap((selection) => {
+    if (
+      selection.artifact?.type === 'sweepEdge' &&
+      artifactPredicate(selection.artifact)
+    ) {
+      const segment = getArtifactOfTypes(
+        { key: selection.artifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (!err(segment)) {
+        return [
+          {
+            artifact: segment,
+            codeRef: segment.codeRef,
+          },
+        ]
+      }
+    }
+
     const resolved = resolveToCodeRef(selection, artifactGraph)
-    if (!resolved || !artifactPredicate(resolved.artifact)) return []
-    return [resolved]
+    if (!resolved) return []
+
+    const artifact = artifactPredicate(selection.artifact)
+      ? selection.artifact
+      : resolved.artifact
+    if (!artifactPredicate(artifact)) return []
+    return [{ ...resolved, artifact }]
   })
 }
 

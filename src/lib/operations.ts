@@ -265,23 +265,6 @@ function extractStringArgument(
     : undefined
 }
 
-function extractStringArrayArgument(
-  code: string,
-  operation: StdLibCallOp,
-  argName: string
-): string | undefined {
-  const raw = extractStringArgument(code, operation, argName)
-  if (!raw) return undefined
-
-  return raw
-    .replace(/^\s*\[/, '')
-    .replace(/\]\s*$/, '')
-    .split(',')
-    .map((value) => stripQuotes(value.trim()))
-    .filter(Boolean)
-    .join(', ')
-}
-
 /**
  * Gather up the a Parameter operation's data
  * to be used in the command bar edit flow.
@@ -2345,7 +2328,14 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datumsArg = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true
+  )
+  const datums = 'error' in datumsArg ? undefined : datumsArg
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
     edges,
@@ -2514,7 +2504,14 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
   )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datumsArg = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true
+  )
+  const datums = 'error' in datumsArg ? undefined : datumsArg
 
   const argDefaultValues: ModelingCommandSchema['GDT Perpendicularity'] = {
     objects: { graphSelections, otherSelections: [] },
@@ -2593,7 +2590,14 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
   )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datumsArg = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true
+  )
+  const datums = 'error' in datumsArg ? undefined : datumsArg
 
   const argDefaultValues: ModelingCommandSchema['GDT Parallelism'] = {
     objects: { graphSelections, otherSelections: [] },

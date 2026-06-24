@@ -68,6 +68,11 @@ const getModeOption = (
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => option.id === mode)
 
+const getFirstEnabledModeOption = (
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined =>
+  modeOptions?.find((option) => !option.disabled)
+
 export interface MlCopilotModesProps {
   onClick: (mode: MlCopilotModeId) => void
   children: ReactNode
@@ -91,15 +96,16 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           {({ close }) => (
             <>
               {props.modeOptions.map((mode) => (
-                <div
-                  tabIndex={0}
-                  role="button"
+                <button
+                  type="button"
+                  disabled={mode.disabled}
                   key={mode.id}
                   onClick={() => {
+                    if (mode.disabled) return
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex flex-row items-start gap-2 text-left cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border disabled:cursor-not-allowed disabled:opacity-70 ${props.current === mode.id ? 'border-primary' : ''}`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
@@ -111,8 +117,13 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     <span className="text-chalkboard-70 text-[11px] leading-tight">
                       {mode.description}
                     </span>
+                    {mode.disabled && (
+                      <span className="text-chalkboard-70 text-[11px] leading-tight">
+                        Upgrade your plan to use this mode
+                      </span>
+                    )}
                   </div>
-                </div>
+                </button>
               ))}
             </>
           )}
@@ -277,10 +288,15 @@ export const MlEphantConversationInput = (
   const { modeOptions, onMlCopilotModeChange } = props
   useEffect(() => {
     if (!modeOptions || modeOptions.length === 0) return
-    if (
-      mode !== undefined &&
-      !modeOptions.some((option) => option.id === mode)
-    ) {
+    const currentMode = getModeOption(mode, modeOptions)
+    if (currentMode?.disabled) {
+      const fallbackMode = getFirstEnabledModeOption(modeOptions)?.id
+      userHasPickedMode.current = false
+      setMode(fallbackMode)
+      onMlCopilotModeChange?.(fallbackMode)
+      return
+    }
+    if (mode !== undefined && currentMode === undefined) {
       userHasPickedMode.current = false
       setMode(undefined)
       onMlCopilotModeChange?.(undefined)

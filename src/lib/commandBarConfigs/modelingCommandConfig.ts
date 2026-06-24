@@ -177,17 +177,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   value,
 }))
 
-function isSelections(value: unknown): value is Selections {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'graphSelections' in value &&
-    isArray(value.graphSelections) &&
-    'otherSelections' in value &&
-    isArray(value.otherSelections)
-  )
-}
-
 function isKclCommandValue(value: unknown): value is KclCommandValue {
   return (
     typeof value === 'object' &&
@@ -204,12 +193,24 @@ export function profileSelectionRequiresBodyType({
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
   const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) {
+  if (
+    typeof sketches !== 'object' ||
+    sketches === null ||
+    !('graphSelections' in sketches) ||
+    !isArray(sketches.graphSelections)
+  ) {
     return false
   }
 
   return sketches.graphSelections.some(
-    (selection) => !selection.artifact || selection.artifact.type === 'segment'
+    (selection) =>
+      typeof selection === 'object' &&
+      selection !== null &&
+      (!('artifact' in selection) ||
+        !selection.artifact ||
+        (typeof selection.artifact === 'object' &&
+          'type' in selection.artifact &&
+          selection.artifact.type === 'segment'))
   )
 }
 
@@ -545,7 +546,7 @@ export type ModelingCommandSchema = {
   'GDT Profile': {
     nodeToEdit?: PathToNode
     edges: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -566,7 +567,7 @@ export type ModelingCommandSchema = {
   'GDT Perpendicularity': {
     nodeToEdit?: PathToNode
     objects: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -621,7 +622,7 @@ export type ModelingCommandSchema = {
   'GDT Parallelism': {
     nodeToEdit?: PathToNode
     objects: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -723,6 +724,22 @@ const summarizeDatumKclValue = (value?: KclCommandValue) =>
           : value.valueCalculated
       )
     : ''
+
+const createGdtDatumsArg = (required: boolean) =>
+  ({
+    inputType: 'kcl',
+    defaultValue: KCL_DEFAULT_DATUM_REFS,
+    allowArrays: true,
+    allowStringArrays: true,
+    allowUncalculated: true,
+    inputToKclValue: datumInputToKclArray,
+    kclValueToInput: kclDatumArrayToInput,
+    valueSummary: summarizeDatumKclValue,
+    required,
+  }) satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
+
+const gdtToleranceValueSummary = (value?: KclCommandValue) =>
+  value?.valueText ?? ''
 
 export const getDefaultGdtTolerance = (
   _commandBarContext: unknown,
@@ -1087,7 +1104,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: extrudeSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },
@@ -1177,7 +1194,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
       version: {
@@ -1251,7 +1268,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },
@@ -1351,7 +1368,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bodyType: {
         inputType: 'options',
-        required: false,
+        required: profileSelectionRequiresBodyType,
         options: kclBodyTypeOptions,
       },
     },
@@ -2894,7 +2911,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -2971,7 +2989,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3048,7 +3067,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3125,7 +3145,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3288,7 +3309,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3363,13 +3385,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: false,
-      },
+      datums: createGdtDatumsArg(false),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3450,7 +3470,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3525,13 +3546,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: false,
-      },
+      datums: createGdtDatumsArg(false),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3606,13 +3625,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: false,
-      },
+      datums: createGdtDatumsArg(false),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3687,13 +3704,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: true,
-      },
+      datums: createGdtDatumsArg(true),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3768,13 +3783,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: true,
-      },
+      datums: createGdtDatumsArg(true),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3849,13 +3862,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: true,
-      },
+      datums: createGdtDatumsArg(true),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
@@ -3930,13 +3941,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      datums: {
-        inputType: 'string',
-        required: false,
-      },
+      datums: createGdtDatumsArg(false),
       tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TOLERANCE,
+        defaultValue: getDefaultGdtTolerance,
+        valueSummary: gdtToleranceValueSummary,
         required: true,
       },
       precision: {
