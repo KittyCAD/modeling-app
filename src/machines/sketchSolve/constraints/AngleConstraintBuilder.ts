@@ -6,13 +6,14 @@ import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
-  TAU,
   addVec,
   distance2d,
   dot2d,
+  getCcwSweep,
   getPolarAngle2d,
   intersectRanges,
   lerp,
+  normalizeAngle,
   normalizeVec,
   rotateVec2d,
   scaleVec,
@@ -199,8 +200,7 @@ export function calculateArcRenderInput(
 export function normalizeAngleRad(angle: ApiNumber) {
   const angleRadians =
     angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
-  const normalized = ((angleRadians % TAU) + TAU) % TAU
-  return normalized
+  return normalizeAngle(angleRadians)
 }
 
 // Major angles are ones > 180deg
@@ -245,7 +245,7 @@ function calculateExplicitArcRenderInput(
   const radius = getAngleArcRadius(explicitLabelPosition, center, defaultRadius)
   const startVector = scaleVec(start.dir, radius)
   const startAngle = Math.atan2(startVector[1], startVector[0])
-  const sweepAngle = ccwSweepBetweenDirections(start.dir, end.dir)
+  const sweepAngle = getCcwSweep(start.dir, end.dir)
   const defaultLabelPosition = addVec(
     center,
     rotateVec2d(startVector, sweepAngle / 2)
@@ -321,12 +321,6 @@ function angleSectorBoundaries(
         { line: line1, dir: line1Dir },
       ] as const
   }
-}
-
-function ccwSweepBetweenDirections(start: Coords2d, end: Coords2d) {
-  const startAngle = Math.atan2(start[1], start[0])
-  const endAngle = Math.atan2(end[1], end[0])
-  return (((endAngle - startAngle) % TAU) + TAU) % TAU
 }
 
 function calculateExplicitArcRadius(

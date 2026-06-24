@@ -10,7 +10,7 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
-import { TAU, dot2d, polar2d, subVec } from '@src/lib/utils2d'
+import { TAU, dot2d, normalizeAngle, polar2d, subVec } from '@src/lib/utils2d'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 import {
   CONSTRAINT_COLOR,
@@ -165,7 +165,7 @@ export function getArcLabelOffset(
     return sweep * 0.5
   }
 
-  const offset = normalizePositiveAngle(labelAngle - startAngle)
+  const offset = normalizeAngle(labelAngle - startAngle)
   if (offset <= sweep + ANGLE_EPSILON) {
     return Math.min(offset, sweep)
   }
@@ -201,10 +201,6 @@ export function getArcBodySections(
 
 function compactArcSections(sections: [number, number][]) {
   return sections.filter(([start, end]) => end - start > ANGLE_EPSILON)
-}
-
-function normalizePositiveAngle(angle: number) {
-  return ((angle % TAU) + TAU) % TAU
 }
 
 function updateArc(

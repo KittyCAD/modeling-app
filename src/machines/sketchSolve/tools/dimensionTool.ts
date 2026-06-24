@@ -15,9 +15,10 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { toastToolbar } from '@src/lib/toolbarToast'
 import { roundOff } from '@src/lib/utils'
 import {
-  TAU,
   dot2d,
+  getCcwSweep,
   length2d,
+  normalizeAngle,
   normalizeVec,
   scaleVec,
   subVec,
@@ -353,16 +354,6 @@ function getInitialAngleLineSelections(
         getFarthestLinePointFromVertex(line1Points, vertex),
     },
   ]
-}
-
-function normalizeAngle(angle: number) {
-  return ((angle % TAU) + TAU) % TAU
-}
-
-function getCcwSweep(start: Coords2d, end: Coords2d) {
-  return normalizeAngle(
-    Math.atan2(end[1], end[0]) - Math.atan2(start[1], start[0])
-  )
 }
 
 function isDirectionInSector(

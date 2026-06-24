@@ -7,6 +7,19 @@ export function deg2Rad(deg: number): number {
 
 export const TAU = Math.PI * 2
 
+// Normalize a radian angle into [0, 2PI).
+export function normalizeAngle(angle: number) {
+  return ((angle % TAU) + TAU) % TAU
+}
+
+// Returns the counter-clockwise angular distance from start to end in radians,
+// normalized into [0, 2PI).
+export function getCcwSweep(start: Coords2d, end: Coords2d) {
+  return normalizeAngle(
+    Math.atan2(end[1], end[0]) - Math.atan2(start[1], start[0])
+  )
+}
+
 export function getTangentPointFromPreviousArc(
   lastArcCenter: Coords2d,
   lastArcCCW: boolean,
