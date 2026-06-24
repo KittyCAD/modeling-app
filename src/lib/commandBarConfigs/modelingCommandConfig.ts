@@ -255,6 +255,7 @@ export type ModelingCommandSchema = {
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
+    draftAngle?: KclCommandValue
     twistAngle?: KclCommandValue
     twistAngleStep?: KclCommandValue
     twistCenter?: KclCommandValue
@@ -546,6 +547,7 @@ export type ModelingCommandSchema = {
   'GDT Profile': {
     nodeToEdit?: PathToNode
     edges: Selections
+    profileFunction?: 'profile' | 'profileLine' | 'profileSurface'
     datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue

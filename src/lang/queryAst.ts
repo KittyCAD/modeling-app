@@ -1906,7 +1906,7 @@ export function retrieveSelectionsFromOpArg(
       resolvedArtifactId,
       pathId
     )
-    graphSelections.push({ entityRef, codeRef })
+    graphSelections.push({ artifact, entityRef, codeRef })
   }
 
   if (graphSelections.length === 0) {

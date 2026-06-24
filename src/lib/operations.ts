@@ -438,6 +438,25 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     twistAngle = result
   }
 
+  // draftAngle argument from a string to a KCL expression
+  let draftAngle: KclCommandValue | undefined
+  if (
+    'draftAngle' in operation.labeledArgs &&
+    operation.labeledArgs.draftAngle
+  ) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.draftAngle.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve draftAngle argument" }
+    }
+
+    draftAngle = result
+  }
+
   // twistAngleStep argument from a string to a KCL expression
   let twistAngleStep: KclCommandValue | undefined
   if (
@@ -511,6 +530,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     bidirectionalLength,
     tagStart,
     tagEnd,
+    draftAngle,
     twistAngle,
     twistAngleStep,
     twistCenter,
@@ -2298,14 +2318,29 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 
   const edgesArg = operation.labeledArgs?.['edges']
-  if (!edgesArg || !edgesArg.sourceRange) {
-    return { reason: 'Missing or invalid edges argument' }
+  const facesArg = operation.labeledArgs?.['faces']
+  if (!edgesArg?.sourceRange && !facesArg?.sourceRange) {
+    return { reason: 'Missing or invalid edges or faces argument' }
   }
 
-  const edges = extractEdgeSelections(artifactGraph, edgesArg)
-  if ('error' in edges) {
-    return { reason: edges.error }
+  let selections: Selections | undefined
+  if (edgesArg?.sourceRange) {
+    const edges = extractEdgeSelections(artifactGraph, edgesArg)
+    if ('error' in edges) {
+      return { reason: edges.error }
+    }
+    selections = edges
+  } else if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    selections = { graphSelections: faces, otherSelections: [] }
   }
+  if (!selections) {
+    return { reason: 'Missing or invalid edges or faces argument' }
+  }
+
   const tolerance = await extractKclArgument(
     code,
     operation,
@@ -2338,7 +2373,7 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   const datums = 'error' in datumsArg ? undefined : datumsArg
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
-    edges,
+    edges: selections,
     datums,
     tolerance,
     precision,
@@ -2346,6 +2381,12 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     framePlane,
     leaderScale,
     fontSize,
+    profileFunction:
+      operation.name === 'gdt::profileLine'
+        ? 'profileLine'
+        : operation.name === 'gdt::profileSurface'
+          ? 'profileSurface'
+          : 'profile',
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2451,8 +2492,19 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
   artifactGraph,
   code,
 }) => {
+  const commandName =
+    operation.type === 'StdLibCall' && operation.name === 'gdt::angularity'
+      ? 'GDT Angularity'
+      : operation.type === 'StdLibCall' &&
+          operation.name === 'gdt::concentricity'
+        ? 'GDT Concentricity'
+        : operation.type === 'StdLibCall' && operation.name === 'gdt::symmetry'
+          ? 'GDT Symmetry'
+          : operation.type === 'StdLibCall' && operation.name === 'gdt::runout'
+            ? 'GDT Runout'
+            : 'GDT Perpendicularity'
   const baseCommand = {
-    name: 'GDT Perpendicularity',
+    name: commandName,
     groupId: 'modeling',
   }
   if (operation.type !== 'StdLibCall') {
@@ -2848,6 +2900,36 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Profile',
     icon: 'gdtProfile',
     prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileLine': {
+    label: 'Profile Line',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileSurface': {
+    label: 'Profile Surface',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::angularity': {
+    label: 'Angularity',
+    icon: 'angle',
+    prepareToEdit: prepareToEditGdtPerpendicularity,
+  },
+  'gdt::concentricity': {
+    label: 'Concentricity',
+    icon: 'circle',
+    prepareToEdit: prepareToEditGdtPerpendicularity,
+  },
+  'gdt::symmetry': {
+    label: 'Symmetry',
+    icon: 'symmetric',
+    prepareToEdit: prepareToEditGdtPerpendicularity,
+  },
+  'gdt::runout': {
+    label: 'Runout',
+    icon: 'gdtRunout',
+    prepareToEdit: prepareToEditGdtPerpendicularity,
   },
   'gear::helical': {
     label: 'Helical Gear',
@@ -3268,7 +3350,15 @@ export function groupNestedOperations(
   const consumed = new Set<Operation>()
 
   const getGroupOperations = (groupBegin: Operation): Operation[] | null => {
-    const startIndex = allOps.indexOf(groupBegin)
+    let startIndex = allOps.indexOf(groupBegin)
+    if (startIndex === -1 && groupBegin.type === 'GroupBegin') {
+      const groupKey = JSON.stringify(groupBegin.group)
+      startIndex = allOps.findIndex(
+        (operation) =>
+          operation.type === 'GroupBegin' &&
+          JSON.stringify(operation.group) === groupKey
+      )
+    }
     if (startIndex === -1) {
       return null
     }
@@ -3298,7 +3388,7 @@ export function groupNestedOperations(
       continue
     }
 
-    if (consumed.has(item)) {
+    if (consumed.has(item) && item.type !== 'GroupBegin') {
       continue
     }
 
