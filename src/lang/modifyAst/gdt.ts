@@ -27,6 +27,8 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
+export type ProfileGdtFunction = 'profile' | 'profileLine' | 'profileSurface'
+
 function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']
 ): boolean {
@@ -60,7 +62,7 @@ function resolveSelectionsForTags(
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
  * @param leaderScale - Scale of the leader (optional)
- * @param fontPointSize - Font point size for annotation text (optional)
+ * @param fontSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the last created node, or an Error
@@ -75,8 +77,7 @@ export function addFlatnessGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -88,8 +89,7 @@ export function addFlatnessGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
@@ -169,8 +169,7 @@ export function addFlatnessGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -238,6 +237,229 @@ export function addFlatnessGdt({
   }
 }
 
+type MixedFaceEdgeGdtParams = {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  datums?: KclCommandValue
+  tolerance: KclCommandValue
+  wasmInstance: ModuleType
+  precision?: KclCommandValue
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
+  fontSize?: KclCommandValue
+  nodeToEdit?: PathToNode
+}
+
+function addMixedFaceEdgeGdt(
+  functionName: string,
+  {
+    ast,
+    artifactGraph,
+    objects,
+    datums,
+    tolerance,
+    wasmInstance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit,
+  }: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  const faceSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isFaceArtifact
+  )
+  const edgeSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isProfileEdgeArtifact
+  )
+
+  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+    return new Error('No valid selections found. Please select faces or edges.')
+  }
+
+  const faceExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    faceExprs.push(tagResult.exprs[0])
+  }
+
+  const edgeExprs: Expr[] = []
+  for (const edgeSelection of edgeSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      edgeSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tags for edge selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    if (tagResult.exprs.length < 2) {
+      console.warn('Edge selection did not resolve to enough faces', tagResult)
+      continue
+    }
+
+    edgeExprs.push(
+      createCallExpressionStdLibKw('getCommonEdge', null, [
+        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
+      ])
+    )
+  }
+
+  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
+  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+    return new Error('No valid face or edge expressions could be generated')
+  }
+
+  if ('variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
+  }
+  if (precision && 'variableName' in precision && precision.variableName) {
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
+  }
+
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit: mNodeToEdit,
+    wasmInstance,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+  })
+  if (err(styleResult)) return styleResult
+
+  let lastPathToNode: PathToNode | undefined
+  const createCall = (targetArgName: 'faces' | 'edges', targetExpr: Expr) => {
+    const labeledArgs = [
+      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      createLabeledArg('tolerance', valueOrVariable(tolerance)),
+    ]
+
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
+    }
+
+    if (precision !== undefined) {
+      labeledArgs.push(
+        createLabeledArg('precision', valueOrVariable(precision))
+      )
+    }
+
+    labeledArgs.push(...styleResult.labeledArgs)
+
+    return createCallExpressionStdLibKw(
+      functionName,
+      null,
+      labeledArgs,
+      undefined,
+      [createIdentifier('gdt')]
+    )
+  }
+
+  for (const faceExpr of uniqueFaceExprs) {
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createCall('faces', faceExpr),
+      pathToEdit: mNodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    lastPathToNode = pathToNode
+  }
+
+  for (const edgeExpr of uniqueEdgeExprs) {
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createCall('edges', edgeExpr),
+      pathToEdit: mNodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    lastPathToNode = pathToNode
+  }
+
+  if (!lastPathToNode) {
+    return new Error(`Failed to create any gdt::${functionName} calls`)
+  }
+
+  return { modifiedAst, pathToNode: lastPathToNode }
+}
+
+export function addStraightnessGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('straightness', params)
+}
+
+export function addCircularityGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('circularity', params)
+}
+
+export function addCylindricityGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('cylindricity', params)
+}
+
+export function addAngularityGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('angularity', params)
+}
+
+export function addConcentricityGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('concentricity', params)
+}
+
+export function addSymmetryGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('symmetry', params)
+}
+
+export function addRunoutGdt(
+  params: MixedFaceEdgeGdtParams
+): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  return addMixedFaceEdgeGdt('runout', params)
+}
+
 export function addPositionGdt({
   ast,
   artifactGraph,
@@ -249,8 +471,7 @@ export function addPositionGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -263,8 +484,7 @@ export function addPositionGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -351,8 +571,7 @@ export function addPositionGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) return styleResult
 
@@ -430,7 +649,9 @@ export function addPositionGdt({
 export function addProfileGdt({
   ast,
   artifactGraph,
+  objects,
   edges,
+  faces,
   datums,
   tolerance,
   wasmInstance,
@@ -438,34 +659,69 @@ export function addProfileGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  edges: Selections
-  datums?: string
+  objects?: Selections
+  edges?: Selections
+  faces?: Selections
+  datums?: string | KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const selections = objects ?? edges ?? faces
 
-  const edgeSelections = edges.graphSelections.filter(
-    (selection): selection is ResolvedGraphSelection =>
-      Boolean(selection.codeRef) && isProfileEdgeArtifact(selection.artifact)
-  )
-  if (edgeSelections.length === 0) {
+  if (!selections) {
     return new Error(
-      'No valid edge selections found. Please select sketch or sweep edges.'
+      'No selections found. Please select faces or edges for profile.'
     )
+  }
+
+  const faceSelections = resolveSelectionsForTags(
+    selections,
+    artifactGraph,
+    isFaceArtifact
+  )
+  const edgeSelections = resolveSelectionsForTags(
+    selections,
+    artifactGraph,
+    isProfileEdgeArtifact
+  )
+
+  if (faceSelections.length > 0 && edgeSelections.length > 0) {
+    return new Error(
+      'Profile requires either faces or edges, not both. Select faces for profileSurface or edges for profileLine.'
+    )
+  }
+
+  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+    return new Error('No valid selections found. Please select faces or edges.')
+  }
+
+  const faceExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    faceExprs.push(tagResult.exprs[0])
   }
 
   const edgeExprs: Expr[] = []
@@ -494,13 +750,22 @@ export function addProfileGdt({
     )
   }
 
+  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueEdgeExprs.length === 0) {
-    return new Error('No valid edge expressions could be generated')
+  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+    return new Error('No valid profile expressions could be generated')
   }
 
   if ('variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+  }
+  if (
+    datums &&
+    typeof datums !== 'string' &&
+    'variableName' in datums &&
+    datums.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
@@ -513,32 +778,24 @@ export function addProfileGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
   }
 
   let lastPathToNode: PathToNode | undefined
-  for (const edgeExpr of uniqueEdgeExprs) {
+  const createProfileCall = (
+    targetArgName: 'faces' | 'edges',
+    targetExpr: Expr
+  ) => {
     const labeledArgs = [
-      createLabeledArg('edges', createArrayExpression([edgeExpr])),
+      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
-
-    const datumNames = parseDatumNames(datums)
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
-    }
+    const datumsArg = createOptionalDatumsArg(datums, wasmInstance)
+    if (datumsArg) labeledArgs.push(datumsArg)
 
     if (precision !== undefined) {
       labeledArgs.push(
@@ -548,25 +805,42 @@ export function addProfileGdt({
 
     labeledArgs.push(...styleResult.labeledArgs)
 
-    const call = createCallExpressionStdLibKw(
-      'profile',
+    return createCallExpressionStdLibKw(
+      nodeToEdit
+        ? 'profile'
+        : targetArgName === 'faces'
+          ? 'profileSurface'
+          : 'profileLine',
       null,
       labeledArgs,
       undefined,
       [createIdentifier('gdt')]
     )
+  }
 
+  for (const faceExpr of uniqueFaceExprs) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call,
+      call: createProfileCall('faces', faceExpr),
       pathToEdit: nodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
     })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
+    if (err(pathToNode)) return pathToNode
+    lastPathToNode = pathToNode
+  }
+
+  for (const edgeExpr of uniqueEdgeExprs) {
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createProfileCall('edges', edgeExpr),
+      pathToEdit: nodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
     lastPathToNode = pathToNode
   }
 
@@ -591,8 +865,7 @@ export function addDistanceGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -605,8 +878,7 @@ export function addDistanceGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -696,8 +968,7 @@ export function addDistanceGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -770,22 +1041,20 @@ export function addPerpendicularityGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  datums?: string
+  datums?: string | KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -868,14 +1137,12 @@ export function addPerpendicularityGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
   }
 
-  const datumNames = parseDatumNames(datums)
   let lastPathToNode: PathToNode | undefined
 
   const createPerpendicularityCall = (
@@ -887,16 +1154,8 @@ export function addPerpendicularityGdt({
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
-    }
+    const datumsArg = createOptionalDatumsArg(datums, wasmInstance)
+    if (datumsArg) labeledArgs.push(datumsArg)
 
     if (precision !== undefined) {
       labeledArgs.push(
@@ -966,22 +1225,20 @@ export function addParallelismGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  datums?: string
+  datums?: string | KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -1064,14 +1321,12 @@ export function addParallelismGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
   }
 
-  const datumNames = parseDatumNames(datums)
   let lastPathToNode: PathToNode | undefined
 
   const createParallelismCall = (
@@ -1083,16 +1338,8 @@ export function addParallelismGdt({
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
-    }
+    const datumsArg = createOptionalDatumsArg(datums, wasmInstance)
+    if (datumsArg) labeledArgs.push(datumsArg)
 
     if (precision !== undefined) {
       labeledArgs.push(
@@ -1160,8 +1407,7 @@ export function addAnnotationGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -1172,8 +1418,7 @@ export function addAnnotationGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -1249,8 +1494,7 @@ export function addAnnotationGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -1325,7 +1569,7 @@ export function addAnnotationGdt({
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
  * @param leaderScale - Scale of the leader (optional)
- * @param fontPointSize - Font point size for annotation text (optional)
+ * @param fontSize - Font point size for annotation text (optional)
  * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the created node, or an Error
@@ -1339,8 +1583,7 @@ export function addDatumGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -1351,8 +1594,7 @@ export function addDatumGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
@@ -1413,8 +1655,7 @@ export function addDatumGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -1528,6 +1769,26 @@ function parseDatumNames(datums?: string): string[] {
     .filter(Boolean)
 }
 
+function createOptionalDatumsArg(
+  datums: string | KclCommandValue | undefined,
+  wasmInstance: ModuleType
+): ReturnType<typeof createLabeledArg> | undefined {
+  if (!datums) return undefined
+  if (typeof datums !== 'string') {
+    return createLabeledArg('datums', valueOrVariable(datums))
+  }
+
+  const datumNames = parseDatumNames(datums)
+  if (datumNames.length === 0) return undefined
+
+  return createLabeledArg(
+    'datums',
+    createArrayExpression(
+      datumNames.map((datum) => createLiteral(datum, wasmInstance))
+    )
+  )
+}
+
 /**
  * Handles common GDT style parameters for all GDT annotation functions.
  * Inserts variables into AST if needed and creates labeled arguments for style parameters.
@@ -1537,7 +1798,7 @@ function parseDatumNames(datums?: string): string[] {
  * @param params.nodeToEdit - Path to node being edited (for edit mode)
  * @param params.framePosition - Position of the feature control frame [x, y] (optional)
  * @param params.framePlane - Plane for displaying the frame (XY, XZ, YZ) or variable (optional)
- * @param params.fontPointSize - Font point size for annotation text (optional)
+ * @param params.fontSize - Font point size for annotation text (optional)
  * @param params.fontScale - Scale factor for annotation text (optional)
  * @returns Object containing labeled arguments for the style parameters, or Error if parameter processing fails
  */
@@ -1548,8 +1809,7 @@ function processGdtStyleParameters({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
 }: {
   modifiedAst: Node<Program>
   wasmInstance: ModuleType
@@ -1557,8 +1817,7 @@ function processGdtStyleParameters({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
 }): Error | { labeledArgs: ReturnType<typeof createLabeledArg>[] } {
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
 
@@ -1588,17 +1847,9 @@ function processGdtStyleParameters({
   ) {
     insertVariableAndOffsetPathToNode(leaderScale, modifiedAst, nodeToEdit)
   }
-  if (
-    fontPointSize &&
-    'variableName' in fontPointSize &&
-    fontPointSize.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, nodeToEdit)
+  if (fontSize && 'variableName' in fontSize && fontSize.variableName) {
+    insertVariableAndOffsetPathToNode(fontSize, modifiedAst, nodeToEdit)
   }
-  if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
-    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, nodeToEdit)
-  }
-
   // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
   if (framePlane) {
     let framePlaneExpr: Expr
@@ -1630,14 +1881,8 @@ function processGdtStyleParameters({
       createLabeledArg('leaderScale', valueOrVariable(leaderScale))
     )
   }
-  if (fontPointSize !== undefined) {
-    labeledArgs.push(
-      createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
-    )
+  if (fontSize !== undefined) {
+    labeledArgs.push(createLabeledArg('fontSize', valueOrVariable(fontSize)))
   }
-  if (fontScale !== undefined) {
-    labeledArgs.push(createLabeledArg('fontScale', valueOrVariable(fontScale)))
-  }
-
   return { labeledArgs }
 }
