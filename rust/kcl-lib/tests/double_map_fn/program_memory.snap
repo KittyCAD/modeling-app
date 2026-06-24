@@ -4,8 +4,7 @@ description: Variables in memory after executing double_map_fn.kcl
 ---
 {
   "increment": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "xs": {
     "type": "HomArray",

@@ -4,8 +4,7 @@ description: Variables in memory after executing subtract_self.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "fullPart": {
     "type": "HomArray",
