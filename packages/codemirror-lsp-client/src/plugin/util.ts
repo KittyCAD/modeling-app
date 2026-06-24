@@ -54,7 +54,7 @@ export function offsetToPos(doc: Text, offset: number) {
 
 const markedOptions: MarkedOptions = {
   gfm: true,
-  sanitize: false,
+  sanitize: true,
 }
 
 export function isLSPTextEdit(
@@ -82,7 +82,6 @@ export function formatContents(
   if (isLSPMarkupContent(contents)) {
     let value = contents.value
     if (contents.kind === 'markdown') {
-      console.dir(markedOptions)
       value = Marked.parse(value, markedOptions)
     }
     return value
