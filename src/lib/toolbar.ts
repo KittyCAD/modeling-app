@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
 import {
@@ -13,7 +14,7 @@ import {
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
+import { getSelectedDefaultPlane } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -633,7 +634,8 @@ export function buildToolbarConfig(
           },
           tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges
+              modelingState.context.selectionRanges,
+              modelingState.context.kclManager.artifactGraph
             )
 
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {

@@ -1,3 +1,4 @@
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   getSelectedSketchTarget,
@@ -6,7 +7,6 @@ import {
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
-import { selectSketchPlane } from '@src/lib/selections'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineEvent,
@@ -279,7 +279,10 @@ async function enterSketch(input: unknown) {
         kclManager.artifactGraph,
         state.context.selectionRanges
       )
-  const isSketchBlock = isSketchBlockSelected(state.context.selectionRanges)
+  const isSketchBlock = isSketchBlockSelected(
+    state.context.selectionRanges,
+    state.context.kclManager.artifactGraph
+  )
   const selectedSketchTarget = getSelectedSketchTarget(
     state.context.selectionRanges
   )

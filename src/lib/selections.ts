@@ -107,6 +107,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  DefaultPlaneSelection,
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
@@ -2950,6 +2951,18 @@ export function getDefaultSketchPlaneData(
     zAxis,
     yAxis,
   }
+}
+
+function isDefaultPlaneSelection(
+  selection: Selections['otherSelections'][number]
+): selection is DefaultPlaneSelection {
+  return (
+    typeof selection === 'object' && selection !== null && 'name' in selection
+  )
+}
+
+export function getSelectedDefaultPlane(selectionRanges: Selections) {
+  return selectionRanges.otherSelections.find(isDefaultPlaneSelection)
 }
 
 const defaultPlaneDataByName: Record<
