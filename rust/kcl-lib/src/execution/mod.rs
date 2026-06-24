@@ -27,6 +27,7 @@ use indexmap::IndexMap;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub use kcl_value_view::KclValueView;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -149,6 +150,7 @@ mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
+pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
 mod sketch_solve;
@@ -216,21 +218,21 @@ impl ControlFlowKind {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
     /// Use [control_continue] or [Self::into_value] to get the value.
-    value: KclValue,
+    value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
     pub(crate) fn continue_(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Continue,
         }
     }
 
     pub(crate) fn exit(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Exit,
         }
     }
@@ -243,7 +245,7 @@ impl KclValueControlFlow {
     }
 
     pub(crate) fn into_value(self) -> KclValue {
-        self.value
+        *self.value
     }
 }
 
@@ -254,6 +256,7 @@ impl KclValueControlFlow {
 ///
 /// Normally, you don't construct this directly. Use the `early_return!` macro.
 #[must_use = "You should always handle the control flow value when it is returned"]
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub(crate) enum EarlyReturn {
     /// A normal value with control flow.
@@ -300,7 +303,7 @@ impl PreserveMem {
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
-    pub variables: IndexMap<String, KclValue>,
+    pub variables: IndexMap<String, KclValueView>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,
@@ -2265,7 +2268,7 @@ mod tests {
     async fn execute_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         execute_outcome_with_backend(code, backend).await.variables
     }
 
@@ -2285,7 +2288,7 @@ mod tests {
     async fn execute_error_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -2298,7 +2301,7 @@ mod tests {
         main_code: &str,
         files: &[(&str, &str)],
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
         for (name, contents) in files {
             tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
@@ -2329,7 +2332,7 @@ mod tests {
     async fn run_with_caching_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         cache::bust_cache().await;
         clear_mem_cache().await;
@@ -2348,7 +2351,7 @@ mod tests {
     async fn run_mock_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         clear_mem_cache().await;
 
@@ -2372,15 +2375,18 @@ mod tests {
         outcome.variables
     }
 
-    fn sorted_variable_keys(variables: &IndexMap<String, KclValue>) -> Vec<String> {
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValueView>) -> Vec<String> {
         let mut keys = variables.keys().cloned().collect::<Vec<_>>();
         keys.sort();
         keys
     }
 
-    fn assert_number_variable(variables: &IndexMap<String, KclValue>, key: &str, expected: f64) {
+    fn assert_number_variable(variables: &IndexMap<String, KclValueView>, key: &str, expected: f64) {
         let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
-        assert_eq!(value.as_f64().unwrap(), expected, "{key}: {value:?}");
+        let KclValueView::Number { value, .. } = value else {
+            panic!("expected `{key}` to be a number, got {value:?}");
+        };
+        assert_eq!(*value, expected, "{key}: {value:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3597,12 +3603,12 @@ w = f() + f()
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+        assert_number_variable(&result.variables, "x", 2.0);
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
-        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+        assert_number_variable(&result.variables, "z", 3.0);
 
         ctx.close().await;
         ctx2.close().await;

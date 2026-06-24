@@ -1185,10 +1185,10 @@ export fn distance(
   /// The acceptable distance tolerance.
   @(includeInSnippet = true)
   tolerance: number(Length),
-  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center.
-  from?: Face | TaggedFace | Edge,
-  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center.
-  to?: Face | TaggedFace | Edge,
+  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  from?: Face | TaggedFace | Edge | any,
+  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  to?: Face | TaggedFace | Edge | any,
   /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
   edges?: [Edge | any; 1+],

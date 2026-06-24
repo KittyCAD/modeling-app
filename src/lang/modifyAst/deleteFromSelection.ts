@@ -27,7 +27,7 @@ import {
 import type {
   ArtifactGraph,
   CallExpressionKw,
-  KclValue,
+  KclValueView,
   PathToNode,
   PipeExpression,
   Program,
@@ -278,7 +278,7 @@ export async function deleteFromSelection(
           const pathsDependingOnExtrude: {
             [id: string]: {
               path: PathToNode
-              variable: KclValue
+              variable: KclValueView
             }
           } = {}
           const roundLiteral = (x: number) =>

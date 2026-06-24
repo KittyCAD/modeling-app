@@ -32,6 +32,7 @@ import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
+  findGdtDistanceEndpointCallsToFix,
   findGdtEdgesCallsToFix,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
@@ -58,7 +59,18 @@ function sourceRangeForCall(
   node: unknown,
   calleeName: string
 ): [number, number, number] {
+  const ranges = sourceRangesForCalls(node, calleeName)
+  const firstRange = ranges[0]
+  if (!firstRange) throw new Error(`Could not find ${calleeName} call`)
+  return firstRange
+}
+
+function sourceRangesForCalls(
+  node: unknown,
+  calleeName: string
+): Array<[number, number, number]> {
   const visited = new Set<unknown>()
+  const ranges: Array<[number, number, number]> = []
 
   function isRecord(value: unknown): value is Record<string, unknown> {
     return Boolean(value && typeof value === 'object')
@@ -93,23 +105,21 @@ function sourceRangeForCall(
     const call = getCallRecord(value)
     const name = getNestedName(call)
     if (call && name === calleeName) {
-      return [
+      ranges.push([
         getNumber(call.start),
         getNumber(call.end),
         getNumber(call.module_id ?? call.moduleId),
-      ]
+      ])
     }
 
     for (const child of Object.values(value)) {
-      const result = walk(child)
-      if (result) return result
+      walk(child)
     }
     return null
   }
 
-  const result = walk(node)
-  if (!result) throw new Error(`Could not find ${calleeName} call`)
-  return result
+  walk(node)
+  return ranges
 }
 
 function facePair(a: string, b: string): [string, string] {
@@ -359,6 +369,22 @@ const KCL_GDT_GET_COMMON_EDGE = `body = startSketchOn(XY)
 
 gdt001 = gdt::straightness(
   edges = [getCommonEdge(faces = [e1, cap1])],
+  tolerance = 0.1mm,
+)
+`
+
+const KCL_GDT_DISTANCE_GET_COMMON_EDGE = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10], tag = $e2)
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $cap1)
+
+gdt001 = gdt::distance(
+  from = getCommonEdge(faces = [e1, cap1]),
+  to = getCommonEdge(faces = [e2, cap1]),
   tolerance = 0.1mm,
 )
 `
@@ -798,6 +824,43 @@ describe('refactorZ0006Unified', () => {
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
+    it('finds GD&T distance from/to calls with getCommonEdge(...) for Z0006 refactor', () => {
+      const ast = assertParse(KCL_GDT_DISTANCE_GET_COMMON_EDGE, wasmInstance)
+      const ranges = sourceRangesForCalls(ast, 'getCommonEdge')
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: ranges[0],
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+        {
+          edgeId: '00000000-0000-0000-0000-000000000003',
+          sourceRange: ranges[1],
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000004',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+      const toFix = findGdtDistanceEndpointCallsToFix(
+        ast,
+        metadata,
+        defaultArtifactGraph()
+      )
+      expect(toFix.length).toBeGreaterThanOrEqual(1)
+      expect(toFix[0]?.endpoints).toHaveLength(2)
+      expect(toFix[0]?.endpoints.map(({ label }) => label)).toEqual([
+        'from',
+        'to',
+      ])
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
     it('refactors GD&T edges with provided metadata without requiring engine execution', () => {
       const ast = assertParse(KCL_GDT_GET_COMMON_EDGE, wasmInstance)
       const graph = createTaggedWallAndCapGraph(ast, KCL_GDT_GET_COMMON_EDGE, {
@@ -834,6 +897,82 @@ describe('refactorZ0006Unified', () => {
       expect(n).toContain('sideFaces = [e1, cap1]')
       expect(n).toContain('tolerance = 0.1mm')
       expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
+    })
+
+    it('refactors GD&T distance from/to with provided metadata without requiring engine execution', () => {
+      const ast = assertParse(KCL_GDT_DISTANCE_GET_COMMON_EDGE, wasmInstance)
+      const graph = defaultArtifactGraph()
+      const addWallAndCap = ({
+        segmentId,
+        wallId,
+        segmentSnippet,
+      }: {
+        segmentId: string
+        wallId: string
+        segmentSnippet: string
+      }) => {
+        const partialGraph = createTaggedWallAndCapGraph(
+          ast,
+          KCL_GDT_DISTANCE_GET_COMMON_EDGE,
+          {
+            segmentId,
+            wallId,
+            capId: 'cap-1',
+            pathId: `path-${segmentId}`,
+            sweepId: `sweep-${segmentId}`,
+            segmentSnippet,
+            extrudeSnippet: 'extrude(length = 5, tagEnd = $cap1)',
+          }
+        )
+        for (const [id, artifact] of partialGraph) {
+          graph.set(id, artifact)
+        }
+      }
+      addWallAndCap({
+        segmentId: 'segment-e1',
+        wallId: 'wall-e1',
+        segmentSnippet: 'line(endAbsolute = [10, 0], tag = $e1)',
+      })
+      addWallAndCap({
+        segmentId: 'segment-e2',
+        wallId: 'wall-e2',
+        segmentSnippet: 'line(endAbsolute = [10, 10], tag = $e2)',
+      })
+      const ranges = sourceRangesForCalls(ast, 'getCommonEdge')
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'edge-1',
+          sourceRange: ranges[0],
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+        {
+          edgeId: 'edge-2',
+          sourceRange: ranges[1],
+          faceIds: facePair('wall-e2', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const refactored = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(refactored)).toBe(false)
+      if (err(refactored)) throw refactored
+      const n = norm(refactored)
+      expect(n).toContain('gdt::distance(')
+      expect(n).toContain('from = {')
+      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('to = {')
+      expect(n).toContain('sideFaces = [e2, cap1]')
+      expect(n).toContain('tolerance = 0.1mm')
+      expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
+      expect(n).not.toContain('getCommonEdge(faces = [e2, cap1])')
     })
 
     it('does not partially refactor a fillet tags array when one element has no metadata', () => {

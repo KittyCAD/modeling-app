@@ -4,12 +4,10 @@ description: Variables in memory after executing kw_fn.kcl
 ---
 {
   "add": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "increment": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "three": {
     "type": "Number",

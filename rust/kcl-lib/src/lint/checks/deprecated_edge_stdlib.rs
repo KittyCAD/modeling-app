@@ -1,6 +1,6 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, extrude `to`, or GD&T `edges`
-//! arguments.
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, extrude `to`, GD&T `edges`, or
+//! GD&T distance `from`/`to` arguments.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -85,6 +85,14 @@ fn get_to_arg(call: &CallExpressionKw) -> Option<&Expr> {
         .iter()
         .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "to")?;
     Some(&to_arg.arg)
+}
+
+fn get_arg<'a>(call: &'a CallExpressionKw, label: &str) -> Option<&'a Expr> {
+    let arg = call
+        .arguments
+        .iter()
+        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == label)?;
+    Some(&arg.arg)
 }
 
 fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
@@ -185,6 +193,18 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
                 "gdt::{} uses 'edges' with deprecated stdlib; prefer edge specifier objects",
                 callee_name
             ),
+            pos,
+            None,
+        ));
+    } else if callee_name == "distance"
+        && ["from", "to"]
+            .iter()
+            .filter_map(|label| get_arg(call_node, label))
+            .any(is_deprecated_edge_stdlib_expr)
+    {
+        let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+        findings.push(Z0006.at(
+            "gdt::distance uses 'from' or 'to' with deprecated stdlib; prefer edge specifier objects".to_string(),
             pos,
             None,
         ));
@@ -355,6 +375,24 @@ mod tests {
         assert!(
             z0006[0].description.contains("edges"),
             "description should mention edges"
+        );
+    }
+
+    #[test]
+    fn z0006_fires_for_gdt_distance_with_deprecated_from_to() {
+        let kcl = r#"gdt::distance(
+  from = getCommonEdge(faces = [face1, face2]),
+  to = getCommonEdge(faces = [face3, face4]),
+  tolerance = 0.1mm,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for GD&T distance with deprecated from/to");
+        assert!(
+            z0006[0].description.contains("from") || z0006[0].description.contains("to"),
+            "description should mention from or to"
         );
     }
 
