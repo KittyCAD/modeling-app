@@ -32,6 +32,7 @@ import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
+  findGdtEdgesCallsToFix,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
 import {
@@ -198,6 +199,99 @@ function createTaggedCapGraph(
   return graph
 }
 
+function createTaggedWallAndCapGraph(
+  ast: ReturnType<typeof assertParse>,
+  code: string,
+  {
+    segmentId,
+    wallId,
+    capId,
+    pathId,
+    sweepId,
+    segmentSnippet,
+    extrudeSnippet,
+  }: {
+    segmentId: string
+    wallId: string
+    capId: string
+    pathId: string
+    sweepId: string
+    segmentSnippet: string
+    extrudeSnippet: string
+  }
+): ArtifactGraph {
+  const graph = defaultArtifactGraph()
+  const addGeneratedNodePath = (codeRef: ReturnType<typeof codeRefFromRange>) =>
+    ({
+      ...codeRef,
+      nodePath: { steps: [] },
+    }) as Artifact extends { codeRef: infer CodeRef } ? CodeRef : never
+  const segmentCodeRef = addGeneratedNodePath(
+    codeRefFromRange(sourceRangeForSnippet(code, segmentSnippet), ast)
+  )
+  const sweepCodeRef = addGeneratedNodePath(
+    codeRefFromRange(sourceRangeForSnippet(code, extrudeSnippet), ast)
+  )
+  const path: Artifact = {
+    type: 'path',
+    id: pathId,
+    subType: 'sketch',
+    codeRef: segmentCodeRef,
+    planeId: 'plane-1',
+    segIds: [segmentId],
+    sweepId,
+    trajectorySweepId: null,
+    consumed: true,
+  }
+  const segment: Artifact = {
+    type: 'segment',
+    id: segmentId,
+    pathId,
+    edgeIds: [],
+    codeRef: segmentCodeRef,
+    commonSurfaceIds: [wallId, capId],
+  }
+  const sweep: Artifact = {
+    type: 'sweep',
+    id: sweepId,
+    codeRef: sweepCodeRef,
+    pathId,
+    subType: 'extrusion',
+    surfaceIds: [wallId, capId],
+    edgeIds: [],
+    method: 'new',
+    trajectoryId: null,
+    consumed: false,
+  }
+  const wall: Artifact = {
+    type: 'wall',
+    id: wallId,
+    segId: segmentId,
+    edgeCutEdgeIds: [],
+    sweepId,
+    pathIds: [pathId],
+    faceCodeRef: segmentCodeRef,
+    cmdId: `${wallId}-cmd`,
+  }
+  const cap: Artifact = {
+    type: 'cap',
+    id: capId,
+    subType: 'end',
+    edgeCutEdgeIds: [],
+    sweepId,
+    pathIds: [pathId],
+    faceCodeRef: sweepCodeRef,
+    cmdId: `${capId}-cmd`,
+  }
+
+  graph.set(path.id, path)
+  graph.set(segment.id, segment)
+  graph.set(sweep.id, sweep)
+  graph.set(wall.id, wall)
+  graph.set(cap.id, cap)
+  return graph
+}
+
 const SAMPLE_KCL = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -252,6 +346,21 @@ const KCL_GET_COMMON_EDGE = `body = startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $cap1)
   |> fillet(radius = 1, tags = [getCommonEdge(faces = [e1, cap1])])
+`
+
+const KCL_GDT_GET_COMMON_EDGE = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $cap1)
+
+gdt001 = gdt::straightness(
+  edges = [getCommonEdge(faces = [e1, cap1])],
+  tolerance = 0.1mm,
+)
 `
 
 const KCL_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE = `@settings(kclVersion = 2.0)
@@ -664,6 +773,67 @@ describe('refactorZ0006Unified', () => {
       expect(toFix.length).toBeGreaterThanOrEqual(1)
       expect(toFix[0]?.faceIds).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('finds GD&T call with edges = [getCommonEdge(...)] for Z0006 refactor', () => {
+      const ast = assertParse(KCL_GDT_GET_COMMON_EDGE, wasmInstance)
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+      const toFix = findGdtEdgesCallsToFix(
+        ast,
+        metadata,
+        defaultArtifactGraph()
+      )
+      expect(toFix.length).toBeGreaterThanOrEqual(1)
+      expect(toFix[0]?.orderedPayloads[0]?.side_faces).toHaveLength(2)
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('refactors GD&T edges with provided metadata without requiring engine execution', () => {
+      const ast = assertParse(KCL_GDT_GET_COMMON_EDGE, wasmInstance)
+      const graph = createTaggedWallAndCapGraph(ast, KCL_GDT_GET_COMMON_EDGE, {
+        segmentId: 'segment-e1',
+        wallId: 'wall-e1',
+        capId: 'cap-1',
+        pathId: 'path-1',
+        sweepId: 'sweep-1',
+        segmentSnippet: 'line(endAbsolute = [10, 0], tag = $e1)',
+        extrudeSnippet: 'extrude(length = 5, tagEnd = $cap1)',
+      })
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'edge-1',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const refactored = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(refactored)).toBe(false)
+      if (err(refactored)) throw refactored
+      const n = norm(refactored)
+      expect(n).toContain('gdt::straightness(')
+      expect(n).toContain('edges = [')
+      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('tolerance = 0.1mm')
+      expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
     })
 
     it('does not partially refactor a fillet tags array when one element has no metadata', () => {

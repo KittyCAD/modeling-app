@@ -57,6 +57,12 @@ description: Variables in memory after executing property_access_not_found_on_so
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "end01": {
+          "type": "TagIdentifier",
+          "value": "end01"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

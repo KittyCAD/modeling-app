@@ -63,6 +63,7 @@ import {
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
+import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -77,10 +78,18 @@ import {
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
+  HOME_KEYMAP_SCOPE,
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import {
   acceptOnboarding,
   needsToOnboard,
@@ -99,10 +108,24 @@ const Home = () => {
   useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
+  const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
+
+  useEffect(() => {
+    if (!keymap) {
+      return
+    }
+
+    keymap.applyScope(HOME_KEYMAP_SCOPE)
+
+    return () => {
+      keymap.removeScope(HOME_KEYMAP_SCOPE)
+    }
+  }, [keymap])
+
   const navigate = useNavigate()
   const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
@@ -124,6 +147,17 @@ const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } =
     useProjectSearch(optimisticProjects)
+  const projectSearchKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.search.focusProjects,
+          [HOME_KEYMAP_SCOPE],
+          registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : undefined,
+    platform()
+  )
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
@@ -311,15 +345,6 @@ const Home = () => {
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
-  useHotkeys(
-    isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => {
-      void navigate(PATHS.HOME + PATHS.SETTINGS)
-    },
-    {
-      splitKey: '|',
-    }
-  )
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
@@ -331,6 +356,7 @@ const Home = () => {
           setSearchParams={setSearchParams}
           settings={settingsValues}
           readWriteProjectDir={readWriteProjectDir}
+          projectSearchKeybinding={projectSearchKeybinding}
           className="col-start-2 -col-end-1"
         />
         <aside
@@ -523,6 +549,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setSearchParams: (params: Record<string, string>) => void
   settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
+  projectSearchKeybinding?: string
 }
 
 function HomeHeader({
@@ -531,6 +558,7 @@ function HomeHeader({
   setSearchParams,
   settings,
   readWriteProjectDir,
+  projectSearchKeybinding,
   ...rest
 }: HomeHeaderProps) {
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
@@ -542,7 +570,10 @@ function HomeHeader({
           <h1 className="text-3xl font-bold">Projects</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          <ProjectSearchBar setQuery={setQuery} />
+          <ProjectSearchBar
+            setQuery={setQuery}
+            keybinding={projectSearchKeybinding}
+          />
           <div className="flex gap-2 items-center">
             <small>Sort by</small>
             <ActionButton

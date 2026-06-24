@@ -3,7 +3,6 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::EngineManager;
 use kcl_lib::ExecOutcome;
 use kcl_lib::ExecutionCallbacks;
 use kcl_lib::KclError;
@@ -46,10 +45,10 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 
 #[wasm_bindgen]
 pub struct Context {
-    engine: Arc<Box<dyn EngineManager>>,
+    engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: Arc<FileManager>,
-    mock_engine: Arc<Box<dyn EngineManager>>,
+    mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     execution_callbacks: Option<JsExecutionCallbacks>,
     pub(crate) project_manager: ProjectManager,
     pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
@@ -74,14 +73,12 @@ impl Context {
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
-            engine: Arc::new(Box::new(
-                kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
-                    .map_err(|e| format!("{:?}", e))?,
+            engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
+                engine_manager,
+                response_context.clone(),
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
-            mock_engine: Arc::new(Box::new(
-                kcl_lib::mock_engine::EngineConnection::new().map_err(|e| format!("{:?}", e))?,
-            )),
+            mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
             execution_callbacks,
             response_context,
             project_manager: ProjectManager,

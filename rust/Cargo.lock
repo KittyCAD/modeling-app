@@ -318,9 +318,9 @@ dependencies = [
 
 [[package]]
 name = "bon"
-version = "3.9.1"
+version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f47dbe92550676ee653353c310dfb9cf6ba17ee70396e1f7cf0a2020ad49b2fe"
+checksum = "a602c73c7b0148ec6d12af6fd5cc7a46e2eacc8878271a999abac56eed12f561"
 dependencies = [
  "bon-macros",
  "rustversion",
@@ -328,9 +328,9 @@ dependencies = [
 
 [[package]]
 name = "bon-macros"
-version = "3.9.1"
+version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "519bd3116aeeb42d5372c29d982d16d0170d3d4a5ed85fc7dd91642ffff3c67c"
+checksum = "6dee98b0db6a962de883bf5d20362dee4d7ca0d12fe39a7c6c73c844e1cd7c1f"
 dependencies = [
  "darling",
  "ident_case",
@@ -1596,7 +1596,7 @@ dependencies = [
  "bstr",
  "log",
  "regex-automata",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
 ]
 
 [[package]]
@@ -1749,9 +1749,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "1.4.1"
+version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8be7462df143984c4598a256ef469b251d7d7f9e271135073e78fc535414f3d0"
+checksum = "6970f50e31d6fc17d3fa27329444bfa74e196cf62e95052a3f6fee181dba6425"
 dependencies = [
  "bytes",
  "itoa",
@@ -1775,7 +1775,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1efedce1fb8e6913f23e0c92de8e62cd5b772a67e7b3946df930a62566c93184"
 dependencies = [
  "bytes",
- "http 1.4.1",
+ "http 1.4.2",
 ]
 
 [[package]]
@@ -1786,7 +1786,7 @@ checksum = "b021d93e26becf5dc7e1b75b1bed1fd93124b374ceb73f43d4d4eafec896a64a"
 dependencies = [
  "bytes",
  "futures-core",
- "http 1.4.1",
+ "http 1.4.2",
  "http-body 1.0.1",
  "pin-project-lite",
 ]
@@ -1845,7 +1845,7 @@ dependencies = [
  "bytes",
  "futures-channel",
  "futures-core",
- "http 1.4.1",
+ "http 1.4.2",
  "http-body 1.0.1",
  "httparse",
  "itoa",
@@ -1862,7 +1862,7 @@ version = "0.27.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3c93eb611681b207e1fe55d5a71ecf91572ec8a6705cdb6857f7d8d5242cf58"
 dependencies = [
- "http 1.4.1",
+ "http 1.4.2",
  "hyper 1.8.1",
  "hyper-util",
  "rustls",
@@ -1885,7 +1885,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "http 1.4.1",
+ "http 1.4.2",
  "http-body 1.0.1",
  "hyper 1.8.1",
  "ipnet",
@@ -2130,9 +2130,9 @@ dependencies = [
 
 [[package]]
 name = "insta"
-version = "1.47.2"
+version = "1.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b4a6248eb93a4401ed2f37dfe8ea592d3cf05b7cf4f8efa867b6895af7e094e"
+checksum = "86f0f8fee8c926415c58d6ae43a08523a26faccb2323f5e6b644fe7dd4ef6b82"
 dependencies = [
  "console 0.16.3",
  "once_cell",
@@ -2141,6 +2141,7 @@ dependencies = [
  "regex",
  "serde",
  "similar",
+ "strip-ansi-escapes",
  "tempfile",
 ]
 
@@ -2362,6 +2363,7 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "base64",
+ "bon",
  "chrono",
  "clap",
  "console_error_panic_hook",
@@ -2379,7 +2381,7 @@ dependencies = [
  "gloo-utils",
  "gltf-json",
  "handlebars",
- "http 1.4.1",
+ "http 1.4.2",
  "ignore",
  "image",
  "image-compare 0.5.0",
@@ -2477,20 +2479,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-to-core"
-version = "0.1.165"
-dependencies = [
- "anyhow",
- "async-trait",
- "indexmap 2.14.0",
- "kcl-lib",
- "kittycad",
- "kittycad-modeling-cmds",
- "tokio",
- "uuid",
-]
-
-[[package]]
 name = "kcl-wasm-lib"
 version = "0.1.165"
 dependencies = [
@@ -2538,7 +2526,7 @@ dependencies = [
  "format_serde_error",
  "futures",
  "getrandom 0.3.4",
- "http 1.4.1",
+ "http 1.4.2",
  "itertools 0.14.0",
  "log",
  "mime_guess",
@@ -2569,9 +2557,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.206"
+version = "0.2.207"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a35208abdee644c5a75a6becc4c95ab1590f994f9fb58ff97510c621bdf770b2"
+checksum = "265151af3861c2533fe88115dd8c6079ef8fdc49d2547df1b20db421e175f5ff"
 dependencies = [
  "anyhow",
  "bon",
@@ -2580,7 +2568,7 @@ dependencies = [
  "enum-iterator",
  "enum-iterator-derive",
  "euler",
- "http 1.4.1",
+ "http 1.4.2",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
@@ -2728,7 +2716,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex-automata",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
  "syn 2.0.117",
 ]
 
@@ -3291,7 +3279,7 @@ checksum = "287d8d3ebdce117b8539f59411e4ed9ec226e0a4153c7f55495c6070d68e6f72"
 dependencies = [
  "parse-display-derive 0.10.0",
  "regex",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
 ]
 
 [[package]]
@@ -3302,7 +3290,7 @@ checksum = "e78deb158fb1d73b29efb4b7e9b9860b78059c670de06bd28df8d0b458ded0eb"
 dependencies = [
  "parse-display-derive 0.11.0",
  "regex",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
 ]
 
 [[package]]
@@ -3314,7 +3302,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
  "structmeta",
  "syn 2.0.117",
 ]
@@ -3328,7 +3316,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
  "structmeta",
  "syn 2.0.117",
 ]
@@ -3720,7 +3708,7 @@ dependencies = [
  "rand 0.9.4",
  "rand_chacha 0.9.0",
  "rand_xorshift",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
  "rusty-fork",
  "tempfile",
  "unarray",
@@ -3728,8 +3716,9 @@ dependencies = [
 
 [[package]]
 name = "pulp"
-version = "0.22.2"
-source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
+version = "0.22.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "046aa45b989642ec2e4717c8e72d677b13edd831a4d3b6cf37d9a3e54912496a"
 dependencies = [
  "bytemuck",
  "cfg-if",
@@ -3744,8 +3733,9 @@ dependencies = [
 
 [[package]]
 name = "pulp-wasm-simd-flag"
-version = "0.1.0"
-source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d8f70e07b9c3962945a74e59ca1c511bba65b6419468acc217c457d93f3c740"
 
 [[package]]
 name = "pxfm"
@@ -4109,14 +4099,14 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.12.3"
+version = "1.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e10754a14b9137dd7b1e3e5b0493cc9171fdd105e0ab477f51b72e7f3ac0e276"
+checksum = "f1292b7759ae1cb9ec195452d1390a074f0cd8541ab7a5a8c31cd6db45d4a6ba"
 dependencies = [
  "aho-corasick",
  "memchr",
  "regex-automata",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
 ]
 
 [[package]]
@@ -4127,7 +4117,7 @@ checksum = "5276caf25ac86c8d810222b3dbb938e512c55c6831a10f3e6ed1c93b84041f1c"
 dependencies = [
  "aho-corasick",
  "memchr",
- "regex-syntax 0.8.10",
+ "regex-syntax 0.8.11",
 ]
 
 [[package]]
@@ -4150,9 +4140,9 @@ checksum = "f162c6dd7b008981e4d40210aca20b4bd0f9b60ca9271061b07f78537722f2e1"
 
 [[package]]
 name = "regex-syntax"
-version = "0.8.10"
+version = "0.8.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
+checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "reqwest"
@@ -4164,7 +4154,7 @@ dependencies = [
  "bytes",
  "futures-core",
  "futures-util",
- "http 1.4.1",
+ "http 1.4.2",
  "http-body 1.0.1",
  "http-body-util",
  "hyper 1.8.1",
@@ -4859,6 +4849,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d08889ec5408683408db66ad89e0e1f93dff55c73a4ccc71c427d5b277ee47e6"
 
 [[package]]
+name = "strip-ansi-escapes"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a8f8038e7e7969abb3f1b7c2a811225e9296da208539e0f79c5251d6cac0025"
+dependencies = [
+ "vte",
+]
+
+[[package]]
 name = "strsim"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5232,7 +5231,6 @@ dependencies = [
  "signal-hook-registry",
  "socket2 0.6.3",
  "tokio-macros",
- "tracing",
  "windows-sys 0.61.2",
 ]
 
@@ -5376,7 +5374,7 @@ dependencies = [
  "bitflags 2.10.0",
  "bytes",
  "futures-util",
- "http 1.4.1",
+ "http 1.4.2",
  "http-body 1.0.1",
  "iri-string",
  "pin-project-lite",
@@ -5543,7 +5541,7 @@ checksum = "6c01152af293afb9c7c2a57e4b559c5620b421f6d133261c60dd2d0cdb38e6b8"
 dependencies = [
  "bytes",
  "data-encoding",
- "http 1.4.1",
+ "http 1.4.2",
  "httparse",
  "log",
  "rand 0.9.4",
@@ -5756,9 +5754,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.23.2"
+version = "1.23.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d258b83ceec21034727ecee8c382cfa6c3e133699b0742c64571814fb420c9f7"
+checksum = "144d6b123cef80b301b8f72a9e2ca4370ddec21950d0a103dd22c437006d2db7"
 dependencies = [
  "getrandom 0.4.1",
  "js-sys",
@@ -5808,6 +5806,15 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "vte"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "231fdcd7ef3037e8330d8e17e61011a2c244126acc0a982f4040ac3f9f0bc077"
+dependencies = [
+ "memchr",
+]
 
 [[package]]
 name = "wait-timeout"

@@ -1,6 +1,6 @@
-import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Node } from "@rust/kcl-lib/bindings/Node";
 
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { OpArg, OpKclValue } from "@rust/kcl-lib/bindings/Operation";
 import {
   createCallExpressionStdLibKw,
   createIdentifier,
@@ -9,18 +9,18 @@ import {
   createLocalName,
   createVariableDeclaration,
   findUniqueName,
-} from '@src/lang/create'
+} from "@src/lang/create";
 import {
   createPoint2dExpression,
   createVariableExpressionsArray,
   deduplicateFaceExprs,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
-} from '@src/lang/modifyAst'
+} from "@src/lang/modifyAst";
 import {
   modifyAstWithTagForCapFace,
   mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
+} from "@src/lang/modifyAst/tagManagement";
 import {
   artifactToEntityRef,
   getEdgeCutMeta,
@@ -30,16 +30,15 @@ import {
   resolveToCodeRef,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
-} from '@src/lang/queryAst'
+} from "@src/lang/queryAst";
 import {
   getArtifactOfTypes,
   getCapCodeRef,
   getCapForPathId,
-  getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepFromSuspectedSweepSurface,
-} from '@src/lang/std/artifactGraph'
-import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
+} from "@src/lang/std/artifactGraph";
+import type { ResolvedGraphSelection } from "@src/lang/std/artifactGraph";
 import {
   type Artifact,
   type ArtifactGraph,
@@ -49,21 +48,24 @@ import {
   type Program,
   type VariableMap,
   formatNumberValue,
-} from '@src/lang/wasm'
-import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+} from "@src/lang/wasm";
+import type { KclCommandValue, KclExpression } from "@src/lib/commandTypes";
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from "@src/lib/constants";
+import { stringToKclExpression } from "@src/lib/kclHelpers";
+import type RustContext from "@src/lib/rustContext";
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from "@src/lib/selections";
+import { err } from "@src/lib/trap";
+import { isArray } from "@src/lib/utils";
+import type { ModuleType } from "@src/lib/wasm_lib_wrapper";
 import type {
   EdgeCutInfo,
   EnginePrimitiveSelection,
   Selection,
   Selections,
-} from '@src/machines/modelingSharedTypes'
+} from "@src/machines/modelingSharedTypes";
 
 export function addShell({
   ast,
@@ -73,21 +75,21 @@ export function addShell({
   nodeToEdit,
   wasmInstance,
 }: {
-  ast: Node<Program>
-  artifactGraph: ArtifactGraph
-  faces: Selections
-  thickness: KclCommandValue
-  nodeToEdit?: PathToNode
-  wasmInstance: ModuleType
+  ast: Node<Program>;
+  artifactGraph: ArtifactGraph;
+  faces: Selections;
+  thickness: KclCommandValue;
+  nodeToEdit?: PathToNode;
+  wasmInstance: ModuleType;
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      modifiedAst: Node<Program>;
+      pathToNode: PathToNode;
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast)
-  const mNodeToEdit = structuredClone(nodeToEdit)
+  let modifiedAst = structuredClone(ast);
+  const mNodeToEdit = structuredClone(nodeToEdit);
 
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
@@ -98,27 +100,27 @@ export function addShell({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      artifactTypeFilter: ['sweep', 'compositeSolid'],
-    }
-  )
+      artifactTypeFilter: ["sweep", "compositeSolid"],
+    },
+  );
   if (err(result)) {
-    return result
+    return result;
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
-  modifiedAst = result.modifiedAst
+  const { solidsExpr, facesExpr, pathIfPipe } = result;
+  modifiedAst = result.modifiedAst;
   if (!facesExpr) {
-    return new Error("Couldn't retrieve face from selection")
+    return new Error("Couldn't retrieve face from selection");
   }
 
-  const call = createCallExpressionStdLibKw('shell', solidsExpr, [
-    createLabeledArg('faces', facesExpr),
-    createLabeledArg('thickness', valueOrVariable(thickness)),
-  ])
+  const call = createCallExpressionStdLibKw("shell", solidsExpr, [
+    createLabeledArg("faces", facesExpr),
+    createLabeledArg("thickness", valueOrVariable(thickness)),
+  ]);
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in thickness && thickness.variableName) {
-    insertVariableAndOffsetPathToNode(thickness, modifiedAst, mNodeToEdit)
+  if ("variableName" in thickness && thickness.variableName) {
+    insertVariableAndOffsetPathToNode(thickness, modifiedAst, mNodeToEdit);
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -130,15 +132,15 @@ export function addShell({
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
     wasmInstance,
-  })
+  });
   if (err(pathToNode)) {
-    return pathToNode
+    return pathToNode;
   }
 
   return {
     modifiedAst,
     pathToNode,
-  }
+  };
 }
 
 export function addDeleteFace({
@@ -148,20 +150,20 @@ export function addDeleteFace({
   nodeToEdit,
   wasmInstance,
 }: {
-  ast: Node<Program>
-  artifactGraph: ArtifactGraph
-  faces: Selections
-  nodeToEdit?: PathToNode
-  wasmInstance: ModuleType
+  ast: Node<Program>;
+  artifactGraph: ArtifactGraph;
+  faces: Selections;
+  nodeToEdit?: PathToNode;
+  wasmInstance: ModuleType;
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      modifiedAst: Node<Program>;
+      pathToNode: PathToNode;
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast)
-  const mNodeToEdit = structuredClone(nodeToEdit)
+  let modifiedAst = structuredClone(ast);
+  const mNodeToEdit = structuredClone(nodeToEdit);
 
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
@@ -172,43 +174,43 @@ export function addDeleteFace({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      artifactTypeFilter: ['sweep', 'compositeSolid'],
-    }
-  )
+      artifactTypeFilter: ["sweep", "compositeSolid"],
+    },
+  );
   if (err(result)) {
-    return result
+    return result;
   }
 
-  let { solidsExprs, facesExprs } = result
-  modifiedAst = result.modifiedAst
+  let { solidsExprs, facesExprs } = result;
+  modifiedAst = result.modifiedAst;
 
   const enginePrimitives = faces.otherSelections.filter(
     (selection): selection is EnginePrimitiveSelection =>
       isEnginePrimitiveSelection(selection) &&
-      selection.primitiveType === 'face'
-  )
+      selection.primitiveType === "face",
+  );
   if (enginePrimitives.length > 0) {
     const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
       enginePrimitives,
       modifiedAst,
       artifactGraph,
       wasmInstance,
-    })
-    if (err(result)) return result
-    solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
+    });
+    if (err(result)) return result;
+    solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs));
 
-    facesExprs.push(...result.faceExprs)
+    facesExprs.push(...result.faceExprs);
   }
 
-  const solidsExpr = createVariableExpressionsArray(solidsExprs)
-  const facesExpr = createVariableExpressionsArray(facesExprs)
+  const solidsExpr = createVariableExpressionsArray(solidsExprs);
+  const facesExpr = createVariableExpressionsArray(facesExprs);
   if (!facesExpr) {
-    return new Error("Couldn't retrieve face from selection")
+    return new Error("Couldn't retrieve face from selection");
   }
 
-  const call = createCallExpressionStdLibKw('deleteFace', solidsExpr, [
-    createLabeledArg('faces', facesExpr),
-  ])
+  const call = createCallExpressionStdLibKw("deleteFace", solidsExpr, [
+    createLabeledArg("faces", facesExpr),
+  ]);
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -219,21 +221,31 @@ export function addDeleteFace({
     pathIfNewPipe: result.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
     wasmInstance,
-  })
+  });
   if (err(pathToNode)) {
-    return pathToNode
+    return pathToNode;
   }
 
   return {
     modifiedAst,
     pathToNode,
-  }
+  };
+}
+
+function getEnginePrimitiveFaceSelectionsFromSelection({
+  otherSelections,
+}: Selections): EnginePrimitiveSelection[] {
+  return otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === "face",
+  );
 }
 
 // TODO: figure out if KCL-defined modules like hole could let us derive types
-export type HoleBody = 'blind'
-export type HoleType = 'simple' | 'counterbore' | 'countersink'
-export type HoleBottom = 'flat' | 'drill'
+export type HoleBody = "blind";
+export type HoleType = "simple" | "counterbore" | "countersink";
+export type HoleBottom = "flat" | "drill";
 
 export function addHole({
   ast,
@@ -254,32 +266,32 @@ export function addHole({
   nodeToEdit,
   wasmInstance,
 }: {
-  ast: Node<Program>
-  artifactGraph: ArtifactGraph
-  face: Selections
-  cutAt: KclCommandValue
-  holeBody: HoleBody
-  blindDepth?: KclCommandValue
-  blindDiameter?: KclCommandValue
-  holeType: HoleType
-  counterboreDepth?: KclCommandValue
-  counterboreDiameter?: KclCommandValue
-  countersinkAngle?: KclCommandValue
-  countersinkDiameter?: KclCommandValue
-  countersinkHeadClearance?: KclCommandValue
-  holeBottom: HoleBottom
-  drillPointAngle?: KclCommandValue
-  nodeToEdit?: PathToNode
-  wasmInstance: ModuleType
+  ast: Node<Program>;
+  artifactGraph: ArtifactGraph;
+  face: Selections;
+  cutAt: KclCommandValue;
+  holeBody: HoleBody;
+  blindDepth?: KclCommandValue;
+  blindDiameter?: KclCommandValue;
+  holeType: HoleType;
+  counterboreDepth?: KclCommandValue;
+  counterboreDiameter?: KclCommandValue;
+  countersinkAngle?: KclCommandValue;
+  countersinkDiameter?: KclCommandValue;
+  countersinkHeadClearance?: KclCommandValue;
+  holeBottom: HoleBottom;
+  drillPointAngle?: KclCommandValue;
+  nodeToEdit?: PathToNode;
+  wasmInstance: ModuleType;
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      modifiedAst: Node<Program>;
+      pathToNode: PathToNode;
     }
   | Error {
   // 1. Clone the ast so we can edit it
-  let modifiedAst = structuredClone(ast)
-  const mNodeToEdit = structuredClone(nodeToEdit)
+  let modifiedAst = structuredClone(ast);
+  const mNodeToEdit = structuredClone(nodeToEdit);
 
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
@@ -290,210 +302,214 @@ export function addHole({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+      artifactTypeFilter: ["compositeSolid", "sweep"],
+    },
+  );
   if (err(result)) {
-    return result
+    return result;
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
-  modifiedAst = result.modifiedAst
+  const { solidsExpr, facesExpr, pathIfPipe } = result;
+  modifiedAst = result.modifiedAst;
   if (!facesExpr) {
-    return new Error("Couldn't retrieve face from selection")
+    return new Error("Couldn't retrieve face from selection");
   }
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
-  const nonCodeMeta = undefined
-  const modulePath = [createIdentifier('hole')]
+  const nonCodeMeta = undefined;
+  const modulePath = [createIdentifier("hole")];
 
   // Prep the big label args
-  let holeBodyNode: Node<CallExpressionKw> | undefined
-  if (holeBody === 'blind' && blindDepth && blindDiameter) {
+  let holeBodyNode: Node<CallExpressionKw> | undefined;
+  if (holeBody === "blind" && blindDepth && blindDiameter) {
     holeBodyNode = createCallExpressionStdLibKw(
-      'blind',
+      "blind",
       null,
       [
-        createLabeledArg('depth', valueOrVariable(blindDepth)),
-        createLabeledArg('diameter', valueOrVariable(blindDiameter)),
+        createLabeledArg("depth", valueOrVariable(blindDepth)),
+        createLabeledArg("diameter", valueOrVariable(blindDiameter)),
       ],
       nonCodeMeta,
-      modulePath
-    )
+      modulePath,
+    );
   } else {
-    return new Error('Unsupported hole body type')
+    return new Error("Unsupported hole body type");
   }
 
-  let holeBottomNode: Node<CallExpressionKw> | undefined
-  if (holeBottom === 'flat') {
+  let holeBottomNode: Node<CallExpressionKw> | undefined;
+  if (holeBottom === "flat") {
     holeBottomNode = createCallExpressionStdLibKw(
-      'flat',
+      "flat",
       null,
       [],
       nonCodeMeta,
-      modulePath
-    )
-  } else if (holeBottom === 'drill' && drillPointAngle) {
+      modulePath,
+    );
+  } else if (holeBottom === "drill" && drillPointAngle) {
     holeBottomNode = createCallExpressionStdLibKw(
-      'drill',
+      "drill",
       null,
-      [createLabeledArg('pointAngle', valueOrVariable(drillPointAngle))],
+      [createLabeledArg("pointAngle", valueOrVariable(drillPointAngle))],
       nonCodeMeta,
-      modulePath
-    )
+      modulePath,
+    );
   } else {
-    return new Error('Unsupported hole bottom type or missing parameters')
+    return new Error("Unsupported hole bottom type or missing parameters");
   }
 
-  let holeTypeNode: Node<CallExpressionKw> | undefined
-  if (holeType === 'simple') {
+  let holeTypeNode: Node<CallExpressionKw> | undefined;
+  if (holeType === "simple") {
     holeTypeNode = createCallExpressionStdLibKw(
-      'simple',
+      "simple",
       null,
       [],
       nonCodeMeta,
-      modulePath
-    )
+      modulePath,
+    );
   } else if (
-    holeType === 'counterbore' &&
+    holeType === "counterbore" &&
     counterboreDepth &&
     counterboreDiameter
   ) {
     holeTypeNode = createCallExpressionStdLibKw(
-      'counterbore',
+      "counterbore",
       null,
       [
-        createLabeledArg('depth', valueOrVariable(counterboreDepth)),
-        createLabeledArg('diameter', valueOrVariable(counterboreDiameter)),
+        createLabeledArg("depth", valueOrVariable(counterboreDepth)),
+        createLabeledArg("diameter", valueOrVariable(counterboreDiameter)),
       ],
       nonCodeMeta,
-      modulePath
-    )
+      modulePath,
+    );
   } else if (
-    holeType === 'countersink' &&
+    holeType === "countersink" &&
     countersinkAngle &&
     countersinkDiameter
   ) {
     const countersinkArgs = [
-      createLabeledArg('angle', valueOrVariable(countersinkAngle)),
-      createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
-    ]
+      createLabeledArg("angle", valueOrVariable(countersinkAngle)),
+      createLabeledArg("diameter", valueOrVariable(countersinkDiameter)),
+    ];
     if (countersinkHeadClearance) {
       countersinkArgs.push(
         createLabeledArg(
-          'headClearance',
-          valueOrVariable(countersinkHeadClearance)
-        )
-      )
+          "headClearance",
+          valueOrVariable(countersinkHeadClearance),
+        ),
+      );
     }
     holeTypeNode = createCallExpressionStdLibKw(
-      'countersink',
+      "countersink",
       null,
       countersinkArgs,
       nonCodeMeta,
-      modulePath
-    )
+      modulePath,
+    );
   } else {
-    return new Error('Unsupported hole type or missing parameters')
+    return new Error("Unsupported hole type or missing parameters");
   }
 
-  let cutAtExpr = createPoint2dExpression(cutAt, wasmInstance)
-  if (err(cutAtExpr)) return cutAtExpr
+  let cutAtExpr = createPoint2dExpression(cutAt, wasmInstance);
+  if (err(cutAtExpr)) return cutAtExpr;
 
   const call = createCallExpressionStdLibKw(
-    'hole',
+    "hole",
     solidsExpr,
     [
-      createLabeledArg('face', facesExpr),
-      createLabeledArg('cutAt', cutAtExpr),
-      createLabeledArg('holeBottom', holeBottomNode),
-      createLabeledArg('holeBody', holeBodyNode),
-      createLabeledArg('holeType', holeTypeNode),
+      createLabeledArg("face", facesExpr),
+      createLabeledArg("cutAt", cutAtExpr),
+      createLabeledArg("holeBottom", holeBottomNode),
+      createLabeledArg("holeBody", holeBodyNode),
+      createLabeledArg("holeType", holeTypeNode),
     ],
     nonCodeMeta,
-    modulePath
-  )
+    modulePath,
+  );
 
   // Insert variables for labeled arguments if provided
   // Only insert cutAt variable if we used valueOrVariable (not for arrays)
   if (
-    !('value' in cutAt && isArray(cutAt.value)) &&
-    'variableName' in cutAt &&
+    !("value" in cutAt && isArray(cutAt.value)) &&
+    "variableName" in cutAt &&
     cutAt.variableName
   ) {
-    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, mNodeToEdit)
+    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, mNodeToEdit);
   }
-  if (blindDepth && 'variableName' in blindDepth && blindDepth.variableName) {
-    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, mNodeToEdit)
+  if (blindDepth && "variableName" in blindDepth && blindDepth.variableName) {
+    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, mNodeToEdit);
   }
   if (
     blindDiameter &&
-    'variableName' in blindDiameter &&
+    "variableName" in blindDiameter &&
     blindDiameter.variableName
   ) {
-    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, mNodeToEdit)
+    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, mNodeToEdit);
   }
   if (
     counterboreDepth &&
-    'variableName' in counterboreDepth &&
+    "variableName" in counterboreDepth &&
     counterboreDepth.variableName
   ) {
     insertVariableAndOffsetPathToNode(
       counterboreDepth,
       modifiedAst,
-      mNodeToEdit
-    )
+      mNodeToEdit,
+    );
   }
   if (
     counterboreDiameter &&
-    'variableName' in counterboreDiameter &&
+    "variableName" in counterboreDiameter &&
     counterboreDiameter.variableName
   ) {
     insertVariableAndOffsetPathToNode(
       counterboreDiameter,
       modifiedAst,
-      mNodeToEdit
-    )
+      mNodeToEdit,
+    );
   }
   if (
     countersinkAngle &&
-    'variableName' in countersinkAngle &&
+    "variableName" in countersinkAngle &&
     countersinkAngle.variableName
   ) {
     insertVariableAndOffsetPathToNode(
       countersinkAngle,
       modifiedAst,
-      mNodeToEdit
-    )
+      mNodeToEdit,
+    );
   }
   if (
     countersinkDiameter &&
-    'variableName' in countersinkDiameter &&
+    "variableName" in countersinkDiameter &&
     countersinkDiameter.variableName
   ) {
     insertVariableAndOffsetPathToNode(
       countersinkDiameter,
       modifiedAst,
-      mNodeToEdit
-    )
+      mNodeToEdit,
+    );
   }
   if (
     countersinkHeadClearance &&
-    'variableName' in countersinkHeadClearance &&
+    "variableName" in countersinkHeadClearance &&
     countersinkHeadClearance.variableName
   ) {
     insertVariableAndOffsetPathToNode(
       countersinkHeadClearance,
       modifiedAst,
-      mNodeToEdit
-    )
+      mNodeToEdit,
+    );
   }
   if (
     drillPointAngle &&
-    'variableName' in drillPointAngle &&
+    "variableName" in drillPointAngle &&
     drillPointAngle.variableName
   ) {
-    insertVariableAndOffsetPathToNode(drillPointAngle, modifiedAst, mNodeToEdit)
+    insertVariableAndOffsetPathToNode(
+      drillPointAngle,
+      modifiedAst,
+      mNodeToEdit,
+    );
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -505,255 +521,255 @@ export function addHole({
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
     wasmInstance,
-  })
+  });
   if (err(pathToNode)) {
-    return pathToNode
+    return pathToNode;
   }
 
   return {
     modifiedAst,
     pathToNode,
-  }
+  };
 }
 
 // Util functions for hole edit flows
 export async function retrieveHoleBodyArgs(
   opArg: OpArg | undefined,
   instance: ModuleType,
-  providedRustContext?: RustContext
+  providedRustContext?: RustContext,
 ) {
-  let holeBody: HoleBody | undefined
-  let blindDepth: KclExpression | undefined
-  let blindDiameter: KclExpression | undefined
-  if (opArg?.value.type !== 'Object') {
-    return new Error("Couldn't retrieve hole body arguments as an object")
+  let holeBody: HoleBody | undefined;
+  let blindDepth: KclExpression | undefined;
+  let blindDiameter: KclExpression | undefined;
+  if (opArg?.value.type !== "Object") {
+    return new Error("Couldn't retrieve hole body arguments as an object");
   }
 
-  const opArgValue = opArg.value.value
+  const opArgValue = opArg.value.value;
   if (
-    'blindDepth' in opArgValue &&
-    opArgValue.blindDepth?.type === 'Number' &&
-    'diameter' in opArgValue &&
-    opArgValue.diameter?.type === 'Number'
+    "blindDepth" in opArgValue &&
+    opArgValue.blindDepth?.type === "Number" &&
+    "diameter" in opArgValue &&
+    opArgValue.diameter?.type === "Number"
   ) {
-    holeBody = 'blind'
+    holeBody = "blind";
     const depthStr = formatNumberValue(
       opArgValue.blindDepth.value,
       opArgValue.blindDepth.ty,
-      instance
-    )
-    if (err(depthStr)) return depthStr
+      instance,
+    );
+    if (err(depthStr)) return depthStr;
     const depthResult = await stringToKclExpression(
       depthStr,
-      providedRustContext!
-    )
-    if (err(depthResult) || 'errors' in depthResult) {
-      return new Error("Couldn't retrieve blindDepth argument")
+      providedRustContext!,
+    );
+    if (err(depthResult) || "errors" in depthResult) {
+      return new Error("Couldn't retrieve blindDepth argument");
     }
-    blindDepth = depthResult
+    blindDepth = depthResult;
 
     const diameterStr = formatNumberValue(
       opArgValue.diameter.value,
       opArgValue.diameter.ty,
-      instance
-    )
-    if (err(diameterStr)) return diameterStr
+      instance,
+    );
+    if (err(diameterStr)) return diameterStr;
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      providedRustContext!
-    )
-    if (err(diameterResult) || 'errors' in diameterResult) {
-      return new Error("Couldn't retrieve diameter argument")
+      providedRustContext!,
+    );
+    if (err(diameterResult) || "errors" in diameterResult) {
+      return new Error("Couldn't retrieve diameter argument");
     }
-    blindDiameter = diameterResult
+    blindDiameter = diameterResult;
   } else {
     return new Error(
-      "Couldn't retrieve hole body arguments: couldn't determine type"
-    )
+      "Couldn't retrieve hole body arguments: couldn't determine type",
+    );
   }
 
-  return { holeBody, blindDepth, blindDiameter }
+  return { holeBody, blindDepth, blindDiameter };
 }
 
 export async function retrieveHoleBottomArgs(
   opArg: OpArg | undefined,
   instance: ModuleType,
-  providedRustContext?: RustContext
+  providedRustContext?: RustContext,
 ) {
-  let holeBottom: HoleBottom | undefined
-  let drillPointAngle: KclExpression | undefined
-  if (opArg?.value.type !== 'Object') {
-    return new Error("Couldn't retrieve hole bottom arguments as an object")
+  let holeBottom: HoleBottom | undefined;
+  let drillPointAngle: KclExpression | undefined;
+  if (opArg?.value.type !== "Object") {
+    return new Error("Couldn't retrieve hole bottom arguments as an object");
   }
 
-  const opArgValue = opArg.value.value
+  const opArgValue = opArg.value.value;
   if (
-    'drillBitAngle' in opArgValue &&
-    opArgValue.drillBitAngle?.type === 'Number'
+    "drillBitAngle" in opArgValue &&
+    opArgValue.drillBitAngle?.type === "Number"
   ) {
     if (opArgValue.drillBitAngle.value === 180) {
-      holeBottom = 'flat'
+      holeBottom = "flat";
     } else {
-      holeBottom = 'drill'
+      holeBottom = "drill";
       const angleStr = formatNumberValue(
         opArgValue.drillBitAngle.value,
         opArgValue.drillBitAngle.ty,
-        instance
-      )
-      if (err(angleStr)) return angleStr
+        instance,
+      );
+      if (err(angleStr)) return angleStr;
       const angleResult = await stringToKclExpression(
         angleStr,
-        providedRustContext!
-      )
-      if (err(angleResult) || 'errors' in angleResult) {
-        return new Error("Couldn't retrieve drillBitAngle argument")
+        providedRustContext!,
+      );
+      if (err(angleResult) || "errors" in angleResult) {
+        return new Error("Couldn't retrieve drillBitAngle argument");
       }
-      drillPointAngle = angleResult
+      drillPointAngle = angleResult;
     }
   } else {
     return new Error(
-      "Couldn't retrieve holeBottom argument: couldn't determine type"
-    )
+      "Couldn't retrieve holeBottom argument: couldn't determine type",
+    );
   }
 
-  return { holeBottom, drillPointAngle }
+  return { holeBottom, drillPointAngle };
 }
 
 export async function retrieveHoleTypeArgs(
   opArg: OpArg | undefined,
   instance: ModuleType,
-  providedRustContext?: RustContext
+  providedRustContext?: RustContext,
 ) {
-  let holeType: HoleType | undefined
-  let counterboreDepth: KclExpression | undefined
-  let counterboreDiameter: KclExpression | undefined
-  let countersinkAngle: KclExpression | undefined
-  let countersinkDiameter: KclExpression | undefined
-  let countersinkHeadClearance: KclExpression | undefined
-  if (opArg?.value.type !== 'Object') {
-    return new Error("Couldn't retrieve hole bottom arguments as an object")
+  let holeType: HoleType | undefined;
+  let counterboreDepth: KclExpression | undefined;
+  let counterboreDiameter: KclExpression | undefined;
+  let countersinkAngle: KclExpression | undefined;
+  let countersinkDiameter: KclExpression | undefined;
+  let countersinkHeadClearance: KclExpression | undefined;
+  if (opArg?.value.type !== "Object") {
+    return new Error("Couldn't retrieve hole bottom arguments as an object");
   }
 
-  const holeTypeValue = opArg.value.value
+  const holeTypeValue = opArg.value.value;
   // TODO: figure out if we could pull types out of KCL-defined modules?
   // https://github.com/KittyCAD/modeling-app/blob/2666d89427c3350ededccb055ee0b2eceec12d4d/rust/kcl-lib/std/hole.kcl#L8-L10
-  const holeTypeSimpleFeatureId = 0
-  const holeTypeCounterboreFeatureId = 1
-  const holeTypeCountersinkFeatureId = 2
+  const holeTypeSimpleFeatureId = 0;
+  const holeTypeCounterboreFeatureId = 1;
+  const holeTypeCountersinkFeatureId = 2;
   if (
-    !('feature' in holeTypeValue && holeTypeValue.feature?.type === 'Number')
+    !("feature" in holeTypeValue && holeTypeValue.feature?.type === "Number")
   ) {
     return new Error(
-      "Couldn't retrieve holeType argument: couldn't determine type"
-    )
+      "Couldn't retrieve holeType argument: couldn't determine type",
+    );
   }
 
-  const feature = holeTypeValue.feature.value
+  const feature = holeTypeValue.feature.value;
   if (feature === holeTypeSimpleFeatureId) {
-    holeType = 'simple'
+    holeType = "simple";
   } else if (
     feature === holeTypeCounterboreFeatureId &&
-    'depth' in holeTypeValue &&
-    holeTypeValue.depth?.type === 'Number' &&
-    'diameter' in holeTypeValue &&
-    holeTypeValue.diameter?.type === 'Number'
+    "depth" in holeTypeValue &&
+    holeTypeValue.depth?.type === "Number" &&
+    "diameter" in holeTypeValue &&
+    holeTypeValue.diameter?.type === "Number"
   ) {
-    holeType = 'counterbore'
+    holeType = "counterbore";
     const depthStr = formatNumberValue(
       holeTypeValue.depth.value,
       holeTypeValue.depth.ty,
-      instance
-    )
-    if (err(depthStr)) return depthStr
+      instance,
+    );
+    if (err(depthStr)) return depthStr;
     const depthResult = await stringToKclExpression(
       depthStr,
-      providedRustContext!
-    )
-    if (err(depthResult) || 'errors' in depthResult) {
-      return new Error("Couldn't retrieve depth argument")
+      providedRustContext!,
+    );
+    if (err(depthResult) || "errors" in depthResult) {
+      return new Error("Couldn't retrieve depth argument");
     }
-    counterboreDepth = depthResult
+    counterboreDepth = depthResult;
 
     const diameterStr = formatNumberValue(
       holeTypeValue.diameter.value,
       holeTypeValue.diameter.ty,
-      instance
-    )
-    if (err(diameterStr)) return diameterStr
+      instance,
+    );
+    if (err(diameterStr)) return diameterStr;
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      providedRustContext!
-    )
-    if (err(diameterResult) || 'errors' in diameterResult) {
-      return new Error("Couldn't retrieve counterboreDiameter argument")
+      providedRustContext!,
+    );
+    if (err(diameterResult) || "errors" in diameterResult) {
+      return new Error("Couldn't retrieve counterboreDiameter argument");
     }
-    counterboreDiameter = diameterResult
+    counterboreDiameter = diameterResult;
   } else if (
     feature === holeTypeCountersinkFeatureId &&
-    'angle' in holeTypeValue &&
-    holeTypeValue.angle?.type === 'Number' &&
-    'diameter' in holeTypeValue &&
-    holeTypeValue.diameter?.type === 'Number'
+    "angle" in holeTypeValue &&
+    holeTypeValue.angle?.type === "Number" &&
+    "diameter" in holeTypeValue &&
+    holeTypeValue.diameter?.type === "Number"
   ) {
-    holeType = 'countersink'
+    holeType = "countersink";
     const angleStr = formatNumberValue(
       holeTypeValue.angle.value,
       holeTypeValue.angle.ty,
-      instance
-    )
-    if (err(angleStr)) return angleStr
+      instance,
+    );
+    if (err(angleStr)) return angleStr;
     const angleResult = await stringToKclExpression(
       angleStr,
-      providedRustContext!
-    )
-    if (err(angleResult) || 'errors' in angleResult) {
-      return new Error("Couldn't retrieve countersinkAngle argument")
+      providedRustContext!,
+    );
+    if (err(angleResult) || "errors" in angleResult) {
+      return new Error("Couldn't retrieve countersinkAngle argument");
     }
-    countersinkAngle = angleResult
+    countersinkAngle = angleResult;
 
     const diameterStr = formatNumberValue(
       holeTypeValue.diameter.value,
       holeTypeValue.diameter.ty,
-      instance
-    )
+      instance,
+    );
     if (err(diameterStr)) {
-      return new Error("Couldn't format countersinkDiameter argument")
+      return new Error("Couldn't format countersinkDiameter argument");
     }
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      providedRustContext!
-    )
-    if (err(diameterResult) || 'errors' in diameterResult) {
-      return new Error("Couldn't retrieve countersinkDiameter argument")
+      providedRustContext!,
+    );
+    if (err(diameterResult) || "errors" in diameterResult) {
+      return new Error("Couldn't retrieve countersinkDiameter argument");
     }
-    countersinkDiameter = diameterResult
+    countersinkDiameter = diameterResult;
 
-    if ('headClearance' in holeTypeValue) {
-      if (holeTypeValue.headClearance?.type !== 'Number') {
-        return new Error("Couldn't retrieve countersinkHeadClearance argument")
+    if ("headClearance" in holeTypeValue) {
+      if (holeTypeValue.headClearance?.type !== "Number") {
+        return new Error("Couldn't retrieve countersinkHeadClearance argument");
       }
 
       const headClearanceStr = formatNumberValue(
         holeTypeValue.headClearance.value,
         holeTypeValue.headClearance.ty,
-        instance
-      )
+        instance,
+      );
       if (err(headClearanceStr)) {
-        return new Error("Couldn't format countersinkHeadClearance argument")
+        return new Error("Couldn't format countersinkHeadClearance argument");
       }
       const headClearanceResult = await stringToKclExpression(
         headClearanceStr,
-        providedRustContext!
-      )
-      if (err(headClearanceResult) || 'errors' in headClearanceResult) {
-        return new Error("Couldn't retrieve countersinkHeadClearance argument")
+        providedRustContext!,
+      );
+      if (err(headClearanceResult) || "errors" in headClearanceResult) {
+        return new Error("Couldn't retrieve countersinkHeadClearance argument");
       }
-      countersinkHeadClearance = headClearanceResult
+      countersinkHeadClearance = headClearanceResult;
     }
   } else {
     return new Error(
-      "Couldn't retrieve holeType argument: couldn't determine type"
-    )
+      "Couldn't retrieve holeType argument: couldn't determine type",
+    );
   }
 
   return {
@@ -763,7 +779,7 @@ export async function retrieveHoleTypeArgs(
     countersinkAngle,
     countersinkDiameter,
     countersinkHeadClearance,
-  }
+  };
 }
 
 export function addOffsetPlane({
@@ -775,65 +791,65 @@ export function addOffsetPlane({
   nodeToEdit,
   wasmInstance,
 }: {
-  ast: Node<Program>
-  artifactGraph: ArtifactGraph
-  variables: VariableMap
-  plane: Selections
-  offset: KclCommandValue
-  nodeToEdit?: PathToNode
-  wasmInstance: ModuleType
+  ast: Node<Program>;
+  artifactGraph: ArtifactGraph;
+  variables: VariableMap;
+  plane: Selections;
+  offset: KclCommandValue;
+  nodeToEdit?: PathToNode;
+  wasmInstance: ModuleType;
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      modifiedAst: Node<Program>;
+      pathToNode: PathToNode;
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast)
-  const mNodeToEdit = structuredClone(nodeToEdit)
+  let modifiedAst = structuredClone(ast);
+  const mNodeToEdit = structuredClone(nodeToEdit);
 
   // 2. Prepare unlabeled and labeled arguments
-  let planeExpr: Expr | undefined
+  let planeExpr: Expr | undefined;
   const hasFaceToOffset = plane.graphSelections.some((sel) => {
-    const resolved = resolveToCodeRef(sel, artifactGraph)
-    const t = resolved?.artifact?.type
-    return t === 'cap' || t === 'wall' || t === 'edgeCut'
-  })
+    const resolved = resolveToCodeRef(sel, artifactGraph);
+    const t = resolved?.artifact?.type;
+    return t === "cap" || t === "wall" || t === "edgeCut";
+  });
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
       plane,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
-    )
+      mNodeToEdit,
+    );
     if (err(result)) {
-      return result
+      return result;
     }
 
-    const { solidsExpr, facesExpr } = result
-    modifiedAst = result.modifiedAst
+    const { solidsExpr, facesExpr } = result;
+    modifiedAst = result.modifiedAst;
     if (!facesExpr) {
-      return new Error("Couldn't retrieve face from selection")
+      return new Error("Couldn't retrieve face from selection");
     }
 
-    planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
-      createLabeledArg('face', facesExpr),
-    ])
+    planeExpr = createCallExpressionStdLibKw("planeOf", solidsExpr, [
+      createLabeledArg("face", facesExpr),
+    ]);
   } else {
-    planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
+    planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance);
     if (!planeExpr) {
-      return new Error('No plane found in the selection')
+      return new Error("No plane found in the selection");
     }
   }
 
-  const call = createCallExpressionStdLibKw('offsetPlane', planeExpr, [
-    createLabeledArg('offset', valueOrVariable(offset)),
-  ])
+  const call = createCallExpressionStdLibKw("offsetPlane", planeExpr, [
+    createLabeledArg("offset", valueOrVariable(offset)),
+  ]);
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in offset && offset.variableName) {
-    insertVariableAndOffsetPathToNode(offset, modifiedAst, mNodeToEdit)
+  if ("variableName" in offset && offset.variableName) {
+    insertVariableAndOffsetPathToNode(offset, modifiedAst, mNodeToEdit);
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -845,373 +861,473 @@ export function addOffsetPlane({
     pathIfNewPipe: undefined,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
     wasmInstance,
-  })
+  });
   if (err(pathToNode)) {
-    return pathToNode
+    return pathToNode;
   }
 
   return {
     modifiedAst,
     pathToNode,
-  }
+  };
 }
 
-export function getBodySelectionFromPrimitiveParentEntityId(
-  parentEntityId: string,
-  artifactGraph: ArtifactGraph
-): ResolvedGraphSelection | null {
-  let parentArtifact = artifactGraph.get(parentEntityId)
-  // Engine topology parent_id may be a constituent sweep id after shell/boolean; the editable
-  // body is often a compositeSolid whose solidIds includes that id (graph may not key parentId).
-  if (!parentArtifact) {
-    for (const [, artifact] of artifactGraph) {
-      if (artifact.type === 'compositeSolid') {
-        const solidIds = (artifact as { solidIds?: string[] }).solidIds ?? []
-        if (solidIds.includes(parentEntityId)) {
-          parentArtifact = artifact
-          break
-        }
-      }
-    }
-  }
-  if (!parentArtifact) {
-    return null
-  }
+export function getPlaneExprFromSelection({
+  ast,
+  artifactGraph,
+  variables,
+  plane,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  ast: Node<Program>;
+  artifactGraph: ArtifactGraph;
+  variables: VariableMap;
+  plane: Selections;
+  wasmInstance: ModuleType;
+  nodeToEdit?: PathToNode;
+}): Error | { modifiedAst: Node<Program>; expr: Expr } {
+  let modifiedAst = ast;
+  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane);
+  const hasFaceSelection = plane.graphSelections.some((sel) =>
+    isFaceArtifact(sel.artifact),
+  );
 
-  if (
-    parentArtifact.type === 'sweep' ||
-    parentArtifact.type === 'compositeSolid'
-  ) {
+  // Face selections become a named planeOf(...) first. That keeps mirror3d and
+  // offsetPlane on the same representation and preserves edit paths when we
+  // insert faceId(...) variables before the edited node.
+  if (enginePrimitives.length > 0 || hasFaceSelection) {
+    const result = buildSolidsAndFacesExprs(
+      plane,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit,
+      {
+        // Keep lookup aligned with deleteFace so selected parent solids map directly.
+        lastChildLookup: false,
+        artifactTypeFilter: ["sweep", "compositeSolid"],
+      },
+    );
+    if (err(result)) {
+      return result;
+    }
+
+    let { solidsExprs, facesExprs } = result;
+    modifiedAst = result.modifiedAst;
+
+    if (enginePrimitives.length > 0) {
+      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+        enginePrimitives,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      });
+      if (err(result)) {
+        return result;
+      }
+      solidsExprs = deduplicateFaceExprs(
+        solidsExprs.concat(result.solidsExprs),
+      );
+      facesExprs.push(...result.faceExprs);
+    }
+
+    const solidsExpr = createVariableExpressionsArray(solidsExprs);
+    const facesExpr = createVariableExpressionsArray(facesExprs);
+    if (!facesExpr) {
+      return new Error("Couldn't retrieve face from selection");
+    }
+
+    const planeOfExpr = createCallExpressionStdLibKw("planeOf", solidsExpr, [
+      createLabeledArg("face", facesExpr),
+    ]);
+    const planeVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+    );
+    const variableIdentifierAst = createLocalName(planeVariableName);
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: planeOfExpr,
+        valueText: "",
+        valueCalculated: "",
+        variableName: planeVariableName,
+        variableDeclarationAst: createVariableDeclaration(
+          planeVariableName,
+          planeOfExpr,
+        ),
+        variableIdentifierAst,
+        insertIndex:
+          nodeToEdit && typeof nodeToEdit[1]?.[0] === "number"
+            ? nodeToEdit[1][0]
+            : modifiedAst.body.length,
+      },
+      modifiedAst,
+      nodeToEdit,
+    );
+
     return {
-      artifact: parentArtifact,
-      codeRef: parentArtifact.codeRef,
-    }
+      modifiedAst,
+      expr: variableIdentifierAst,
+    };
   }
 
-  if (parentArtifact.type === 'path' && parentArtifact.sweepId) {
-    const parentSweep = getArtifactOfTypes(
-      { key: parentArtifact.sweepId, types: ['sweep'] },
-      artifactGraph
-    )
-    if (!err(parentSweep)) {
-      return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
+  const defaultPlane = plane.otherSelections.find(
+    (selection) => typeof selection === "object" && "name" in selection,
+  );
+  if (defaultPlane) {
+    return {
+      modifiedAst,
+      expr: createLocalName(defaultPlane.name.toUpperCase()),
+    };
+  }
+
+  let planeExpr: Expr | undefined = getSelectedPlaneAsNode(
+    plane,
+    variables,
+    wasmInstance,
+  );
+  if (!planeExpr) {
+    const planeVars = getVariableExprsFromSelection(
+      plane,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit,
+    );
+    if (!err(planeVars) && planeVars.exprs.length === 1) {
+      const [planeVar] = planeVars.exprs;
+      if (planeVar.type !== "PipeSubstitution") {
+        planeExpr = planeVar;
       }
     }
   }
-
-  if (
-    parentArtifact.type === 'cap' ||
-    parentArtifact.type === 'wall' ||
-    parentArtifact.type === 'edgeCut'
-  ) {
-    const parentSweep = getSweepFromSuspectedSweepSurface(
-      parentArtifact.id,
-      artifactGraph
-    )
-    if (!err(parentSweep)) {
-      return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
-      }
-    }
+  if (!planeExpr) {
+    return new Error("No plane found in the selection");
   }
 
-  const parentCodeRefs = getCodeRefsByArtifactId(parentEntityId, artifactGraph)
-  if (!parentCodeRefs || parentCodeRefs.length === 0) {
-    return null
-  }
+  return { modifiedAst, expr: planeExpr };
+}
 
+// Utilities
+
+function getSolidSelectionsFromFaceSelections(
+  faces: Selections,
+  artifactGraph: ArtifactGraph,
+): Selections {
   return {
-    artifact: parentArtifact,
-    codeRef: parentCodeRefs[parentCodeRefs.length - 1],
-  }
+    graphSelections: faces.graphSelections.flatMap((face) => {
+      if (!face.artifact) {
+        return [];
+      }
+      const sweep = getSweepFromSuspectedSweepSurface(
+        face.artifact.id,
+        artifactGraph,
+      );
+      if (err(sweep) || !sweep) {
+        return [];
+      }
+
+      return {
+        artifact: sweep as Artifact,
+        codeRef: sweep.codeRef,
+      };
+    }),
+    otherSelections: [],
+  };
 }
 
 export function getFacesExprsFromSelection(
   ast: Node<Program>,
   faces: Selections,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
 ) {
-  let modifiedAst = ast
+  let modifiedAst = ast;
   const exprs = faces.graphSelections.flatMap((v2Sel) => {
-    const resolved = resolveToCodeRef(v2Sel, artifactGraph)
+    const resolved = resolveToCodeRef(v2Sel, artifactGraph);
     if (!resolved?.artifact) {
-      console.warn('No artifact found for face', v2Sel)
-      return []
+      console.warn("No artifact found for face", v2Sel);
+      return [];
     }
-    let artifact = resolved.artifact
-    if (artifact.type === 'path') {
-      const capForPath = getCapForPathId(artifact.id, artifactGraph)
-      if (err(capForPath)) return []
-      artifact = capForPath
+    let artifact = resolved.artifact;
+    if (artifact.type === "path") {
+      const capForPath = getCapForPathId(artifact.id, artifactGraph);
+      if (err(capForPath)) return [];
+      artifact = capForPath;
     }
-    if (artifact.type === 'cap') {
+    if (artifact.type === "cap") {
       // Add tagEnd/tagStart to the extrude and use that tag instead of END/START
       const tagResult = modifyAstWithTagForCapFace(
         modifiedAst,
         artifact,
         artifactGraph,
-        wasmInstance
-      )
+        wasmInstance,
+      );
       if (err(tagResult)) {
-        console.warn('Failed to add cap tag to extrude', tagResult)
-        return []
+        console.warn("Failed to add cap tag to extrude", tagResult);
+        return [];
       }
-      modifiedAst = tagResult.modifiedAst
-      return [createLocalName(tagResult.tag)]
-    } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
-      let targetArtifact: Artifact | undefined
-      let edgeCutMeta: EdgeCutInfo | null = null
-      if (artifact.type === 'wall') {
-        const key = artifact.segId
+      modifiedAst = tagResult.modifiedAst;
+      return [createLocalName(tagResult.tag)];
+    } else if (artifact.type === "wall" || artifact.type === "edgeCut") {
+      let targetArtifact: Artifact | undefined;
+      let edgeCutMeta: EdgeCutInfo | null = null;
+      if (artifact.type === "wall") {
+        const key = artifact.segId;
         const segmentArtifact = getArtifactOfTypes(
-          { key, types: ['segment'] },
-          artifactGraph
-        )
-        if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-          console.warn('No segment found for face', v2Sel)
-          return []
+          { key, types: ["segment"] },
+          artifactGraph,
+        );
+        if (err(segmentArtifact) || segmentArtifact.type !== "segment") {
+          console.warn("No segment found for face", v2Sel);
+          return [];
         }
 
         const regionTagExpr = getRegionTagExprFromSegmentId(
           modifiedAst,
           segmentArtifact.id,
           artifactGraph,
-          wasmInstance
-        )
+          wasmInstance,
+        );
         if (regionTagExpr) {
-          return [regionTagExpr]
+          return [regionTagExpr];
         }
 
         if (segmentArtifact.originalSegId) {
           const originalSegmentArtifact = getArtifactOfTypes(
-            { key: segmentArtifact.originalSegId, types: ['segment'] },
-            artifactGraph
-          )
+            { key: segmentArtifact.originalSegId, types: ["segment"] },
+            artifactGraph,
+          );
           targetArtifact = err(originalSegmentArtifact)
             ? segmentArtifact
-            : originalSegmentArtifact
+            : originalSegmentArtifact;
         } else {
-          targetArtifact = segmentArtifact
+          targetArtifact = segmentArtifact;
         }
       } else {
-        targetArtifact = artifact
-        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
+        targetArtifact = artifact;
+        edgeCutMeta = getEdgeCutMeta(
+          artifact,
+          ast,
+          artifactGraph,
+          wasmInstance,
+        );
       }
 
       const codeRef =
-        targetArtifact && 'codeRef' in targetArtifact
+        targetArtifact && "codeRef" in targetArtifact
           ? targetArtifact.codeRef
-          : undefined
+          : undefined;
       if (!codeRef) {
-        console.warn('No codeRef for target artifact')
-        return []
+        console.warn("No codeRef for target artifact");
+        return [];
       }
       const tagResult = mutateAstWithTagForSketchSegment(
         ast,
         codeRef.pathToNode,
         wasmInstance,
-        edgeCutMeta
-      )
+        edgeCutMeta,
+      );
       if (err(tagResult)) {
         console.warn(
-          'Failed to mutate ast with tag for sketch segment',
-          tagResult
-        )
-        return []
+          "Failed to mutate ast with tag for sketch segment",
+          tagResult,
+        );
+        return [];
       }
 
-      return [createLocalName(tagResult.tag)]
+      return [createLocalName(tagResult.tag)];
     } else {
-      console.warn('Face was not a cap or wall or chamfer', v2Sel)
-      return []
+      console.warn("Face was not a cap or wall or chamfer", v2Sel);
+      return [];
     }
-  })
-  return { modifiedAst, exprs }
+  });
+  return { modifiedAst, exprs };
 }
 
 // Check if an artifact is a face type (cap, wall, or edgeCut)
 export function isFaceArtifact(artifact: Artifact | undefined): boolean {
   return (
     artifact !== undefined &&
-    (artifact.type === 'cap' ||
-      artifact.type === 'wall' ||
-      artifact.type === 'edgeCut')
-  )
+    (artifact.type === "cap" ||
+      artifact.type === "wall" ||
+      artifact.type === "edgeCut")
+  );
 }
 
 // Sort of an opposite of getFacesExprsFromSelection above, used for edit flows
 export function retrieveFaceSelectionsFromOpArgs(
   solidsArg: OpArg,
   facesArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
 ) {
-  const solids = retrieveSelectionsFromOpArg(solidsArg, artifactGraph)
+  const solids = retrieveSelectionsFromOpArg(solidsArg, artifactGraph);
   if (err(solids)) {
-    return solids
+    return solids;
   }
 
   // Collect sweep IDs from all solids (shell can have multiple solids e.g. [thing1, thing2])
-  const sweepIdsSet = new Set<string>()
+  const sweepIdsSet = new Set<string>();
   for (const sel of solids.graphSelections) {
-    const resolved = resolveToCodeRef(sel, artifactGraph)
-    const artifact = resolved?.artifact
-    if (artifact?.type === 'sweep') {
-      sweepIdsSet.add(artifact.id)
+    const resolved = resolveToCodeRef(sel, artifactGraph);
+    const artifact = resolved?.artifact;
+    if (artifact?.type === "sweep") {
+      sweepIdsSet.add(artifact.id);
     }
   }
   if (sweepIdsSet.size === 0) {
-    return new Error('No sweep artifact found in solids selection')
+    return new Error("No sweep artifact found in solids selection");
   }
   const candidates = new Map<
     string,
     {
-      artifact: Artifact
-      codeRef: { pathToNode: PathToNode; range: [number, number, number] }
+      artifact: Artifact;
+      codeRef: { pathToNode: PathToNode; range: [number, number, number] };
     }
-  >()
+  >();
   for (const artifact of artifactGraph.values()) {
     if (
-      artifact.type === 'cap' &&
+      artifact.type === "cap" &&
       sweepIdsSet.has(artifact.sweepId) &&
       artifact.subType
     ) {
-      const codeRef = getCapCodeRef(artifact, artifactGraph)
+      const codeRef = getCapCodeRef(artifact, artifactGraph);
       if (err(codeRef)) {
-        return codeRef
+        return codeRef;
       }
 
-      const entry = { artifact, codeRef }
-      candidates.set(artifact.subType, entry)
-      candidates.set(artifact.id, entry)
+      const entry = { artifact, codeRef };
+      candidates.set(artifact.subType, entry);
+      candidates.set(artifact.id, entry);
     } else if (
-      artifact.type === 'wall' &&
+      artifact.type === "wall" &&
       sweepIdsSet.has(artifact.sweepId) &&
       artifact.segId
     ) {
       const segArtifact = getArtifactOfTypes(
-        { key: artifact.segId, types: ['segment'] },
-        artifactGraph
-      )
+        { key: artifact.segId, types: ["segment"] },
+        artifactGraph,
+      );
       if (err(segArtifact)) {
-        return segArtifact
+        return segArtifact;
       }
 
-      const { codeRef } = segArtifact
-      const entry = { artifact, codeRef }
-      candidates.set(artifact.segId, entry)
-      candidates.set(artifact.id, entry)
+      const { codeRef } = segArtifact;
+      const entry = { artifact, codeRef };
+      candidates.set(artifact.segId, entry);
+      candidates.set(artifact.id, entry);
     }
   }
 
-  const faceValues: OpKclValue[] = []
-  if (facesArg.value.type === 'Array') {
-    faceValues.push(...facesArg.value.value)
+  const faceValues: OpKclValue[] = [];
+  if (facesArg.value.type === "Array") {
+    faceValues.push(...facesArg.value.value);
   } else {
-    faceValues.push(facesArg.value)
+    faceValues.push(facesArg.value);
   }
-  const graphSelections: Selection[] = []
+  const graphSelections: Selection[] = [];
   for (const v of faceValues) {
-    if (v.type === 'String' && v.value && candidates.has(v.value)) {
-      const result = candidates.get(v.value)
+    if (v.type === "String" && v.value && candidates.has(v.value)) {
+      const result = candidates.get(v.value);
       if (result) {
         graphSelections.push({
           entityRef: artifactToEntityRef(
             result.artifact.type,
-            result.artifact.id
+            result.artifact.id,
           ),
           codeRef: result.codeRef,
-        })
+        });
       } else {
         console.warn(
-          'retrieveFaceSelectionsFromOpArgs result is missing and not a selection'
-        )
+          "retrieveFaceSelectionsFromOpArgs result is missing and not a selection",
+        );
       }
     } else if (
-      v.type === 'TagIdentifier' &&
+      v.type === "TagIdentifier" &&
       v.artifact_id &&
       candidates.has(v.artifact_id)
     ) {
-      const result = candidates.get(v.artifact_id)
+      const result = candidates.get(v.artifact_id);
       if (result) {
         graphSelections.push({
           entityRef: artifactToEntityRef(
             result.artifact.type,
-            result.artifact.id
+            result.artifact.id,
           ),
           codeRef: result.codeRef,
-        })
+        });
       } else {
         console.warn(
-          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection',
-          { artifact_id: v.artifact_id, candidatesKeys: [...candidates.keys()] }
-        )
+          "retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection",
+          {
+            artifact_id: v.artifact_id,
+            candidatesKeys: [...candidates.keys()],
+          },
+        );
       }
     } else {
-      console.warn('Face value is not a String or TagIdentifier', v, {
+      console.warn("Face value is not a String or TagIdentifier", v, {
         type: v.type,
-        ...(v.type === 'TagIdentifier' && {
+        ...(v.type === "TagIdentifier" && {
           artifact_id: v.artifact_id,
           inCandidates: v.artifact_id != null && candidates.has(v.artifact_id),
         }),
-      })
-      continue
+      });
+      continue;
     }
   }
 
   const faces: Selections = {
     graphSelections,
     otherSelections: [],
-  }
-  return { solids, faces }
+  };
+  return { solids, faces };
 }
 
 export function retrieveNonDefaultPlaneSelectionFromOpArg(
   planeArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
 ): Selections | Error {
-  if (planeArg.value.type !== 'Plane') {
+  if (planeArg.value.type !== "Plane") {
     return new Error(
-      'Unsupported case for edit flows at the moment, check the KCL code'
-    )
+      "Unsupported case for edit flows at the moment, check the KCL code",
+    );
   }
 
   const planeArtifact = getArtifactOfTypes(
     {
       key: planeArg.value.artifact_id,
-      types: ['plane', 'planeOfFace'],
+      types: ["plane", "planeOfFace"],
     },
-    artifactGraph
-  )
+    artifactGraph,
+  );
   if (err(planeArtifact)) {
-    return new Error("Couldn't retrieve plane or planeOfFace artifact")
+    return new Error("Couldn't retrieve plane or planeOfFace artifact");
   }
 
-  if (planeArtifact.type === 'plane') {
+  if (planeArtifact.type === "plane") {
     return {
       graphSelections: [
         {
-          entityRef: artifactToEntityRef('plane', planeArtifact.id),
+          entityRef: artifactToEntityRef("plane", planeArtifact.id),
           codeRef: planeArtifact.codeRef,
         },
       ],
       otherSelections: [],
-    }
-  } else if (planeArtifact.type === 'planeOfFace') {
+    };
+  } else if (planeArtifact.type === "planeOfFace") {
     const faceArtifact = getArtifactOfTypes(
-      { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
-      artifactGraph
-    )
+      { key: planeArtifact.faceId, types: ["cap", "wall", "edgeCut"] },
+      artifactGraph,
+    );
     if (err(faceArtifact)) {
-      return new Error("Couldn't retrieve face artifact for planeOfFace")
+      return new Error("Couldn't retrieve face artifact for planeOfFace");
     }
 
-    const codeRef = getFaceCodeRef(faceArtifact)
+    const codeRef = getFaceCodeRef(faceArtifact);
     if (!codeRef) {
-      return new Error("Couldn't retrieve code reference for face artifact")
+      return new Error("Couldn't retrieve code reference for face artifact");
     }
 
     return {
@@ -1222,10 +1338,10 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
         },
       ],
       otherSelections: [],
-    }
+    };
   }
 
-  return new Error('Unsupported plane artifact type')
+  return new Error("Unsupported plane artifact type");
 }
 
 export function buildSolidsAndFacesExprs(
@@ -1235,12 +1351,12 @@ export function buildSolidsAndFacesExprs(
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
   options: {
-    lastChildLookup?: boolean
-    artifactTypeFilter?: Array<Artifact['type']>
-  } = {}
+    lastChildLookup?: boolean;
+    artifactTypeFilter?: Array<Artifact["type"]>;
+  } = {},
 ) {
-  let modifiedAst = structuredClone(ast)
-  const { lastChildLookup = true, artifactTypeFilter = ['sweep'] } = options
+  let modifiedAst = structuredClone(ast);
+  const { lastChildLookup = true, artifactTypeFilter = ["sweep"] } = options;
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
     faces,
@@ -1251,25 +1367,25 @@ export function buildSolidsAndFacesExprs(
     {
       lastChildLookup,
       artifactTypeFilter,
-    }
-  )
+    },
+  );
   if (err(vars)) {
-    return vars
+    return vars;
   }
 
-  const pathIfPipe = vars.pathIfPipe
+  const pathIfPipe = vars.pathIfPipe;
 
   const taggedFacesResult = getFacesExprsFromSelection(
     modifiedAst,
     faces,
     artifactGraph,
-    wasmInstance
-  )
-  modifiedAst = taggedFacesResult.modifiedAst
-  const taggedFacesExprs = taggedFacesResult.exprs
+    wasmInstance,
+  );
+  modifiedAst = taggedFacesResult.modifiedAst;
+  const taggedFacesExprs = taggedFacesResult.exprs;
 
-  const solidsExpr = createVariableExpressionsArray(vars.exprs)
-  const facesExpr = createVariableExpressionsArray(taggedFacesExprs)
+  const solidsExpr = createVariableExpressionsArray(vars.exprs);
+  const facesExpr = createVariableExpressionsArray(taggedFacesExprs);
   return {
     solidsExprs: vars.exprs,
     facesExprs: taggedFacesExprs,
@@ -1277,7 +1393,7 @@ export function buildSolidsAndFacesExprs(
     facesExpr,
     pathIfPipe,
     modifiedAst,
-  }
+  };
 }
 
 // Adds all the faceId calls needed in the AST so we can refer to them,
@@ -1289,58 +1405,58 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   artifactGraph,
   wasmInstance,
 }: {
-  enginePrimitives: EnginePrimitiveSelection[]
-  modifiedAst: Node<Program>
-  artifactGraph: ArtifactGraph
-  wasmInstance: ModuleType
+  enginePrimitives: EnginePrimitiveSelection[];
+  modifiedAst: Node<Program>;
+  artifactGraph: ArtifactGraph;
+  wasmInstance: ModuleType;
 }): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
   if (enginePrimitives.length === 0) {
-    return { solidsExprs: [], faceExprs: [] }
+    return { solidsExprs: [], faceExprs: [] };
   }
 
   const dedupedSelections = [
     ...new Map(
       enginePrimitives
-        .filter((selection) => selection.primitiveType === 'face')
+        .filter((selection) => selection.primitiveType === "face")
         .map((selection) => [
-          `${selection.parentEntityId || ''}:${selection.primitiveIndex}`,
+          `${selection.parentEntityId || ""}:${selection.primitiveIndex}`,
           selection,
-        ])
+        ]),
     ).values(),
-  ]
+  ];
 
-  let insertIndex = modifiedAst.body.length
-  const solidExprs: Expr[] = []
-  const faceExprs: Expr[] = []
+  let insertIndex = modifiedAst.body.length;
+  const solidExprs: Expr[] = [];
+  const faceExprs: Expr[] = [];
 
   for (const primitiveSelection of dedupedSelections) {
     if (!primitiveSelection.parentEntityId) {
-      continue
+      continue;
     }
 
     // Step 1. Retrieve the body
     const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
       primitiveSelection.parentEntityId,
-      artifactGraph
-    )
+      artifactGraph,
+    );
     if (!bodySelection) {
       return new Error(
-        'Delete Face could not resolve a parent solid for a selected primitive face.'
-      )
+        "Delete Face could not resolve a parent solid for a selected primitive face.",
+      );
     }
 
-    const art = bodySelection.artifact
+    const art = bodySelection.artifact;
     const pathId =
-      art?.type === 'segment' ? (art as { pathId?: string }).pathId : undefined
+      art?.type === "segment" ? (art as { pathId?: string }).pathId : undefined;
     const entityRef = artifactToEntityRef(
-      art?.type ?? 'sweep',
-      art?.id ?? '',
-      pathId
-    )
+      art?.type ?? "sweep",
+      art?.id ?? "",
+      pathId,
+    );
     if (!entityRef) {
       return new Error(
-        'Delete Face could not build entity ref for body selection.'
-      )
+        "Delete Face could not build entity ref for body selection.",
+      );
     }
     const bodyVars = getVariableExprsFromSelection(
       {
@@ -1352,60 +1468,60 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
       wasmInstance,
       undefined,
       {
-        artifactTypeFilter: ['sweep', 'compositeSolid'],
-      }
-    )
+        artifactTypeFilter: ["sweep", "compositeSolid"],
+      },
+    );
     if (err(bodyVars)) {
-      return bodyVars
+      return bodyVars;
     }
 
-    let solidExpr = createVariableExpressionsArray(bodyVars.exprs)
+    let solidExpr = createVariableExpressionsArray(bodyVars.exprs);
     if (solidExpr === null && bodyVars.exprs.length === 1) {
-      solidExpr = bodyVars.exprs[0]
+      solidExpr = bodyVars.exprs[0];
     }
     if (!solidExpr) {
       return new Error(
-        'Could not resolve selected primitive face bodies in code.'
-      )
+        "Could not resolve selected primitive face bodies in code.",
+      );
     }
     if (solidExprs.length === 0) {
-      solidExprs.push(solidExpr)
+      solidExprs.push(solidExpr);
     }
 
     // Step 2. Create the faceId call and keep track of the new variable name
     const faceExpr = createCallExpressionStdLibKw(
-      'faceId',
+      "faceId",
       structuredClone(solidExpr),
       [
         createLabeledArg(
-          'index',
-          createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
+          "index",
+          createLiteral(primitiveSelection.primitiveIndex, wasmInstance),
         ),
-      ]
-    )
+      ],
+    );
     const faceVariableName = findUniqueName(
       modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.FACE
-    )
-    const variableIdentifierAst = createLocalName(faceVariableName)
+      KCL_DEFAULT_CONSTANT_PREFIXES.FACE,
+    );
+    const variableIdentifierAst = createLocalName(faceVariableName);
     insertVariableAndOffsetPathToNode(
       {
         valueAst: faceExpr,
-        valueText: '',
-        valueCalculated: '',
+        valueText: "",
+        valueCalculated: "",
         variableName: faceVariableName,
         variableDeclarationAst: createVariableDeclaration(
           faceVariableName,
-          faceExpr
+          faceExpr,
         ),
         variableIdentifierAst,
         insertIndex,
       },
-      modifiedAst
-    )
-    insertIndex++
-    faceExprs.push(variableIdentifierAst)
+      modifiedAst,
+    );
+    insertIndex++;
+    faceExprs.push(variableIdentifierAst);
   }
 
-  return { solidsExprs: solidExprs, faceExprs }
+  return { solidsExprs: solidExprs, faceExprs };
 }

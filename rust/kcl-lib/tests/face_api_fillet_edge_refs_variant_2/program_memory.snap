@@ -275,6 +275,16 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "endCap": {
+          "type": "TagIdentifier",
+          "value": "endCap"
+        },
+        "startCap": {
+          "type": "TagIdentifier",
+          "value": "startCap"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -834,6 +844,16 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "endCap": {
+          "type": "TagIdentifier",
+          "value": "endCap"
+        },
+        "startCap": {
+          "type": "TagIdentifier",
+          "value": "startCap"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

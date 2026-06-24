@@ -523,6 +523,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             normalizeProjectPathForCloudMetadata(entry.path)
           )
           project.cloudProjectId ??= cloudMetadata?.remoteProjectId
+          project.cloudConflict = cloudMetadata?.conflict
           if (project.metadata) {
             project.metadata.modified = getOpfsCloudProjectModifiedTime(
               cloudMetadata,
@@ -872,6 +873,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            onFileSystemSuccess?: () => void
+            onSuccess?: () => void
           }
         }) => {
           const wasmInstance = await input.context.wasmInstancePromise
@@ -891,12 +894,39 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           })
 
           message.message += `, ${totalDeleted} deleted`
+          input.onFileSystemSuccess?.()
+
+          const project = input.context.app.project
+          const requestedRelativePath = normalizeKCLFileDeletePath(
+            input.requestedFileNameWithExtension
+          )
+          const deletesRequestedFile = (input.filesToDelete ?? []).some(
+            (file) =>
+              normalizeKCLFileDeletePath(file.requestedFileName) ===
+              requestedRelativePath
+          )
+          const requestedAbsolutePath = project
+            ? fsZds.join(project.path, input.requestedFileNameWithExtension)
+            : ''
+          const shouldNavigate =
+            !project ||
+            project.name !== input.requestedProjectName ||
+            project.executingPath !== requestedAbsolutePath ||
+            deletesRequestedFile
+
+          if (!shouldNavigate) {
+            input.onSuccess?.()
+          }
 
           return {
             ...message,
             projectName: input.requestedProjectName,
             fileName: input.requestedFileNameWithExtension || '',
             subRoute: input.requestedSubRoute || '',
+            shouldNavigate,
+            ...(shouldNavigate && input.onSuccess
+              ? { onProjectLoaderComplete: input.onSuccess }
+              : {}),
           }
         }
       ),
