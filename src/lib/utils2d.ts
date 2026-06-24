@@ -20,6 +20,23 @@ export function getCcwSweep(start: Coords2d, end: Coords2d) {
   )
 }
 
+/**
+ * Computes the directed angular distance from startAngle to endAngle
+ * in radians, going either CCW or CW.
+ *
+ * Notes:
+ * - If startAngle === endAngle, the result is 0 for both directions (not 2PI).
+ * - Inputs are typically within [-PI, PI], but any value works.
+ */
+export function getAngleDiff(
+  startAngle: number,
+  endAngle: number,
+  ccw: boolean
+) {
+  const diff = normalizeAngle(endAngle - startAngle)
+  return ccw ? diff : (TAU - diff) % TAU
+}
+
 export function getTangentPointFromPreviousArc(
   lastArcCenter: Coords2d,
   lastArcCCW: boolean,

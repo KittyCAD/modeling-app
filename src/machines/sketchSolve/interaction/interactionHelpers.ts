@@ -3,8 +3,14 @@ import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
-import { getAngleDiff, isArray } from '@src/lib/utils'
-import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
+import { isArray } from '@src/lib/utils'
+import {
+  distance2d,
+  dot2d,
+  getAngleDiff,
+  polar2d,
+  subVec,
+} from '@src/lib/utils2d'
 import {
   getArcPoints,
   getControlPointSplinePoints,
