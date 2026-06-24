@@ -55,27 +55,27 @@ pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
     ((b[0] - a[0]).squared() + (b[1] - a[1]).squared()).sqrt()
 }
 
-pub(crate) fn vec2_sub(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+pub(crate) fn vec2_sub(a: Coords2d, b: Coords2d) -> Coords2d {
     [a[0] - b[0], a[1] - b[1]]
 }
 
-pub(crate) fn vec2_add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+pub(crate) fn vec2_add(a: Coords2d, b: Coords2d) -> Coords2d {
     [a[0] + b[0], a[1] + b[1]]
 }
 
-pub(crate) fn vec2_scale(a: [f64; 2], scale: f64) -> [f64; 2] {
+pub(crate) fn vec2_scale(a: Coords2d, scale: f64) -> Coords2d {
     [a[0] * scale, a[1] * scale]
 }
 
-pub(crate) fn vec2_cross(a: [f64; 2], b: [f64; 2]) -> f64 {
+pub(crate) fn vec2_cross(a: Coords2d, b: Coords2d) -> f64 {
     a[0] * b[1] - a[1] * b[0]
 }
 
-pub(crate) fn vec2_dot(a: [f64; 2], b: [f64; 2]) -> f64 {
+pub(crate) fn vec2_dot(a: Coords2d, b: Coords2d) -> f64 {
     a[0] * b[0] + a[1] * b[1]
 }
 
-pub(crate) fn vec2_len(a: [f64; 2]) -> f64 {
+pub(crate) fn vec2_len(a: Coords2d) -> f64 {
     libm::hypot(a[0], a[1])
 }
 
@@ -86,7 +86,7 @@ pub(crate) fn vec2_len(a: [f64; 2]) -> f64 {
 ///
 /// Returns the intersection point, or `None` when the lines are parallel or
 /// nearly parallel.
-pub(crate) fn intersect_lines_2d(line0: ([f64; 2], [f64; 2]), line1: ([f64; 2], [f64; 2])) -> Option<[f64; 2]> {
+pub(crate) fn intersect_lines_2d(line0: (Coords2d, Coords2d), line1: (Coords2d, Coords2d)) -> Option<Coords2d> {
     let p = line0.0;
     let r = vec2_sub(line0.1, line0.0);
     let q = line1.0;
