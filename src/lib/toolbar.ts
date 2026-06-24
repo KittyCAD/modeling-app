@@ -31,7 +31,7 @@ import {
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
-import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 
 export type ToolbarModeName =
   | 'modeling'
