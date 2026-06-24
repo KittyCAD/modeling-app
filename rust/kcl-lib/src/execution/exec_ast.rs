@@ -118,6 +118,7 @@ use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
 use crate::std::utils::intersect_lines_2d;
+use crate::std::utils::normalize_rad;
 use crate::std::utils::vec2_dot;
 use crate::std::utils::vec2_len;
 use crate::std::utils::vec2_sub;
@@ -301,15 +302,6 @@ fn angle_sector_rays(sector: AngleSector, is_inverse: bool) -> [AngleSectorRay; 
     if is_inverse { [rays[1], rays[0]] } else { rays }
 }
 
-fn normalize_radians(angle: f64) -> f64 {
-    let normalized = angle % std::f64::consts::TAU;
-    if normalized < 0.0 {
-        normalized + std::f64::consts::TAU
-    } else {
-        normalized
-    }
-}
-
 fn line_endpoint_datum(
     line: &ConstrainableLine2d,
     endpoint_index: usize,
@@ -382,7 +374,7 @@ fn remap_angle_for_representative_rays(
         -desired - sign_offset
     };
 
-    ezpz::datatypes::Angle::from_radians(normalize_radians(representative_angle))
+    ezpz::datatypes::Angle::from_radians(normalize_rad(representative_angle))
 }
 
 struct PointsAtAngleLineData {
