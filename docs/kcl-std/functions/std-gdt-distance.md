@@ -10,8 +10,8 @@ GD&T distance annotation for displaying measured edge lengths or distances betwe
 ```kcl
 gdt::distance(
   tolerance: number(Length),
-  from?: Face | TaggedFace | Edge,
-  to?: Face | TaggedFace | Edge,
+  from?: Face | TaggedFace | Edge | any,
+  to?: Face | TaggedFace | Edge | any,
   edges?: [Edge | any; 1+],
   precision?: number(_),
   framePosition?: Point2d,
@@ -28,8 +28,8 @@ This is part of model-based definition (MBD).
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The acceptable distance tolerance. | Yes |
-| `from` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | The face or edge to measure from. Must be used with `to`. The default position is the entity center. | No |
-| `to` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | The face or edge to measure to. Must be used with `from`. The default position is the entity center. | No |
+| `from` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
+| `to` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the distance label relative to the measured geometry. The default is `[100mm, 100mm]`. | No |
