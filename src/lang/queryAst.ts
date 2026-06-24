@@ -1617,8 +1617,11 @@ function getSplitOutputExprFromSelection(
     resolvedSelection?.artifact?.type === 'sweep'
       ? resolvedSelection.artifact
       : resolvedSelection?.artifact?.type === 'path'
-        ? getExtrudeOutputSweepForPath(resolvedSelection.artifact, artifactGraph)
-      : null
+        ? getExtrudeOutputSweepForPath(
+            resolvedSelection.artifact,
+            artifactGraph
+          )
+        : null
   const inferredOutputIndex =
     artifact?.type === 'sweep' && artifact.subType === 'extrusion'
       ? getMultiRegionExtrudeOutputIndex(
