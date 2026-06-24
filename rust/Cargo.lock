@@ -2274,7 +2274,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.164"
+version = "0.2.165"
 dependencies = [
  "schemars",
  "serde",
