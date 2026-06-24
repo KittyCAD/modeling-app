@@ -10,6 +10,7 @@ import {
   distance2d,
   dot2d,
   getCcwSweep,
+  getLineIntersection,
   getPolarAngle2d,
   intersectRanges,
   lerp,
@@ -386,25 +387,4 @@ function withMinimumMagnitude(value: number, minMagnitude: number) {
     return minMagnitude
   }
   return Math.sign(value) * Math.max(Math.abs(value), minMagnitude)
-}
-
-// Returns the intersection of 2 infinite lines that lie on the given line segments.
-// Returns a valid point even if the line segments themselves don't intersect.
-// Returns null if the lines are parallel,
-export function getLineIntersection(
-  line1: LineSegment,
-  line2: LineSegment
-): Coords2d | null {
-  const p = line1[0]
-  const q = line2[0]
-  const r = subVec(line1[1], line1[0])
-  const s = subVec(line2[1], line2[0])
-  const denominator = r[0] * s[1] - r[1] * s[0]
-  if (Math.abs(denominator) < 1e-8) {
-    return null
-  }
-
-  const qp = subVec(q, p)
-  const t = (qp[0] * s[1] - qp[1] * s[0]) / denominator
-  return [p[0] + r[0] * t, p[1] + r[1] * t]
 }

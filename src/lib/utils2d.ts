@@ -114,6 +114,26 @@ export function cross2d(a: Coords2d, b: Coords2d): number {
   return a[0] * b[1] - a[1] * b[0]
 }
 
+// Returns the intersection of two infinite lines defined by two points each.
+// Returns null when the lines are parallel or nearly parallel.
+export function getLineIntersection(
+  line0: readonly [Coords2d, Coords2d],
+  line1: readonly [Coords2d, Coords2d]
+): Coords2d | null {
+  const p = line0[0]
+  const q = line1[0]
+  const r = subVec(line0[1], line0[0])
+  const s = subVec(line1[1], line1[0])
+  const denominator = cross2d(r, s)
+  if (Math.abs(denominator) <= 1e-9) {
+    return null
+  }
+
+  const qp = subVec(q, p)
+  const t = cross2d(qp, s) / denominator
+  return [p[0] + r[0] * t, p[1] + r[1] * t]
+}
+
 // Takes a vector given by 2 coords and rotates it 90deg CCW.
 export function perpendicular(v: Coords2d): Coords2d {
   return [-v[1], v[0]]

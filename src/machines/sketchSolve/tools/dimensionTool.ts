@@ -17,6 +17,7 @@ import { roundOff } from '@src/lib/utils'
 import {
   dot2d,
   getCcwSweep,
+  getLineIntersection,
   length2d,
   normalizeAngle,
   normalizeVec,
@@ -158,7 +159,6 @@ type DraftRuntime = {
 
 type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
 
-const LINE_INTERSECTION_EPSILON = 1e-8
 const SECTOR_EPSILON = 1e-9
 const ANGLE_SECTOR_PROMPT_TOAST_ID = 'dimension-tool-angle-sector-prompt'
 
@@ -205,29 +205,6 @@ function dismissAngleSectorPrompt() {
 
 function getObjects(context: DimensionToolContext) {
   return context.initialObjects
-}
-
-function getLineIntersection(
-  line0Points: readonly [Coords2d, Coords2d],
-  line1Points: readonly [Coords2d, Coords2d]
-): Coords2d | null {
-  const [p0, p1] = line0Points
-  const [p2, p3] = line1Points
-  const line0Direction = subVec(p1, p0)
-  const line1Direction = subVec(p3, p2)
-  const denominator =
-    line0Direction[0] * line1Direction[1] -
-    line0Direction[1] * line1Direction[0]
-
-  if (Math.abs(denominator) < LINE_INTERSECTION_EPSILON) {
-    return null
-  }
-
-  const delta = subVec(p2, p0)
-  const t =
-    (delta[0] * line1Direction[1] - delta[1] * line1Direction[0]) / denominator
-
-  return [p0[0] + t * line0Direction[0], p0[1] + t * line0Direction[1]]
 }
 
 function getClickedRayDirection(
