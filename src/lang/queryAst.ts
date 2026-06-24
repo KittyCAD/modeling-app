@@ -1202,8 +1202,9 @@ export function resolveToCodeRef(
         )?.[0]
       : undefined)
   if (!codeRef) return null
-  const artifact =
-    s.entityRef && artifactGraph
+  const artifact = s.artifact
+    ? s.artifact
+    : s.entityRef && artifactGraph
       ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
       : codeRef.range && artifactGraph
         ? (getArtifactFromRange(codeRef.range, artifactGraph) ?? undefined)
@@ -1318,6 +1319,7 @@ export function getVariableExprsFromSelection(
       s,
       ast,
       wasmInstance,
+      artifactGraph,
       artifactTypeFilter
     )
     if (splitOutputExpr) {
@@ -1595,26 +1597,51 @@ function getSplitOutputExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType,
+  artifactGraph: ArtifactGraph,
   artifactTypeFilter?: Array<Artifact['type']>
 ): Expr | null {
-  if (artifactTypeFilter && !artifactTypeFilter.includes('compositeSolid')) {
+  if (
+    artifactTypeFilter &&
+    !artifactTypeFilter.includes('compositeSolid') &&
+    !artifactTypeFilter.includes('sweep')
+  ) {
     return null
   }
-  const artifact =
-    resolvedSelection?.artifact?.type === 'compositeSolid'
-      ? (resolvedSelection.artifact as Artifact & {
-          subType?: string
-          outputIndex?: number | null
-        })
+  type SplitOutputArtifact = Artifact & {
+    subType?: string
+    outputIndex?: number | null
+    pathId?: string
+  }
+  const artifact: SplitOutputArtifact | null =
+    resolvedSelection?.artifact?.type === 'compositeSolid' ||
+    resolvedSelection?.artifact?.type === 'sweep'
+      ? resolvedSelection.artifact
+      : resolvedSelection?.artifact?.type === 'path'
+        ? getExtrudeOutputSweepForPath(resolvedSelection.artifact, artifactGraph)
       : null
+  const inferredOutputIndex =
+    artifact?.type === 'sweep' && artifact.subType === 'extrusion'
+      ? getMultiRegionExtrudeOutputIndex(
+          artifact,
+          ast,
+          wasmInstance,
+          artifactGraph
+        )
+      : null
+  const outputIndex = artifact?.outputIndex ?? inferredOutputIndex
+
   if (
-    artifact?.subType?.toLowerCase() !== 'split' ||
-    artifact.outputIndex == null
+    outputIndex == null ||
+    (artifact?.subType?.toLowerCase() !== 'split' &&
+      inferredOutputIndex == null)
   ) {
     return null
   }
 
-  const codeRef = resolvedSelection?.codeRef ?? selection.codeRef
+  const codeRef =
+    artifact && 'codeRef' in artifact
+      ? artifact.codeRef
+      : (resolvedSelection?.codeRef ?? selection.codeRef)
   if (!codeRef) {
     return null
   }
@@ -1631,9 +1658,91 @@ function getSplitOutputExprFromSelection(
 
   return createMemberExpression(
     directLookup.node.declaration.id.name,
-    createLiteral(artifact.outputIndex, wasmInstance),
+    createLiteral(outputIndex, wasmInstance),
     true
   )
+}
+
+function getMultiRegionExtrudeOutputIndex(
+  artifact: Artifact & { pathId?: string },
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  artifactGraph: ArtifactGraph
+): number | null {
+  if (!artifact.pathId || !('codeRef' in artifact)) {
+    return null
+  }
+
+  const extrudeDecl = getNodeFromPath<VariableDeclaration>(
+    ast,
+    artifact.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    err(extrudeDecl) ||
+    extrudeDecl.node.type !== 'VariableDeclaration' ||
+    extrudeDecl.node.declaration.init.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const extrudeCall = extrudeDecl.node.declaration.init
+  if (
+    extrudeCall.callee.type !== 'Name' ||
+    extrudeCall.callee.name.name !== 'extrude' ||
+    extrudeCall.unlabeled?.type !== 'ArrayExpression'
+  ) {
+    return null
+  }
+
+  const regionArtifact = artifactGraph.get(artifact.pathId)
+  if (!regionArtifact || !('codeRef' in regionArtifact)) {
+    return null
+  }
+  const regionName = getVariableNameFromNodePath(
+    regionArtifact.codeRef.pathToNode,
+    ast,
+    wasmInstance
+  )
+  if (!regionName) {
+    return null
+  }
+
+  for (const [index, element] of extrudeCall.unlabeled.elements.entries()) {
+    if (element.type !== 'Name') {
+      continue
+    }
+
+    if (regionName === element.name.name) {
+      return index
+    }
+  }
+
+  return null
+}
+
+function getExtrudeOutputSweepForPath(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): (Artifact & { pathId?: string; outputIndex?: number | null }) | null {
+  if (artifact.type !== 'path' || artifact.subType !== 'region') {
+    return null
+  }
+
+  const sweep = [...artifactGraph.values()].find(
+    (
+      candidate
+    ): candidate is Artifact & {
+      pathId?: string
+      outputIndex?: number | null
+    } =>
+      candidate.type === 'sweep' &&
+      candidate.subType === 'extrusion' &&
+      candidate.pathId === artifact.id
+  )
+
+  return sweep ?? null
 }
 
 function splitOutputExprKey(expr: Expr): string {

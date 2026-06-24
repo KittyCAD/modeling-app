@@ -79,6 +79,13 @@ export function deriveSegmentFreedom(
     if (isPointSegment(startPoint)) {
       pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
     }
+  } else if (segmentData.type === 'ControlPointSpline') {
+    for (const controlId of segmentData.controls) {
+      const controlPoint = getObjById(controlId)
+      if (isPointSegment(controlPoint)) {
+        pointFreedoms.push(controlPoint.kind.segment.freedom ?? null)
+      }
+    }
   }
 
   // Filter out nulls

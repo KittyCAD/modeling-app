@@ -19,6 +19,7 @@ import {
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   getVariableExprsFromSelection,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -213,7 +214,9 @@ export function getAxisExpression(
     if (!err(tagResult)) {
       modifiedAst = tagResult.modifiedAst
       const { tag } = tagResult
-      const axisSelection = edge?.graphSelections[0]?.artifact
+      const axisSelection =
+        edge?.graphSelections[0]?.artifact ??
+        resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
       if (!axisSelection) {
         return new Error('Generated axis selection is missing.')
       }
