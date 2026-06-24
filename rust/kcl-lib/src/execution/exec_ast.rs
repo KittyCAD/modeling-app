@@ -391,6 +391,11 @@ struct PointsAtAngleLineData {
     angle_kind: ezpz::datatypes::AngleKind,
 }
 
+enum AngleConstraintLowering {
+    LinesAtAngle,
+    PointsAtAngle(PointsAtAngleLineData),
+}
+
 fn push_points_at_angle_for_lines(
     sketch_block_state: &mut SketchBlockState,
     sketch_var_ty: NumericType,
@@ -3962,8 +3967,8 @@ impl Node<BinaryExpression> {
                                     return Err(internal_err(message, self));
                                 }
                             };
-                            let points_at_angle_data = match *mode {
-                                AngleConstraintMode::LinesAtAngle => None,
+                            let angle_lowering = match *mode {
+                                AngleConstraintMode::LinesAtAngle => AngleConstraintLowering::LinesAtAngle,
                                 AngleConstraintMode::PointsAtAngle { sector, inverse } => {
                                     let sketch_vars = exec_state
                                         .mod_local
@@ -4009,7 +4014,7 @@ impl Node<BinaryExpression> {
                                             [line0_direction, line1_direction],
                                             desired_angle,
                                         ));
-                                    Some(PointsAtAngleLineData {
+                                    AngleConstraintLowering::PointsAtAngle(PointsAtAngleLineData {
                                         initial_vertex,
                                         representative_points: [line0_representative, line1_representative],
                                         angle_kind,
@@ -4024,15 +4029,15 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            match (*mode, points_at_angle_data) {
-                                (AngleConstraintMode::LinesAtAngle, None) => {
+                            match angle_lowering {
+                                AngleConstraintLowering::LinesAtAngle => {
                                     sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
                                         datum_line_from_constrainable(line0, range)?,
                                         datum_line_from_constrainable(line1, range)?,
                                         ezpz::datatypes::AngleKind::Other(desired_angle),
                                     ));
                                 }
-                                (AngleConstraintMode::PointsAtAngle { .. }, Some(points_at_angle_data)) => {
+                                AngleConstraintLowering::PointsAtAngle(points_at_angle_data) => {
                                     push_points_at_angle_for_lines(
                                         sketch_block_state,
                                         sketch_var_ty,
@@ -4040,11 +4045,6 @@ impl Node<BinaryExpression> {
                                         points_at_angle_data,
                                         range,
                                     )?
-                                }
-                                _ => {
-                                    let message = "Invalid angle constraint lowering state".to_owned();
-                                    debug_assert!(false, "{}", &message);
-                                    return Err(internal_err(message, self));
                                 }
                             }
                             use crate::execution::Artifact;
