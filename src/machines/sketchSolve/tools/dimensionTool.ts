@@ -366,10 +366,6 @@ function isDirectionInSector(
   )
 }
 
-function reverseDirection(direction: Coords2d): Coords2d {
-  return scaleVec(direction, -1)
-}
-
 function getClickedRayKey(
   lineIndex: 0 | 1,
   direction: RayDirection
@@ -393,16 +389,16 @@ export function getAngleSectorRays(
     case 2:
       return [
         angleContext.line1Direction,
-        reverseDirection(angleContext.line0Direction),
+        scaleVec(angleContext.line0Direction, -1),
       ]
     case 3:
       return [
-        reverseDirection(angleContext.line0Direction),
-        reverseDirection(angleContext.line1Direction),
+        scaleVec(angleContext.line0Direction, -1),
+        scaleVec(angleContext.line1Direction, -1),
       ]
     case 4:
       return [
-        reverseDirection(angleContext.line1Direction),
+        scaleVec(angleContext.line1Direction, -1),
         angleContext.line0Direction,
       ]
   }
@@ -445,12 +441,12 @@ function getAngleRays(
     { key: 'line0Forward', direction: angleContext.line0Direction },
     {
       key: 'line0Reverse',
-      direction: reverseDirection(angleContext.line0Direction),
+      direction: scaleVec(angleContext.line0Direction, -1),
     },
     { key: 'line1Forward', direction: angleContext.line1Direction },
     {
       key: 'line1Reverse',
-      direction: reverseDirection(angleContext.line1Direction),
+      direction: scaleVec(angleContext.line1Direction, -1),
     },
   ]
 
