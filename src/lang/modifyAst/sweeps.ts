@@ -26,7 +26,10 @@ import {
   insertPrimitiveEdgeVariablesAndOffsetPathToNode,
   retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  getFacesExprsFromSelection,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 import {
   modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,

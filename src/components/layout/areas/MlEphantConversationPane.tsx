@@ -529,7 +529,6 @@ export const MlEphantConversationPane = (props: {
   return (
     <MlEphantConversation
       isLoading={conversation === undefined}
-      isLoadingAttachments={isLoadingAttachments}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}

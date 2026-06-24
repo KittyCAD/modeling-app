@@ -1,4 +1,3 @@
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import {
   getArtifactFromRange,
@@ -8,7 +7,10 @@ import {
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { CommandSelectionType } from '@src/lib/commandTypes'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
@@ -158,6 +160,7 @@ export function coerceSelectionsToBody(
       )
       if (
         bodySelection?.artifact &&
+        bodySelection.codeRef &&
         !seenBodyIds.has(bodySelection.artifact.id)
       ) {
         seenBodyIds.add(bodySelection.artifact.id)

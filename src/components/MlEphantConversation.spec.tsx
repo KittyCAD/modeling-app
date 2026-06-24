@@ -199,7 +199,6 @@ describe('MlEphantConversation', () => {
     render(
       <MlEphantConversation
         isLoading={false}
-        isLoadingAttachments={true}
         conversation={{
           exchanges: [
             {

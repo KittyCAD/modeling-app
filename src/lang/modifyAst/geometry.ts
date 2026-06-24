@@ -197,9 +197,13 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
+    const edgeCodeRef = edge.graphSelections[0]?.codeRef
+    if (!edgeCodeRef) {
+      return new Error('Selected edge is missing a source range.')
+    }
     const pathToAxisSelection = getNodePathFromSourceRange(
       modifiedAst,
-      edge.graphSelections[0]?.codeRef.range
+      edgeCodeRef.range
     )
     const tagResult = mutateAstWithTagForSketchSegment(
       modifiedAst,

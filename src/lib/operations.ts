@@ -4131,6 +4131,15 @@ export function onHide(props: {
   })
 }
 
+export function onDelete(props: {
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+  objects: Selections
+}) {
+  props.modelingActor.send({
+    type: 'Delete selection',
+  })
+}
+
 export async function onUnhide(props: {
   hideOperation: HideOperation
   targetArtifact: Artifact
