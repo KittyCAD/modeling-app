@@ -265,10 +265,21 @@ async function replayZookeeperEditPatch({
   const currentFileReplay = preparedReplayFiles.find(
     (replayFile) => replayFile.absolutePath === kclManager.path
   )
+  const activeFileReplay = preparedReplayFiles.find(
+    (replayFile) => replayFile.absolutePath === effectProps.activeFilePath
+  )
 
   const deletesCurrentFile = currentFileReplay?.nextContent === null
   await writeZookeeperPatchReplay(preparedReplayFiles)
   await effectProps.onProjectFilesReplay?.(preparedReplayFiles)
+  if (effectProps.activeFilePath && activeFileReplay) {
+    kclManager.synchronizeCachedEditorHistoryAfterDirectGlobalReplay({
+      filePath: effectProps.activeFilePath,
+      direction: effectProps.direction,
+      previousContent: activeFileReplay.previousContent,
+      nextContent: activeFileReplay.nextContent,
+    })
+  }
 
   if (deletesCurrentFile) {
     await effectProps.onCurrentFileDelete(

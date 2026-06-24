@@ -4,7 +4,6 @@ description: Variables in memory after executing error_inside_fn_also_has_source
 ---
 {
   "someFunction": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   }
 }
