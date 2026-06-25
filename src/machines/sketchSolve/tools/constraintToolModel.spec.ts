@@ -177,7 +177,7 @@ describe('constraintToolModel', () => {
     )
   })
 
-  it('recognizes horizontal selections for both line and point-pair modes', () => {
+  it('recognizes horizontal and vertical selections for line and point-pair modes', () => {
     const point = createPointApiObject({ id: 1 })
     const secondPoint = createPointApiObject({ id: 2 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -208,8 +208,17 @@ describe('constraintToolModel', () => {
     )
     expect(pointPair.status).toBe('complete')
     expect(pointPair.bestMatch?.mode.id).toBe('point-pair')
-    expect(pointPair.bestMatch?.mode.resultingConstraintType).toBe(
-      'VerticalDistance'
+    expect(pointPair.bestMatch?.mode.resultingConstraintType).toBe('Horizontal')
+
+    const verticalPointPair = getConstraintToolSelectionMatches(
+      'verticalConstraintTool',
+      [1, ORIGIN_TARGET],
+      objects
+    )
+    expect(verticalPointPair.status).toBe('complete')
+    expect(verticalPointPair.bestMatch?.mode.id).toBe('point-pair')
+    expect(verticalPointPair.bestMatch?.mode.resultingConstraintType).toBe(
+      'Vertical'
     )
   })
 

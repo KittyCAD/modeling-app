@@ -332,7 +332,7 @@ export const constraintToolConfigs = {
       },
       {
         id: 'point-pair',
-        resultingConstraintType: 'VerticalDistance',
+        resultingConstraintType: 'Horizontal',
         slots: [['pointLike'], ['pointLike']],
         areaSelectionPolicy: 'consume-minimal',
       },
@@ -351,7 +351,7 @@ export const constraintToolConfigs = {
       },
       {
         id: 'point-pair',
-        resultingConstraintType: 'HorizontalDistance',
+        resultingConstraintType: 'Vertical',
         slots: [['pointLike'], ['pointLike']],
         areaSelectionPolicy: 'consume-minimal',
       },
