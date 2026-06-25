@@ -112,7 +112,6 @@ type LineSelection = {
   clickPoint: Coords2d
 }
 
-type RayDirection = 'forward' | 'reverse'
 export type AngleSector = 1 | 2 | 3 | 4
 
 export type DimensionAngleDraftContext = {
@@ -192,28 +191,28 @@ function dismissAngleSectorPrompt() {
   toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
 }
 
-function getClickedRayDirection(
+function isClickedRayDirectionForward(
   linePoints: readonly [Coords2d, Coords2d],
   vertex: Coords2d,
   clickPoint: Coords2d
-): RayDirection {
+): boolean {
   const lineDirection = normalizeVec(subVec(linePoints[1], linePoints[0]))
   const clickDirection = subVec(clickPoint, vertex)
-  return dot2d(clickDirection, lineDirection) >= 0 ? 'forward' : 'reverse'
+  return dot2d(clickDirection, lineDirection) >= 0
 }
 
 // Given which side of line0 and line1 the user clicked, which semantic sector is that?
 export function getBaseAngleSector(
-  line0Ray: RayDirection,
-  line1Ray: RayDirection
+  line0RayDirectionIsForward: boolean,
+  line1RayDirectionIsForward: boolean
 ): AngleSector {
-  if (line0Ray === 'forward' && line1Ray === 'forward') {
+  if (line0RayDirectionIsForward && line1RayDirectionIsForward) {
     return 1
   }
-  if (line0Ray === 'reverse' && line1Ray === 'forward') {
+  if (!line0RayDirectionIsForward && line1RayDirectionIsForward) {
     return 2
   }
-  if (line0Ray === 'reverse' && line1Ray === 'reverse') {
+  if (!line0RayDirectionIsForward && !line1RayDirectionIsForward) {
     return 3
   }
   return 4
@@ -269,12 +268,12 @@ function getDimensionAngleContext(
     return null
   }
 
-  const line0Ray = getClickedRayDirection(
+  const line0RayDirectionIsForward = isClickedRayDirectionForward(
     line0Points,
     vertex,
     firstSelection.clickPoint
   )
-  const line1Ray = getClickedRayDirection(
+  const line1RayDirectionIsForward = isClickedRayDirectionForward(
     line1Points,
     vertex,
     secondSelection.clickPoint
@@ -291,7 +290,10 @@ function getDimensionAngleContext(
     ...angleContextBase,
     baseSelection: getVisibleAngleSelection(
       angleContextBase,
-      getBaseAngleSector(line0Ray, line1Ray)
+      getBaseAngleSector(
+        line0RayDirectionIsForward,
+        line1RayDirectionIsForward
+      )
     ),
   }
 }
