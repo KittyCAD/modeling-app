@@ -342,7 +342,6 @@ export class SceneFixture {
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
   ) => {
-    await openAndClearDebugPanel(this.page)
     await doAndWaitForImageDiff(
       this.page,
       () =>
@@ -358,7 +357,6 @@ export class SceneFixture {
         }),
       300
     )
-    await closeDebugPanel(this.page)
   }
   /** Forces a refresh of the camera position and target displayed
    *  in the debug panel and then returns the values of the fields

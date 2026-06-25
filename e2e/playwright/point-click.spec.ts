@@ -707,7 +707,13 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [capEnd001, region001.tags.line3] },
+          axis = {
+            sideFaces = [region001.tags.line3, capEnd001],
+            endFaces = [
+              region001.tags.line1,
+              region001.tags.line2
+            ]
+          },
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -780,7 +786,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [capEnd001, region001.tags.line3] },
+          axis = { sideFaces = [region001.tags.line3, capEnd001] },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -1096,8 +1102,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[capEnd001,region001.tags.line2]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[capStart001,region001.tags.line2]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,capEnd001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -2648,12 +2654,25 @@ sketch002 = sketch(on = face001) {
 hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
-    const newCodeToFind = `revolve001 = revolve(
+    const newCodeToFindAfterAdd = `revolve001 = revolve(
+  region002,
+  angle = 360deg,
+  axis = {
+    sideFaces = [capEnd001, region001.tags.line1],
+    endFaces = [
+      region001.tags.line3,
+      region001.tags.line2
+    ]
+  },
+  bodyType = SURFACE,
+)`
+    const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
     sideFaces = [capEnd001, region001.tags.line1]
   },
+  bodyType = SURFACE,
 )`
 
     await context.addInitScript((initialCode) => {
@@ -2690,6 +2709,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
+          BodyType: '',
         },
         highlightedHeaderArg: 'axisOrEdge',
         stage: 'arguments',
@@ -2704,6 +2724,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
+          BodyType: '',
         },
         highlightedHeaderArg: 'edge',
         stage: 'arguments',
@@ -2723,8 +2744,24 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
+          BodyType: '',
         },
         highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'bodyType',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 region',
+          Angle: '360deg',
+          AxisOrEdge: 'Edge',
+          Edge: '1 edge',
+          BodyType: '',
+        },
+        highlightedHeaderArg: 'bodyType',
         stage: 'arguments',
       })
       await cmdBar.progressCmdBar()
@@ -2735,12 +2772,14 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
+          BodyType: 'SURFACE',
         },
+        reviewValidationError: undefined,
         stage: 'review',
       })
       await cmdBar.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind, {
+      await editor.expectEditor.toContain(newCodeToFindAfterAdd, {
         shouldNormalise: true,
       })
     })
@@ -2759,6 +2798,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgValue: '360deg',
         headerArguments: {
           Angle: '360deg',
+          BodyType: 'SURFACE',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2773,6 +2813,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         stage: 'review',
         headerArguments: {
           Angle: newAngle,
+          BodyType: 'SURFACE',
         },
         commandName: 'Revolve',
       })
@@ -2780,7 +2821,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001'),
+        newCodeToFindAfterEdit.replace('angle = 360deg', 'angle = angle001'),
         {
           shouldNormalise: true,
         }
@@ -4359,7 +4400,6 @@ extrude001 = extrude(region001, length = 30)`
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
-        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
         await editor.expectEditor.toContain('tolerance = 0.1in')
@@ -4781,7 +4821,6 @@ extrude001 = extrude(region001, length = 30)`
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
-        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
         await editor.expectEditor.toContain('name = "A"')

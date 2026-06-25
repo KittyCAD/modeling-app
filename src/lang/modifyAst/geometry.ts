@@ -11,6 +11,9 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  createEdgeRefObjectExpression,
+  edgeSelectionToEntityReference,
+  entityReferenceToEdgeRefPayload,
   getEdgeTagCall,
   getPrimitiveEdgeSelections,
   groupSelectionsByBodyAndAddTags,
@@ -182,6 +185,45 @@ export function getAxisExpression(
   if (axis) {
     return { generatedAxis: createLocalName(axis), modifiedAst }
   } else if (edge && artifactGraph) {
+    const firstEdgeSelection = edge.graphSelections[0]
+    const originalEdgeSelection = firstEdgeSelection
+      ? resolveToCodeRef(firstEdgeSelection, artifactGraph)
+      : null
+    const shouldInferEdgeRef =
+      firstEdgeSelection?.entityRef?.type === 'edge' ||
+      originalEdgeSelection?.artifact?.type === 'edgeCut'
+    const edgeEntityRef =
+      firstEdgeSelection?.entityRef?.type === 'edge'
+        ? firstEdgeSelection.entityRef
+        : shouldInferEdgeRef && originalEdgeSelection?.artifact
+          ? edgeSelectionToEntityReference(
+              {
+                ...originalEdgeSelection,
+                artifact: originalEdgeSelection.artifact,
+              },
+              artifactGraph
+            )
+          : undefined
+
+    if (edgeEntityRef && !err(edgeEntityRef) && edgeEntityRef.type === 'edge') {
+      const payload = entityReferenceToEdgeRefPayload(edgeEntityRef)
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        originalEdgeSelection ?? undefined
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
+      }
+
+      return {
+        generatedAxis: edgeRefResult.expr,
+        modifiedAst: edgeRefResult.modifiedAst,
+      }
+    }
+
     // Direct segment case (sketch solve)
     const segmentAxisExpr = getVariableExprsFromSelection(
       edge,

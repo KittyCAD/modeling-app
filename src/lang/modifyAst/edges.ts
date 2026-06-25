@@ -657,7 +657,7 @@ export function getPrimitiveEdgeSelections(
  * Converts a resolved edge selection to an EntityReference with face information.
  * This is used for the new face-based edge selection API (selectionsV2).
  */
-function edgeSelectionToEntityReference(
+export function edgeSelectionToEntityReference(
   selection: ResolvedGraphSelection & { artifact: Artifact },
   artifactGraph: ArtifactGraph
 ): EntityReference | Error {

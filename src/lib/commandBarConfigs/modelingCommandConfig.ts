@@ -1852,7 +1852,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       edge: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'primitiveEdge'],
+        selectionTypes: ['segment', 'primitiveEdge', 'edgeCut'],
         multiple: false,
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.mode as string),
