@@ -10,9 +10,11 @@
 /rust/**/frontend.rs              @KittyCAD/frontend @KittyCAD/kcl
 /rust/**/frontend/                @KittyCAD/frontend @KittyCAD/kcl
 
-# KCL Dependencies
+# Dependencies
 Cargo.toml                        @KittyCAD/frontend @KittyCAD/kcl
 Cargo.lock                        @KittyCAD/frontend @KittyCAD/kcl
+package.json                      @KittyCAD/frontend @KittyCAD/kcl
+package-lock.json                 @KittyCAD/frontend @KittyCAD/kcl
 
 # Documentation
 README.md                         @KittyCAD/frontend @KittyCAD/kcl
