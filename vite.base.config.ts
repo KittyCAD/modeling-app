@@ -176,7 +176,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
     // Disallow legacy stuff
     "object-src 'none'",
     // Disallow iframes. Iframes might access the parent electron state.
-    "iframe-src 'none'",
+    "frame-src 'none'",
   ]
 
   // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
