@@ -6,12 +6,14 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   getCloudProjectFolderRenameName,
+  sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -280,6 +282,53 @@ describe('systemIOMachine - XState', () => {
           requestedFileNameBefore
         )
         actor.stop()
+      })
+      it('does not require fresh project folders when bulk editing without deletes', async () => {
+        await expect(
+          sharedBulkDeleteWorkflow({
+            input: {
+              requestedProjectName: 'created-by-zookeeper',
+              context: { folders: [] } as unknown as SystemIOContext,
+              files: [],
+              filesToDelete: [],
+              wasmInstance: instanceInThisFile,
+            },
+          })
+        ).resolves.toBe(0)
+      })
+      it('calls the bulk edit file-system error callback when writes fail', async () => {
+        const onFileSystemError = vi.fn()
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: [
+                {
+                  requestedCode: 'part = true\n',
+                  requestedFileName: 'main.kcl',
+                  requestedProjectName: 'zookeeper-project',
+                },
+              ],
+              requestedProjectName: 'zookeeper-project',
+              requestedFileNameWithExtension: 'main.kcl',
+              onFileSystemError,
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(onFileSystemError).toHaveBeenCalledOnce()
+        } finally {
+          actor.stop()
+        }
       })
     })
     describe('when reading projects', () => {

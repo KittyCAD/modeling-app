@@ -144,6 +144,7 @@ export const systemIOMachine = setup({
             override?: boolean
             requestedSubRoute?: string
             onFileSystemSuccess?: () => void
+            onFileSystemError?: () => void
             onSuccess?: () => void
           }
         }
@@ -669,6 +670,7 @@ export const systemIOMachine = setup({
             override?: boolean
             requestedSubRoute?: string
             onFileSystemSuccess?: () => void
+            onFileSystemError?: () => void
             onSuccess?: () => void
           }
         }): Promise<{
@@ -1708,6 +1710,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             onFileSystemSuccess: event.data.onFileSystemSuccess,
+            onFileSystemError: event.data.onFileSystemError,
             onSuccess: event.data.onSuccess,
           }
         },

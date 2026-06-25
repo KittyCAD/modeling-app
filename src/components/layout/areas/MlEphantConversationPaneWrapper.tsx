@@ -131,6 +131,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
   const {
     beginPendingZookeeperHistoryWrite,
+    cancelPendingZookeeperHistoryWrite,
     completePendingZookeeperHistoryWrite,
   } = useZookeeperEditPatchHistory({
     kclManager,
@@ -228,6 +229,11 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                   patch: payload.zookeeperEditPatch,
                   projectPath: project.path,
                 })
+              }
+            },
+            onFileSystemError: () => {
+              if (shouldRecordZookeeperHistory) {
+                cancelPendingZookeeperHistoryWrite(exchangeId)
               }
             },
             ...(shouldRefreshActiveEditorAfterPlainOutput && activeFileOutput
@@ -483,6 +489,16 @@ function useZookeeperEditPatchHistory({
     [tryFlushPendingZookeeperHistory]
   )
 
+  const cancelPendingZookeeperHistoryWrite = useCallback(
+    (exchangeId: number) => {
+      pendingZookeeperHistoryByExchange.current.delete(exchangeId)
+      if (pendingZookeeperHistoryByExchange.current.size === 0) {
+        kclManager.zookeeperHistoryRecordingInProgress = false
+      }
+    },
+    [kclManager]
+  )
+
   useFlushZookeeperHistoryOnResponseEnd(
     mlEphantManagerActor,
     pendingZookeeperHistoryByExchange,
@@ -491,6 +507,7 @@ function useZookeeperEditPatchHistory({
 
   return {
     beginPendingZookeeperHistoryWrite,
+    cancelPendingZookeeperHistoryWrite,
     completePendingZookeeperHistoryWrite,
   }
 }
