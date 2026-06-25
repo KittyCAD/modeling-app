@@ -733,6 +733,9 @@ async fn inner_extrude(
             );
         } else if is_edge {
             // Surface-extrude an edge.
+            exec_state
+                .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), cmd)
+                .await?;
             // TODO: edge tag.
             solids.push(
                 do_post_extrude_edges_only(extrude_cmd_id.into(), extrude_method, None, exec_state, &args).await?,
