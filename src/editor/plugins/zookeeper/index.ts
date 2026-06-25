@@ -531,11 +531,8 @@ async function prepareZookeeperPatchReplay(
       currentContent
     )
     if (expectedContentError) {
-      const activeFileAlreadyReplayed = Boolean(
-        alreadyReplayedFilePaths?.has(replayFile.absolutePath)
-      )
       if (
-        activeFileAlreadyReplayed &&
+        alreadyReplayedFilePaths?.has(replayFile.absolutePath) &&
         ((replayFile.nextContent === null && currentContent === '') ||
           (replayFile.expectedContent === null &&
             replayFile.nextContent !== null &&

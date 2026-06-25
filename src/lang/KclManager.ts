@@ -478,10 +478,6 @@ export class ZDSProject {
     // to have for executions and code mods
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
-    if (err(apiFiles)) {
-      reportRejection(apiFiles)
-      return newEditor
-    }
     markOnce('project/endCollectFiles')
 
     markOnce('project/startSendProjectToWasm')
@@ -584,25 +580,29 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
-    const existingFiles: File[] = []
-    const apiFiles: ApiFile[] = []
+    const apiFiles = await Promise.all(
+      this.files.map(async (file): Promise<ApiFile | null> => {
+        try {
+          return await file.asRustApiFile()
+        } catch (error: unknown) {
+          if (!isEnoentError(error)) {
+            return Promise.reject(error)
+          }
 
-    for (const file of this.files) {
-      try {
-        apiFiles.push(await file.asRustApiFile())
-        existingFiles.push(file)
-      } catch (error: unknown) {
-        if (!isEnoentError(error)) {
-          return Promise.reject(error)
+          if (file instanceof KclManager) {
+            return {
+              id: file.id,
+              path: file.path,
+              text: file.code,
+            }
+          }
+
+          return null
         }
-      }
-    }
+      })
+    )
 
-    if (existingFiles.length !== this.files.length) {
-      this.files = existingFiles
-    }
-
-    return apiFiles
+    return apiFiles.filter((file): file is ApiFile => file !== null)
   }
 
   /**
@@ -3317,8 +3317,8 @@ export class KclManager extends File {
       this.engineCommandManager.sendSceneCommand(event)
     })
   }
-  localStoragePersistCode(): string {
-    return safeLSGetItem(PERSIST_CODE_KEY) || ''
+  localStoragePersistCode(): string | undefined {
+    return safeLSGetItem(PERSIST_CODE_KEY) ?? undefined
   }
   /**
    * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
