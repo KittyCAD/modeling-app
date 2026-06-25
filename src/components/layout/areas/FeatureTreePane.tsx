@@ -536,7 +536,7 @@ function OperationBranchGroup({
         modelingActor={modelingActor}
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
-        isModuleOwned={true}
+        isModuleOwned={isModuleOwned}
       />
     )
   }
@@ -577,7 +577,7 @@ function OperationBranchGroup({
             modelingActor={modelingActor}
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
-            isModuleOwned={true}
+            isModuleOwned={isModuleOwned}
           />
         </div>
       </div>
@@ -1046,7 +1046,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Translate', groupId: 'modeling' },
@@ -1060,7 +1064,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Rotate', groupId: 'modeling' },
@@ -1074,7 +1082,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Scale', groupId: 'modeling' },
@@ -1088,7 +1100,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Clone', groupId: 'modeling' },
@@ -1105,7 +1121,8 @@ const OperationItem = ({
     if (
       item.type === 'StdLibCall' ||
       item.type === 'GroupBegin' ||
-      item.type === 'VariableDeclaration'
+      item.type === 'VariableDeclaration' ||
+      item.type === 'ModuleInstance'
     ) {
       const maybeArtifact =
         getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
@@ -1276,13 +1293,16 @@ const OperationItem = ({
               </ContextMenuItem>,
             ]
           : []),
-        ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
+        ...(item.type === 'StdLibCall' ||
+        item.type === 'GroupBegin' ||
+        item.type === 'ModuleInstance'
           ? [
               <ContextMenuItem
                 onClick={enterTranslateFlow}
                 data-testid="context-menu-set-translate"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1293,6 +1313,7 @@ const OperationItem = ({
                 data-testid="context-menu-set-rotate"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1303,6 +1324,7 @@ const OperationItem = ({
                 data-testid="context-menu-set-scale"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1313,6 +1335,7 @@ const OperationItem = ({
                 data-testid="context-menu-clone"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1322,7 +1345,8 @@ const OperationItem = ({
           : []),
         ...(item.type === 'StdLibCall' ||
         item.type === 'GroupBegin' ||
-        item.type === 'VariableDeclaration'
+        item.type === 'VariableDeclaration' ||
+        item.type === 'ModuleInstance'
           ? [
               <ContextMenuItem
                 onClick={deleteOperation}

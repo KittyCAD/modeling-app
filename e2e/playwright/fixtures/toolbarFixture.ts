@@ -365,10 +365,25 @@ export class ToolbarFixture {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
     return this.featureTreePane
-      .getByRole('button', {
-        name: operationName,
+      .locator('button:not([disabled])')
+      .filter({
+        has: this.page.getByText(operationName, { exact: true }),
       })
       .nth(operationIndex)
+  }
+
+  async openFeatureTreeOperationContextMenu(
+    operationName: string,
+    operationIndex: number
+  ) {
+    const operationButton = await this.getFeatureTreeOperation(
+      operationName,
+      operationIndex
+    )
+    const operationRow = operationButton.locator(
+      'xpath=ancestor::*[@data-testid="feature-tree-operation-item"][1]'
+    )
+    await operationRow.click({ button: 'right' })
   }
 
   /**

@@ -542,16 +542,13 @@ test.describe(
 
       await test.step('Delete the part using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const opr = await toolbar.getFeatureTreeOperation('Rotate', 0)
-        await opr.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
-        const ops = await toolbar.getFeatureTreeOperation('Scale', 0)
-        await ops.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
-        const opt = await toolbar.getFeatureTreeOperation('Translate', 0)
-        await opt.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
         await selectBracket()
@@ -722,8 +719,7 @@ test.describe(
 
         await test.step('Delete first part using the feature tree', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          const op = await toolbar.getFeatureTreeOperation('cube', 0)
-          await op.click({ button: 'right' })
+          await toolbar.openFeatureTreeOperationContextMenu('cube', 0)
           await page.getByTestId('context-menu-delete').click()
           await scene.settled(cmdBar)
           await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -743,8 +739,7 @@ test.describe(
 
         await test.step('Delete second part using the feature tree', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
-          await op.click({ button: 'right' })
+          await toolbar.openFeatureTreeOperationContextMenu('cubeSw', 0)
           await page.getByTestId('context-menu-delete').click()
           await scene.settled(cmdBar)
           await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
@@ -882,9 +877,7 @@ foreign
 
       await test.step('Clone the part using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('washer', 0)
-        await op.scrollIntoViewIfNeeded()
-        await op.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('washer', 0)
         await page.getByTestId('context-menu-clone').click()
         await cmdBar.expectState({
           stage: 'arguments',
@@ -932,8 +925,7 @@ foreign
 
       await test.step('Delete clone using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
-        await op.click({ button: 'right' })
+        await toolbar.openFeatureTreeOperationContextMenu('clone001', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
