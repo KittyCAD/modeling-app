@@ -840,11 +840,7 @@ pub(crate) async fn after_surface_creation(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(
-                mcmd::ObjectBringToFront::builder()
-                    .object_id(extrude_cmd_id.into())
-                    .build(),
-            ),
+            ModelingCmd::from(mcmd::ObjectBringToFront::builder().object_id(body_id).build()),
         )
         .await?;
 
@@ -891,7 +887,7 @@ pub(crate) async fn after_surface_creation(
 
     Ok(Solid {
         id: body_id,
-        value_id: extrude_cmd_id.into(),
+        value_id: body_id,
         artifact_id: extrude_cmd_id,
         value: new_value,
         faces: Default::default(),
