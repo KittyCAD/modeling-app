@@ -3,7 +3,12 @@ import type {
   ClientMetrics,
   WebSocketRequest,
 } from '@kittycad/lib/dist/types/src'
-import { ZooWebView } from '@kittycad/web-view'
+import {
+  ZooWebView,
+  type ZooWebViewEventDetail,
+  type ZooWebViewWorkerMessageEventDetail,
+  webViewKclWasmFileName,
+} from '@kittycad/web-view'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
 import { promiseFactory, uuidv4 } from '@src/lib/utils'
@@ -22,28 +27,6 @@ interface IDeferredPromise {
   reject: (value: any) => void
 }
 
-type WebViewWorkerMessage =
-  | {
-      from: 'websocket'
-      payload: {
-        type: 'message'
-        data: unknown
-      }
-    }
-  | {
-      from: 'wasm'
-      payload: {
-        type: 'message' | 'execute'
-        data: unknown
-      }
-    }
-
-const webViewKclWasmFileName = 'kittycad-web-view-kcl_wasm_lib_bg.wasm'
-const webViewKclWasmUrlProperty = 'kcl_wasm_lib_bg_wasm_url'
-const webViewWasmPatchSymbol = Symbol.for(
-  'zoo-modeling-app.webViewKclWasmUrlPatch'
-)
-
 const webViewKclWasmUrl = () => {
   if (typeof document === 'undefined') {
     return `/${webViewKclWasmFileName}`
@@ -54,28 +37,6 @@ const webViewKclWasmUrl = () => {
   }
 
   return new URL(webViewKclWasmFileName, document.location.href).href
-}
-
-const ensureWebViewKclWasmUrlPatch = () => {
-  const prototype = zoo.WebRTC.prototype as typeof zoo.WebRTC.prototype & {
-    [webViewWasmPatchSymbol]?: boolean
-  }
-  if (prototype[webViewWasmPatchSymbol]) {
-    return
-  }
-
-  const originalStart = Reflect.get(prototype, 'start')
-  prototype.start = function patchedStart(this: zoo.WebRTC) {
-    const args = (
-      this as unknown as { zooClientArgs?: Record<string, unknown> }
-    ).zooClientArgs
-    if (args) {
-      args[webViewKclWasmUrlProperty] = webViewKclWasmUrl()
-    }
-
-    return originalStart.call(this)
-  }
-  prototype[webViewWasmPatchSymbol] = true
 }
 
 class WebViewWebSocket extends EventTarget {
@@ -134,7 +95,6 @@ export class WebViewConnection extends EventTarget {
   private readonly rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
 
   private zooWebView: ZooWebView | undefined
-  private rtc: zoo.WebRTC | undefined
   private removeWorkerMessageListener: (() => void) | undefined
   private removeDataChannelCloseListener: (() => void) | undefined
 
@@ -222,7 +182,7 @@ export class WebViewConnection extends EventTarget {
     this.dispatchConnectionStep(ConnectingType.WebSocketConnecting)
 
     const fakeWebSocket = new WebViewWebSocket((data) => {
-      this.rtc?.send(data)?.catch((error) => {
+      this.zooWebView?.send(data)?.catch((error) => {
         EngineDebugger.addLog({
           label: 'webViewConnection',
           message: 'rtc.send failed',
@@ -236,40 +196,29 @@ export class WebViewConnection extends EventTarget {
       token: this.token,
       baseUrl: this.url,
     })
-    ensureWebViewKclWasmUrlPatch()
     this.zooWebView = new ZooWebView({
       zooClient,
       size: this.requestedSize,
       allowMultiple: true,
       autoStart: false,
+      kclWasmUrl: webViewKclWasmUrl(),
     })
     this.prepareElements()
     this.streamElement.insertBefore(
       this.zooWebView.el,
       this.streamElement.firstChild
     )
+    this.bridgeWorkerMessages(fakeWebSocket)
 
-    const startElement =
-      this.zooWebView.el.querySelector<HTMLElement>('div.start')
-    if (!startElement) {
-      return Promise.reject(
-        new Error('ZooWebView start element was not created')
-      )
-    }
-
-    startElement.click()
-
-    this.rtc = this.zooWebView.rtc
-    if (!this.rtc) {
+    this.zooWebView.start()
+    if (!this.zooWebView.rtc) {
       return Promise.reject(
         new Error('ZooWebView did not create a WebRTC session')
       )
     }
 
-    this.rtc.removeMouseEvents()
-    this.peerConnection = (
-      this.rtc as unknown as { rtcPeerConnection?: RTCPeerConnection }
-    ).rtcPeerConnection
+    this.zooWebView.removeMouseEvents()
+    this.peerConnection = this.zooWebView.peerConnection
     if (!this.peerConnection) {
       return Promise.reject(
         new Error('ZooWebView WebRTC peer connection is missing')
@@ -289,7 +238,6 @@ export class WebViewConnection extends EventTarget {
     )
 
     fakeWebSocket.open()
-    this.bridgeWorkerMessages(fakeWebSocket)
 
     await Promise.all([trackPromise, channelPromise, connectedPromise])
 
@@ -309,12 +257,13 @@ export class WebViewConnection extends EventTarget {
 
   private waitForTrack() {
     return new Promise<void>((resolve) => {
-      const onTrack = () => {
-        if (!this.rtc?.track) {
+      const onTrack = (event: Event) => {
+        const detail = (event as CustomEvent<ZooWebViewEventDetail>).detail
+        const mediaStream = detail.mediaStream
+        if (!mediaStream) {
           return
         }
 
-        const mediaStream = this.rtc.track.streams[0]
         this.mediaStream = mediaStream
         if (this.peerConnection) {
           this.webrtcStatsCollector = createWebrtcStatsCollector({
@@ -330,18 +279,19 @@ export class WebViewConnection extends EventTarget {
             detail: { conn: this, mediaStream },
           })
         )
-        this.rtc.removeEventListener('track', onTrack)
+        this.zooWebView?.removeEventListener('track', onTrack)
         resolve()
       }
 
-      this.rtc?.addEventListener('track', onTrack)
+      this.zooWebView?.addEventListener('track', onTrack)
     })
   }
 
   private waitForDataChannel() {
     return new Promise<void>((resolve, reject) => {
-      const onDataChannel = () => {
-        const channel = this.rtc?.channel
+      const onDataChannel = (event: Event) => {
+        const detail = (event as CustomEvent<ZooWebViewEventDetail>).detail
+        const channel = detail.dataChannel
         if (!channel) {
           return
         }
@@ -383,40 +333,42 @@ export class WebViewConnection extends EventTarget {
           onOpen()
         }
 
-        this.rtc?.removeEventListener('datachannel', onDataChannel)
+        this.zooWebView?.removeEventListener('datachannel', onDataChannel)
       }
 
-      this.rtc?.addEventListener('datachannel', onDataChannel)
+      this.zooWebView?.addEventListener('datachannel', onDataChannel)
     })
   }
 
   private waitForConnected() {
     return new Promise<void>((resolve) => {
       const onConnected = () => {
-        this.rtc?.removeResizeObserver()
-        this.rtc?.removeEventListener('connected', onConnected)
-        this.rtc?.removeEventListener('close', onClose)
+        this.zooWebView?.removeResizeObserver()
+        this.zooWebView?.removeEventListener('connected', onConnected)
+        this.zooWebView?.removeEventListener('close', onClose)
         resolve()
       }
 
       const onClose = () => {
-        this.rtc?.removeEventListener('close', onClose)
+        this.zooWebView?.removeEventListener('close', onClose)
         this.tearDownManager({ peerConnectionDisconnected: true })
       }
 
-      this.rtc?.addEventListener('connected', onConnected)
-      this.rtc?.addEventListener('close', onClose)
+      this.zooWebView?.addEventListener('connected', onConnected)
+      this.zooWebView?.addEventListener('close', onClose)
     })
   }
 
   private bridgeWorkerMessages(fakeWebSocket: WebViewWebSocket) {
-    const executor = this.rtc?.executor()
-    if (!executor) {
+    const webView = this.zooWebView
+    if (!webView) {
       return
     }
 
-    const onWorkerMessage = (event: MessageEvent<WebViewWorkerMessage>) => {
-      const message = event.data
+    const onWorkerMessage = (event: Event) => {
+      const { message } = (
+        event as CustomEvent<ZooWebViewWorkerMessageEventDetail>
+      ).detail
       if (
         !message ||
         !('from' in message) ||
@@ -429,9 +381,9 @@ export class WebViewConnection extends EventTarget {
       fakeWebSocket.receive(message.payload.data)
     }
 
-    executor.addEventListener(onWorkerMessage)
+    webView.addEventListener('workerMessage', onWorkerMessage)
     this.removeWorkerMessageListener = () => {
-      executor.removeEventListener(onWorkerMessage)
+      webView.removeEventListener('workerMessage', onWorkerMessage)
     }
   }
 
@@ -512,7 +464,6 @@ export class WebViewConnection extends EventTarget {
     void this.zooWebView?.deconstructor()
     this.zooWebView?.el.remove()
     this.zooWebView = undefined
-    this.rtc = undefined
     this.peerConnection = undefined
     this.unreliableDataChannel = undefined
     this.mediaStream = undefined
