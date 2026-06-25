@@ -56,7 +56,7 @@ import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGrap
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   ORIGIN_TARGET,
-  type SelectionClickPoints,
+  type SelectionCoordinates,
   type SketchSolveSelectionId,
   type SolveActionArgs,
   buildSegmentCtorFromObject,
@@ -1073,7 +1073,7 @@ export function createOnClickCallback({
     selectedIds: Array<SketchSolveSelectionId>
     duringAreaSelectIds: Array<number>
     replaceExistingSelection?: boolean
-    selectionClickPoints?: SelectionClickPoints
+    selectionCoordinates?: SelectionCoordinates
   }) => void
   onEditConstraint: (constraintId: number) => void
 }): (arg: {
@@ -1122,7 +1122,7 @@ export function createOnClickCallback({
           sceneInfra
         )
       }
-      const selectionClickPoints =
+      const selectionCoordinates =
         closestSelection &&
         typeof closestSelection.selectionId === 'number' &&
         isLineSegment(selectedApiObject) &&
@@ -1133,7 +1133,7 @@ export function createOnClickCallback({
         selectedIds: closestSelection ? [closestSelection.selectionId] : [],
         duringAreaSelectIds: [],
         ...(shouldReplaceSelection ? { replaceExistingSelection: true } : {}),
-        ...(selectionClickPoints ? { selectionClickPoints } : {}),
+        ...(selectionCoordinates ? { selectionCoordinates } : {}),
       })
     }
   }
@@ -2504,7 +2504,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         selectedIds: Array<SketchSolveSelectionId>
         duringAreaSelectIds: Array<number>
         replaceExistingSelection?: boolean
-        selectionClickPoints?: SelectionClickPoints
+        selectionCoordinates?: SelectionCoordinates
       }) => self.send({ type: 'update selected ids', data }),
       onEditConstraint: (constraintId: number) => {
         self.send({

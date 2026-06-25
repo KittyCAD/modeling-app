@@ -32,7 +32,7 @@ import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGrap
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type {
-  SelectionClickPoints,
+  SelectionCoordinates,
   SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
@@ -44,7 +44,7 @@ type DimensionToolContext = {
   kclManager: KclManager
   sketchId: number
   initialSelectionIds: SketchSolveSelectionId[]
-  initialSelectionClickPoints: SelectionClickPoints
+  initialSelectionCoordinates: SelectionCoordinates
   initialObjects: ApiObject[]
   runtime: DraftRuntime
 }
@@ -55,7 +55,7 @@ type DimensionToolInput = {
   kclManager: KclManager
   sketchId: number
   initialSelectionIds?: SketchSolveSelectionId[]
-  initialSelectionClickPoints?: SelectionClickPoints
+  initialSelectionCoordinates?: SelectionCoordinates
   initialObjects?: ApiObject[]
   sceneGraphDelta?: SceneGraphDelta
 }
@@ -262,7 +262,7 @@ function getFarthestLinePointFromVertex(
 
 function getInitialAngleLineSelections(
   selectionIds: readonly SketchSolveSelectionId[],
-  selectionClickPoints: SelectionClickPoints,
+  selectionCoordinates: SelectionCoordinates,
   objects: ApiObject[]
 ): [LineSelection, LineSelection] | null {
   const lineIds = selectionIds.filter(
@@ -287,13 +287,13 @@ function getInitialAngleLineSelections(
     {
       id: lineIds[0],
       clickPoint:
-        selectionClickPoints[lineIds[0]] ??
+        selectionCoordinates[lineIds[0]] ??
         getFarthestLinePointFromVertex(line0Points, vertex),
     },
     {
       id: lineIds[1],
       clickPoint:
-        selectionClickPoints[lineIds[1]] ??
+        selectionCoordinates[lineIds[1]] ??
         getFarthestLinePointFromVertex(line1Points, vertex),
     },
   ]
@@ -672,7 +672,7 @@ function addDimensionListener({
   const initialObjects = context.initialObjects
   const initialLineSelections = getInitialAngleLineSelections(
     context.initialSelectionIds,
-    context.initialSelectionClickPoints,
+    context.initialSelectionCoordinates,
     initialObjects
   )
   if (initialLineSelections) {
@@ -698,7 +698,7 @@ function addDimensionListener({
         data: {
           selectedIds: [firstSelection.id, secondSelection.id],
           replaceExistingSelection: true,
-          selectionClickPoints: {
+          selectionCoordinates: {
             [firstSelection.id]: firstSelection.clickPoint,
             [secondSelection.id]: secondSelection.clickPoint,
           },
@@ -729,7 +729,7 @@ function addDimensionListener({
             data: {
               selectedIds: [lineSelection.id],
               replaceExistingSelection: true,
-              selectionClickPoints: {
+              selectionCoordinates: {
                 [lineSelection.id]: lineSelection.clickPoint,
               },
             },
@@ -756,7 +756,7 @@ function addDimensionListener({
               data: {
                 selectedIds: [runtime.firstSelection.id, lineSelection.id],
                 replaceExistingSelection: true,
-                selectionClickPoints: {
+                selectionCoordinates: {
                   [runtime.firstSelection.id]:
                     runtime.firstSelection.clickPoint,
                   [lineSelection.id]: lineSelection.clickPoint,
@@ -832,7 +832,7 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId,
     initialSelectionIds: input.initialSelectionIds ?? [],
-    initialSelectionClickPoints: input.initialSelectionClickPoints ?? {},
+    initialSelectionCoordinates: input.initialSelectionCoordinates ?? {},
     initialObjects:
       input.initialObjects ?? input.sceneGraphDelta?.new_graph.objects ?? [],
     runtime: createRuntime(),

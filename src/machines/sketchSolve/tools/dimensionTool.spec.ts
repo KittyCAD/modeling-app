@@ -4,7 +4,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
 import type {
-  SelectionClickPoints,
+  SelectionCoordinates,
   SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
@@ -80,7 +80,7 @@ function createParentHarness(
   objects: ApiObject[],
   options: {
     initialSelectionIds?: SketchSolveSelectionId[]
-    initialSelectionClickPoints?: SelectionClickPoints
+    initialSelectionCoordinates?: SelectionCoordinates
   } = {}
 ) {
   const sceneInfra = createMockSceneInfra()
@@ -189,7 +189,7 @@ function createParentHarness(
             kclManager,
             sketchId: 0,
             initialSelectionIds: options.initialSelectionIds,
-            initialSelectionClickPoints: options.initialSelectionClickPoints,
+            initialSelectionCoordinates: options.initialSelectionCoordinates,
             initialObjects: sceneGraphDelta.new_graph.objects,
           },
         },
@@ -510,7 +510,7 @@ describe('dimensionTool', () => {
       data: {
         selectedIds: [10, 11],
         replaceExistingSelection: true,
-        selectionClickPoints: {
+        selectionCoordinates: {
           10: [10, 0],
           11: [5, 8.660254037844386],
         },

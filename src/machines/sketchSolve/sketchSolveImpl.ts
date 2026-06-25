@@ -24,7 +24,7 @@ import {
 } from '@src/machines/sketchSolve/segments'
 import {
   ORIGIN_TARGET,
-  type SelectionClickPoints,
+  type SelectionCoordinates,
   type SketchSolveSelectionId,
   getObjectSelectionIds,
   isObjectSelectionId,
@@ -92,7 +92,7 @@ export {
   getObjectSelectionIds,
   isObjectSelectionId,
   ORIGIN_TARGET,
-  type SelectionClickPoints,
+  type SelectionCoordinates,
   type SketchSolveSelectionId,
   type SketchSpecialTarget,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
@@ -134,7 +134,7 @@ export type SketchSolveMachineEvent =
         selectedIds?: Array<SketchSolveSelectionId>
         duringAreaSelectIds?: Array<number>
         replaceExistingSelection?: boolean
-        selectionClickPoints?: SelectionClickPoints
+        selectionCoordinates?: SelectionCoordinates
       }
     }
   | {
@@ -230,7 +230,7 @@ export type SketchSolveContext = {
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
   selectedIds: Array<SketchSolveSelectionId>
-  selectionClickPoints: SelectionClickPoints
+  selectionCoordinates: SelectionCoordinates
   duringAreaSelectIds: Array<number>
   hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
@@ -780,23 +780,23 @@ export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
   disposeGroupChildren(sketchSegments)
 }
 
-function getSelectionClickPointsForIds(
+function getSelectionCoordinatesForIds(
   selectedIds: readonly SketchSolveSelectionId[],
-  selectionClickPoints: SelectionClickPoints
-): SelectionClickPoints {
-  const nextSelectionClickPoints: SelectionClickPoints = {}
+  selectionCoordinates: SelectionCoordinates
+): SelectionCoordinates {
+  const nextSelectionCoordinates: SelectionCoordinates = {}
   for (const selectedId of selectedIds) {
     if (typeof selectedId !== 'number') {
       continue
     }
 
-    const clickPoint = selectionClickPoints[selectedId]
+    const clickPoint = selectionCoordinates[selectedId]
     if (clickPoint) {
-      nextSelectionClickPoints[selectedId] = clickPoint
+      nextSelectionCoordinates[selectedId] = clickPoint
     }
   }
 
-  return nextSelectionClickPoints
+  return nextSelectionCoordinates
 }
 
 export function updateSelectedIds({ event, context }: SolveAssignArgs) {
@@ -811,9 +811,9 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
 
   // Handle regular selectedIds update (for click selection, etc.)
   if (event.data.selectedIds !== undefined) {
-    const selectionClickPoints = {
-      ...context.selectionClickPoints,
-      ...(event.data.selectionClickPoints ?? {}),
+    const selectionCoordinates = {
+      ...context.selectionCoordinates,
+      ...(event.data.selectionCoordinates ?? {}),
     }
     let nextSelectedIds: SketchSolveSelectionId[]
 
@@ -840,9 +840,9 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
     }
 
     updates.selectedIds = nextSelectedIds
-    updates.selectionClickPoints = getSelectionClickPointsForIds(
+    updates.selectionCoordinates = getSelectionCoordinatesForIds(
       nextSelectedIds,
-      selectionClickPoints
+      selectionCoordinates
     )
   }
 
@@ -859,7 +859,7 @@ export function updateSelectedIdsFromCodeSelection({
   if (!objects) {
     return {
       selectedIds: [],
-      selectionClickPoints: {},
+      selectionCoordinates: {},
       duringAreaSelectIds: [],
     }
   }
@@ -869,7 +869,7 @@ export function updateSelectedIdsFromCodeSelection({
       getCurrentSketchObjectsById(objects, context.sketchId),
       event.data.ranges
     ),
-    selectionClickPoints: {},
+    selectionCoordinates: {},
     duringAreaSelectIds: [],
   }
 }
@@ -1593,7 +1593,7 @@ export function spawnTool(
       kclManager: context.kclManager,
       sketchId: context.sketchId,
       initialSelectionIds: context.selectedIds,
-      initialSelectionClickPoints: context.selectionClickPoints,
+      initialSelectionCoordinates: context.selectionCoordinates,
       initialObjects:
         context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
@@ -1634,7 +1634,7 @@ export type ToolInput = {
   kclManager: KclManager
   sketchId: number
   initialSelectionIds?: SketchSolveSelectionId[]
-  initialSelectionClickPoints?: SelectionClickPoints
+  initialSelectionCoordinates?: SelectionCoordinates
   initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }

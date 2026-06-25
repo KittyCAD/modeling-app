@@ -456,7 +456,7 @@ export const sketchSolveMachine = setup({
     }),
     'clear selection': assign({
       selectedIds: [],
-      selectionClickPoints: {},
+      selectionCoordinates: {},
       duringAreaSelectIds: [],
     }),
     'toggle non-visual constraints': assign(({ context }) => ({
@@ -507,7 +507,7 @@ export const sketchSolveMachine = setup({
     return {
       sketchSolveToolName: null,
       selectedIds: [],
-      selectionClickPoints: {},
+      selectionCoordinates: {},
       duringAreaSelectIds: [],
       hoveredId: null,
       constraintHoverPopups: [],
