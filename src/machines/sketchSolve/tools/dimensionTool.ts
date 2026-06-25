@@ -30,6 +30,7 @@ import {
 import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type {
   SelectionClickPoints,
   SketchSolveSelectionId,
@@ -65,47 +66,13 @@ type DimensionToolEvent =
       type: 'done'
     }
 
-type ParentSketchSolveEvent =
-  | {
-      type: 'update selected ids'
-      data: {
-        selectedIds?: SketchSolveSelectionId[]
-        duringAreaSelectIds?: number[]
-        replaceExistingSelection?: boolean
-        selectionClickPoints?: SelectionClickPoints
-      }
-    }
-  | {
-      type: 'update hovered id'
-      data: {
-        hoveredId: SketchSolveSelectionId | null
-      }
-    }
-  | {
-      type: 'update sketch outcome'
-      data: {
-        sourceDelta: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-        updateEditor?: boolean
-        writeToDisk?: boolean
-        addToHistory?: boolean
-        suppressExecOutcomeIssues?: boolean
-      }
-    }
-  | {
-      type: 'set draft entities'
-      data: {
-        segmentIds: number[]
-        constraintIds: number[]
-      }
-    }
-  | {
-      type: 'clear draft entities'
-    }
-  | {
-      type: 'delete draft entities'
-    }
+type ParentSketchSolveSender = {
+  _parent?: { send: (event: SketchSolveMachineEvent) => void }
+}
+
+type DimensionToolSelf = ParentSketchSolveSender & {
+  send: (event: DimensionToolEvent) => void
+}
 
 type LineSelection = {
   id: number
@@ -157,8 +124,8 @@ function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
 }
 
 function sendParent(
-  self: { _parent?: { send: (event: unknown) => void } },
-  event: ParentSketchSolveEvent
+  self: ParentSketchSolveSender,
+  event: SketchSolveMachineEvent
 ) {
   self._parent?.send(event)
 }
@@ -499,7 +466,7 @@ async function deleteInactivePreviewConstraint(
 }
 
 function sendPreviewResultToParent(
-  self: { _parent?: { send: (event: unknown) => void } },
+  self: ParentSketchSolveSender,
   result: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -520,7 +487,7 @@ function sendPreviewResultToParent(
 }
 
 function sendFinalResultToParent(
-  self: { _parent?: { send: (event: unknown) => void } },
+  self: ParentSketchSolveSender,
   result: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -540,7 +507,7 @@ function sendFinalResultToParent(
 async function updateDraftAngleConstraint(
   runtime: DraftRuntime,
   context: DimensionToolContext,
-  self: { _parent?: { send: (event: unknown) => void } },
+  self: ParentSketchSolveSender,
   mousePoint: Coords2d
 ) {
   if (!runtime.active || !runtime.angleContext) {
@@ -608,7 +575,7 @@ async function updateDraftAngleConstraint(
 function requestDraftPreview(
   runtime: DraftRuntime,
   context: DimensionToolContext,
-  self: { _parent?: { send: (event: unknown) => void } },
+  self: ParentSketchSolveSender,
   mousePoint: Coords2d
 ) {
   if (!runtime.active) {
@@ -639,10 +606,7 @@ function requestDraftPreview(
 async function commitDraftAngleConstraint(
   runtime: DraftRuntime,
   context: DimensionToolContext,
-  self: {
-    _parent?: { send: (event: unknown) => void }
-    send: (event: DimensionToolEvent) => void
-  },
+  self: DimensionToolSelf,
   mousePoint: Coords2d
 ) {
   if (!runtime.active || !runtime.angleContext) {
@@ -731,10 +695,7 @@ function addDimensionListener({
   self,
 }: {
   context: DimensionToolContext
-  self: {
-    _parent?: { send: (event: unknown) => void }
-    send: (event: DimensionToolEvent) => void
-  }
+  self: DimensionToolSelf
 }) {
   const runtime = context.runtime
   runtime.active = true
