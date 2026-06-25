@@ -113,7 +113,6 @@ type DraftRuntime = {
 
 type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
 
-const SECTOR_EPSILON = 1e-9
 const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies ReadonlyArray<AngleSector>
 const ANGLE_SECTOR_PROMPT_TOAST_ID = 'dimension-tool-angle-sector-prompt'
 
@@ -145,17 +144,6 @@ function createRuntime(): DraftRuntime {
 function deactivateRuntime(runtime: DraftRuntime) {
   runtime.active = false
   runtime.queuedMousePoint = null
-}
-
-function showAngleSectorPrompt() {
-  toastToolbar('Move mouse to choose sector, then click to place label.', {
-    id: ANGLE_SECTOR_PROMPT_TOAST_ID,
-    duration: Number.POSITIVE_INFINITY,
-  })
-}
-
-function dismissAngleSectorPrompt() {
-  toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
 }
 
 function isClickedRayDirectionForward(
@@ -311,16 +299,6 @@ function getInitialAngleLineSelections(
   ]
 }
 
-function isDirectionInSector(
-  direction: Coords2d,
-  start: Coords2d,
-  end: Coords2d
-) {
-  return (
-    getCcwSweep(start, direction) <= getCcwSweep(start, end) + SECTOR_EPSILON
-  )
-}
-
 function getVisibleAngleSelection(
   angleContext: DimensionAngleDirections,
   sector: AngleSector
@@ -354,7 +332,10 @@ function getHoveredAngleSelection(
       getVisibleAngleSelection(angleContext, sector)
     ).find((selection) => {
       const [start, end] = getVisibleAngleSectorRays(angleContext, selection)
-      return isDirectionInSector(mouseDirection, start, end)
+      const isDirectionInSector =
+        getCcwSweep(start, mouseDirection) <= getCcwSweep(start, end) + 1e-9
+
+      return isDirectionInSector
     }) ?? angleContext.baseSelection
   )
 }
@@ -482,24 +463,6 @@ function sendPreviewResultToParent(
       writeToDisk: false,
       addToHistory: false,
       suppressExecOutcomeIssues: true,
-    },
-  })
-}
-
-function sendFinalResultToParent(
-  self: ParentSketchSolveSender,
-  result: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-    checkpointId?: number | null
-  }
-) {
-  sendParent(self, {
-    type: 'update sketch outcome',
-    data: {
-      sourceDelta: result.kclSource,
-      sceneGraphDelta: result.sceneGraphDelta,
-      checkpointId: result.checkpointId ?? null,
     },
   })
 }
@@ -648,7 +611,14 @@ async function commitDraftAngleConstraint(
     const constraintId =
       existingConstraintId ?? getConstraintIdFromResult(result)
     runtime.draftConstraintId = null
-    sendFinalResultToParent(self, result)
+    sendParent(self, {
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: result.kclSource,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId: result.checkpointId ?? null,
+      },
+    })
     sendParent(self, { type: 'clear draft entities' })
     sendParent(self, {
       type: 'update selected ids',
@@ -658,7 +628,7 @@ async function commitDraftAngleConstraint(
       type: 'update hovered id',
       data: { hoveredId: constraintId },
     })
-    dismissAngleSectorPrompt()
+    toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
     self.send({ type: 'done' })
   } catch (error) {
     runtime.active = true
@@ -715,7 +685,10 @@ function addDimensionListener({
     if (angleContext) {
       runtime.firstSelection = firstSelection
       runtime.angleContext = angleContext
-      showAngleSectorPrompt()
+      toastToolbar('Move mouse to choose sector, then click to place label.', {
+        id: ANGLE_SECTOR_PROMPT_TOAST_ID,
+        duration: Number.POSITIVE_INFINITY,
+      })
       sendParent(self, {
         type: 'update hovered id',
         data: { hoveredId: null },
@@ -828,7 +801,7 @@ function removeDimensionListener({
   context,
 }: { context: DimensionToolContext }) {
   deactivateRuntime(context.runtime)
-  dismissAngleSectorPrompt()
+  toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
