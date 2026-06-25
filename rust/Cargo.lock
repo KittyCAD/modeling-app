@@ -2273,6 +2273,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-api"
+version = "0.2.166"
+dependencies = [
+ "indexmap 2.14.0",
+ "kcl-error",
+ "parse-display 0.11.0",
+ "parse-display-derive 0.11.0",
+ "pyo3",
+ "pyo3-stub-gen",
+ "schemars",
+ "serde",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
 name = "kcl-bumper"
 version = "0.1.166"
 dependencies = [
