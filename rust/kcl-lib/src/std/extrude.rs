@@ -21,6 +21,7 @@ use kittycad_modeling_cmds::shared::DirectionType;
 use kittycad_modeling_cmds::shared::EntityReference;
 use kittycad_modeling_cmds::shared::ExtrudeMethod;
 use kittycad_modeling_cmds::shared::Point2d;
+use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
@@ -31,10 +32,12 @@ use super::utils::point_to_mm;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
+use crate::execution::CreatorEdge;
 use crate::execution::CreatorFace;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::Extrudable;
+use crate::execution::ExtrudePlane;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
 use crate::execution::KclValue;
@@ -691,6 +694,13 @@ async fn inner_extrude(
             Extrudable::EdgeTag(_) => BeingExtruded::Sketch,
             Extrudable::Edge(_) => BeingExtruded::Sketch,
         };
+        let is_edge = match extrudable {
+            Extrudable::Sketch(..) => false,
+            Extrudable::FaceTag(_) => false,
+            Extrudable::Face(_) => false,
+            Extrudable::EdgeTag(_) => true,
+            Extrudable::Edge(_) => true,
+        };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
                 exec_state,
@@ -720,6 +730,12 @@ async fn inner_extrude(
                     being_extruded,
                 )
                 .await?,
+            );
+        } else if is_edge {
+            // Surface-extrude an edge.
+            // TODO: edge tag.
+            solids.push(
+                do_post_extrude_edges_only(extrude_cmd_id.into(), extrude_method, None, exec_state, &args).await?,
             );
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
@@ -777,6 +793,107 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
     // Probably will fail in the engine because it means the clone map was built wrong,
     // or KCL and the engine disagree about what geometry exists.
     any_edge_id
+}
+
+pub(crate) async fn do_post_extrude_edges_only(
+    extrude_cmd_id: ArtifactId,
+    extrude_method: ExtrudeMethod,
+    edge_tag: Option<crate::parsing::ast::types::Node<TagDeclarator>>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Solid, KclError> {
+    match extrude_method {
+        ExtrudeMethod::New => {
+            // This is expected.
+        }
+        ExtrudeMethod::Merge => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot use method MERGE with surface extrude of an edge".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        _ => {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Unknown extrude method: {extrude_method:?}"),
+                vec![args.source_range],
+            )));
+        }
+    }
+
+    let body_id = extrude_cmd_id.into();
+
+    // Bring the object to the front of the scene.
+    // See: https://github.com/KittyCAD/modeling-app/issues/806
+
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::ObjectBringToFront::builder()
+                    .object_id(extrude_cmd_id.into())
+                    .build(),
+            ),
+        )
+        .await?;
+
+    // Get the body entity ids.
+    let response = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(body_id).build()),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(ref all_child_ids_resp),
+    } = response
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+            vec![args.source_range],
+        )));
+    };
+    let entity_ids = &all_child_ids_resp.entity_ids;
+    let Some(face_id) = entity_ids.first().copied() else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Expected EntityGetAllChildUuids response to have at least 1 ID: {response:?}",),
+            vec![args.source_range],
+        )));
+    };
+    let Some(edge_id) = entity_ids.get(1).copied() else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Expected EntityGetAllChildUuids response to have at least 2 IDs: {response:?}"),
+            vec![args.source_range],
+        )));
+    };
+
+    // TODO: Do we need to use ExtrudeArc?
+    let extrude_surface = ExtrudeSurface::ExtrudePlane(ExtrudePlane {
+        face_id,
+        tag: edge_tag,
+        geo_meta: GeoMeta {
+            id: face_id,
+            metadata: args.source_range.into(),
+        },
+    });
+    let new_value = vec![extrude_surface];
+
+    Ok(Solid {
+        id: body_id,
+        value_id: extrude_cmd_id.into(),
+        artifact_id: extrude_cmd_id,
+        value: new_value,
+        faces: Default::default(),
+        meta: vec![args.source_range.into()],
+        // Normally, we would propagate the units of the sketch. But an edge
+        // doesn't have units. We also don't seem to use this field anywhere.
+        units: UnitLength::Millimeters,
+        sectional: false,
+        creator: SolidCreator::Edge(CreatorEdge { edge_id, body_id }),
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: Vec::new(),
+        pending_edge_cut_ids: Vec::new(),
+    })
 }
 
 #[allow(clippy::too_many_arguments)]

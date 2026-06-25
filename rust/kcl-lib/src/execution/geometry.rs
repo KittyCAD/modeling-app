@@ -1074,14 +1074,15 @@ impl Extrudable {
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => {
                     #[cfg(target_arch = "wasm32")]
-web_sys::console::log_1(&format!("SKETCH IS NONE EDGE TAG").into());
-                    None},
+                    web_sys::console::log_1(&format!("SKETCH IS NONE EDGE TAG").into());
+                    None
+                }
             },
             Extrudable::Edge(_) => {
-                
                 #[cfg(target_arch = "wasm32")]
-web_sys::console::log_1(&format!("SKETCH IS NONE EDGE").into());
-None},
+                web_sys::console::log_1(&format!("SKETCH IS NONE EDGE").into());
+                None
+            }
         }
     }
 
@@ -1276,6 +1277,15 @@ pub struct CreatorFace {
     pub sketch: Sketch,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorEdge {
+    /// The edge id that served as the base.
+    pub edge_id: uuid::Uuid,
+    /// The solid id that owned the edge.
+    pub body_id: uuid::Uuid,
+}
+
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -1285,6 +1295,8 @@ pub enum SolidCreator {
     Sketch(Sketch),
     /// Created by extruding or modifying a face.
     Face(CreatorFace),
+    /// Created by extruding or modifying an edge.
+    Edge(CreatorEdge),
     /// Created procedurally without a sketch.
     Procedural,
 }
@@ -1294,6 +1306,7 @@ impl Solid {
         match &self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
@@ -1302,6 +1315,7 @@ impl Solid {
         match &mut self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
