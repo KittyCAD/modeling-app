@@ -1850,6 +1850,24 @@ export function handleSelectionBatch({
 
   if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
+    const fallbackSelections = selections.graphSelections
+      .map((selection) => {
+        const entityId = getEngineEntityIdForSelection(selection, artifactGraph)
+        if (!entityId) return undefined
+        return {
+          id: entityId,
+          range:
+            getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]?.range ||
+            defaultSourceRange(),
+        }
+      })
+      .filter(isNonNullable)
+
+    if (fallbackSelections.length > 0) {
+      engineEvents.push(
+        ...addEngineEntitySelectionCmds(fallbackSelections, systemDeps)
+      )
+    }
   } else {
     for (const s of selections.graphSelections) {
       const entityId = getEngineEntityIdForSelection(s, artifactGraph)
@@ -2091,6 +2109,29 @@ export function updateExtraSegments(
   }
 }
 
+function addEngineEntitySelectionCmds(
+  selections: SelectionToEngine[],
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
+): WebSocketRequest[] {
+  if (
+    systemDeps.engineCommandManager.connection?.pingIntervalId === undefined
+  ) {
+    return []
+  }
+  return [
+    {
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_add',
+        entities: selections.map(({ id }) => id).filter(isNonNullable),
+      },
+      cmd_id: uuidv4(),
+    },
+  ]
+}
+
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[],
   systemDeps: {
@@ -2163,6 +2204,10 @@ function getEngineEntityIdForSelection(
         return entityRef.face_id
       case 'plane':
         return entityRef.plane_id
+      case 'solid2d_edge':
+        return entityRef.edge_id
+      case 'segment':
+        return entityRef.segment_id
     }
   }
 
