@@ -368,7 +368,7 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
   }
 }
 
-export const sharedBulkDeleteWorkflow = async ({
+const sharedBulkDeleteWorkflow = async ({
   input,
 }: {
   input: {
