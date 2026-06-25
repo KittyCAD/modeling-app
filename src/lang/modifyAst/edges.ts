@@ -1333,6 +1333,15 @@ interface GdtEdgesCallToFix {
   pathToCall?: PathToNode
 }
 
+interface GdtDistanceEndpointCallToFix {
+  range: [number, number, number]
+  endpoints: Array<{
+    label: 'from' | 'to'
+    payload: FilletEdgeRefPayload
+  }>
+  pathToCall?: PathToNode
+}
+
 function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
   if (!expr || typeof expr !== 'object') return null
   if (expr.type === 'CallExpressionKw') return expr
@@ -1493,6 +1502,62 @@ export function findGdtEdgesCallsToFix(
   return results
 }
 
+export function findGdtDistanceEndpointCallsToFix(
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph: ArtifactGraph
+): GdtDistanceEndpointCallToFix[] {
+  const results: GdtDistanceEndpointCallToFix[] = []
+
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
+
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (calleeName !== 'distance') return
+
+      const endpoints: GdtDistanceEndpointCallToFix['endpoints'] = []
+
+      for (const label of ['from', 'to'] as const) {
+        const endpointArg = call.arguments?.find(
+          (a) => getLabelName(a) === label
+        )
+        if (!endpointArg?.arg) continue
+
+        const inner = getCallFromExpr(endpointArg.arg)
+        if (!inner) continue
+
+        const innerCallee = getCalleeName(inner)
+        if (!isDeprecatedEdgeStdlib(innerCallee)) continue
+
+        const meta = edgeRefactorMetadata.find((m) =>
+          sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
+        )
+        if (!meta) continue
+
+        endpoints.push({
+          label,
+          payload: {
+            side_faces: meta.faceIds,
+            end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+          },
+        })
+      }
+
+      if (endpoints.length === 0) return
+
+      results.push({
+        range: [call.start, call.end, call.moduleId],
+        endpoints,
+        pathToCall: pathToNode,
+      })
+    },
+  })
+
+  return results
+}
+
 function refactorRevolveHelixAxisToEdgeRefInPlace(
   modifiedAst: Node<Program>,
   toFix: RevolveHelixCallToFix[],
@@ -1626,6 +1691,62 @@ function refactorGdtEdgesToEdgeSpecifiersInPlace(
   return modifiedAst
 }
 
+function refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
+  modifiedAst: Node<Program>,
+  toFix: GdtDistanceEndpointCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+
+  for (let index = 0; index < toFix.length; index++) {
+    const { endpoints, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    let nextAst = structuredClone(modifiedAst)
+    const endpointExprs: Array<{ label: 'from' | 'to'; expr: Expr }> = []
+    let failedToCreateEndpointRef = false
+
+    for (const endpoint of endpoints) {
+      const result = createEdgeRefObjectExpression(
+        endpoint.payload,
+        wasmInstance,
+        nextAst,
+        artifactGraph
+      )
+      if (err(result)) {
+        failedToCreateEndpointRef = true
+        break
+      }
+      endpointExprs.push({ label: endpoint.label, expr: result.expr })
+      nextAst = result.modifiedAst
+    }
+
+    if (failedToCreateEndpointRef || endpointExprs.length === 0) continue
+
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      nextAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (err(nodeResult)) continue
+
+    const callNode = nodeResult.node
+    const replacedLabels = new Set(endpointExprs.map(({ label }) => label))
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => !replacedLabels.has(getLabelName(a) as 'from' | 'to')
+    )
+    for (const endpointExpr of endpointExprs) {
+      newArgs.push(createLabeledArg(endpointExpr.label, endpointExpr.expr))
+    }
+    callNode.arguments = newArgs
+    modifiedAst = nextAst
+  }
+
+  return modifiedAst
+}
+
 export function refactorZ0006Unified(
   ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1649,11 +1770,17 @@ export function refactorZ0006Unified(
     edgeRefactorMetadata,
     artifactGraph
   )
+  const toFixGdtDistanceEndpoints = findGdtDistanceEndpointCallsToFix(
+    ast,
+    edgeRefactorMetadata,
+    artifactGraph
+  )
   if (
     toFixFilletChamfer.length === 0 &&
     toFixRevolveHelix.length === 0 &&
     toFixExtrudeTo.length === 0 &&
-    toFixGdtEdges.length === 0
+    toFixGdtEdges.length === 0 &&
+    toFixGdtDistanceEndpoints.length === 0
   ) {
     return new Error('No Z0006 fixes to apply')
   }
@@ -1739,6 +1866,18 @@ export function refactorZ0006Unified(
     modifiedAst,
     toFixGdtEdges,
     toFixGdtEdges.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  modifiedAst = refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
+    modifiedAst,
+    toFixGdtDistanceEndpoints,
+    toFixGdtDistanceEndpoints.map((item) =>
       item.pathToCall?.length
         ? item.pathToCall
         : getNodePathFromSourceRange(ast, item.range)
