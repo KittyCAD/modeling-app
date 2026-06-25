@@ -583,8 +583,26 @@ export class ZDSProject {
   }
 
   /** Get all the KCL files in this project as a flat array. */
-  private getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((f) => f.asRustApiFile()))
+  private async getAllKclFiles(): Promise<ApiFile[]> {
+    const existingFiles: File[] = []
+    const apiFiles: ApiFile[] = []
+
+    for (const file of this.files) {
+      try {
+        apiFiles.push(await file.asRustApiFile())
+        existingFiles.push(file)
+      } catch (error: unknown) {
+        if (!isEnoentError(error)) {
+          return Promise.reject(error)
+        }
+      }
+    }
+
+    if (existingFiles.length !== this.files.length) {
+      this.files = existingFiles
+    }
+
+    return apiFiles
   }
 
   /**
@@ -3821,10 +3839,14 @@ function clearRecoverySnapshot(path: string) {
 }
 
 function isEnoentError(err: unknown) {
+  if (err === 'ENOENT') {
+    return true
+  }
+
   return (
     typeof err === 'object' &&
     err !== null &&
-    'cause' in err &&
-    err.cause === 'ENOENT'
+    (('cause' in err && err.cause === 'ENOENT') ||
+      ('code' in err && err.code === 'ENOENT'))
   )
 }
