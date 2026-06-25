@@ -558,6 +558,7 @@ async function updateDraftAngleConstraint(
     getDefaultLengthUnit(context.kclManager)
   )
   const draftKey = getDraftKey(constraint)
+  // Skip constraint edits when the mouse moved too little to change the draft.
   if (draftKey === runtime.lastDraftKey) {
     return
   }
@@ -630,12 +631,7 @@ function requestDraftPreview(
       while (runtime.active && runtime.queuedMousePoint) {
         const nextMousePoint = runtime.queuedMousePoint
         runtime.queuedMousePoint = null
-        await updateDraftAngleConstraint(
-          runtime,
-          context,
-          self,
-          nextMousePoint
-        )
+        await updateDraftAngleConstraint(runtime, context, self, nextMousePoint)
       }
     } catch (error) {
       toastSketchSolveError(error)
