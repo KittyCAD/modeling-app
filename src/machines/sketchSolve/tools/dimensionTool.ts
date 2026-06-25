@@ -262,7 +262,10 @@ function getDimensionAngleContext(
   }
   return {
     ...angleContextBase,
-    baseSelection: getBaseAngleSelection(angleContextBase, line0Ray, line1Ray),
+    baseSelection: getVisibleAngleSelection(
+      angleContextBase,
+      getBaseAngleSector(line0Ray, line1Ray)
+    ),
   }
 }
 
@@ -359,15 +362,6 @@ function getVisibleAngleSelection(
     sector,
     inverse: getCcwSweep(start, end) > Math.PI,
   }
-}
-
-function getBaseAngleSelection(
-  angleContext: DimensionAngleDirections,
-  line0Ray: RayDirection,
-  line1Ray: RayDirection
-): DimensionAngleSelection {
-  const sector = getBaseAngleSector(line0Ray, line1Ray)
-  return getVisibleAngleSelection(angleContext, sector)
 }
 
 function getVisibleAngleSectorRays(
