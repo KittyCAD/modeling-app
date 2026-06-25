@@ -815,17 +815,13 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
       ...context.selectionClickPoints,
       ...(event.data.selectionClickPoints ?? {}),
     }
+    let nextSelectedIds: SketchSolveSelectionId[]
 
     // If empty array is provided, clear the selection
     if (event.data.selectedIds.length === 0) {
-      updates.selectedIds = []
-      updates.selectionClickPoints = {}
+      nextSelectedIds = []
     } else if (event.data.replaceExistingSelection) {
-      updates.selectedIds = event.data.selectedIds
-      updates.selectionClickPoints = getSelectionClickPointsForIds(
-        event.data.selectedIds,
-        selectionClickPoints
-      )
+      nextSelectedIds = event.data.selectedIds
     } else {
       const first = event.data.selectedIds[0]
       if (
@@ -834,24 +830,20 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
         context.selectedIds.includes(first)
       ) {
         // If only one ID is selected and it's already in the selection, remove only it from the selection
-        const nextSelectedIds = context.selectedIds.filter((id) => id !== first)
-        updates.selectedIds = nextSelectedIds
-        updates.selectionClickPoints = getSelectionClickPointsForIds(
-          nextSelectedIds,
-          context.selectionClickPoints
-        )
+        nextSelectedIds = context.selectedIds.filter((id) => id !== first)
       } else {
         // Merge new IDs with existing selection
-        const result = Array.from(
+        nextSelectedIds = Array.from(
           new Set([...context.selectedIds, ...event.data.selectedIds])
-        )
-        updates.selectedIds = result
-        updates.selectionClickPoints = getSelectionClickPointsForIds(
-          result,
-          selectionClickPoints
         )
       }
     }
+
+    updates.selectedIds = nextSelectedIds
+    updates.selectionClickPoints = getSelectionClickPointsForIds(
+      nextSelectedIds,
+      selectionClickPoints
+    )
   }
 
   return updates
