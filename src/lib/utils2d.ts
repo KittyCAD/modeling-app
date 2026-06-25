@@ -1,6 +1,8 @@
 import type { Coords2d } from '@src/lang/util'
 import { getAngle } from '@src/lib/utils'
 
+export type LineCoords = readonly [Coords2d, Coords2d]
+
 export function deg2Rad(deg: number): number {
   return (deg * Math.PI) / 180
 }
@@ -99,6 +101,13 @@ export function isParallel(
   const denominator = length2d(a) * length2d(b)
   if (denominator === 0) return false
   return Math.abs(cross2d(a, b) / denominator) < Math.sin(epsilonRadians)
+}
+
+export function linesAreParallel(line1: LineCoords, line2: LineCoords) {
+  const line1Dir = subVec(line1[1], line1[0])
+  const line2Dir = subVec(line2[1], line2[0])
+
+  return isParallel(line1Dir, line2Dir)
 }
 
 export function addVec(a: Coords2d, b: Coords2d): Coords2d {
