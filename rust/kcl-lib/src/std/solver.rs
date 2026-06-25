@@ -2,6 +2,7 @@ use std::f64::consts::TAU;
 use std::sync::Arc;
 
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
@@ -9,7 +10,6 @@ use kittycad_modeling_cmds::length_unit::LengthUnit;
 use kittycad_modeling_cmds::shared::Angle as KAngle;
 use kittycad_modeling_cmds::shared::PathSegment;
 use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
-use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
 use crate::ExecState;
@@ -26,6 +26,7 @@ use crate::execution::Path;
 use crate::execution::Segment;
 use crate::execution::SegmentKind;
 use crate::execution::SketchSurface;
+use crate::execution::types::NumericTypeExt;
 use crate::front::ObjectId;
 use crate::parsing::ast::types::TagNode;
 use crate::std::args::TyF64;
@@ -475,8 +476,8 @@ pub(crate) async fn create_segments_in_engine(
                 let mut sketch_acc = sketch.clone();
                 for sampled_point in sampled_iter {
                     let to = [
-                        TyF64::new(sampled_point[0], common_unit.into()),
-                        TyF64::new(sampled_point[1], common_unit.into()),
+                        TyF64::new(sampled_point[0], NumericType::length(common_unit)),
+                        TyF64::new(sampled_point[1], NumericType::length(common_unit)),
                     ];
                     sketch_acc = straight_line(
                         exec_state.next_uuid(),
@@ -507,8 +508,8 @@ pub(crate) async fn create_segments_in_engine(
 #[cfg(test)]
 mod tests {
     use indexmap::IndexMap;
+    use kcl_api::UnitLength;
     use kcl_error::SourceRange;
-    use kittycad_modeling_cmds::units::UnitLength;
 
     use super::create_segments_in_engine;
     use super::sample_control_point_spline_points;
@@ -518,6 +519,8 @@ mod tests {
     use crate::execution::Segment;
     use crate::execution::SegmentKind;
     use crate::execution::SketchSurface;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::ControlPointSplineCtor;
     use crate::front::ObjectId;
     use crate::std::args::TyF64;
@@ -546,20 +549,20 @@ mod tests {
             kind: SegmentKind::ControlPointSpline {
                 controls: vec![
                     [
-                        TyF64::new(0.0, UnitLength::Millimeters.into()),
-                        TyF64::new(0.0, UnitLength::Millimeters.into()),
+                        TyF64::new(0.0, NumericType::length(UnitLength::Millimeters)),
+                        TyF64::new(0.0, NumericType::length(UnitLength::Millimeters)),
                     ],
                     [
-                        TyF64::new(12.0, UnitLength::Millimeters.into()),
-                        TyF64::new(22.0, UnitLength::Millimeters.into()),
+                        TyF64::new(12.0, NumericType::length(UnitLength::Millimeters)),
+                        TyF64::new(22.0, NumericType::length(UnitLength::Millimeters)),
                     ],
                     [
-                        TyF64::new(28.0, UnitLength::Millimeters.into()),
-                        TyF64::new(22.0, UnitLength::Millimeters.into()),
+                        TyF64::new(28.0, NumericType::length(UnitLength::Millimeters)),
+                        TyF64::new(22.0, NumericType::length(UnitLength::Millimeters)),
                     ],
                     [
-                        TyF64::new(40.0, UnitLength::Millimeters.into()),
-                        TyF64::new(0.0, UnitLength::Millimeters.into()),
+                        TyF64::new(40.0, NumericType::length(UnitLength::Millimeters)),
+                        TyF64::new(0.0, NumericType::length(UnitLength::Millimeters)),
                     ],
                 ],
                 ctor: Box::new(ControlPointSplineCtor {

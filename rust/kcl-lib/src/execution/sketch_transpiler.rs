@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 
 use crate::Program;
@@ -392,7 +393,7 @@ fn build_sketch_block_ast(
 }
 
 /// Convert f64 + UnitLength to Number (rounding to 2 decimal places)
-fn f64_to_number(value: f64, units: kittycad_modeling_cmds::units::UnitLength) -> Number {
+fn f64_to_number(value: f64, units: UnitLength) -> Number {
     // Round to 2 decimal places, then convert using From trait
     let rounded = (value * 100.0).round() / 100.0;
     let normalized = if rounded == 0.0 { 0.0 } else { rounded };
@@ -496,7 +497,7 @@ fn transpiler_segment_name(segment: &TranspilerSegment) -> &str {
 
 fn transpiler_create_segment_declaration(
     segment: &TranspilerSegment,
-    units: kittycad_modeling_cmds::units::UnitLength,
+    units: UnitLength,
 ) -> Result<ast::BodyItem, KclError> {
     let (segment_name, segment_ast) = match segment {
         TranspilerSegment::Line(segment) => (
@@ -573,7 +574,7 @@ fn create_line_ast_from_coords(
     start_y: f64,
     end_x: f64,
     end_y: f64,
-    units: kittycad_modeling_cmds::units::UnitLength,
+    units: UnitLength,
 ) -> Result<ast::Expr, KclError> {
     // Create Point2d<Expr> with var expressions for start and end points
     let start_point = Point2d {
@@ -613,7 +614,7 @@ fn create_arc_ast_from_coords(
     end_y: f64,
     center_x: f64,
     center_y: f64,
-    units: kittycad_modeling_cmds::units::UnitLength,
+    units: UnitLength,
 ) -> Result<ast::Expr, KclError> {
     let start_point = Point2d {
         x: Expr::Var(f64_to_number(start_x, units)),
@@ -656,7 +657,7 @@ fn create_circle_ast_from_coords(
     start_y: f64,
     center_x: f64,
     center_y: f64,
-    units: kittycad_modeling_cmds::units::UnitLength,
+    units: UnitLength,
 ) -> Result<ast::Expr, KclError> {
     let start_point = Point2d {
         x: Expr::Var(f64_to_number(start_x, units)),
@@ -1033,11 +1034,7 @@ fn path_supports_tangent_constraint_at_entry(path_segment: &Path) -> bool {
     }
 }
 
-fn get_arc_size_constraint_value(
-    path_segment: &Path,
-    units: kittycad_modeling_cmds::units::UnitLength,
-    kind: ArcSizeKind,
-) -> Option<Number> {
+fn get_arc_size_constraint_value(path_segment: &Path, units: UnitLength, kind: ArcSizeKind) -> Option<Number> {
     let (center, from) = match path_segment {
         Path::TangentialArc { center, base, .. }
         | Path::TangentialArcTo { center, base, .. }

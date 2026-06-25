@@ -353,7 +353,7 @@ pub async fn coerce_revolve_targets(
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
 
     use super::*;
     use crate::execution::AbstractSegment;
@@ -363,6 +363,7 @@ mod tests {
     use crate::execution::SegmentRepr;
     use crate::execution::SketchSurface;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
     use crate::front::Number;
     use crate::front::ObjectId;

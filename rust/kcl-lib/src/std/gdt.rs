@@ -37,6 +37,7 @@ use crate::std::args::TyF64;
 use crate::std::edge;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
+use crate::unit_conversion;
 
 // The engine exposes two text knobs:
 // - font_point_size controls the FreeType raster/bitmap texture resolution in pixels/points.
@@ -1026,7 +1027,7 @@ async fn create_basic_distance_annotation(
         .build();
     let options = AnnotationOptions::builder()
         .dimension(dimension)
-        .units(display_units)
+        .units(unit_conversion::length::api_to_kcmc(display_units))
         .build();
     let annotation_cmd = ModelingCmd::from(
         mcmd::NewAnnotation::builder()

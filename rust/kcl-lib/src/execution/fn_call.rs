@@ -1,8 +1,11 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+use kcl_api::Group;
+use kcl_api::OpArg;
 
 use crate::CompilationIssue;
 use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -18,10 +21,8 @@ use crate::execution::StatementKind;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
-use crate::execution::cad_op::Group;
-use crate::execution::cad_op::OpArg;
-use crate::execution::cad_op::OpKclValue;
 use crate::execution::cad_op::Operation;
+use crate::execution::cad_op::op_from_kcl_value;
 use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
@@ -381,7 +382,7 @@ impl FunctionSource {
             let op_labeled_args = args
                 .labeled
                 .iter()
-                .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                .map(|(k, arg)| (k.clone(), OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)))
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
@@ -390,7 +391,7 @@ impl FunctionSource {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
                         .unlabeled_kw_arg_unconverted()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
@@ -405,7 +406,7 @@ impl FunctionSource {
                         function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
                     node_path: NodePath::placeholder(),
@@ -1184,6 +1185,7 @@ mod test {
     use crate::execution::memory::Stack;
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::parsing::ast::types::DefaultParamVal;
     use crate::parsing::ast::types::FunctionExpression;
     use crate::parsing::ast::types::Identifier;

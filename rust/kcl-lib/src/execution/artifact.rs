@@ -1,6 +1,7 @@
 use ahash::AHashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
+use kcl_api::NodePath;
 use kittycad_modeling_cmds::EnableSketchMode;
 use kittycad_modeling_cmds::FaceIsPlanar;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -16,11 +17,12 @@ use uuid::Uuid;
 
 use crate::KclError;
 use crate::ModuleId;
-use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::engine::PlaneName;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
+use crate::execution::cmd_id_ref_to_artifact_id;
 use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
 use crate::front::Constraint;
@@ -1967,7 +1969,7 @@ fn artifacts_to_update(
             };
             // Each key is a segment in the region. The value is the segment in
             // the original path. Build the reverse mapping.
-            let original_segment_ids = path.seg_ids.iter().map(|p| p.0).collect::<Vec<_>>();
+            let original_segment_ids = path.seg_ids.iter().map(Uuid::from).collect::<Vec<_>>();
             let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
             for (original_segment_id, region_segment_ids) in reverse.iter() {
                 for segment_id in region_segment_ids {
@@ -2203,7 +2205,7 @@ fn artifacts_to_update(
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
-            let target = ArtifactId::from(target);
+            let target = cmd_id_ref_to_artifact_id(target);
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,
@@ -2238,8 +2240,8 @@ fn artifacts_to_update(
             let method = kittycad_modeling_cmds::shared::ExtrudeMethod::Merge;
             let sub_type = SweepSubType::Sweep;
             let mut return_arr = Vec::new();
-            let target = ArtifactId::from(target);
-            let trajectory = ArtifactId::from(trajectory);
+            let target = cmd_id_ref_to_artifact_id(target);
+            let trajectory = cmd_id_ref_to_artifact_id(trajectory);
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,

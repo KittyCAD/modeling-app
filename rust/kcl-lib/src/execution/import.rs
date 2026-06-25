@@ -241,9 +241,9 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
     let units = length_from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat3d::Obj(opts) => opts.units = units,
-        InputFormat3d::Ply(opts) => opts.units = units,
-        InputFormat3d::Stl(opts) => opts.units = units,
+        InputFormat3d::Obj(opts) => opts.units = crate::unit_conversion::length::api_to_kcmc(units),
+        InputFormat3d::Ply(opts) => opts.units = crate::unit_conversion::length::api_to_kcmc(units),
+        InputFormat3d::Stl(opts) => opts.units = crate::unit_conversion::length::api_to_kcmc(units),
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(

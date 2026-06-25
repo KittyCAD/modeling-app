@@ -942,6 +942,20 @@ class UnitAngle(enum.Enum):
     """
 
 @typing.final
+class UnitAngle(enum.Enum):
+    r"""
+    The valid types of angle formats.
+    """
+    Degrees = ...
+    r"""
+    Degrees <https://en.wikipedia.org/wiki/Degree_(angle)>
+    """
+    Radians = ...
+    r"""
+    Radians <https://en.wikipedia.org/wiki/Radian>
+    """
+
+@typing.final
 class UnitArea(enum.Enum):
     r"""
     The valid types of area units.
@@ -991,6 +1005,36 @@ class UnitDensity(enum.Enum):
     KilogramsPerCubicMeter = ...
     r"""
     Kilograms per cubic meter.
+    """
+
+@typing.final
+class UnitLength(enum.Enum):
+    r"""
+    The valid types of length units.
+    """
+    Centimeters = ...
+    r"""
+    Centimeters <https://en.wikipedia.org/wiki/Centimeter>
+    """
+    Feet = ...
+    r"""
+    Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
+    """
+    Inches = ...
+    r"""
+    Inches <https://en.wikipedia.org/wiki/Inch>
+    """
+    Meters = ...
+    r"""
+    Meters <https://en.wikipedia.org/wiki/Meter>
+    """
+    Millimeters = ...
+    r"""
+    Millimeters <https://en.wikipedia.org/wiki/Millimeter>
+    """
+    Yards = ...
+    r"""
+    Yards <https://en.wikipedia.org/wiki/Yard>
     """
 
 @typing.final

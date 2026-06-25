@@ -1,4 +1,5 @@
-use serde::Serialize;
+pub use kcl_api::NodePath;
+pub use kcl_api::Step;
 
 use super::BinaryPart;
 use super::BodyItem;
@@ -8,75 +9,29 @@ use crate::execution::ProgramLookup;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 
-/// A traversal path through the AST to a node.
-///
-/// Similar to the idea of a `NodeId`, a `NodePath` uniquely identifies a node,
-/// assuming you know the root node.
-///
-/// The implementation doesn't cover all parts of the tree. It currently only
-/// works on parts of the tree that the frontend uses.
-#[derive(Debug, Default, Clone, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
-#[ts(export_to = "NodePath.ts")]
-pub struct NodePath {
-    pub steps: Vec<Step>,
+pub trait NodePathExt: Sized {
+    fn placeholder() -> Self;
+    fn fill_placeholder(&mut self, programs: &ProgramLookup, cached_body_items: usize, range: SourceRange);
+    fn from_range(
+        programs: &crate::execution::ProgramLookup,
+        cached_body_items: usize,
+        range: SourceRange,
+    ) -> Option<Self>;
+    fn from_body(body: &[BodyItem], cached_body_items: usize, range: SourceRange, path: NodePath) -> Option<NodePath>;
+    fn from_body_item(body_item: &BodyItem, range: SourceRange, path: NodePath) -> Option<NodePath>;
+    fn from_expr(expr: &Expr, range: SourceRange, path: NodePath) -> Option<NodePath>;
+    fn is_empty(&self) -> bool;
+    fn push(&mut self, step: Step);
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
-#[ts(export_to = "NodePath.ts")]
-#[serde(tag = "type")]
-pub enum Step {
-    ProgramBodyItem { index: usize },
-    CallCallee,
-    CallArg { index: usize },
-    CallKwCallee,
-    CallKwUnlabeledArg,
-    CallKwArg { index: usize },
-    BinaryLeft,
-    BinaryRight,
-    UnaryArg,
-    PipeBodyItem { index: usize },
-    ArrayElement { index: usize },
-    ArrayRangeStart,
-    ArrayRangeEnd,
-    ObjectProperty { index: usize },
-    ObjectPropertyKey,
-    ObjectPropertyValue,
-    ExpressionStatementExpr,
-    VariableDeclarationDeclaration,
-    VariableDeclarationInit,
-    FunctionExpressionName,
-    FunctionExpressionParam { index: usize },
-    FunctionExpressionBody,
-    FunctionExpressionBodyItem { index: usize },
-    ReturnStatementArg,
-    MemberExpressionObject,
-    MemberExpressionProperty,
-    IfExpressionCondition,
-    IfExpressionThen,
-    IfExpressionElseIf { index: usize },
-    IfExpressionElseIfCond,
-    IfExpressionElseIfBody,
-    IfExpressionElse,
-    ImportStatementItem { index: usize },
-    ImportStatementItemName,
-    ImportStatementItemAlias,
-    LabeledExpressionExpr,
-    LabeledExpressionLabel,
-    AscribedExpressionExpr,
-    SketchBlockArgs,
-    SketchBlockBody,
-    SketchBlockBodyItem { index: usize },
-    SketchVar,
-}
-
-impl NodePath {
+impl NodePathExt for NodePath {
     /// Placeholder for when the AST isn't available to create a real path.  It
     /// will be filled in later.
-    pub(crate) fn placeholder() -> Self {
+    fn placeholder() -> Self {
         Self::default()
     }
 
-    pub(crate) fn fill_placeholder(&mut self, programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) {
+    fn fill_placeholder(&mut self, programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) {
         if !self.is_empty() {
             return;
         }
@@ -85,7 +40,7 @@ impl NodePath {
 
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
-    pub(crate) fn from_range(
+    fn from_range(
         programs: &crate::execution::ProgramLookup,
         cached_body_items: usize,
         range: SourceRange,
@@ -372,7 +327,7 @@ impl NodePath {
         Some(path)
     }
 
-    pub fn is_empty(&self) -> bool {
+    fn is_empty(&self) -> bool {
         self.steps.is_empty()
     }
 

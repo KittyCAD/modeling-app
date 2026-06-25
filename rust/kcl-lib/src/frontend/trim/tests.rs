@@ -3023,7 +3023,7 @@ const RECT_ARC_LINE5_TRIM_BASE_KCL: &str = r#"sketch001 = sketch(on = YZ) {
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
 mod get_trim_spawn_terminations_tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
 
     use super::*;
     use crate::frontend::trim::Coords2d;

@@ -18,12 +18,12 @@ pub use artifact::StartSketchOnPlane;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
-pub use cad_op::Group;
-pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_api::Operation;
+use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
@@ -60,12 +60,11 @@ pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::TangencyMode;
-use uuid::Uuid;
 
 use crate::CompilationIssue;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
-use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
@@ -75,6 +74,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::cache::CacheInformation;
 use crate::execution::cache::CacheResult;
+use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
 use crate::execution::typed_path::TypedPath;
@@ -2107,54 +2107,10 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
-pub struct ArtifactId(Uuid);
+pub use kcl_api::ArtifactId;
 
-impl ArtifactId {
-    pub fn new(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-
-    /// A placeholder artifact ID that will be filled in later.
-    pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-}
-
-impl From<Uuid> for ArtifactId {
-    fn from(uuid: Uuid) -> Self {
-        Self::new(uuid)
-    }
-}
-
-impl From<&Uuid> for ArtifactId {
-    fn from(uuid: &Uuid) -> Self {
-        Self::new(*uuid)
-    }
-}
-
-impl From<ArtifactId> for Uuid {
-    fn from(id: ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<&ArtifactId> for Uuid {
-    fn from(id: &ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<ModelingCmdId> for ArtifactId {
-    fn from(id: ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
-impl From<&ModelingCmdId> for ArtifactId {
-    fn from(id: &ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
+pub fn cmd_id_ref_to_artifact_id(id: &ModelingCmdId) -> ArtifactId {
+    ArtifactId::new(*id.as_ref())
 }
 
 #[cfg(test)]
@@ -2241,13 +2197,13 @@ impl ProgramLookup {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::NumericType;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ModuleId;
     use crate::errors::KclErrorDetails;
     use crate::errors::Severity;
-    use crate::exec::NumericType;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 

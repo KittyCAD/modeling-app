@@ -206,7 +206,7 @@ fn build_stale_body_error_message(
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
     use uuid::Uuid;
 
     use super::*;

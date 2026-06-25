@@ -2,6 +2,7 @@
 
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
+use kcl_lib::NodePathExt;
 use kcl_lib::NodePathStep;
 use kcl_lib::bust_cache;
 use kcl_lib::exec::Operation;
