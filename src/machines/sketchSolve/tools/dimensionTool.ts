@@ -784,15 +784,16 @@ function addDimensionListener({
 
       const mousePoint: Coords2d = [twoD.x, twoD.y]
       if (runtime.angleContext) {
+        // After both lines are selected, mouse movement updates the angle label draft.
         requestDraftPreview(runtime, context, self, mousePoint)
-        return
+      } else {
+        // Before the second line is selected, mouse movement only updates line hover.
+        const lineSelection = getClosestLineSelection(mousePoint, context)
+        sendParent(self, {
+          type: 'update hovered id',
+          data: { hoveredId: lineSelection?.id ?? null },
+        })
       }
-
-      const lineSelection = getClosestLineSelection(mousePoint, context)
-      sendParent(self, {
-        type: 'update hovered id',
-        data: { hoveredId: lineSelection?.id ?? null },
-      })
     },
   })
 }
