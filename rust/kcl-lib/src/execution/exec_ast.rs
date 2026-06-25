@@ -6152,7 +6152,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn angle_dimension_with_sector_allows_missing_unlabeled_input() {
+    async fn angle_dimension_with_sector_uses_named_lines() {
         parse_execute(
             r#"
 sketch(on = XY) {
