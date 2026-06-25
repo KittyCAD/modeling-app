@@ -1931,7 +1931,7 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const diskCode = normalizeLineEndings(providedCode || (await file.read()))
+    const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)

@@ -531,6 +531,25 @@ async function prepareZookeeperPatchReplay(
       currentContent
     )
     if (expectedContentError) {
+      const activeFileAlreadyReplayed = Boolean(
+        alreadyReplayedFilePaths?.has(replayFile.absolutePath)
+      )
+      if (
+        activeFileAlreadyReplayed &&
+        ((replayFile.nextContent === null && currentContent === '') ||
+          (replayFile.expectedContent === null &&
+            replayFile.nextContent !== null &&
+            currentContent !== null &&
+            isCodeTheSame(currentContent, replayFile.nextContent)))
+      ) {
+        preparedReplayFiles.push({
+          relativePath: replayFile.relativePath,
+          absolutePath: replayFile.absolutePath,
+          previousContent: diskContent,
+          nextContent: replayFile.nextContent,
+        })
+        continue
+      }
       return Promise.reject(expectedContentError)
     }
     preparedReplayFiles.push({
