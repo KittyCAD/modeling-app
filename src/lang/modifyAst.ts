@@ -1137,6 +1137,9 @@ export function insertRegionVariablesAndOffsetPathToNode({
       intersection_index: intersectionIndex,
       curve_clockwise: curveClockwise,
     } = regionSelection.resolvableIntersectionInfo
+    // Closed primitive curves, such as circles, can report the same curve as
+    // both the walking curve and intersecting curve. KCL only needs that curve
+    // once to resolve the region.
     const segmentIds =
       segment === intersectionSegment
         ? [segment]
