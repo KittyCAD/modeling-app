@@ -53,6 +53,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
@@ -105,8 +106,27 @@ export function addShell({
     return result
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
+  let { solidsExprs, facesExprs } = result
   modifiedAst = result.modifiedAst
+
+  const enginePrimitives =
+    facesExprs.length === 0
+      ? getPrimitiveFaceSelectionsFromSelection(faces)
+      : []
+  if (enginePrimitives.length > 0) {
+    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+      enginePrimitives,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    solidsExprs = deduplicateFaceExprs(result.solidsExprs)
+    facesExprs.push(...result.faceExprs)
+  }
+
+  const solidsExpr = createVariableExpressionsArray(solidsExprs)
+  const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {
     return new Error("Couldn't retrieve face from selection")
   }
@@ -127,7 +147,7 @@ export function addShell({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: pathIfPipe,
+    pathIfNewPipe: result.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
     wasmInstance,
   })
@@ -230,14 +250,37 @@ export function addDeleteFace({
   }
 }
 
-function getEnginePrimitiveFaceSelectionsFromSelection({
+function getPrimitiveFaceSelectionsFromSelection({
+  graphSelections,
   otherSelections,
 }: Selections): EnginePrimitiveSelection[] {
-  return otherSelections.filter(
+  const otherPrimitiveFaces = otherSelections.filter(
     (selection): selection is EnginePrimitiveSelection =>
       isEnginePrimitiveSelection(selection) &&
       selection.primitiveType === 'face'
   )
+
+  const graphPrimitiveFaces = graphSelections.flatMap((selection) => {
+    const topologyFallback = getEngineTopologyFallbackNormalized(selection)
+    if (!topologyFallback) return []
+
+    const entityId =
+      selection.engineEntityId ??
+      (selection.entityRef?.type === 'face' ? selection.entityRef.face_id : '')
+    if (!entityId) return []
+
+    return [
+      {
+        type: 'enginePrimitive' as const,
+        entityId,
+        parentEntityId: topologyFallback.parentId,
+        primitiveIndex: topologyFallback.primitiveIndex,
+        primitiveType: 'face' as const,
+      },
+    ]
+  })
+
+  return [...otherPrimitiveFaces, ...graphPrimitiveFaces]
 }
 
 // TODO: figure out if KCL-defined modules like hole could let us derive types
@@ -882,7 +925,7 @@ export function getPlaneExprFromSelection({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; expr: Expr } {
   let modifiedAst = ast
-  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
+  const enginePrimitives = getPrimitiveFaceSelectionsFromSelection(plane)
   const hasFaceSelection = plane.graphSelections.some((sel) =>
     isFaceArtifact(sel.artifact)
   )

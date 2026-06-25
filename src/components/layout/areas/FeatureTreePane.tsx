@@ -102,10 +102,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
-// Keep automatic edit-time migration disabled until all feature-tree and
-// point-click edit flows support the new edge specifier syntax. Until then,
-// expose Z0006 only as an explicit lint action.
-//
 // IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
 // operations. The migration can change the KCL, and we need to choose the
 // correct operation to edit.
@@ -113,7 +109,7 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // may fail since operations don't have an identity that persists across
 // executions. Currently, we don't change the operations in an auto-fix, but
 // this seems brittle.
-const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
+const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = true
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {

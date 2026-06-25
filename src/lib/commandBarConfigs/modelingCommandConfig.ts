@@ -109,6 +109,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -469,6 +470,11 @@ export type ModelingCommandSchema = {
     z?: KclCommandValue
     factor?: KclCommandValue
     global?: boolean
+  }
+  'Mirror 3D': {
+    nodeToEdit?: PathToNode
+    bodies: Selections
+    across: Selections
   }
   Clone: {
     nodeToEdit?: PathToNode
@@ -1408,7 +1414,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
+        selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -2664,6 +2670,65 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'boolean',
         required: false,
+      },
+    },
+  },
+  'Mirror 3D': {
+    description: 'Mirror solids across a plane or edge.',
+    icon: 'mirror3d',
+    displayName: 'Mirror',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addMirror3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      bodies: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      across: {
+        inputType: 'selectionMixed',
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'segment',
+          'sweepEdge',
+          'primitiveFace',
+          'primitiveEdge',
+          'enginePrimitiveFace',
+          'enginePrimitiveEdge',
+        ],
+        multiple: false,
+        required: true,
       },
     },
   },

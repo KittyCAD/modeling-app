@@ -162,6 +162,7 @@ import {
   addAppearance,
   addClone,
   addHide,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -558,6 +559,7 @@ export type ModelingMachineEvent =
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
+  | { type: 'Mirror 3D'; data: ModelingCommandSchema['Mirror 3D'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
       type: 'Hide'
@@ -5070,6 +5072,46 @@ export const modelingMachine = setup({
         )
       }
     ),
+    mirror3DAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Mirror 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addMirror3D({
+          ...input.data,
+          ast,
+          artifactGraph,
+          variables: input.kclManager.variables,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     cloneAstMod: fromPromise(
       async ({
         input,
@@ -6663,6 +6705,10 @@ export const modelingMachine = setup({
 
         Scale: {
           target: 'Applying scale',
+        },
+
+        'Mirror 3D': {
+          target: 'Applying Mirror 3D',
         },
 
         Clone: {
@@ -8708,6 +8754,27 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Mirror 3D': {
+      invoke: {
+        src: 'mirror3DAstMod',
+        id: 'mirror3DAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Mirror 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],

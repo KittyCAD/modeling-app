@@ -121,14 +121,16 @@ export function addFillet({
         findKwArg('edges', existingCall) !== undefined ||
         findKwArg('edgeRefs', existingCall) !== undefined
       if (hasEdgeRefs) {
-        const newArgs = (existingCall.arguments ?? []).map((a) => {
-          const name = (a.label as { name?: string })?.name
-          if (name === 'radius')
-            return createLabeledArg('radius', valueOrVariable(radius))
-          if (name === 'tag' && tag)
-            return createLabeledArg('tag', createTagDeclarator(tag))
-          return a
-        })
+        const newArgs = (existingCall.arguments ?? [])
+          .filter((a) => getLabelName(a) !== 'tags')
+          .map((a) => {
+            const name = getLabelName(a)
+            if (name === 'radius')
+              return createLabeledArg('radius', valueOrVariable(radius))
+            if (name === 'tag' && tag)
+              return createLabeledArg('tag', createTagDeclarator(tag))
+            return a
+          })
         const call = createCallExpressionStdLibKw(
           'fillet',
           existingCall.unlabeled,
@@ -272,21 +274,23 @@ export function addChamfer({
         findKwArg('edges', existingCall) !== undefined ||
         findKwArg('edgeRefs', existingCall) !== undefined
       if (hasEdgeRefs) {
-        const newArgs = (existingCall.arguments ?? []).map((a) => {
-          const name = (a.label as { name?: string })?.name
-          if (name === 'length')
-            return createLabeledArg('length', valueOrVariable(length))
-          if (name === 'secondLength' && secondLength != null)
-            return createLabeledArg(
-              'secondLength',
-              valueOrVariable(secondLength)
-            )
-          if (name === 'angle' && angle != null)
-            return createLabeledArg('angle', valueOrVariable(angle))
-          if (name === 'tag' && tag)
-            return createLabeledArg('tag', createTagDeclarator(tag))
-          return a
-        })
+        const newArgs = (existingCall.arguments ?? [])
+          .filter((a) => getLabelName(a) !== 'tags')
+          .map((a) => {
+            const name = getLabelName(a)
+            if (name === 'length')
+              return createLabeledArg('length', valueOrVariable(length))
+            if (name === 'secondLength' && secondLength != null)
+              return createLabeledArg(
+                'secondLength',
+                valueOrVariable(secondLength)
+              )
+            if (name === 'angle' && angle != null)
+              return createLabeledArg('angle', valueOrVariable(angle))
+            if (name === 'tag' && tag)
+              return createLabeledArg('tag', createTagDeclarator(tag))
+            return a
+          })
         const call = createCallExpressionStdLibKw(
           'chamfer',
           existingCall.unlabeled,
