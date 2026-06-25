@@ -10,6 +10,20 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
+  ExperimentalFeaturesMenu: () => null,
+}))
+vi.mock('@src/components/SelectionReferencesPopover', () => ({
+  SelectionReferencesPopover: () => null,
+}))
+vi.mock('@src/components/SelectionStatusBarItem', () => ({
+  SelectionStatusBarItem: () => null,
+}))
+vi.mock('@src/components/UnitsMenu', () => ({
+  UnitsMenu: () => null,
+}))
+
 import engineSceneExtension from '.'
 
 function createExecutingEditorService(

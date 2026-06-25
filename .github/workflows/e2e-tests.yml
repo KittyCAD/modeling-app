@@ -103,7 +103,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -233,7 +233,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -326,7 +326,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -418,7 +418,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -459,7 +459,7 @@ jobs:
       - name: npm run test:e2e:web
         run: npm run test:e2e:web -- --grep=demo
         env:
-          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url || format('https://pr-{0}.vercel.dev.zoo.dev', github.event.pull_request.number) }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}

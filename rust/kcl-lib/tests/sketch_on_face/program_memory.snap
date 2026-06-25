@@ -325,7 +325,8 @@ description: Variables in memory after executing sketch_on_face.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },

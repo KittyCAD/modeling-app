@@ -80,7 +80,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -168,7 +169,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -200,8 +202,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     }
   },
   "circl": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "p": {
     "type": "Solid",
@@ -480,7 +481,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -624,7 +626,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },

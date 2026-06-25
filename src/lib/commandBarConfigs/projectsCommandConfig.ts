@@ -4,6 +4,7 @@ import { getInitialProjectDirectoryPath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -22,10 +23,16 @@ export type ProjectsCommandSchema = {
   }
 }
 
+function defaultEnableProjectDirectoryCommands() {
+  return typeof window !== 'undefined' && Boolean(window.electron)
+}
+
 export function createProjectCommands({
   systemIOActor,
+  enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  enableProjectDirectoryCommands?: boolean
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -218,7 +225,10 @@ export function createProjectCommands({
           const oldName = context.argumentsToSubmit.oldName as
             | string
             | undefined
-          return oldName || defaultProjectFolderNameSnapshot()
+          const folder = folderSnapshot()?.find((item) => item.name === oldName)
+          return folder
+            ? getProjectDisplayName(folder)
+            : oldName || defaultProjectFolderNameSnapshot()
         },
       },
     },
@@ -333,8 +343,7 @@ export function createProjectCommands({
     },
   }
 
-  /** No disk-writing commands are available in the browser */
-  const projectCommands = window.electron
+  const projectCommands = enableProjectDirectoryCommands
     ? [
         openProjectCommand,
         createProjectCommand,

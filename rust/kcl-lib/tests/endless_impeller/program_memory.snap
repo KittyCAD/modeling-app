@@ -24,7 +24,8 @@ description: Variables in memory after executing endless_impeller.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -50,7 +51,8 @@ description: Variables in memory after executing endless_impeller.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -76,7 +78,8 @@ description: Variables in memory after executing endless_impeller.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -102,7 +105,8 @@ description: Variables in memory after executing endless_impeller.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -128,7 +132,8 @@ description: Variables in memory after executing endless_impeller.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -154,7 +159,8 @@ description: Variables in memory after executing endless_impeller.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
     }
@@ -456,7 +462,8 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -623,7 +630,8 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -790,7 +798,8 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -957,7 +966,8 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1124,7 +1134,8 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1291,7 +1302,8 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
       },
@@ -1763,7 +1775,8 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -1998,7 +2011,8 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2233,7 +2247,8 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2468,7 +2483,8 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2703,7 +2719,8 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2938,7 +2955,8 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },
@@ -2988,8 +3006,7 @@ description: Variables in memory after executing endless_impeller.kcl
     }
   },
   "squareRegion": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "width": {
     "type": "Number",

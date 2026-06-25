@@ -1,15 +1,26 @@
+import type { EditorState } from '@codemirror/state'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
+import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { isCodeTheSame } from '@src/lib/codeEditor'
+import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import {
+  type ZookeeperEditPatch,
+  type ZookeeperEditPatchFile,
+  mergeZookeeperEditPatches,
+} from '@src/lib/zookeeperEditPatch'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
+  type MlEphantManagerActor,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
 import {
@@ -18,13 +29,59 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   SystemIOMachineEvents,
+  normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { useEffect } from 'react'
+import { applyPatch, parsePatch, reversePatch } from 'diff'
+import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
+
+function getZookeeperPatchPreviousCode(
+  patch: ZookeeperEditPatch,
+  relativePath: string | undefined,
+  currentCode: string
+): string | undefined {
+  if (relativePath === undefined) {
+    return
+  }
+
+  const changedFile = patch.changed_files?.find(
+    (file) => normalizeKCLFileDeletePath(file.path) === relativePath
+  )
+  if (changedFile === undefined) {
+    return
+  }
+
+  return getZookeeperChangedFilePreviousCode(changedFile, currentCode)
+}
+
+function getZookeeperChangedFilePreviousCode(
+  changedFile: ZookeeperEditPatchFile,
+  currentCode: string
+): string | undefined {
+  if (changedFile.status === 'deleted') {
+    return changedFile.previous_contents ?? undefined
+  }
+  if (changedFile.status === 'created') {
+    return ''
+  }
+  if (!changedFile.diff) {
+    return
+  }
+
+  const parsedPatch = parsePatch(changedFile.diff)[0]
+  if (!parsedPatch) {
+    return
+  }
+
+  const previousCode = applyPatch(currentCode, reversePatch(parsedPatch), {
+    fuzzFactor: 0,
+  })
+  return previousCode === false ? undefined : previousCode
+}
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const { auth } = useApp()
@@ -72,15 +129,59 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
+  const {
+    beginPendingZookeeperHistoryWrite,
+    completePendingZookeeperHistoryWrite,
+  } = useZookeeperEditPatchHistory({
+    kclManager,
+    mlEphantManagerActor,
+  })
+
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
-    billing.actor,
-    token,
     kclManager.engineCommandManager,
     (requestProps) => {
-      const payload = prepareMlEphantNewFileRequest(requestProps)
+      const activeFilePath =
+        requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
+      const payload = prepareMlEphantNewFileRequest({
+        ...requestProps,
+        fallbackFilePath: activeFilePath,
+      })
 
       if (payload) {
+        let historyRecorded = false
+        const exchangeId = requestProps.exchangeId ?? 0
+        const activeRelativePath =
+          project?.path && activeFilePath
+            ? normalizeKCLFileDeletePath(
+                fsZds.relative(project.path, activeFilePath)
+              )
+            : ''
+        const activeFileDeleted =
+          activeRelativePath.length > 0 &&
+          payload.filesToDelete.some(
+            (file) =>
+              normalizeKCLFileDeletePath(file.requestedFileName) ===
+              activeRelativePath
+          )
+        const shouldRecordZookeeperHistory = Boolean(
+          project?.path && payload.zookeeperEditPatch?.changed_files?.length
+        )
+        const activeFileOutput = payload.files.find(
+          (file) =>
+            normalizeKCLFileDeletePath(file.requestedFileName) ===
+            activeRelativePath
+        )
+        const shouldRefreshActiveEditorAfterPlainOutput = Boolean(
+          !shouldRecordZookeeperHistory &&
+            !activeFileDeleted &&
+            activeFileOutput &&
+            project?.name === payload.requestedProjectName &&
+            activeFilePath === kclManager.path
+        )
+        if (shouldRecordZookeeperHistory) {
+          beginPendingZookeeperHistoryWrite(exchangeId, activeFilePath)
+        }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
@@ -91,6 +192,63 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             requestedProjectName: payload.requestedProjectName,
             requestedFileNameWithExtension:
               payload.requestedFileNameWithExtension ?? '',
+            onFileSystemSuccess: () => {
+              if (historyRecorded) return
+              historyRecorded = true
+              if (
+                shouldRecordZookeeperHistory &&
+                project?.path &&
+                payload.zookeeperEditPatch
+              ) {
+                const currentFile = payload.files.find(
+                  (file) =>
+                    normalizeKCLFileDeletePath(file.requestedFileName) ===
+                    activeRelativePath
+                )
+                const currentEditorRelativePath =
+                  project.path && kclManager.path
+                    ? normalizeKCLFileDeletePath(
+                        fsZds.relative(project.path, kclManager.path)
+                      )
+                    : ''
+                const currentEditorFile = payload.files.find(
+                  (file) =>
+                    normalizeKCLFileDeletePath(file.requestedFileName) ===
+                    currentEditorRelativePath
+                )
+                completePendingZookeeperHistoryWrite({
+                  activeFileDeleted,
+                  activeFilePath,
+                  activeFileRequestedCode: currentFile?.requestedCode,
+                  currentFilePath: currentEditorFile
+                    ? kclManager.path
+                    : undefined,
+                  currentFileRequestedCode: currentEditorFile?.requestedCode,
+                  exchangeId,
+                  patch: payload.zookeeperEditPatch,
+                  projectPath: project.path,
+                })
+              }
+            },
+            ...(shouldRefreshActiveEditorAfterPlainOutput && activeFileOutput
+              ? {
+                  onSuccess: () => {
+                    if (kclManager.path !== activeFilePath) return
+                    if (kclManager.code === activeFileOutput.requestedCode)
+                      return
+                    kclManager.updateCodeEditor(
+                      activeFileOutput.requestedCode,
+                      {
+                        shouldAddToHistory: false,
+                        shouldClearHistory: true,
+                        shouldExecute: true,
+                        shouldResetCamera: true,
+                        shouldWriteToDisk: true,
+                      }
+                    )
+                  },
+                }
+              : {}),
           },
         })
       }
@@ -103,13 +261,6 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     systemIOActor,
     settingsValues
   )
-
-  const sendBillingUpdate = () => {
-    billing.send({
-      type: BillingTransition.Update,
-      apiToken: token,
-    })
-  }
 
   // During the makethon, this was set to the following:
   // !isPlaywright() &&
@@ -137,7 +288,22 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
           kclManager,
           contextModeling,
           sendModeling,
-          sendBillingUpdate,
+          sendBillingUpdate: () => {
+            billing.send({
+              type: BillingTransition.Update,
+              apiToken: token,
+            })
+          },
+          sendBillingUsageStarted: () => {
+            billing.send({
+              type: BillingTransition.UsageStarted,
+            })
+          },
+          sendBillingUsageEnded: () => {
+            billing.send({
+              type: BillingTransition.UsageEnded,
+            })
+          },
           theProject: theProject.current,
           loaderFile,
           settings: settingsValues,
@@ -153,6 +319,289 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       />
     </LayoutPanel>
   )
+}
+
+function useZookeeperEditPatchHistory({
+  kclManager,
+  mlEphantManagerActor,
+}: {
+  kclManager: KclManager
+  mlEphantManagerActor: MlEphantManagerActor
+}) {
+  const pendingZookeeperHistoryByExchange = useRef(
+    new Map<number, PendingZookeeperHistory>()
+  )
+
+  useEffect(() => {
+    const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
+    return () => {
+      pendingZookeeperHistories.clear()
+      kclManager.zookeeperHistoryRecordingInProgress = false
+    }
+  }, [kclManager])
+
+  const recordZookeeperHistory = useCallback(
+    (pending: ReadyPendingZookeeperHistory) => {
+      const {
+        codeChangeFilePath,
+        codeChangeRelativePath,
+        codeChangeRequestedCode,
+        patchChangesCodeChangeFile,
+      } = getZookeeperCodeChangeTarget(pending)
+
+      if (
+        codeChangeFilePath &&
+        patchChangesCodeChangeFile &&
+        codeChangeRequestedCode !== undefined &&
+        kclManager.path === codeChangeFilePath
+      ) {
+        const codeChangePreviousCode = getZookeeperPatchPreviousCode(
+          pending.patch,
+          codeChangeRelativePath,
+          codeChangeRequestedCode
+        )
+        // Project refreshes may reload the active editor before Zookeeper
+        // history is recorded. Put the captured pre-write state back first so
+        // the Zookeeper change lands on top of the user's local undo stack.
+        if (
+          pending.activeEditorState &&
+          codeChangePreviousCode !== undefined &&
+          isCodeTheSame(
+            pending.activeEditorState.doc.toString(),
+            codeChangePreviousCode
+          ) &&
+          (isCodeTheSame(kclManager.code, codeChangePreviousCode) ||
+            isCodeTheSame(kclManager.code, codeChangeRequestedCode))
+        ) {
+          kclManager.restoreEditorHistoryState(pending.activeEditorState)
+        }
+        kclManager.addGlobalHistoryEventWithCodeChange(
+          zookeeperEditPatchHistoryEvent({
+            projectPath: pending.projectPath,
+            patch: pending.patch,
+            activeFilePath: pending.activeFilePath,
+          }),
+          codeChangeRequestedCode,
+          codeChangePreviousCode
+        )
+        return
+      }
+
+      kclManager.addGlobalHistoryEvent(
+        zookeeperEditPatchHistoryEvent({
+          projectPath: pending.projectPath,
+          patch: pending.patch,
+          activeFilePath: pending.activeFilePath,
+        })
+      )
+    },
+    [kclManager]
+  )
+
+  const tryFlushPendingZookeeperHistory = useCallback(
+    (exchangeId: number) => {
+      const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
+      if (
+        !pending?.streamEnded ||
+        pending.outstandingWrites > 0 ||
+        !pending.projectPath ||
+        !pending.patch?.changed_files?.length ||
+        !pending.activeFilePath
+      ) {
+        return
+      }
+
+      pendingZookeeperHistoryByExchange.current.delete(exchangeId)
+      try {
+        recordZookeeperHistory({
+          activeFileDeleted: pending.activeFileDeleted,
+          activeFilePath: pending.activeFilePath,
+          activeEditorState: pending.activeEditorState,
+          activeFileRequestedCode: pending.activeFileRequestedCode,
+          currentFilePath: pending.currentFilePath,
+          currentFileRequestedCode: pending.currentFileRequestedCode,
+          patch: pending.patch,
+          projectPath: pending.projectPath,
+        })
+      } finally {
+        if (pendingZookeeperHistoryByExchange.current.size === 0) {
+          kclManager.zookeeperHistoryRecordingInProgress = false
+        }
+      }
+    },
+    [kclManager, recordZookeeperHistory]
+  )
+
+  const beginPendingZookeeperHistoryWrite = useCallback(
+    (exchangeId: number, activeFilePath?: string) => {
+      const pending =
+        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
+        createPendingZookeeperHistory()
+      pending.outstandingWrites += 1
+      if (
+        !pending.activeEditorState &&
+        activeFilePath &&
+        activeFilePath === kclManager.path
+      ) {
+        pending.activeEditorState = kclManager.captureEditorHistoryState()
+      }
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      kclManager.zookeeperHistoryRecordingInProgress = true
+    },
+    [kclManager]
+  )
+
+  const completePendingZookeeperHistoryWrite = useCallback(
+    ({
+      activeFileDeleted,
+      activeFilePath,
+      activeFileRequestedCode,
+      currentFilePath,
+      currentFileRequestedCode,
+      exchangeId,
+      patch,
+      projectPath,
+    }: CompletePendingZookeeperHistoryWriteProps) => {
+      const pending =
+        pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
+        createPendingZookeeperHistory()
+      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
+      pending.projectPath = projectPath
+      pending.activeFilePath ??= activeFilePath
+      pending.activeFileDeleted = pending.activeFileDeleted || activeFileDeleted
+      pending.activeFileRequestedCode =
+        activeFileRequestedCode ?? pending.activeFileRequestedCode
+      pending.currentFilePath = currentFilePath ?? pending.currentFilePath
+      pending.currentFileRequestedCode =
+        currentFileRequestedCode ?? pending.currentFileRequestedCode
+      pending.patch = pending.patch
+        ? mergeZookeeperEditPatches(pending.patch, patch)
+        : patch
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      tryFlushPendingZookeeperHistory(exchangeId)
+    },
+    [tryFlushPendingZookeeperHistory]
+  )
+
+  useFlushZookeeperHistoryOnResponseEnd(
+    mlEphantManagerActor,
+    pendingZookeeperHistoryByExchange,
+    tryFlushPendingZookeeperHistory
+  )
+
+  return {
+    beginPendingZookeeperHistoryWrite,
+    completePendingZookeeperHistoryWrite,
+  }
+}
+
+function getZookeeperCodeChangeTarget({
+  activeFileDeleted,
+  activeFilePath,
+  activeFileRequestedCode,
+  currentFilePath,
+  currentFileRequestedCode,
+  patch,
+  projectPath,
+}: ReadyPendingZookeeperHistory) {
+  const fallbackFilePath = activeFileDeleted ? undefined : activeFilePath
+  const fallbackRequestedCode = activeFileDeleted
+    ? undefined
+    : activeFileRequestedCode
+  const codeChangeFilePath = currentFilePath ?? fallbackFilePath
+  const codeChangeRequestedCode =
+    currentFileRequestedCode ?? fallbackRequestedCode
+  const codeChangeRelativePath = codeChangeFilePath
+    ? normalizeKCLFileDeletePath(
+        fsZds.relative(projectPath, codeChangeFilePath)
+      )
+    : undefined
+  const patchChangesCodeChangeFile = Boolean(
+    codeChangeRelativePath &&
+      patch.changed_files?.some(
+        (file) =>
+          normalizeKCLFileDeletePath(file.path) === codeChangeRelativePath
+      )
+  )
+
+  return {
+    codeChangeFilePath,
+    codeChangeRelativePath,
+    codeChangeRequestedCode,
+    patchChangesCodeChangeFile,
+  }
+}
+
+type PendingZookeeperHistory = {
+  activeFileDeleted: boolean
+  activeEditorState?: EditorState
+  activeFilePath?: string
+  activeFileRequestedCode?: string
+  currentFilePath?: string
+  currentFileRequestedCode?: string
+  outstandingWrites: number
+  patch?: ZookeeperEditPatch
+  projectPath?: string
+  streamEnded: boolean
+}
+
+type ReadyPendingZookeeperHistory = {
+  activeFileDeleted: boolean
+  activeEditorState?: EditorState
+  activeFilePath: string
+  activeFileRequestedCode?: string
+  currentFilePath?: string
+  currentFileRequestedCode?: string
+  patch: ZookeeperEditPatch
+  projectPath: string
+}
+
+type CompletePendingZookeeperHistoryWriteProps =
+  ReadyPendingZookeeperHistory & {
+    exchangeId: number
+  }
+
+function createPendingZookeeperHistory(): PendingZookeeperHistory {
+  return {
+    activeFileDeleted: false,
+    outstandingWrites: 0,
+    streamEnded: false,
+  }
+}
+
+function useFlushZookeeperHistoryOnResponseEnd(
+  mlEphantManagerActor: MlEphantManagerActor,
+  pendingZookeeperHistoryByExchange: MutableRefObject<
+    Map<number, PendingZookeeperHistory>
+  >,
+  tryFlushPendingZookeeperHistory: (exchangeId: number) => void
+) {
+  useEffect(() => {
+    let lastId: number | undefined = undefined
+    const subscription = mlEphantManagerActor.subscribe((next) => {
+      if (next.context.lastMessageId === lastId) return
+      lastId = next.context.lastMessageId
+
+      if (next.context.lastMessageType !== 'end_of_stream') return
+      const exchangeId = (next.context.conversation?.exchanges.length ?? 0) - 1
+      if (exchangeId < 0) return
+
+      const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
+      if (!pending) return
+
+      pending.streamEnded = true
+      pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
+      tryFlushPendingZookeeperHistory(exchangeId)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [
+    mlEphantManagerActor,
+    pendingZookeeperHistoryByExchange,
+    tryFlushPendingZookeeperHistory,
+  ])
 }
 
 export const MlEphantConversationMenu = () => {

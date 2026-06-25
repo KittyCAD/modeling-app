@@ -20,6 +20,10 @@ import {
   getRouterSearchFromRequestUrl,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
+import {
+  loadHomeProjects,
+  webHomeRouteEnabled,
+} from '@src/lib/routeLoaderUtils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type {
   FileLoaderData,
@@ -37,7 +41,7 @@ export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
  * The base loader is used to reroute `/` root path requests,
  * to the home route on desktop, and to a constrained single project view on web.
  *
- * Once we get cloud storage or another solution we'll introduce the home, multi-project view on web.
+ * The OPFS cloud feature flag enables the home, multi-project view on web.
  */
 export const baseLoader =
   ({
@@ -60,6 +64,10 @@ export const baseLoader =
     // Let another part of the system handle the "open with web/desktop"...
     if (url.searchParams.has('ask-open-desktop')) {
       return
+    }
+
+    if (await webHomeRouteEnabled(app)) {
+      return redirect(PATHS.HOME + routerSearch)
     }
 
     // Web, make a default project and redirect to it.
@@ -94,8 +102,7 @@ export const baseLoader =
         wasmInstance
       )
 
-      const fileURLPath =
-        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
+      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(requestedProjectName)}`
       return redirect(fileURLPath + routerSearch)
     }
   }
@@ -127,7 +134,7 @@ export const fileLoader =
 
     const wasmInstance = await kclManager.wasmInstancePromise
 
-    let settings = await loadAndValidateSettings(
+    const settings = await loadAndValidateSettings(
       wasmInstance,
       heuristicProjectFilePath
     )
@@ -236,6 +243,12 @@ export const fileLoader =
         : undefined
     )
 
+    const requestedFileName =
+      app.systemIOActor.getSnapshot().context.requestedFileName
+    if (requestedFileName.project === projectName) {
+      requestedFileName.onProjectLoaderComplete?.()
+    }
+
     const requestedProjectDirectoryPath = getParentAbsolutePath(project.path)
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
@@ -269,18 +282,11 @@ export const homeLoader =
   }: {
     app: App
   }): LoaderFunction =>
-  async ({ request }): Promise<HomeLoaderData | Response> => {
-    // If on web, bump out to root, which will redirect to a project.
-    if (!window.electron) {
+  async (): Promise<HomeLoaderData | Response> => {
+    // If on unflagged web, bump out to root, which will redirect to a project.
+    if (!window.electron && !(await webHomeRouteEnabled(app))) {
       return redirect(PATHS.INDEX)
     }
 
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
-    app.closeProject()
-    app.settings.actor.send({
-      type: 'clear.project',
-    })
-    return {}
+    return loadHomeProjects(app)
   }

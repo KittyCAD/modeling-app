@@ -94,7 +94,7 @@ export function SelectionFilterControls() {
       {(popover) => (
         <>
           <Popover.Button
-            className={`${defaultStatusBarItemClassNames} gap-1`}
+            className={`${defaultStatusBarItemClassNames} gap-2`}
             data-testid="selection-filter-status"
             title="Selection filter"
           >

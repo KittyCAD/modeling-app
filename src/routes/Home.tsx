@@ -1,12 +1,14 @@
+import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useState } from 'react'
+import type { Dispatch, FormEvent, HTMLProps, SetStateAction } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
+import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -15,7 +17,6 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { SketchSolveAnnouncement } from '@src/components/SketchSolveAnnouncements'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -24,23 +25,39 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import {
+  type ProjectStatus,
+  useProjectStatuses,
+} from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import {
+  opfsCloudSyncStatus,
+  setOpfsCloudSyncProjectScope,
+} from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  type OptimisticProjectRenames,
+  applyOptimisticProjectRenames,
+  pruneSettledOptimisticProjectRenames,
+} from '@src/lib/optimisticProjectRenames'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
+import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -54,16 +71,24 @@ import {
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
+  HOME_KEYMAP_SCOPE,
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import type { ActorRefFrom } from 'xstate'
+import { type ActorRefFrom, waitFor } from 'xstate'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -71,11 +96,26 @@ const Home = () => {
   useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
+  const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
+
+  useEffect(() => {
+    if (!keymap) {
+      return
+    }
+
+    keymap.applyScope(HOME_KEYMAP_SCOPE)
+
+    return () => {
+      keymap.removeScope(HOME_KEYMAP_SCOPE)
+    }
+  }, [keymap])
+
   const navigate = useNavigate()
+  const location = useLocation()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
@@ -84,11 +124,64 @@ const Home = () => {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
+  const projectStatuses = useProjectStatuses(projects, apiToken)
+  const [optimisticProjectRenames, setOptimisticProjectRenames] =
+    useState<OptimisticProjectRenames>({})
+  const optimisticProjects = useMemo(
+    () => applyOptimisticProjectRenames(projects, optimisticProjectRenames),
+    [projects, optimisticProjectRenames]
+  )
   const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, setQuery } = useProjectSearch(projects)
+  const { searchResults, query, setQuery } =
+    useProjectSearch(optimisticProjects)
+  const projectSearchKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.search.focusProjects,
+          [HOME_KEYMAP_SCOPE],
+          registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : undefined,
+    platform()
+  )
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+
+  useEffect(() => {
+    setOpfsCloudSyncProjectScope(undefined)
+  }, [])
+
+  useEffect(() => {
+    setOptimisticProjectRenames((renames) =>
+      pruneSettledOptimisticProjectRenames(projects, renames)
+    )
+  }, [projects])
+
+  useEffect(() => {
+    const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
+      navigate,
+      location,
+      ''
+    )
+
+    commands.send({
+      type: 'Add commands',
+      data: {
+        commands: [RouteTelemetryCommand, RouteSettingsCommand],
+      },
+    })
+
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
+      })
+    }
+  }, [navigate, location, commands])
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -104,12 +197,42 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
-  const location = useLocation()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
+
+  useEffect(() => {
+    let disposed = false
+    let lastHandledSyncedAt: string | undefined
+
+    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
+      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
+        return
+      }
+
+      lastHandledSyncedAt = syncedAt
+      void waitFor(systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+        .then(() => {
+          if (disposed || lastHandledSyncedAt !== syncedAt) {
+            return
+          }
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        })
+        .catch(reportRejection)
+    })
+
+    return () => {
+      disposed = true
+      disposeCloudSyncRefreshEffect()
+    }
+  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -204,15 +327,6 @@ const Home = () => {
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
-  useHotkeys(
-    isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => {
-      void navigate(PATHS.HOME + PATHS.SETTINGS)
-    },
-    {
-      splitKey: '|',
-    }
-  )
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
@@ -222,6 +336,7 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
+          projectSearchKeybinding={projectSearchKeybinding}
           className="col-start-2 -col-end-1"
         />
         <aside
@@ -331,11 +446,9 @@ const Home = () => {
                 </div>
               </li>
             )}
-            {settingsValues.modeling.useSketchSolveMode.current && (
-              <li className="contents">
-                <SketchSolveAnnouncement />
-              </li>
-            )}
+            <li className="contents">
+              <Announcements token={apiToken} />
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -372,10 +485,14 @@ const Home = () => {
         </aside>
         <ProjectGrid
           searchResults={searchResults ?? []}
-          projects={projects}
+          projects={optimisticProjects}
           query={query}
           sort={sort}
-          handleRenameProject={handleRenameProject(systemIOActor)}
+          projectStatuses={projectStatuses}
+          handleRenameProject={handleRenameProject(
+            systemIOActor,
+            setOptimisticProjectRenames
+          )}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -410,12 +527,14 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
+  projectSearchKeybinding?: string
 }
 
 function HomeHeader({
   setQuery,
   sort,
   setSearchParams,
+  projectSearchKeybinding,
   ...rest
 }: HomeHeaderProps) {
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
@@ -427,7 +546,10 @@ function HomeHeader({
           <h1 className="text-3xl font-bold">Projects</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          <ProjectSearchBar setQuery={setQuery} />
+          <ProjectSearchBar
+            setQuery={setQuery}
+            keybinding={projectSearchKeybinding}
+          />
           <div className="flex gap-2 items-center">
             <small>Sort by</small>
             <ActionButton
@@ -485,6 +607,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projects: Project[] | undefined
   query: string
   sort: string
+  projectStatuses: Map<string, ProjectStatus>
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
     project: Project
@@ -496,6 +619,7 @@ function ProjectGrid({
   projects,
   query,
   sort,
+  projectStatuses,
   handleRenameProject,
   ...rest
 }: ProjectGridProps) {
@@ -503,6 +627,11 @@ function ProjectGrid({
   const state = useSystemIOState()
   const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
+  const loadingMore = isReadingFolders ? (
+    <div className="py-4">
+      <Loading isDummy={true}>Loading more projects...</Loading>
+    </div>
+  ) : null
 
   return (
     <section data-testid="home-section" {...rest}>
@@ -511,41 +640,33 @@ function ProjectGrid({
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <>
-              <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {sortedSearchResults.map((project) => (
-                  <ProjectCard
-                    key={project.path}
-                    project={project}
-                    handleRenameProject={handleRenameProject}
-                    handleDeleteProject={handleDeleteProject(systemIOActor)}
-                  />
-                ))}
-              </ul>
-              {isReadingFolders && (
-                <div className="py-4">
-                  <Loading isDummy={true}>Loading more projects...</Loading>
-                </div>
-              )}
-            </>
+            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {sortedSearchResults.map((project) => (
+                <ProjectCard
+                  key={project.path}
+                  project={project}
+                  projectStatus={
+                    project.cloudProjectId
+                      ? projectStatuses.get(project.cloudProjectId)
+                      : undefined
+                  }
+                  handleRenameProject={handleRenameProject}
+                  handleDeleteProject={handleDeleteProject(systemIOActor)}
+                />
+              ))}
+            </ul>
           ) : (
-            <>
-              <p
-                data-testid="projects-none"
-                className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
-              >
-                No projects found
-                {projects !== undefined && projects.length === 0
-                  ? ', open or create one to add it here.'
-                  : ` with the search term "${query}"`}
-              </p>
-              {isReadingFolders && (
-                <div className="py-4">
-                  <Loading isDummy={true}>Loading more projects...</Loading>
-                </div>
-              )}
-            </>
+            <p
+              data-testid="projects-none"
+              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+            >
+              No projects found
+              {projects !== undefined && projects.length === 0
+                ? ', open or create one to add it here.'
+                : ` with the search term "${query}"`}
+            </p>
           )}
+          {loadingMore}
         </>
       )}
     </section>
@@ -553,19 +674,36 @@ function ProjectGrid({
 }
 
 function handleRenameProject(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  setOptimisticProjectRenames: Dispatch<
+    SetStateAction<OptimisticProjectRenames>
+  >
 ) {
   return async function (e: FormEvent<HTMLFormElement>, project: Project) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
 
-    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+    if (
+      !project.cloudProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName.startsWith('.')
+    ) {
       toast.error('Project names cannot start with a period.')
       return
     }
 
-    if (newProjectName !== project.name) {
+    if (newProjectName !== getProjectDisplayName(project)) {
+      if (project.cloudProjectId && typeof newProjectName === 'string') {
+        setOptimisticProjectRenames((renames) => ({
+          ...renames,
+          [project.cloudProjectId as string]: {
+            title: newProjectName,
+            modified: Date.now(),
+          },
+        }))
+      }
+
       systemIOActor.send({
         type: SystemIOMachineEvents.renameProject,
         data: {

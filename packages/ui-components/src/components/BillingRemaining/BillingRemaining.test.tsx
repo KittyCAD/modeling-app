@@ -126,3 +126,19 @@ test('Hides overrun when total due is zero', async () => {
 
   expect(queryByText('Overrun')).toBeNull()
 })
+
+test('Shows total due with two decimal places', async () => {
+  const { queryByText } = render(
+    <BillingRemaining
+      mode={BillingRemainingMode.ProgressBarFixed}
+      userPaymentBalance={{
+        ...userPaymentBalance,
+        total_due: 1.3,
+      }}
+    />
+  )
+
+  expect(queryByText('Overrun')).toBeVisible()
+  expect(queryByText('1.30')).toBeVisible()
+  expect(queryByText('1.3')).toBeNull()
+})

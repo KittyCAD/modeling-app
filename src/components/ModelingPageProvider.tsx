@@ -172,30 +172,23 @@ export const ModelingPageProvider = ({
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
     commands.send({
-      type: 'Remove commands',
+      type: 'Add commands',
       data: {
         commands: [
           RouteTelemetryCommand,
-          RouteHomeCommand,
           RouteSettingsCommand,
+          RouteHomeCommand,
         ],
       },
     })
-    if (location.pathname === PATHS.HOME) {
+    return () => {
       commands.send({
-        type: 'Add commands',
-        data: {
-          commands: [RouteTelemetryCommand, RouteSettingsCommand],
-        },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commands.send({
-        type: 'Add commands',
+        type: 'Remove commands',
         data: {
           commands: [
             RouteTelemetryCommand,
-            RouteSettingsCommand,
             RouteHomeCommand,
+            RouteSettingsCommand,
           ],
         },
       })

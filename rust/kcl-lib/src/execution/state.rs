@@ -12,7 +12,6 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
-use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
@@ -20,6 +19,7 @@ use crate::NodePath;
 use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -32,6 +32,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::KclValueView;
 use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
@@ -475,8 +476,14 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
+        let variables = self
+            .mod_local
+            .variables(main_ref)?
+            .into_iter()
+            .map(|(key, value)| (key, KclValueView::from(value)))
+            .collect();
         Ok(ExecOutcome {
-            variables: self.mod_local.variables(main_ref)?,
+            variables,
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
@@ -881,7 +888,7 @@ impl ExecState {
 
     pub(crate) async fn build_artifact_graph(
         &mut self,
-        engine: &Arc<Box<dyn EngineManager>>,
+        engine: &Arc<EngineManager>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         let mut new_commands = Vec::new();

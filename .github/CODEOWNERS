@@ -7,17 +7,28 @@
 /rust/                            @KittyCAD/kcl
 
 # ZDS-KCL bridge
-/rust/**/frontend.rs              @KittyCAD/frontend
-/rust/**/frontend/                @KittyCAD/frontend
+/rust/**/frontend.rs              @KittyCAD/frontend @KittyCAD/kcl
+/rust/**/frontend/                @KittyCAD/frontend @KittyCAD/kcl
 
-# KCL Dependencies
+# Dependencies
 Cargo.toml                        @KittyCAD/frontend @KittyCAD/kcl
 Cargo.lock                        @KittyCAD/frontend @KittyCAD/kcl
+package.json                      @KittyCAD/frontend @KittyCAD/kcl
+package-lock.json                 @KittyCAD/frontend @KittyCAD/kcl
 
 # Documentation
+README.md                         @KittyCAD/frontend @KittyCAD/kcl
+GLOSSARY.md                       @KittyCAD/frontend @KittyCAD/kcl
+CONTRIBUTING.md                   @KittyCAD/frontend @KittyCAD/kcl
 /docs/                            @KittyCAD/frontend @KittyCAD/kcl
 /public/kcl-samples/              @KittyCAD/frontend @KittyCAD/kcl
 /rust/**/kcl_samples/             @KittyCAD/frontend @KittyCAD/kcl
+
+# Other shared files
+/.github                          @KittyCAD/frontend @KittyCAD/kcl
+_typos.toml                       @KittyCAD/frontend @KittyCAD/kcl
+flake.nix                         @KittyCAD/frontend @KittyCAD/kcl
+flake.lock                        @KittyCAD/frontend @KittyCAD/kcl
 
 # Tests
 /e2e/playwright/benchmark/        @KittyCAD/mech

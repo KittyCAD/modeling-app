@@ -173,6 +173,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "legCapStart": {
+              "type": "TagIdentifier",
+              "value": "legCapStart"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -329,6 +335,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "legCapStart": {
+              "type": "TagIdentifier",
+              "value": "legCapStart"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -485,6 +497,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "legCapStart": {
+              "type": "TagIdentifier",
+              "value": "legCapStart"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -641,6 +659,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "legCapStart": {
+              "type": "TagIdentifier",
+              "value": "legCapStart"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -845,6 +869,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "earCapEnd": {
+          "type": "TagIdentifier",
+          "value": "earCapEnd"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1433,6 +1463,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "earCapEnd": {
+              "type": "TagIdentifier",
+              "value": "earCapEnd"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1589,6 +1625,12 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "earCapEnd": {
+              "type": "TagIdentifier",
+              "value": "earCapEnd"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1747,6 +1789,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "legCapStart": {
+          "type": "TagIdentifier",
+          "value": "legCapStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1903,6 +1951,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "legCapStart": {
+          "type": "TagIdentifier",
+          "value": "legCapStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2082,6 +2136,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "legCapStart": {
+          "type": "TagIdentifier",
+          "value": "legCapStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3562,6 +3622,12 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "tailCapStart": {
+          "type": "TagIdentifier",
+          "value": "tailCapStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

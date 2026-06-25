@@ -107,15 +107,13 @@ test.describe(
         })
 
         // Go to the hotkey for Command Palette.
-        const commandPalette = page.getByText('Open Command Palette')
+        const commandPalette = page.getByText('Open command palette')
         await commandPalette.scrollIntoViewIfNeeded()
 
-        // The heading is above it and should be in view now.
-        const commandPaletteHeading = page.getByRole('heading', {
-          name: 'Command Palette',
+        const row = page.locator('tr').filter({
+          hasText: 'Open command palette',
         })
-        // The hotkey is in a kbd element next to the heading.
-        const hotkey = commandPaletteHeading.locator('+ div kbd')
+        const hotkey = row.locator('kbd')
         const text = process.platform === 'darwin' ? 'Command+K' : 'Control+K'
         await expect(hotkey).toHaveText(text)
       }

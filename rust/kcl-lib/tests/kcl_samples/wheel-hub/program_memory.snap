@@ -91,6 +91,7 @@ description: Variables in memory after executing wheel-hub.kcl
       "parentSolid": {
         "solidId": "[uuid]",
         "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
           "[uuid]",
           "[uuid]"
@@ -152,7 +153,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "parentSolid": {
         "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]"
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
     }
@@ -534,6 +536,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "parentSolid": {
             "solidId": "[uuid]",
             "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]",
               "[uuid]"
@@ -698,6 +701,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -816,6 +820,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -934,6 +939,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1051,6 +1057,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1168,6 +1175,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1285,6 +1293,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1402,6 +1411,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1519,6 +1529,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1636,6 +1647,7 @@ description: Variables in memory after executing wheel-hub.kcl
                   "parentSolid": {
                     "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]",
                       "[uuid]"
@@ -1828,6 +1840,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "parentSolid": {
                   "solidId": "[uuid]",
                   "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
                     "[uuid]",
                     "[uuid]"
@@ -2061,6 +2074,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "parentSolid": {
           "solidId": "[uuid]",
           "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]"
@@ -2197,7 +2211,8 @@ description: Variables in memory after executing wheel-hub.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -2312,7 +2327,8 @@ description: Variables in memory after executing wheel-hub.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -2427,7 +2443,8 @@ description: Variables in memory after executing wheel-hub.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -2542,7 +2559,8 @@ description: Variables in memory after executing wheel-hub.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -2657,7 +2675,8 @@ description: Variables in memory after executing wheel-hub.kcl
               },
               "parentSolid": {
                 "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]"
+                "creatorSketchId": "[uuid]",
+                "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
             },
@@ -2799,7 +2818,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -2912,7 +2932,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -2986,7 +3007,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "parentSolid": {
                   "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]"
+                  "creatorSketchId": "[uuid]",
+                  "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
               },
@@ -3121,7 +3143,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   },
                   "parentSolid": {
                     "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]"
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
@@ -3195,7 +3218,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "parentSolid": {
           "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]"
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
       },
@@ -3292,6 +3316,16 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3470,6 +3504,16 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -7401,6 +7445,16 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -7593,6 +7647,16 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        },
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

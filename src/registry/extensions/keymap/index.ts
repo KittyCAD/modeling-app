@@ -10,7 +10,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
@@ -21,6 +20,7 @@ import {
   BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  HOME_KEYMAP_SCOPE,
   type KeymapArguments,
   type KeymapItem,
   type KeymapScope,
@@ -32,14 +32,22 @@ import {
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
+  createEmptyPersistedKeymap,
+  createKeymapTree,
+  createUnbindBinding,
   keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
   normalizeEventKey,
+  resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
+import {
+  readUserKeymapFile,
+  writeUserKeymapFile,
+} from '@src/registry/extensions/keymap/persistence'
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
@@ -67,6 +75,12 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
     userEditable: false,
   },
   {
+    id: HOME_KEYMAP_SCOPE,
+    displayName: 'Home',
+    priority: 50,
+    userEditable: false,
+  },
+  {
     id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
     displayName: 'Code editor not focused',
     group: KEYMAP_CONTEXT_SCOPE_GROUP,
@@ -82,7 +96,7 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
   },
   {
     id: MODE_SKETCHING_KEYMAP_SCOPE,
-    displayName: 'Sketch mode',
+    displayName: 'Legacy sketch mode',
     group: KEYMAP_CONTEXT_SCOPE_GROUP,
     priority: 200,
     userEditable: false,
@@ -96,7 +110,7 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
   },
   {
     id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-    displayName: 'Sketch solve mode',
+    displayName: 'Sketch mode',
     group: KEYMAP_CONTEXT_SCOPE_GROUP,
     priority: 220,
     userEditable: false,
@@ -125,8 +139,17 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
 ]
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
-  const keymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
+  const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
   const keymapScopesSignal = ctx.valueSpecs.signal(keymapScopesValueSpec)
+  const persistedKeymap = signal(createEmptyPersistedKeymap())
+  const keymapSignal = computed(() =>
+    createKeymapTree(
+      resolveKeymapItems(
+        contributedKeymapSignal.value.items,
+        persistedKeymap.value
+      )
+    )
+  )
   const activeScopes = signal<readonly string[]>([
     CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   ])
@@ -137,6 +160,13 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     global: [],
     codeMirror: [],
   }
+  /**
+   * Reference count for temporarily disabling keymap handling. A count is used
+   * instead of a boolean so overlapping callers can suspend listening
+   * independently and keymaps resume only after every cleanup callback has run.
+   */
+  let suspendListeningCount = 0
+  let persistedKeymapRevision = 0
   let pendingTimeout: number | undefined
   let pendingAnimationFrame: number | undefined
 
@@ -154,6 +184,18 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       pendingAnimationFrame = undefined
     }
   }
+
+  const initialPersistedKeymapLoad = readUserKeymapFile()
+    .then((keymap) => {
+      if (persistedKeymapRevision === 0) {
+        persistedKeymap.value = keymap
+      }
+    })
+    .catch((error) => {
+      if (error !== undefined) {
+        reportRejection(error)
+      }
+    })
 
   const schedulePendingKeystrokesReset = () => {
     if (pendingTimeout !== undefined) {
@@ -187,6 +229,10 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const handleKeyDown: KeymapService['handleKeyDown'] = (event, { source }) => {
+    if (suspendListeningCount > 0) {
+      return false
+    }
+
     const chord = keyboardEventToKeymapChord(event)
     const pendingKeystrokes = pendingKeystrokesBySource[source]
     if (
@@ -263,6 +309,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
 
   const serviceImpl: KeymapService = {
     keymap: keymapSignal,
+    persistedKeymap,
     partialMatch,
     applyScope: (scopeName) => {
       if (activeScopes.value.includes(scopeName)) {
@@ -276,26 +323,48 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       )
     },
     getCurrentScopes: () => activeScopes.value,
+    savePersistedKeymap: async (keymap) => {
+      await initialPersistedKeymapLoad
+      persistedKeymapRevision += 1
+      persistedKeymap.value = keymap
+      await writeUserKeymapFile(keymap)
+    },
+    addUserBinding: async (binding) => {
+      await serviceImpl.savePersistedKeymap({
+        ...persistedKeymap.value,
+        bindings: [...persistedKeymap.value.bindings, binding],
+      })
+    },
+    removeUserBinding: async (index) => {
+      await serviceImpl.savePersistedKeymap({
+        ...persistedKeymap.value,
+        bindings: persistedKeymap.value.bindings.filter(
+          (_binding, bindingIndex) => bindingIndex !== index
+        ),
+      })
+    },
+    unbind: async (item) => {
+      await serviceImpl.addUserBinding(createUnbindBinding(item))
+    },
+    /**
+     * Used by UI that needs to capture raw keystrokes for another purpose, such
+     * as the editable keybinding field in Settings. While suspended,
+     * `handleKeyDown` ignores global and CodeMirror keymap matches so the
+     * caller's own keydown listener can record chords without triggering app
+     * commands. The returned function must be called when capture ends.
+     */
+    suspendListening: () => {
+      suspendListeningCount += 1
+      clearPendingKeystrokes()
+      return () => {
+        suspendListeningCount = Math.max(0, suspendListeningCount - 1)
+      }
+    },
     handleKeyDown,
     focusScope: (scopeName) => ({
       onFocus: () => serviceImpl.applyScope(scopeName),
       onBlur: () => serviceImpl.removeScope(scopeName),
     }),
-  }
-
-  const resetView = () => {
-    const kclManager = ctx.services
-      .optional(commandSystemService)
-      ?.actor.getSnapshot().context.kclManager
-    if (!kclManager) {
-      return
-    }
-
-    resetCameraPosition({
-      sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
-      settingsActor: kclManager.systemDeps.settings,
-    }).catch(reportRejection)
   }
 
   function runKeymapItem(item: KeymapItem) {
@@ -319,8 +388,6 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         return openSettings()
       case 'zds.settings.tab':
         return updateSettingsTab(getSettingsTabArgument(item.arguments))
-      case 'zds.view.reset':
-        return resetView()
       default:
         return runCommandById(item)
     }
