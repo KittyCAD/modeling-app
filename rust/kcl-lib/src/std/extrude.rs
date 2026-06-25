@@ -745,7 +745,7 @@ async fn inner_extrude(
                 Extrudable::Edge(_) => None,
             };
             solids.push(
-                do_post_extrude_edges_only(extrude_cmd_id.into(), extrude_method, edge_tag, exec_state, &args).await?,
+                after_surface_creation(extrude_cmd_id.into(), extrude_method, edge_tag, exec_state, &args).await?,
             );
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
@@ -805,7 +805,9 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
     any_edge_id
 }
 
-pub(crate) async fn do_post_extrude_edges_only(
+/// This is similar to [`do_post_extrude()`], but for surfaces where a sketch
+/// isn't available.
+pub(crate) async fn after_surface_creation(
     extrude_cmd_id: ArtifactId,
     extrude_method: ExtrudeMethod,
     edge_tag: Option<crate::parsing::ast::types::Node<TagDeclarator>>,
