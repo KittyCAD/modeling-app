@@ -542,7 +542,7 @@ function sendFinalResultToParent(
   })
 }
 
-async function replaceDraftAngleConstraint(
+async function updateDraftAngleConstraint(
   runtime: DraftRuntime,
   context: DimensionToolContext,
   self: { _parent?: { send: (event: unknown) => void } },
@@ -630,7 +630,7 @@ function requestDraftPreview(
       while (runtime.active && runtime.queuedMousePoint) {
         const nextMousePoint = runtime.queuedMousePoint
         runtime.queuedMousePoint = null
-        await replaceDraftAngleConstraint(
+        await updateDraftAngleConstraint(
           runtime,
           context,
           self,
