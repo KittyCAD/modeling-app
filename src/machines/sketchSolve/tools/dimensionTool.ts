@@ -290,10 +290,7 @@ function getDimensionAngleContext(
     ...angleContextBase,
     baseSelection: getVisibleAngleSelection(
       angleContextBase,
-      getBaseAngleSector(
-        line0RayDirectionIsForward,
-        line1RayDirectionIsForward
-      )
+      getBaseAngleSector(line0RayDirectionIsForward, line1RayDirectionIsForward)
     ),
   }
 }
