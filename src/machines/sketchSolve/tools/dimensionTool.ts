@@ -114,11 +114,6 @@ type LineSelection = {
 
 type RayDirection = 'forward' | 'reverse'
 export type AngleSector = 1 | 2 | 3 | 4
-type AngleRayKey =
-  | 'line0Forward'
-  | 'line0Reverse'
-  | 'line1Forward'
-  | 'line1Reverse'
 
 export type DimensionAngleDraftContext = {
   line0Id: number
@@ -268,8 +263,8 @@ function getDimensionAngleContext(
     ...angleContextBase,
     baseSelection: getBaseAngleSelection(
       angleContextBase,
-      getClickedRayKey(0, line0Ray),
-      getClickedRayKey(1, line1Ray)
+      line0Ray,
+      line1Ray
     ),
   }
 }
@@ -333,16 +328,6 @@ function isDirectionInSector(
   )
 }
 
-function getClickedRayKey(
-  lineIndex: 0 | 1,
-  direction: RayDirection
-): AngleRayKey {
-  if (lineIndex === 0) {
-    return direction === 'forward' ? 'line0Forward' : 'line0Reverse'
-  }
-  return direction === 'forward' ? 'line1Forward' : 'line1Reverse'
-}
-
 export function getAngleSectorRays(
   angleContext: Pick<
     DimensionAngleDraftContext,
@@ -371,44 +356,6 @@ export function getAngleSectorRays(
   }
 }
 
-const DIRECT_SECTOR_BOUNDARIES = [
-  {
-    sector: 1,
-    startKey: 'line0Forward',
-    endKey: 'line1Forward',
-  },
-  {
-    sector: 2,
-    startKey: 'line1Forward',
-    endKey: 'line0Reverse',
-  },
-  {
-    sector: 3,
-    startKey: 'line0Reverse',
-    endKey: 'line1Reverse',
-  },
-  {
-    sector: 4,
-    startKey: 'line1Reverse',
-    endKey: 'line0Forward',
-  },
-] as const satisfies ReadonlyArray<{
-  sector: AngleSector
-  startKey: AngleRayKey
-  endKey: AngleRayKey
-}>
-
-function getSectorForRayPair(startKey: AngleRayKey, endKey: AngleRayKey) {
-  for (const boundary of DIRECT_SECTOR_BOUNDARIES) {
-    if (
-      (boundary.startKey === startKey && boundary.endKey === endKey) ||
-      (boundary.startKey === endKey && boundary.endKey === startKey)
-    ) {
-      return boundary.sector
-    }
-  }
-}
-
 function getVisibleAngleSelection(
   angleContext: Pick<
     DimensionAngleDraftContext,
@@ -428,10 +375,10 @@ function getBaseAngleSelection(
     DimensionAngleDraftContext,
     'line0Direction' | 'line1Direction'
   >,
-  line0Ray: AngleRayKey,
-  line1Ray: AngleRayKey
+  line0Ray: RayDirection,
+  line1Ray: RayDirection
 ): DimensionAngleSelection {
-  const sector = getSectorForRayPair(line0Ray, line1Ray) ?? 1
+  const sector = getBaseAngleSector(line0Ray, line1Ray)
   return getVisibleAngleSelection(angleContext, sector)
 }
 
