@@ -202,6 +202,7 @@ function getClickedRayDirection(
   return dot2d(clickDirection, lineDirection) >= 0 ? 'forward' : 'reverse'
 }
 
+// Given which side of line0 and line1 the user clicked, which semantic sector is that?
 export function getBaseAngleSector(
   line0Ray: RayDirection,
   line1Ray: RayDirection
@@ -216,6 +217,32 @@ export function getBaseAngleSector(
     return 3
   }
   return 4
+}
+
+// Given a sector number, what are the ordered start/end rays used to measure the angle?
+export function getAngleSectorRays(
+  angleContext: DimensionAngleDirections,
+  sector: AngleSector
+): [Coords2d, Coords2d] {
+  switch (sector) {
+    case 1:
+      return [angleContext.line0Direction, angleContext.line1Direction]
+    case 2:
+      return [
+        angleContext.line1Direction,
+        scaleVec(angleContext.line0Direction, -1),
+      ]
+    case 3:
+      return [
+        scaleVec(angleContext.line0Direction, -1),
+        scaleVec(angleContext.line1Direction, -1),
+      ]
+    case 4:
+      return [
+        scaleVec(angleContext.line1Direction, -1),
+        angleContext.line0Direction,
+      ]
+  }
 }
 
 function getDimensionAngleContext(
@@ -326,31 +353,6 @@ function isDirectionInSector(
   return (
     getCcwSweep(start, direction) <= getCcwSweep(start, end) + SECTOR_EPSILON
   )
-}
-
-export function getAngleSectorRays(
-  angleContext: DimensionAngleDirections,
-  sector: AngleSector
-): [Coords2d, Coords2d] {
-  switch (sector) {
-    case 1:
-      return [angleContext.line0Direction, angleContext.line1Direction]
-    case 2:
-      return [
-        angleContext.line1Direction,
-        scaleVec(angleContext.line0Direction, -1),
-      ]
-    case 3:
-      return [
-        scaleVec(angleContext.line0Direction, -1),
-        scaleVec(angleContext.line1Direction, -1),
-      ]
-    case 4:
-      return [
-        scaleVec(angleContext.line1Direction, -1),
-        angleContext.line0Direction,
-      ]
-  }
 }
 
 function getVisibleAngleSelection(
