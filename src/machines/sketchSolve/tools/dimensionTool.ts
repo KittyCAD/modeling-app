@@ -261,11 +261,7 @@ function getDimensionAngleContext(
   }
   return {
     ...angleContextBase,
-    baseSelection: getBaseAngleSelection(
-      angleContextBase,
-      line0Ray,
-      line1Ray
-    ),
+    baseSelection: getBaseAngleSelection(angleContextBase, line0Ray, line1Ray),
   }
 }
 
