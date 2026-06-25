@@ -971,8 +971,8 @@ export fn patternCircular3d(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn union(
-  /// The solids to union.
-  @solids: [Solid; 2+],
+  /// The solids or imported geometries to union.
+  @solids: [Solid | ImportedGeometry; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
@@ -980,7 +980,7 @@ export fn union(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
-): [Solid; 1+] {}
+): [Solid | ImportedGeometry; 1+] {}
 
 /// Intersect returns the shared volume between multiple solids, preserving only
 /// overlapping regions.
@@ -1034,8 +1034,8 @@ export fn union(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn intersect(
-  /// The solids to intersect.
-  @solids: [Solid; 2+],
+  /// The solids or imported geometries to intersect.
+  @solids: [Solid | ImportedGeometry; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
@@ -1043,7 +1043,7 @@ export fn intersect(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
-): [Solid; 1+] {}
+): [Solid | ImportedGeometry; 1+] {}
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
 ///
@@ -1192,10 +1192,10 @@ export fn intersect(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn subtract(
-  /// The solids to use as the base to subtract from.
-  @solids: [Solid; 1+],
-  /// The solids to subtract.
-  tools: [Solid],
+  /// The solids or imported geometries to use as the base to subtract from.
+  @solids: [Solid | ImportedGeometry; 1+],
+  /// The solids or imported geometries to subtract.
+  tools: [Solid | ImportedGeometry; 1+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
@@ -1203,7 +1203,7 @@ export fn subtract(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
-): [Solid] {}
+): [Solid | ImportedGeometry; 1+] {}
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 ///
