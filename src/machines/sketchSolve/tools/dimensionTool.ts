@@ -19,7 +19,6 @@ import {
   getCcwSweep,
   getLineIntersection,
   length2d,
-  normalizeAngle,
   normalizeVec,
   scaleVec,
   subVec,
@@ -127,23 +126,12 @@ export type DimensionAngleDraftContext = {
   line0Direction: Coords2d
   line1Direction: Coords2d
   vertex: Coords2d
-  baseWedgeIndex: number
+  baseSelection: DimensionAngleSelection
 }
 
 type DimensionAngleSelection = {
   sector: AngleSector
   inverse: boolean
-}
-
-type AngleRay = {
-  key: AngleRayKey
-  direction: Coords2d
-}
-
-type AngleWedge = {
-  start: AngleRay
-  end: AngleRay
-  selection: DimensionAngleSelection
 }
 
 type DraftRuntime = {
@@ -160,6 +148,9 @@ type DraftRuntime = {
 type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
 
 const SECTOR_EPSILON = 1e-9
+const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies ReadonlyArray<
+  AngleSector
+>
 const ANGLE_SECTOR_PROMPT_TOAST_ID = 'dimension-tool-angle-sector-prompt'
 
 function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
@@ -268,20 +259,21 @@ function getDimensionAngleContext(
     secondSelection.clickPoint
   )
 
-  const angleContext = {
+  const angleContextBase = {
     line0Id: firstSelection.id,
     line1Id: secondSelection.id,
     line0Direction: normalizeVec(line0Vector),
     line1Direction: normalizeVec(line1Vector),
     vertex,
-    baseWedgeIndex: 0,
   }
-  angleContext.baseWedgeIndex = findWedgeIndexForRays(
-    angleContext,
-    getClickedRayKey(0, line0Ray),
-    getClickedRayKey(1, line1Ray)
-  )
-  return angleContext
+  return {
+    ...angleContextBase,
+    baseSelection: getBaseAngleSelection(
+      angleContextBase,
+      getClickedRayKey(0, line0Ray),
+      getClickedRayKey(1, line1Ray)
+    ),
+  }
 }
 
 function getFarthestLinePointFromVertex(
@@ -408,112 +400,71 @@ const DIRECT_SECTOR_BOUNDARIES = [
   endKey: AngleRayKey
 }>
 
-function getAngleRays(
-  angleContext: Pick<
-    DimensionAngleDraftContext,
-    'line0Direction' | 'line1Direction'
-  >
-): AngleRay[] {
-  const rays: AngleRay[] = [
-    { key: 'line0Forward', direction: angleContext.line0Direction },
-    {
-      key: 'line0Reverse',
-      direction: scaleVec(angleContext.line0Direction, -1),
-    },
-    { key: 'line1Forward', direction: angleContext.line1Direction },
-    {
-      key: 'line1Reverse',
-      direction: scaleVec(angleContext.line1Direction, -1),
-    },
-  ]
-
-  return rays.sort(
-    (left, right) =>
-      normalizeAngle(Math.atan2(left.direction[1], left.direction[0])) -
-      normalizeAngle(Math.atan2(right.direction[1], right.direction[0]))
-  )
-}
-
-function getSelectionForWedge(startKey: AngleRayKey, endKey: AngleRayKey) {
+function getSectorForRayPair(startKey: AngleRayKey, endKey: AngleRayKey) {
   for (const boundary of DIRECT_SECTOR_BOUNDARIES) {
-    if (boundary.startKey === startKey && boundary.endKey === endKey) {
-      return {
-        sector: boundary.sector,
-        inverse: false,
-      }
-    }
-
-    if (boundary.startKey === endKey && boundary.endKey === startKey) {
-      return {
-        sector: boundary.sector,
-        inverse: true,
-      }
+    if (
+      (boundary.startKey === startKey && boundary.endKey === endKey) ||
+      (boundary.startKey === endKey && boundary.endKey === startKey)
+    ) {
+      return boundary.sector
     }
   }
 }
 
-function getAngleWedges(
+function getVisibleAngleSelection(
   angleContext: Pick<
     DimensionAngleDraftContext,
     'line0Direction' | 'line1Direction'
-  >
-): AngleWedge[] {
-  const rays = getAngleRays(angleContext)
-  const wedges: AngleWedge[] = []
-
-  for (let index = 0; index < rays.length; index++) {
-    const start = rays[index]
-    const end = rays[(index + 1) % rays.length]
-    const selection = getSelectionForWedge(start.key, end.key)
-    if (selection) {
-      wedges.push({ start, end, selection })
-    }
+  >,
+  sector: AngleSector
+): DimensionAngleSelection {
+  const [start, end] = getAngleSectorRays(angleContext, sector)
+  return {
+    sector,
+    inverse: getCcwSweep(start, end) > Math.PI,
   }
-
-  return wedges
 }
 
-function findWedgeIndexForRays(
+function getBaseAngleSelection(
   angleContext: Pick<
     DimensionAngleDraftContext,
     'line0Direction' | 'line1Direction'
   >,
   line0Ray: AngleRayKey,
   line1Ray: AngleRayKey
-) {
-  const wedges = getAngleWedges(angleContext)
-  return Math.max(
-    wedges.findIndex(
-      (wedge) =>
-        (wedge.start.key === line0Ray && wedge.end.key === line1Ray) ||
-        (wedge.start.key === line1Ray && wedge.end.key === line0Ray)
-    ),
-    0
-  )
+): DimensionAngleSelection {
+  const sector = getSectorForRayPair(line0Ray, line1Ray) ?? 1
+  return getVisibleAngleSelection(angleContext, sector)
 }
 
-function getHoveredWedgeIndex(
+function getVisibleAngleSectorRays(
+  angleContext: Pick<
+    DimensionAngleDraftContext,
+    'line0Direction' | 'line1Direction'
+  >,
+  selection: DimensionAngleSelection
+): [Coords2d, Coords2d] {
+  const [start, end] = getAngleSectorRays(angleContext, selection.sector)
+  return selection.inverse ? [end, start] : [start, end]
+}
+
+function getHoveredAngleSelection(
   mousePoint: Coords2d,
   angleContext: DimensionAngleDraftContext
-): number {
+): DimensionAngleSelection {
   const mouseDirection = subVec(mousePoint, angleContext.vertex)
   if (length2d(mouseDirection) === 0) {
-    return angleContext.baseWedgeIndex
+    return angleContext.baseSelection
   }
 
-  const wedges = getAngleWedges(angleContext)
-  const hoveredIndex = wedges.findIndex((wedge) =>
-    isDirectionInSector(
-      mouseDirection,
-      wedge.start.direction,
-      wedge.end.direction
-    )
+  return (
+    ANGLE_SECTORS.map((sector) =>
+      getVisibleAngleSelection(angleContext, sector)
+    ).find((selection) => {
+      const [start, end] = getVisibleAngleSectorRays(angleContext, selection)
+      return isDirectionInSector(mouseDirection, start, end)
+    }) ?? angleContext.baseSelection
   )
-  if (hoveredIndex !== -1) {
-    return hoveredIndex
-  }
-
-  return angleContext.baseWedgeIndex
 }
 
 function invertAngleSelection(
@@ -525,45 +476,18 @@ function invertAngleSelection(
   }
 }
 
-function getOppositeWedgeIndex(wedgeIndex: number) {
-  return (wedgeIndex + 2) % 4
-}
-
-function getWedgeSelection(
-  angleContext: DimensionAngleDraftContext,
-  wedgeIndex: number
-) {
-  const wedges = getAngleWedges(angleContext)
-  return (
-    wedges[wedgeIndex]?.selection ??
-    wedges[angleContext.baseWedgeIndex]?.selection
-  )
-}
-
 export function getDimensionAngleSelection(
   mousePoint: Coords2d,
   angleContext: DimensionAngleDraftContext
 ): DimensionAngleSelection {
-  const baseWedgeIndex = angleContext.baseWedgeIndex
-  const hoveredWedgeIndex = getHoveredWedgeIndex(mousePoint, angleContext)
-  const baseSelection = getWedgeSelection(angleContext, baseWedgeIndex)
+  const hoveredSelection = getHoveredAngleSelection(mousePoint, angleContext)
+  const oppositeBaseSector = ((angleContext.baseSelection.sector + 1) % 4) + 1
 
-  if (
-    baseSelection &&
-    hoveredWedgeIndex === getOppositeWedgeIndex(baseWedgeIndex)
-  ) {
-    return invertAngleSelection(baseSelection)
+  if (hoveredSelection.sector === oppositeBaseSector) {
+    return invertAngleSelection(angleContext.baseSelection)
   }
 
-  const hoveredSelection = getWedgeSelection(angleContext, hoveredWedgeIndex)
-  if (hoveredSelection) {
-    return hoveredSelection
-  }
-
-  return {
-    sector: 1,
-    inverse: false,
-  }
+  return hoveredSelection
 }
 
 function getDimensionAngleDegrees(

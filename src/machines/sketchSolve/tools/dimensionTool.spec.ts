@@ -216,7 +216,10 @@ describe('dimensionTool angle selection', () => {
     line1Id: 11,
     ...lineDirections,
     vertex: [0, 0],
-    baseWedgeIndex: 0,
+    baseSelection: {
+      sector: 1,
+      inverse: false,
+    },
   }
 
   it('maps cursor sectors relative to the clicked rays', () => {
@@ -238,7 +241,7 @@ describe('dimensionTool angle selection', () => {
     })
   })
 
-  it('uses inverse when the visual wedge is opposite the directed KCL sector', () => {
+  it('uses inverse when the visible region is opposite the directed KCL sector', () => {
     const clockwiseContext: DimensionAngleDraftContext = {
       line0Id: 10,
       line1Id: 11,
@@ -248,7 +251,10 @@ describe('dimensionTool angle selection', () => {
       ] as Coords2d,
       line1Direction: [1, 0],
       vertex: [0, 0],
-      baseWedgeIndex: 0,
+      baseSelection: {
+        sector: 1,
+        inverse: true,
+      },
     }
 
     expect(getDimensionAngleSelection([1, 0.25], clockwiseContext)).toEqual({
@@ -264,6 +270,25 @@ describe('dimensionTool angle selection', () => {
       inverse: true,
     })
     expect(getDimensionAngleSelection([-1, -0.3], clockwiseContext)).toEqual({
+      sector: 1,
+      inverse: false,
+    })
+  })
+
+  it('keeps the clicked sector and flips inverse when hovering the opposite side', () => {
+    const southLineContext: DimensionAngleDraftContext = {
+      line0Id: 10,
+      line1Id: 11,
+      line0Direction: [1, 0],
+      line1Direction: [0, -1],
+      vertex: [0, 0],
+      baseSelection: {
+        sector: 1,
+        inverse: true,
+      },
+    }
+
+    expect(getDimensionAngleSelection([-1, 1], southLineContext)).toEqual({
       sector: 1,
       inverse: false,
     })
