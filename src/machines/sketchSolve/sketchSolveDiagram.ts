@@ -319,16 +319,7 @@ function getPreparedApplyForConstraintTool(
   const objects =
     context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return getConstraintToolPreparedApply(
-    toolName,
-    context.selectedIds,
-    objects,
-    {
-      defaultLengthUnit: baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-      ),
-    }
-  )
+  return getConstraintToolPreparedApply(toolName, context.selectedIds, objects)
 }
 
 function isConstraintToolName(
@@ -391,9 +382,6 @@ export const sketchSolveMachine = setup({
           selectedIds: context.selectedIds,
           objects:
             context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
-          defaultLengthUnit: baseUnitToNumericSuffix(
-            context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-          ),
           rustContext: context.rustContext,
           sketchId: context.sketchId,
           settings: jsAppSettings(context.kclManager.systemDeps.settings),

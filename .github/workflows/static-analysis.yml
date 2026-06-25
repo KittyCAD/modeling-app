@@ -128,4 +128,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
       - name: Run typos
-        uses: crate-ci/typos@v1.47.0
+        uses: crate-ci/typos@v1.47.2
