@@ -3,7 +3,6 @@ import type {
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
-import env from '@src/env'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
 import { promiseFactory, uuidv4 } from '@src/lib/utils'
