@@ -195,11 +195,7 @@ impl Context {
             .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id: Some(checkpoint_id),
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, Some(checkpoint_id));
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize execute mock result. {TRUE_BUG} Details: {e}"))?)
@@ -240,12 +236,8 @@ impl Context {
             .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
-        let result = kcl_lib::front::NewSketchOutcome {
-            source_delta,
-            scene_graph_delta,
-            sketch_id,
-            checkpoint_id: Some(checkpoint_id),
-        };
+        let result =
+            kcl_lib::front::NewSketchOutcome::new(source_delta, scene_graph_delta, sketch_id, Some(checkpoint_id));
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize new sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -286,10 +278,7 @@ impl Context {
             .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
-        let result = kcl_lib::front::EditSketchOutcome {
-            scene_graph_delta,
-            checkpoint_id: Some(checkpoint_id),
-        };
+        let result = kcl_lib::front::EditSketchOutcome::new(scene_graph_delta, Some(checkpoint_id));
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit sketch result. {TRUE_BUG} Details: {e}"))?)
@@ -390,11 +379,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add segment result. {TRUE_BUG} Details: {e}"))?)
@@ -461,11 +446,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
@@ -513,11 +494,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize delete objects result. {TRUE_BUG} Details: {e}"))?)
@@ -562,11 +539,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
@@ -612,11 +585,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
@@ -682,11 +651,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint label result. {TRUE_BUG} Details: {e}"))?)
@@ -904,11 +869,7 @@ impl Context {
         } else {
             None
         };
-        let result = kcl_lib::front::SketchMutationOutcome {
-            source_delta,
-            scene_graph_delta,
-            checkpoint_id,
-        };
+        let result = kcl_lib::front::SketchMutationOutcome::new(source_delta, scene_graph_delta, checkpoint_id);
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize chain segment result. {TRUE_BUG} Details: {e}"))?)

@@ -1,7 +1,18 @@
 //! An API for controlling the KCL interpreter from the frontend.
 
-#![allow(async_fn_in_trait)]
+use std::ops::Deref;
+use std::ops::DerefMut;
 
+pub use kcl_api::Error;
+pub use kcl_api::File;
+pub use kcl_api::FileId;
+pub use kcl_api::LifecycleApi;
+pub use kcl_api::ObjectId;
+pub use kcl_api::ProjectId;
+pub use kcl_api::Result;
+pub use kcl_api::SketchCheckpointId;
+pub use kcl_api::SourceDelta;
+pub use kcl_api::Version;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Deserialize;
@@ -14,50 +25,60 @@ use crate::engine::PlaneName;
 use crate::execution::ArtifactId;
 use crate::pretty::NumericSuffix;
 
-pub trait LifecycleApi {
-    async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
-    async fn get_project(&self, project: ProjectId) -> Result<Vec<File>>;
-    async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
-    async fn get_file(&self, project: ProjectId, file: FileId) -> Result<File>;
-    async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
-    // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
-    async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
-    async fn switch_file(&self, project: ProjectId, file: FileId) -> Result<()>;
-    async fn refresh(&self, project: ProjectId) -> Result<()>;
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
+#[serde(transparent)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
-    pub project: ProjectId,
-    pub file: FileId,
-    pub version: Version,
-
-    pub objects: Vec<Object>,
-    pub settings: Settings,
-    pub sketch_mode: Option<ObjectId>,
+    pub api: kcl_api::SceneGraph<Settings, Object>,
 }
 
 impl SceneGraph {
     pub fn empty(project: ProjectId, file: FileId, version: Version) -> Self {
         SceneGraph {
-            project,
-            file,
-            version,
-            objects: Vec::new(),
-            settings: Default::default(),
-            sketch_mode: None,
+            api: kcl_api::SceneGraph::empty(project, file, version),
+        }
+    }
+
+    pub fn new(
+        project: ProjectId,
+        file: FileId,
+        version: Version,
+        objects: Vec<Object>,
+        settings: Settings,
+        sketch_mode: Option<ObjectId>,
+    ) -> Self {
+        SceneGraph {
+            api: kcl_api::SceneGraph {
+                project,
+                file,
+                version,
+                objects,
+                settings,
+                sketch_mode,
+            },
         }
     }
 }
 
+impl Deref for SceneGraph {
+    type Target = kcl_api::SceneGraph<Settings, Object>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.api
+    }
+}
+
+impl DerefMut for SceneGraph {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.api
+    }
+}
+
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[serde(transparent)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraphDelta {
-    pub new_graph: SceneGraph,
-    pub new_objects: Vec<ObjectId>,
-    pub invalidates_ids: bool,
-    pub exec_outcome: ExecOutcome,
+    pub api: kcl_api::SceneGraphDelta<SceneGraph, ExecOutcome>,
 }
 
 impl SceneGraphDelta {
@@ -68,92 +89,163 @@ impl SceneGraphDelta {
         exec_outcome: ExecOutcome,
     ) -> Self {
         SceneGraphDelta {
-            new_graph,
-            new_objects,
-            invalidates_ids,
-            exec_outcome,
+            api: kcl_api::SceneGraphDelta::new(new_graph, new_objects, invalidates_ids, exec_outcome),
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct SourceDelta {
-    pub text: String,
+impl Deref for SceneGraphDelta {
+    type Target = kcl_api::SceneGraphDelta<SceneGraph, ExecOutcome>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.api
+    }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ts_rs::TS)]
-pub struct SketchCheckpointId(u64);
-
-impl SketchCheckpointId {
-    pub(crate) fn new(n: u64) -> Self {
-        Self(n)
+impl DerefMut for SceneGraphDelta {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.api
     }
 }
 
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[serde(transparent)]
 #[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
 pub struct SketchMutationOutcome {
-    pub source_delta: SourceDelta,
-    pub scene_graph_delta: SceneGraphDelta,
-    pub checkpoint_id: Option<SketchCheckpointId>,
+    pub api: kcl_api::SketchMutationOutcome<SceneGraphDelta>,
 }
 
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct NewSketchOutcome {
-    pub source_delta: SourceDelta,
-    pub scene_graph_delta: SceneGraphDelta,
-    pub sketch_id: ObjectId,
-    pub checkpoint_id: Option<SketchCheckpointId>,
-}
-
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct EditSketchOutcome {
-    pub scene_graph_delta: SceneGraphDelta,
-    pub checkpoint_id: Option<SketchCheckpointId>,
-}
-
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct RestoreSketchCheckpointOutcome {
-    pub source_delta: SourceDelta,
-    pub scene_graph_delta: SceneGraphDelta,
-}
-
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
-pub struct ObjectId(pub usize);
-
-impl ObjectId {
-    pub fn predecessor(self) -> Option<Self> {
-        self.0.checked_sub(1).map(ObjectId)
+impl SketchMutationOutcome {
+    pub fn new(
+        source_delta: SourceDelta,
+        scene_graph_delta: SceneGraphDelta,
+        checkpoint_id: Option<SketchCheckpointId>,
+    ) -> Self {
+        SketchMutationOutcome {
+            api: kcl_api::SketchMutationOutcome {
+                source_delta,
+                scene_graph_delta,
+                checkpoint_id,
+            },
+        }
     }
 }
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
-pub struct Version(pub usize);
+impl Deref for SketchMutationOutcome {
+    type Target = kcl_api::SketchMutationOutcome<SceneGraphDelta>;
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiProjectId")]
-pub struct ProjectId(pub usize);
+    fn deref(&self) -> &Self::Target {
+        &self.api
+    }
+}
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFileId")]
-pub struct FileId(pub usize);
+impl DerefMut for SketchMutationOutcome {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.api
+    }
+}
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFile")]
-pub struct File {
-    pub id: FileId,
-    pub path: String,
-    pub text: String,
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[serde(transparent)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct NewSketchOutcome {
+    pub api: kcl_api::NewSketchOutcome<SceneGraphDelta>,
+}
+
+impl NewSketchOutcome {
+    pub fn new(
+        source_delta: SourceDelta,
+        scene_graph_delta: SceneGraphDelta,
+        sketch_id: ObjectId,
+        checkpoint_id: Option<SketchCheckpointId>,
+    ) -> Self {
+        NewSketchOutcome {
+            api: kcl_api::NewSketchOutcome {
+                source_delta,
+                scene_graph_delta,
+                sketch_id,
+                checkpoint_id,
+            },
+        }
+    }
+}
+
+impl Deref for NewSketchOutcome {
+    type Target = kcl_api::NewSketchOutcome<SceneGraphDelta>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.api
+    }
+}
+
+impl DerefMut for NewSketchOutcome {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.api
+    }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[serde(transparent)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct EditSketchOutcome {
+    pub api: kcl_api::EditSketchOutcome<SceneGraphDelta>,
+}
+
+impl EditSketchOutcome {
+    pub fn new(scene_graph_delta: SceneGraphDelta, checkpoint_id: Option<SketchCheckpointId>) -> Self {
+        EditSketchOutcome {
+            api: kcl_api::EditSketchOutcome {
+                scene_graph_delta,
+                checkpoint_id,
+            },
+        }
+    }
+}
+
+impl Deref for EditSketchOutcome {
+    type Target = kcl_api::EditSketchOutcome<SceneGraphDelta>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.api
+    }
+}
+
+impl DerefMut for EditSketchOutcome {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.api
+    }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[serde(transparent)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct RestoreSketchCheckpointOutcome {
+    pub api: kcl_api::RestoreSketchCheckpointOutcome<SceneGraphDelta>,
+}
+
+impl RestoreSketchCheckpointOutcome {
+    pub fn new(source_delta: SourceDelta, scene_graph_delta: SceneGraphDelta) -> Self {
+        RestoreSketchCheckpointOutcome {
+            api: kcl_api::RestoreSketchCheckpointOutcome {
+                source_delta,
+                scene_graph_delta,
+            },
+        }
+    }
+}
+
+impl Deref for RestoreSketchCheckpointOutcome {
+    type Target = kcl_api::RestoreSketchCheckpointOutcome<SceneGraphDelta>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.api
+    }
+}
+
+impl DerefMut for RestoreSketchCheckpointOutcome {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.api
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
@@ -336,63 +428,3 @@ pub enum Expr {
     Var(Number),
     Variable(String),
 }
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct Error {
-    pub msg: String,
-}
-
-impl Error {
-    pub fn file_id_in_use(id: FileId, path: &str) -> Self {
-        Error {
-            msg: format!("File ID already in use: {id:?}, currently used for `{path}`"),
-        }
-    }
-
-    pub fn file_id_not_found(project_id: ProjectId, file_id: FileId) -> Self {
-        Error {
-            msg: format!("File ID not found in project: {file_id:?}, project: {project_id:?}"),
-        }
-    }
-
-    pub fn bad_project(found: ProjectId, expected: Option<ProjectId>) -> Self {
-        let msg = match expected {
-            Some(expected) => format!("Project ID mismatch found: {found:?}, expected: {expected:?}"),
-            None => format!("No open project, found: {found:?}"),
-        };
-        Error { msg }
-    }
-
-    pub fn bad_version(found: Version, expected: Version) -> Self {
-        Error {
-            msg: format!("Version mismatch found: {found:?}, expected: {expected:?}"),
-        }
-    }
-
-    pub fn bad_file(found: FileId, expected: Option<FileId>) -> Self {
-        let msg = match expected {
-            Some(expected) => format!("File ID mismatch found: {found:?}, expected: {expected:?}"),
-            None => format!("File ID not found: {found:?}"),
-        };
-        Error { msg }
-    }
-
-    pub fn serialize(e: impl serde::ser::Error) -> Self {
-        Error {
-            msg: format!(
-                "Could not serialize successful KCL result. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"
-            ),
-        }
-    }
-
-    pub fn deserialize(name: &str, e: impl serde::de::Error) -> Self {
-        Error {
-            msg: format!(
-                "Could not deserialize argument `{name}`. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"
-            ),
-        }
-    }
-}
-
-pub type Result<T> = std::result::Result<T, Error>;

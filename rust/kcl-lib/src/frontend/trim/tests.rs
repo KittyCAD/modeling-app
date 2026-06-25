@@ -2924,7 +2924,7 @@ async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Objec
         );
     }
 
-    scene_graph.objects
+    scene_graph.api.objects
 }
 
 fn find_first_line_id(objects: &[crate::frontend::api::Object]) -> crate::frontend::api::ObjectId {
