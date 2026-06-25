@@ -9,6 +9,7 @@ import {
 import {
   Annotation,
   Compartment,
+  type EditorState,
   type Extension,
   StateEffect,
   Transaction,
@@ -40,6 +41,13 @@ const globalHistoryRequest = StateEffect.define<HistoryRequest>()
 type GlobalHistoryDispatchOptions = {
   shouldForwardToLocalHistory: boolean
 }
+
+type HistoryCommandTarget = {
+  state: EditorState
+  dispatch: (transaction: Transaction) => void
+}
+
+type HistoryCommand = (target: HistoryCommandTarget) => boolean
 
 /**
  * A locked-down CodeMirror EditorView that is meant for
@@ -228,12 +236,10 @@ export class HistoryView {
       return false
     }
 
-    this.suppressNextLocalGlobalHistoryRequest = true
-    const restored = redo(this.localHistoryTargetView)
-    if (!restored) {
-      this.suppressNextLocalGlobalHistoryRequest = false
-    }
-    return restored
+    return this.synchronizeLocalHistoryTargetAfterDirectGlobalCommand(
+      this.localHistoryTargetView,
+      redo
+    )
   }
 
   /**
@@ -246,12 +252,56 @@ export class HistoryView {
       return false
     }
 
+    return this.synchronizeLocalHistoryTargetAfterDirectGlobalCommand(
+      this.localHistoryTargetView,
+      undo
+    )
+  }
+
+  synchronizeLocalHistoryStateAfterDirectGlobalRedo(state: EditorState) {
+    return this.synchronizeLocalHistoryStateAfterDirectGlobalCommand(
+      state,
+      redo
+    )
+  }
+
+  synchronizeLocalHistoryStateAfterDirectGlobalUndo(state: EditorState) {
+    return this.synchronizeLocalHistoryStateAfterDirectGlobalCommand(
+      state,
+      undo
+    )
+  }
+
+  private synchronizeLocalHistoryStateAfterDirectGlobalCommand(
+    state: EditorState,
+    command: HistoryCommand
+  ) {
+    let synchronizedState = state
+    const target = {
+      get state() {
+        return synchronizedState
+      },
+      dispatch(transaction: Transaction) {
+        synchronizedState = transaction.state
+      },
+    }
+    const restored = this.synchronizeLocalHistoryTargetAfterDirectGlobalCommand(
+      target,
+      command
+    )
+    return restored ? synchronizedState : undefined
+  }
+
+  private synchronizeLocalHistoryTargetAfterDirectGlobalCommand(
+    target: HistoryCommandTarget,
+    command: HistoryCommand
+  ) {
     this.suppressNextLocalGlobalHistoryRequest = true
-    const restored = undo(this.localHistoryTargetView)
-    if (!restored) {
+    try {
+      return command(target)
+    } finally {
       this.suppressNextLocalGlobalHistoryRequest = false
     }
-    return restored
   }
 
   /** Extensions attached to a local history target */

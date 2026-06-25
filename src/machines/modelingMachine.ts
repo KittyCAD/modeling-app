@@ -197,7 +197,7 @@ import {
 import type {
   Artifact,
   ArtifactId,
-  KclValue,
+  KclValueView,
   PathToNode,
   PipeExpression,
   Program,
@@ -3792,7 +3792,7 @@ export const modelingMachine = setup({
           artifact?.type === 'segment' || artifact?.type === 'solid2d'
             ? artifact?.pathId
             : plane?.pathIds[0]
-        let sketch: KclValue | null = null
+        let sketch: KclValueView | null = null
         let planeVar: Plane | null = null
 
         for (const variable of Object.values(kclManager.execState.variables)) {

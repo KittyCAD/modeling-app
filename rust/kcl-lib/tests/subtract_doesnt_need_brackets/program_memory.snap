@@ -4,8 +4,7 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
 ---
 {
   "cube": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "part001": {
     "type": "Solid",
