@@ -148,9 +148,7 @@ type DraftRuntime = {
 type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
 
 const SECTOR_EPSILON = 1e-9
-const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies ReadonlyArray<
-  AngleSector
->
+const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies ReadonlyArray<AngleSector>
 const ANGLE_SECTOR_PROMPT_TOAST_ID = 'dimension-tool-angle-sector-prompt'
 
 function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
