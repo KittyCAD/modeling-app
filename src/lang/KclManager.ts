@@ -3058,6 +3058,57 @@ export class KclManager extends File {
     this.restoredEditorHistoryOnLastFileSwitch = false
     return this._globalHistoryView.synchronizeLocalHistoryAfterDirectGlobalUndo()
   }
+  synchronizeCachedEditorHistoryAfterDirectGlobalReplay({
+    filePath,
+    direction,
+    previousContent,
+    nextContent,
+  }: {
+    filePath: string
+    direction: 'undo' | 'redo'
+    previousContent: string | null
+    nextContent: string | null
+  }) {
+    if (
+      filePath === this.path ||
+      previousContent === null ||
+      nextContent === null
+    ) {
+      return false
+    }
+
+    const cachedState = this.editorStatesByPath.get(filePath)
+    if (
+      !cachedState ||
+      !isCodeTheSame(cachedState.doc.toString(), previousContent)
+    ) {
+      return false
+    }
+
+    const synchronizedState =
+      direction === 'undo'
+        ? this._globalHistoryView.synchronizeLocalHistoryStateAfterDirectGlobalUndo(
+            cachedState
+          )
+        : this._globalHistoryView.synchronizeLocalHistoryStateAfterDirectGlobalRedo(
+            cachedState
+          )
+    if (
+      !synchronizedState ||
+      !isCodeTheSame(synchronizedState.doc.toString(), nextContent)
+    ) {
+      return false
+    }
+
+    this.editorStatesByPath.set(filePath, synchronizedState)
+    if (this.pendingRecoverySnapshot?.path === filePath) {
+      clearTimeout(this.timeoutRecoverySnapshot)
+      this.timeoutRecoverySnapshot = undefined
+      this.pendingRecoverySnapshot = null
+    }
+    clearRecoverySnapshot(filePath)
+    return true
+  }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
     this.pendingDirectSketchHistoryEntries = []

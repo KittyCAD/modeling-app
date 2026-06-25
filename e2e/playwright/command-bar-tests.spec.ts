@@ -11,6 +11,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     page,
     homePage,
     toolbar,
+    scene,
+    editor,
     cmdBar,
   }) => {
     await page.addInitScript(async () => {
@@ -34,12 +36,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
-
-    // Click the line of code for xLine.
-    await page.getByText(`startProfile(at = [-10, -10])`).click()
-
-    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
-    await page.waitForTimeout(200)
+    await scene.settled()
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
@@ -53,7 +50,19 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       },
       highlightedHeaderArg: 'Profiles',
     })
+    await editor.selectText('startProfile(at = [-10, -10])')
     await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'length',
+    })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
