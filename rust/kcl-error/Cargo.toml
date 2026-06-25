@@ -18,6 +18,12 @@ ts-rs = { version = "12.0.1", features = [
   "no-serde-warnings",
   "serde-json-impl",
 ] }
+thiserror = "2.0.18"
+pyo3 = { workspace = true, optional = true }
+schemars = { workspace = true }
 
 [lints]
 workspace = true
+
+[features]
+pyo3 = ["dep:pyo3"]
