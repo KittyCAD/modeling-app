@@ -1073,14 +1073,10 @@ impl Extrudable {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => {
-                    #[cfg(target_arch = "wasm32")]
-                    web_sys::console::log_1(&format!("SKETCH IS NONE EDGE TAG").into());
                     None
                 }
             },
             Extrudable::Edge(_) => {
-                #[cfg(target_arch = "wasm32")]
-                web_sys::console::log_1(&format!("SKETCH IS NONE EDGE").into());
                 None
             }
         }
