@@ -1,4 +1,3 @@
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   getSelectedSketchTarget,
@@ -8,6 +7,7 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import type {
   ModelingMachineEvent,
   modelingMachine,

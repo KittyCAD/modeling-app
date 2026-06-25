@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { createLiteral } from '@src/lang/create'
 import { useApp } from '@src/lib/boot'
 import {
@@ -15,6 +14,7 @@ import {
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'

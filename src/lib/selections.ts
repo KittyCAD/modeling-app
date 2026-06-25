@@ -781,13 +781,22 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
   if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
     return null
   }
-  const edgeSelection: ResolvedGraphSelection = {
-    artifact: edgeArtifact,
+
+  const segmentArtifact = getArtifactOfTypes(
+    { key: edgeArtifact.segId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(segmentArtifact)) {
+    return null
+  }
+
+  const segmentSelection: ResolvedGraphSelection = {
+    artifact: segmentArtifact,
     codeRef: graphSelection.codeRef,
   }
 
   const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    edgeSelection,
+    segmentSelection,
     artifactGraph
   )
   if (err(sourceSurfaceArtifact)) {
@@ -798,7 +807,7 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
     kclManager.ast,
     {
       ...graphSelection,
-      artifact: edgeArtifact,
+      artifact: segmentArtifact,
       codeRef: graphSelection.codeRef,
     },
     artifactGraph,
