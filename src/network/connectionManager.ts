@@ -65,6 +65,7 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
 } from '@src/network/utils'
+import { WebViewConnection } from '@src/network/webViewConnection'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -160,6 +161,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady,
     callbackOnUnitTestingConnection,
     rustContext,
+    streamElement,
   }: {
     width: number
     height: number
@@ -167,6 +169,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     rustContext?: RustContext
+    streamElement?: HTMLElement
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -204,15 +207,28 @@ export class ConnectionManager extends EventTarget {
     const handleMessage = this.createMessageHandler(rustContext)
 
     const url = this.generateWebsocketURL()
-    this.connection = new Connection({
-      url,
-      token,
-      handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
-      tearDownManager: this.tearDown.bind(this),
-      rejectPendingCommand: this.rejectPendingCommand.bind(this),
-      callbackOnUnitTestingConnection,
-      handleMessage,
-    })
+    this.connection =
+      streamElement && !callbackOnUnitTestingConnection
+        ? (new WebViewConnection({
+            width,
+            height,
+            token,
+            streamElement,
+            handleOnDataChannelMessage:
+              this.handleOnDataChannelMessage.bind(this),
+            tearDownManager: this.tearDown.bind(this),
+            rejectPendingCommand: this.rejectPendingCommand.bind(this),
+          }) as unknown as Connection)
+        : new Connection({
+            url,
+            token,
+            handleOnDataChannelMessage:
+              this.handleOnDataChannelMessage.bind(this),
+            tearDownManager: this.tearDown.bind(this),
+            rejectPendingCommand: this.rejectPendingCommand.bind(this),
+            callbackOnUnitTestingConnection,
+            handleMessage,
+          })
 
     // Nothing more to do when using a lite engine initialization
     if (callbackOnUnitTestingConnection) {

@@ -7,7 +7,11 @@ import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
-import { createCustomLogger, indexHtmlCsp } from './vite.base.config'
+import {
+  createCustomLogger,
+  indexHtmlCsp,
+  pluginKittyCadWebViewWasm,
+} from './vite.base.config'
 
 export default defineConfig(({ command, mode }) => {
   return {
@@ -90,6 +94,7 @@ export default defineConfig(({ command, mode }) => {
         },
       }),
       indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
+      pluginKittyCadWebViewWasm(),
       viteTsconfigPaths(),
       eslint(),
       version(),

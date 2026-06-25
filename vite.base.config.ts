@@ -1,5 +1,8 @@
+import fs from 'node:fs'
+import type { ServerResponse } from 'node:http'
 import { builtinModules } from 'node:module'
 import type { AddressInfo } from 'node:net'
+import path from 'node:path'
 import {
   type ConfigEnv,
   type Plugin,
@@ -11,6 +14,128 @@ import pkg from './package.json'
 
 const publicAssetWarning =
   'Assets in public directory cannot be imported from JavaScript'
+const webViewKclWasmFileName = 'kittycad-web-view-kcl_wasm_lib_bg.wasm'
+const webViewKclWasmUrlProperty = 'kcl_wasm_lib_bg_wasm_url'
+const webViewKclWasmPackagePath = [
+  'node_modules',
+  '@kittycad',
+  'kcl-wasm-lib',
+  'kcl_wasm_lib_bg.wasm',
+]
+const kittyCadLibBundleRegex =
+  /(?:^|[\\/])@kittycad[\\/]lib[\\/]dist[\\/](?:mjs[\\/]index\.js|cjs[\\/]index\.cjs)(?:\?.*)?$/
+const kittyCadLibWorkerPayloadRegex =
+  /([A-Za-z_$][\w$]*)\("([A-Za-z0-9+/=]+)",null,!1\)/
+const workerFetchSnippet =
+  'await fetch(new URL("/kcl_wasm_lib_bg.wasm",location.origin)).then((e=>e.arrayBuffer())).then((e=>hr({module_or_path:e})))'
+const workerFetchReplacement = `await fetch(e.${webViewKclWasmUrlProperty}??new URL("/${webViewKclWasmFileName}",location.origin)).then((e=>e.arrayBuffer())).then((e=>hr({module_or_path:e})))`
+
+const isKittyCadLibBundle = (id: string) => kittyCadLibBundleRegex.test(id)
+
+const rewriteKittyCadLibWorkerWasmUrl = (code: string, id: string) => {
+  const match = code.match(kittyCadLibWorkerPayloadRegex)
+  if (!match) {
+    throw new Error(`Could not find @kittycad/lib worker payload in ${id}`)
+  }
+
+  const [call, factoryName, encodedWorker] = match
+  const workerCode = Buffer.from(encodedWorker, 'base64').toString('utf8')
+  if (!workerCode.includes(workerFetchSnippet)) {
+    throw new Error(`Could not find @kittycad/lib wasm fetch in ${id}`)
+  }
+
+  const updatedWorkerCode = workerCode.replace(
+    workerFetchSnippet,
+    workerFetchReplacement
+  )
+  const updatedEncodedWorker = Buffer.from(updatedWorkerCode, 'utf8').toString(
+    'base64'
+  )
+
+  return code.replace(call, `${factoryName}("${updatedEncodedWorker}",null,!1)`)
+}
+
+export function pluginKittyCadWebViewWasm(): Plugin {
+  let root = process.cwd()
+  const wasmFilePath = () => path.resolve(root, ...webViewKclWasmPackagePath)
+
+  const writeWasmResponse = (res: ServerResponse) => {
+    const sourcePath = wasmFilePath()
+    if (!fs.existsSync(sourcePath)) {
+      res.statusCode = 404
+      res.end(`Missing ${sourcePath}`)
+      return
+    }
+
+    res.setHeader('Content-Type', 'application/wasm')
+    fs.createReadStream(sourcePath).pipe(res)
+  }
+
+  return {
+    name: 'kittycad-web-view-wasm',
+    enforce: 'pre',
+    config() {
+      return {
+        optimizeDeps: {
+          esbuildOptions: {
+            plugins: [
+              {
+                name: 'kittycad-web-view-wasm',
+                setup(build) {
+                  build.onLoad(
+                    {
+                      filter:
+                        /@kittycad[\\/]lib[\\/]dist[\\/](?:mjs[\\/]index\.js|cjs[\\/]index\.cjs)$/,
+                    },
+                    async (args) => {
+                      const code = await fs.promises.readFile(args.path, 'utf8')
+                      return {
+                        contents: rewriteKittyCadLibWorkerWasmUrl(
+                          code,
+                          args.path
+                        ),
+                        loader: 'js',
+                      }
+                    }
+                  )
+                },
+              },
+            ],
+          },
+        },
+      }
+    },
+    configResolved(config) {
+      root = config.root
+    },
+    transform(code, id) {
+      if (!isKittyCadLibBundle(id)) return
+      if (!kittyCadLibWorkerPayloadRegex.test(code)) return
+
+      return {
+        code: rewriteKittyCadLibWorkerWasmUrl(code, id),
+        map: null,
+      }
+    },
+    configureServer(server) {
+      server.middlewares.use(`/${webViewKclWasmFileName}`, (_req, res) => {
+        writeWasmResponse(res)
+      })
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(`/${webViewKclWasmFileName}`, (_req, res) => {
+        writeWasmResponse(res)
+      })
+    },
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: webViewKclWasmFileName,
+        source: fs.readFileSync(wasmFilePath()),
+      })
+    },
+  }
+}
 
 export function createCustomLogger() {
   const logger = createLogger()

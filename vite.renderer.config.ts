@@ -11,6 +11,7 @@ import {
   indexHtmlCsp,
   isIgnoredWatchPath,
   pluginExposeRenderer,
+  pluginKittyCadWebViewWasm,
 } from './vite.base.config'
 
 // https://vitejs.dev/config
@@ -41,6 +42,7 @@ export default defineConfig((env) => {
       }),
       indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),
+      pluginKittyCadWebViewWasm(),
       viteTsconfigPaths(),
       lezer(),
       // Needed for electron-builder (in npm run tronb:vite scripts)
