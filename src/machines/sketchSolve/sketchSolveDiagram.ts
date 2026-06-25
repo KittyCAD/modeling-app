@@ -20,7 +20,6 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import {
-  PointSegment,
   buildCircularSizeDimensionConstraintInput,
   getLinePoints,
   isArcSegment,
