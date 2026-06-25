@@ -124,6 +124,11 @@ export type DimensionAngleDraftContext = {
   baseSelection: DimensionAngleSelection
 }
 
+type DimensionAngleDirections = {
+  line0Direction: Coords2d
+  line1Direction: Coords2d
+}
+
 type DimensionAngleSelection = {
   sector: AngleSector
   inverse: boolean
@@ -185,10 +190,6 @@ function showAngleSectorPrompt() {
 
 function dismissAngleSectorPrompt() {
   toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
-}
-
-function getObjects(context: DimensionToolContext) {
-  return context.initialObjects
 }
 
 function getClickedRayDirection(
@@ -325,10 +326,7 @@ function isDirectionInSector(
 }
 
 export function getAngleSectorRays(
-  angleContext: Pick<
-    DimensionAngleDraftContext,
-    'line0Direction' | 'line1Direction'
-  >,
+  angleContext: DimensionAngleDirections,
   sector: AngleSector
 ): [Coords2d, Coords2d] {
   switch (sector) {
@@ -353,10 +351,7 @@ export function getAngleSectorRays(
 }
 
 function getVisibleAngleSelection(
-  angleContext: Pick<
-    DimensionAngleDraftContext,
-    'line0Direction' | 'line1Direction'
-  >,
+  angleContext: DimensionAngleDirections,
   sector: AngleSector
 ): DimensionAngleSelection {
   const [start, end] = getAngleSectorRays(angleContext, sector)
@@ -367,10 +362,7 @@ function getVisibleAngleSelection(
 }
 
 function getBaseAngleSelection(
-  angleContext: Pick<
-    DimensionAngleDraftContext,
-    'line0Direction' | 'line1Direction'
-  >,
+  angleContext: DimensionAngleDirections,
   line0Ray: RayDirection,
   line1Ray: RayDirection
 ): DimensionAngleSelection {
@@ -379,10 +371,7 @@ function getBaseAngleSelection(
 }
 
 function getVisibleAngleSectorRays(
-  angleContext: Pick<
-    DimensionAngleDraftContext,
-    'line0Direction' | 'line1Direction'
-  >,
+  angleContext: DimensionAngleDirections,
   selection: DimensionAngleSelection
 ): [Coords2d, Coords2d] {
   const [start, end] = getAngleSectorRays(angleContext, selection.sector)
@@ -726,9 +715,8 @@ function getClosestLineSelection(
   mousePoint: Coords2d,
   context: DimensionToolContext
 ): LineSelection | null {
-  const objects = getObjects(context)
   const currentSketchObjects = getCurrentSketchObjectsById(
-    objects,
+    context.initialObjects,
     context.sketchId
   )
   const closestLine = findClosestApiObjects(
@@ -759,17 +747,18 @@ function addDimensionListener({
 }) {
   const runtime = context.runtime
   runtime.active = true
+  const initialObjects = context.initialObjects
   const initialLineSelections = getInitialAngleLineSelections(
     context.initialSelectionIds,
     context.initialSelectionClickPoints,
-    getObjects(context)
+    initialObjects
   )
   if (initialLineSelections) {
     const [firstSelection, secondSelection] = initialLineSelections
     const angleContext = getDimensionAngleContext(
       firstSelection,
       secondSelection,
-      getObjects(context)
+      initialObjects
     )
     if (angleContext) {
       runtime.firstSelection = firstSelection
@@ -828,7 +817,7 @@ function addDimensionListener({
           const angleContext = getDimensionAngleContext(
             runtime.firstSelection,
             lineSelection,
-            getObjects(context)
+            initialObjects
           )
 
           if (angleContext) {
@@ -894,12 +883,6 @@ function removeDimensionListener({
   })
 }
 
-function deleteDraftEntities(self: {
-  _parent?: { send: (event: unknown) => void }
-}) {
-  sendParent(self, { type: 'delete draft entities' })
-}
-
 export const machine = setup({
   types: {
     context: {} as DimensionToolContext,
@@ -909,7 +892,8 @@ export const machine = setup({
   actions: {
     'add dimension listener': addDimensionListener,
     'remove dimension listener': removeDimensionListener,
-    'delete draft entities': ({ self }) => deleteDraftEntities(self),
+    'delete draft entities': ({ self }) =>
+      sendParent(self, { type: 'delete draft entities' }),
     'toast sketch solve error': ({ event }) => {
       toastSketchSolveError(event)
     },
