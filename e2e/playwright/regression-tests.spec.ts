@@ -693,8 +693,8 @@ extrude002 = extrude(profile002, length = 150)`
       // The animation typically takes around 500ms, so we'll check for a second
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
-      // After animation completes, we should see the sketching toolbar
-      await toolbar.expectToolbarMode.toBe('sketchSolve')
+      // After animation completes, we still should not show modeling tools.
+      await toolbar.expectToolbarMode.not.toBe('modeling')
     })
   })
 

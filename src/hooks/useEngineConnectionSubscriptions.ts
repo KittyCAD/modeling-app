@@ -4,12 +4,12 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import {
   getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
   normalizeEntityReference,
 } from '@src/lib/selections'
-import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
