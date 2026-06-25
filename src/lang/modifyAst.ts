@@ -1164,8 +1164,9 @@ export function insertRegionVariablesAndOffsetPathToNode({
     const labeledArgs = [
       createLabeledArg('segments', createArrayExpression(segmentExprs)),
     ]
-    // KCL uses omitted/-1 intersectionIndex as the default single-intersection case.
-    if (intersectionCount > 1 && intersectionIndex !== -1) {
+    // KCL defaults to -1, which resolves the last intersection.
+    // The engine reports that same case as the final zero-based index.
+    if (intersectionIndex !== intersectionCount - 1) {
       labeledArgs.push(
         createLabeledArg(
           'intersectionIndex',

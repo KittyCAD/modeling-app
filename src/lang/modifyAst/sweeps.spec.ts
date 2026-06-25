@@ -385,6 +385,48 @@ extrude001 = extrude(region001, length = 1)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should omit intersectionIndex when the engine selects the final intersection', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+            intersectionIndex: 2,
+            intersectionCount: 3,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(segments = [s.line1, s.line2])`
+      )
+      expect(newCode).not.toContain(`intersectionIndex`)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit an extrude call from a sketch region selection', async () => {
       const code = `${triangleRegion}
 region001 = region(point = [1mm, 1mm], sketch = s)
