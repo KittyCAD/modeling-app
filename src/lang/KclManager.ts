@@ -82,7 +82,6 @@ import {
   redoDepth,
   undoDepth,
 } from '@codemirror/commands'
-import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
@@ -777,7 +776,6 @@ export class KclManager extends File {
 
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
-  private readonly performanceTrackedTreeHighlighters = new WeakSet<object>()
   private readonly editorStatesByPath = new Map<string, EditorState>()
   private restoredEditorHistoryOnLastFileSwitch = false
   private disposeGlobalHistorySubscription: (() => boolean) | undefined
@@ -2745,49 +2743,6 @@ export class KclManager extends File {
     return this._copilotEnabled
   }
 
-  private overrideTreeHighlighterUpdateForPerformanceTracking() {
-    // @ts-ignore
-    this._editorView?.plugins.forEach((e) => {
-      let sawATreeDiff = false
-      // we cannot use <>.constructor.name since it will get destroyed
-      // when packaging the application.
-      const isTreeHighlightPlugin =
-        e?.value &&
-        e.value?.hasOwnProperty('tree') &&
-        e.value?.hasOwnProperty('decoratedTo') &&
-        e.value?.hasOwnProperty('decorations')
-      if (isTreeHighlightPlugin) {
-        if (this.performanceTrackedTreeHighlighters.has(e.value)) {
-          return
-        }
-        this.performanceTrackedTreeHighlighters.add(e.value)
-        let originalUpdate = e.value.update
-        // @ts-ignore
-        function performanceTrackingUpdate(args) {
-          /**
-           * TreeHighlighter.update will be called multiple times on start up.
-           * We do not want to track the highlight performance of an empty update.
-           * mark the syntax highlight one time when the new tree comes in with the
-           * initial code
-           */
-          const treeIsDifferent =
-            // @ts-ignore
-            !sawATreeDiff && this.tree !== syntaxTree(args.state)
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/willSyntaxHighlight')
-          }
-          // Call the original function
-          // @ts-ignore
-          originalUpdate.apply(this, [args])
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/didSyntaxHighlight')
-            sawATreeDiff = true
-          }
-        }
-        e.value.update = performanceTrackingUpdate
-      }
-    })
-  }
   get isAllTextSelected() {
     return this._isAllTextSelected
   }
@@ -2878,8 +2833,6 @@ export class KclManager extends File {
         Transaction.addToHistory.of(false),
       ],
     })
-    // themeCompartment.reconfigure above installs the syntax-highlighting extension
-    this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
   setEditorLineWrapping(shouldWrap: boolean) {
     this._editorView.dispatch({
