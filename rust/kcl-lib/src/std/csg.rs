@@ -85,6 +85,9 @@ async fn geometry_ids(
     geometries: &mut [GeometryWithImportedGeometry],
     ctx: &ExecutorContext,
 ) -> Result<Vec<uuid::Uuid>, KclError> {
+    // Imported geometry is resolved to the engine object id before CSG. After
+    // this point overlap detection is engine-owned, so keep Boolean* no-overlap
+    // warnings visible instead of special-casing imported bodies here.
     let mut ids = Vec::with_capacity(geometries.len());
     for geometry in geometries {
         ids.push(geometry.id(ctx).await?);

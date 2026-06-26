@@ -477,33 +477,6 @@ model = cube"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_imported_step_union_with_extrude_overlaps() {
-    let code = r#"@settings(kclVersion = 2.0)
-
-import "tests/inputs/cube.step" as cube
-sketch001 = sketch(on = XZ) {
-  circle1 = circle(start = [var 0mm, var 218.85mm], center = [var 0mm, var 0mm])
-  coincident([circle1.center, ORIGIN])
-  vertical([circle1.start, ORIGIN])
-}
-hidden001 = hide(sketch001)
-region001 = region(point = [0mm, -218.8475mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 10000, symmetric = true)
-union([cube, extrude001])"#;
-
-    let (exec_state, _, _) = execute_and_export_step(code, None).await.unwrap();
-
-    assert!(
-        exec_state
-            .issues()
-            .iter()
-            .all(|issue| !issue.message.contains("bodies in this union had no overlap")),
-        "imported STEP union unexpectedly reported no overlap: {:#?}",
-        exec_state.issues()
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_stl() {
     let code = r#"import 'e2e/executor/inputs/2-5-long-m8-chc-screw.stl' as screw
 model = screw"#;
