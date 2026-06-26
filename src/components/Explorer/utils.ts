@@ -9,6 +9,7 @@ import {
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
+import type { ProjectExplorerRowContextMenuItem } from '@src/registry/contracts/projectExplorer'
 import type { ReactNode } from 'react'
 
 /**
@@ -73,6 +74,7 @@ export interface FileExplorerRender extends FileExplorerRow {
 
 export interface FileExplorerRowContextMenuProps {
   itemRef: React.RefObject<HTMLElement | null>
+  row: FileExplorerRender
   onRename: () => void
   onDelete: () => void
   onOpenInNewWindow: () => void
@@ -80,6 +82,7 @@ export interface FileExplorerRowContextMenuProps {
   onCopy: () => void
   onPaste: () => void
   isCopying: boolean
+  rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
 }
 
 /**

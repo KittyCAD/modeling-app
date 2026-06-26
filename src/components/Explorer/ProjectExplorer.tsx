@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
@@ -45,6 +46,7 @@ import {
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -191,8 +193,12 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
+  useSignals()
   const { commands, registry, settings, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
+  const rowContextMenuItems = registry.signal(
+    projectExplorerRowContextMenuItemsValueSpec
+  ).value
   const { kclManager } = useSingletons()
   const isSystemIOIdle = useSelector(systemIOActor, (state) =>
     state.matches(SystemIOMachineStates.idle)
@@ -1586,6 +1592,7 @@ export const ProjectExplorer = ({
             isInteractionDisabled={isFileTreeInteractionDisabled}
             isExternalDragOver={isExternalDragOver}
             highlightedEntry={highlightedEntry}
+            rowContextMenuItems={rowContextMenuItems}
             onDeleteEnd={() => {
               setIsDeleting(false)
             }}

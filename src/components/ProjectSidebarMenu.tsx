@@ -23,6 +23,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import {
+  canRevealInFileExplorer,
+  revealInFileExplorer,
+} from '@src/lib/revealInFileExplorer'
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   findKeymapItemForCommand,
@@ -206,6 +210,7 @@ function ProjectMenuPopover({
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
+  const projectPath = project?.path
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const exportProjectZipCommandInfo = {
@@ -265,6 +270,21 @@ function ProjectMenuPopover({
           },
         },
         'break',
+        projectPath && canRevealInFileExplorer()
+          ? {
+              id: 'reveal-in-file-explorer',
+              Element: 'button',
+              children: (
+                <span
+                  className="flex-1"
+                  data-testid="project-sidebar-reveal-in-file-explorer"
+                >
+                  Reveal in File Explorer
+                </span>
+              ),
+              onClick: () => revealInFileExplorer(projectPath),
+            }
+          : null,
         {
           id: 'importFile',
           Element: 'button',
@@ -391,6 +411,7 @@ function ProjectMenuPopover({
       isDesktop,
       homeNavigationEnabled,
       cloudConflictMetadata,
+      projectPath,
     ]
   )
 
