@@ -3,11 +3,27 @@ import {
   canRevealInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
-import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import {
+  projectExplorerProjectMenuItemsValueSpec,
+  projectExplorerRowContextMenuItemsValueSpec,
+} from '@src/registry/contracts/projectExplorer'
 
 const projectExplorerExtension = defineRegistryItem({
   id: 'project-explorer',
   provides: [
+    provide(
+      projectExplorerProjectMenuItemsValueSpec,
+      {
+        id: 'project-explorer.project-menu.reveal-in-file-explorer',
+        order: 100,
+        label: 'Reveal in File Explorer',
+        dataTestId: 'project-sidebar-reveal-in-file-explorer',
+        isVisible: ({ projectPath }) =>
+          Boolean(projectPath) && canRevealInFileExplorer(),
+        onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
+      },
+      { key: 'project-explorer.project-menu.reveal-in-file-explorer' }
+    ),
     provide(
       projectExplorerRowContextMenuItemsValueSpec,
       {

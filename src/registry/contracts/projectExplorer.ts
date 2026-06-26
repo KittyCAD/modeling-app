@@ -24,12 +24,36 @@ export interface ProjectExplorerRowContextMenuItem {
   onSelect: (context: ProjectExplorerRowContextMenuItemContext) => void
 }
 
+export interface ProjectExplorerProjectMenuItemContext {
+  projectPath: string
+}
+
+export interface ProjectExplorerProjectMenuItem {
+  id: string
+  order?: number
+  label: ReactNode
+  dataTestId?: string
+  disabled?:
+    | boolean
+    | ((context: ProjectExplorerProjectMenuItemContext) => boolean)
+  isVisible?: (context: ProjectExplorerProjectMenuItemContext) => boolean
+  onSelect: (context: ProjectExplorerProjectMenuItemContext) => void
+}
+
 const byOrder = (
-  a: ProjectExplorerRowContextMenuItem,
-  b: ProjectExplorerRowContextMenuItem
+  a: ProjectExplorerRowContextMenuItem | ProjectExplorerProjectMenuItem,
+  b: ProjectExplorerRowContextMenuItem | ProjectExplorerProjectMenuItem
 ) => (a.order || 0) - (b.order || 0)
 
 export const projectExplorerContract = defineContract({
+  projectExplorerProjectMenuItemsValueSpec: defineValueSpec<
+    ProjectExplorerProjectMenuItem,
+    ProjectExplorerProjectMenuItem[]
+  >({
+    name: 'project-explorer-project-menu-items',
+    defaultValue: [],
+    combine: (items) => items.toSorted(byOrder),
+  }),
   projectExplorerRowContextMenuItemsValueSpec: defineValueSpec<
     ProjectExplorerRowContextMenuItem,
     ProjectExplorerRowContextMenuItem[]
@@ -40,5 +64,7 @@ export const projectExplorerContract = defineContract({
   }),
 })
 
-export const { projectExplorerRowContextMenuItemsValueSpec } =
-  projectExplorerContract
+export const {
+  projectExplorerProjectMenuItemsValueSpec,
+  projectExplorerRowContextMenuItemsValueSpec,
+} = projectExplorerContract

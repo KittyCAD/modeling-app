@@ -9,9 +9,14 @@ export function canRevealInFileExplorer() {
 
 export function revealInFileExplorer(path: string) {
   const electron = typeof window === 'undefined' ? undefined : window.electron
-  if (!electron) {
+  const showInFolder = electron?.showInFolder
+  if (typeof showInFolder !== 'function') {
     return
   }
 
-  void Promise.resolve(electron.showInFolder(path)).catch(reportRejection)
+  try {
+    void Promise.resolve(showInFolder(path)).catch(reportRejection)
+  } catch (error) {
+    reportRejection(error)
+  }
 }
