@@ -48,7 +48,8 @@ export function ClientSideFileDropper({
   const [isExternalDragOver, setIsExternalDragOver] = useState(false)
   const dragCounter = useRef(0)
   const { state } = useModelingContext()
-  const { sceneInfra, imageManager } = useSingletons()
+  const { kclManager } = useSingletons()
+  const { sceneInfra, imageManager } = kclManager
 
   const handleFileDrop = async (e: React.DragEvent) => {
     const files = e.dataTransfer.files

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 function makeSceneInfraForCallbacksTest() {
@@ -11,6 +12,7 @@ function makeSceneInfraForCallbacksTest() {
       subscribeToUnreliable: vi.fn(),
     } as any,
     Promise.resolve({} as any),
+    new ImageManager(),
     () => ({}) as any
   )
 }

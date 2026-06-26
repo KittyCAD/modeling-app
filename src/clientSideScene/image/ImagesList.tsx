@@ -17,7 +17,8 @@ export function ImagesList() {
     position: 'before' | 'after'
   } | null>(null)
   const { state: modelingState } = useModelingContext()
-  const { imageManager, sceneInfra } = useSingletons()
+  const { kclManager } = useSingletons()
+  const { imageManager, sceneInfra } = kclManager
   const isSketchMode =
     modelingState.matches('Sketch') || modelingState.matches('sketchSolveMode')
 

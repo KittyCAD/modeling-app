@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals-core'
 import type { IElectronAPI } from '@root/interface'
-import type { App } from '@src/lib/app'
 import { joinOSPaths } from '@src/lib/paths'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export const IMAGES_FOLDER_NAME = 'zds_images'
 const IMAGES_JSON_FILE_NAME = 'images.json'
@@ -28,7 +28,7 @@ interface ImagesJSON {
   images: ImageEntry[]
 }
 
-type SettingsActor = App['settingsActor']
+type SettingsActor = SettingsActorType
 
 export class ImageManager {
   static isSupportedImageFile(file: File): boolean {
@@ -116,7 +116,7 @@ export class ImageManager {
     if (!images) return
 
     const existingNames = new Set(images.list.map((img) => img.fileName))
-    const imageFileName = getUniqueImageFileName(
+    const imageFileName = await getUniqueImageFileName(
       file.name,
       existingNames,
       images.projectPath,
@@ -282,15 +282,15 @@ export function getImageFilePath(projectPath: string, imageFileName: string) {
   return joinOSPaths(getImageFolderPath(projectPath), imageFileName)
 }
 
-function getUniqueImageFileName(
+async function getUniqueImageFileName(
   fileName: string,
   existingNames: Set<string>,
   projectPath: string,
   electron: IElectronAPI
-): string {
+): Promise<string> {
   if (
     !existingNames.has(fileName) &&
-    !imageExistsOnDisk(fileName, projectPath, electron)
+    !(await imageExistsOnDisk(fileName, projectPath, electron))
   ) {
     return fileName
   }
@@ -302,7 +302,7 @@ function getUniqueImageFileName(
   let candidate = `${baseName}_${suffix}${extension}`
   while (
     existingNames.has(candidate) ||
-    imageExistsOnDisk(candidate, projectPath, electron)
+    (await imageExistsOnDisk(candidate, projectPath, electron))
   ) {
     suffix += 1
     candidate = `${baseName}_${suffix}${extension}`
@@ -310,10 +310,15 @@ function getUniqueImageFileName(
   return candidate
 }
 
-function imageExistsOnDisk(
+async function imageExistsOnDisk(
   fileName: string,
   projectPath: string,
   electron: IElectronAPI
 ) {
-  return electron.exists(getImageFilePath(projectPath, fileName))
+  try {
+    await electron.stat(getImageFilePath(projectPath, fileName))
+    return true
+  } catch {
+    return false
+  }
 }
