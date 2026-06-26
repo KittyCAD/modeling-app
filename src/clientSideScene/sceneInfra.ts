@@ -46,6 +46,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { signal } from '@preact/signals-core'
 import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
+import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
 import {
   IMAGE_TRANSFORM_CORNER,
   IMAGE_TRANSFORM_EDGE,
@@ -860,8 +861,15 @@ export class SceneInfra {
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
+    const intersect = this.raycastRing()[0]
 
-    if (this.onMouseDownSelection) {
+    if (isReferenceImageInteractionObject(intersect?.object)) {
+      this.selected = {
+        mouseDownVector,
+        object: intersect.object,
+        hasBeenDragged: false,
+      }
+    } else if (this.onMouseDownSelection) {
       // function is defined -> we're in new sketch-solve mode
       this.selected = this.onMouseDownSelection()
         ? {
@@ -872,7 +880,6 @@ export class SceneInfra {
         : null
     } else {
       // sketch-v1, this can be deleted if old sketch mode gets deprecated
-      const intersect = this.raycastRing()[0]
       if (intersect) {
         const intersectParent = intersect?.object?.parent as Group
         this.selected = intersectParent.isGroup
@@ -1072,6 +1079,27 @@ export class SceneInfra {
 function isAxisObject(object: Object3D | undefined): boolean {
   if (!object) return false
   return object.name === X_AXIS || object.name === Y_AXIS
+}
+
+function isImageTransformObject(object: Object3D | undefined): boolean {
+  const type = object?.userData?.type
+  return (
+    type === IMAGE_TRANSFORM_CORNER ||
+    type === IMAGE_TRANSFORM_EDGE ||
+    type === IMAGE_TRANSFORM_ROTATE
+  )
+}
+
+function isReferenceImageInteractionObject(
+  object: Object3D | undefined
+): boolean {
+  if (!object) return false
+  if (isImageTransformObject(object)) {
+    return Boolean(object.parent?.userData?.image)
+  }
+  return Boolean(
+    object.userData?.image && object.parent?.name === IMAGE_RENDERER_GROUP
+  )
 }
 
 function getIntersectionPriority(object: Object3D | undefined): number {
