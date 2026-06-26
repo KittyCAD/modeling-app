@@ -242,6 +242,47 @@ pub async fn coerce_extrude_targets(
         return Ok(vec![Extrudable::from(synthetic_sketch)]);
     }
 
+    // Edges behave like sketch segments: they can only be surface-extruded, they
+    // don't create caps, and they can't be mixed with sketches or faces. Enforce
+    // the same rules so these cases fail loudly instead of silently producing a
+    // surface (or silently ignoring `tagStart`/`tagEnd`).
+    let has_edge = extrudables
+        .iter()
+        .any(|e| matches!(e, Extrudable::Edge(_) | Extrudable::EdgeTag(_)));
+    if has_edge {
+        let has_non_edge = extrudables
+            .iter()
+            .any(|e| !matches!(e, Extrudable::Edge(_) | Extrudable::EdgeTag(_)));
+        if has_non_edge {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot extrude edges together with sketches or faces in the same call. Use separate `extrude()` calls.".to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if !matches!(body_type, BodyType::Surface) {
+            let kind_of_extrude = match body_type {
+                BodyType::Solid => "solid extrude",
+                BodyType::Surface => "surface extrude",
+                _ => "non-surface extrude",
+            };
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "You're trying to perform a {kind_of_extrude} on an edge, but edges can only be extruded with surface extrudes. To do a solid extrude, select a closed sketch region instead. To extrude these edges, do a surface extrude by using `bodyType = SURFACE` instead."
+                ),
+                vec![source_range],
+            )));
+        }
+
+        if tag_start.is_some() || tag_end.is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`tagStart` and `tagEnd` are not supported when extruding edges. Edge surface extrudes do not create start or end caps."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
+    }
+
     Ok(extrudables)
 }
 
@@ -1421,6 +1462,95 @@ mod tests {
         assert!(
             err.message()
                 .contains("`tagStart` and `tagEnd` are not supported when extruding sketch segments"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
+
+    /// `getOppositeEdge()` and the other edge getters return a raw edge as
+    /// `KclValue::Uuid`, which coerces to `Extrudable::Edge`.
+    fn edge_value(exec_state: &mut ExecState) -> KclValue {
+        KclValue::Uuid {
+            value: exec_state.next_uuid(),
+            meta: vec![],
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_rejects_solid_body_type() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let edge = edge_value(&mut exec_state);
+        let err = coerce_extrude_targets(
+            vec![edge],
+            BodyType::Solid,
+            None,
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("edges can only be extruded with surface extrudes"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_rejects_cap_tags() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let edge = edge_value(&mut exec_state);
+        let err = coerce_extrude_targets(
+            vec![edge],
+            BodyType::Surface,
+            Some(&TagDeclarator::new("cap_start")),
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("`tagStart` and `tagEnd` are not supported when extruding edges"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_rejects_mixing_with_face() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let edge = edge_value(&mut exec_state);
+        // The string "START" coerces to a `FaceTag`, i.e. a non-edge extrudable.
+        let face = KclValue::String {
+            value: "START".to_owned(),
+            meta: vec![],
+        };
+        let err = coerce_extrude_targets(
+            vec![edge, face],
+            BodyType::Surface,
+            None,
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("Cannot extrude edges together with sketches or faces"),
             "{err:?}"
         );
         ctx.close().await;
