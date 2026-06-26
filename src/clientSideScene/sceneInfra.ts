@@ -46,12 +46,12 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { signal } from '@preact/signals-core'
 import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
-import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
 import {
   IMAGE_TRANSFORM_CORNER,
   IMAGE_TRANSFORM_EDGE,
   IMAGE_TRANSFORM_ROTATE,
 } from '@src/clientSideScene/image/ImageTransformUI'
+import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
