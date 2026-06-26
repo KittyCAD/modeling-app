@@ -1,12 +1,12 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import { type ImageEntry } from '@src/clientSideScene/image/ImageManager'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useSingletons } from '@src/lib/boot'
 import { type DragEvent, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useSignals } from '@preact/signals-react/runtime'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import { type ImageEntry } from '@src/clientSideScene/image/ImageManager'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { OrthographicCamera, Vector3 } from 'three'
-import { useSingletons } from '@src/lib/boot'
 
 export function ImagesList() {
   useSignals()

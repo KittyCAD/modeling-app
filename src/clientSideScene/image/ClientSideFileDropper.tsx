@@ -1,10 +1,10 @@
-import { OrthographicCamera } from 'three'
-import { useRef, useState } from 'react'
-import toast from 'react-hot-toast'
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { useSingletons } from '@src/lib/boot'
+import { useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { OrthographicCamera } from 'three'
 
 type ModelingState = ReturnType<typeof useModelingContext>['state']
 

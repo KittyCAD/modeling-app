@@ -1,17 +1,17 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type {
   ImageEntry,
   ImageManager,
 } from '@src/clientSideScene/image/ImageManager'
-import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
-import type { Coords2d } from '@src/lang/util'
-import { Vector2 } from 'three'
 import {
   IMAGE_TRANSFORM_CORNER,
   IMAGE_TRANSFORM_EDGE,
   IMAGE_TRANSFORM_ROTATE,
   ImageTransformUI,
 } from '@src/clientSideScene/image/ImageTransformUI'
+import { IMAGE_RENDERER_GROUP } from '@src/clientSideScene/image/imageConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { Coords2d } from '@src/lang/util'
+import { Vector2 } from 'three'
 
 type DraggingInfo = {
   image: ImageEntry

@@ -44,6 +44,7 @@ import toast from 'react-hot-toast'
 export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ImagesList } from '@src/clientSideScene/image/ImagesList'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
@@ -85,7 +86,6 @@ import {
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useNavigate } from 'react-router-dom'
-import { ImagesList } from '@src/clientSideScene/image/ImagesList'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -348,7 +348,7 @@ export const FeatureTreePaneContents = memo(() => {
               liveActiveModuleId={liveActiveModuleId}
             />
           ))}
-          <ImagesList/>
+          <ImagesList />
         </>
       </section>
     </div>

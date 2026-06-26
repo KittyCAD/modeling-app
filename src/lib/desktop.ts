@@ -9,6 +9,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
+import { IMAGES_FOLDER_NAME } from '@src/clientSideScene/image/ImageManager'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
@@ -37,7 +38,6 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
-import { IMAGES_FOLDER_NAME } from '@src/clientSideScene/image/ImageManager'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,

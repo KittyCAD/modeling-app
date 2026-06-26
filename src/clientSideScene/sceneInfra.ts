@@ -44,8 +44,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { signal } from '@preact/signals-core'
-import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
 import type { ImageManager } from '@src/clientSideScene/image/ImageManager'
+import { ImageRenderer } from '@src/clientSideScene/image/ImageRenderer'
 import {
   IMAGE_TRANSFORM_CORNER,
   IMAGE_TRANSFORM_EDGE,

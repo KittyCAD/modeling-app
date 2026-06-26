@@ -17,6 +17,8 @@ const shouldAlwaysShowOverlays = () =>
 
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
+import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
+import { getImageTransformCursor } from '@src/clientSideScene/image/ImageTransformUI'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
@@ -38,8 +40,6 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
-import { getImageTransformCursor } from '@src/clientSideScene/image/ImageTransformUI'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
