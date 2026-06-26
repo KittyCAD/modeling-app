@@ -365,9 +365,8 @@ export class ToolbarFixture {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
     return this.featureTreePane
-      .locator('button:not([disabled])')
-      .filter({
-        has: this.page.getByText(operationName, { exact: true }),
+      .getByRole('button', {
+        name: operationName,
       })
       .nth(operationIndex)
   }

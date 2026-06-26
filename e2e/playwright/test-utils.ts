@@ -122,6 +122,12 @@ export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await page.getByTestId('custom-cmd-send-button').click()
 }
 
+export async function sendSceneCommand(page: Page, cmd: EngineCommand) {
+  await page.evaluate(async (cmd) => {
+    await window.engineCommandManager.sendSceneCommand(cmd)
+  }, cmd)
+}
+
 async function clearCommandLogs(page: Page) {
   await page.getByTestId('custom-cmd-input').fill('')
   await page.getByTestId('clear-commands').scrollIntoViewIfNeeded()

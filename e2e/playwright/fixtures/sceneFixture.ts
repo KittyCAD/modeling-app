@@ -9,6 +9,7 @@ import {
   getPixelRGBs,
   openAndClearDebugPanel,
   sendCustomCmd,
+  sendSceneCommand,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 
@@ -345,7 +346,7 @@ export class SceneFixture {
     await doAndWaitForImageDiff(
       this.page,
       () =>
-        sendCustomCmd(this.page, {
+        sendSceneCommand(this.page, {
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
