@@ -78,6 +78,36 @@ pub mod mass {
     }
 }
 
+pub mod area {
+    use kittycad_modeling_cmds::units::UnitArea;
+
+    pub fn kcmc_to_api(value: UnitArea) -> kcl_api::UnitArea {
+        match value {
+            UnitArea::SquareCentimeters => kcl_api::UnitArea::SquareCentimeters,
+            UnitArea::SquareDecimeters => kcl_api::UnitArea::SquareDecimeters,
+            UnitArea::SquareFeet => kcl_api::UnitArea::SquareFeet,
+            UnitArea::SquareInches => kcl_api::UnitArea::SquareInches,
+            UnitArea::SquareKilometers => kcl_api::UnitArea::SquareKilometers,
+            UnitArea::SquareMeters => kcl_api::UnitArea::SquareMeters,
+            UnitArea::SquareMillimeters => kcl_api::UnitArea::SquareMillimeters,
+            UnitArea::SquareYards => kcl_api::UnitArea::SquareYards,
+        }
+    }
+
+    pub fn api_to_kcmc(value: kcl_api::UnitArea) -> UnitArea {
+        match value {
+            kcl_api::UnitArea::SquareCentimeters => UnitArea::SquareCentimeters,
+            kcl_api::UnitArea::SquareDecimeters => UnitArea::SquareDecimeters,
+            kcl_api::UnitArea::SquareFeet => UnitArea::SquareFeet,
+            kcl_api::UnitArea::SquareInches => UnitArea::SquareInches,
+            kcl_api::UnitArea::SquareKilometers => UnitArea::SquareKilometers,
+            kcl_api::UnitArea::SquareMeters => UnitArea::SquareMeters,
+            kcl_api::UnitArea::SquareMillimeters => UnitArea::SquareMillimeters,
+            kcl_api::UnitArea::SquareYards => UnitArea::SquareYards,
+        }
+    }
+}
+
 pub mod angle {
     use kittycad_modeling_cmds::units::UnitAngle;
 
