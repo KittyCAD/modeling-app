@@ -1,7 +1,9 @@
 use kittycad_unit_conversion_derive::UnitConversion;
-use parse_display_derive::{Display, FromStr};
+use parse_display_derive::Display;
+use parse_display_derive::FromStr;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use ts_rs::TS;
 
 /// The valid types of length units.
