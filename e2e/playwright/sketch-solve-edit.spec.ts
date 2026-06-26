@@ -612,10 +612,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -820,10 +817,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -942,10 +936,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -1534,10 +1525,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -1865,10 +1853,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -1964,7 +1949,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         timeout: 10000,
       })
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
+        'Sketch',
         0
       )
       await solveSketchOperation.dblclick()
@@ -1978,24 +1963,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
-      const op = await toolbar.getFeatureTreeOperation(
-        'Horizontal Constraint',
-        0
-      )
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain('horizontal(line1)')
-    })
-
-    await test.step('Delete second constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
-      await caret.click()
-      const op = await toolbar.getFeatureTreeOperation(
+      await toolbar.openFeatureTreeOperationContextMenu(
         'Coincident Constraint',
         0
       )
-      await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain(
@@ -2003,9 +1974,18 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       )
     })
 
+    await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+      await toolbar.openFeatureTreeOperationContextMenu(
+        'Horizontal Constraint',
+        0
+      )
+      await page.getByRole('button', { name: 'Delete' }).click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('horizontal(line1)')
+    })
+
     await test.step('Delete sketch block from feature tree and verify code updates', async () => {
-      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-      await op.click({ button: 'right' })
+      await toolbar.openFeatureTreeOperationContextMenu('Sketch', 0)
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('sketch(on')
