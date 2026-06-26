@@ -13,9 +13,9 @@ use crate::ExecState;
 use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
-use crate::exec::KclValue;
 use crate::execution::ArtifactGraph;
 use crate::execution::EnvironmentRef;
+use crate::execution::KclValueView;
 use crate::execution::ModuleArtifactState;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
@@ -436,7 +436,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 #[must_use]
 fn common_snapshots(
     test: &Test,
-    variables: IndexMap<String, KclValue>,
+    variables: IndexMap<String, KclValueView>,
     #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
         IndexMap<Uuid, WebSocketResponse>,
     >,
@@ -6182,6 +6182,27 @@ mod beam_sweeps {
 }
 mod truss_bridge {
     const TEST_NAME: &str = "truss_bridge";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod gdt_face_api_edge_specifier {
+    const TEST_NAME: &str = "gdt_face_api_edge_specifier";
 
     /// Test parsing KCL.
     #[test]

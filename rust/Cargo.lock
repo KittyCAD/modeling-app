@@ -318,9 +318,9 @@ dependencies = [
 
 [[package]]
 name = "bon"
-version = "3.9.1"
+version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f47dbe92550676ee653353c310dfb9cf6ba17ee70396e1f7cf0a2020ad49b2fe"
+checksum = "a602c73c7b0148ec6d12af6fd5cc7a46e2eacc8878271a999abac56eed12f561"
 dependencies = [
  "bon-macros",
  "rustversion",
@@ -328,9 +328,9 @@ dependencies = [
 
 [[package]]
 name = "bon-macros"
-version = "3.9.1"
+version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "519bd3116aeeb42d5372c29d982d16d0170d3d4a5ed85fc7dd91642ffff3c67c"
+checksum = "6dee98b0db6a962de883bf5d20362dee4d7ca0d12fe39a7c6c73c844e1cd7c1f"
 dependencies = [
  "darling",
  "ident_case",
@@ -2273,8 +2273,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-api"
+version = "0.2.166"
+dependencies = [
+ "indexmap 2.14.0",
+ "kcl-error",
+ "kittycad-measurements",
+ "kittycad-unit-conversion-derive",
+ "parse-display 0.11.0",
+ "parse-display-derive 0.11.0",
+ "pyo3",
+ "pyo3-stub-gen",
+ "schemars",
+ "serde",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
 name = "kcl-bumper"
-version = "0.1.165"
+version = "0.1.166"
 dependencies = [
  "anyhow",
  "clap",
@@ -2285,7 +2303,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.165"
+version = "0.2.166"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2294,7 +2312,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.165"
+version = "0.1.166"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2304,17 +2322,20 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.165"
+version = "0.2.166"
 dependencies = [
  "miette",
+ "pyo3",
+ "schemars",
  "serde",
  "serde_json",
+ "thiserror 2.0.18",
  "ts-rs",
 ]
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.165"
+version = "0.2.166"
 dependencies = [
  "anyhow",
  "clap",
@@ -2335,7 +2356,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.165"
+version = "0.1.166"
 dependencies = [
  "anyhow",
  "clap",
@@ -2355,7 +2376,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.165"
+version = "0.2.166"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2363,6 +2384,7 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "base64",
+ "bon",
  "chrono",
  "clap",
  "console_error_panic_hook",
@@ -2388,6 +2410,7 @@ dependencies = [
  "insta",
  "itertools 0.14.0",
  "js-sys",
+ "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
@@ -2442,9 +2465,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.165"
+version = "0.3.166"
 dependencies = [
  "anyhow",
+ "kcl-api",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
@@ -2458,7 +2482,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.165"
+version = "0.2.166"
 dependencies = [
  "logos",
  "proptest",
@@ -2466,7 +2490,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.165"
+version = "0.2.166"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2478,22 +2502,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-to-core"
-version = "0.1.165"
-dependencies = [
- "anyhow",
- "async-trait",
- "indexmap 2.14.0",
- "kcl-lib",
- "kittycad",
- "kittycad-modeling-cmds",
- "tokio",
- "uuid",
-]
-
-[[package]]
 name = "kcl-wasm-lib"
-version = "0.1.165"
+version = "0.1.166"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2570,9 +2580,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.206"
+version = "0.2.207"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a35208abdee644c5a75a6becc4c95ab1590f994f9fb58ff97510c621bdf770b2"
+checksum = "265151af3861c2533fe88115dd8c6079ef8fdc49d2547df1b20db421e175f5ff"
 dependencies = [
  "anyhow",
  "bon",
@@ -3729,8 +3739,9 @@ dependencies = [
 
 [[package]]
 name = "pulp"
-version = "0.22.2"
-source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
+version = "0.22.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "046aa45b989642ec2e4717c8e72d677b13edd831a4d3b6cf37d9a3e54912496a"
 dependencies = [
  "bytemuck",
  "cfg-if",
@@ -3745,8 +3756,9 @@ dependencies = [
 
 [[package]]
 name = "pulp-wasm-simd-flag"
-version = "0.1.0"
-source = "git+https://github.com/KittyCAD/pulp.git?branch=modeling-app#305b28214e3d70de331deb53129f4193dd065cae"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d8f70e07b9c3962945a74e59ca1c511bba65b6419468acc217c457d93f3c740"
 
 [[package]]
 name = "pxfm"
@@ -5242,7 +5254,6 @@ dependencies = [
  "signal-hook-registry",
  "socket2 0.6.3",
  "tokio-macros",
- "tracing",
  "windows-sys 0.61.2",
 ]
 

@@ -80,6 +80,7 @@ pub mod test_server;
 mod thread;
 #[doc(hidden)]
 pub mod tooling;
+pub mod unit_conversion;
 mod unparser;
 mod util;
 #[cfg(test)]
@@ -90,7 +91,6 @@ mod wasm;
 
 pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
-pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
 pub use errors::CompilationIssue;
@@ -109,6 +109,7 @@ pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
+pub use execution::KclValueView;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
@@ -133,6 +134,7 @@ pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use modules::ModuleId;
 pub use parsing::ast::types::FormatOptions;
 pub use parsing::ast::types::NodePath;
+pub use parsing::ast::types::NodePathExt;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
 pub use settings::types::Configuration;
@@ -142,20 +144,32 @@ pub use unparser::recast_dir;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::walk_dir;
 
+pub mod engine_connection {
+    pub use crate::engine::engine_manager::EngineManager;
+    pub use crate::engine::engine_manager::EngineTransport;
+    pub use crate::engine::engine_manager::ResponseInformation;
+    pub use crate::engine::engine_manager::SocketHealth;
+    pub use crate::engine::engine_manager::TransportCloseError;
+}
+
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
+    pub use kcl_api::NumericType;
+    pub use kcl_api::UnitAngle;
+    pub use kcl_api::UnitLength;
+    pub use kcl_api::UnitType;
+
     pub use crate::execution::ArtifactCommand;
     pub use crate::execution::DefaultPlanes;
     pub use crate::execution::IdGenerator;
     pub use crate::execution::KclObjectKind;
     pub use crate::execution::KclValue;
+    pub use crate::execution::KclValueView;
     pub use crate::execution::Operation;
     pub use crate::execution::PlaneKind;
     pub use crate::execution::Sketch;
     pub use crate::execution::annotations::WarningLevel;
-    pub use crate::execution::types::NumericType;
-    pub use crate::execution::types::UnitType;
     pub use crate::util::RetryConfig;
     pub use crate::util::execute_with_retries;
 }
@@ -167,15 +181,6 @@ pub mod wasm_engine {
     pub use crate::engine::conn_wasm::ResponseContext;
     pub use crate::fs::wasm::FileManager;
     pub use crate::fs::wasm::FileSystemManager;
-}
-
-pub mod mock_engine {
-    pub use crate::engine::conn_mock::EngineConnection;
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub mod native_engine {
-    pub use crate::engine::conn::EngineConnection;
 }
 
 pub mod std_utils {

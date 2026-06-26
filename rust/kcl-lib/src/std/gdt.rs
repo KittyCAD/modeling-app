@@ -34,8 +34,10 @@ use crate::parsing::ast::types as ast;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
+use crate::std::edge;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
+use crate::unit_conversion::ToKcmc;
 
 // The engine exposes two text knobs:
 // - font_point_size controls the FreeType raster/bitmap texture resolution in pixels/points.
@@ -100,11 +102,19 @@ enum DistanceEntity {
     Face(Box<Face>),
     TaggedFace(Box<TagIdentifier>),
     Edge(EdgeReference),
+    Specifier(kcmc::shared::EdgeSpecifier),
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
+enum GdtEdgeReference {
+    Entity(EdgeReference),
+    Specifier(kcmc::shared::EdgeSpecifier),
+}
+
+#[derive(Debug, Clone)]
 struct DistanceEndpoint {
-    entity_id: uuid::Uuid,
+    entity_id: Option<uuid::Uuid>,
+    edge_reference: Option<kcmc::shared::EdgeSpecifier>,
     entity_pos: KPoint2d<f64>,
 }
 
@@ -127,7 +137,7 @@ enum GdtFeatureControlKind {
 
 struct GdtFeatureControlParams {
     faces: Vec<TagIdentifier>,
-    edges: Vec<EdgeReference>,
+    edges: Vec<GdtEdgeReference>,
     datums: Option<Vec<String>>,
     tolerance: TyF64,
     precision: Option<TyF64>,
@@ -207,15 +217,23 @@ impl DistanceEntity {
     async fn to_endpoint(&self, exec_state: &mut ExecState, args: &Args) -> Result<DistanceEndpoint, KclError> {
         match self {
             DistanceEntity::Face(face) => Ok(DistanceEndpoint {
-                entity_id: face.id,
+                entity_id: Some(face.id),
+                edge_reference: None,
                 entity_pos: KPoint2d { x: 0.5, y: 0.5 },
             }),
             DistanceEntity::TaggedFace(face) => Ok(DistanceEndpoint {
-                entity_id: args.get_adjacent_face_to_tag(exec_state, face, false).await?,
+                entity_id: Some(args.get_adjacent_face_to_tag(exec_state, face, false).await?),
+                edge_reference: None,
                 entity_pos: KPoint2d { x: 0.5, y: 0.5 },
             }),
             DistanceEntity::Edge(edge) => Ok(DistanceEndpoint {
-                entity_id: edge.get_engine_id(exec_state, args)?,
+                entity_id: Some(edge.get_engine_id(exec_state, args)?),
+                edge_reference: None,
+                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+            }),
+            DistanceEntity::Specifier(edge_reference) => Ok(DistanceEndpoint {
+                entity_id: None,
+                edge_reference: Some(edge_reference.clone()),
                 entity_pos: KPoint2d { x: 0.5, y: 0.0 },
             }),
         }
@@ -233,12 +251,64 @@ impl<'a> FromKclValue<'a> for DistanceEntity {
     }
 }
 
-fn distance_entity_type() -> RuntimeType {
-    RuntimeType::Union(vec![
-        RuntimeType::face(),
-        RuntimeType::tagged_face(),
-        RuntimeType::edge(),
-    ])
+async fn parse_distance_entity_arg(
+    arg_name: &str,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<DistanceEntity>, KclError> {
+    let Some(value): Option<KclValue> = args.get_kw_arg_opt(arg_name, &RuntimeType::any(), exec_state)? else {
+        return Ok(None);
+    };
+
+    if edge::is_edge_specifier_object(&value) {
+        let unresolved = edge::parse_edge_specifier_value(&value, args)?;
+        let edge_reference = edge::resolve_edge_specifier_with_face_tags(&unresolved, exec_state, args).await?;
+        return Ok(Some(DistanceEntity::Specifier(edge_reference)));
+    }
+
+    DistanceEntity::from_kcl_val(&value)
+        .map(Some)
+        .ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                format!(
+                    "`{arg_name}` must be a face, tagged face, tagged edge, edge UUID, or edge specifier object (e.g. {{ sideFaces = [...], endFaces = [...], index = 0 }})"
+                ),
+                vec![args.source_range],
+            ))
+        })
+}
+
+async fn parse_gdt_edges_arg(exec_state: &mut ExecState, args: &Args) -> Result<Vec<GdtEdgeReference>, KclError> {
+    // Face API edge specifiers are object-shaped payloads, so keep the runtime type
+    // broad here and validate each element below. This mirrors fillet/chamfer.
+    let Some(edges): Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?
+    else {
+        return Ok(Vec::new());
+    };
+
+    if edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "`edges` must contain at least one edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut parsed_edges = Vec::with_capacity(edges.len());
+    for edge_value in &edges {
+        if edge::is_edge_specifier_object(edge_value) {
+            let unresolved = edge::parse_edge_specifier_value(edge_value, args)?;
+            let edge_reference = edge::resolve_edge_specifier_with_face_tags(&unresolved, exec_state, args).await?;
+            parsed_edges.push(GdtEdgeReference::Specifier(edge_reference));
+        } else if let Some(edge) = EdgeReference::from_kcl_val(edge_value) {
+            parsed_edges.push(GdtEdgeReference::Entity(edge));
+        } else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "edges must contain tagged edges, edge UUIDs, or edge specifier objects (e.g. { sideFaces = [...], endFaces = [...], index = 0 })".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+    }
+    Ok(parsed_edges)
 }
 
 pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -308,7 +378,7 @@ async fn inner_datum(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let feature_control = AnnotationFeatureControl::builder()
-        .entity_id(face_id)
+        .maybe_entity_id(Some(face_id))
         // Point to the center of the face.
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
         .leader_type(AnnotationLineEnd::Dot)
@@ -386,11 +456,7 @@ pub async fn straightness(exec_state: &mut ExecState, args: Args) -> Result<KclV
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
@@ -403,7 +469,7 @@ pub async fn straightness(exec_state: &mut ExecState, args: Args) -> Result<KclV
         GdtFeatureControlKind::Straightness,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums: None,
             tolerance,
             precision,
@@ -425,11 +491,7 @@ pub async fn circularity(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
@@ -442,7 +504,7 @@ pub async fn circularity(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         GdtFeatureControlKind::Circularity,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums: None,
             tolerance,
             precision,
@@ -464,11 +526,7 @@ pub async fn cylindricity(exec_state: &mut ExecState, args: Args) -> Result<KclV
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
@@ -481,7 +539,7 @@ pub async fn cylindricity(exec_state: &mut ExecState, args: Args) -> Result<KclV
         GdtFeatureControlKind::Cylindricity,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums: None,
             tolerance,
             precision,
@@ -503,11 +561,7 @@ pub async fn concentricity(exec_state: &mut ExecState, args: Args) -> Result<Kcl
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Vec<String> = args.get_kw_arg(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -525,7 +579,7 @@ pub async fn concentricity(exec_state: &mut ExecState, args: Args) -> Result<Kcl
         GdtFeatureControlKind::Concentricity,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums: Some(datums),
             tolerance,
             precision,
@@ -547,11 +601,7 @@ pub async fn symmetry(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Vec<String> = args.get_kw_arg(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -569,7 +619,7 @@ pub async fn symmetry(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         GdtFeatureControlKind::Symmetry,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums: Some(datums),
             tolerance,
             precision,
@@ -591,11 +641,7 @@ pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Vec<String> = args.get_kw_arg(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -613,7 +659,7 @@ pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         GdtFeatureControlKind::Runout,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums: Some(datums),
             tolerance,
             precision,
@@ -630,11 +676,7 @@ pub async fn runout(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }
 
 pub async fn profile_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let edges: Vec<EdgeReference> = args.get_kw_arg(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let params = profile_common_params(&args, exec_state)?;
 
     let annotations = inner_profile_line(edges, params, exec_state, &args).await?;
@@ -664,29 +706,25 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
 
-    let annotations = match (edges, faces) {
-        (Some(edges), None) => {
+    let annotations = match (!edges.is_empty(), faces) {
+        (true, None) => {
             let params = profile_common_params(&args, exec_state)?;
             inner_profile_line(edges, params, exec_state, &args).await?
         }
-        (None, Some(faces)) => {
+        (false, Some(faces)) => {
             let params = profile_common_params(&args, exec_state)?;
             inner_profile_surface(faces, params, exec_state, &args).await?
         }
-        (Some(_), Some(_)) => {
+        (true, Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Profile cannot combine `edges` and `faces`. Use `profileLine` for edges or `profileSurface` for faces."
                     .to_owned(),
                 vec![args.source_range],
             )));
         }
-        (None, None) => {
+        (false, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Profile requires either `edges` for `profileLine` or `faces` for `profileSurface`.".to_owned(),
                 vec![args.source_range],
@@ -723,7 +761,7 @@ fn profile_common_params(args: &Args, exec_state: &mut ExecState) -> Result<GdtP
 }
 
 async fn inner_profile_line(
-    edges: Vec<EdgeReference>,
+    edges: Vec<GdtEdgeReference>,
     params: GdtProfileCommonParams,
     exec_state: &mut ExecState,
     args: &Args,
@@ -778,11 +816,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Option<Vec<String>> = args.get_kw_arg_opt(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -800,7 +834,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         GdtFeatureControlKind::Position,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums,
             tolerance,
             precision,
@@ -817,13 +851,9 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 }
 
 pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let from: Option<DistanceEntity> = args.get_kw_arg_opt("from", &distance_entity_type(), exec_state)?;
-    let to: Option<DistanceEntity> = args.get_kw_arg_opt("to", &distance_entity_type(), exec_state)?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let from = parse_distance_entity_arg("from", exec_state, &args).await?;
+    let to = parse_distance_entity_arg("to", exec_state, &args).await?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
@@ -835,7 +865,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let annotations = inner_distance(
         from,
         to,
-        edges.unwrap_or_default(),
+        edges,
         tolerance,
         precision,
         frame_position,
@@ -853,7 +883,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 async fn inner_distance(
     from: Option<DistanceEntity>,
     to: Option<DistanceEntity>,
-    edges: Vec<EdgeReference>,
+    edges: Vec<GdtEdgeReference>,
     tolerance: TyF64,
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
@@ -922,14 +952,19 @@ async fn inner_distance(
 
     let mut annotations = Vec::with_capacity(edges.len());
     for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
+        let (entity_id, edge_reference) = match edge {
+            GdtEdgeReference::Entity(edge) => (Some(edge.get_engine_id(exec_state, args)?), None),
+            GdtEdgeReference::Specifier(edge_reference) => (None, Some(edge_reference.clone())),
+        };
         create_basic_distance_annotation(
             DistanceEndpoint {
-                entity_id: edge_id,
+                entity_id,
+                edge_reference: edge_reference.clone(),
                 entity_pos: KPoint2d { x: 0.0, y: 0.0 },
             },
             DistanceEndpoint {
-                entity_id: edge_id,
+                entity_id,
+                edge_reference,
                 entity_pos: KPoint2d { x: 1.0, y: 0.0 },
             },
             &tolerance,
@@ -965,9 +1000,11 @@ async fn create_basic_distance_annotation(
     let annotation_id = exec_state.next_uuid();
     let display_units = exec_state.length_unit();
     let dimension = AnnotationBasicDimension::builder()
-        .from_entity_id(from.entity_id)
+        .maybe_from_entity_id(from.entity_id)
+        .maybe_from_edge_reference(from.edge_reference)
         .from_entity_pos(from.entity_pos)
-        .to_entity_id(to.entity_id)
+        .maybe_to_entity_id(to.entity_id)
+        .maybe_to_edge_reference(to.edge_reference)
         .to_entity_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
@@ -990,7 +1027,7 @@ async fn create_basic_distance_annotation(
         .build();
     let options = AnnotationOptions::builder()
         .dimension(dimension)
-        .units(display_units)
+        .units(display_units.to_kcmc())
         .build();
     let annotation_cmd = ModelingCmd::from(
         mcmd::NewAnnotation::builder()
@@ -1015,11 +1052,7 @@ pub async fn angularity(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Option<Vec<String>> = args.get_kw_arg_opt(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -1037,7 +1070,7 @@ pub async fn angularity(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         GdtFeatureControlKind::Angularity,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums,
             tolerance,
             precision,
@@ -1059,11 +1092,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Option<Vec<String>> = args.get_kw_arg_opt(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -1081,7 +1110,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         GdtFeatureControlKind::Perpendicularity,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums,
             tolerance,
             precision,
@@ -1103,11 +1132,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let datums: Option<Vec<String>> = args.get_kw_arg_opt(
         "datums",
         &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
@@ -1125,7 +1150,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         GdtFeatureControlKind::Parallelism,
         GdtFeatureControlParams {
             faces: faces.unwrap_or_default(),
-            edges: edges.unwrap_or_default(),
+            edges,
             datums,
             tolerance,
             precision,
@@ -1148,11 +1173,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
-    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
-        exec_state,
-    )?;
+    let edges = parse_gdt_edges_arg(exec_state, &args).await?;
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
@@ -1162,7 +1183,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let annotations = inner_annotation(
         annotation,
         faces.unwrap_or_default(),
-        edges.unwrap_or_default(),
+        edges,
         frame_position,
         frame_plane,
         leader_scale,
@@ -1178,7 +1199,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 async fn inner_annotation(
     annotation: String,
     faces: Vec<TagIdentifier>,
-    edges: Vec<EdgeReference>,
+    edges: Vec<GdtEdgeReference>,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
@@ -1217,7 +1238,8 @@ async fn inner_annotation(
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         create_annotation(
-            face_id,
+            Some(face_id),
+            None,
             &annotation,
             frame_position.as_ref(),
             frame_plane.id,
@@ -1230,19 +1252,38 @@ async fn inner_annotation(
         .await?;
     }
     for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_annotation(
-            edge_id,
-            &annotation,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
+        match edge {
+            GdtEdgeReference::Entity(edge) => {
+                create_annotation(
+                    Some(edge.get_engine_id(exec_state, args)?),
+                    None,
+                    &annotation,
+                    frame_position.as_ref(),
+                    frame_plane.id,
+                    leader_scale.as_ref(),
+                    font_size.as_ref(),
+                    exec_state,
+                    args,
+                    &mut annotations,
+                )
+                .await?;
+            }
+            GdtEdgeReference::Specifier(edge_reference) => {
+                create_annotation(
+                    None,
+                    Some(edge_reference.clone()),
+                    &annotation,
+                    frame_position.as_ref(),
+                    frame_plane.id,
+                    leader_scale.as_ref(),
+                    font_size.as_ref(),
+                    exec_state,
+                    args,
+                    &mut annotations,
+                )
+                .await?;
+            }
+        }
     }
 
     Ok(annotations)
@@ -1326,7 +1367,8 @@ async fn create_feature_control_annotations(
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         create_feature_control_annotation(
-            face_id,
+            Some(face_id),
+            None,
             symbol,
             diameter_symbol,
             &tolerance,
@@ -1343,23 +1385,46 @@ async fn create_feature_control_annotations(
         .await?;
     }
     for edge in &edges {
-        let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_feature_control_annotation(
-            edge_id,
-            symbol,
-            diameter_symbol,
-            &tolerance,
-            &datums,
-            precision,
-            frame_position.as_ref(),
-            frame_plane.id,
-            leader_scale.as_ref(),
-            font_size.as_ref(),
-            exec_state,
-            args,
-            &mut annotations,
-        )
-        .await?;
+        match edge {
+            GdtEdgeReference::Entity(edge) => {
+                create_feature_control_annotation(
+                    Some(edge.get_engine_id(exec_state, args)?),
+                    None,
+                    symbol,
+                    diameter_symbol,
+                    &tolerance,
+                    &datums,
+                    precision,
+                    frame_position.as_ref(),
+                    frame_plane.id,
+                    leader_scale.as_ref(),
+                    font_size.as_ref(),
+                    exec_state,
+                    args,
+                    &mut annotations,
+                )
+                .await?;
+            }
+            GdtEdgeReference::Specifier(edge_reference) => {
+                create_feature_control_annotation(
+                    None,
+                    Some(edge_reference.clone()),
+                    symbol,
+                    diameter_symbol,
+                    &tolerance,
+                    &datums,
+                    precision,
+                    frame_position.as_ref(),
+                    frame_plane.id,
+                    leader_scale.as_ref(),
+                    font_size.as_ref(),
+                    exec_state,
+                    args,
+                    &mut annotations,
+                )
+                .await?;
+            }
+        }
     }
 
     Ok(annotations)
@@ -1367,7 +1432,8 @@ async fn create_feature_control_annotations(
 
 #[allow(clippy::too_many_arguments)]
 async fn create_feature_control_annotation(
-    entity_id: uuid::Uuid,
+    entity_id: Option<uuid::Uuid>,
+    edge_reference: Option<kcmc::shared::EdgeSpecifier>,
     symbol: MbdSymbol,
     diameter_symbol: Option<MbdSymbol>,
     tolerance: &TyF64,
@@ -1391,7 +1457,8 @@ async fn create_feature_control_annotation(
         datums,
     );
     let feature_control = AnnotationFeatureControl::builder()
-        .entity_id(entity_id)
+        .maybe_entity_id(entity_id)
+        .maybe_edge_reference(edge_reference)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
         .leader_type(AnnotationLineEnd::Dot)
         .control_frame(control_frame)
@@ -1469,7 +1536,8 @@ fn gdt_control_frame(
 
 #[allow(clippy::too_many_arguments)]
 async fn create_annotation(
-    entity_id: uuid::Uuid,
+    entity_id: Option<uuid::Uuid>,
+    edge_reference: Option<kcmc::shared::EdgeSpecifier>,
     annotation: &str,
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
@@ -1482,7 +1550,8 @@ async fn create_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let feature_control = AnnotationFeatureControl::builder()
-        .entity_id(entity_id)
+        .maybe_entity_id(entity_id)
+        .maybe_edge_reference(edge_reference)
         .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
         .leader_type(AnnotationLineEnd::Dot)
         .prefix(annotation.to_owned())
@@ -1944,6 +2013,177 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
+    }
+
+    const GDT_FACE_API_EDGE_KCL_TEMPLATE: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10mm, tagStart = $capStart001)
+__GDT_CALL__
+"#;
+
+    fn gdt_face_api_edge_kcl(gdt_call: &str) -> String {
+        GDT_FACE_API_EDGE_KCL_TEMPLATE.replace("__GDT_CALL__", gdt_call)
+    }
+
+    fn assert_feature_control_uses_edge_reference(feature_control: &AnnotationFeatureControl) {
+        assert!(feature_control.entity_id.is_none());
+        let edge_reference = feature_control
+            .edge_reference
+            .as_ref()
+            .expect("expected face API edge specifier to emit edge_reference");
+        assert_eq!(edge_reference.side_faces.len(), 2);
+        assert!(edge_reference.end_faces.is_empty());
+        assert_eq!(edge_reference.index, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_straightness_accepts_face_api_edge_specifier() -> Result<(), KclError> {
+        let code = gdt_face_api_edge_kcl(
+            r#"gdt::straightness(
+  edges = [
+    {
+      sideFaces = [region001.tags.line1, capStart001]
+    }
+  ],
+  tolerance = 0.1mm,
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)"#,
+        );
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let feature_control = feature_control(&commands[annotation_index])?;
+        assert_feature_control_uses_edge_reference(feature_control);
+        assert!(feature_control.control_frame.is_some());
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_annotation_accepts_face_api_edge_specifier() -> Result<(), KclError> {
+        let code = gdt_face_api_edge_kcl(
+            r#"gdt::annotation(
+  annotation = "A",
+  edges = [
+    {
+      sideFaces = [region001.tags.line1, capStart001]
+    }
+  ],
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)"#,
+        );
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let feature_control = feature_control(&commands[annotation_index])?;
+        assert_feature_control_uses_edge_reference(feature_control);
+        assert_eq!(feature_control.prefix.as_deref(), Some("A"));
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_accepts_face_api_edge_specifier() -> Result<(), KclError> {
+        let code = gdt_face_api_edge_kcl(
+            r#"gdt::distance(
+  edges = [
+    {
+      sideFaces = [region001.tags.line1, capStart001]
+    }
+  ],
+  tolerance = 0.1mm,
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)"#,
+        );
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let options = annotation_options(&commands[annotation_index])?;
+        let dimension = options
+            .dimension
+            .as_ref()
+            .expect("expected new_annotation command to have a dimension");
+        assert!(dimension.from_entity_id.is_none());
+        assert!(dimension.to_entity_id.is_none());
+        assert_eq!(
+            dimension
+                .from_edge_reference
+                .as_ref()
+                .expect("expected from_edge_reference")
+                .side_faces
+                .len(),
+            2
+        );
+        assert_eq!(
+            dimension
+                .to_edge_reference
+                .as_ref()
+                .expect("expected to_edge_reference")
+                .side_faces
+                .len(),
+            2
+        );
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_from_to_accept_face_api_edge_specifiers() -> Result<(), KclError> {
+        let code = gdt_face_api_edge_kcl(
+            r#"gdt::distance(
+  from = {
+    sideFaces = [region001.tags.line1, capStart001]
+  },
+  to = {
+    sideFaces = [region001.tags.line3, capStart001]
+  },
+  tolerance = 0.1mm,
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)"#,
+        );
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let options = annotation_options(&commands[annotation_index])?;
+        let dimension = options
+            .dimension
+            .as_ref()
+            .expect("expected new_annotation command to have a dimension");
+        assert!(dimension.from_entity_id.is_none());
+        assert!(dimension.to_entity_id.is_none());
+        assert_eq!(
+            dimension
+                .from_edge_reference
+                .as_ref()
+                .expect("expected from_edge_reference")
+                .side_faces
+                .len(),
+            2
+        );
+        assert_eq!(
+            dimension
+                .to_edge_reference
+                .as_ref()
+                .expect("expected to_edge_reference")
+                .side_faces
+                .len(),
+            2
+        );
         Ok(())
     }
 

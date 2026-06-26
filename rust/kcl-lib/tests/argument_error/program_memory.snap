@@ -4,7 +4,6 @@ description: Variables in memory after executing argument_error.kcl
 ---
 {
   "f": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   }
 }

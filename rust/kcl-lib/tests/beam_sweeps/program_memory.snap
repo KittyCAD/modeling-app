@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing truss_sweeps.kcl
+description: Variables in memory after executing beam_sweeps.kcl
 ---
 {
   "__sketch_1_on": {
@@ -54,8 +54,7 @@ description: Variables in memory after executing truss_sweeps.kcl
     }
   },
   "makeTubeSection": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "ringDiameter": {
     "type": "Number",

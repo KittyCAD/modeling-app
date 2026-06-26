@@ -4,6 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { Link } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
@@ -34,8 +35,10 @@ function ProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const hasChangesRequested =
     projectStatus?.publicationStatus === 'changes_requested'
+  const hasCloudConflict = Boolean(project.cloudConflict)
   const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
   const [imageUrl, setImageUrl] = useState('')
@@ -167,6 +170,13 @@ function ProjectCard({
     >
       <Link
         data-testid="project-link"
+        onClick={(e) => {
+          if (!hasCloudConflict) {
+            return
+          }
+          e.preventDefault()
+          setIsInspectingConflict(true)
+        }}
         to={
           project.readWriteAccess
             ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
@@ -179,6 +189,14 @@ function ProjectCard({
         }`}
       >
         <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
+          {hasCloudConflict && (
+            <span
+              className="absolute top-2 left-2 z-10 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10 pointer-events-none"
+              data-testid="cloud-conflict-badge"
+            >
+              Inspect Conflicts
+            </span>
+          )}
           {imageUrl && (
             <img
               src={imageUrl}
@@ -188,7 +206,9 @@ function ProjectCard({
           )}
           {hasChangesRequested && (
             <span
-              className="absolute top-2 left-2 z-10 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10 pointer-events-none"
+              className={`absolute ${
+                hasCloudConflict ? 'top-8' : 'top-2'
+              } left-2 z-10 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10 pointer-events-none`}
               data-testid="changes-requested-badge"
             >
               Changes requested
@@ -298,6 +318,14 @@ function ProjectCard({
             "? This action cannot be undone.
           </p>
         </DeleteConfirmationDialog>
+      )}
+      {isInspectingConflict && (
+        <CloudConflictDialog
+          projectPath={project.path}
+          projectName={projectName}
+          onDismiss={() => setIsInspectingConflict(false)}
+          onResolved={() => setIsInspectingConflict(false)}
+        />
       )}
     </li>
   )

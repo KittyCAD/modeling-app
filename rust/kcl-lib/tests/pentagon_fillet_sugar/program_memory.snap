@@ -202,8 +202,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     }
   },
   "circl": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "p": {
     "type": "Solid",

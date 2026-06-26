@@ -1,9 +1,9 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
-use kcmc::units::UnitAngle;
-use kcmc::units::UnitLength;
 use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 use uuid::Uuid;
@@ -37,6 +37,7 @@ pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;

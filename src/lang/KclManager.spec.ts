@@ -503,6 +503,52 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('external edit')
   })
 
+  it('does not reload Zookeeper disk watcher updates into the active editor', async () => {
+    const { kclManager } = createKclManagerTestHarness('from disk')
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+
+    kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    ;(kclManager as any).markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+    await flushPromises()
+
+    expect(updateCodeEditorSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('from disk')
+  })
+
+  it('does not reload active editor disk updates while Zookeeper history is pending', async () => {
+    const { kclManager } = createKclManagerTestHarness('from disk')
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+    const testInternals = kclManager as unknown as {
+      markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
+    }
+
+    kclManager.path = '/tmp/kcl-manager-zookeeper-history-pending-test.kcl'
+    kclManager.zookeeperHistoryRecordingInProgress = true
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    testInternals.markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+    await flushPromises()
+
+    expect(updateCodeEditorSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('from disk')
+  })
+
   it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
     const { kclManager } = createKclManagerTestHarness('')
     const path = '/tmp/kcl-manager-watch-open-test.kcl'
@@ -529,6 +575,46 @@ describe('KclManager diagnostics', () => {
 
     readSpy.mockRestore()
     watchSpy.mockRestore()
+  })
+
+  it('refreshes derived state when restoring cached editor state for a reopened file', async () => {
+    vi.useFakeTimers()
+
+    const mainPath = '/tmp/kcl-manager-restored-main.kcl'
+    const depsPath = '/tmp/kcl-manager-restored-deps.kcl'
+    const mainCode = 'import x from "deps.kcl"\n'
+    const depsCode = 'export x = 42\n'
+    const { kclManager } = createKclManagerTestHarness(mainCode)
+    const systemDeps = (kclManager as any).systemDeps
+
+    kclManager.path = mainPath
+    kclManager.id = 1
+
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
+      async (path) => {
+        return path === depsPath ? depsCode : mainCode
+      }
+    )
+
+    await KclManager.fromFile(new File(depsPath, 2), systemDeps, kclManager)
+
+    const sendUpdateFileSpy = vi
+      .spyOn(kclManager.rustContext, 'sendUpdateFile')
+      .mockResolvedValue(undefined)
+    const executeCodeSpy = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+    } as typeof kclManager.engineCommandManager.connection
+
+    await KclManager.fromFile(new File(mainPath, 1), systemDeps, kclManager)
+
+    expect(sendUpdateFileSpy).toHaveBeenCalledWith(1, mainCode)
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(executeCodeSpy).toHaveBeenCalledWith(mainCode)
   })
 
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
@@ -715,11 +801,13 @@ describe('KclManager diagnostics', () => {
     const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
     const ast = await kclManager.safeParse('x = 2')
 
-    expect(ast).not.toBeNull()
+    if (ast === null) {
+      throw new Error('Expected test KCL to parse')
+    }
 
     kclManager.wasmInstancePromise = deferredWasm.promise
 
-    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast, {
       shouldExecute: false,
       shouldWriteToDisk: false,
     })
@@ -743,11 +831,13 @@ describe('KclManager diagnostics', () => {
     const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
     const ast = await kclManager.safeParse('x = 2')
 
-    expect(ast).not.toBeNull()
+    if (ast === null) {
+      throw new Error('Expected test KCL to parse')
+    }
 
     kclManager.wasmInstancePromise = deferredWasm.promise
 
-    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast!, {
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast, {
       shouldExecute: false,
       shouldWriteToDisk: false,
       allowProgrammaticDocumentChanges: true,

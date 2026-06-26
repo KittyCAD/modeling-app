@@ -359,7 +359,7 @@ mod tests {
     use pretty_assertions::assert_eq;
     use pretty_assertions::assert_ne;
 
-    use crate::exec::KclValue;
+    use crate::exec::KclValueView;
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
     // the resulting sketch.
@@ -384,10 +384,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube, cloned_cube);
 
-        let KclValue::Sketch { value: cube } = cube else {
+        let KclValueView::Sketch { value: cube } = cube else {
             panic!("Expected a sketch, got: {cube:?}");
         };
-        let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
+        let KclValueView::Sketch { value: cloned_cube } = cloned_cube else {
             panic!("Expected a sketch, got: {cloned_cube:?}");
         };
 
@@ -433,10 +433,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube, cloned_cube);
 
-        let KclValue::Solid { value: cube } = cube else {
+        let KclValueView::Solid { value: cube } = cube else {
             panic!("Expected a solid, got: {cube:?}");
         };
-        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+        let KclValueView::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
         let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
@@ -493,10 +493,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube, cloned_cube);
 
-        let KclValue::Sketch { value: cube } = cube else {
+        let KclValueView::Sketch { value: cube } = cube else {
             panic!("Expected a sketch, got: {cube:?}");
         };
-        let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
+        let KclValueView::Sketch { value: cloned_cube } = cloned_cube else {
             panic!("Expected a sketch, got: {cloned_cube:?}");
         };
 
@@ -549,10 +549,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube, cloned_cube);
 
-        let KclValue::Solid { value: cube } = cube else {
+        let KclValueView::Solid { value: cube } = cube else {
             panic!("Expected a solid, got: {cube:?}");
         };
-        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+        let KclValueView::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
         let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
@@ -623,10 +623,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube, cloned_cube);
 
-        let KclValue::Solid { value: cube } = cube else {
+        let KclValueView::Solid { value: cube } = cube else {
             panic!("Expected a solid, got: {cube:?}");
         };
-        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+        let KclValueView::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
         let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
@@ -725,10 +725,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube, cloned_cube);
 
-        let KclValue::Solid { value: cube } = cube else {
+        let KclValueView::Solid { value: cube } = cube else {
             panic!("Expected a solid, got: {cube:?}");
         };
-        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+        let KclValueView::Solid { value: cloned_cube } = cloned_cube else {
             panic!("Expected a solid, got: {cloned_cube:?}");
         };
         let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");

@@ -18,15 +18,16 @@ pub use artifact::StartSketchOnPlane;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
-pub use cad_op::Group;
-pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_api::Operation;
+use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub use kcl_value_view::KclValueView;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -59,21 +60,21 @@ pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::TangencyMode;
-use uuid::Uuid;
 
 use crate::CompilationIssue;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
-use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
-use crate::engine::EngineManager;
 use crate::engine::GridScaleBehavior;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::cache::CacheInformation;
 use crate::execution::cache::CacheResult;
+use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
 use crate::execution::typed_path::TypedPath;
@@ -143,6 +144,7 @@ mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
+pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
 mod sketch_solve;
@@ -210,21 +212,21 @@ impl ControlFlowKind {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
     /// Use [control_continue] or [Self::into_value] to get the value.
-    value: KclValue,
+    value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
     pub(crate) fn continue_(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Continue,
         }
     }
 
     pub(crate) fn exit(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Exit,
         }
     }
@@ -237,7 +239,7 @@ impl KclValueControlFlow {
     }
 
     pub(crate) fn into_value(self) -> KclValue {
-        self.value
+        *self.value
     }
 }
 
@@ -248,6 +250,7 @@ impl KclValueControlFlow {
 ///
 /// Normally, you don't construct this directly. Use the `early_return!` macro.
 #[must_use = "You should always handle the control flow value when it is returned"]
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub(crate) enum EarlyReturn {
     /// A normal value with control flow.
@@ -294,7 +297,7 @@ impl PreserveMem {
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
-    pub variables: IndexMap<String, KclValue>,
+    pub variables: IndexMap<String, KclValueView>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,
@@ -795,7 +798,7 @@ pub enum ContextType {
 /// as this uses `Arc` under the hood.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
-    pub engine: Arc<Box<dyn EngineManager>>,
+    pub engine: Arc<EngineManager>,
     pub engine_batch: EngineBatchContext,
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
@@ -947,7 +950,7 @@ impl ExecutorSettings {
 impl ExecutorContext {
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
-        engine: Arc<Box<dyn EngineManager>>,
+        engine: Arc<EngineManager>,
         fs: Arc<FileManager>,
         settings: ExecutorSettings,
     ) -> Self {
@@ -974,7 +977,7 @@ impl ExecutorContext {
 
     /// Create a new live executor context from an engine using the local file manager.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_with_engine(engine: Arc<Box<dyn EngineManager>>, settings: ExecutorSettings) -> Self {
+    pub fn new_with_engine(engine: Arc<EngineManager>, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, Arc::new(FileManager::new()), settings)
     }
 
@@ -1004,22 +1007,21 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
-            crate::engine::conn::EngineConnection::new(ws, settings.heartbeats).await?,
-        ));
+        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, fs, settings)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
@@ -1029,7 +1031,7 @@ impl ExecutorContext {
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new_mock(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new_mock(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
@@ -1047,16 +1049,10 @@ impl ExecutorContext {
         fs_manager: crate::fs::wasm::FileSystemManager,
         settings: ExecutorSettings,
     ) -> Result<Self, String> {
-        use crate::mock_engine;
-
-        let mock_engine = Arc::new(Box::new(
-            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
-        ) as Box<dyn EngineManager>);
-
         let fs = Arc::new(FileManager::new(fs_manager));
 
         Ok(ExecutorContext {
-            engine: mock_engine,
+            engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs,
             settings,
@@ -1066,7 +1062,7 @@ impl ExecutorContext {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
+    pub fn new_forwarded_mock(engine: Arc<EngineManager>) -> Self {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
@@ -2111,54 +2107,10 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
-pub struct ArtifactId(Uuid);
+pub use kcl_api::ArtifactId;
 
-impl ArtifactId {
-    pub fn new(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-
-    /// A placeholder artifact ID that will be filled in later.
-    pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-}
-
-impl From<Uuid> for ArtifactId {
-    fn from(uuid: Uuid) -> Self {
-        Self::new(uuid)
-    }
-}
-
-impl From<&Uuid> for ArtifactId {
-    fn from(uuid: &Uuid) -> Self {
-        Self::new(*uuid)
-    }
-}
-
-impl From<ArtifactId> for Uuid {
-    fn from(id: ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<&ArtifactId> for Uuid {
-    fn from(id: &ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<ModelingCmdId> for ArtifactId {
-    fn from(id: ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
-impl From<&ModelingCmdId> for ArtifactId {
-    fn from(id: &ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
+pub fn cmd_id_ref_to_artifact_id(id: &ModelingCmdId) -> ArtifactId {
+    ArtifactId::new(*id.as_ref())
 }
 
 #[cfg(test)]
@@ -2174,14 +2126,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
-            |err| {
-                KclError::new_internal(crate::errors::KclErrorDetails::new(
-                    format!("Failed to create mock engine connection: {err}"),
-                    vec![SourceRange::default()],
-                ))
-            },
-        )?)),
+        engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
@@ -2252,13 +2197,13 @@ impl ProgramLookup {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::NumericType;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ModuleId;
     use crate::errors::KclErrorDetails;
     use crate::errors::Severity;
-    use crate::exec::NumericType;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
@@ -2271,7 +2216,7 @@ mod tests {
     async fn execute_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         execute_outcome_with_backend(code, backend).await.variables
     }
 
@@ -2291,7 +2236,7 @@ mod tests {
     async fn execute_error_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -2304,7 +2249,7 @@ mod tests {
         main_code: &str,
         files: &[(&str, &str)],
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
         for (name, contents) in files {
             tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
@@ -2312,7 +2257,7 @@ mod tests {
 
         let program = crate::Program::parse_no_errs(main_code).unwrap();
         let ctx = ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
@@ -2335,15 +2280,12 @@ mod tests {
     async fn run_with_caching_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         cache::bust_cache().await;
         clear_mem_cache().await;
 
-        let ctx = ExecutorContext::new_with_engine(
-            Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
-            Default::default(),
-        );
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(code).unwrap();
         ctx.run_with_caching(program.clone()).await.unwrap();
         let cached = ctx.run_with_caching(program).await.unwrap();
@@ -2357,7 +2299,7 @@ mod tests {
     async fn run_mock_variables_with_backend(
         code: &str,
         backend: memory::MemoryBackendKind,
-    ) -> IndexMap<String, KclValue> {
+    ) -> IndexMap<String, KclValueView> {
         let _backend = memory::MemoryBackendKind::override_for_test(backend);
         clear_mem_cache().await;
 
@@ -2381,15 +2323,18 @@ mod tests {
         outcome.variables
     }
 
-    fn sorted_variable_keys(variables: &IndexMap<String, KclValue>) -> Vec<String> {
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValueView>) -> Vec<String> {
         let mut keys = variables.keys().cloned().collect::<Vec<_>>();
         keys.sort();
         keys
     }
 
-    fn assert_number_variable(variables: &IndexMap<String, KclValue>, key: &str, expected: f64) {
+    fn assert_number_variable(variables: &IndexMap<String, KclValueView>, key: &str, expected: f64) {
         let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
-        assert_eq!(value.as_f64().unwrap(), expected, "{key}: {value:?}");
+        let KclValueView::Number { value, .. } = value else {
+            panic!("expected `{key}` to be a number, got {value:?}");
+        };
+        assert_eq!(*value, expected, "{key}: {value:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3606,12 +3551,12 @@ w = f() + f()
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+        assert_number_variable(&result.variables, "x", 2.0);
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
-        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+        assert_number_variable(&result.variables, "z", 3.0);
 
         ctx.close().await;
         ctx2.close().await;
@@ -3738,10 +3683,7 @@ solid7 = extrude(r7, length = width)
         cache::bust_cache().await;
         clear_mem_cache().await;
 
-        let ctx = ExecutorContext::new_with_engine(
-            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
-            Default::default(),
-        );
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs(
             r#"sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
