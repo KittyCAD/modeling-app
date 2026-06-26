@@ -1,8 +1,8 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   canRevealInFileExplorer,
   revealInFileExplorer,
-} from '@src/lib/revealInFileExplorer'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+} from './revealInFileExplorer'
 
 const originalElectron = window.electron
 

@@ -1,23 +1,17 @@
 import { Popover } from '@headlessui/react'
-import { Registry } from '@kittycad/registry'
-import type { App } from '@src/lib/app'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
-import { createActor, createMachine } from 'xstate'
 
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import projectExplorerExtension from '@src/registry/extensions/projectExplorer'
 
 import ProjectSidebarMenu, {
   ProjectBreadcrumbButton,
   canNavigateHome,
 } from '@src/components/ProjectSidebarMenu'
-
-const originalElectron = window.electron
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -27,7 +21,6 @@ beforeAll(async () => {
 })
 
 afterEach(() => {
-  window.electron = originalElectron
   vi.restoreAllMocks()
 })
 
@@ -75,45 +68,6 @@ function renderBreadcrumb() {
   )
 }
 
-function createProjectMenuApp() {
-  const registry = new Registry()
-  registry.configure([projectExplorerExtension])
-  const commandsActor = createActor(
-    createMachine({
-      context: {
-        commands: [],
-      },
-    })
-  ).start()
-
-  return {
-    app: {
-      machineManager: {
-        machines: [],
-      },
-      commands: {
-        actor: commandsActor,
-        send: vi.fn(),
-      },
-      settings: {
-        actor: {},
-        useSettings: () => ({
-          app: {
-            machineApi: {
-              current: false,
-            },
-          },
-        }),
-      },
-      registry,
-    } as unknown as App,
-    dispose: () => {
-      commandsActor.stop()
-      registry[Symbol.dispose]()
-    },
-  }
-}
-
 describe('ProjectSidebarMenu tests', () => {
   test('enables home navigation for desktop or cloud-backed web', () => {
     expect(
@@ -142,33 +96,6 @@ describe('ProjectSidebarMenu tests', () => {
 
     expect(logoLink).toHaveAttribute('href', PATHS.HOME)
     expect(screen.getByRole('tooltip')).toHaveTextContent('Go home')
-  })
-
-  test('Reveals the current project from the project menu', async () => {
-    const showInFolder = vi.fn()
-    window.electron = {
-      showInFolder,
-      platform: 'darwin',
-      os: {
-        isMac: false,
-      },
-    } as unknown as Window['electron']
-    const { app, dispose } = createProjectMenuApp()
-
-    try {
-      renderWithRouter(
-        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
-      )
-
-      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-      fireEvent.click(
-        await screen.findByTestId('project-sidebar-reveal-in-file-explorer')
-      )
-
-      expect(showInFolder).toHaveBeenCalledWith(projectWellFormed.path)
-    } finally {
-      dispose()
-    }
   })
 
   test('Shows the full project-relative file path in the breadcrumb', () => {

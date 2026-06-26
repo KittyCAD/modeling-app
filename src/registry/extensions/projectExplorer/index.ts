@@ -1,12 +1,12 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import {
-  canRevealInFileExplorer,
-  revealInFileExplorer,
-} from '@src/lib/revealInFileExplorer'
-import {
   projectExplorerProjectMenuItemsValueSpec,
   projectExplorerRowContextMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
+import {
+  canRevealInFileExplorer,
+  revealInFileExplorer,
+} from './revealInFileExplorer'
 
 const projectExplorerExtension = defineRegistryItem({
   id: 'project-explorer',
