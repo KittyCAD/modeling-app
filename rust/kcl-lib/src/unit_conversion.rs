@@ -108,6 +108,24 @@ pub mod area {
     }
 }
 
+pub mod density {
+    use kittycad_modeling_cmds::units::UnitDensity;
+
+    pub fn kcmc_to_api(value: UnitDensity) -> kcl_api::UnitDensity {
+        match value {
+            UnitDensity::PoundsPerCubicFeet => kcl_api::UnitDensity::PoundsPerCubicFeet,
+            UnitDensity::KilogramsPerCubicMeter => kcl_api::UnitDensity::KilogramsPerCubicMeter,
+        }
+    }
+
+    pub fn api_to_kcmc(value: kcl_api::UnitDensity) -> UnitDensity {
+        match value {
+            kcl_api::UnitDensity::PoundsPerCubicFeet => UnitDensity::PoundsPerCubicFeet,
+            kcl_api::UnitDensity::KilogramsPerCubicMeter => UnitDensity::KilogramsPerCubicMeter,
+        }
+    }
+}
+
 pub mod angle {
     use kittycad_modeling_cmds::units::UnitAngle;
 
