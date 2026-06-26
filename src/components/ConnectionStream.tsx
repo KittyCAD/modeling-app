@@ -27,7 +27,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
-  getSketchIdForEngineRegionEntity,
+  getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
@@ -162,16 +162,19 @@ export const ConnectionStream = (props: {
             // If the selection is an undeclared region, get the corresponding sketch
             if (!artifact) {
               try {
-                const sketchId = await getSketchIdForEngineRegionEntity(
-                  entity_id,
-                  kclManager.artifactGraph,
-                  engineCommandManager
-                )
+                const regionSelection =
+                  await getEngineRegionSelectionFromEntity(
+                    entity_id,
+                    kclManager.artifactGraph,
+                    kclManager.ast,
+                    engineCommandManager,
+                    wasmInstance
+                  )
 
-                if (sketchId) {
+                if (regionSelection && regionSelection.sketchId) {
                   sceneInfra.modelingSend({
                     type: 'Edit sketch solve',
-                    data: { artifactId: sketchId },
+                    data: { artifactId: regionSelection.sketchId },
                   })
                 }
 

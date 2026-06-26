@@ -131,7 +131,7 @@ newSketch = sketch(on = XZ) {
 
 function withDefaultLengthUnitInches(code: string): string {
   return `@settings(defaultLengthUnit = in)
-
+    
 ${code}`
 }
 

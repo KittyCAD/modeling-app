@@ -189,7 +189,7 @@ function getSketchIdForRegionInfo(
   return null
 }
 
-export async function getSketchIdForEngineRegionEntity(
+async function getSketchIdForEngineRegionEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   engineCommandManager: ConnectionManager
@@ -213,7 +213,7 @@ export async function getEngineRegionSelectionFromEntity(
   ast: Node<Program>,
   engineCommandManager: ConnectionManager,
   wasmInstance: ModuleType,
-  useSegmentsBasedRegions: boolean
+  useSegmentsBasedRegions = false
 ): Promise<EngineRegionSelection | null> {
   if (!useSegmentsBasedRegions) {
     const queryPointMm = await getRegionQueryPointForRegion(

@@ -106,17 +106,13 @@ async function getAstAndSketchSelectionsEngineless(
 function createEngineRegionSelectionForSketch({
   artifactGraph,
   sketchId,
-  id = 'region-1',
   intersectionIndex = 0,
   intersectionCount = 1,
-  curveClockwise = false,
 }: {
   artifactGraph: ArtifactGraph
   sketchId: string
-  id?: string
   intersectionIndex?: number
   intersectionCount?: number
-  curveClockwise?: boolean
 }): EngineRegionSelection {
   const segmentIds = [...artifactGraph.values()]
     .filter((artifact) => {
@@ -138,14 +134,14 @@ function createEngineRegionSelectionForSketch({
 
   return {
     type: 'engineRegion',
-    id,
+    id: 'region-1',
     sketchId,
     resolvableIntersectionInfo: {
       segment,
       intersection_segment: intersectionSegment,
       intersection_index: intersectionIndex,
       intersection_count: intersectionCount,
-      curve_clockwise: curveClockwise,
+      curve_clockwise: false,
     },
   }
 }
@@ -315,47 +311,6 @@ extrude002 = extrude(seg01, length = 3)`)
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
-            sketchId: sketch!.id,
-          }),
-        ],
-      }
-      const length = await getKclCommandValue(
-        '1',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const result = addExtrude({
-        ast,
-        sketches,
-        length,
-        artifactGraph,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `hidden001 = hide(s)
-region001 = region(segments = [s.line1, s.line2])
-extrude001 = extrude(region001, length = 1)`
-      )
-      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
-    })
-
-    it('should add an extrude call from a legacy point-based sketch region selection', async () => {
-      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
-        triangleRegion,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const sketch = artifactGraph
-        .values()
-        .find((a) => a.type === 'sketchBlock')
-      const sketches: Selections = {
-        graphSelections: [],
-        otherSelections: [
           {
             type: 'engineRegion',
             id: 'region-1',
@@ -382,6 +337,47 @@ extrude001 = extrude(region001, length = 1)`
       expect(newCode).toContain(
         `hidden001 = hide(s)
 region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call from a segments-based sketch region selection', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `hidden001 = hide(s)
+region001 = region(segments = [s.line1, s.line2])
 extrude001 = extrude(region001, length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -1197,10 +1193,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
+          {
+            type: 'engineRegion',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
             sketchId: sketch!.id,
-          }),
+          },
         ],
       }
       const pathArtifact = [...artifactGraph.values()].findLast(
@@ -1220,7 +1218,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `hidden001 = hide(s)
-region001 = region(segments = [s.line1, s.line2])`
+region001 = region(point = [1mm, 1mm], sketch = s)`
       )
       expect(newCode).toContain(`sweep001 = sweep(
   region001,
@@ -1252,10 +1250,12 @@ sketch002 = sketch(on = XZ) {
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
+          {
+            type: 'engineRegion',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
             sketchId: sketch!.id,
-          }),
+          },
         ],
       }
       const pathArtifacts = [...artifactGraph.values()]
@@ -1277,7 +1277,7 @@ sketch002 = sketch(on = XZ) {
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `hidden001 = hide(s)
-region001 = region(segments = [s.line1, s.line2])`
+region001 = region(point = [1mm, 1mm], sketch = s)`
       )
       expect(newCode).toContain(`sweep001 = sweep(
   region001,
@@ -1742,15 +1742,18 @@ t = sketch(on = plane001) {
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
+          {
+            type: 'engineRegion',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
             sketchId: sketch1!.id,
-          }),
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
-            sketchId: sketch2!.id,
+          },
+          {
+            type: 'engineRegion',
             id: 'region-2',
-          }),
+            point: { x: 1, y: 1 },
+            sketchId: sketch2!.id,
+          },
         ],
       }
       const result = addLoft({
@@ -1770,8 +1773,8 @@ t = sketch(on = plane001) {
       expect(newCode).toContain(`loft001 = loft([`)
       expect(newCode).toContain(`hidden001 = hide(s)`)
       expect(newCode).toContain(`hidden002 = hide(t)`)
-      expect(newCode).toContain(`region(segments = [s.line1, s.line2])`)
-      expect(newCode).toContain(`region(segments = [t.edge1, t.edge2])`)
+      expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = s)`)
+      expect(newCode).toContain(`region(point = [1mm, 1mm], sketch = t)`)
       if (err(newCode)) throw newCode
       const { operations } = await getAstAndArtifactGraph(
         newCode,
@@ -2032,10 +2035,12 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
+          {
+            type: 'engineRegion',
+            id: 'region-1',
+            point: { x: 1, y: 1 },
             sketchId: sketch!.id,
-          }),
+          },
         ],
       }
       const angle = await getKclCommandValue(
@@ -2057,7 +2062,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `hidden001 = hide(s)
-region001 = region(segments = [s.line1, s.line2])
+region001 = region(point = [1mm, 1mm], sketch = s)
 revolve001 = revolve(region001, angle = 10, axis = X)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -2395,10 +2400,12 @@ revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
-          createEngineRegionSelectionForSketch({
-            artifactGraph,
+          {
+            type: 'engineRegion',
+            id: 'region-1',
+            point: { x: -2.48, y: -1.8875 },
             sketchId: sketch.id,
-          }),
+          },
         ],
       }
 
@@ -2426,7 +2433,7 @@ revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
 
       expect(newCode).toContain(
         `hidden001 = hide(sketch001)
-region001 = region(segments = [sketch001.line1, sketch001.line2])
+region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
 revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
       )
     })
