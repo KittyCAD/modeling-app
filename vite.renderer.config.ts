@@ -1,3 +1,4 @@
+import { kittyCadWebViewWasmPlugin } from '@kittycad/web-view/vite'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import type { ConfigEnv, UserConfig } from 'vite'
@@ -41,6 +42,7 @@ export default defineConfig((env) => {
       }),
       indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),
+      kittyCadWebViewWasmPlugin(),
       viteTsconfigPaths(),
       lezer(),
       // Needed for electron-builder (in npm run tronb:vite scripts)

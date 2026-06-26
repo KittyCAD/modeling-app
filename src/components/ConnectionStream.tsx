@@ -66,11 +66,6 @@ export const ConnectionStream = (props: {
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
-  const safariObjectFitClass = useMemo(() => {
-    // on safari we want to apply object-fit: fill to fix video resize bug
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-    return isSafari ? ' object-fill' : ''
-  }, [])
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
@@ -494,16 +489,6 @@ export const ConnectionStream = (props: {
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
-      <video
-        autoPlay
-        muted
-        key={id + 'video'}
-        ref={videoRef}
-        controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
-        disablePictureInPicture
-        id="video-stream"
-      />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}

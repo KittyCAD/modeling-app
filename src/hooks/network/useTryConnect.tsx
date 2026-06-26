@@ -74,7 +74,19 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          streamElement: videoWrapperRef.current,
         })
+
+        const connectionVideoElement = (
+          engineCommandManager.connection as unknown as {
+            videoElement?: HTMLVideoElement
+          }
+        )?.videoElement
+        if (connectionVideoElement) {
+          ;(
+            videoRef as unknown as { current: HTMLVideoElement | null }
+          ).current = connectionVideoElement
+        }
 
         if (!videoRef.current) {
           EngineDebugger.addLog({

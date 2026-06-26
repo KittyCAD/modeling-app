@@ -1,3 +1,4 @@
+import { kittyCadWebViewWasmPlugin } from '@kittycad/web-view/vite'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import eslint from '@nabla/vite-plugin-eslint'
@@ -90,6 +91,7 @@ export default defineConfig(({ command, mode }) => {
         },
       }),
       indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
+      kittyCadWebViewWasmPlugin(),
       viteTsconfigPaths(),
       eslint(),
       version(),
