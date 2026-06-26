@@ -777,6 +777,7 @@ export class KclManager extends File {
 
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
+  private readonly performanceTrackedTreeHighlighters = new WeakSet<object>()
   private readonly editorStatesByPath = new Map<string, EditorState>()
   private restoredEditorHistoryOnLastFileSwitch = false
   private disposeGlobalHistorySubscription: (() => boolean) | undefined
@@ -2743,13 +2744,8 @@ export class KclManager extends File {
   get copilotEnabled(): boolean {
     return this._copilotEnabled
   }
-  // Invoked when editorView is created and each time when it is updated (eg. user is sketching)..
-  // setEditorView(editorView: EditorView) {
-  //   this.overrideTreeHighlighterUpdateForPerformanceTracking()
-  // }
 
-  /** TODO: Investigate if this is still needed in the new world */
-  overrideTreeHighlighterUpdateForPerformanceTracking() {
+  private overrideTreeHighlighterUpdateForPerformanceTracking() {
     // @ts-ignore
     this._editorView?.plugins.forEach((e) => {
       let sawATreeDiff = false
@@ -2761,6 +2757,10 @@ export class KclManager extends File {
         e.value?.hasOwnProperty('decoratedTo') &&
         e.value?.hasOwnProperty('decorations')
       if (isTreeHighlightPlugin) {
+        if (this.performanceTrackedTreeHighlighters.has(e.value)) {
+          return
+        }
+        this.performanceTrackedTreeHighlighters.add(e.value)
         let originalUpdate = e.value.update
         // @ts-ignore
         function performanceTrackingUpdate(args) {
@@ -2878,6 +2878,8 @@ export class KclManager extends File {
         Transaction.addToHistory.of(false),
       ],
     })
+    // themeCompartment.reconfigure above installs the syntax-highlighting extension
+    this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
   setEditorLineWrapping(shouldWrap: boolean) {
     this._editorView.dispatch({
