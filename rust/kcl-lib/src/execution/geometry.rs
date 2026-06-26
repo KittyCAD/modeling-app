@@ -1072,13 +1072,9 @@ impl Extrudable {
             Extrudable::EdgeTag(tag_identifier) => match tag_identifier.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
-                None => {
-                    None
-                }
+                None => None,
             },
-            Extrudable::Edge(_) => {
-                None
-            }
+            Extrudable::Edge(_) => None,
         }
     }
 
