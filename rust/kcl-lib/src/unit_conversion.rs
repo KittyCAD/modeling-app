@@ -1,3 +1,103 @@
+use kittycad_modeling_cmds::units as kcmcu;
+
+/// Converts a unit from kcl_api to its equivalent for kcmc.
+pub trait ToKcmc {
+    type Equivalent;
+    /// Converts this unit of measurement from kcl_api to its equivalent for kcmc.
+    fn to_kcmc(self) -> Self::Equivalent;
+}
+
+/// Converts a unit from kcmc to its equivalent for kcl_api.
+pub trait ToApi {
+    type Equivalent;
+    /// Converts this unit of measurement from kcmc to its equivalent for kcl_api.
+    fn to_api(self) -> Self::Equivalent;
+}
+
+impl ToKcmc for kcl_api::UnitLength {
+    type Equivalent = kcmcu::UnitLength;
+    fn to_kcmc(self) -> Self::Equivalent {
+        length::api_to_kcmc(self)
+    }
+}
+
+impl ToApi for kcmcu::UnitLength {
+    type Equivalent = kcl_api::UnitLength;
+    fn to_api(self) -> Self::Equivalent {
+        length::kcmc_to_api(self)
+    }
+}
+
+impl ToKcmc for kcl_api::UnitAngle {
+    type Equivalent = kcmcu::UnitAngle;
+    fn to_kcmc(self) -> Self::Equivalent {
+        angle::api_to_kcmc(self)
+    }
+}
+
+impl ToApi for kcmcu::UnitAngle {
+    type Equivalent = kcl_api::UnitAngle;
+    fn to_api(self) -> Self::Equivalent {
+        angle::kcmc_to_api(self)
+    }
+}
+
+impl ToKcmc for kcl_api::UnitMass {
+    type Equivalent = kcmcu::UnitMass;
+    fn to_kcmc(self) -> Self::Equivalent {
+        mass::api_to_kcmc(self)
+    }
+}
+
+impl ToApi for kcmcu::UnitMass {
+    type Equivalent = kcl_api::UnitMass;
+    fn to_api(self) -> Self::Equivalent {
+        mass::kcmc_to_api(self)
+    }
+}
+
+impl ToKcmc for kcl_api::UnitArea {
+    type Equivalent = kcmcu::UnitArea;
+    fn to_kcmc(self) -> Self::Equivalent {
+        area::api_to_kcmc(self)
+    }
+}
+
+impl ToApi for kcmcu::UnitArea {
+    type Equivalent = kcl_api::UnitArea;
+    fn to_api(self) -> Self::Equivalent {
+        area::kcmc_to_api(self)
+    }
+}
+
+impl ToKcmc for kcl_api::UnitDensity {
+    type Equivalent = kcmcu::UnitDensity;
+    fn to_kcmc(self) -> Self::Equivalent {
+        density::api_to_kcmc(self)
+    }
+}
+
+impl ToApi for kcmcu::UnitDensity {
+    type Equivalent = kcl_api::UnitDensity;
+    fn to_api(self) -> Self::Equivalent {
+        density::kcmc_to_api(self)
+    }
+}
+
+impl ToKcmc for kcl_api::UnitVolume {
+    type Equivalent = kcmcu::UnitVolume;
+    fn to_kcmc(self) -> Self::Equivalent {
+        volume::api_to_kcmc(self)
+    }
+}
+
+impl ToApi for kcmcu::UnitVolume {
+    type Equivalent = kcl_api::UnitVolume;
+    fn to_api(self) -> Self::Equivalent {
+        volume::kcmc_to_api(self)
+    }
+}
+
 pub mod length {
     use kittycad_modeling_cmds::units::UnitLength;
 
