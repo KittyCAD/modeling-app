@@ -3,18 +3,19 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
   projectExplorerRowContextMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   canRevealInFileExplorer,
   revealInFileExplorer,
 } from './revealInFileExplorer'
 
-const projectExplorerExtension = defineRegistryItem({
-  id: 'project-explorer',
+const revealInFileExplorerItems = defineRegistryItem({
+  id: 'reveal-in-file-explorer.items',
   provides: [
     provide(
       projectExplorerProjectMenuItemsValueSpec,
       {
-        id: 'project-explorer.project-menu.reveal-in-file-explorer',
+        id: 'reveal-in-file-explorer.project-menu',
         order: 100,
         label: 'Reveal in File Explorer',
         dataTestId: 'project-sidebar-reveal-in-file-explorer',
@@ -22,21 +23,30 @@ const projectExplorerExtension = defineRegistryItem({
           Boolean(projectPath) && canRevealInFileExplorer(),
         onSelect: ({ projectPath }) => revealInFileExplorer(projectPath),
       },
-      { key: 'project-explorer.project-menu.reveal-in-file-explorer' }
+      { key: 'reveal-in-file-explorer.project-menu' }
     ),
     provide(
       projectExplorerRowContextMenuItemsValueSpec,
       {
-        id: 'project-explorer.reveal-in-file-explorer',
+        id: 'reveal-in-file-explorer.row-context-menu',
         order: 100,
         label: 'Reveal in File Explorer',
         dataTestId: 'context-menu-reveal-in-file-explorer',
         isVisible: ({ row }) => !row.isFake && canRevealInFileExplorer(),
         onSelect: ({ row }) => revealInFileExplorer(row.path),
       },
-      { key: 'project-explorer.reveal-in-file-explorer' }
+      { key: 'reveal-in-file-explorer.row-context-menu' }
     ),
   ],
 })
 
-export default projectExplorerExtension
+const revealInFileExplorerPlugin = createZdsPlugin({
+  id: 'reveal-in-file-explorer',
+  title: 'Reveal in File Explorer',
+  description:
+    'Adds project and file tree menu actions for opening items in the system file manager.',
+  items: [revealInFileExplorerItems],
+  defaultSetting: 'core',
+})
+
+export default revealInFileExplorerPlugin

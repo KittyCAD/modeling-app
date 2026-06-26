@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
-import projectExplorerExtension from '.'
+import revealInFileExplorer from '.'
 
 const originalElectron = window.electron
 
@@ -48,7 +48,7 @@ function renderWithRouter(children: ReactNode) {
 
 function createProjectMenuApp() {
   const registry = new Registry()
-  registry.configure([projectExplorerExtension])
+  registry.configure([revealInFileExplorer])
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -85,7 +85,7 @@ function createProjectMenuApp() {
   }
 }
 
-describe('project explorer project menu', () => {
+describe('revealInFileExplorer project menu', () => {
   test('reveals the current project from the contributed menu item', async () => {
     const showInFolder = vi.fn()
     window.electron = {
