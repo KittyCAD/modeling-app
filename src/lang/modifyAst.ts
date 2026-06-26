@@ -21,6 +21,7 @@ import {
   findAllPreviousVariables,
   getBodyIndex,
   getNodeFromPath,
+  getSettingsAnnotation,
   getSketchSegmentName,
   getVariableNameFromNodePath,
   isCallExprWithName,
@@ -37,6 +38,7 @@ import type {
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  NumericSuffix,
   PathToNode,
   PipeExpression,
   Program,
@@ -45,13 +47,20 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import { isPathToNodeNumber, parse } from '@src/lang/wasm'
+import {
+  baseUnitToNumericSuffix,
+  isPathToNodeNumber,
+  parse,
+} from '@src/lang/wasm'
 import type {
   KclCommandValue,
   KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
@@ -1114,6 +1123,16 @@ export function insertRegionVariablesAndOffsetPathToNode({
     return []
   }
 
+  const pointRegions = engineRegions.filter(({ point }) => point)
+  let unitSuffix: NumericSuffix | undefined
+  if (pointRegions.length > 0) {
+    const settings = getSettingsAnnotation(modifiedAst, wasmInstance)
+    if (err(settings)) {
+      return settings
+    }
+    unitSuffix = baseUnitToNumericSuffix(settings.defaultLengthUnit)
+  }
+
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
   for (const [index, regionSelection] of engineRegions.entries()) {
@@ -1130,55 +1149,78 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error("Couldn't retrieve sketch block variable")
     }
 
-    const {
-      segment,
-      intersection_segment: intersectionSegment,
-      intersection_count: intersectionCount,
-      intersection_index: intersectionIndex,
-      curve_clockwise: curveClockwise,
-    } = regionSelection.resolvableIntersectionInfo
-    // Closed primitive curves, such as circles, can report the same curve as
-    // both the walking curve and intersecting curve. KCL only needs that curve
-    // once to resolve the region.
-    const segmentIds =
-      segment === intersectionSegment
-        ? [segment]
-        : [segment, intersectionSegment]
+    let regionExpr: Expr
+    if (regionSelection.resolvableIntersectionInfo) {
+      const {
+        segment,
+        intersection_segment: intersectionSegment,
+        intersection_count: intersectionCount,
+        intersection_index: intersectionIndex,
+        curve_clockwise: curveClockwise,
+      } = regionSelection.resolvableIntersectionInfo
+      // Closed primitive curves, such as circles, can report the same curve as
+      // both the walking curve and intersecting curve. KCL only needs that curve
+      // once to resolve the region.
+      const segmentIds =
+        segment === intersectionSegment
+          ? [segment]
+          : [segment, intersectionSegment]
 
-    const segmentExprs: Expr[] = []
-    for (const segmentId of segmentIds) {
-      const segmentExpr = getSegmentExprForEngineRegion({
-        segmentId,
-        sketchId: regionSelection.sketchId,
-        sketchVarName,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-      })
-      if (err(segmentExpr)) {
-        return segmentExpr
+      const segmentExprs: Expr[] = []
+      for (const segmentId of segmentIds) {
+        const segmentExpr = getSegmentExprForEngineRegion({
+          segmentId,
+          sketchId: regionSelection.sketchId,
+          sketchVarName,
+          modifiedAst,
+          artifactGraph,
+          wasmInstance,
+        })
+        if (err(segmentExpr)) {
+          return segmentExpr
+        }
+        segmentExprs.push(segmentExpr)
       }
-      segmentExprs.push(segmentExpr)
-    }
 
-    const labeledArgs = [
-      createLabeledArg('segments', createArrayExpression(segmentExprs)),
-    ]
-    // KCL defaults to -1, which resolves the last intersection.
-    // The engine reports that same case as the final zero-based index.
-    if (intersectionIndex !== intersectionCount - 1) {
-      labeledArgs.push(
-        createLabeledArg(
-          'intersectionIndex',
-          createLiteral(intersectionIndex, wasmInstance)
+      const labeledArgs = [
+        createLabeledArg('segments', createArrayExpression(segmentExprs)),
+      ]
+      // KCL defaults to -1, which resolves the last intersection.
+      // The engine reports that same case as the final zero-based index.
+      if (intersectionIndex !== intersectionCount - 1) {
+        labeledArgs.push(
+          createLabeledArg(
+            'intersectionIndex',
+            createLiteral(intersectionIndex, wasmInstance)
+          )
         )
-      )
-    }
-    if (curveClockwise) {
-      labeledArgs.push(createLabeledArg('direction', createLocalName('CW')))
-    }
+      }
+      if (curveClockwise) {
+        labeledArgs.push(createLabeledArg('direction', createLocalName('CW')))
+      }
 
-    const regionExpr = createCallExpressionStdLibKw('region', null, labeledArgs)
+      regionExpr = createCallExpressionStdLibKw('region', null, labeledArgs)
+    } else {
+      const { x, y } = regionSelection.point
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        return new Error('Region point coordinates are invalid')
+      }
+      if (!unitSuffix) {
+        return new Error("Couldn't retrieve region point unit suffix")
+      }
+
+      const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+      regionExpr = createCallExpressionStdLibKw('region', null, [
+        createLabeledArg(
+          'point',
+          createArrayExpression([
+            createLiteral(x, wasmInstance, unitSuffix, decimals),
+            createLiteral(y, wasmInstance, unitSuffix, decimals),
+          ])
+        ),
+        createLabeledArg('sketch', createLocalName(sketchVarName)),
+      ])
+    }
 
     const variableName = findUniqueName(modifiedAst, 'region')
     const variableIdentifierAst = createLocalName(variableName)

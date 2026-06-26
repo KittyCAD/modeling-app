@@ -2104,7 +2104,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
-        'region(segments = [sketch001.line4, sketch001.line1])'
+        'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
       )
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'

@@ -3,6 +3,7 @@ import { EditorSelection } from '@codemirror/state'
 import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
+  Point2d,
   RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
@@ -36,6 +37,7 @@ import {
   getLastVariable,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
+  getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   isSingleCursorInPipe,
@@ -82,6 +84,10 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr, reportRejection } from '@src/lib/trap'
@@ -90,6 +96,7 @@ import {
   isArray,
   isNonNullable,
   isOverlap,
+  mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -148,6 +155,24 @@ async function getResolvableIntersectionInfoForRegion(
   return regionInfoResponse.data
 }
 
+async function getRegionQueryPointForRegion(
+  regionId: ArtifactId,
+  engineCommandManager: ConnectionManager
+): Promise<Point2d | null> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'region_get_query_point',
+      region_id: regionId,
+    },
+  })
+  if (!isModelingResponse(response)) return null
+  const queryPointResponse = response.resp.data.modeling_response
+  if (queryPointResponse.type !== 'region_get_query_point') return null
+  return queryPointResponse.data.query_point
+}
+
 function getSketchIdForRegionInfo(
   regionInfo: RegionGetResolvableIntersectionInfo,
   artifactGraph: ArtifactGraph
@@ -185,8 +210,43 @@ export async function getSketchIdForEngineRegionEntity(
 export async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  ast: Node<Program>,
+  engineCommandManager: ConnectionManager,
+  wasmInstance: ModuleType,
+  useSegmentsBasedRegions: boolean
 ): Promise<EngineRegionSelection | null> {
+  if (!useSegmentsBasedRegions) {
+    const queryPointMm = await getRegionQueryPointForRegion(
+      regionEntityId,
+      engineCommandManager
+    )
+    if (!queryPointMm) return null
+    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+    const settings = getSettingsAnnotation(ast, wasmInstance)
+    const lengthUnit =
+      !isErr(settings) && settings.defaultLengthUnit
+        ? settings.defaultLengthUnit
+        : DEFAULT_DEFAULT_LENGTH_UNIT
+    const point: Point2d = {
+      x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+      y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+    }
+
+    const sketchId = await getSketchIdForEngineRegionEntity(
+      regionEntityId,
+      artifactGraph,
+      engineCommandManager
+    )
+    if (!sketchId) return null
+
+    return {
+      type: 'engineRegion',
+      id: regionEntityId,
+      point,
+      sketchId,
+    }
+  }
+
   const regionInfo = await getResolvableIntersectionInfoForRegion(
     regionEntityId,
     engineCommandManager
@@ -1071,13 +1131,17 @@ export async function getEventForSelectWithPoint(
     engineCommandManager,
     kclManager,
     rustContext,
+    wasmInstance,
+    useSegmentsBasedRegions,
   }: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     rustContext: RustContext
+    wasmInstance: ModuleType
+    useSegmentsBasedRegions: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
-  const { artifactGraph } = kclManager
+  const { ast, artifactGraph } = kclManager
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -1124,7 +1188,10 @@ export async function getEventForSelectWithPoint(
     const regionSelection = await getEngineRegionSelectionFromEntity(
       data.entity_id,
       artifactGraph,
-      engineCommandManager
+      ast,
+      engineCommandManager,
+      wasmInstance,
+      useSegmentsBasedRegions
     )
     if (regionSelection) {
       return {

@@ -1,5 +1,6 @@
 import type {
   EntityType,
+  Point2d,
   RegionGetResolvableIntersectionInfo,
 } from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -34,12 +35,21 @@ export type EnginePrimitiveSelection = {
   primitiveType: EntityType
 }
 
-export interface EngineRegionSelection {
+type EngineRegionSelectionBase = {
   type: 'engineRegion'
   id: string
   sketchId: ArtifactId
-  resolvableIntersectionInfo: RegionGetResolvableIntersectionInfo
 }
+
+export type EngineRegionSelection =
+  | (EngineRegionSelectionBase & {
+      point: Point2d
+      resolvableIntersectionInfo?: never
+    })
+  | (EngineRegionSelectionBase & {
+      point?: never
+      resolvableIntersectionInfo: RegionGetResolvableIntersectionInfo
+    })
 
 export type NonCodeSelection =
   | Axis
