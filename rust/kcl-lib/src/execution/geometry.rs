@@ -12,8 +12,10 @@ use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 use parse_display::Display;
 use parse_display::FromStr;
@@ -180,10 +182,20 @@ impl ImportedGeometry {
             return Ok(());
         }
 
-        ctx.engine
-            .ensure_async_command_completed(self.id, self.meta.first().map(|m| m.source_range))
-            .await?;
+        let source_range = self.meta.first().map(|m| m.source_range);
+        let response = ctx.engine.ensure_async_command_completed(self.id, source_range).await?;
 
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::ImportFiles(import_files),
+        } = response
+        else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Expected import files response when waiting for imported geometry.".to_string(),
+                vec![source_range.unwrap_or_default()],
+            )));
+        };
+
+        self.id = import_files.object_id;
         self.completed = true;
 
         Ok(())
