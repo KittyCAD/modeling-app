@@ -395,7 +395,6 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-
 // Required for registerFileProtocolCsp file:// intercepting
 // This fixes media file streaming
 // see https://github.com/electron/electron/issues/40447
