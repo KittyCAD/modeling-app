@@ -3532,14 +3532,17 @@ impl Node<BinaryExpression> {
                     Some("union".to_owned()),
                 );
                 let result = crate::std::csg::inner_union(
-                    vec![*left.clone(), *right.clone()],
+                    vec![
+                        crate::execution::GeometryWithImportedGeometry::Solid(*left.clone()),
+                        crate::execution::GeometryWithImportedGeometry::Solid(*right.clone()),
+                    ],
                     Default::default(),
                     crate::std::csg::CsgAlgorithm::Latest,
                     exec_state,
                     args,
                 )
                 .await?;
-                return Ok(result.into());
+                return Ok(crate::std::csg::csg_geometries_to_kcl_value(result));
             }
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
@@ -3551,15 +3554,15 @@ impl Node<BinaryExpression> {
                     Some("subtract".to_owned()),
                 );
                 let result = crate::std::csg::inner_subtract(
-                    vec![*left.clone()],
-                    vec![*right.clone()],
+                    vec![crate::execution::GeometryWithImportedGeometry::Solid(*left.clone())],
+                    vec![crate::execution::GeometryWithImportedGeometry::Solid(*right.clone())],
                     Default::default(),
                     crate::std::csg::CsgAlgorithm::Latest,
                     exec_state,
                     args,
                 )
                 .await?;
-                return Ok(result.into());
+                return Ok(crate::std::csg::csg_geometries_to_kcl_value(result));
             }
         } else if self.operator == BinaryOperator::And
             && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
@@ -3572,14 +3575,17 @@ impl Node<BinaryExpression> {
                 Some("intersect".to_owned()),
             );
             let result = crate::std::csg::inner_intersect(
-                vec![*left.clone(), *right.clone()],
+                vec![
+                    crate::execution::GeometryWithImportedGeometry::Solid(*left.clone()),
+                    crate::execution::GeometryWithImportedGeometry::Solid(*right.clone()),
+                ],
                 Default::default(),
                 crate::std::csg::CsgAlgorithm::Latest,
                 exec_state,
                 args,
             )
             .await?;
-            return Ok(result.into());
+            return Ok(crate::std::csg::csg_geometries_to_kcl_value(result));
         }
 
         // Check if we are doing logical operations on booleans.
