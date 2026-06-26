@@ -303,6 +303,12 @@ async function replayZookeeperEditPatch({
     effectProps.activeFilePath &&
     kclManager.path !== effectProps.activeFilePath
   ) {
+    if (currentFileReplay) {
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: currentFileReplay.absolutePath,
+        nextContent: currentFileReplay.nextContent,
+      })
+    }
     await effectProps.onActiveFileRestore(
       effectProps.activeFilePath,
       restoredActiveFileReplay.nextContent ?? ''

@@ -3127,6 +3127,27 @@ export class KclManager extends File {
     clearRecoverySnapshot(filePath)
     return true
   }
+  synchronizeCurrentEditorAfterDirectGlobalReplay({
+    filePath,
+    nextContent,
+  }: {
+    filePath: string
+    nextContent: string | null
+  }) {
+    if (filePath !== this.path || nextContent === null) {
+      return false
+    }
+
+    this.updateCodeEditor(nextContent, {
+      shouldAddToHistory: false,
+      shouldClearHistory: false,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    this.markFileCodeAsSynced(nextContent)
+    return true
+  }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
     this.pendingDirectSketchHistoryEntries = []
