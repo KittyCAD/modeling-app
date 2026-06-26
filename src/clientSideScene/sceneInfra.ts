@@ -420,7 +420,14 @@ export class SceneInfra {
   }
 
   animate = () => {
-    this.animationFrameId = requestAnimationFrame(this.animate)
+    if (this.animationFrameId !== -1) {
+      return
+    }
+    this.renderLoop()
+  }
+
+  private renderLoop = () => {
+    this.animationFrameId = requestAnimationFrame(this.renderLoop)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()

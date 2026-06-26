@@ -14,6 +14,7 @@ import {
   dialog,
   ipcMain,
   nativeTheme,
+  powerSaveBlocker,
   protocol,
   screen,
   shell,
@@ -46,6 +47,7 @@ import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { ZookeeperReasoningSleepBlocker } from '@src/lib/zookeeperReasoningSleepBlocker'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
@@ -68,6 +70,9 @@ let mainWindow: BrowserWindow | null = null
 let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
+const zookeeperReasoningSleepBlocker = new ZookeeperReasoningSleepBlocker(
+  powerSaveBlocker
+)
 
 type MachineApiSignal = 'on' | 'off'
 
@@ -228,6 +233,12 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     newWindow.setBounds({ x, y, width: windowWidth, height: windowHeight })
   }
 
+  const webContentsId = newWindow.webContents.id
+
+  newWindow.webContents.on('render-process-gone', () => {
+    zookeeperReasoningSleepBlocker.clear(webContentsId)
+  })
+
   newWindow.on('close', () => {
     const bounds = newWindow.getBounds()
     saveLocalDeviceState({
@@ -239,6 +250,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     // BrowserWindow-scoped resources must die with that exact window.
     windowMenuManager.clearWindow(newWindow)
     deviceFlowSessions.abort(newWindow)
+    zookeeperReasoningSleepBlocker.clear(webContentsId)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
       (browserWindow) => !browserWindow.isDestroyed()
@@ -479,6 +491,13 @@ ipcMain.handle('machine-api.set-state', (_event, signal: MachineApiSignal) => {
   setMachineApiState(signal)
   return getMachineApiState() === 'on'
 })
+
+ipcMain.handle(
+  'app.setZookeeperReasoningSleepBlocked',
+  (event, active: boolean) => {
+    return zookeeperReasoningSleepBlocker.setActive(event.sender.id, active)
+  }
+)
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
   const targetWindow = BrowserWindow.fromWebContents(event.sender)

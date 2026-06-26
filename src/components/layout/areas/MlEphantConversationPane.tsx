@@ -82,6 +82,21 @@ export const MlEphantConversationPane = (props: {
     props.mlEphantManagerActor,
     awaitingResponseSelector
   )
+
+  useEffect(() => {
+    window.electron
+      ?.setZookeeperReasoningSleepBlocked(isPromptRunning)
+      .catch(reportRejection)
+  }, [isPromptRunning])
+
+  useEffect(() => {
+    return () => {
+      window.electron
+        ?.setZookeeperReasoningSleepBlocked(false)
+        .catch(reportRejection)
+    }
+  }, [])
+
   const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.modeOptions
   })
